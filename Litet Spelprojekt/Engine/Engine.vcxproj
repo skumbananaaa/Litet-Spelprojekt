@@ -19,13 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Application.h" />
+    <ClInclude Include="Include\EnginePch.h" />
+    <ClInclude Include="Include\GLAD\glad.h" />
+    <ClInclude Include="Include\GLAD\khrplatform.h" />
+    <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
+    <ClInclude Include="Include\System\Window.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\EnginePch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EnginePch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Include\GLAD\glad.c" />
+    <ClCompile Include="Source\System\Application.cpp" />
+    <ClCompile Include="Source\System\Window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{58070825-549E-4173-8861-4C6341B6E166}</ProjectGuid>
@@ -143,6 +153,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>ENGINE_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

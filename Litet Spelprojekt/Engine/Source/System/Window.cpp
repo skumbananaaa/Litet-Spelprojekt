@@ -1,21 +1,21 @@
 #include <EnginePch.h>
-#include "..\..\Include\System\Window.h"
+#include <System/Window.h>
 
 Window::Window(int width, int height)
 {
-	//Assumes only one window in app
-	if (!glfwInit())
-		std::cout << "Failed to init GLFW" << std::endl;
+	m_pWindow = glfwCreateWindow(width, height, "Lilla Spel", nullptr, nullptr);
+	if (m_pWindow == nullptr)
+	{
+		std::cout << "Failed to create window" << std::endl;
+	}
 }
 
 
 Window::~Window()
 {
-	glfwTerminate();
 }
 
 
 void Window::PollEvents()
 {
-	
 }

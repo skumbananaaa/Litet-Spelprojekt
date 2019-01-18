@@ -1,5 +1,8 @@
 #pragma once
+#include <EnginePch.h>
 #include <Defines.h>
+
+struct GLFWwindow;
 
 class API Window
 {

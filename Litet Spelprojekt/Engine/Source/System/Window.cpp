@@ -18,4 +18,6 @@ Window::~Window()
 
 void Window::PollEvents()
 {
+	glfwPollEvents();
+	glfwSwapBuffers(m_pWindow);
 }

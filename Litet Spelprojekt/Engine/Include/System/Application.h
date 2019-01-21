@@ -1,7 +1,6 @@
 #pragma once
 #include <System\Window.h>
-#include <Graphics\Renderers\GLRenderer.h>
-
+#include <Graphics\Renderers\GLContext.h>
 
 class API Application
 {
@@ -19,11 +18,11 @@ public:
 	virtual void OnRender() {};
 
 	Window& GetWindow();
-	GLRenderer& GetContext();
+	GLContext& GetContext();
 
 private:
 	Window* m_pWindow;
-	GLRenderer* m_pContext;
+	GLContext* m_pContext;
 
 public:
 	static Application& GetInstance();
@@ -32,13 +31,13 @@ private:
 	static Application* s_Instance;
 };
 
-Window& Application::GetWindow()
+inline Window& Application::GetWindow()
 {
 	assert(m_pWindow != nullptr);
 	return *m_pWindow;
 }
 
-GLRenderer& Application::GetContext()
+inline GLContext& Application::GetContext()
 {
 	assert(m_pContext != nullptr);
 	return *m_pContext;

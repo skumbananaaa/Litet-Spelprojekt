@@ -34,9 +34,9 @@ void GLContext::SetProgram(const ShaderProgram& program) const noexcept
 
 void GLContext::SetTexture(const Texture& texture, GLuint slot) const noexcept
 {
-	GLenum slot = GL_TEXTURE0 + slot;
-	glActiveTexture(slot);
-	glBindTexture(slot, texture.m_Texture);
+	GLenum textureSlot = GL_TEXTURE0 + slot;
+	glActiveTexture(textureSlot);
+	glBindTexture(textureSlot, texture.m_Texture);
 }
 
 void GLContext::SetUniformBuffer(const UniformBuffer& buffer, GLuint slot) const noexcept

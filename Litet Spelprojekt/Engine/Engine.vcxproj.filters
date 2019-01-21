@@ -77,10 +77,13 @@
     <ClCompile Include="Source\Graphics\Renderers\GLContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\Texture.cpp">
+    <ClCompile Include="Source\Graphics\Buffers\UniformBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphics\Buffers\UniformBuffer.cpp">
+    <ClCompile Include="Source\Graphics\Textures\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Textures\Texture2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

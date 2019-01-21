@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <System/Window.h>
 
-Window::Window(int width, int height)
+Window::Window(int width, int height) noexcept
 {
 	m_pWindow = glfwCreateWindow(width, height, "Lilla Spel", nullptr, nullptr);
 	if (m_pWindow == nullptr)
@@ -13,6 +13,8 @@ Window::Window(int width, int height)
 		m_Width = width;
 		m_Height = height;
 	}
+
+	glfwMakeContextCurrent(m_pWindow);
 }
 
 
@@ -34,5 +36,5 @@ void Window::SwapBuffers() noexcept
 
 bool Window::IsClosed() noexcept
 {
-	return glfwWindowShouldClose(m_pWindow);
+	return (glfwWindowShouldClose(m_pWindow) != 0);
 }

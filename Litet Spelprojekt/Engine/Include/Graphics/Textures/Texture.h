@@ -5,11 +5,11 @@
 enum TEX_PARAM : unsigned int
 {
 	TEX_PARAM_UNKNOWN = 0,
-	TEX_PARAM_REPEAT = GL_REPEAT,
-	TEX_NEAREST = GL_NEAREST,
-	TEX_LINEAR = GL_LINEAR,
-	TEX_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
-	TEX_MIPMAP_LINEAR = GL_NEAREST_MIPMAP_NEAREST,
+	TEX_PARAM_REPEAT = 1,
+	TEX_NEAREST = 2,
+	TEX_LINEAR = 3,
+	TEX_MIPMAP_NEAREST = 4,
+	TEX_MIPMAP_LINEAR = 5,
 };
 
 struct TextureParams
@@ -35,5 +35,5 @@ public:
 	void SetParameters(const TextureParams& params) noexcept;
 
 protected:
-	GLuint m_Texture;
+	unsigned int m_Texture;
 };

@@ -22,7 +22,7 @@ private:
 	void Create(const void* pInitalData, unsigned int count, unsigned int stride) noexcept;
 
 private:
-	GLuint m_Buffer;
+	unsigned int m_Buffer;
 	unsigned int m_Count;
 	unsigned int m_Stride;
 };

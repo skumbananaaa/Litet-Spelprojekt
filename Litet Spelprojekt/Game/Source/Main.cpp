@@ -4,9 +4,9 @@
 int main(int argc, char* argv[])
 {
 	Application* pApp = new Application();
-	//TODO: Call run here
+	int res = pApp->Run();
 	delete pApp;
 
 	std::cin.get();
-	return 0;
+	return res;
 }

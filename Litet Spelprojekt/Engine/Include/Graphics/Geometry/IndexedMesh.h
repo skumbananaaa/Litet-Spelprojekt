@@ -1,5 +1,4 @@
 #pragma once
-
 #include <EnginePch.h>
 #include <Defines.h>
 
@@ -15,9 +14,9 @@ public:
 	unsigned int GetVertexCount() const noexcept;
 
 private:
-	GLuint m_VAO;
-	GLuint m_VBO;
-	GLuint m_IBO;
+	unsigned int m_VAO;
+	unsigned int m_VBO;
+	unsigned int m_IBO;
 	int m_VertexCount;
 	int m_IndexCount;
 };

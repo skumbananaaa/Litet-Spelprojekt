@@ -18,5 +18,7 @@ void Texture2D::Create(const void* pInitalData, unsigned int format, unsigned in
 {
 	glGenTextures(1, &m_Texture);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
+
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

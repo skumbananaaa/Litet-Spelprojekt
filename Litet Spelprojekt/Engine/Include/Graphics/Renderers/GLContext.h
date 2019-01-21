@@ -6,11 +6,11 @@
 #include <Graphics/Textures/Texture.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 
-enum Capability : GLuint
+enum Capability : unsigned int
 {
-	DEPTH_TEST = GL_DEPTH_TEST,
-	CULL_FACE = GL_CULL_FACE,
-	BLEND = GL_BLEND
+	DEPTH_TEST = 0,
+	CULL_FACE = 1,
+	BLEND = 2
 };
 
 typedef Capability Cap;
@@ -30,7 +30,7 @@ public:
 	void Enable(Cap cap) const noexcept;
 	void Disable(Cap cap) const noexcept;
 	void SetProgram(const ShaderProgram& program) const noexcept;
-	void SetTexture(const Texture& texture, GLuint slot) const noexcept;
-	void SetUniformBuffer(const UniformBuffer& buffer, GLuint slot) const noexcept;
+	void SetTexture(const Texture& texture, unsigned int slot) const noexcept;
+	void SetUniformBuffer(const UniformBuffer& buffer, unsigned int slot) const noexcept;
 	void DrawIndexedMesh(const IndexedMesh& mesh) const noexcept;
 };

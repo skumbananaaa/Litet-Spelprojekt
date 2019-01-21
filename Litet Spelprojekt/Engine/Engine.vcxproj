@@ -43,7 +43,8 @@
     <ClCompile Include="Include\GLAD\glad.c" />
     <ClCompile Include="Source\Graphics\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\GLContext.cpp" />
-    <ClCompile Include="Source\Graphics\Texture.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\Texture.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
   </ItemGroup>

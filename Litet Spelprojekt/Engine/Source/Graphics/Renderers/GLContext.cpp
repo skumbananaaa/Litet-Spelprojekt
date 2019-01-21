@@ -10,6 +10,8 @@ GLContext::GLContext()
 	else
 	{
 		std::cout << "OpenGL initialized" << std::endl;
+		std::cout << glGetString(GL_VENDOR) << std::endl;
+		std::cout << glGetString(GL_RENDERER) << std::endl;
 	}
 }
 

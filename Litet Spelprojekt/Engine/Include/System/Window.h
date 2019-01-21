@@ -27,7 +27,6 @@ private:
 	int m_Height;
 };
 
-
 inline int Window::GetWidth() const noexcept
 {
 	return m_Width;

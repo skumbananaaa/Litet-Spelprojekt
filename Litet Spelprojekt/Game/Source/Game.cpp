@@ -76,7 +76,8 @@ Game::Game() noexcept
 		22, 23, 20
 	};
 
-	m_pTestMesh = new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
+	//m_pTestMesh = new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
+	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 
 	m_pScene = new Scene();
 
@@ -86,7 +87,7 @@ Game::Game() noexcept
 		pGameObject = new GameObject();
 		pGameObject->SetMesh(m_pTestMesh);
 		pGameObject->SetPosition(5.0f * glm::vec3(i / 25, (i / 5) % 5, i % 5));
-		//pGameObject->SetScale(glm::vec3(0.2f));
+		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
 		m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));

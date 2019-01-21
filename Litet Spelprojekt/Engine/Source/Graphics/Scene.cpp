@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Graphics\Scene.h>
 
 Scene::Scene() noexcept

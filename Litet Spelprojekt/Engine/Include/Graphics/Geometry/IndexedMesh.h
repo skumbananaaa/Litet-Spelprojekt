@@ -32,6 +32,9 @@ private:
 	unsigned int m_IBO;
 	unsigned int m_VertexCount;
 	unsigned int m_IndexCount;
+
+public:
+	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);
 };
 
 inline unsigned int IndexedMesh::GetIndexCount() const noexcept

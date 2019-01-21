@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Graphics\GameObject.h>
 
 GameObject::GameObject() noexcept

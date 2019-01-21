@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Graphics\Camera.h>
 
 Camera::Camera(const glm::vec3& pos, float pitch, float yaw) noexcept

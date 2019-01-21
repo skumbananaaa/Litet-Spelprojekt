@@ -1,7 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 
-class UniformBuffer
+class API UniformBuffer
 {
 	friend class GLContext;
 

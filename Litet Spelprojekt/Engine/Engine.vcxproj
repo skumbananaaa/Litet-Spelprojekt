@@ -22,6 +22,9 @@
     <ClInclude Include="Include\EnginePch.h" />
     <ClInclude Include="Include\GLAD\glad.h" />
     <ClInclude Include="Include\GLAD\khrplatform.h" />
+    <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
+    <ClInclude Include="Include\Graphics\Renderers\GLRenderer.h" />
+    <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
     <ClInclude Include="Include\System\Window.h" />

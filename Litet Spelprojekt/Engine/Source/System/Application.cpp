@@ -1,6 +1,6 @@
 #include <EnginePch.h>
-#include <chrono>
 #include <System/Application.h>
+#include <System/Input.h>
 
 constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
@@ -63,6 +63,8 @@ int32_t Application::Run()
 	m_pContext->SetClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 	while (!m_pWindow->IsClosed())
 	{
+		Input::Update();
+
 		m_pWindow->PollEvents();
 		m_pContext->Clear();
 
@@ -85,8 +87,19 @@ int32_t Application::Run()
 	return 0;
 }
 
-Application& Application::GetInstance()
+void Application::OnKeyDown(KEY keycode)
 {
-	assert(s_Instance != nullptr);
-	return *s_Instance;
+	std::cout << std::to_string(keycode) << std::endl;
+
+	Input::KeyState(keycode, true);
+}
+
+void Application::OnKeyUp(KEY keycode)
+{
+	Input::KeyState(keycode, false);
+}
+
+void Application::OnResize(unsigned int width, unsigned int height)
+{
+	m_pContext->SetViewport(width, height, 0, 0);
 }

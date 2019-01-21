@@ -47,10 +47,10 @@ public:
 	void SetParameters(const TextureParams& params) noexcept;
 
 protected:
-	unsigned int TexParamToGL(TEX_PARAM param) const noexcept;
-	unsigned int TexFormatToGL(TEX_FORMAT param) const noexcept;
-	unsigned int TexFormatToGLInternal(TEX_FORMAT param) const noexcept;
-
-protected:
 	unsigned int m_Texture;
+
+public:
+	static unsigned int TexParamToGL(TEX_PARAM param) noexcept;
+	static unsigned int TexFormatToGL(TEX_FORMAT param) noexcept;
+	static unsigned int TexFormatToGLInternal(TEX_FORMAT param) noexcept;
 };

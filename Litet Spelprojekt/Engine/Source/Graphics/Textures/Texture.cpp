@@ -25,7 +25,7 @@ void Texture::SetParameters(const TextureParams& params) noexcept
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-unsigned int Texture::TexParamToGL(TEX_PARAM param) const noexcept
+unsigned int Texture::TexParamToGL(TEX_PARAM param) noexcept
 {
 	static unsigned int s_TexParamTable[TEX_PARAM_COUNT] =
 	{ 
@@ -42,7 +42,7 @@ unsigned int Texture::TexParamToGL(TEX_PARAM param) const noexcept
 	return s_TexParamTable[param];
 }
 
-unsigned int Texture::TexFormatToGL(TEX_FORMAT param) const noexcept
+unsigned int Texture::TexFormatToGL(TEX_FORMAT param) noexcept
 {
 	static unsigned int s_TexFormatTable[TEX_FORMAT_COUNT] =
 	{
@@ -56,7 +56,7 @@ unsigned int Texture::TexFormatToGL(TEX_FORMAT param) const noexcept
 	return s_TexFormatTable[param];
 }
 
-unsigned int Texture::TexFormatToGLInternal(TEX_FORMAT param) const noexcept
+unsigned int Texture::TexFormatToGLInternal(TEX_FORMAT param) noexcept
 {
 	static unsigned int s_TexFormatTable[TEX_FORMAT_COUNT] =
 	{

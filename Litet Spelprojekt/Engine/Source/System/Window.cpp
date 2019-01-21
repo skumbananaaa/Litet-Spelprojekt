@@ -373,6 +373,11 @@ void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mod
 		Application::GetInstance().OnKeyUp(GLFWToKey(key));
 }
 
+void MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
+{
+	Application::GetInstance().OnMouseMove(glm::vec2(x, y));
+}
+
 void ResizeCallback(GLFWwindow* window, int width, int height)
 {
 	Application::GetInstance().OnResize(width, height);
@@ -415,6 +420,7 @@ Window::Window(const char* pTitle, int width, int height) noexcept
 
 	glfwSetErrorCallback(ErrorCallback);
 	glfwSetKeyCallback(m_pWindow, KeyCallback);
+	glfwSetCursorPosCallback(m_pWindow, MouseMoveCallback);
 	glfwSetWindowSizeCallback(m_pWindow, ResizeCallback);
 }
 

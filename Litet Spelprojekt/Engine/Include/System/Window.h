@@ -20,12 +20,18 @@ public:
 	void SwapBuffers() noexcept;
 	int GetWidth() const noexcept;
 	int GetHeight() const noexcept;
+	GLFWwindow* GetHandle() const noexcept;
 
 private:
 	GLFWwindow* m_pWindow;
 	int m_Width;
 	int m_Height;
 };
+
+inline GLFWwindow* Window::GetHandle() const noexcept
+{
+	return m_pWindow;
+}
 
 inline int Window::GetWidth() const noexcept
 {

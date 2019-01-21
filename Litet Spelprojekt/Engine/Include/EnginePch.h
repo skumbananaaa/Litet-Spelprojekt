@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GLM/glm.hpp>
 #if defined(ENGINE_EXPORT)
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>

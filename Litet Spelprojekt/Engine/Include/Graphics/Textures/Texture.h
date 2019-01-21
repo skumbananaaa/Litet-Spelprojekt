@@ -8,8 +8,11 @@ enum TEX_PARAM : unsigned int
 	TEX_PARAM_REPEAT = 1,
 	TEX_NEAREST = 2,
 	TEX_LINEAR = 3,
-	TEX_MIPMAP_NEAREST = 4,
-	TEX_MIPMAP_LINEAR = 5,
+	TEX_NEAREST_MIPMAP_NEAREST = 4,
+	TEX_LINEAR_MIPMAP_NEAREST = 5,
+	TEX_NEAREST_MIPMAP_LINEAR = 6,
+	TEX_LINEAR_MIPMAP_LINEAR = 7,
+	TEX_PARAM_COUNT = 8,
 };
 
 struct TextureParams
@@ -29,10 +32,13 @@ public:
 	Texture& operator=(Texture&& other) = delete;
 	Texture& operator=(const Texture& other) = delete;
 
-	Texture();
+	Texture() noexcept;
 	~Texture();
 
 	void SetParameters(const TextureParams& params) noexcept;
+
+protected:
+	unsigned int TexParamToGL(TEX_PARAM param) const noexcept;
 
 protected:
 	unsigned int m_Texture;

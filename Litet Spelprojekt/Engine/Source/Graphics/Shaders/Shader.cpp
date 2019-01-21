@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Graphics\Shaders\Shader.h>
 
 Shader::Shader() noexcept : m_Shader(0), m_type(ShaderType::UNDEFINED)

@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #endif
 
+#include "Defines.h"
+
 #include <cassert>
 #include <iostream>
 #include <Fstream>

@@ -10,7 +10,7 @@ public:
 	Texture2D& operator=(Texture2D&& other) = delete;
 	Texture2D& operator=(const Texture2D& other) = delete;
 
-	Texture2D(const void* pInitalData, unsigned int format, unsigned int width, unsigned int height);
+	Texture2D(const void* pInitalData, unsigned int format, unsigned int width, unsigned int height, const TextureParams& params = TextureParams());
 	~Texture2D();
 
 	unsigned int GetWidth() const noexcept;
@@ -18,7 +18,7 @@ public:
 	unsigned int GetFormat() const noexcept;
 
 private:
-	void Create(const void* pInitalData, unsigned int format, unsigned int width, unsigned int height);
+	void Create(const void* pInitalData, unsigned int format, unsigned int width, unsigned int height, const TextureParams& params);
 
 private:
 	unsigned int m_Width;

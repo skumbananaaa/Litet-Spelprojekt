@@ -94,6 +94,11 @@ void Application::OnKeyDown(KEY keycode)
 	Input::KeyState(keycode, true);
 }
 
+void Application::OnMouseMove(const glm::vec2& position)
+{
+	Input::MousePosition(position);
+}
+
 void Application::OnKeyUp(KEY keycode)
 {
 	Input::KeyState(keycode, false);

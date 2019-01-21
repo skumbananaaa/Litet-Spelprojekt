@@ -154,8 +154,11 @@ public:
 
 	static bool IsKeyDown(KEY keycode);
 	static bool IsKeyUp(KEY keycode);
+	static const glm::vec2& GetMousePosition();
+	static void SetMousePosition(const glm::vec2& position);
 
 private:
 	static void Update();
 	static void KeyState(KEY keycode, bool state);
+	static void MousePosition(const glm::vec2& position);
 };

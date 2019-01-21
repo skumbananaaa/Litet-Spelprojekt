@@ -26,7 +26,7 @@ bool Shader::CompileFromSource(const char* const source, ShaderType type) noexce
 	if (!success)
 	{
 		glGetShaderInfoLog(m_Shader, 512, NULL, infoLog);
-		std::cout << "ERROR COMPILING SHADER OF TYPE" << type << "\n" << infoLog << std::endl;
+		std::cout << "ERROR COMPILING SHADER OF TYPE " << type << "\n" << infoLog << std::endl;
 		return false;
 	};
 
@@ -72,7 +72,7 @@ bool Shader::CompileFromFile(const char* const path, ShaderType type) noexcept
 	if (!success)
 	{
 		glGetShaderInfoLog(m_Shader, 512, NULL, infoLog);
-		std::cout << "ERROR COMPILING SHADER OF TYPE" << type << "\n" << infoLog << std::endl;
+		std::cout << "ERROR COMPILING SHADER OF TYPE " << type << "\n" << infoLog << std::endl;
 		return false;
 	};
 

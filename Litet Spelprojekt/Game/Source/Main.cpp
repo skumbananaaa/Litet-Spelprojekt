@@ -1,9 +1,8 @@
-#include <System/Application.h>
-#include <iostream>
+#include "..\Include\Game.h"
 
 int main(int argc, char* argv[])
 {
-	Application* pApp = new Application();
+	Application* pApp = new Game();
 	int res = pApp->Run();
 	delete pApp;
 

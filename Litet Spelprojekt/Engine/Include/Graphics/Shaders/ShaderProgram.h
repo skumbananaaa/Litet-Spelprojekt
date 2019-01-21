@@ -1,7 +1,6 @@
 #pragma once
 
 #include <EnginePch.h>
-#include <Defines.h>
 #include <Graphics\Shaders\Shader.h>
 
 class API ShaderProgram

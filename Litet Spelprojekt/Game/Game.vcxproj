@@ -72,21 +72,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Intermediaries\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)Engine\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Libs\Include\GLM;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Build\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Intermediaries\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)Engine\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Libs\Include\GLM;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Build\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Engine\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Libs\Include\GLM;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Build\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)Engine\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Libs\Include\GLM;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Build\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -142,7 +142,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Game.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

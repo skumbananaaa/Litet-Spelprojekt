@@ -23,8 +23,11 @@
     <ClInclude Include="Include\GLAD\glad.h" />
     <ClInclude Include="Include\GLAD\khrplatform.h" />
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
+    <ClInclude Include="Include\Graphics\Camera.h" />
+    <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
+    <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture.h" />
@@ -38,6 +41,9 @@
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Graphics\Camera.cpp" />
+    <ClCompile Include="Source\Graphics\GameObject.cpp" />
+    <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\System\Input.cpp" />
     <ClCompile Include="Source\EnginePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

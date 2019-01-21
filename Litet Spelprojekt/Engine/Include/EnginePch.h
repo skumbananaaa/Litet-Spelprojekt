@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #endif
 
+#include <GLM\glm.hpp>
 #include "Defines.h"
 
 #include <cassert>
@@ -14,3 +15,5 @@
 
 #include <string>
 #include <vector>
+
+static const glm::vec3 UP_VECTOR(0.0f, 1.0f, 0.0f);

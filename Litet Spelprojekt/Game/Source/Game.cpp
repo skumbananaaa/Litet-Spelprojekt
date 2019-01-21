@@ -14,7 +14,7 @@ Game::Game() noexcept
 		"layout (location = 3) in vec2 texCoords;\n"
 		"void main()\n"
 		"{\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"   gl_Position = vec4(position, 1.0);\n"
 		"}\0",
 		ShaderType::VERTEX_SHADER
 	);
@@ -50,6 +50,7 @@ Game::Game() noexcept
 Game::~Game()
 {
 	delete m_pShaderProgram;
+	delete m_pTriangle;
 }
 
 void Game::OnUpdate(float dtS)
@@ -60,4 +61,7 @@ void Game::OnUpdate(float dtS)
 void Game::OnRender()
 {
 	Application::OnRender();
+
+	GetContext().SetProgram(*m_pShaderProgram);
+	GetContext().DrawIndexedMesh(*m_pTriangle);
 }

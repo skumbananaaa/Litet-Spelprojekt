@@ -1,9 +1,9 @@
 #pragma once
 
 #include <System\Application.h>
-#include <glm.hpp>
+#include <GLM\glm.hpp>
 
-class Game : Application
+class Game : public Application
 {
 public:
 	Game() noexcept;

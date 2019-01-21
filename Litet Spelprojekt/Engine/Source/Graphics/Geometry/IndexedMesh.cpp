@@ -11,6 +11,7 @@ IndexedMesh::IndexedMesh(const Vertex* const vertices, const unsigned int* const
 	glGenBuffers(1, &m_IBO);
 
 	glBindVertexArray(m_VAO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, m_VertexCount, vertices, GL_STATIC_DRAW);
 
@@ -20,7 +21,7 @@ IndexedMesh::IndexedMesh(const Vertex* const vertices, const unsigned int* const
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //Position
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(3 * sizeof(float))); //Normal 
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(6 * sizeof(float))); //Tangent 
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(9 * sizeof(float))); //TexCoords
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(9 * sizeof(float))); //TexCoords
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

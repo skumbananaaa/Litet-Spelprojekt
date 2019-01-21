@@ -22,9 +22,13 @@
     <ClInclude Include="Include\EnginePch.h" />
     <ClInclude Include="Include\GLAD\glad.h" />
     <ClInclude Include="Include\GLAD\khrplatform.h" />
+    <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
-    <ClInclude Include="Include\Graphics\Renderers\GLRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
+    <ClInclude Include="Include\Graphics\Textures\Texture.h" />
+    <ClInclude Include="Include\Graphics\Textures\Texture2D.h" />
+    <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
     <ClInclude Include="Include\System\Window.h" />
@@ -37,6 +41,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EnginePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Include\GLAD\glad.c" />
+    <ClCompile Include="Source\Graphics\Buffers\UniformBuffer.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\GLContext.cpp" />
+    <ClCompile Include="Source\Graphics\Texture.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
   </ItemGroup>

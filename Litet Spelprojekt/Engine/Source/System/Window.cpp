@@ -8,6 +8,11 @@ Window::Window(int width, int height)
 	{
 		std::cout << "Failed to create window" << std::endl;
 	}
+	else
+	{
+		m_Width = width;
+		m_Height = height;
+	}
 }
 
 
@@ -16,8 +21,18 @@ Window::~Window()
 }
 
 
-void Window::PollEvents()
+void Window::PollEvents() noexcept
 {
 	glfwPollEvents();
+}
+
+
+void Window::SwapBuffers() noexcept
+{
 	glfwSwapBuffers(m_pWindow);
+}
+
+bool Window::IsClosed() noexcept
+{
+	return glfwWindowShouldClose(m_pWindow);
 }

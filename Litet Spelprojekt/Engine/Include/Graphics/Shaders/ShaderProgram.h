@@ -5,12 +5,11 @@
 
 class API ShaderProgram
 {
+	friend class GLContext;
+
 public:
 	ShaderProgram();
 	~ShaderProgram();
-
-	void Bind();
-	void Unbind();
 
 private:
 	GLuint m_Program;

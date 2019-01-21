@@ -1,7 +1,6 @@
 #pragma once
 
 #include <EnginePch.h>
-#include <Defines.h>
 
 enum ShaderType : unsigned char
 {
@@ -19,7 +18,7 @@ public:
 	Shader() noexcept;
 	~Shader();
 
-	bool CompileFromSource() noexcept;
+	bool CompileFromSource(const char* const source, ShaderType type) noexcept;
 	bool CompileFromFile(const char* const path, ShaderType type) noexcept;
 
 	unsigned int ShaderTypeTable(ShaderType type) const noexcept;

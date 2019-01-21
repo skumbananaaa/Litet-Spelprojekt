@@ -10,9 +10,27 @@ Shader::~Shader()
 	glDeleteShader(m_Shader);
 }
 
-bool Shader::CompileFromSource() noexcept
+bool Shader::CompileFromSource(const char* const source, ShaderType type) noexcept
 {
-	return false;
+	assert(type != ShaderType::UNDEFINED);
+	m_type = type;
+
+	GLint success;
+	GLchar infoLog[512];
+
+	m_Shader = glCreateShader(ShaderTypeTable(type));
+	glShaderSource(m_Shader, 1, &source, NULL);
+	glCompileShader(m_Shader);
+
+	glGetShaderiv(m_Shader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(m_Shader, 512, NULL, infoLog);
+		std::cout << "ERROR COMPILING SHADER OF TYPE" << type << "\n" << infoLog << std::endl;
+		return false;
+	};
+
+	return true;
 }
 
 bool Shader::CompileFromFile(const char* const path, ShaderType type) noexcept

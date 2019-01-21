@@ -18,7 +18,7 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window(1024, 768);
+		m_pWindow = new Window("Little HOMO", 1024, 768);
 		m_pContext = new GLContext();
 	}
 	
@@ -60,9 +60,11 @@ int32_t Application::Run()
 	float deltaTime = 0.0f;
 	float accumulator = 0.0f;
 
+	m_pContext->SetClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 	while (!m_pWindow->IsClosed())
 	{
 		m_pWindow->PollEvents();
+		m_pContext->Clear();
 
 		currentTime = clock::now();
 		deltaTime = std::chrono::duration_cast<duration>(currentTime - prevTime).count();
@@ -77,7 +79,6 @@ int32_t Application::Run()
 		}
 
 		OnRender();
-
 		m_pWindow->SwapBuffers();
 	}
 

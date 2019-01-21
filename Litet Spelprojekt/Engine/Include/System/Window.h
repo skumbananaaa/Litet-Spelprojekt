@@ -12,7 +12,7 @@ public:
 	Window& operator=(Window&& other) = delete;
 	Window& operator=(const Window& other) = delete;
 
-	Window(int width, int height) noexcept;
+	Window(const char* pTitle, int width, int height) noexcept;
 	~Window();
 
 	bool IsClosed() noexcept;

@@ -41,3 +41,31 @@ unsigned int Texture::TexParamToGL(TEX_PARAM param) const noexcept
 
 	return s_TexParamTable[param];
 }
+
+unsigned int Texture::TexFormatToGL(TEX_FORMAT param) const noexcept
+{
+	static unsigned int s_TexFormatTable[TEX_FORMAT_COUNT] =
+	{
+		0,
+		GL_RED,
+		GL_RG,
+		GL_RGB,
+		GL_RGBA,
+	};
+
+	return s_TexFormatTable[param];
+}
+
+unsigned int Texture::TexFormatToGLInternal(TEX_FORMAT param) const noexcept
+{
+	static unsigned int s_TexFormatTable[TEX_FORMAT_COUNT] =
+	{
+		0,
+		GL_R8,
+		GL_RG8,
+		GL_RGB8,
+		GL_RGBA8,
+	};
+
+	return s_TexFormatTable[param];
+}

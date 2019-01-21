@@ -1,6 +1,5 @@
 #pragma once
 #include <EnginePch.h>
-#include <Defines.h>
 
 enum TEX_PARAM : unsigned int
 {
@@ -13,6 +12,16 @@ enum TEX_PARAM : unsigned int
 	TEX_NEAREST_MIPMAP_LINEAR = 6,
 	TEX_LINEAR_MIPMAP_LINEAR = 7,
 	TEX_PARAM_COUNT = 8,
+};
+
+enum TEX_FORMAT: unsigned int
+{
+	TEX_FORMAT_UNKNOWN = 0,
+	TEX_FORMAT_R = 1,
+	TEX_FORMAT_RG = 2,
+	TEX_FORMAT_RGB = 3,
+	TEX_FORMAT_RGBA = 4,
+	TEX_FORMAT_COUNT = 5,
 };
 
 struct TextureParams
@@ -39,6 +48,8 @@ public:
 
 protected:
 	unsigned int TexParamToGL(TEX_PARAM param) const noexcept;
+	unsigned int TexFormatToGL(TEX_FORMAT param) const noexcept;
+	unsigned int TexFormatToGLInternal(TEX_FORMAT param) const noexcept;
 
 protected:
 	unsigned int m_Texture;

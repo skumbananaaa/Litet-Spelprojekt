@@ -32,11 +32,13 @@
     <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
+    <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\Window.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\System\Input.cpp" />
     <ClCompile Include="Source\EnginePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EnginePch.h</PrecompiledHeaderFile>
@@ -50,6 +52,7 @@
     <ClCompile Include="Source\Graphics\Shaders\ShaderProgram.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Texture.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Texture2D.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\TextureCube.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
   </ItemGroup>

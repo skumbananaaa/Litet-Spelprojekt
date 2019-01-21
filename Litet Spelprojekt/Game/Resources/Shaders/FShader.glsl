@@ -26,16 +26,23 @@ void main()
 	vec3 ambient = ambientStrength * lightColor;
 
 	//DIFFUSE
+	float diffuseStrength = 0.5;
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * lightColor;
+	vec3 diffuse = vec3(0.0);
+	vec3 specular = vec3(0.0);
 
-	//SPECULAR
-	float specularStrength = 1.0;
-	vec3 viewDir = normalize(cameraPosition - fs_in.Position);
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(norm, halfwayDir), 0.0), 16.0);
-	vec3 specular = specularStrength * spec * lightColor;
+	if (diff > 0.0)
+	{
+		diffuse = diffuseStrength * diff * lightColor;
 
-	FragColor = vec4((ambient + diffuse + specular) * vec3(1.0f, 0.0f, 1.0f), 1.0);
+		//SPECULAR
+		float specularStrength = 0.6;
+		vec3 viewDir = normalize(cameraPosition - fs_in.Position);
+		vec3 halfwayDir = normalize(lightDir + viewDir);
+		float spec = pow(max(dot(norm, halfwayDir), 0.0), 256.0);
+		specular = specularStrength * spec * lightColor;
+	}
+
+	FragColor = vec4(clamp((ambient + diffuse) * vec3(1.0f, 0.0f, 1.0f) + specular, 0.0, 1.0), 1.0);
 	//FragColor = vec4(-norm, 1.0);
 }

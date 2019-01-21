@@ -120,7 +120,7 @@ void Game::OnUpdate(float dtS)
 
 	for (unsigned int i = 0; i < 125; i++)
 	{
-		//m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
+		m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
 		m_pScene->GetGameObjects()[i]->UpdateTransform();
 		m_GameObjectUniforms[i]->UpdateData(glm::value_ptr(m_pScene->GetGameObjects()[i]->GetTransform()));
 	}

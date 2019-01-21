@@ -27,4 +27,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\VShader.glsl" />
+    <None Include="Resources\Shaders\FShader.glsl" />
+  </ItemGroup>
 </Project>

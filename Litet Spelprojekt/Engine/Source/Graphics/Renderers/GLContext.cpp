@@ -21,12 +21,39 @@ GLContext::~GLContext()
 
 void GLContext::Enable(Cap cap) const noexcept
 {
-	glEnable(cap);
+
+	switch (cap)
+	{
+	case Cap::DEPTH_TEST:
+		glEnable(GL_DEPTH_TEST);
+		break;
+		
+	case Cap::CULL_FACE:
+		glEnable(GL_CULL_FACE);
+		break;
+
+	case Cap::BLEND:
+		glEnable(GL_BLEND);
+		break;
+	}
 }
 
 void GLContext::Disable(Cap cap) const noexcept
 {
-	glDisable(cap);
+	switch (cap)
+	{
+	case Cap::DEPTH_TEST:
+		glDisable(GL_DEPTH_TEST);
+		break;
+
+	case Cap::CULL_FACE:
+		glDisable(GL_CULL_FACE);
+		break;
+
+	case Cap::BLEND:
+		glDisable(GL_BLEND);
+		break;
+	}
 }
 
 void GLContext::SetProgram(const ShaderProgram& program) const noexcept

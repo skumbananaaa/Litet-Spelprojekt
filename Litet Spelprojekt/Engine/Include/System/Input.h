@@ -139,7 +139,7 @@ enum KEY : int
 	KEY_COUNT = 121,
 };
 
-class Input
+class API Input
 {
 	friend class Application;
 

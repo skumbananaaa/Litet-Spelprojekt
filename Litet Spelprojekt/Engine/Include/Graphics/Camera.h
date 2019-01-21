@@ -2,6 +2,7 @@
 
 #include <EnginePch.h>
 #include <GLM\gtc\matrix_transform.hpp>
+#include <GLM\gtc\type_ptr.hpp>
 
 enum CameraDir : char
 {
@@ -11,6 +12,12 @@ enum CameraDir : char
 	Right,
 	Up,
 	Down
+};
+
+struct DataToShader
+{
+	float CameraCombined[16];
+	float CameraPosition[3];
 };
 
 class API Camera
@@ -43,6 +50,8 @@ public:
 	float GetYaw() const noexcept;
 	float GetPitch() const noexcept;
 
+	const DataToShader& GetDataToShader() const noexcept;
+
 private:
 	glm::mat4 m_ViewMatrix;
 	glm::mat4 m_ProjectionMatrix;
@@ -55,6 +64,8 @@ private:
 	float m_Pitch;
 
 	bool m_IsDirty;
+
+	DataToShader m_DataToShader;
 };
 
 inline const glm::mat4& Camera::GetViewMatrix() const noexcept
@@ -90,4 +101,9 @@ inline float Camera::GetYaw() const noexcept
 inline float Camera::GetPitch() const noexcept
 {
 	return m_Pitch;
+}
+
+inline const DataToShader& Camera::GetDataToShader() const noexcept
+{
+	return m_DataToShader;
 }

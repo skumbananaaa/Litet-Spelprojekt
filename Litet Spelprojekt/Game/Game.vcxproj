@@ -148,6 +148,10 @@
   <ItemGroup>
     <ClInclude Include="Include\Game.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\FShader.glsl" />
+    <None Include="Resources\Shaders\VShader.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

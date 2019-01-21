@@ -60,7 +60,7 @@ int32_t Application::Run()
 	float deltaTime = 0.0f;
 	float accumulator = 0.0f;
 
-	m_pContext->SetClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_pContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	while (!m_pWindow->IsClosed())
 	{
 		Input::Update();

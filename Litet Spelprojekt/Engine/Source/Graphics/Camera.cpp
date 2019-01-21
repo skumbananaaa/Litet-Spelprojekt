@@ -30,6 +30,16 @@ void Camera::Update() noexcept
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
+
+		const float* pSource = (const float*)glm::value_ptr(m_CombinedMatrix);
+		for (int i = 0; i < 16; i++)
+		{
+			m_DataToShader.CameraCombined[i] = pSource[i];
+		}
+
+		m_DataToShader.CameraPosition[0] = m_Position.x;
+		m_DataToShader.CameraPosition[1] = m_Position.y;
+		m_DataToShader.CameraPosition[2] = m_Position.z;
 	}
 }
 

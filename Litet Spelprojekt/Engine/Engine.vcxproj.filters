@@ -18,12 +18,6 @@
     <ClInclude Include="Include\Defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Libs\Include\GLFW\glfw3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Libs\Include\GLFW\glfw3native.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\System\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,6 +67,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Graphics\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Include\GLFW\glfw3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs\Include\GLFW\glfw3native.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,7 +7,9 @@ Framebuffer::Framebuffer(const FramebufferDesc& desc)
 	m_pDepth(nullptr),
 	m_NumColorAttachments(0),
 	m_Framebuffer(0),
-	m_IsOwner(true)
+	m_IsOwner(true),
+	m_Width(0),
+	m_Height(0)
 {
 	Create(desc);
 }
@@ -17,7 +19,9 @@ Framebuffer::Framebuffer(const Texture* texture)
 	m_pDepth(nullptr),
 	m_NumColorAttachments(0),
 	m_Framebuffer(0),
-	m_IsOwner(false)
+	m_IsOwner(false),
+	m_Width(0),
+	m_Height(0)
 {
 	Create(texture);
 }
@@ -55,7 +59,7 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 	{
 		if (desc.ColorAttchmentFormats[i] != TEX_FORMAT_UNKNOWN)
 		{
-			m_ppColor[i] = new Texture2D(nullptr, desc.ColorAttchmentFormats[i], desc.Width, desc.Height, false);
+			m_ppColor[i] = new Texture2D(nullptr, desc.ColorAttchmentFormats[i], desc.Width, desc.Height, false, desc.ColorTexturesParams);
 		}
 	}
 
@@ -63,7 +67,7 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 
 	if (desc.DepthStencilFormat != TEX_FORMAT_UNKNOWN)
 	{
-		m_pDepth = new Texture2D(nullptr, desc.DepthStencilFormat, desc.Width, desc.Height, false);
+		m_pDepth = new Texture2D(nullptr, desc.DepthStencilFormat, desc.Width, desc.Height, false, desc.ColorTexturesParams);
 	}
 
 	CreateFramebuffer();

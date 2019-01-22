@@ -27,12 +27,12 @@ Game::Game() noexcept
 	m_pRenderer = new DefferedRenderer();
 
 	GameObject* pGameObject = nullptr;
-	for (unsigned int i = 0; i < 125; i++)
+	for (unsigned int i = 0; i < 25; i++)
 	{
 		pGameObject = new GameObject();
 		pGameObject->SetMesh(m_pTestMesh);
-		pGameObject->SetPosition(5.0f * glm::vec3(i / 25, (i / 5) % 5, i % 5));
-		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->SetPosition(5.0f * (glm::vec3(i / 5, -0.02f, i % 5) + glm::vec3(-2.5f, 0.0f, -2.5f)));
+		pGameObject->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
 		m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
@@ -55,21 +55,28 @@ Game::Game() noexcept
 
 	m_pWaterGameObject = new GameObject();
 	m_pWaterGameObject->SetMesh(m_pWaterMesh);
-	m_pWaterGameObject->SetScale(glm::vec3(5.0f));
+	m_pWaterGameObject->SetScale(glm::vec3(15.0f));
 	m_pWaterGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 	m_pWaterGameObject->UpdateTransform();
 
 	m_pWaterUniform = new UniformBuffer(glm::value_ptr(m_pWaterGameObject->GetTransform()), 1, sizeof(glm::mat4));
 
+	m_WaterTextureParams.Wrap = TEX_PARAM_REPEAT;
+	m_WaterTextureParams.MinFilter = TEX_LINEAR;
+	m_WaterTextureParams.MagFilter = TEX_LINEAR;
+
 	FramebufferDesc fboDescReflRefr;
 	fboDescReflRefr.ColorAttchmentFormats[0] = TEX_FORMAT::TEX_FORMAT_RGBA;
 	fboDescReflRefr.NumColorAttachments = 1;
+	fboDescReflRefr.ColorTexturesParams = m_WaterTextureParams;
 	fboDescReflRefr.DepthStencilFormat = TEX_FORMAT::TEX_FORMAT_DEPTH;
 	fboDescReflRefr.Width = GetWindow().GetWidth();
 	fboDescReflRefr.Height = GetWindow().GetHeight();
 
 	m_pReflectionFBO = new Framebuffer(fboDescReflRefr);
 	m_pRefractionFBO = new Framebuffer(fboDescReflRefr);
+
+	m_pDUDVTexture = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 
 	GetContext().Enable(Cap::DEPTH_TEST);
 	GetContext().Enable(Cap::CULL_FACE);
@@ -94,9 +101,9 @@ void Game::OnUpdate(float dtS)
 	static float tempRotation = 0.0f;
 	tempRotation += 1.0f * dtS;
 
-	for (uint32 i = 0; i < 125; i++)
+	for (uint32 i = 0; i < 25; i++)
 	{
-		m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
+		//m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
 		m_pScene->GetGameObjects()[i]->UpdateTransform();
 		m_GameObjectUniforms[i]->UpdateData(glm::value_ptr(m_pScene->GetGameObjects()[i]->GetTransform()));
 	}
@@ -152,6 +159,9 @@ void Game::OnUpdate(float dtS)
 	m_pScene->GetCamera().Update();
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
+
+	m_DistortionMoveFactor += 0.02f * dtS;
+	m_DistortionMoveFactor = fmodf(m_DistortionMoveFactor, 1.0f);
 
 	Application::OnUpdate(dtS);
 }
@@ -222,11 +232,14 @@ void Game::OnRender()
 
 	//Draw Water to screen
 	GetContext().SetProgram(m_pShaderProgramWater);
+	m_PerFrameArray[19] = m_DistortionMoveFactor; //Per Frame Fistortion Move Factor
+	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 	GetContext().SetUniformBuffer(m_pWaterUniform, 0);
 
-	//GetContext().SetTexture(m_pReflectionFBO->GetColorAttachment(0), 2);
-	//GetContext().SetTexture(m_pRefractionFBO->GetColorAttachment(0), 3);
+	GetContext().SetTexture(m_pReflectionFBO->GetColorAttachment(0), 0);
+	GetContext().SetTexture(m_pRefractionFBO->GetColorAttachment(0), 1);
+	GetContext().SetTexture(m_pDUDVTexture, 2);
 
 	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
 

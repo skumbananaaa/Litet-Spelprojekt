@@ -45,7 +45,7 @@ uint32 Texture::TexParamToGL(TEX_PARAM param) noexcept
 	return s_TexParamTable[param];
 }
 
-uint32 Texture::TexFormatToGL(TEX_FORMAT param) noexcept
+uint32 Texture::TexFormatToGL(TEX_FORMAT format) noexcept
 {
 	static uint32 s_TexFormatTable[TEX_FORMAT_COUNT] =
 	{
@@ -59,10 +59,10 @@ uint32 Texture::TexFormatToGL(TEX_FORMAT param) noexcept
 		GL_DEPTH_STENCIL,
 	};
 
-	return s_TexFormatTable[param];
+	return s_TexFormatTable[format];
 }
 
-uint32 Texture::TexFormatToGLInternal(TEX_FORMAT param) noexcept
+uint32 Texture::TexFormatToGLInternal(TEX_FORMAT format) noexcept
 {
 	static uint32 s_TexFormatTable[TEX_FORMAT_COUNT] =
 	{
@@ -76,10 +76,10 @@ uint32 Texture::TexFormatToGLInternal(TEX_FORMAT param) noexcept
 		GL_DEPTH24_STENCIL8,
 	};
 
-	return s_TexFormatTable[param];
+	return s_TexFormatTable[format];
 }
 
-uint32 Texture::TexFormatToGLType(TEX_FORMAT param) noexcept
+uint32 Texture::TexFormatToGLType(TEX_FORMAT format) noexcept
 {
 	static uint32 s_TexTypeTable[TEX_FORMAT_COUNT] =
 	{
@@ -93,5 +93,30 @@ uint32 Texture::TexFormatToGLType(TEX_FORMAT param) noexcept
 		GL_UNSIGNED_INT_24_8,
 	};
 
-	return s_TexTypeTable[param];
+	return s_TexTypeTable[format];
+}
+
+uint32 Texture::FormatToNrChannels(TEX_FORMAT format) noexcept
+{
+	switch (format)
+	{
+	case TEX_FORMAT::TEX_FORMAT_R:
+		return 1;
+		
+	case TEX_FORMAT::TEX_FORMAT_RG:
+		return 2;
+
+	case TEX_FORMAT::TEX_FORMAT_RGB:
+		return 3;
+
+	case TEX_FORMAT::TEX_FORMAT_RGBA:
+		return 4;
+
+	case TEX_FORMAT::TEX_FORMAT_RGBA16F:
+		return 4;
+
+	default:
+		std::cout << "ERROR: Format could not be converted to nr of channels" << std::endl;
+		return 0;
+	}
 }

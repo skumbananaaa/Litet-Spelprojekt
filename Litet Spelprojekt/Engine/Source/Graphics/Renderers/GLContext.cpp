@@ -83,11 +83,11 @@ void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 
 	if (pTexture == nullptr)
 	{
-		glBindTexture(textureSlot, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else
 	{
-		glBindTexture(textureSlot, pTexture->m_Texture);
+		glBindTexture(GL_TEXTURE_2D, pTexture->m_Texture);
 	}
 }
 

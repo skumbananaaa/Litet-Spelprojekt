@@ -37,6 +37,7 @@
     <ClInclude Include="Include\Graphics\Textures\Texture.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture2D.h" />
     <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
+    <ClInclude Include="Include\STB\stb_image.h" />
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
     <ClInclude Include="Include\System\Input.h" />

@@ -7,9 +7,11 @@
 #include <Graphics/Scene.h>
 #include <Graphics/Renderers/IRenderer.h>
 #include <Graphics/Textures/Framebuffer.h>
+#include <Graphics/Textures/Texture2D.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
+#include <math.h>
 
 class Game : public Application
 {
@@ -39,6 +41,10 @@ private:
 	GameObject* m_pWaterGameObject;
 	UniformBuffer* m_pWaterUniform;
 
+	TextureParams m_WaterTextureParams;
 	Framebuffer* m_pReflectionFBO;
 	Framebuffer* m_pRefractionFBO;
+
+	Texture* m_pDUDVTexture;
+	float m_DistortionMoveFactor;
 };

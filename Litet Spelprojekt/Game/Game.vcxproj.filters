@@ -36,4 +36,9 @@
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\waterDUDV.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

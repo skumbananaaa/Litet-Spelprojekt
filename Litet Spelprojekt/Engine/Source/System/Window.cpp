@@ -357,17 +357,17 @@ KEY g_KeyTable[GLFW_KEY_LAST + 1] =
 	KEY_UNKNOWN,
 };
 
-KEY GLFWToKey(int key)
+KEY GLFWToKey(int32 key)
 {
 	return g_KeyTable[key];
 }
 
-void ErrorCallback(int error, const char* description)
+void ErrorCallback(int32 error, const char* description)
 {
 	std::cout << "GLFW Error: " << description << std::endl;
 }
 
-void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
+void KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 action, int32 mods)
 {
 	if (action == GLFW_PRESS)
 		Application::GetInstance().OnKeyDown(GLFWToKey(key));
@@ -380,12 +380,12 @@ void MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 	Application::GetInstance().OnMouseMove(glm::vec2(x, y));
 }
 
-void ResizeCallback(GLFWwindow* window, int width, int height)
+void ResizeCallback(GLFWwindow* window, int32 width, int32 height)
 {
 	Application::GetInstance().OnResize(width, height);
 }
 
-Window::Window(const char* pTitle, int width, int height, int samples) noexcept
+Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noexcept
 	: m_pWindow(nullptr),
 	m_Width(0),
 	m_Height(0)

@@ -1,13 +1,14 @@
 #pragma once
 
-#include <System\Application.h>
-#include <Graphics\GameObject.h>
-#include <Graphics\Buffers\UniformBuffer.h>
-#include <Graphics\Camera.h>
-#include <Graphics\Scene.h>
+#include <System/Application.h>
+#include <Graphics/GameObject.h>
+#include <Graphics/Buffers\UniformBuffer.h>
+#include <Graphics/Camera.h>
+#include <Graphics/Scene.h>
+#include <Graphics/Renderers/IRenderer.h>
 
-#include <GLM\glm.hpp>
-#include <GLM\gtc\type_ptr.hpp>
+#include <GLM/glm.hpp>
+#include <GLM/gtc/type_ptr.hpp>
 
 class Game : public Application
 {
@@ -21,7 +22,7 @@ public:
 
 private:
 	ShaderProgram* m_pShaderProgram;
-
+	IRenderer* m_pRenderer;
 	Scene* m_pScene;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;

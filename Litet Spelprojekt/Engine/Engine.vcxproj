@@ -26,10 +26,13 @@
     <ClInclude Include="Include\Graphics\Camera.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
+    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
+    <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
     <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
+    <ClInclude Include="Include\Graphics\Textures\Framebuffer.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture2D.h" />
     <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
@@ -37,6 +40,7 @@
     <ClInclude Include="Include\Defines.h" />
     <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\Window.h" />
+    <ClInclude Include="Include\Types.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
   </ItemGroup>
@@ -44,6 +48,7 @@
     <ClCompile Include="Source\Graphics\Camera.cpp" />
     <ClCompile Include="Source\Graphics\GameObject.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />
     <ClCompile Include="Source\System\Input.cpp" />
     <ClCompile Include="Source\EnginePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

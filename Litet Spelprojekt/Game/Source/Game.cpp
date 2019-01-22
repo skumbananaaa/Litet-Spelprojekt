@@ -9,77 +9,8 @@ Game::Game() noexcept
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
 	m_pShaderProgram = new ShaderProgram(vShader, fShader);
-
-	Vertex triangleVertices[] = 
-	{
-		// Front (Seen from front)
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Top (Seen from above)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Back (Seen from front)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Bottom (Seen from above)
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Left (Seen from left)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Right (Seen from left)
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 0.0F) }
-	};
-
-	unsigned int triangleIndices[] =
-	{
-		// Front (Seen from front)
-		0, 2, 1,
-		2, 0, 3,
-
-		// Top (Seen from above)
-		4, 6, 5,
-		6, 4, 7,
-
-		// Back (Seen from front)
-		8, 9, 10,
-		10, 11, 8,
-
-		// Bottom (Seen from above)
-		12, 13, 14,
-		14, 15, 12,
-
-		// Left (Seen from left)
-		16, 18, 17,
-		18, 16, 19,
-
-		// Right (Seen from left)
-		20, 21, 22,
-		22, 23, 20
-	};
-
-	//m_pTestMesh = new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
-	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
-
 	m_pScene = new Scene();
+	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 
 	GameObject* pGameObject = nullptr;
 	for (unsigned int i = 0; i < 125; i++)

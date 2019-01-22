@@ -6,12 +6,12 @@
 #include <GLFW/glfw3.h>
 #endif
 
-#include <GLM\glm.hpp>
 #include "Defines.h"
+#include "Types.h"
 
 #include <cassert>
 #include <iostream>
-#include <Fstream>
+#include <fstream>
 #include <sstream>
 
 #include <chrono>

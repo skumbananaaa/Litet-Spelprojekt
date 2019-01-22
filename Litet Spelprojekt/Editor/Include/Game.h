@@ -19,7 +19,7 @@ public:
 	void OnRender() override;
 
 private:
-	ShaderProgram* m_pShaderProgram;
+	ShaderProgram* m_pShaderProgramDefault;
 
 	Scene* m_pScene;
 

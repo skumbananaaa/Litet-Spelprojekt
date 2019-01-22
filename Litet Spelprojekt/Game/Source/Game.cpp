@@ -5,13 +5,22 @@
 Game::Game() noexcept
 	: m_pRenderer(nullptr)
 {
-	Shader vShader;
-	Shader fShader;
+	Shader vShaderDefault;
+	Shader fShaderDefault;
 
-	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
-	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
+	vShaderDefault.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
+	fShaderDefault.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
-	m_pShaderProgram = new ShaderProgram(vShader, fShader);
+	m_pShaderProgramDefault = new ShaderProgram(vShaderDefault, fShaderDefault);
+
+	Shader vShaderWater;
+	Shader fShaderWater;
+
+	vShaderWater.CompileFromFile("Resources/Shaders/VShaderWater.glsl", VERTEX_SHADER);
+	fShaderWater.CompileFromFile("Resources/Shaders/FShaderWater.glsl", FRAGMENT_SHADER);
+
+	m_pShaderProgramWater = new ShaderProgram(vShaderWater, fShaderWater);
+
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 
@@ -38,7 +47,8 @@ Game::Game() noexcept
 	pCamera->Update();
 	m_pScene->SetCamera(pCamera);
 
-	m_pCameraUniform = new UniformBuffer(&pCamera->GetDataToShader(), 1, sizeof(DataToShader));
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
 
 	//Water Stuff
 	m_pWaterMesh = IndexedMesh::CreateQuad();
@@ -67,7 +77,7 @@ Game::Game() noexcept
 
 Game::~Game()
 {
-	delete m_pShaderProgram;
+	delete m_pShaderProgramDefault;
 	delete m_pTestMesh;
 	delete m_pScene;
 
@@ -140,19 +150,19 @@ void Game::OnUpdate(float dtS)
 	}
 	
 	m_pScene->GetCamera().Update();
-	m_pCameraUniform->UpdateData(&m_pScene->GetCamera().GetDataToShader());
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 
 	Application::OnUpdate(dtS);
 }
 
 void Game::OnRender()
 {
-
-
-	GetContext().SetProgram(m_pShaderProgram);
-	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
+	GetContext().SetProgram(m_pShaderProgramDefault);
 
 	assert(m_pScene->GetGameObjects().size() == m_GameObjectUniforms.size());
+
+	GetContext().Enable(Cap::CLIP_DISTANCE0);
 
 	//Draw Scene for reflection
 	float reflDistance = m_pScene->GetCamera().GetPos().y * 2;
@@ -160,7 +170,16 @@ void Game::OnRender()
 	m_pScene->GetCamera().InvertPitch();
 	m_pScene->GetCamera().Update();
 
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_PerFrameArray[20] = 0.0f;
+	m_PerFrameArray[21] = 1.0f;
+	m_PerFrameArray[22] = 0.0f;
+	m_PerFrameArray[23] = 0.0f;
+	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
+	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
+
 	GetContext().SetFramebuffer(m_pReflectionFBO);
+	GetContext().Clear();
 
 	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
 	{
@@ -173,13 +192,24 @@ void Game::OnRender()
 	m_pScene->GetCamera().Update();
 
 	//Draw Scene for refraction
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_PerFrameArray[20] = 0.0f;
+	m_PerFrameArray[21] = -1.0f;
+	m_PerFrameArray[22] = 0.0f;
+	m_PerFrameArray[23] = 0.0f;
+	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
+	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
+
 	GetContext().SetFramebuffer(m_pRefractionFBO);
+	GetContext().Clear();
 
 	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
 	{
 		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
 	}
+
+	GetContext().Disable(Cap::CLIP_DISTANCE0);
 
 	//Draw Scene to screen
 	GetContext().SetFramebuffer(nullptr);
@@ -189,6 +219,16 @@ void Game::OnRender()
 		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
 	}
+
+	//Draw Water to screen
+	GetContext().SetProgram(m_pShaderProgramWater);
+	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
+	GetContext().SetUniformBuffer(m_pWaterUniform, 0);
+
+	//GetContext().SetTexture(m_pReflectionFBO->GetColorAttachment(0), 2);
+	//GetContext().SetTexture(m_pRefractionFBO->GetColorAttachment(0), 3);
+
+	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
 
 	Application::OnRender();
 }

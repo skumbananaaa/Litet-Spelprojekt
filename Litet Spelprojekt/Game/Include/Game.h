@@ -22,12 +22,16 @@ public:
 	void OnRender() override;
 
 private:
-	ShaderProgram* m_pShaderProgram;
+	ShaderProgram* m_pShaderProgramDefault;
+	ShaderProgram* m_pShaderProgramWater;
+
 	IRenderer* m_pRenderer;
 	Scene* m_pScene;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
-	UniformBuffer* m_pCameraUniform;
+
+	UniformBuffer* m_pPerFrameUniform;
+	float m_PerFrameArray[16 + 4 + 4];
 
 	IndexedMesh* m_pTestMesh;
 

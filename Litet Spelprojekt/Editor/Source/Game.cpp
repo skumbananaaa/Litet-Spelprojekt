@@ -8,7 +8,7 @@ Game::Game() noexcept
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
-	m_pShaderProgram = new ShaderProgram(vShader, fShader);
+	m_pShaderProgramDefault = new ShaderProgram(vShader, fShader);
 
 	Vertex triangleVertices[] = 
 	{
@@ -109,7 +109,7 @@ Game::Game() noexcept
 
 Game::~Game()
 {
-	delete m_pShaderProgram;
+	delete m_pShaderProgramDefault;
 	delete m_pTestMesh;
 	delete m_pScene;
 }
@@ -182,7 +182,7 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(*m_pShaderProgram);
+	GetContext().SetProgram(*m_pShaderProgramDefault);
 	GetContext().SetUniformBuffer(*m_pCameraUniform, 1);
 
 	for (unsigned int i = 0; i < 125; i++)

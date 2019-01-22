@@ -23,9 +23,10 @@ enum TEX_FORMAT: uint32
 	TEX_FORMAT_RG = 2,
 	TEX_FORMAT_RGB = 3,
 	TEX_FORMAT_RGBA = 4,
-	TEX_FORMAT_DEPTH = 5,
-	TEX_FORMAT_DEPTH_STENCIL = 6,
-	TEX_FORMAT_COUNT = 7,
+	TEX_FORMAT_RGBA16F = 5,
+	TEX_FORMAT_DEPTH = 6,
+	TEX_FORMAT_DEPTH_STENCIL = 7,
+	TEX_FORMAT_COUNT = 8,
 };
 
 struct TextureParams
@@ -60,6 +61,7 @@ public:
 	static uint32 TexParamToGL(TEX_PARAM param) noexcept;
 	static uint32 TexFormatToGL(TEX_FORMAT param) noexcept;
 	static uint32 TexFormatToGLInternal(TEX_FORMAT param) noexcept;
+	static uint32 TexFormatToGLType(TEX_FORMAT param) noexcept;
 };
 
 inline TEX_FORMAT Texture::GetFormat() const noexcept

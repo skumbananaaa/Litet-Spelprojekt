@@ -20,9 +20,12 @@ void TextureCube::Create(const void** ppInitalData, TEX_FORMAT format, uint32 wi
 
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
 
-	for (int i = 0; i < 6; i++)
+	uint32 glformat = Texture::TexFormatToGL(format);
+	uint32 internalFormat = Texture::TexFormatToGLInternal(format);
+	uint32 type = Texture::TexFormatToGLType(format);
+	for (uint32 i = 0; i < 6; i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, TexFormatToGL(format), width, height, 0, TexFormatToGLInternal(format), GL_UNSIGNED_BYTE, ppInitalData[i]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, width, height, 0, glformat, type, ppInitalData[i]);
 	}
 
 	m_Width = width;

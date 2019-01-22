@@ -54,8 +54,9 @@ uint32 Texture::TexFormatToGL(TEX_FORMAT param) noexcept
 		GL_RG,
 		GL_RGB,
 		GL_RGBA,
+		GL_RGBA,
 		GL_DEPTH_COMPONENT,
-		GL_DEPTH24_STENCIL8,
+		GL_DEPTH_STENCIL,
 	};
 
 	return s_TexFormatTable[param];
@@ -70,8 +71,9 @@ uint32 Texture::TexFormatToGLInternal(TEX_FORMAT param) noexcept
 		GL_RG,
 		GL_RGB,
 		GL_RGBA,
+		GL_RGBA16F,
 		GL_DEPTH_COMPONENT,
-		GL_DEPTH_STENCIL,
+		GL_DEPTH24_STENCIL8,
 	};
 
 	return s_TexFormatTable[param];
@@ -86,6 +88,7 @@ uint32 Texture::TexFormatToGLType(TEX_FORMAT param) noexcept
 		GL_UNSIGNED_BYTE,
 		GL_UNSIGNED_BYTE,
 		GL_UNSIGNED_BYTE,
+		GL_FLOAT,
 		GL_UNSIGNED_INT,
 		GL_UNSIGNED_INT_24_8,
 	};

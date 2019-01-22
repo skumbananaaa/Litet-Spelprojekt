@@ -1,7 +1,9 @@
 #include "..\Include\Game.h"
 #include <Graphics/Textures/Framebuffer.h>
+#include <Graphics/Renderers/DefferedRenderer.h>
 
 Game::Game() noexcept
+	: m_pRenderer(nullptr)
 {
 	Shader vShader;
 	Shader fShader;
@@ -9,20 +11,11 @@ Game::Game() noexcept
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
-	{
-		FramebufferDesc desc;
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGB;
-		desc.NumColorAttachments = 1;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
-		desc.Width = 1024;
-		desc.Height = 768;
-
-		Framebuffer* pFramebuffer = new Framebuffer(desc);
-	}
-
 	m_pShaderProgram = new ShaderProgram(vShader, fShader);
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
+
+	m_pRenderer = new DefferedRenderer();
 
 	GameObject* pGameObject = nullptr;
 	for (unsigned int i = 0; i < 125; i++)
@@ -66,7 +59,7 @@ void Game::OnUpdate(float dtS)
 	static float tempRotation = 0.0f;
 	tempRotation += 1.0f * dtS;
 
-	for (unsigned int i = 0; i < 125; i++)
+	for (uint32 i = 0; i < 125; i++)
 	{
 		m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
 		m_pScene->GetGameObjects()[i]->UpdateTransform();

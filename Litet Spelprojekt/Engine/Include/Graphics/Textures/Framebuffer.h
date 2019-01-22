@@ -6,6 +6,7 @@ struct FramebufferDesc
 {
 	TEX_FORMAT DepthStencilFormat = TEX_FORMAT_UNKNOWN;
 	TEX_FORMAT ColorAttchmentFormats[8];
+	TextureParams ColorTexturesParams = TextureParams();
 	uint32 NumColorAttachments = 0;
 	uint32 Width = 0;
 	uint32 Height = 0;

@@ -35,6 +35,10 @@ void GLContext::Enable(Cap cap) const noexcept
 	case Cap::BLEND:
 		glEnable(GL_BLEND);
 		break;
+
+	case Cap::CLIP_DISTANCE0:
+		glEnable(GL_CLIP_DISTANCE0);
+		break;
 	}
 }
 
@@ -52,6 +56,10 @@ void GLContext::Disable(Cap cap) const noexcept
 
 	case Cap::BLEND:
 		glDisable(GL_BLEND);
+		break;
+
+	case Cap::CLIP_DISTANCE0:
+		glDisable(GL_CLIP_DISTANCE0);
 		break;
 	}
 }

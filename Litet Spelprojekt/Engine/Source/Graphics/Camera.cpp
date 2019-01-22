@@ -31,16 +31,6 @@ void Camera::Update() noexcept
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
-
-		const float* pSource = (const float*)glm::value_ptr(m_CombinedMatrix);
-		for (int i = 0; i < 16; i++)
-		{
-			m_DataToShader.CameraCombined[i] = pSource[i];
-		}
-
-		m_DataToShader.CameraPosition[0] = m_Position.x;
-		m_DataToShader.CameraPosition[1] = m_Position.y;
-		m_DataToShader.CameraPosition[2] = m_Position.z;
 	}
 }
 
@@ -103,6 +93,12 @@ void Camera::OffsetPitch(float amount) noexcept
 	}
 }
 
+void Camera::InvertPitch() noexcept
+{
+	m_Pitch = -m_Pitch;
+	m_IsDirty = true;
+}
+
 void Camera::SetPos(const glm::vec3& pos) noexcept
 {
 	m_Position = pos;
@@ -134,4 +130,17 @@ void Camera::SetPitch(float pitch) noexcept
 	{
 		m_Pitch = -1.55334303f;
 	}
+}
+
+void Camera::CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept
+{
+	const float* pSource = (const float*)glm::value_ptr(m_CombinedMatrix);
+	for (int i = 0; i < 16; i++)
+	{
+		arr[startIndex + i] = pSource[i];
+	}
+
+	arr[startIndex + 16] = m_Position.x;
+	arr[startIndex + 17] = m_Position.y;
+	arr[startIndex + 18] = m_Position.z;
 }

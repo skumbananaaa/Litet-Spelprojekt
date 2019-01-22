@@ -34,8 +34,15 @@
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
     <None Include="Resources\Shaders\defferedLightningVert.glsl" />
     <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
+    <None Include="Resources\Shaders\FShaderWater.glsl" />
+    <None Include="Resources\Shaders\VShaderWater.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\waterDUDV.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

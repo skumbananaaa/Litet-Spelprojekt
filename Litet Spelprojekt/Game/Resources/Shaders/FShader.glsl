@@ -10,6 +10,8 @@ layout (std140, binding = 1) uniform PerFrameBlock
 {
 	mat4 cameraCombined;
 	vec3 cameraPosition;
+	float padding;
+	vec4 clipPlane;
 };
 
 out vec4 FragColor;

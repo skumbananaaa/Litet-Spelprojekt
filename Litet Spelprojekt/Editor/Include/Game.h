@@ -5,6 +5,7 @@
 #include <Graphics\Buffers\UniformBuffer.h>
 #include <Graphics\Camera.h>
 #include <Graphics\Scene.h>
+//#include "../../Game/Include/IO/WorldSerializer.h"
 
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
@@ -19,7 +20,7 @@ public:
 	void OnRender() override;
 
 private:
-	ShaderProgram* m_pShaderProgram;
+	ShaderProgram* m_pShaderProgramDefault;
 
 	Scene* m_pScene;
 

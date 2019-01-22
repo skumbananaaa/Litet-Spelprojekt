@@ -12,7 +12,8 @@ enum Capability : uint32
 {
 	DEPTH_TEST = 0,
 	CULL_FACE = 1,
-	BLEND = 2
+	BLEND = 2,
+	CLIP_DISTANCE0 = 3
 };
 
 enum PrimitiveTopology : unsigned int

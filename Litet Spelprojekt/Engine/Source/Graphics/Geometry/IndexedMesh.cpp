@@ -153,3 +153,23 @@ IndexedMesh* IndexedMesh::CreateCube()
 
 	return new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
 }
+
+IndexedMesh* IndexedMesh::CreateQuad()
+{
+	Vertex vertices[]
+	{
+		{ glm::vec3(-1.0F,  1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(1.0F,  1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(1.0F, -1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(-1.0F, -1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) }
+	};
+
+	uint32 indices[]
+	{
+		// Front (Seen from front)
+		0, 2, 1,
+		2, 0, 3
+	};
+
+	return new IndexedMesh(vertices, indices, 4, 6);
+}

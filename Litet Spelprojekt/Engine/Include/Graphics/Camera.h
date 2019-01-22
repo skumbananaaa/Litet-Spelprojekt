@@ -14,12 +14,6 @@ enum CameraDir : char
 	Down
 };
 
-struct DataToShader
-{
-	float CameraCombined[16];
-	float CameraPosition[3];
-};
-
 class API Camera
 {
 public:
@@ -33,6 +27,7 @@ public:
 	void Move(CameraDir dir, float amount) noexcept;
 	void OffsetYaw(float amount) noexcept;
 	void OffsetPitch(float amount) noexcept;
+	void InvertPitch() noexcept;
 
 	void SetPos(const glm::vec3& pos) noexcept;
 	void SetFront(const glm::vec3& front) noexcept;
@@ -50,7 +45,7 @@ public:
 	float GetYaw() const noexcept;
 	float GetPitch() const noexcept;
 
-	const DataToShader& GetDataToShader() const noexcept;
+	void CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept;
 
 private:
 	glm::mat4 m_ViewMatrix;
@@ -64,8 +59,6 @@ private:
 	float m_Pitch;
 
 	bool m_IsDirty;
-
-	DataToShader m_DataToShader;
 };
 
 inline const glm::mat4& Camera::GetViewMatrix() const noexcept
@@ -101,9 +94,4 @@ inline float Camera::GetYaw() const noexcept
 inline float Camera::GetPitch() const noexcept
 {
 	return m_Pitch;
-}
-
-inline const DataToShader& Camera::GetDataToShader() const noexcept
-{
-	return m_DataToShader;
 }

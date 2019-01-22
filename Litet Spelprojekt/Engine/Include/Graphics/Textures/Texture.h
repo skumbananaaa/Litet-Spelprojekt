@@ -59,9 +59,10 @@ protected:
 
 public:
 	static uint32 TexParamToGL(TEX_PARAM param) noexcept;
-	static uint32 TexFormatToGL(TEX_FORMAT param) noexcept;
-	static uint32 TexFormatToGLInternal(TEX_FORMAT param) noexcept;
-	static uint32 TexFormatToGLType(TEX_FORMAT param) noexcept;
+	static uint32 TexFormatToGL(TEX_FORMAT format) noexcept;
+	static uint32 TexFormatToGLInternal(TEX_FORMAT format) noexcept;
+	static uint32 TexFormatToGLType(TEX_FORMAT format) noexcept;
+	static uint32 FormatToNrChannels(TEX_FORMAT format) noexcept;
 };
 
 inline TEX_FORMAT Texture::GetFormat() const noexcept

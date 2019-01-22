@@ -158,13 +158,18 @@
     <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
     <None Include="Resources\Shaders\defferedLightningVert.glsl" />
     <None Include="Resources\Shaders\FShader.glsl" />
+    <None Include="Resources\Shaders\FShaderWater.glsl" />
     <None Include="Resources\Shaders\VShader.glsl" />
+    <None Include="Resources\Shaders\VShaderWater.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\waterDUDV.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

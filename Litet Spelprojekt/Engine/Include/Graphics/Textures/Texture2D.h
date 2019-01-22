@@ -10,6 +10,7 @@ public:
 	Texture2D& operator=(const Texture2D& other) = delete;
 
 	Texture2D(const void* pInitalData, TEX_FORMAT format, uint32 width, uint32 height, bool generateMipmaps = true, const TextureParams& params = TextureParams());
+	Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
 	~Texture2D();
 
 	uint32 GetWidth() const noexcept;
@@ -17,6 +18,7 @@ public:
 
 private:
 	void Create(const void* pInitalData, TEX_FORMAT format, uint32 width, uint32 height, bool generateMipmaps, const TextureParams& params);
+	void Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
 
 private:
 	uint32 m_Width;

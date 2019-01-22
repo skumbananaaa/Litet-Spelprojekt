@@ -9,33 +9,26 @@ public:
 	Texture2D& operator=(Texture2D&& other) = delete;
 	Texture2D& operator=(const Texture2D& other) = delete;
 
-	Texture2D(const void* pInitalData, TEX_FORMAT format, unsigned int width, unsigned int height, const TextureParams& params = TextureParams());
+	Texture2D(const void* pInitalData, TEX_FORMAT format, uint32 width, uint32 height, bool generateMipmaps = true, const TextureParams& params = TextureParams());
 	~Texture2D();
 
-	unsigned int GetWidth() const noexcept;
-	unsigned int GetHeight() const noexcept;
-	TEX_FORMAT GetFormat() const noexcept;
+	uint32 GetWidth() const noexcept;
+	uint32 GetHeight() const noexcept;
 
 private:
-	void Create(const void* pInitalData, TEX_FORMAT format, unsigned int width, unsigned int height, const TextureParams& params);
+	void Create(const void* pInitalData, TEX_FORMAT format, uint32 width, uint32 height, bool generateMipmaps, const TextureParams& params);
 
 private:
-	unsigned int m_Width;
-	unsigned int m_Height;
-	TEX_FORMAT m_Format;
+	uint32 m_Width;
+	uint32 m_Height;
 };
 
-inline unsigned int Texture2D::GetWidth() const noexcept
+inline uint32 Texture2D::GetWidth() const noexcept
 {
 	return m_Width;
 }
 
-inline unsigned int Texture2D::GetHeight() const noexcept
+inline uint32 Texture2D::GetHeight() const noexcept
 {
 	return m_Height;
-}
-
-inline TEX_FORMAT Texture2D::GetFormat() const noexcept
-{
-	return m_Format;
 }

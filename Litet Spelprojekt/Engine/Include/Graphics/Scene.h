@@ -12,7 +12,7 @@ public:
 
 	void SetCamera(Camera* pCamera) noexcept;
 	void AddGameObject(GameObject* pGameObject) noexcept;
-	void RemoveGameObject(unsigned int index) noexcept;
+	void RemoveGameObject(uint32 index) noexcept;
 
 	Camera& GetCamera() noexcept;
 	const std::vector<GameObject*>& GetGameObjects() const noexcept;

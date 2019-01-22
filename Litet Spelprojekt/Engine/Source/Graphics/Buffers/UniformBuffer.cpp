@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include "..\..\..\Include\Graphics\Buffers\UniformBuffer.h"
 
-UniformBuffer::UniformBuffer(const void * pInitalData, unsigned int count, unsigned int stride)
+UniformBuffer::UniformBuffer(const void * pInitalData, uint32 count, uint32 stride)
 	: m_Buffer(0),
 	m_Count(0),
 	m_Stride(0)
@@ -25,7 +25,7 @@ void UniformBuffer::UpdateData(const void* pData) noexcept
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UniformBuffer::Create(const void* pInitalData, unsigned int count, unsigned int stride) noexcept
+void UniformBuffer::Create(const void* pInitalData, uint32 count, uint32 stride) noexcept
 {
 	glGenBuffers(1, &m_Buffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_Buffer);

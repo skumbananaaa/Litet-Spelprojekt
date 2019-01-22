@@ -11,28 +11,28 @@ public:
 	UniformBuffer& operator=(UniformBuffer&& other) = delete;
 	UniformBuffer& operator=(const UniformBuffer& other) = delete;
 
-	UniformBuffer(const void* pInitalData, unsigned int count, unsigned int stride);
+	UniformBuffer(const void* pInitalData, uint32 count, uint32 stride);
 	~UniformBuffer();
 
-	unsigned int GetCount() const noexcept;
-	unsigned int GetStride() const noexcept;
+	uint32 GetCount() const noexcept;
+	uint32 GetStride() const noexcept;
 	void UpdateData(const void* pData) noexcept;
 
 private:
-	void Create(const void* pInitalData, unsigned int count, unsigned int stride) noexcept;
+	void Create(const void* pInitalData, uint32 count, uint32 stride) noexcept;
 
 private:
-	unsigned int m_Buffer;
-	unsigned int m_Count;
-	unsigned int m_Stride;
+	uint32 m_Buffer;
+	uint32 m_Count;
+	uint32 m_Stride;
 };
 
-inline unsigned int UniformBuffer::GetCount() const noexcept
+inline uint32 UniformBuffer::GetCount() const noexcept
 {
 	return m_Count;
 }
 
-inline unsigned int UniformBuffer::GetStride() const noexcept
+inline uint32 UniformBuffer::GetStride() const noexcept
 {
 	return m_Stride;
 }

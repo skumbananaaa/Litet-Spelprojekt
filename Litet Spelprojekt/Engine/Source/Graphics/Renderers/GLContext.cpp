@@ -56,24 +56,58 @@ void GLContext::Disable(Cap cap) const noexcept
 	}
 }
 
-void GLContext::SetProgram(const ShaderProgram& program) const noexcept
+void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 {
-	glUseProgram(program.m_Program);
+	if (pProgram == nullptr)
+	{
+		glUseProgram(0);
+	}
+	else
+	{
+		glUseProgram(pProgram->m_Program);
+	}
 }
 
-void GLContext::SetTexture(const Texture& texture, unsigned int slot) const noexcept
+void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 {
 	GLenum textureSlot = GL_TEXTURE0 + slot;
 	glActiveTexture(textureSlot);
-	glBindTexture(textureSlot, texture.m_Texture);
+
+	if (pTexture == nullptr)
+	{
+		glBindTexture(textureSlot, 0);
+	}
+	else
+	{
+		glBindTexture(textureSlot, pTexture->m_Texture);
+	}
 }
 
-void GLContext::SetUniformBuffer(const UniformBuffer& buffer, unsigned int slot) const noexcept
+void GLContext::SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) const noexcept
 {
-	glBindBufferBase(GL_UNIFORM_BUFFER, slot, buffer.m_Buffer);
+	if (pBuffer == nullptr)
+	{
+		glBindBufferBase(GL_UNIFORM_BUFFER, slot, 0);
+	}
+	else
+	{
+		glBindBufferBase(GL_UNIFORM_BUFFER, slot, pBuffer->m_Buffer);
+	}
 }
 
-void GLContext::SetViewport(unsigned int width, unsigned int height, unsigned int topX, unsigned int topY) const noexcept
+void GLContext::SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept
+{
+	if (pFramebuffer == nullptr)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pFramebuffer->m_Framebuffer);
+	}
+}
+
+void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) const noexcept
 {
 	glViewport(topX, topY, width, height);
 	glScissor(topX, topY, width, height);

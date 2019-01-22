@@ -1,6 +1,9 @@
 #include "..\Include\Game.h"
+#include <Graphics/Textures/Framebuffer.h>
+#include <Graphics/Renderers/DefferedRenderer.h>
 
 Game::Game() noexcept
+	: m_pRenderer(nullptr)
 {
 	Shader vShader;
 	Shader fShader;
@@ -11,6 +14,8 @@ Game::Game() noexcept
 	m_pShaderProgram = new ShaderProgram(vShader, fShader);
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
+
+	m_pRenderer = new DefferedRenderer();
 
 	GameObject* pGameObject = nullptr;
 	for (unsigned int i = 0; i < 125; i++)
@@ -47,7 +52,6 @@ Game::~Game()
 
 void Game::OnMouseMove(const glm::vec2& position)
 {
-	std::cout << "Mouse move - x: " << position.x << ", " << position.y << std::endl;
 }
 
 void Game::OnUpdate(float dtS)
@@ -55,7 +59,7 @@ void Game::OnUpdate(float dtS)
 	static float tempRotation = 0.0f;
 	tempRotation += 1.0f * dtS;
 
-	for (unsigned int i = 0; i < 125; i++)
+	for (uint32 i = 0; i < 125; i++)
 	{
 		m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
 		m_pScene->GetGameObjects()[i]->UpdateTransform();
@@ -118,12 +122,12 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(*m_pShaderProgram);
-	GetContext().SetUniformBuffer(*m_pCameraUniform, 1);
+	GetContext().SetProgram(m_pShaderProgram);
+	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
 
 	for (unsigned int i = 0; i < 125; i++)
 	{
-		GetContext().SetUniformBuffer(*m_GameObjectUniforms[i], 0);
+		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
 	}
 

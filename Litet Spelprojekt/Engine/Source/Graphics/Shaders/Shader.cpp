@@ -79,9 +79,9 @@ bool Shader::CompileFromFile(const char* const path, ShaderType type) noexcept
 	return true;
 }
 
-unsigned int Shader::ShaderTypeTable(ShaderType type) const noexcept
+uint32 Shader::ShaderTypeTable(ShaderType type) const noexcept
 {
-	static unsigned int shaderTypeTable[] =
+	static uint32 shaderTypeTable[] =
 	{
 		0,
 		GL_VERTEX_SHADER,

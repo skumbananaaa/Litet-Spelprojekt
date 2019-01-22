@@ -20,30 +20,30 @@ class API IndexedMesh
 	friend class GLContext;
 
 public:
-	IndexedMesh(const Vertex* const vertices, const unsigned int* const indices, unsigned int numVertices, unsigned int numIndices) noexcept;
+	IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
 	~IndexedMesh();
 
-	unsigned int GetIndexCount() const noexcept;
-	unsigned int GetVertexCount() const noexcept;
+	uint32 GetIndexCount() const noexcept;
+	uint32 GetVertexCount() const noexcept;
 
 private:
-	unsigned int m_VAO;
-	unsigned int m_VBO;
-	unsigned int m_IBO;
-	unsigned int m_VertexCount;
-	unsigned int m_IndexCount;
+	uint32 m_VAO;
+	uint32 m_VBO;
+	uint32 m_IBO;
+	uint32 m_VertexCount;
+	uint32 m_IndexCount;
 
 public:
 	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);
 	static IndexedMesh* CreateCube();
 };
 
-inline unsigned int IndexedMesh::GetIndexCount() const noexcept
+inline uint32 IndexedMesh::GetIndexCount() const noexcept
 {
 	return m_IndexCount;
 }
 
-inline unsigned int IndexedMesh::GetVertexCount() const noexcept
+inline uint32 IndexedMesh::GetVertexCount() const noexcept
 {
 	return m_VertexCount;
 }

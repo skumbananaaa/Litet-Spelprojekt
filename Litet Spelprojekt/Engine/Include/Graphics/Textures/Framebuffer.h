@@ -4,13 +4,17 @@
 //Maximum amount of rendertargets usally is 8
 struct FramebufferDesc
 {
+	TEX_FORMAT DepthStencilFormat = TEX_FORMAT_UNKNOWN;
 	TEX_FORMAT ColorAttchmentFormats[8];
 	uint32 NumColorAttachments = 0;
-	TEX_FORMAT DepthStencilFormat = TEX_FORMAT_UNKNOWN;
+	uint32 Width = 0;
+	uint32 Height = 0;
 };
 
 class API Framebuffer
 {
+	friend class GLContext;
+
 public:
 	Framebuffer(const FramebufferDesc& desc);
 	Framebuffer(const Texture* texture);
@@ -19,30 +23,47 @@ public:
 	Texture* GetColorAttachment(uint32 index) const;
 	Texture* GetDepthAttachment() const;
 	uint32 GetColorAttachmentCount() const;
+	uint32 GetWidth() const;
+	uint32 GetHeight() const;
 
 private:
 	void Create(const FramebufferDesc& desc);
 	void Create(const Texture* texture);
+	void CreateFramebuffer();
 
 private:
-	Texture* m_pColor[8];
+	Texture* m_ppColor[8];
 	Texture* m_pDepth;
 	uint32 m_NumColorAttachments;
 	uint32 m_Framebuffer;
+	uint32 m_Width;
+	uint32 m_Height;
+	bool m_IsOwner;
 };
 
 
-inline Texture * Framebuffer::GetColorAttachment(uint32 index) const
+inline Texture* Framebuffer::GetColorAttachment(uint32 index) const
 {
-	return nullptr;
+	assert(index < m_NumColorAttachments);
+	return m_ppColor[index];
 }
 
-inline Texture * Framebuffer::GetDepthAttachment() const
+inline Texture* Framebuffer::GetDepthAttachment() const
 {
-	return nullptr;
+	return m_pDepth;
 }
 
 inline uint32 Framebuffer::GetColorAttachmentCount() const
 {
-	return uint32();
+	return m_NumColorAttachments;
+}
+
+inline uint32 Framebuffer::GetWidth() const
+{
+	return m_Width;
+}
+
+inline uint32 Framebuffer::GetHeight() const
+{
+	return m_Height;
 }

@@ -13,7 +13,7 @@ Scene::~Scene()
 		delete m_pCamera;
 	}
 
-	for (unsigned int i = 0; i < m_GameObjects.size(); i++)
+	for (uint32 i = 0; i < m_GameObjects.size(); i++)
 	{
 		delete m_GameObjects[i];
 		m_GameObjects[i] = nullptr;
@@ -30,7 +30,7 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	m_GameObjects.push_back(pGameObject);
 }
 
-void Scene::RemoveGameObject(unsigned int index) noexcept
+void Scene::RemoveGameObject(uint32 index) noexcept
 {
 	m_GameObjects.erase(m_GameObjects.begin() + index);
 }
@@ -39,7 +39,7 @@ void Scene::OnUpdate(float dtS) noexcept
 {
 	m_pCamera->Update();
 	
-	for (unsigned int i = 0; i < m_GameObjects.size(); i++)
+	for (uint32 i = 0; i < m_GameObjects.size(); i++)
 	{
 		m_GameObjects[i]->UpdateTransform();
 	}

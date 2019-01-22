@@ -49,6 +49,7 @@
     <ClCompile Include="Source\Graphics\Camera.cpp" />
     <ClCompile Include="Source\Graphics\GameObject.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Mesh.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />
     <ClCompile Include="Source\System\Input.cpp" />

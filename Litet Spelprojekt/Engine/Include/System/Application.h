@@ -21,7 +21,7 @@ public:
 	virtual void OnMouseMove(const glm::vec2& position);
 	virtual void OnKeyUp(KEY keycode);
 	virtual void OnKeyDown(KEY keycode);
-	virtual void OnResize(unsigned int width, unsigned int height);
+	virtual void OnResize(uint32 width, uint32 height);
 
 	Window& GetWindow();
 	GLContext& GetContext();

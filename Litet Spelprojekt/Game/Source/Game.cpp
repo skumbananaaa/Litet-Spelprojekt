@@ -129,12 +129,12 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(*m_pShaderProgram);
-	GetContext().SetUniformBuffer(*m_pCameraUniform, 1);
+	GetContext().SetProgram(m_pShaderProgram);
+	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
 
 	for (unsigned int i = 0; i < 125; i++)
 	{
-		GetContext().SetUniformBuffer(*m_GameObjectUniforms[i], 0);
+		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
 	}
 

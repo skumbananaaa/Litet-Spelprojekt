@@ -89,8 +89,6 @@ int32_t Application::Run()
 
 void Application::OnKeyDown(KEY keycode)
 {
-	std::cout << std::to_string(keycode) << std::endl;
-
 	Input::KeyState(keycode, true);
 }
 

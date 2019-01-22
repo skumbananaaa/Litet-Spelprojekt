@@ -13,6 +13,8 @@ struct FramebufferDesc
 
 class API Framebuffer
 {
+	friend class GLContext;
+
 public:
 	Framebuffer(const FramebufferDesc& desc);
 	Framebuffer(const Texture* texture);

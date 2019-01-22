@@ -8,7 +8,16 @@ Game::Game() noexcept
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
-	m_pShaderProgramDefault = new ShaderProgram(vShader, fShader);
+	m_pShaderProgram = new ShaderProgram(vShader, fShader);
+
+	std::vector<std::string> data;
+	data.push_back("Line 1");
+	data.push_back("Line 2");
+	data.push_back("Line 3");
+	data.push_back("Line 4");
+
+	//WorldSerializer::Write("test.txt", data);
+
 
 	const int WIDTH = 10;
 	const int HEIGHT = 10;
@@ -52,7 +61,7 @@ Game::Game() noexcept
 
 Game::~Game()
 {
-	delete m_pShaderProgramDefault;
+	delete m_pShaderProgram;
 	delete m_pTestMesh;
 	delete m_pScene;
 }
@@ -125,8 +134,8 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(*m_pShaderProgramDefault);
-	GetContext().SetUniformBuffer(*m_pCameraUniform, 1);
+	GetContext().SetProgram(m_pShaderProgram);
+	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
 
 	/*for (unsigned int i = 0; i < 125; i++)
 	{
@@ -134,7 +143,7 @@ void Game::OnRender()
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
 	}*/
 
-	GetContext().SetUniformBuffer(*m_pGridUniform, 0);
+	GetContext().SetUniformBuffer(m_pGridUniform, 0);
 	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
 
 	Application::OnRender();

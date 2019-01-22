@@ -20,6 +20,7 @@
     <ClCompile Include="Source\Graphics\Textures\TextureCube.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
+    <ClCompile Include="Source\IO\WorldSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -47,6 +48,7 @@
     <ClInclude Include="Include\Types.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
-    <ClInclude Include="Include\STB\stb_image.h" />
+    <ClInclude Include="Include\IO\WorldSerializer.h" />
+	<ClInclude Include="Include\STB\stb_image.h" />
   </ItemGroup>
 </Project>

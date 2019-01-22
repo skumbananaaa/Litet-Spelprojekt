@@ -11,7 +11,7 @@ Game::Game() noexcept
 
 	{
 		FramebufferDesc desc;
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGB;
 		desc.NumColorAttachments = 1;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
 		desc.Width = 1024;

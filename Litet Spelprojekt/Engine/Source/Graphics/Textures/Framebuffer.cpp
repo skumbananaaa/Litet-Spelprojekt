@@ -97,18 +97,16 @@ void Framebuffer::CreateFramebuffer()
 		{
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_pDepth->m_Texture, 0);
 		}
+		else
+		{
+			std::cout << "Not a valid format for depth" << std::endl;
+		}
 	}
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
 		std::cout << "Error: Could not create framebuffer. Status: " << std::to_string(status) << std::endl;
-	}
-	
-	GLenum error = 0;
-	while ((error = glGetError()) != GL_NO_ERROR)
-	{
-		std::cout << "GLERROR: " << std::to_string(error) << std::endl;
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

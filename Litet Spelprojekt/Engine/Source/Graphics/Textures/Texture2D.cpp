@@ -22,7 +22,8 @@ void Texture2D::Create(const void* pInitalData, TEX_FORMAT format, uint32 width,
 
 	uint32 glformat = Texture::TexFormatToGL(format);
 	uint32 internalFormat = Texture::TexFormatToGLInternal(format);
-	glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, internalFormat, GL_UNSIGNED_BYTE, pInitalData);
+	uint32 type = Texture::TexFormatToGLType(format);
+	glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, internalFormat, type, pInitalData);
 	
 	if (generateMipmaps)
 	{

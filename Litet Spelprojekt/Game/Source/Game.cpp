@@ -245,6 +245,6 @@ void Game::OnRender()
 
 	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
 
-	m_pRenderer->DrawScene(*m_pScene);
+	//m_pRenderer->DrawScene(*m_pScene);
 	Application::OnRender();
 }

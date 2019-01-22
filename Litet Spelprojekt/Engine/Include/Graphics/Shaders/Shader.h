@@ -2,7 +2,7 @@
 
 #include <EnginePch.h>
 
-enum ShaderType : unsigned char
+enum ShaderType : uint8
 {
 	UNDEFINED = 0,
 	VERTEX_SHADER = 1,
@@ -21,9 +21,9 @@ public:
 	bool CompileFromSource(const char* const source, ShaderType type) noexcept;
 	bool CompileFromFile(const char* const path, ShaderType type) noexcept;
 
-	unsigned int ShaderTypeTable(ShaderType type) const noexcept;
+	uint32 ShaderTypeTable(ShaderType type) const noexcept;
 
 private:
-	unsigned int m_Shader;
+	uint32 m_Shader;
 	ShaderType m_type;
 };

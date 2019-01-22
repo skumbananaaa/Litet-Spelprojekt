@@ -61,19 +61,19 @@ void GLContext::SetProgram(const ShaderProgram& program) const noexcept
 	glUseProgram(program.m_Program);
 }
 
-void GLContext::SetTexture(const Texture& texture, unsigned int slot) const noexcept
+void GLContext::SetTexture(const Texture& texture, uint32 slot) const noexcept
 {
 	GLenum textureSlot = GL_TEXTURE0 + slot;
 	glActiveTexture(textureSlot);
 	glBindTexture(textureSlot, texture.m_Texture);
 }
 
-void GLContext::SetUniformBuffer(const UniformBuffer& buffer, unsigned int slot) const noexcept
+void GLContext::SetUniformBuffer(const UniformBuffer& buffer, uint32 slot) const noexcept
 {
 	glBindBufferBase(GL_UNIFORM_BUFFER, slot, buffer.m_Buffer);
 }
 
-void GLContext::SetViewport(unsigned int width, unsigned int height, unsigned int topX, unsigned int topY) const noexcept
+void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) const noexcept
 {
 	glViewport(topX, topY, width, height);
 	glScissor(topX, topY, width, height);

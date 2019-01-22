@@ -1,32 +1,43 @@
 #include <EnginePch.h>
 #include <Graphics/Textures/Texture2D.h>
 
-Texture2D::Texture2D(const void* pInitalData, TEX_FORMAT format, unsigned int width, unsigned int height, const TextureParams& params)
+Texture2D::Texture2D(const void* pInitalData, TEX_FORMAT format, uint32 width, uint32 height, bool generateMipmaps, const TextureParams& params)
 	: Texture(),
 	m_Width(0),
-	m_Height(0),
-	m_Format(TEX_FORMAT_UNKNOWN)
+	m_Height(0)
 {
-	Create(pInitalData, format, width, height, params);
+	Create(pInitalData, format, width, height, generateMipmaps, params);
 }
 
 Texture2D::~Texture2D()
 {
 }
 
-void Texture2D::Create(const void* pInitalData, TEX_FORMAT format, unsigned int width, unsigned int height, const TextureParams& params)
+void Texture2D::Create(const void* pInitalData, TEX_FORMAT format, uint32 width, uint32 height, bool generateMipmaps, const TextureParams& params)
 {
 	glGenTextures(1, &m_Texture);
+	Texture::SetParameters(params);
+
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
 
-	SetParameters(params);
+	uint32 glformat = Texture::TexFormatToGL(format);
+	uint32 internalFormat = Texture::TexFormatToGLInternal(format);
+	glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, internalFormat, GL_UNSIGNED_BYTE, pInitalData);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, TexFormatToGL(format), width, height, 0, TexFormatToGLInternal(format), GL_UNSIGNED_BYTE, pInitalData);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if (generateMipmaps)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
+	}
 
 	m_Width = width;
 	m_Height = height;
 	m_Format = format;
 	
+	std::cout << "Created Texture2D" << std::endl;
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

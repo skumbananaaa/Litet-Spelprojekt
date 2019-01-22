@@ -1,4 +1,5 @@
 #include "..\Include\Game.h"
+#include <Graphics/Textures/Framebuffer.h>
 
 Game::Game() noexcept
 {
@@ -7,6 +8,17 @@ Game::Game() noexcept
 
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
+
+	{
+		FramebufferDesc desc;
+		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.NumColorAttachments = 1;
+		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
+		desc.Width = 1024;
+		desc.Height = 768;
+
+		Framebuffer* pFramebuffer = new Framebuffer(desc);
+	}
 
 	m_pShaderProgram = new ShaderProgram(vShader, fShader);
 	m_pScene = new Scene();
@@ -47,7 +59,6 @@ Game::~Game()
 
 void Game::OnMouseMove(const glm::vec2& position)
 {
-	std::cout << "Mouse move - x: " << position.x << ", " << position.y << std::endl;
 }
 
 void Game::OnUpdate(float dtS)

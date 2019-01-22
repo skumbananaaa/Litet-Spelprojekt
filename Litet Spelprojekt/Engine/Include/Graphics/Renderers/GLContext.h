@@ -6,7 +6,7 @@
 #include <Graphics/Textures/Texture.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 
-enum Capability : unsigned int
+enum Capability : uint32
 {
 	DEPTH_TEST = 0,
 	CULL_FACE = 1,
@@ -30,9 +30,9 @@ public:
 	void Enable(Cap cap) const noexcept;
 	void Disable(Cap cap) const noexcept;
 	void SetProgram(const ShaderProgram& program) const noexcept;
-	void SetTexture(const Texture& texture, unsigned int slot) const noexcept;
-	void SetUniformBuffer(const UniformBuffer& buffer, unsigned int slot) const noexcept;
-	void SetViewport(unsigned int width, unsigned int height, unsigned int topX, unsigned int topY) const noexcept;
+	void SetTexture(const Texture& texture, uint32 slot) const noexcept;
+	void SetUniformBuffer(const UniformBuffer& buffer, uint32 slot) const noexcept;
+	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) const noexcept;
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
 	void Clear() const noexcept;
 	void DrawIndexedMesh(const IndexedMesh& mesh) const noexcept;

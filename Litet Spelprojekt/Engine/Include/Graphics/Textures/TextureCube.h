@@ -9,34 +9,27 @@ public:
 	TextureCube& operator=(TextureCube&& other) = delete;
 	TextureCube& operator=(const TextureCube& other) = delete;
 
-	TextureCube(const void* ppInitalData[6], TEX_FORMAT format, unsigned int width, unsigned int height, const TextureParams& params = TextureParams());
+	TextureCube(const void* ppInitalData[6], TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params = TextureParams());
 	~TextureCube();
 
-	unsigned int GetWidth() const noexcept;
-	unsigned int GetHeight() const noexcept;
-	unsigned int GetFormat() const noexcept;
+	uint32 GetWidth() const noexcept;
+	uint32 GetHeight() const noexcept;
 
 private:
-	void Create(const void** ppInitalData, TEX_FORMAT format, unsigned int width, unsigned int height, const TextureParams& params);
+	void Create(const void** ppInitalData, TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params);
 
 private:
-	unsigned int m_Width;
-	unsigned int m_Height;
-	unsigned int m_Format;
+	uint32 m_Width;
+	uint32 m_Height;
 };
 
 
-inline unsigned int TextureCube::GetWidth() const noexcept
+inline uint32 TextureCube::GetWidth() const noexcept
 {
 	return m_Width;
 }
 
-inline unsigned int TextureCube::GetHeight() const noexcept
+inline uint32 TextureCube::GetHeight() const noexcept
 {
 	return m_Height;
-}
-
-inline unsigned int TextureCube::GetFormat() const noexcept
-{
-	return m_Format;
 }

@@ -103,7 +103,7 @@ void Application::OnKeyUp(KEY keycode)
 	Input::KeyState(keycode, false);
 }
 
-void Application::OnResize(unsigned int width, unsigned int height)
+void Application::OnResize(uint32 width, uint32 height)
 {
 	m_pContext->SetViewport(width, height, 0, 0);
 }

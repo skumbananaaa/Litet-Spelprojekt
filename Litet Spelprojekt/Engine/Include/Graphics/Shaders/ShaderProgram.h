@@ -13,5 +13,5 @@ public:
 	~ShaderProgram();
 
 private:
-	unsigned int m_Program;
+	uint32 m_Program;
 };

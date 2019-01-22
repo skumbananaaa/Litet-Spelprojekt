@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-IndexedMesh::IndexedMesh(const Vertex* const vertices, const unsigned int* const indices, unsigned int numVertices, unsigned int numIndices) noexcept
+IndexedMesh::IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept
 {
 	m_VertexCount = numVertices;
 	m_IndexCount = numIndices;
@@ -19,7 +19,7 @@ IndexedMesh::IndexedMesh(const Vertex* const vertices, const unsigned int* const
 	glBufferData(GL_ARRAY_BUFFER, m_VertexCount * sizeof(Vertex), vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexCount * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexCount * sizeof(uint32), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //Position
 	glEnableVertexAttribArray(0);
@@ -60,7 +60,7 @@ IndexedMesh* IndexedMesh::CreateIndexedMeshFromFile(const char* pFilename)
 
 	const aiMesh* pMesh = pScene->mMeshes[0];
 	std::vector<Vertex> vertices(pMesh->mNumVertices);
-	for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
+	for (uint32 i = 0; i < pMesh->mNumVertices; i++)
 	{
 		vertices[i].position = glm::vec3(pMesh->mVertices[i].x, pMesh->mVertices[i].y, pMesh->mVertices[i].z);
 		vertices[i].normal = (pMesh->HasNormals()) ? glm::vec3(pMesh->mNormals[i].x, pMesh->mNormals[i].y, pMesh->mNormals[i].z) : glm::vec3();
@@ -69,8 +69,8 @@ IndexedMesh* IndexedMesh::CreateIndexedMeshFromFile(const char* pFilename)
 	}
 
 
-	std::vector<unsigned int> indices;
-	for (unsigned int i = 0; i < pMesh->mNumFaces; i++)
+	std::vector<uint32> indices;
+	for (uint32 i = 0; i < pMesh->mNumFaces; i++)
 	{
 		const aiFace& face = pMesh->mFaces[i];
 		assert(face.mNumIndices == 3);
@@ -80,7 +80,7 @@ IndexedMesh* IndexedMesh::CreateIndexedMeshFromFile(const char* pFilename)
 		indices.push_back(face.mIndices[2]);
 	}
 
-	return new IndexedMesh(vertices.data(), indices.data(), static_cast<unsigned int>(vertices.size()), static_cast<unsigned int>(indices.size()));
+	return new IndexedMesh(vertices.data(), indices.data(), static_cast<uint32>(vertices.size()), static_cast<uint32>(indices.size()));
 }
 
 IndexedMesh* IndexedMesh::CreateCube()
@@ -124,7 +124,7 @@ IndexedMesh* IndexedMesh::CreateCube()
 		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 0.0F) }
 	};
 
-	unsigned int triangleIndices[] =
+	uint32 triangleIndices[] =
 	{
 		// Front (Seen from front)
 		0, 2, 1,

@@ -95,3 +95,10 @@ void GLContext::DrawIndexedMesh(const IndexedMesh& mesh) const noexcept
 	glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 }
+
+void GLContext::DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept
+{
+	glBindVertexArray(mesh.m_VAO);
+	glDrawArrays(primitiveTopology, 0, mesh.GetVertexCount());
+	glBindVertexArray(0);
+}

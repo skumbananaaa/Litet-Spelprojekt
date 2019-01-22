@@ -10,76 +10,19 @@ Game::Game() noexcept
 
 	m_pShaderProgram = new ShaderProgram(vShader, fShader);
 
-	Vertex triangleVertices[] = 
-	{
-		// Front (Seen from front)
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
+	const int WIDTH = 10;
+	const int HEIGHT = 10;
+	const int DEPTH = 10;
 
-		// Top (Seen from above)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
+	glm::mat4 transform(1.0f);
+	this->m_pGridUniform = new UniformBuffer(glm::value_ptr(transform), 1, sizeof(glm::mat4));
 
-		// Back (Seen from front)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Bottom (Seen from above)
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Left (Seen from left)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 0.0F) },
-
-		// Right (Seen from left)
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 0.0F) }
-	};
-
-	unsigned int triangleIndices[] =
-	{
-		// Front (Seen from front)
-		0, 2, 1,
-		2, 0, 3,
-
-		// Top (Seen from above)
-		4, 6, 5,
-		6, 4, 7,
-
-		// Back (Seen from front)
-		8, 9, 10,
-		10, 11, 8,
-
-		// Bottom (Seen from above)
-		12, 13, 14,
-		14, 15, 12,
-
-		// Left (Seen from left)
-		16, 18, 17,
-		18, 16, 19,
-
-		// Right (Seen from left)
-		20, 21, 22,
-		22, 23, 20
-	};
-
-	//m_pTestMesh = new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
-	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("../Game/Resources/Meshes/ship.obj");
+	this->m_pGridMesh = Mesh::CreateGrid(WIDTH, HEIGHT, DEPTH);
 
 	m_pScene = new Scene();
+
+	//m_pTestMesh = new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
+	/*m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("../Game/Resources/Meshes/ship.obj");
 
 	GameObject* pGameObject = nullptr;
 	for (unsigned int i = 0; i < 125; i++)
@@ -91,7 +34,7 @@ Game::Game() noexcept
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
 		m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
-	}
+	}*/
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
 	pCamera->SetProjectionMatrix(glm::perspective(
@@ -119,12 +62,12 @@ void Game::OnUpdate(float dtS)
 	static float tempRotation = 0.0f;
 	tempRotation += 1.0f * dtS;
 
-	for (unsigned int i = 0; i < 125; i++)
+	/*for (unsigned int i = 0; i < 125; i++)
 	{
 		m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
 		m_pScene->GetGameObjects()[i]->UpdateTransform();
 		m_GameObjectUniforms[i]->UpdateData(glm::value_ptr(m_pScene->GetGameObjects()[i]->GetTransform()));
-	}
+	}*/
 
 	static float cameraSpeed = 5.0f;
 	static float angularSpeed = 1.5f;
@@ -185,11 +128,14 @@ void Game::OnRender()
 	GetContext().SetProgram(*m_pShaderProgram);
 	GetContext().SetUniformBuffer(*m_pCameraUniform, 1);
 
-	for (unsigned int i = 0; i < 125; i++)
+	/*for (unsigned int i = 0; i < 125; i++)
 	{
 		GetContext().SetUniformBuffer(*m_GameObjectUniforms[i], 0);
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
-	}
+	}*/
+
+	GetContext().SetUniformBuffer(*m_pGridUniform, 0);
+	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
 
 	Application::OnRender();
 }

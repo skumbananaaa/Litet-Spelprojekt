@@ -27,4 +27,7 @@ private:
 	UniformBuffer* m_pCameraUniform;
 
 	IndexedMesh* m_pTestMesh;
+
+	Mesh* m_pGridMesh;
+	UniformBuffer* m_pGridUniform;
 };

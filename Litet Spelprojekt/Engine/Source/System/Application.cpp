@@ -18,7 +18,7 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Little HOMO", 1024, 768, 8);
+		m_pWindow = new Window("Little HOMO", 1024, 768, 1);
 		m_pContext = new GLContext();
 	}
 	
@@ -66,7 +66,7 @@ int32_t Application::Run()
 		Input::Update();
 
 		m_pWindow->PollEvents();
-		m_pContext->Clear();
+		m_pContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
 
 		currentTime = clock::now();
 		deltaTime = std::chrono::duration_cast<duration>(currentTime - prevTime).count();

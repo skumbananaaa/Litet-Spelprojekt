@@ -20,6 +20,11 @@ class API IndexedMesh
 	friend class GLContext;
 
 public:
+	IndexedMesh(IndexedMesh&& other) = delete;
+	IndexedMesh(const IndexedMesh& other) = delete;
+	IndexedMesh& operator=(IndexedMesh&& other) = delete;
+	IndexedMesh& operator=(const IndexedMesh& other) = delete;
+
 	IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
 	~IndexedMesh();
 

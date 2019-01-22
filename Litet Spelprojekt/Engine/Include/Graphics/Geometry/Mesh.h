@@ -6,6 +6,11 @@ class API Mesh
 	friend class GLContext;
 
 public:
+	Mesh(Mesh&& other) = delete;
+	Mesh(const Mesh& other) = delete;
+	Mesh& operator=(Mesh&& other) = delete;
+	Mesh& operator=(const Mesh& other) = delete;
+
 	Mesh(const Vertex* const vertices, unsigned int numVertices) noexcept;
 	~Mesh();
 

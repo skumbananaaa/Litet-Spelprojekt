@@ -70,16 +70,15 @@ void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 
 void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 {
-	GLenum textureSlot = GL_TEXTURE0 + slot;
-	glActiveTexture(textureSlot);
+	glActiveTexture(GL_TEXTURE0 + slot);
 
 	if (pTexture == nullptr)
 	{
-		glBindTexture(textureSlot, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else
 	{
-		glBindTexture(textureSlot, pTexture->m_Texture);
+		glBindTexture(GL_TEXTURE_2D, pTexture->m_Texture);
 	}
 }
 
@@ -118,9 +117,9 @@ void GLContext::SetClearColor(float r, float g, float b, float a) const noexcept
 	glClearColor(r, g, b, a);
 }
 
-void GLContext::Clear() const noexcept
+void GLContext::Clear(uint32 flags) const noexcept
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(flags);
 }
 
 void GLContext::DrawIndexedMesh(const IndexedMesh& mesh) const noexcept
@@ -134,5 +133,12 @@ void GLContext::DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) 
 {
 	glBindVertexArray(mesh.m_VAO);
 	glDrawArrays(primitiveTopology, 0, mesh.GetVertexCount());
+	glBindVertexArray(0);
+}
+
+void GLContext::DrawFullscreenTriangle(const FullscreenTri & triangle) const noexcept
+{
+	glBindVertexArray(triangle.m_VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 }

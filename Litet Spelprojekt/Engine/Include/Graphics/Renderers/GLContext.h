@@ -6,6 +6,7 @@
 #include <Graphics/Textures/Texture.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Textures/Framebuffer.h>
+#include <Graphics/Geometry/FullscreenTri.h>
 
 enum Capability : uint32
 {
@@ -27,6 +28,14 @@ enum PrimitiveTopology : unsigned int
 	PT_LINE_STRIP_ADJACENCY = 0x000B,
 	PT_TRIANGLES_ADJACENCY = 0x000C,
 	PT_TRIANGLE_STRIP_ADJACENCY = 0x000D,
+};
+
+enum ClearFlags : uint32
+{
+	CLEAR_FLAG_UNKNOWN = 0,
+	CLEAR_FLAG_COLOR = 0x00004000,
+	CLEAR_FLAG_DEPTH = 0x00000100,
+	CLEAR_FLAG_STENCIL = 0x00000400
 };
 
 typedef Capability Cap;
@@ -51,7 +60,8 @@ public:
 	void SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept;
 	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) const noexcept;
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
-	void Clear() const noexcept;
+	void Clear(uint32 flags) const noexcept;
 	void DrawIndexedMesh(const IndexedMesh& mesh) const noexcept;
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
+	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
 };

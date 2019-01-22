@@ -79,13 +79,20 @@ void Framebuffer::CreateFramebuffer()
 	glGenFramebuffers(1, &m_Framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
 
+	uint32 buf = 0;
+	uint32 drawBuffers[8];
 	for (uint32 i = 0; i < m_NumColorAttachments; i++)
 	{
 		if (m_ppColor[i] != nullptr)
 		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ppColor[i]->m_Texture, 0);
+			drawBuffers[buf] = GL_COLOR_ATTACHMENT0 + buf;
+			glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[buf], GL_TEXTURE_2D, m_ppColor[i]->m_Texture, 0);
+
+			buf++;
 		}
 	}
+
+	glDrawBuffers(buf, drawBuffers);
 
 	if (m_pDepth != nullptr)
 	{

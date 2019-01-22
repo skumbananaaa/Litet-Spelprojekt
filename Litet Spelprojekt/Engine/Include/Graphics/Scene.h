@@ -14,7 +14,7 @@ public:
 	void AddGameObject(GameObject* pGameObject) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
 
-	Camera& GetCamera() noexcept;
+	Camera& GetCamera() const noexcept;
 	const std::vector<GameObject*>& GetGameObjects() const noexcept;
 
 	void OnUpdate(float dtS) noexcept;
@@ -24,7 +24,7 @@ private:
 	std::vector<GameObject*> m_GameObjects;
 };
 
-inline Camera& Scene::GetCamera() noexcept
+inline Camera& Scene::GetCamera() const noexcept
 {
 	return *m_pCamera;
 }

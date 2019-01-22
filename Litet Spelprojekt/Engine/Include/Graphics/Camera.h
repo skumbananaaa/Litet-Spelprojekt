@@ -44,7 +44,7 @@ public:
 	const glm::mat4& GetProjectionMatrix() const noexcept;
 	const glm::mat4& GetCombinedMatrix() const noexcept;
 
-	const glm::vec3& GetPos() const noexcept;
+	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec3& GetFront() const noexcept;
 
 	float GetYaw() const noexcept;
@@ -83,7 +83,7 @@ inline const glm::mat4& Camera::GetCombinedMatrix() const noexcept
 	return m_CombinedMatrix;
 }
 
-inline const glm::vec3& Camera::GetPos() const noexcept
+inline const glm::vec3& Camera::GetPosition() const noexcept
 {
 	return m_Position;
 }

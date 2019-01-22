@@ -153,6 +153,10 @@
     <ClInclude Include="Include\Game.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
+    <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
+    <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
+    <None Include="Resources\Shaders\defferedLightningVert.glsl" />
     <None Include="Resources\Shaders\FShader.glsl" />
     <None Include="Resources\Shaders\VShader.glsl" />
   </ItemGroup>

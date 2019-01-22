@@ -30,6 +30,10 @@
   <ItemGroup>
     <None Include="Resources\Shaders\VShader.glsl" />
     <None Include="Resources\Shaders\FShader.glsl" />
+    <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
+    <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
+    <None Include="Resources\Shaders\defferedLightningVert.glsl" />
+    <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

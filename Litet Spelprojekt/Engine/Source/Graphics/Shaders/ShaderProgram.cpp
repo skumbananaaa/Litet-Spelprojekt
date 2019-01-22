@@ -20,6 +20,10 @@ ShaderProgram::ShaderProgram(const Shader& vShader, const Shader& fShader) noexc
 		glGetProgramInfoLog(m_Program, 512, NULL, infoLog);
 		std::cout << "ERROR LINKING SHADERS\n" << infoLog << std::endl;
 	}
+	else
+	{
+		std::cout << "Created shaderprogram" << std::endl;
+	}
 }
 
 ShaderProgram::ShaderProgram(const Shader& vShader, const Shader& gShader, const Shader& fShader) noexcept
@@ -42,6 +46,10 @@ ShaderProgram::ShaderProgram(const Shader& vShader, const Shader& gShader, const
 	{
 		glGetProgramInfoLog(m_Program, 512, NULL, infoLog);
 		std::cout << "ERROR LINKING SHADERS\n" << infoLog << std::endl;
+	}
+	else
+	{
+		std::cout << "Created shaderprogram" << std::endl;
 	}
 }
 

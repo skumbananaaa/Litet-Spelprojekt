@@ -25,6 +25,7 @@
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Camera.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
+    <ClInclude Include="Include\Graphics\Geometry\FullscreenTri.h" />
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Mesh.h" />
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
@@ -48,6 +49,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Graphics\Camera.cpp" />
     <ClCompile Include="Source\Graphics\GameObject.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\FullscreenTri.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Mesh.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />

@@ -45,6 +45,7 @@ Game::Game() noexcept
 
 Game::~Game()
 {
+	delete m_pRenderer;
 	delete m_pShaderProgram;
 	delete m_pTestMesh;
 	delete m_pScene;
@@ -125,11 +126,12 @@ void Game::OnRender()
 	GetContext().SetProgram(m_pShaderProgram);
 	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
 
-	for (unsigned int i = 0; i < 125; i++)
+	for (uint32 i = 0; i < 125; i++)
 	{
 		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
 	}
 
+	m_pRenderer->DrawScene(*m_pScene);
 	Application::OnRender();
 }

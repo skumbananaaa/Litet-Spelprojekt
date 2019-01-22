@@ -31,4 +31,7 @@
     <None Include="Resources\Shaders\VShader.glsl" />
     <None Include="Resources\Shaders\FShader.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resources\Meshes\ship.obj" />
+  </ItemGroup>
 </Project>

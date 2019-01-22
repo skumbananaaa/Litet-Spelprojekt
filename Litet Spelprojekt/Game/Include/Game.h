@@ -15,6 +15,7 @@ public:
 	Game() noexcept;
 	~Game();
 
+	void OnMouseMove(const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender() override;
 

@@ -2,6 +2,8 @@
 #include <System/Window.h>
 #include <System/Application.h>
 
+Window* Window::s_pMainWindow = nullptr;
+
 KEY g_KeyTable[GLFW_KEY_LAST + 1] = 
 {
 	KEY_UNKNOWN,
@@ -383,20 +385,24 @@ void ResizeCallback(GLFWwindow* window, int width, int height)
 	Application::GetInstance().OnResize(width, height);
 }
 
-Window::Window(const char* pTitle, int width, int height) noexcept
+Window::Window(const char* pTitle, int width, int height, int samples) noexcept
 	: m_pWindow(nullptr),
 	m_Width(0),
 	m_Height(0)
 {
+	assert(s_pMainWindow == nullptr);
+	s_pMainWindow = this;
+
 	glfwWindowHint(GLFW_RED_BITS, 8);
 	glfwWindowHint(GLFW_GREEN_BITS, 8);
 	glfwWindowHint(GLFW_BLUE_BITS, 8);
 	glfwWindowHint(GLFW_ALPHA_BITS, 8);
 	glfwWindowHint(GLFW_DEPTH_BITS, 24);
 	glfwWindowHint(GLFW_STENCIL_BITS, 8);
+	glfwWindowHint(GLFW_SAMPLES, samples);
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
@@ -445,4 +451,10 @@ void Window::SwapBuffers() noexcept
 bool Window::IsClosed() noexcept
 {
 	return (glfwWindowShouldClose(m_pWindow) != 0);
+}
+
+Window& Window::GetCurrentWindow() noexcept
+{
+	assert(s_pMainWindow != nullptr);
+	return *s_pMainWindow;
 }

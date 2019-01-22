@@ -114,6 +114,11 @@ Game::~Game()
 	delete m_pScene;
 }
 
+void Game::OnMouseMove(const glm::vec2& position)
+{
+	std::cout << "Mouse move - x: " << position.x << ", " << position.y << std::endl;
+}
+
 void Game::OnUpdate(float dtS)
 {
 	static float tempRotation = 0.0f;

@@ -18,7 +18,7 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Little HOMO", 1024, 768);
+		m_pWindow = new Window("Little HOMO", 1024, 768, 8);
 		m_pContext = new GLContext();
 	}
 	
@@ -96,7 +96,6 @@ void Application::OnKeyDown(KEY keycode)
 
 void Application::OnMouseMove(const glm::vec2& position)
 {
-	Input::MousePosition(position);
 }
 
 void Application::OnKeyUp(KEY keycode)

@@ -12,7 +12,7 @@ public:
 	Window& operator=(Window&& other) = delete;
 	Window& operator=(const Window& other) = delete;
 
-	Window(const char* pTitle, int width, int height) noexcept;
+	Window(const char* pTitle, int width, int height, int samples) noexcept;
 	~Window();
 
 	bool IsClosed() noexcept;
@@ -26,6 +26,12 @@ private:
 	GLFWwindow* m_pWindow;
 	int m_Width;
 	int m_Height;
+
+private:
+	static Window* s_pMainWindow;
+
+public:
+	static Window& GetCurrentWindow() noexcept;
 };
 
 inline GLFWwindow* Window::GetHandle() const noexcept

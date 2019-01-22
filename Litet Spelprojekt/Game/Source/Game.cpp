@@ -9,17 +9,6 @@ Game::Game() noexcept
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
-	{
-		FramebufferDesc desc;
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.NumColorAttachments = 1;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
-		desc.Width = 1024;
-		desc.Height = 768;
-
-		Framebuffer* pFramebuffer = new Framebuffer(desc);
-	}
-
 	m_pShaderProgram = new ShaderProgram(vShader, fShader);
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
@@ -47,7 +36,29 @@ Game::Game() noexcept
 
 	m_pCameraUniform = new UniformBuffer(&pCamera->GetDataToShader(), 1, sizeof(DataToShader));
 
+	//Water Stuff
+	m_pWaterMesh = IndexedMesh::CreateQuad();
+
+	m_pWaterGameObject = new GameObject();
+	m_pWaterGameObject->SetMesh(m_pWaterMesh);
+	m_pWaterGameObject->SetScale(glm::vec3(5.0f));
+	m_pWaterGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
+	m_pWaterGameObject->UpdateTransform();
+
+	m_pWaterUniform = new UniformBuffer(glm::value_ptr(m_pWaterGameObject->GetTransform()), 1, sizeof(glm::mat4));
+
+	FramebufferDesc fboDescReflRefr;
+	fboDescReflRefr.ColorAttchmentFormats[0] = TEX_FORMAT::TEX_FORMAT_RGBA;
+	fboDescReflRefr.NumColorAttachments = 1;
+	fboDescReflRefr.DepthStencilFormat = TEX_FORMAT::TEX_FORMAT_DEPTH;
+	fboDescReflRefr.Width = GetWindow().GetWidth();
+	fboDescReflRefr.Height = GetWindow().GetHeight();
+
+	m_pReflectionFBO = new Framebuffer(fboDescReflRefr);
+	m_pRefractionFBO = new Framebuffer(fboDescReflRefr);
+
 	GetContext().Enable(Cap::DEPTH_TEST);
+	GetContext().Enable(Cap::CULL_FACE);
 }
 
 Game::~Game()
@@ -55,6 +66,9 @@ Game::~Game()
 	delete m_pShaderProgram;
 	delete m_pTestMesh;
 	delete m_pScene;
+
+	delete m_pReflectionFBO;
+	delete m_pRefractionFBO;
 }
 
 void Game::OnMouseMove(const glm::vec2& position)
@@ -129,10 +143,44 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
+
+
 	GetContext().SetProgram(m_pShaderProgram);
 	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
 
-	for (unsigned int i = 0; i < 125; i++)
+	assert(m_pScene->GetGameObjects().size() == m_GameObjectUniforms.size());
+
+	//Draw Scene for reflection
+	float reflDistance = m_pScene->GetCamera().GetPos().y * 2;
+	m_pScene->GetCamera().SetPos(m_pScene->GetCamera().GetPos() - glm::vec3(0.0f, reflDistance, 0.0f));
+	m_pScene->GetCamera().InvertPitch();
+	m_pScene->GetCamera().Update();
+
+	GetContext().SetFramebuffer(m_pReflectionFBO);
+
+	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
+	{
+		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
+		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
+	}
+
+	m_pScene->GetCamera().SetPos(m_pScene->GetCamera().GetPos() + glm::vec3(0.0f, reflDistance, 0.0f));
+	m_pScene->GetCamera().InvertPitch();
+	m_pScene->GetCamera().Update();
+
+	//Draw Scene for refraction
+	GetContext().SetFramebuffer(m_pRefractionFBO);
+
+	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
+	{
+		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
+		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
+	}
+
+	//Draw Scene to screen
+	GetContext().SetFramebuffer(nullptr);
+
+	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
 	{
 		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());

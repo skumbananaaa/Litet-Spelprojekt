@@ -103,6 +103,12 @@ void Camera::OffsetPitch(float amount) noexcept
 	}
 }
 
+void Camera::InvertPitch() noexcept
+{
+	m_Pitch = -m_Pitch;
+	m_IsDirty = true;
+}
+
 void Camera::SetPos(const glm::vec3& pos) noexcept
 {
 	m_Position = pos;

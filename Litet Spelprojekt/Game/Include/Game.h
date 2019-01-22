@@ -6,6 +6,7 @@
 #include <Graphics/Camera.h>
 #include <Graphics/Scene.h>
 #include <Graphics/Renderers/IRenderer.h>
+#include <Graphics/Textures/Framebuffer.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
@@ -29,4 +30,11 @@ private:
 	UniformBuffer* m_pCameraUniform;
 
 	IndexedMesh* m_pTestMesh;
+
+	IndexedMesh* m_pWaterMesh;
+	GameObject* m_pWaterGameObject;
+	UniformBuffer* m_pWaterUniform;
+
+	Framebuffer* m_pReflectionFBO;
+	Framebuffer* m_pRefractionFBO;
 };

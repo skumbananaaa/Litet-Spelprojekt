@@ -33,6 +33,7 @@ public:
 	void Move(CameraDir dir, float amount) noexcept;
 	void OffsetYaw(float amount) noexcept;
 	void OffsetPitch(float amount) noexcept;
+	void InvertPitch() noexcept;
 
 	void SetPos(const glm::vec3& pos) noexcept;
 	void SetFront(const glm::vec3& front) noexcept;

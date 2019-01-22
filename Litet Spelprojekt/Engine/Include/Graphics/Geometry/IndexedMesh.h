@@ -36,6 +36,7 @@ private:
 public:
 	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);
 	static IndexedMesh* CreateCube();
+	static IndexedMesh* CreateQuad();
 };
 
 inline uint32 IndexedMesh::GetIndexCount() const noexcept

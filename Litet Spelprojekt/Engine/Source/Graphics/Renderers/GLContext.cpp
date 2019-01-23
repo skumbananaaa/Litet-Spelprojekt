@@ -21,47 +21,12 @@ GLContext::~GLContext()
 
 void GLContext::Enable(Cap cap) const noexcept
 {
-
-	switch (cap)
-	{
-	case Cap::DEPTH_TEST:
-		glEnable(GL_DEPTH_TEST);
-		break;
-		
-	case Cap::CULL_FACE:
-		glEnable(GL_CULL_FACE);
-		break;
-
-	case Cap::BLEND:
-		glEnable(GL_BLEND);
-		break;
-
-	case Cap::CLIP_DISTANCE0:
-		glEnable(GL_CLIP_DISTANCE0);
-		break;
-	}
+	glEnable(cap);
 }
 
 void GLContext::Disable(Cap cap) const noexcept
 {
-	switch (cap)
-	{
-	case Cap::DEPTH_TEST:
-		glDisable(GL_DEPTH_TEST);
-		break;
-
-	case Cap::CULL_FACE:
-		glDisable(GL_CULL_FACE);
-		break;
-
-	case Cap::BLEND:
-		glDisable(GL_BLEND);
-		break;
-
-	case Cap::CLIP_DISTANCE0:
-		glDisable(GL_CLIP_DISTANCE0);
-		break;
-	}
+	glDisable(cap);
 }
 
 void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
@@ -123,6 +88,26 @@ void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 top
 void GLContext::SetClearColor(float r, float g, float b, float a) const noexcept
 {
 	glClearColor(r, g, b, a);
+}
+
+void GLContext::SetClearDepth(float depth) const noexcept
+{
+	glClearDepthf(depth);
+}
+
+void GLContext::SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept
+{
+	glColorMask(r, g, b, a);
+}
+
+void GLContext::SetDepthMask(bool writeDepth) const noexcept
+{
+	glDepthMask((writeDepth) ? GL_TRUE : GL_FALSE);
+}
+
+void GLContext::SetDepthFunc(Func func) const noexcept
+{
+	glDepthFunc(func);
 }
 
 void GLContext::Clear(uint32 flags) const noexcept

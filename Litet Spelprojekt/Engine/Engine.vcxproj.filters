@@ -22,6 +22,7 @@
     <ClCompile Include="Source\System\Window.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\FullscreenTri.cpp" />
     <ClCompile Include="Source\IO\WorldSerializer.cpp" />
+    <ClCompile Include="Source\Graphics\Material\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
     <ClInclude Include="Include\Graphics\Geometry\FullscreenTri.h" />
     <ClInclude Include="Include\IO\WorldSerializer.h" />
-	<ClInclude Include="Include\STB\stb_image.h" />
+    <ClInclude Include="Include\STB\stb_image.h" />
+    <ClInclude Include="Include\Graphics\Materials\Material.h" />
   </ItemGroup>
 </Project>

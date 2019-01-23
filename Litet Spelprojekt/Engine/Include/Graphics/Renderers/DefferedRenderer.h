@@ -5,15 +5,20 @@
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
 
-struct GPassPerFrame
+struct GPassVSPerFrame
 {
 	glm::mat4 ViewProjection;
 	glm::vec3 CameraPosition;
 };
 
-struct GPassPerObject
+struct GPassVSPerObject
 {
 	glm::mat4 Model;
+};
+
+struct GPassFSPerObject
+{
+	glm::vec4 Color;
 };
 
 struct LightPassBuffer
@@ -37,16 +42,20 @@ public:
 	void DrawScene(const Scene& scene) const override final;
 
 private:
-	void Create();
-	void GeometryPass(const Scene& scene) const;
-	void LightPass(const Scene& scene) const;
+	void Create() noexcept;
+	void DepthPrePass(const Scene& scene) const noexcept;
+	void GeometryPass(const Scene& scene) const noexcept;
+	void LightPass(const Scene& scene) const noexcept;
+	void DrawAllMeshesInScene(const Scene& scene) const noexcept;
 
 private:
 	Framebuffer* m_pGBuffer;
 	FullscreenTri* m_pTriangle;
 	UniformBuffer* m_pGPassVSPerFrame;
 	UniformBuffer* m_pGPassVSPerObject;
+	UniformBuffer* m_pGPassFSPerObject;
 	UniformBuffer* m_pLightPassBuffer;
+	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pLightPassProgram;
 };

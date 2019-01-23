@@ -47,12 +47,14 @@
     <ClInclude Include="Include\Types.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
+    <ClInclude Include="Include\Graphics\Materials\Material.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Graphics\Camera.cpp" />
     <ClCompile Include="Source\Graphics\GameObject.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\FullscreenTri.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Mesh.cpp" />
+    <ClCompile Include="Source\Graphics\Material\Material.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />

@@ -2,12 +2,13 @@
 #include <Graphics\GameObject.h>
 
 GameObject::GameObject() noexcept
+	: m_pMesh(nullptr),
+	m_pMaterial(nullptr),
+	m_position(0.0f),
+	m_rotation(1.0f, 0.0f, 0.0f, 0.0f),
+	m_scale(1.0f),
+	m_IsDirty(true)
 {
-	m_pMesh = nullptr;
-	m_position = glm::vec3(0.0f);
-	m_rotation = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
-	m_scale = glm::vec3(1.0f);
-	m_IsDirty = true;
 	UpdateTransform();
 }
 

@@ -5,6 +5,7 @@
 #include <Graphics\Buffers\UniformBuffer.h>
 #include <Graphics\Camera.h>
 #include <Graphics\Scene.h>
+#include <Graphics/Fonts/test.h>
 //#include "../../Game/Include/IO/WorldSerializer.h"
 
 #include <GLM\glm.hpp>
@@ -25,10 +26,12 @@ private:
 	Scene* m_pScene;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
-	UniformBuffer* m_pCameraUniform;
 
-	IndexedMesh* m_pTestMesh;
+	UniformBuffer* m_pPerFrameUniform;
+	float m_PerFrameArray[16 + 3];
 
 	Mesh* m_pGridMesh;
 	UniformBuffer* m_pGridUniform;
+
+	test* t;
 };

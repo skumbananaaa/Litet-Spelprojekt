@@ -13,6 +13,8 @@ public:
 	ShaderProgram(const Shader& vShader, const Shader& gShader, const Shader& fShader) noexcept;
 	~ShaderProgram();
 
+	int GetUniformLocation(const char* name) noexcept;
+
 private:
 	uint32 m_Program;
 };

@@ -380,8 +380,12 @@ void MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 	Application::GetInstance().OnMouseMove(glm::vec2(x, y));
 }
 
-void ResizeCallback(GLFWwindow* window, int32 width, int32 height)
+void ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
 {
+	Window* pMyWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(pWindow));
+	pMyWindow->m_Height = height;
+	pMyWindow->m_Width = width;
+
 	Application::GetInstance().OnResize(width, height);
 }
 
@@ -428,6 +432,8 @@ Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noe
 	glfwSetKeyCallback(m_pWindow, KeyCallback);
 	glfwSetCursorPosCallback(m_pWindow, MouseMoveCallback);
 	glfwSetWindowSizeCallback(m_pWindow, ResizeCallback);
+
+	glfwSetWindowUserPointer(m_pWindow, this);
 }
 
 

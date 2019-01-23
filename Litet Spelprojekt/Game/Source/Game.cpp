@@ -93,13 +93,32 @@ Game::Game() noexcept
 
 Game::~Game()
 {
-	delete m_pRenderer;
 	delete m_pShaderProgramDefault;
-	delete m_pTestMesh;
+	delete m_pShaderProgramWater;
+
+	delete m_pRenderer;
 	delete m_pScene;
+
+	for (uint32 i = 0; i < m_GameObjectUniforms.size(); i++)
+	{
+		delete m_GameObjectUniforms[i];
+		m_GameObjectUniforms[i] = nullptr;
+	}
+
+	delete m_pPerFrameUniform;
+
+	delete m_pTestMesh;
+	delete m_pGroundTestMesh;
+
+	delete m_pWaterMesh;
+	delete m_pWaterGameObject;
+	delete m_pWaterUniform;
 
 	delete m_pReflectionFBO;
 	delete m_pRefractionFBO;
+
+	delete m_pWaterNormalMap;
+	delete m_pDUDVTexture;
 }
 
 void Game::OnMouseMove(const glm::vec2& position)
@@ -178,13 +197,16 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	/*GetContext().SetProgram(m_pShaderProgramDefault);
+	GetContext().SetProgram(m_pShaderProgramDefault);
 
 	assert(m_pScene->GetGameObjects().size() == m_GameObjectUniforms.size());
 
 	GetContext().Enable(Cap::CLIP_DISTANCE0);
 
 	//Draw Scene for reflection
+	static float waterHeight = 0.0f;
+	static float cutoffOffset = 0.01f;
+
 	float reflDistance = m_pScene->GetCamera().GetPosition().y * 2;
 	m_pScene->GetCamera().SetPos(m_pScene->GetCamera().GetPosition() - glm::vec3(0.0f, reflDistance, 0.0f));
 	m_pScene->GetCamera().InvertPitch();
@@ -194,7 +216,7 @@ void Game::OnRender()
 	m_PerFrameArray[20] = 0.0f;
 	m_PerFrameArray[21] = 1.0f;
 	m_PerFrameArray[22] = 0.0f;
-	m_PerFrameArray[23] = 0.0f;
+	m_PerFrameArray[23] = waterHeight + cutoffOffset;
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 
@@ -217,7 +239,7 @@ void Game::OnRender()
 	m_PerFrameArray[20] = 0.0f;
 	m_PerFrameArray[21] = -1.0f;
 	m_PerFrameArray[22] = 0.0f;
-	m_PerFrameArray[23] = 0.0f;
+	m_PerFrameArray[23] = waterHeight - cutoffOffset;
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 
@@ -242,6 +264,8 @@ void Game::OnRender()
 	}
 
 	//Draw Water to screen
+	GetContext().Enable(Cap::BLEND);
+
 	GetContext().SetProgram(m_pShaderProgramWater);
 	m_PerFrameArray[19] = m_DistortionMoveFactor; //Per Frame Fistortion Move Factor
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
@@ -252,9 +276,12 @@ void Game::OnRender()
 	GetContext().SetTexture(m_pRefractionFBO->GetColorAttachment(0), 1);
 	GetContext().SetTexture(m_pDUDVTexture, 2);
 	GetContext().SetTexture(m_pWaterNormalMap, 3);
+	GetContext().SetTexture(m_pRefractionFBO->GetDepthAttachment(), 4);
 
-	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());*/
+	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
 
-	m_pRenderer->DrawScene(*m_pScene);
+	GetContext().Disable(Cap::BLEND);
+
+	//m_pRenderer->DrawScene(*m_pScene);
 	Application::OnRender();
 }

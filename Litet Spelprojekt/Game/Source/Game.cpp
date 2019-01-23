@@ -23,20 +23,28 @@ Game::Game() noexcept
 
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
+	m_pGroundTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cliff_3_low.obj");
 
 	m_pRenderer = new DefferedRenderer();
 
 	GameObject* pGameObject = nullptr;
-	for (unsigned int i = 0; i < 25; i++)
-	{
-		pGameObject = new GameObject();
-		pGameObject->SetMesh(m_pTestMesh);
-		pGameObject->SetPosition(5.0f * (glm::vec3(i / 5, -0.02f, i % 5) + glm::vec3(-2.5f, 0.0f, -2.5f)));
-		pGameObject->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-		pGameObject->UpdateTransform();
-		m_pScene->AddGameObject(pGameObject);
-		m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
-	}
+
+	pGameObject = new GameObject();
+	pGameObject->SetMesh(m_pTestMesh);
+	pGameObject->SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+	pGameObject->SetScale(glm::vec3(6.0f));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+	m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
+
+	pGameObject = new GameObject();
+	pGameObject->SetMesh(m_pGroundTestMesh);
+	pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
+	pGameObject->SetScale(glm::vec3(0.2f));
+	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+	m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
 	pCamera->SetProjectionMatrix(glm::perspective(
@@ -77,6 +85,7 @@ Game::Game() noexcept
 	m_pRefractionFBO = new Framebuffer(fboDescReflRefr);
 
 	m_pDUDVTexture = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
+	m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 
 	GetContext().Enable(Cap::DEPTH_TEST);
 	GetContext().Enable(Cap::CULL_FACE);
@@ -102,12 +111,12 @@ void Game::OnUpdate(float dtS)
 	static float tempRotation = 0.0f;
 	tempRotation += 1.0f * dtS;
 
-	for (uint32 i = 0; i < 25; i++)
+	/*for (uint32 i = 0; i < 1; i++)
 	{
 		//m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
 		m_pScene->GetGameObjects()[i]->UpdateTransform();
 		m_GameObjectUniforms[i]->UpdateData(glm::value_ptr(m_pScene->GetGameObjects()[i]->GetTransform()));
-	}
+	}*/
 
 	static float cameraSpeed = 5.0f;
 	static float angularSpeed = 1.5f;
@@ -242,6 +251,7 @@ void Game::OnRender()
 	GetContext().SetTexture(m_pReflectionFBO->GetColorAttachment(0), 0);
 	GetContext().SetTexture(m_pRefractionFBO->GetColorAttachment(0), 1);
 	GetContext().SetTexture(m_pDUDVTexture, 2);
+	GetContext().SetTexture(m_pWaterNormalMap, 3);
 
 	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
 

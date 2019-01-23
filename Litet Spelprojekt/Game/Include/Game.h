@@ -36,6 +36,7 @@ private:
 	float m_PerFrameArray[16 + 4 + 4];
 
 	IndexedMesh* m_pTestMesh;
+	IndexedMesh* m_pGroundTestMesh;
 
 	IndexedMesh* m_pWaterMesh;
 	GameObject* m_pWaterGameObject;
@@ -45,6 +46,7 @@ private:
 	Framebuffer* m_pReflectionFBO;
 	Framebuffer* m_pRefractionFBO;
 
+	Texture* m_pWaterNormalMap;
 	Texture* m_pDUDVTexture;
 	float m_DistortionMoveFactor;
 };

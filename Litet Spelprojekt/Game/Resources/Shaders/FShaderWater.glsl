@@ -19,6 +19,7 @@ layout (std140, binding = 1) uniform PerFrameBlock
 layout (binding = 0) uniform sampler2D reflectionTexture;
 layout (binding = 1) uniform sampler2D refractionTexture;
 layout (binding = 2) uniform sampler2D dudvMap;
+layout (binding = 3) uniform sampler2D normalMap;
 
 out vec4 FragColor;
 
@@ -26,11 +27,15 @@ const float distortionStrength = 0.005;
 
 void main()
 {
+	vec3 lightDir = normalize(vec3(0.0, 1.0, 0.5));
+	vec3 lightColor = vec3(1.0, 1.0, 1.0);
+
 	vec2 ndcTexCoords = (fs_in.ClipSpacePosition.xy / fs_in.ClipSpacePosition.w) / 2.0 + 0.5;
 
-	vec2 distortion1 = (texture(dudvMap, vec2(fs_in.TexCoords.x + distortionMoveFactor, fs_in.TexCoords.y)).rg * 2.0 - 1.0) * distortionStrength;
-	vec2 distortion2 = (texture(dudvMap, vec2(1.0 - fs_in.TexCoords.x, fs_in.TexCoords.y + distortionMoveFactor)).rg * 2.0 - 1.0) * distortionStrength;
-	vec2 totalDistortion = distortion1 + distortion2;
+	vec2 distortionTexCoords = texture(dudvMap, vec2(fs_in.TexCoords.x + distortionMoveFactor, fs_in.TexCoords.y)).rg * 0.1;
+	distortionTexCoords = fs_in.TexCoords + vec2(distortionTexCoords.x, distortionTexCoords.y + distortionMoveFactor);
+	vec2 totalDistortion = (texture(dudvMap, distortionTexCoords).rg * 2.0 - 1.0) * distortionStrength;
+
 
 	vec2 reflectionTexCoords = vec2(ndcTexCoords.x, -ndcTexCoords.y);
 	reflectionTexCoords += totalDistortion;
@@ -44,6 +49,18 @@ void main()
 	vec4 reflectionColor = texture(reflectionTexture, reflectionTexCoords);
 	vec4 refractionColor = texture(refractionTexture, refractionTexCoords);
 
-	FragColor = mix(reflectionColor, refractionColor, 0.5);
-	FragColor = mix(FragColor, vec4(0.14, 0.51, 0.67, 1.0), 0.25);
+	vec3 viewDir = normalize(cameraPosition - fs_in.Position);
+	float refractionFactor = pow(dot(viewDir, vec3(0.0, 1.0, 0.0)), 6.0);
+
+	vec3 normal = texture(normalMap, distortionTexCoords).xyz;
+	normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y, normal.z * 2.0 - 1.0));
+
+	//Specular
+	float specularStrength = 0.6;
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
+	vec3 specular = specularStrength * spec * lightColor;
+
+	FragColor = mix(reflectionColor, refractionColor, refractionFactor);
+	FragColor = mix(FragColor, vec4(0.7, 0.25, 0.33, 1.0), 0.25) + vec4(specular, 0.0);
 }

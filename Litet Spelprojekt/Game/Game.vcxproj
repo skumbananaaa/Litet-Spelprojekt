@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Textures\waterDUDV.png" />
+    <Image Include="Resources\Textures\waterNormalMap.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

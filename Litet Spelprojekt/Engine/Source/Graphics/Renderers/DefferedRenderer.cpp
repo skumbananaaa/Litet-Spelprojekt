@@ -86,9 +86,8 @@ void DefferedRenderer::Create()
 	{
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		//desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA16F;
-		//desc.ColorAttchmentFormats[2] = TEX_FORMAT_RGBA16F;
-		desc.NumColorAttachments = 1;
+		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA16F;
+		desc.NumColorAttachments = 2;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
 		desc.Width = 1920;
 		desc.Height = 1080;
@@ -152,6 +151,8 @@ void DefferedRenderer::Create()
 
 	{
 		LightPassBuffer buff = {};
+		buff.InverseView = glm::mat4(1.0f);
+		buff.InverseProjection = glm::mat4(1.0f);
 		buff.CameraPosition = glm::vec3();
 
 		m_pLightPassBuffer = new UniformBuffer(&buff, 1, sizeof(LightPassBuffer));
@@ -193,21 +194,22 @@ void DefferedRenderer::LightPass(const Scene& scene) const
 {
 	GLContext& context = Application::GetInstance().GetContext();
 
-
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
 	context.SetProgram(m_pLightPassProgram);
 	context.SetUniformBuffer(m_pLightPassBuffer, 0);
 
 	{
 		LightPassBuffer buff = {};
+		buff.InverseView = glm::inverse(scene.GetCamera().GetViewMatrix());
+		buff.InverseProjection = glm::inverse(scene.GetCamera().GetProjectionMatrix());
 		buff.CameraPosition = scene.GetCamera().GetPosition();
 
 		m_pLightPassBuffer->UpdateData(&buff);
 	}
 
 	context.SetTexture(m_pGBuffer->GetColorAttachment(0), 0);
-	//context.SetTexture(m_pGBuffer->GetColorAttachment(1), 1);
-	//context.SetTexture(m_pGBuffer->GetColorAttachment(2), 2);
+	context.SetTexture(m_pGBuffer->GetColorAttachment(1), 1);
+	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 2);
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 }

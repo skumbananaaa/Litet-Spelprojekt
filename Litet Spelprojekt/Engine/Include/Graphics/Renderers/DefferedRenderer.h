@@ -18,6 +18,8 @@ struct GPassPerObject
 
 struct LightPassBuffer
 {
+	glm::mat4 InverseView;
+	glm::mat4 InverseProjection;
 	glm::vec3 CameraPosition;
 };
 

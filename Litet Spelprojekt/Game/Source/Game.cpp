@@ -40,7 +40,7 @@ Game::Game() noexcept
 	pGameObject = new GameObject();
 	pGameObject->SetMesh(m_pGroundTestMesh);
 	pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
-	pGameObject->SetScale(glm::vec3(0.2f));
+	pGameObject->SetScale(glm::vec3(0.4f));
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
@@ -52,7 +52,7 @@ Game::Game() noexcept
 		(float)GetWindow().GetWidth() /
 		(float)GetWindow().GetHeight(),
 		0.1F, 100.0F));
-	pCamera->Update();
+	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
@@ -137,10 +137,15 @@ void Game::OnUpdate(float dtS)
 		m_GameObjectUniforms[i]->UpdateData(glm::value_ptr(m_pScene->GetGameObjects()[i]->GetTransform()));
 	}*/
 
-	static float cameraSpeed = 5.0f;
-	static float angularSpeed = 1.5f;
+	//Cartesian
+	static float cartesianCameraSpeed = 5.0f;
+	static float cartesianCameraAngularSpeed = 1.5f;
+	
+	
+	static float polarCameraSpeed = 5.0f;
+	static float polarCameraAngularSpeed = 0.8f;
 
-	if (Input::IsKeyDown(KEY_W))
+	/*if (Input::IsKeyDown(KEY_W))
 	{
 		m_pScene->GetCamera().Move(CameraDir::Forward, cameraSpeed * dtS);
 	}
@@ -183,9 +188,63 @@ void Game::OnUpdate(float dtS)
 	else if (Input::IsKeyDown(KEY_RIGHT))
 	{
 		m_pScene->GetCamera().OffsetYaw(angularSpeed * dtS);
-	}
+	}*/
 	
-	m_pScene->GetCamera().Update();
+	if (Input::IsKeyDown(KEY_W))
+	{
+		m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Forward, polarCameraSpeed * dtS);
+	}
+	else if (Input::IsKeyDown(KEY_S))
+	{
+		m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Backwards, polarCameraSpeed * dtS);
+	}
+
+	if (Input::IsKeyDown(KEY_A))
+	{
+		m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Left, polarCameraSpeed * dtS);
+	}
+	else if (Input::IsKeyDown(KEY_D))
+	{
+		m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Right, polarCameraSpeed * dtS);
+	}
+
+	if (Input::IsKeyDown(KEY_E))
+	{
+		m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Up, polarCameraSpeed * dtS);
+	}
+	else if (Input::IsKeyDown(KEY_Q))
+	{
+		m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Down, polarCameraSpeed * dtS);
+	}
+
+	if (Input::IsKeyDown(KEY_UP))
+	{
+		m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateUp, polarCameraAngularSpeed * dtS);
+	}
+	else if (Input::IsKeyDown(KEY_DOWN))
+	{
+		m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateDown, polarCameraAngularSpeed * dtS);
+	}
+
+	if (Input::IsKeyDown(KEY_LEFT))
+	{
+		m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateLeft, polarCameraAngularSpeed * dtS);
+	}
+	else if (Input::IsKeyDown(KEY_RIGHT))
+	{
+		m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateRight, polarCameraAngularSpeed * dtS);
+	}
+
+	if (Input::IsKeyDown(KEY_X))
+	{
+		m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomIn, polarCameraSpeed * dtS);
+	}
+	else if (Input::IsKeyDown(KEY_Z))
+	{
+		m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomOut, polarCameraSpeed * dtS);
+	}
+
+	m_pScene->GetCamera().UpdateFromLookAt();
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 
@@ -207,10 +266,12 @@ void Game::OnRender()
 	static float waterHeight = 0.0f;
 	static float cutoffOffset = 0.01f;
 
-	float reflDistance = m_pScene->GetCamera().GetPosition().y * 2;
+	/*glm::vec3 cameraPos = m_pScene->GetCamera().GetPosition();
+	glm::vec3 lookAt = m_pScene->GetCamera().GetLookAt();
+	float reflDistance = cameraPos.y * 2;
 	m_pScene->GetCamera().SetPos(m_pScene->GetCamera().GetPosition() - glm::vec3(0.0f, reflDistance, 0.0f));
 	m_pScene->GetCamera().InvertPitch();
-	m_pScene->GetCamera().Update();
+	m_pScene->GetCamera().UpdateFromPitchYaw();*/
 
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_PerFrameArray[20] = 0.0f;
@@ -230,9 +291,9 @@ void Game::OnRender()
 		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
 	}
 
-	m_pScene->GetCamera().SetPos(m_pScene->GetCamera().GetPosition() + glm::vec3(0.0f, reflDistance, 0.0f));
-	m_pScene->GetCamera().InvertPitch();
-	m_pScene->GetCamera().Update();
+	/*m_pScene->GetCamera().SetPos(cameraPos);
+	m_pScene->GetCamera().SetLookAt(lookAt);
+	m_pScene->GetCamera().UpdateFromLookAt();*/
 
 	//Draw Scene for refraction
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
@@ -255,6 +316,7 @@ void Game::OnRender()
 	GetContext().Disable(Cap::CLIP_DISTANCE0);
 
 	//Draw Scene to screen
+	GetContext().Enable(Cap::BLEND);
 	GetContext().SetFramebuffer(nullptr);
 
 	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
@@ -264,7 +326,6 @@ void Game::OnRender()
 	}
 
 	//Draw Water to screen
-	GetContext().Enable(Cap::BLEND);
 
 	GetContext().SetProgram(m_pShaderProgramWater);
 	m_PerFrameArray[19] = m_DistortionMoveFactor; //Per Frame Fistortion Move Factor

@@ -34,5 +34,7 @@
     <None Include="Resources\Shaders\VShader.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Resources\Shaders\FShaderFont.glsl" />
+    <None Include="Resources\Shaders\VShaderFont.glsl" />
   </ItemGroup>
 </Project>

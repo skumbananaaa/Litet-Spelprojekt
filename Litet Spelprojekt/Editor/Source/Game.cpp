@@ -1,14 +1,17 @@
 #include "..\Include\Game.h"
 
 Game::Game() noexcept
+	: Application()
 {
+	std::cout << "Game" << std::endl;
+
 	Shader vShader;
 	Shader fShader;
 
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
-	m_pShaderProgram = new ShaderProgram(vShader, fShader);
+	m_pShaderProgramDefault = new ShaderProgram(vShader, fShader);
 
 	std::vector<std::string> data;
 	data.push_back("Line 1");
@@ -29,6 +32,7 @@ Game::Game() noexcept
 	this->m_pGridMesh = Mesh::CreateGrid(WIDTH, HEIGHT, DEPTH);
 
 	m_pScene = new Scene();
+
 
 	//m_pTestMesh = new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
 	/*m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("../Game/Resources/Meshes/ship.obj");
@@ -54,15 +58,16 @@ Game::Game() noexcept
 	pCamera->Update();
 	m_pScene->SetCamera(pCamera);
 
-	m_pCameraUniform = new UniformBuffer(&pCamera->GetDataToShader(), 1, sizeof(DataToShader));
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
 
 	GetContext().Enable(Cap::DEPTH_TEST);
 }
 
 Game::~Game()
 {
-	delete m_pShaderProgram;
-	delete m_pTestMesh;
+	delete m_pShaderProgramDefault;
+	delete m_pGridMesh;
 	delete m_pScene;
 }
 
@@ -127,15 +132,16 @@ void Game::OnUpdate(float dtS)
 	}
 	
 	m_pScene->GetCamera().Update();
-	m_pCameraUniform->UpdateData(&m_pScene->GetCamera().GetDataToShader());
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 
 	Application::OnUpdate(dtS);
 }
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(m_pShaderProgram);
-	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
+	GetContext().SetProgram(m_pShaderProgramDefault);
+	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 
 	/*for (unsigned int i = 0; i < 125; i++)
 	{

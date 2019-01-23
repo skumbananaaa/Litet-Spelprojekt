@@ -25,9 +25,9 @@ private:
 	Scene* m_pScene;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
-	UniformBuffer* m_pCameraUniform;
-
-	IndexedMesh* m_pTestMesh;
+	
+	UniformBuffer* m_pPerFrameUniform;
+	float m_PerFrameArray[16 + 3];
 
 	Mesh* m_pGridMesh;
 	UniformBuffer* m_pGridUniform;

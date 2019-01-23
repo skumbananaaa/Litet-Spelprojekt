@@ -143,6 +143,6 @@ Mesh* Mesh::CreateGrid(int width, int height, int depth)
 	}
 
 	Mesh* mesh = new Mesh(vertices, counter);
-	delete[] vertices;
+	//sdelete[] vertices;
 	return mesh;
 }

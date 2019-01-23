@@ -8,6 +8,8 @@ Application* Application::s_Instance = nullptr;
 Application::Application()
 	: m_pWindow(nullptr), m_pContext(nullptr)
 {
+	std::cout << "Application" << std::endl;
+
 	assert(s_Instance == nullptr);
 	s_Instance = this;
 

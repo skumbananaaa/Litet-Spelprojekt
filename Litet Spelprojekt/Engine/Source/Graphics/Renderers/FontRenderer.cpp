@@ -81,7 +81,7 @@ FontRenderer::FontRenderer(const GLContext& context, void* face)
 	glBindVertexArray(0);
 }
 
-void FontRenderer::RenderText(GLContext& context, std::string text, float x, float y, float scale, glm::vec3 color)
+void FontRenderer::RenderText(GLContext& context, std::string text, float x, float y, float scale)
 {	
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);

@@ -6,7 +6,7 @@ constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
 Application::Application()
-	: m_pWindow(nullptr), m_pContext(nullptr)
+	: m_pWindow(nullptr), m_pContext(nullptr), m_fps(0), m_ups(0)
 {
 	std::cout << "Application" << std::endl;
 
@@ -62,7 +62,6 @@ int32_t Application::Run()
 	float deltaTime = 0.0f;
 	float totalTime = 0.0f;
 	float accumulator = 0.0f;
-
 	int32 fps = 0;
 	int32 ups = 0;
 
@@ -84,6 +83,8 @@ int32_t Application::Run()
 			std::string title = "Little HOBO [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
 			m_pWindow->SetTitle(title.c_str());
 
+			this->m_fps = fps;
+			this->m_ups = ups;
 			ups = 0;
 			fps = 0;
 			totalTime = 0.0f;

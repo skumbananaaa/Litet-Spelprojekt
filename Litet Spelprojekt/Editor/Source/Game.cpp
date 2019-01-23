@@ -128,8 +128,9 @@ void Game::OnRender()
 	GetContext().SetUniformBuffer(m_pGridUniform, 0);
 	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
 
-	fontRenderer->RenderText(GetContext(), "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-	fontRenderer->RenderText(GetContext(), "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
+
+	fontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
+	fontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
 
 	Application::OnRender();
 }

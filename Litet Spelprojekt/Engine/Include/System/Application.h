@@ -26,9 +26,14 @@ public:
 	Window& GetWindow();
 	GLContext& GetContext();
 
+	int32 GetFPS() const noexcept;
+	int32 GetUPS() const noexcept;
+
 private:
 	Window* m_pWindow;
 	GLContext* m_pContext;
+	int32 m_fps;
+	int32 m_ups;
 
 public:
 	static Application& GetInstance();
@@ -53,4 +58,14 @@ inline GLContext& Application::GetContext()
 {
 	assert(m_pContext != nullptr);
 	return *m_pContext;
+}
+
+inline int32 Application::GetFPS() const noexcept
+{
+	return m_fps;
+}
+
+inline int32 Application::GetUPS() const noexcept
+{
+	return m_ups;
 }

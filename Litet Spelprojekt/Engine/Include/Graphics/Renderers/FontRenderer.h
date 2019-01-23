@@ -34,7 +34,7 @@ private:
 	UniformBuffer* m_pPerFrameUniform;
 
 public:
-	void RenderText(GLContext& context, std::string text, float x, float y, float scale, glm::vec3 color);
+	void RenderText(GLContext& context, std::string text, float x, float y, float scale);
 	void UpdateRenderTargetSize(int width, int height);
 	void SetColor(const glm::vec3& color);
 

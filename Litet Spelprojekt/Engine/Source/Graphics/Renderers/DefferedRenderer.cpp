@@ -57,6 +57,7 @@ void DefferedRenderer::DrawScene(const Scene& scene) const
 {
 	GLContext& context = Application::GetInstance().GetContext();
 
+	context.SetViewport(m_pGBuffer->GetWidth(), m_pGBuffer->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pGBuffer);
 	context.Clear(CLEAR_FLAG_DEPTH);
 
@@ -151,8 +152,6 @@ void DefferedRenderer::GeometryPass(const Scene& scene) const
 {
 	GLContext& context = Application::GetInstance().GetContext();
 
-	context.SetViewport(m_pGBuffer->GetWidth(), m_pGBuffer->GetHeight(), 0, 0);
-
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.Clear(CLEAR_FLAG_COLOR);
 	
@@ -179,8 +178,6 @@ void DefferedRenderer::GeometryPass(const Scene& scene) const
 void DefferedRenderer::LightPass(const Scene& scene) const
 {
 	GLContext& context = Application::GetInstance().GetContext();
-
-	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
 
 	context.SetProgram(m_pLightPassProgram);
 

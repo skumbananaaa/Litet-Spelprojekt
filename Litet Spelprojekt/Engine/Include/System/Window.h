@@ -20,8 +20,9 @@ public:
 	bool IsClosed() noexcept;
 	void PollEvents() noexcept;
 	void SwapBuffers() noexcept;
-	int GetWidth() const noexcept;
-	int GetHeight() const noexcept;
+	void SetTitle(const char* pTitle) noexcept;
+	int32 GetWidth() const noexcept;
+	int32 GetHeight() const noexcept;
 	GLFWwindow* GetHandle() const noexcept;
 
 private:

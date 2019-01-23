@@ -56,7 +56,9 @@
     <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />
-    <ClCompile Include="Source\IO\WorldSerializer.cpp" />
+    <ClCompile Include="Source\IO\WorldSerializer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\System\Input.cpp" />
     <ClCompile Include="Source\EnginePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

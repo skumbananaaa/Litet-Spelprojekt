@@ -9,18 +9,34 @@ in VS_OUT
 
 layout(binding = 0) uniform sampler2D g_Color;
 layout(binding = 1) uniform sampler2D g_Normal;
-layout(binding = 2) uniform sampler2D g_Position;
+layout(binding = 2) uniform sampler2D g_Depth;
 
 layout(binding = 0) uniform LightPassBuffer
 {
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
 	vec3 g_CameraPosition;
 };
 
+vec3 PositionFromDepth(float depth)
+{
+	float z = (depth * 2.0f) - 1.0f;
+
+	vec4 posClipSpace = vec4((fs_in.TexCoords * 2.0f) - vec2(1.0f), z, 1.0f);
+	vec4 posViewSpace = g_InverseProjection * posClipSpace;
+
+	posViewSpace = posViewSpace / posViewSpace.w;
+	vec4 worldPosition = g_InverseView * posViewSpace;
+	return worldPosition.xyz;
+}
+
 void main()
 {
+	float depth = texture(g_Depth, fs_in.TexCoords).r;
+	vec3 position = PositionFromDepth(depth);
+
 	vec4 color = texture(g_Color, fs_in.TexCoords);
 	vec3 normal = normalize(texture(g_Normal, fs_in.TexCoords).xyz);
-	vec3 position = texture(g_Position, fs_in.TexCoords).xyz;
 	vec3 lightDir = normalize(vec3(0.0f, 1.0f, 0.5f));
 	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
 	vec3 viewDir = normalize(g_CameraPosition - position);

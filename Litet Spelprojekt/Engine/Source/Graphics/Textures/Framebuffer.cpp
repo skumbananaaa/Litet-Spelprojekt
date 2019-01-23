@@ -59,7 +59,7 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 	{
 		if (desc.ColorAttchmentFormats[i] != TEX_FORMAT_UNKNOWN)
 		{
-			m_ppColor[i] = new Texture2D(nullptr, desc.ColorAttchmentFormats[i], desc.Width, desc.Height, false, desc.ColorTexturesParams);
+			m_ppColor[i] = new Texture2D(nullptr, desc.ColorAttchmentFormats[i], desc.Width, desc.Height, false, desc.SamplingParams);
 		}
 	}
 
@@ -67,14 +67,18 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 
 	if (desc.DepthStencilFormat != TEX_FORMAT_UNKNOWN)
 	{
-		m_pDepth = new Texture2D(nullptr, desc.DepthStencilFormat, desc.Width, desc.Height, false, desc.ColorTexturesParams);
+		m_pDepth = new Texture2D(nullptr, desc.DepthStencilFormat, desc.Width, desc.Height, false, desc.SamplingParams);
 	}
+
+	m_Width = desc.Width;
+	m_Height = desc.Height;
 
 	CreateFramebuffer();
 }
 
 void Framebuffer::Create(const Texture* texture)
 {
+	//TODO: Fix this
 	CreateFramebuffer();
 }
 

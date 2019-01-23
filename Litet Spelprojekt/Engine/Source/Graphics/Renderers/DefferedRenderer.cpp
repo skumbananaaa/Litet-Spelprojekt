@@ -9,6 +9,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pLightPassProgram(nullptr),
 	m_pGPassVSPerFrame(nullptr),
 	m_pGPassVSPerObject(nullptr),
+	m_pLightPassBuffer(nullptr),
 	m_pTriangle(nullptr)
 {
 	Create();
@@ -46,6 +47,12 @@ DefferedRenderer::~DefferedRenderer()
 		m_pGPassVSPerObject = nullptr;
 	}
 
+	if (m_pLightPassBuffer != nullptr)
+	{
+		delete m_pLightPassBuffer;
+		m_pLightPassBuffer = nullptr;
+	}
+
 	if (m_pTriangle != nullptr)
 	{
 		delete m_pTriangle;
@@ -57,6 +64,7 @@ void DefferedRenderer::DrawScene(const Scene& scene) const
 {
 	GLContext& context = Application::GetInstance().GetContext();
 
+	context.SetViewport(m_pGBuffer->GetWidth(), m_pGBuffer->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pGBuffer);
 	context.Clear(CLEAR_FLAG_DEPTH);
 
@@ -82,8 +90,8 @@ void DefferedRenderer::Create()
 		desc.ColorAttchmentFormats[2] = TEX_FORMAT_RGBA16F;
 		desc.NumColorAttachments = 3;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
-		desc.Width = Window::GetCurrentWindow().GetWidth();
-		desc.Height = Window::GetCurrentWindow().GetHeight();
+		desc.Width = 1920;
+		desc.Height = 1080;
 
 		m_pGBuffer = new Framebuffer(desc);
 	}
@@ -143,6 +151,13 @@ void DefferedRenderer::Create()
 	}
 
 	{
+		LightPassBuffer buff = {};
+		buff.CameraPosition = glm::vec3();
+
+		m_pLightPassBuffer = new UniformBuffer(&buff, 1, sizeof(LightPassBuffer));
+	}
+
+	{
 		m_pTriangle = new FullscreenTri();
 	}
 }
@@ -177,8 +192,18 @@ void DefferedRenderer::GeometryPass(const Scene& scene) const
 void DefferedRenderer::LightPass(const Scene& scene) const
 {
 	GLContext& context = Application::GetInstance().GetContext();
-	
+
+
+	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
 	context.SetProgram(m_pLightPassProgram);
+	context.SetUniformBuffer(m_pLightPassBuffer, 0);
+
+	{
+		LightPassBuffer buff = {};
+		buff.CameraPosition = scene.GetCamera().GetPosition();
+
+		m_pLightPassBuffer->UpdateData(&buff);
+	}
 
 	context.SetTexture(m_pGBuffer->GetColorAttachment(0), 0);
 	context.SetTexture(m_pGBuffer->GetColorAttachment(1), 1);

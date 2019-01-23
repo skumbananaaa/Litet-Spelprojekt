@@ -6,6 +6,8 @@ struct GLFWwindow;
 
 class API Window
 {
+	friend void ResizeCallback(GLFWwindow*, int32, int32);
+
 public:
 	Window(Window&& other) = delete;
 	Window(const Window& other) = delete;

@@ -16,6 +16,11 @@ struct GPassPerObject
 	glm::mat4 Model;
 };
 
+struct LightPassBuffer
+{
+	glm::vec3 CameraPosition;
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -39,6 +44,7 @@ private:
 	FullscreenTri* m_pTriangle;
 	UniformBuffer* m_pGPassVSPerFrame;
 	UniformBuffer* m_pGPassVSPerObject;
+	UniformBuffer* m_pLightPassBuffer;
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pLightPassProgram;
 };

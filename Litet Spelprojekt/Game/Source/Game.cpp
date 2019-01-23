@@ -76,7 +76,7 @@ Game::Game() noexcept
 	FramebufferDesc fboDescReflRefr;
 	fboDescReflRefr.ColorAttchmentFormats[0] = TEX_FORMAT::TEX_FORMAT_RGBA;
 	fboDescReflRefr.NumColorAttachments = 1;
-	fboDescReflRefr.ColorTexturesParams = m_WaterTextureParams;
+	fboDescReflRefr.SamplingParams = m_WaterTextureParams;
 	fboDescReflRefr.DepthStencilFormat = TEX_FORMAT::TEX_FORMAT_DEPTH;
 	fboDescReflRefr.Width = GetWindow().GetWidth();
 	fboDescReflRefr.Height = GetWindow().GetHeight();
@@ -178,7 +178,7 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(m_pShaderProgramDefault);
+	/*GetContext().SetProgram(m_pShaderProgramDefault);
 
 	assert(m_pScene->GetGameObjects().size() == m_GameObjectUniforms.size());
 
@@ -253,8 +253,8 @@ void Game::OnRender()
 	GetContext().SetTexture(m_pDUDVTexture, 2);
 	GetContext().SetTexture(m_pWaterNormalMap, 3);
 
-	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
+	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());*/
 
-	//m_pRenderer->DrawScene(*m_pScene);
+	m_pRenderer->DrawScene(*m_pScene);
 	Application::OnRender();
 }

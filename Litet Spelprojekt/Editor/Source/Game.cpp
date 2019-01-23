@@ -6,7 +6,7 @@ Game::Game() noexcept : Application()
 {
 	std::cout << "Game" << std::endl;
 
-	/*Shader vShader;
+	Shader vShader;
 	Shader fShader;
 
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
@@ -32,11 +32,11 @@ Game::Game() noexcept : Application()
 
 	this->m_pGridMesh = Mesh::CreateGrid(WIDTH, HEIGHT, DEPTH);
 
-	m_pScene = new Scene();*/
+	m_pScene = new Scene();
 
 	fontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
 
-	/*
+	
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
 	pCamera->SetProjectionMatrix(glm::perspective(
 		glm::radians<float>(90.0F),
@@ -48,7 +48,7 @@ Game::Game() noexcept : Application()
 
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
-	*/
+	
 	//GetContext().Enable(Cap::DEPTH_TEST);
 }
 
@@ -67,7 +67,7 @@ void Game::OnUpdate(float dtS)
 	static float cameraSpeed = 5.0f;
 	static float angularSpeed = 1.5f;
 
-	/*if (Input::IsKeyDown(KEY_W))
+	if (Input::IsKeyDown(KEY_W))
 	{
 		m_pScene->GetCamera().Move(CameraDir::Forward, cameraSpeed * dtS);
 	}
@@ -115,18 +115,18 @@ void Game::OnUpdate(float dtS)
 	m_pScene->GetCamera().Update();
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
-	*/
+	
 	Application::OnUpdate(dtS);
 }
 
 void Game::OnRender()
 {
-	/*GetContext().SetProgram(m_pShaderProgramDefault);
+	GetContext().SetProgram(m_pShaderProgramDefault);
 	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 
 
 	GetContext().SetUniformBuffer(m_pGridUniform, 0);
-	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);*/
+	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
 
 	fontRenderer->RenderText(GetContext(), "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 	fontRenderer->RenderText(GetContext(), "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));

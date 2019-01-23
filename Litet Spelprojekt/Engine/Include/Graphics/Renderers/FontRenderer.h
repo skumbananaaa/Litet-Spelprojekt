@@ -30,7 +30,7 @@ private:
 	static unsigned int m_VBO;
 
 	PerFrameFontRenderer m_PerFrameData;
-	std::map<char, Character> Characters;
+	std::map<char, Character> m_Characters;
 	UniformBuffer* m_pPerFrameUniform;
 
 public:

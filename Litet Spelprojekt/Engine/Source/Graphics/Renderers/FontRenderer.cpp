@@ -62,7 +62,7 @@ FontRenderer::FontRenderer(const GLContext& context, void* face)
 			glm::ivec2(ft_face->glyph->bitmap_left, ft_face->glyph->bitmap_top),
 			ft_face->glyph->advance.x
 		};
-		Characters.insert(std::pair<char, Character>(c, character));
+		m_Characters.insert(std::pair<char, Character>(c, character));
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -97,7 +97,7 @@ void FontRenderer::RenderText(GLContext& context, std::string text, float x, flo
 	std::string::const_iterator c;
 	for (c = text.begin(); c != text.end(); c++)
 	{
-		Character ch = Characters[*c];
+		Character ch = m_Characters[*c];
 
 		float xpos = x + ch.Bearing.x * scale;
 		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;

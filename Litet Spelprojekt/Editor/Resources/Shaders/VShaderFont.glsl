@@ -3,7 +3,11 @@
 layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
 out vec2 TexCoords;
 
-uniform mat4 projection;
+layout (std140, binding = 0) uniform PerFrameBlock
+{
+	mat4 projection;
+    vec3 color;
+};
 
 void main()
 {

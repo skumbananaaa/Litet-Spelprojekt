@@ -86,9 +86,9 @@ void DefferedRenderer::Create()
 	{
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA16F;
-		desc.ColorAttchmentFormats[2] = TEX_FORMAT_RGBA16F;
-		desc.NumColorAttachments = 3;
+		//desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA16F;
+		//desc.ColorAttchmentFormats[2] = TEX_FORMAT_RGBA16F;
+		desc.NumColorAttachments = 1;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
 		desc.Width = 1920;
 		desc.Height = 1080;
@@ -206,8 +206,8 @@ void DefferedRenderer::LightPass(const Scene& scene) const
 	}
 
 	context.SetTexture(m_pGBuffer->GetColorAttachment(0), 0);
-	context.SetTexture(m_pGBuffer->GetColorAttachment(1), 1);
-	context.SetTexture(m_pGBuffer->GetColorAttachment(2), 2);
+	//context.SetTexture(m_pGBuffer->GetColorAttachment(1), 1);
+	//context.SetTexture(m_pGBuffer->GetColorAttachment(2), 2);
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 }

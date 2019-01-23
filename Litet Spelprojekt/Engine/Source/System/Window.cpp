@@ -436,12 +436,15 @@ Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noe
 	glfwSetWindowUserPointer(m_pWindow, this);
 }
 
-
 Window::~Window()
 {
 	glfwDestroyWindow(m_pWindow);
 }
 
+void Window::SetTitle(const char* pTitle) noexcept
+{
+	glfwSetWindowTitle(m_pWindow, pTitle);
+}
 
 void Window::PollEvents() noexcept
 {

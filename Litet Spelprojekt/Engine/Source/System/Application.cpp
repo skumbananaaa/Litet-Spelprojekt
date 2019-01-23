@@ -58,7 +58,11 @@ int32_t Application::Run()
 	auto currentTime = clock::now();
 	auto prevTime = clock::now();
 	float deltaTime = 0.0f;
+	float totalTime = 0.0f;
 	float accumulator = 0.0f;
+
+	int32 fps = 0;
+	int32 ups = 0;
 
 	m_pContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	while (!m_pWindow->IsClosed())
@@ -71,16 +75,30 @@ int32_t Application::Run()
 		currentTime = clock::now();
 		deltaTime = std::chrono::duration_cast<duration>(currentTime - prevTime).count();
 		prevTime = currentTime;
-		
+		totalTime += deltaTime;
+
+		if (totalTime > 1.0f)
+		{
+			std::string title = "Little HOBO [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
+			m_pWindow->SetTitle(title.c_str());
+
+			ups = 0;
+			fps = 0;
+			totalTime = 0.0f;
+		}
 
 		accumulator += deltaTime;
 		while (accumulator > timestep)
 		{
 			OnUpdate(timestep);
 			accumulator -= timestep;
+
+			ups++;
 		}
 
 		OnRender();
+		fps++;
+
 		m_pWindow->SwapBuffers();
 	}
 

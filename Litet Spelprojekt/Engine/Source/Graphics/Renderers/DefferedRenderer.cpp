@@ -255,10 +255,23 @@ void DefferedRenderer::GeometryPass(const Scene& scene) const noexcept
 
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
 	{
-		perObjectVS.Model = scene.GetGameObjects()[i]->GetTransform();
+		GameObject& gameobject = *scene.GetGameObjects()[i];
+
+		perObjectVS.Model = gameobject.GetTransform();
 		m_pGPassVSPerObject->UpdateData(&perObjectVS);
 
-		perObjectFS.Color = scene.GetGameObjects()[i]->GetMaterial().GetColor();
+		const Material& material = gameobject.GetMaterial();
+		perObjectFS.Color = material.GetColor();
+		if (material.HasTexture())
+		{
+			perObjectFS.HasTexture = 1.0f;
+			context.SetTexture(material.GetTexture(), 0);
+		}
+		else
+		{
+			perObjectFS.HasTexture = 0.0f;
+		}
+
 		m_pGPassFSPerObject->UpdateData(&perObjectFS);
 
 		context.DrawIndexedMesh(scene.GetGameObjects()[i]->GetMesh());

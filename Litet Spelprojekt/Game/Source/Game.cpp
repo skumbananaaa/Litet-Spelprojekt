@@ -101,6 +101,8 @@ Game::Game() noexcept
 	m_pDUDVTexture = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 	m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 
+	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
+
 	GetContext().Enable(Cap::DEPTH_TEST);
 	GetContext().Enable(Cap::CULL_FACE);
 }
@@ -303,7 +305,7 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(m_pShaderProgramDefault);
+	/*GetContext().SetProgram(m_pShaderProgramDefault);
 
 	assert(m_pScene->GetGameObjects().size() == m_GameObjectUniforms.size());
 
@@ -397,8 +399,12 @@ void Game::OnRender()
 
 	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
 
-	GetContext().Disable(Cap::BLEND);
+	GetContext().Disable(Cap::BLEND);*/
 
-	//m_pRenderer->DrawScene(*m_pScene);
+	m_pRenderer->DrawScene(*m_pScene);
+
+	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
+	
 	Application::OnRender();
 }

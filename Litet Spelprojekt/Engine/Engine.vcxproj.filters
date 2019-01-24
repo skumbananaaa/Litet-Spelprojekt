@@ -24,8 +24,8 @@
     <ClCompile Include="Source\IO\WorldSerializer.cpp" />
     <ClCompile Include="Source\Graphics\Material\Material.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp" />
-    <ClCompile Include="Source\Graphics\GUI\GUI.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -58,7 +58,7 @@
     <ClInclude Include="Include\STB\stb_image.h" />
     <ClInclude Include="Include\Graphics\Materials\Material.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
-    <ClInclude Include="Include\Graphics\GUI\GUI.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIManager.h" />
+    <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
   </ItemGroup>
 </Project>

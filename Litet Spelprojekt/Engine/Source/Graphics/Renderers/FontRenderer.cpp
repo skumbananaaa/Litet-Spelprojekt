@@ -95,6 +95,7 @@ FontRenderer::~FontRenderer()
 			m_Fontrenderers.erase(m_Fontrenderers.begin() + counter);
 			break;
 		}
+		counter++;
 	}
 	if (m_Fontrenderers.size() == 0)
 	{

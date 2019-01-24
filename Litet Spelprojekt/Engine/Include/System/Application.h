@@ -62,7 +62,7 @@ private:
 inline void Application::InternalOnRender()
 {
 	OnRender();
-	m_pGUIManager->OnRender();
+	m_pGUIManager->OnRender(m_pContext);
 }
 
 inline void Application::InternalOnUpdate(float dtS)

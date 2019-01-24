@@ -38,6 +38,11 @@ private:
 	IndexedMesh* m_pTestMesh;
 	IndexedMesh* m_pGroundTestMesh;
 
+	Texture2D* m_pBoatTexture;
+
+	Material* m_pBoatMaterial;
+	Material* m_pGroundMaterial;
+
 	IndexedMesh* m_pWaterMesh;
 	GameObject* m_pWaterGameObject;
 	UniformBuffer* m_pWaterUniform;

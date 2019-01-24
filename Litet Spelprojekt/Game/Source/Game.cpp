@@ -27,9 +27,19 @@ Game::Game() noexcept
 
 	m_pRenderer = new DefferedRenderer();
 
-	GameObject* pGameObject = nullptr;
+	m_pBoatTexture = new Texture2D("Resources/Textures/ship.jpg", TEX_FORMAT_RGBA);
 
+	m_pBoatMaterial = new Material();
+	m_pBoatMaterial->SetColor(glm::vec4(0.655f, 0.639f, 0.627f, 1.0f));
+	m_pBoatMaterial->SetTexture(m_pBoatTexture);
+
+	m_pGroundMaterial = new Material();
+	m_pGroundMaterial->SetColor(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f));
+
+	GameObject* pGameObject = nullptr;
+	
 	pGameObject = new GameObject();
+	pGameObject->SetMaterial(m_pBoatMaterial);
 	pGameObject->SetMesh(m_pTestMesh);
 	pGameObject->SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
 	pGameObject->SetScale(glm::vec3(6.0f));
@@ -38,6 +48,7 @@ Game::Game() noexcept
 	m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
 
 	pGameObject = new GameObject();
+	pGameObject->SetMaterial(m_pGroundMaterial);
 	pGameObject->SetMesh(m_pGroundTestMesh);
 	pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
 	pGameObject->SetScale(glm::vec3(0.4f));
@@ -99,6 +110,10 @@ Game::~Game()
 	delete m_pRenderer;
 	delete m_pScene;
 
+	delete m_pBoatTexture;
+
+	delete m_pBoatMaterial;
+	delete m_pGroundMaterial;
 	for (uint32 i = 0; i < m_GameObjectUniforms.size(); i++)
 	{
 		delete m_GameObjectUniforms[i];

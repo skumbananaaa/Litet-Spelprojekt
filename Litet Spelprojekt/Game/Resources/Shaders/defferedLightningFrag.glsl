@@ -8,8 +8,7 @@ in VS_OUT
 } fs_in;
 
 layout(binding = 0) uniform sampler2D g_Color;
-layout(binding = 1) uniform sampler2D g_Normal;
-layout(binding = 2) uniform sampler2D g_Depth;
+layout(binding = 1) uniform sampler2D g_NormalDepth;
 
 layout(binding = 0) uniform LightPassBuffer
 {
@@ -32,11 +31,11 @@ vec3 PositionFromDepth(float depth)
 
 void main()
 {
-	float depth = texture(g_Depth, fs_in.TexCoords).r;
-	vec3 position = PositionFromDepth(depth);
+	vec4 normalDepth = texture(g_NormalDepth, fs_in.TexCoords);
+	vec3 position = PositionFromDepth(normalDepth.w);
 
+	vec3 normal = normalize(normalDepth.xyz);
 	vec4 color = texture(g_Color, fs_in.TexCoords);
-	vec3 normal = normalize(texture(g_Normal, fs_in.TexCoords).xyz);
 	vec3 lightDir = normalize(vec3(0.0f, 1.0f, 0.5f));
 	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
 	vec3 viewDir = normalize(g_CameraPosition - position);

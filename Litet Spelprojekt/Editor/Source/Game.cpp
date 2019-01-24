@@ -1,14 +1,18 @@
 #include "..\Include\Game.h"
 
-Game::Game() noexcept
+
+
+Game::Game() noexcept : Application()
 {
+	std::cout << "Game" << std::endl;
+
 	Shader vShader;
 	Shader fShader;
 
 	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
 	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
 
-	m_pShaderProgram = new ShaderProgram(vShader, fShader);
+	m_pShaderProgramDefault = new ShaderProgram(vShader, fShader);
 
 	std::vector<std::string> data;
 	data.push_back("Line 1");
@@ -30,21 +34,9 @@ Game::Game() noexcept
 
 	m_pScene = new Scene();
 
-	//m_pTestMesh = new IndexedMesh(triangleVertices, triangleIndices, 24, 36);
-	/*m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("../Game/Resources/Meshes/ship.obj");
+	fontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
 
-	GameObject* pGameObject = nullptr;
-	for (unsigned int i = 0; i < 125; i++)
-	{
-		pGameObject = new GameObject();
-		pGameObject->SetMesh(m_pTestMesh);
-		pGameObject->SetPosition(5.0f * glm::vec3(i / 25, (i / 5) % 5, i % 5));
-		pGameObject->SetScale(glm::vec3(1.0f));
-		pGameObject->UpdateTransform();
-		m_pScene->AddGameObject(pGameObject);
-		m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
-	}*/
-
+	
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
 	pCamera->SetProjectionMatrix(glm::perspective(
 		glm::radians<float>(90.0F),
@@ -54,15 +46,16 @@ Game::Game() noexcept
 	pCamera->Update();
 	m_pScene->SetCamera(pCamera);
 
-	m_pCameraUniform = new UniformBuffer(&pCamera->GetDataToShader(), 1, sizeof(DataToShader));
-
-	GetContext().Enable(Cap::DEPTH_TEST);
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
+	
+	//GetContext().Enable(Cap::DEPTH_TEST);
 }
 
 Game::~Game()
 {
-	delete m_pShaderProgram;
-	delete m_pTestMesh;
+	delete m_pShaderProgramDefault;
+	delete m_pGridMesh;
 	delete m_pScene;
 }
 
@@ -70,13 +63,6 @@ void Game::OnUpdate(float dtS)
 {
 	static float tempRotation = 0.0f;
 	tempRotation += 1.0f * dtS;
-
-	/*for (unsigned int i = 0; i < 125; i++)
-	{
-		m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
-		m_pScene->GetGameObjects()[i]->UpdateTransform();
-		m_GameObjectUniforms[i]->UpdateData(glm::value_ptr(m_pScene->GetGameObjects()[i]->GetTransform()));
-	}*/
 
 	static float cameraSpeed = 5.0f;
 	static float angularSpeed = 1.5f;
@@ -125,26 +111,26 @@ void Game::OnUpdate(float dtS)
 	{
 		m_pScene->GetCamera().OffsetYaw(angularSpeed * dtS);
 	}
-	
-	m_pScene->GetCamera().Update();
-	m_pCameraUniform->UpdateData(&m_pScene->GetCamera().GetDataToShader());
 
+	m_pScene->GetCamera().Update();
+	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
+	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
+	
 	Application::OnUpdate(dtS);
 }
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(m_pShaderProgram);
-	GetContext().SetUniformBuffer(m_pCameraUniform, 1);
+	GetContext().SetProgram(m_pShaderProgramDefault);
+	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 
-	/*for (unsigned int i = 0; i < 125; i++)
-	{
-		GetContext().SetUniformBuffer(*m_GameObjectUniforms[i], 0);
-		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
-	}*/
 
 	GetContext().SetUniformBuffer(m_pGridUniform, 0);
 	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
+
+
+	fontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
+	fontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
 
 	Application::OnRender();
 }

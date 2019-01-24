@@ -16,9 +16,11 @@ struct GPassVSPerObject
 	glm::mat4 Model;
 };
 
+
 struct GPassFSPerObject
 {
 	glm::vec4 Color;
+	float HasTexture;
 };
 
 struct LightPassBuffer

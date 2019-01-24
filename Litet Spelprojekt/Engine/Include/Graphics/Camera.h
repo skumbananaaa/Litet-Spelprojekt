@@ -4,7 +4,7 @@
 #include <GLM\gtc\matrix_transform.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
-enum CameraDir : char
+enum CameraDirCartesian : uint8
 {
 	Forward,
 	Backwards,
@@ -14,23 +14,37 @@ enum CameraDir : char
 	Down
 };
 
+enum CameraPosPolar : uint8
+{
+	ZoomIn,
+	ZoomOut,
+	RotateLeft,
+	RotateRight,
+	RotateUp,
+	RotateDown
+};
+
 class API Camera
 {
 public:
 	Camera(const glm::vec3& pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = 0.0f) noexcept;
+	Camera(const glm::vec3& pos, const glm::vec3& lookAt) noexcept;
 	~Camera();
 
-	void Update() noexcept;
+	void UpdateFromPitchYaw() noexcept;
+	void UpdateFromLookAt() noexcept;
 
 	void SetProjectionMatrix(const glm::mat4& matrix) noexcept;
 
-	void Move(CameraDir dir, float amount) noexcept;
+	void MoveCartesian(CameraDirCartesian dir, float amount) noexcept;
+	void MovePosPolar(CameraPosPolar dir, float amount) noexcept;
+	void MoveLookAtAndPosPolar(CameraDirCartesian dir, float amount) noexcept;
 	void OffsetYaw(float amount) noexcept;
 	void OffsetPitch(float amount) noexcept;
 	void InvertPitch() noexcept;
 
 	void SetPos(const glm::vec3& pos) noexcept;
-	void SetFront(const glm::vec3& front) noexcept;
+	void SetLookAt(const glm::vec3& lookAt) noexcept;
 
 	void SetYaw(float yaw) noexcept;
 	void SetPitch(float pitch) noexcept;
@@ -40,6 +54,7 @@ public:
 	const glm::mat4& GetCombinedMatrix() const noexcept;
 
 	const glm::vec3& GetPosition() const noexcept;
+	const glm::vec3& GetLookAt() const noexcept;
 	const glm::vec3& GetFront() const noexcept;
 
 	float GetYaw() const noexcept;
@@ -53,6 +68,7 @@ private:
 	glm::mat4 m_CombinedMatrix;
 
 	glm::vec3 m_Position;
+	glm::vec3 m_LookAt;
 	glm::vec3 m_Front;
 
 	float m_Yaw;
@@ -79,6 +95,11 @@ inline const glm::mat4& Camera::GetCombinedMatrix() const noexcept
 inline const glm::vec3& Camera::GetPosition() const noexcept
 {
 	return m_Position;
+}
+
+inline const glm::vec3& Camera::GetLookAt() const noexcept
+{
+	return m_LookAt;
 }
 
 inline const glm::vec3& Camera::GetFront() const noexcept

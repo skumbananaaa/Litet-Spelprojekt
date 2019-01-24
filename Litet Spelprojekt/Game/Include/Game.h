@@ -8,6 +8,7 @@
 #include <Graphics/Renderers/IRenderer.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Textures/Texture2D.h>
+#include <Graphics/Renderers/FontRenderer.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
@@ -54,4 +55,6 @@ private:
 	Texture* m_pWaterNormalMap;
 	Texture* m_pDUDVTexture;
 	float m_DistortionMoveFactor;
+
+	FontRenderer* m_pFontRenderer;
 };

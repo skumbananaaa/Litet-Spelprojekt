@@ -33,6 +33,7 @@
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
+    <ClInclude Include="Include\Graphics\GUI\GUIManager.h" />
     <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
@@ -60,6 +61,7 @@
     <ClCompile Include="Source\Graphics\Geometry\Mesh.cpp" />
     <ClCompile Include="Source\Graphics\Material\Material.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />
     <ClCompile Include="Source\IO\WorldSerializer.cpp">

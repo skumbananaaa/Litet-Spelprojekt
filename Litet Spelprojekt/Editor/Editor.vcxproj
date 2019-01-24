@@ -142,10 +142,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\Editor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\Editor.cpp" />
     <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>

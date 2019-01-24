@@ -43,7 +43,7 @@ Editor::Editor() noexcept : Application()
 		(float)GetWindow().GetWidth() /
 		(float)GetWindow().GetHeight(),
 		0.1F, 100.0F));
-	pCamera->Update();
+	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
@@ -70,29 +70,29 @@ void Editor::OnUpdate(float dtS)
 
 	if (Input::IsKeyDown(KEY_W))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Forward, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_S))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Backwards, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_A))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Left, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Left, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_D))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Right, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_E))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Up, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_Q))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Down, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_UP))
@@ -113,7 +113,7 @@ void Editor::OnUpdate(float dtS)
 		m_pScene->GetCamera().OffsetYaw(angularSpeed * dtS);
 	}
 
-	m_pScene->GetCamera().Update();
+	m_pScene->GetCamera().UpdateFromPitchYaw();
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 	

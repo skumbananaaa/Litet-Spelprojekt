@@ -99,36 +99,17 @@ int32_t Application::Run()
 		accumulator += deltaTime;
 		while (accumulator > timestep)
 		{
-			OnUpdate(timestep);
+			InternalOnUpdate(timestep);
 			accumulator -= timestep;
 
 			ups++;
 		}
 
-		OnRender();
+		InternalOnRender();
 		fps++;
 
 		m_pWindow->SwapBuffers();
 	}
 
 	return 0;
-}
-
-void Application::OnKeyDown(KEY keycode)
-{
-	Input::KeyState(keycode, true);
-}
-
-void Application::OnMouseMove(const glm::vec2& position)
-{
-}
-
-void Application::OnKeyUp(KEY keycode)
-{
-	Input::KeyState(keycode, false);
-}
-
-void Application::OnResize(uint32 width, uint32 height)
-{
-	m_pContext->SetViewport(width, height, 0, 0);
 }

@@ -11,11 +11,11 @@
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
-class Game : public Application
+class Editor : public Application
 {
 public:
-	Game() noexcept;
-	~Game();
+	Editor() noexcept;
+	~Editor();
 
 	void OnUpdate(float dtS) override;
 	void OnRender() override;

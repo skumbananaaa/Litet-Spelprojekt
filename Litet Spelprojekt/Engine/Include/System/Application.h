@@ -2,6 +2,7 @@
 #include <System\Window.h>
 #include <Graphics\Renderers\GLContext.h>
 #include "Input.h"
+#include <Graphics/GUI/GUIManager.h>
 
 class API Application
 {
@@ -25,6 +26,7 @@ public:
 
 	Window& GetWindow();
 	GLContext& GetContext();
+	GUIManager& GetGUIManager();
 
 	int32 GetFPS() const noexcept;
 	int32 GetUPS() const noexcept;
@@ -32,6 +34,7 @@ public:
 private:
 	Window* m_pWindow;
 	GLContext* m_pContext;
+	GUIManager* m_pGUIManager;
 	int32 m_fps;
 	int32 m_ups;
 
@@ -58,6 +61,12 @@ inline GLContext& Application::GetContext()
 {
 	assert(m_pContext != nullptr);
 	return *m_pContext;
+}
+
+inline GUIManager& Application::GetGUIManager()
+{
+	assert(m_pGUIManager != nullptr);
+	return *m_pGUIManager;
 }
 
 inline int32 Application::GetFPS() const noexcept

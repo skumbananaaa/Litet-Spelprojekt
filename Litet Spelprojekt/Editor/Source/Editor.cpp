@@ -1,10 +1,10 @@
-#include "..\Include\Game.h"
+#include "..\Include\Editor.h"
 
 
 
-Game::Game() noexcept : Application()
+Editor::Editor() noexcept : Application()
 {
-	std::cout << "Game" << std::endl;
+	std::cout << "Editor" << std::endl;
 
 	Shader vShader;
 	Shader fShader;
@@ -52,14 +52,14 @@ Game::Game() noexcept : Application()
 	//GetContext().Enable(Cap::DEPTH_TEST);
 }
 
-Game::~Game()
+Editor::~Editor()
 {
 	delete m_pShaderProgramDefault;
 	delete m_pGridMesh;
 	delete m_pScene;
 }
 
-void Game::OnUpdate(float dtS)
+void Editor::OnUpdate(float dtS)
 {
 	static float tempRotation = 0.0f;
 	tempRotation += 1.0f * dtS;
@@ -119,7 +119,7 @@ void Game::OnUpdate(float dtS)
 	Application::OnUpdate(dtS);
 }
 
-void Game::OnRender()
+void Editor::OnRender()
 {
 	GetContext().SetProgram(m_pShaderProgramDefault);
 	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);

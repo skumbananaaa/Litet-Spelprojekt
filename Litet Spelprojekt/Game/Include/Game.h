@@ -20,11 +20,14 @@ public:
 	Game() noexcept;
 	~Game();
 
+	void OnKeyUp(KEY keycode) override;
+	void OnKeyDown(KEY keycode) override;
 	void OnMouseMove(const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender() override;
 
 private:
+	bool cartesianCamera;
 	ShaderProgram* m_pShaderProgramDefault;
 	ShaderProgram* m_pShaderProgramWater;
 

@@ -33,6 +33,11 @@ private:
 private:
 	static Window* s_pMainWindow;
 
+	static void KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 action, int32 mods);
+	static void MouseMoveCallback(GLFWwindow* pWindow, double x, double y);
+	static void MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action, int32 mods);
+	static void ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height);
+
 public:
 	static Window& GetCurrentWindow() noexcept;
 };

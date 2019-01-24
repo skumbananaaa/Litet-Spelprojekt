@@ -28,12 +28,15 @@ private:
 	static ShaderProgram* m_pShaderProgram;
 	static unsigned int m_VAO;
 	static unsigned int m_VBO;
+	static std::vector<FontRenderer*> m_Fontrenderers;
 
 	PerFrameFontRenderer m_PerFrameData;
 	std::map<char, Character> m_Characters;
 	UniformBuffer* m_pPerFrameUniform;
 
 public:
+	~FontRenderer();
+
 	void RenderText(GLContext& context, std::string text, float x, float y, float scale);
 	void UpdateRenderTargetSize(int width, int height);
 	void SetColor(const glm::vec3& color);

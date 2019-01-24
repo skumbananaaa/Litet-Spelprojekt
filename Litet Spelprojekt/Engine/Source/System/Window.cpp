@@ -367,26 +367,31 @@ void ErrorCallback(int32 error, const char* description)
 	std::cout << "GLFW Error: " << description << std::endl;
 }
 
-void KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 action, int32 mods)
+void Window::KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 action, int32 mods)
 {
 	if (action == GLFW_PRESS)
-		Application::GetInstance().OnKeyDown(GLFWToKey(key));
+		Application::GetInstance().InternalOnKeyDown(GLFWToKey(key));
 	else if (action == GLFW_RELEASE)
-		Application::GetInstance().OnKeyUp(GLFWToKey(key));
+		Application::GetInstance().InternalOnKeyUp(GLFWToKey(key));
 }
 
-void MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
+void Window::MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 {
-	Application::GetInstance().OnMouseMove(glm::vec2(x, y));
+	Application::GetInstance().InternalOnMouseMove(glm::vec2(x, y));
 }
 
-void ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
+void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action, int32 mods)
+{
+	Application::GetInstance().InternalOnMouseButton((MouseButton)button, action == GLFW_PRESS);
+}
+
+void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
 {
 	Window* pMyWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(pWindow));
 	pMyWindow->m_Height = height;
 	pMyWindow->m_Width = width;
 
-	Application::GetInstance().OnResize(width, height);
+	Application::GetInstance().InternalOnResize(width, height);
 }
 
 Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noexcept
@@ -431,6 +436,7 @@ Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noe
 	glfwSetErrorCallback(ErrorCallback);
 	glfwSetKeyCallback(m_pWindow, KeyCallback);
 	glfwSetCursorPosCallback(m_pWindow, MouseMoveCallback);
+	glfwSetMouseButtonCallback(m_pWindow, MouseButtonCallback);
 	glfwSetWindowSizeCallback(m_pWindow, ResizeCallback);
 
 	glfwSetWindowUserPointer(m_pWindow, this);

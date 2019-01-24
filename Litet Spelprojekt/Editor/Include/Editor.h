@@ -33,5 +33,5 @@ private:
 	Mesh* m_pGridMesh;
 	UniformBuffer* m_pGridUniform;
 
-	FontRenderer* fontRenderer;
+	FontRenderer* m_pFontRenderer;;
 };

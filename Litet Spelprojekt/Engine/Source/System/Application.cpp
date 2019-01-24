@@ -22,9 +22,9 @@ Application::Application()
 	{
 		m_pWindow = new Window("Little HOMO", 1024, 768, 1);
 		m_pContext = new GLContext();
+		m_pGUIManager = new GUIManager();
 	}
 	
-
 	std::cout << "Send Nudes" << std::endl;
 }
 
@@ -43,6 +43,12 @@ Application::~Application()
 	{
 		delete m_pContext;
 		m_pContext = nullptr;
+	}
+
+	if (m_pGUIManager != nullptr)
+	{
+		delete m_pGUIManager;
+		m_pGUIManager = nullptr;
 	}
 
 	glfwTerminate();
@@ -93,36 +99,17 @@ int32_t Application::Run()
 		accumulator += deltaTime;
 		while (accumulator > timestep)
 		{
-			OnUpdate(timestep);
+			InternalOnUpdate(timestep);
 			accumulator -= timestep;
 
 			ups++;
 		}
 
-		OnRender();
+		InternalOnRender();
 		fps++;
 
 		m_pWindow->SwapBuffers();
 	}
 
 	return 0;
-}
-
-void Application::OnKeyDown(KEY keycode)
-{
-	Input::KeyState(keycode, true);
-}
-
-void Application::OnMouseMove(const glm::vec2& position)
-{
-}
-
-void Application::OnKeyUp(KEY keycode)
-{
-	Input::KeyState(keycode, false);
-}
-
-void Application::OnResize(uint32 width, uint32 height)
-{
-	m_pContext->SetViewport(width, height, 0, 0);
 }

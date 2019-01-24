@@ -33,6 +33,9 @@ const float depthOfFullOpaque = 0.7;
 const float depthOfFullDistortion = 0.9;
 const float depthOfFullSpecular = 0.7;
 
+const float fogDensity = 0.075;
+const float fogGradient = 5.0;
+
 void main()
 {
 	vec3 lightDir = normalize(vec3(0.0, 1.0, 0.5));
@@ -68,7 +71,9 @@ void main()
 	vec3 normal = texture(normalMap, distortionTexCoords).xyz;
 	normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y * normalYSmoothness, normal.z * 2.0 - 1.0));
 
-	vec3 viewDir = normalize(cameraPosition - fs_in.Position);
+	vec3 viewDir = cameraPosition - fs_in.Position;
+	float distFromCamera = length(viewDir);
+	viewDir = normalize(viewDir); 
 	float refractionFactor = pow(dot(viewDir, normal), refractionExp);
 
 	//Specular
@@ -76,7 +81,11 @@ void main()
 	float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
 	vec3 specular = specularStrength * spec * lightColor * clamp(waterDepth / depthOfFullSpecular, 0.0, 1.0);
 
+	//Fog
+	float visibility = clamp(exp(-pow(distFromCamera * fogDensity, fogGradient)), 0.0, 1.0);
+
 	FragColor = mix(reflectionColor, refractionColor, refractionFactor);
 	FragColor = mix(FragColor, vec4(0.7, 0.25, 0.33, 1.0), 0.25) + vec4(specular, 0.0);
+	//FragColor = mix(vec4(0.392, 0.584, 0.929, 1.0), FragColor, visibility); //Fog
 	FragColor.a = clamp(waterDepth / depthOfFullOpaque, 0.0, 1.0);
 }

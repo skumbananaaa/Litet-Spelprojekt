@@ -34,7 +34,7 @@ Editor::Editor() noexcept : Application()
 
 	m_pScene = new Scene();
 
-	fontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
+	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
 
 	
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
@@ -43,7 +43,7 @@ Editor::Editor() noexcept : Application()
 		(float)GetWindow().GetWidth() /
 		(float)GetWindow().GetHeight(),
 		0.1F, 100.0F));
-	pCamera->Update();
+	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
@@ -57,6 +57,7 @@ Editor::~Editor()
 	delete m_pShaderProgramDefault;
 	delete m_pGridMesh;
 	delete m_pScene;
+	delete m_pFontRenderer;
 }
 
 void Editor::OnUpdate(float dtS)
@@ -69,29 +70,29 @@ void Editor::OnUpdate(float dtS)
 
 	if (Input::IsKeyDown(KEY_W))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Forward, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_S))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Backwards, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_A))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Left, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Left, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_D))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Right, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_E))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Up, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_Q))
 	{
-		m_pScene->GetCamera().Move(CameraDir::Down, cameraSpeed * dtS);
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_UP))
@@ -112,7 +113,7 @@ void Editor::OnUpdate(float dtS)
 		m_pScene->GetCamera().OffsetYaw(angularSpeed * dtS);
 	}
 
-	m_pScene->GetCamera().Update();
+	m_pScene->GetCamera().UpdateFromPitchYaw();
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 	
@@ -129,8 +130,8 @@ void Editor::OnRender()
 	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
 
 
-	fontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
-	fontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
 
 	Application::OnRender();
 }

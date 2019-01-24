@@ -139,6 +139,13 @@ enum KEY : int
 	KEY_COUNT = 121,
 };
 
+enum MouseButton : int
+{
+	MOUSE_BUTTON_LEFT = 0,
+	MOUSE_BUTTON_RIGHT = 1,
+	MOUSE_BUTTON_MIDDLE = 2,
+};
+
 class API Input
 {
 	friend class Application;
@@ -154,10 +161,13 @@ public:
 
 	static bool IsKeyDown(KEY keycode);
 	static bool IsKeyUp(KEY keycode);
+	static bool IsButtonDown(MouseButton button);
+	static bool IsButtonUp(MouseButton button);
 	static glm::vec2 GetMousePosition();
 	static void SetMousePosition(const glm::vec2& position);
 
 private:
 	static void Update();
 	static void KeyState(KEY keycode, bool state);
+	static bool ButtonState(MouseButton button, bool state);
 };

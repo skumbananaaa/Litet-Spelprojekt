@@ -8,6 +8,7 @@ layout(location = 3) in vec2 g_TexCoords;
 out VS_OUT
 {
 	vec3 Normal;
+	vec2 TexCoords;
 } vs_out;
 
 layout(std140, binding = 0) uniform VSPerFrame
@@ -25,6 +26,7 @@ void main()
 {
 	vec4 normal = g_Model * vec4(g_Normal, 0.0);
 	vs_out.Normal = normal.xyz;
+	vs_out.TexCoords = g_TexCoords;
 
 	gl_Position = g_ViewProjection * g_Model * vec4(g_Position, 1.0);
 }

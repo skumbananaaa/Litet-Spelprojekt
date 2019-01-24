@@ -212,7 +212,7 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender()
 {
-	GetContext().SetProgram(m_pShaderProgramDefault);
+	/*GetContext().SetProgram(m_pShaderProgramDefault);
 
 	assert(m_pScene->GetGameObjects().size() == m_GameObjectUniforms.size());
 
@@ -295,8 +295,8 @@ void Game::OnRender()
 
 	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
 
-	GetContext().Disable(Cap::BLEND);
+	GetContext().Disable(Cap::BLEND);*/
 
-	//m_pRenderer->DrawScene(*m_pScene);
+	m_pRenderer->DrawScene(*m_pScene);
 	Application::OnRender();
 }

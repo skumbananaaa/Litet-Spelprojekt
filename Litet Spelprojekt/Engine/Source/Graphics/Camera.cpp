@@ -7,9 +7,9 @@ Camera::Camera(const glm::vec3& pos, float pitch, float yaw) noexcept
 	m_Pitch = pitch;
 	m_Yaw = yaw;
 	m_Front = glm::normalize(glm::vec3(
-		cos(m_Pitch) * cos(m_Yaw),
-		sin(m_Pitch),
-		cos(m_Pitch) * sin(m_Yaw)));
+		cosf(m_Pitch) * cosf(m_Yaw),
+		sinf(m_Pitch),
+		cosf(m_Pitch) * sinf(m_Yaw)));
 	m_LookAt = m_Position + m_Front;
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
 	m_IsDirty = false;
@@ -20,8 +20,8 @@ Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt) noexcept
 	m_Position = pos;
 	m_LookAt = lookAt;
 	m_Front = glm::normalize(m_LookAt - m_Position);
-	m_Pitch = asin(m_Front.y);
-	m_Yaw = atan2(m_Front.x, m_Front.z);
+	m_Pitch = asinf(m_Front.y);
+	m_Yaw = atan2(m_Front.x, m_Front.z) - glm::half_pi<float>();
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
 	m_IsDirty = false;
 }
@@ -37,12 +37,12 @@ void Camera::UpdateFromPitchYaw() noexcept
 		m_IsDirty = false;
 
 		m_Front = glm::normalize(glm::vec3(
-			cos(m_Pitch) * cos(m_Yaw),
-			sin(m_Pitch),
-			cos(m_Pitch) * sin(m_Yaw)));
+			cosf(m_Pitch) * cosf(m_Yaw),
+			sinf(m_Pitch),
+			cosf(m_Pitch) * sinf(m_Yaw)));
 		m_LookAt = m_Position + m_Front;
 
-		m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
+		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 }
@@ -54,7 +54,7 @@ void Camera::UpdateFromLookAt() noexcept
 		m_IsDirty = false;
 
 		m_Front = glm::normalize(m_LookAt - m_Position);
-		//m_Pitch = asin(m_Front.y);
+		//m_Pitch = asinf(m_Front.y);
 		//m_Yaw = atan2(m_Front.x, m_Front.z);
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
@@ -109,7 +109,11 @@ void Camera::MovePosPolar(CameraPosPolar dir, float amount) noexcept
 	{
 		case CameraPosPolar::ZoomIn:
 		{
-			m_Position += m_Front * amount;
+			float distanceToLookAt = glm::length(m_LookAt - m_Position);
+			if (distanceToLookAt > 0.1f)
+			{
+				m_Position += m_Front * amount;
+			}
 			break;
 		}
 
@@ -122,18 +126,18 @@ void Camera::MovePosPolar(CameraPosPolar dir, float amount) noexcept
 		case CameraPosPolar::RotateLeft:
 		{
 			float distanceToLookAt = glm::length(glm::vec3(m_LookAt.x - m_Position.x, 0.0f, m_LookAt.z - m_Position.z));
-			m_Yaw -= amount;
-			m_Position.x = m_LookAt.x + sinf(m_Yaw) * distanceToLookAt;
-			m_Position.z = m_LookAt.z + cosf(m_Yaw) * distanceToLookAt;
+			m_Yaw += amount;
+			m_Position.x = m_LookAt.x - cosf(m_Yaw) * distanceToLookAt;
+			m_Position.z = m_LookAt.z - sinf(m_Yaw) * distanceToLookAt;
 			break;
 		}
 
 		case CameraPosPolar::RotateRight:
 		{
 			float distanceToLookAt = glm::length(glm::vec3(m_LookAt.x - m_Position.x, 0.0f, m_LookAt.z - m_Position.z));
-			m_Yaw += amount;
-			m_Position.x = m_LookAt.x + sinf(m_Yaw) * distanceToLookAt;
-			m_Position.z = m_LookAt.z + cosf(m_Yaw) * distanceToLookAt;
+			m_Yaw -= amount;
+			m_Position.x = m_LookAt.x - cosf(m_Yaw) * distanceToLookAt;
+			m_Position.z = m_LookAt.z - sinf(m_Yaw) * distanceToLookAt;
 			break;
 		}
 
@@ -142,11 +146,11 @@ void Camera::MovePosPolar(CameraPosPolar dir, float amount) noexcept
 			float distanceToLookAt = glm::length(m_LookAt - m_Position);
 			m_Pitch -= amount;
 			m_Pitch = glm::clamp(m_Pitch, -1.55334303f, 1.55334303f);
-			m_Position = m_LookAt + 
+			m_Position = m_LookAt - 
 				glm::normalize(glm::vec3(
-				cos(m_Pitch) * cos(glm::half_pi<float>() - m_Yaw),
-				sin(m_Pitch),
-				cos(m_Pitch) * sin(glm::half_pi<float>() - m_Yaw)))
+				cosf(m_Pitch) * cosf(m_Yaw),
+				sinf(m_Pitch),
+				cosf(m_Pitch) * sinf(m_Yaw)))
 				* distanceToLookAt;
 			break;
 		}
@@ -156,11 +160,11 @@ void Camera::MovePosPolar(CameraPosPolar dir, float amount) noexcept
 			float distanceToLookAt = glm::length(m_LookAt - m_Position);
 			m_Pitch += amount;
 			m_Pitch = glm::clamp(m_Pitch, -1.55334303f, 1.55334303f);
-			m_Position = m_LookAt + 
+			m_Position = m_LookAt - 
 				glm::normalize(glm::vec3(
-				cos(m_Pitch) * cos(glm::half_pi<float>() - m_Yaw),
-				sin(m_Pitch),
-				cos(m_Pitch) * sin(glm::half_pi<float>() - m_Yaw)))
+				cosf(m_Pitch) * cosf(m_Yaw),
+				sinf(m_Pitch),
+				cosf(m_Pitch) * sinf(m_Yaw)))
 				* distanceToLookAt;
 			break;
 		}

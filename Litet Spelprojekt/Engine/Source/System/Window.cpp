@@ -380,6 +380,11 @@ void Window::MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 	Application::GetInstance().InternalOnMouseMove(glm::vec2(x, y));
 }
 
+void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action, int32 mods)
+{
+	Application::GetInstance().InternalOnMouseButton((MouseButton)button, action == GLFW_PRESS);
+}
+
 void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
 {
 	Window* pMyWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(pWindow));
@@ -431,6 +436,7 @@ Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noe
 	glfwSetErrorCallback(ErrorCallback);
 	glfwSetKeyCallback(m_pWindow, KeyCallback);
 	glfwSetCursorPosCallback(m_pWindow, MouseMoveCallback);
+	glfwSetMouseButtonCallback(m_pWindow, MouseButtonCallback);
 	glfwSetWindowSizeCallback(m_pWindow, ResizeCallback);
 
 	glfwSetWindowUserPointer(m_pWindow, this);

@@ -5,6 +5,8 @@
 bool g_CurrentKeyState[KEY_COUNT];
 bool g_LastKeyState[KEY_COUNT];
 
+bool g_CurrentButtonState[3];
+
 bool Input::IsKeyDown(KEY keycode)
 {
 	return g_CurrentKeyState[keycode];
@@ -12,7 +14,17 @@ bool Input::IsKeyDown(KEY keycode)
 
 bool Input::IsKeyUp(KEY keycode)
 {
-	return g_CurrentKeyState[keycode];
+	return !g_CurrentKeyState[keycode];
+}
+
+bool Input::IsButtonDown(MouseButton button)
+{
+	return g_CurrentButtonState[button];
+}
+
+bool Input::IsButtonUp(MouseButton button)
+{
+	return !g_CurrentButtonState[button];
 }
 
 glm::vec2 Input::GetMousePosition()
@@ -37,4 +49,17 @@ void Input::Update()
 void Input::KeyState(KEY keycode, bool state)
 {
 	g_CurrentKeyState[keycode] = state;
+}
+
+/*
+Returns true if the new state has changed
+*/
+bool Input::ButtonState(MouseButton button, bool state)
+{
+	if (g_CurrentButtonState[button] != state)
+	{
+		g_CurrentButtonState[button] = state;
+		return true;
+	}
+	return false;
 }

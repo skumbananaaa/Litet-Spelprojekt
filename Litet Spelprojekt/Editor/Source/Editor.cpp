@@ -34,7 +34,7 @@ Editor::Editor() noexcept : Application()
 
 	m_pScene = new Scene();
 
-	fontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
+	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
 
 	
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
@@ -57,6 +57,7 @@ Editor::~Editor()
 	delete m_pShaderProgramDefault;
 	delete m_pGridMesh;
 	delete m_pScene;
+	delete m_pFontRenderer;
 }
 
 void Editor::OnUpdate(float dtS)
@@ -129,8 +130,8 @@ void Editor::OnRender()
 	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
 
 
-	fontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
-	fontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
 
 	Application::OnRender();
 }

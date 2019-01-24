@@ -22,9 +22,9 @@ Application::Application()
 	{
 		m_pWindow = new Window("Little HOMO", 1024, 768, 1);
 		m_pContext = new GLContext();
+		m_pGUIManager = new GUIManager();
 	}
 	
-
 	std::cout << "Send Nudes" << std::endl;
 }
 
@@ -43,6 +43,12 @@ Application::~Application()
 	{
 		delete m_pContext;
 		m_pContext = nullptr;
+	}
+
+	if (m_pGUIManager != nullptr)
+	{
+		delete m_pGUIManager;
+		m_pGUIManager = nullptr;
 	}
 
 	glfwTerminate();

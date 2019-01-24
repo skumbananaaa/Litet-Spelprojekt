@@ -136,6 +136,8 @@ Game::~Game()
 
 	delete m_pWaterNormalMap;
 	delete m_pDUDVTexture;
+
+	delete m_pFontRenderer;
 }
 
 void Game::OnMouseMove(const glm::vec2& position)

@@ -12,6 +12,7 @@
 ShaderProgram* FontRenderer::m_pShaderProgram = nullptr;
 unsigned int FontRenderer::m_VAO;
 unsigned int FontRenderer::m_VBO;
+std::vector<FontRenderer*> FontRenderer::m_Fontrenderers;
 
 FontRenderer::FontRenderer(const GLContext& context, void* face)
 {
@@ -79,6 +80,26 @@ FontRenderer::FontRenderer(const GLContext& context, void* face)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	m_Fontrenderers.push_back(this);
+}
+
+FontRenderer::~FontRenderer()
+{
+	delete m_pPerFrameUniform;
+	int counter = 0;
+	for (FontRenderer* renderer : m_Fontrenderers)
+	{
+		if (renderer == this)
+		{
+			m_Fontrenderers.erase(m_Fontrenderers.begin() + counter);
+			break;
+		}
+	}
+	if (m_Fontrenderers.size() == 0)
+	{
+		delete m_pShaderProgram;
+	}
 }
 
 void FontRenderer::RenderText(GLContext& context, std::string text, float x, float y, float scale)

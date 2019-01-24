@@ -8,6 +8,8 @@ layout(location = 3) in vec2 g_TexCoords;
 out VS_OUT
 {
 	vec3 Normal;
+	vec3 Tangent;
+	vec3 Binormal;
 	vec2 TexCoords;
 } vs_out;
 
@@ -24,8 +26,12 @@ layout(std140, binding = 1) uniform VSPerObject
 
 void main()
 {
-	vec4 normal = g_Model * vec4(g_Normal, 0.0);
+	vec4 normal = g_Model * vec4(g_Normal, 0.0f);
+	vec4 tangent = g_Model * vec4(g_Tangent, 0.0f);
+	
 	vs_out.Normal = normal.xyz;
+	vs_out.Tangent = tangent.xyz;
+	vs_out.Binormal = cross(normal.xyz, tangent.xyz);
 	vs_out.TexCoords = g_TexCoords;
 
 	gl_Position = g_ViewProjection * g_Model * vec4(g_Position, 1.0);

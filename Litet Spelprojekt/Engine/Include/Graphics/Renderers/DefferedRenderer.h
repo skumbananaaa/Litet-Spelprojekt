@@ -21,6 +21,7 @@ struct GPassFSPerObject
 {
 	glm::vec4 Color;
 	float HasTexture;
+	float HasNormalMap;
 };
 
 struct LightPassBuffer
@@ -46,9 +47,9 @@ public:
 private:
 	void Create() noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
-	void GeometryPass(const Scene& scene) const noexcept;
+	void GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera) const noexcept;
 	void LightPass(const Scene& scene) const noexcept;
-	void DrawAllMeshesInScene(const Scene& scene) const noexcept;
+	void WaterPass(const Scene& sceen) const noexcept;
 
 private:
 	Framebuffer* m_pGBuffer;
@@ -60,4 +61,5 @@ private:
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pLightPassProgram;
+	ShaderProgram* m_pWaterpassProgram;
 };

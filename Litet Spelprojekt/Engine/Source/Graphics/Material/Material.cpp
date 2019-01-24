@@ -3,7 +3,8 @@
 
 Material::Material()
 	: m_Color(),
-	m_pTexture(nullptr)
+	m_pTexture(nullptr),
+	m_pNormalMap(nullptr)
 {
 }
 

@@ -21,6 +21,8 @@ public:
 	const IndexedMesh& GetMesh() const noexcept;
 	const glm::mat4& GetTransform() const noexcept;
 
+	bool HasMaterial() const noexcept;
+
 	void UpdateTransform() noexcept;
 
 private:
@@ -53,4 +55,9 @@ inline const IndexedMesh& GameObject::GetMesh() const noexcept
 inline const glm::mat4& GameObject::GetTransform() const noexcept
 {
 	return m_transform;
+}
+
+inline bool GameObject::HasMaterial() const noexcept
+{
+	return m_pMaterial != nullptr;
 }

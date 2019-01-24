@@ -91,12 +91,14 @@ void DefferedRenderer::DrawScene(const Scene& scene) const
 
 	//DepthPrePass(scene);
 
-	GeometryPass(scene);
+	GeometryPass(scene.GetGameObjects(), scene.GetCamera());
 
 	context.SetFramebuffer(nullptr);
 	context.Disable(DEPTH_TEST);
 
 	LightPass(scene);
+
+	WaterPass(scene);
 
 	context.Enable(DEPTH_TEST);
 	context.SetDepthMask(true);
@@ -114,10 +116,10 @@ void DefferedRenderer::Create() noexcept
 		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA16F;
 		desc.NumColorAttachments = 2;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
-		//desc.Width = 1920; 
-		desc.Width = Window::GetCurrentWindow().GetWidth();
-		//desc.Height = 1080;
-		desc.Height = Window::GetCurrentWindow().GetHeight();
+		desc.Width = 1920; 
+		//desc.Width = Window::GetCurrentWindow().GetWidth();
+		desc.Height = 1080;
+		//desc.Height = Window::GetCurrentWindow().GetHeight();
 
 		m_pGBuffer = new Framebuffer(desc);
 	}
@@ -170,6 +172,25 @@ void DefferedRenderer::Create() noexcept
 		m_pDepthPrePassProgram = new ShaderProgram(*pVert);
 
 		delete pVert;
+	}
+
+	{
+		Shader* pVert = new Shader();
+		if (pVert->CompileFromFile("Resources/Shaders/VShaderWater.glsl", VERTEX_SHADER))
+		{
+			std::cout << "Created Water Vertex shader" << std::endl;
+		}
+
+		Shader* pFrag = new Shader();
+		if (pFrag->CompileFromFile("Resources/Shaders/FShaderWater.glsl", FRAGMENT_SHADER))
+		{
+			std::cout << "Created Water Fragment shader" << std::endl;
+		}
+
+		m_pWaterpassProgram = new ShaderProgram(*pVert, *pFrag);
+
+		delete pVert;
+		delete pFrag;
 	}
 
 	//We can destroy object when uniformbuffer is created
@@ -238,7 +259,7 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	context.SetDepthMask(false);
 }
 
-void DefferedRenderer::GeometryPass(const Scene& scene) const noexcept
+void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetContext();
 
@@ -246,35 +267,47 @@ void DefferedRenderer::GeometryPass(const Scene& scene) const noexcept
 	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
 
 	GPassVSPerFrame perFrame = {};
-	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
-	perFrame.CameraPosition = scene.GetCamera().GetPosition();
+	perFrame.ViewProjection = camera.GetCombinedMatrix();
+	perFrame.CameraPosition = camera.GetPosition();
 	m_pGPassVSPerFrame->UpdateData(&perFrame);
 
 	GPassVSPerObject perObjectVS = {};
 	GPassFSPerObject perObjectFS = {};
 
-	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	for (uint32 i = 0; i < gameobjects.size(); i++)
 	{
-		GameObject& gameobject = *scene.GetGameObjects()[i];
-
-		perObjectVS.Model = gameobject.GetTransform();
-		m_pGPassVSPerObject->UpdateData(&perObjectVS);
-
-		const Material& material = gameobject.GetMaterial();
-		perObjectFS.Color = material.GetColor();
-		if (material.HasTexture())
+		GameObject& gameobject = *gameobjects[i];
+		if (gameobject.HasMaterial())
 		{
-			perObjectFS.HasTexture = 1.0f;
-			context.SetTexture(material.GetTexture(), 0);
-		}
-		else
-		{
-			perObjectFS.HasTexture = 0.0f;
-		}
+			perObjectVS.Model = gameobject.GetTransform();
+			m_pGPassVSPerObject->UpdateData(&perObjectVS);
 
-		m_pGPassFSPerObject->UpdateData(&perObjectFS);
+			const Material& material = gameobject.GetMaterial();
+			perObjectFS.Color = material.GetColor();
+			if (material.HasTexture())
+			{
+				perObjectFS.HasTexture = 1.0f;
+				context.SetTexture(material.GetTexture(), 0);
+			}
+			else
+			{
+				perObjectFS.HasTexture = 0.0f;
+			}
 
-		context.DrawIndexedMesh(scene.GetGameObjects()[i]->GetMesh());
+			if (material.HasNormalMap())
+			{
+				perObjectFS.HasNormalMap = 1.0f;
+				context.SetTexture(material.GetNormalMap(), 1);
+			}
+			else
+			{
+				perObjectFS.HasNormalMap = 0.0f;
+			}
+
+			m_pGPassFSPerObject->UpdateData(&perObjectFS);
+
+			context.DrawIndexedMesh(gameobject.GetMesh());
+		}
 	}
 }
 
@@ -299,4 +332,60 @@ void DefferedRenderer::LightPass(const Scene& scene) const noexcept
 	context.SetTexture(m_pGBuffer->GetColorAttachment(1), 1);
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
+}
+
+void DefferedRenderer::WaterPass(const Scene& scene) const noexcept
+{
+	GLContext& context = Application::GetInstance().GetContext();
+
+	context.SetProgram(m_pWaterpassProgram);
+	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
+
+
+	GeometryPass(scene.GetGameObjects(), );
+	LightPass();
+
+	GPassVSPerFrame perFrame = {};
+	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
+	perFrame.CameraPosition = scene.GetCamera().GetPosition();
+	m_pGPassVSPerFrame->UpdateData(&perFrame);
+
+	GPassVSPerObject perObjectVS = {};
+	GPassFSPerObject perObjectFS = {};
+
+	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	{
+		GameObject& gameobject = *scene.GetGameObjects()[i];
+		if (gameobject.HasMaterial())
+		{
+			perObjectVS.Model = gameobject.GetTransform();
+			m_pGPassVSPerObject->UpdateData(&perObjectVS);
+
+			const Material& material = gameobject.GetMaterial();
+			perObjectFS.Color = material.GetColor();
+			if (material.HasTexture())
+			{
+				perObjectFS.HasTexture = 1.0f;
+				context.SetTexture(material.GetTexture(), 0);
+			}
+			else
+			{
+				perObjectFS.HasTexture = 0.0f;
+			}
+
+			if (material.HasNormalMap())
+			{
+				perObjectFS.HasNormalMap = 1.0f;
+				context.SetTexture(material.GetNormalMap(), 1);
+			}
+			else
+			{
+				perObjectFS.HasNormalMap = 0.0f;
+			}
+
+			m_pGPassFSPerObject->UpdateData(&perObjectFS);
+
+			context.DrawIndexedMesh(scene.GetGameObjects()[i]->GetMesh());
+		}
+	}
 }

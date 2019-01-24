@@ -40,6 +40,7 @@ private:
 	IndexedMesh* m_pGroundTestMesh;
 
 	Texture2D* m_pBoatTexture;
+	Texture2D* m_pBoatNormalMap;
 
 	Material* m_pBoatMaterial;
 	Material* m_pGroundMaterial;

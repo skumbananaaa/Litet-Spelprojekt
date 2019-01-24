@@ -28,10 +28,12 @@ Game::Game() noexcept
 	m_pRenderer = new DefferedRenderer();
 
 	m_pBoatTexture = new Texture2D("Resources/Textures/ship.jpg", TEX_FORMAT_RGBA);
+	m_pBoatNormalMap = new Texture2D("Resources/Textures/shipNormalMap.png", TEX_FORMAT_RGBA);
 
 	m_pBoatMaterial = new Material();
 	m_pBoatMaterial->SetColor(glm::vec4(0.655f, 0.639f, 0.627f, 1.0f));
 	m_pBoatMaterial->SetTexture(m_pBoatTexture);
+	m_pBoatMaterial->SetNormalMap(m_pBoatNormalMap);
 
 	m_pGroundMaterial = new Material();
 	m_pGroundMaterial->SetColor(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f));
@@ -72,11 +74,16 @@ Game::Game() noexcept
 	//Water Stuff
 	m_pWaterMesh = IndexedMesh::CreateQuad();
 
+	Material* pWaterMaterial = new Material();
+	pWaterMaterial->SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
 	m_pWaterGameObject = new GameObject();
 	m_pWaterGameObject->SetMesh(m_pWaterMesh);
 	m_pWaterGameObject->SetScale(glm::vec3(15.0f));
 	m_pWaterGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 	m_pWaterGameObject->UpdateTransform();
+
+	m_pScene->AddGameObject(m_pWaterGameObject);
 
 	m_pWaterUniform = new UniformBuffer(glm::value_ptr(m_pWaterGameObject->GetTransform()), 1, sizeof(glm::mat4));
 
@@ -113,6 +120,7 @@ Game::~Game()
 	delete m_pScene;
 
 	delete m_pBoatTexture;
+	delete m_pBoatNormalMap;
 
 	delete m_pBoatMaterial;
 	delete m_pGroundMaterial;

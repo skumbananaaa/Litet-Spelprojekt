@@ -70,13 +70,15 @@ public:
 	GLContext& operator=(GLContext&& other) = delete;
 	GLContext& operator=(const GLContext& other) = delete;
 
-	GLContext();
+	GLContext(float width, float height);
 	~GLContext();
 
 	void Enable(Cap cap) const noexcept;
 	void Disable(Cap cap) const noexcept;
 	
-	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) const noexcept;
+	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept;
+	void SetViewport(const glm::vec4& viewport) noexcept;
+	const glm::vec4 GetViewPort() const noexcept;
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
 	void SetClearDepth(float depth) const noexcept;
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
@@ -92,4 +94,7 @@ public:
 	void DrawIndexedMesh(const IndexedMesh& mesh) const noexcept;
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
 	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
+
+private:
+	glm::vec4 m_ViewPort;
 };

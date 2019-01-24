@@ -2,7 +2,7 @@
 
 
 
-Editor::Editor() noexcept : Application()
+Editor::Editor() noexcept : Application(true)
 {
 	std::cout << "Editor" << std::endl;
 

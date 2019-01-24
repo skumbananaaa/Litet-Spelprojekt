@@ -1,17 +1,38 @@
 #pragma once
+#include <EnginePch.h>
 #include <System/Input.h>
 #include <Graphics/Renderers/GLContext.h>
+#include <Graphics/Buffers/UniformBuffer.h>
 
 #include <algorithm> 
 
 class GUIObject;
+
+struct VertexGUI
+{
+	glm::vec2 position;
+	glm::vec2 texCoords;
+	glm::vec3 color;
+
+	inline bool operator==(const VertexGUI& rs) const
+	{
+		return (position == rs.position) && (texCoords == rs.texCoords) && (color == rs.color);
+	}
+};
+
+struct PerObjectDataGUI
+{
+	glm::mat4 projection;
+	glm::vec3 color;
+};
 
 class API GUIManager
 {
 	friend class Application;
 
 public:
-	GUIManager();
+	GUIManager(float width, float height);
+	~GUIManager();
 
 	void AddGUIObject(GUIObject* object);
 	void RemoveGUIObject(GUIObject* object);
@@ -23,14 +44,20 @@ private:
 	std::vector<GUIObject*> m_GUIObjectsToRemove;
 	std::vector<GUIObject*> m_GUIObjectsToAdd;
 	std::vector<GUIObject*> m_GUIObjectsDirty;
-
+	PerObjectDataGUI m_PerObjectDataGUI;
+	UniformBuffer* m_pPerObjectUniform;
+	ShaderProgram* m_pShaderProgram;
 	bool m_OrderIsDirty;
+	unsigned int m_VAO;
+	unsigned int m_VBO;
+	VertexGUI m_VertexQuad[6];
 
 	bool ContainsGUIObject(const std::vector<GUIObject*>& list, GUIObject* object);
 	void RequestRepaint(GUIObject* object);
+	void SetVertexQuadData(float x, float y, float width, float height, glm::vec4 color);
 
 	virtual void OnUpdate(float dtS);
-	virtual void OnRender(const GLContext* context);
+	virtual void OnRender(GLContext* context);
 
 	virtual void OnMousePressed(MouseButton mousebutton);
 	virtual void OnMouseReleased(MouseButton mousebutton);

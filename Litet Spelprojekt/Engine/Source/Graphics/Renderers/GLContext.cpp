@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/Renderers/GLContext.h>
 
-GLContext::GLContext()
+GLContext::GLContext(float width, float height)
 {
 	if (!gladLoadGL())
 	{
@@ -12,6 +12,8 @@ GLContext::GLContext()
 		std::cout << "OpenGL initialized" << std::endl;
 		std::cout << glGetString(GL_VENDOR) << std::endl;
 		std::cout << glGetString(GL_RENDERER) << std::endl;
+
+		SetViewport(width, height, 0, 0);
 	}
 }
 
@@ -79,10 +81,24 @@ void GLContext::SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept
 	}
 }
 
-void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) const noexcept
+void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept
 {
 	glViewport(topX, topY, width, height);
 	glScissor(topX, topY, width, height);
+	m_ViewPort.x = width;
+	m_ViewPort.y = height;
+	m_ViewPort.z = topX;
+	m_ViewPort.w = topY;
+}
+
+void GLContext::SetViewport(const glm::vec4& viewport) noexcept
+{
+	SetViewport(viewport.x, viewport.y, viewport.z, viewport.w);
+}
+
+const glm::vec4 GLContext::GetViewPort() const noexcept
+{
+	return m_ViewPort;
 }
 
 void GLContext::SetClearColor(float r, float g, float b, float a) const noexcept

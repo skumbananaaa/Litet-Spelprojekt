@@ -119,13 +119,13 @@ void FontRenderer::RenderText(GLContext& context, std::string text, float x, flo
 	std::string::const_iterator c;
 	for (c = text.begin(); c != text.end(); c++)
 	{
-		Character ch = m_Characters[*c];
+		Character character = m_Characters[*c];
 
-		float xpos = x + ch.Bearing.x * scale;
-		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+		float xpos = x + character.Bearing.x * scale;
+		float ypos = y - (character.Size.y - character.Bearing.y) * scale;
 
-		float w = ch.Size.x * scale;
-		float h = ch.Size.y * scale;
+		float w = character.Size.x * scale;
+		float h = character.Size.y * scale;
 		// Update VBO for each character
 		float vertices[VERTEX_COUNT][4] =
 		{
@@ -138,7 +138,7 @@ void FontRenderer::RenderText(GLContext& context, std::string text, float x, flo
 			{ xpos + w, ypos + h,   1.0, 0.0 }
 		};
 		// Render glyph texture over quad
-		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+		glBindTexture(GL_TEXTURE_2D, character.TextureID);
 		// Update content of VBO memory
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
@@ -147,7 +147,7 @@ void FontRenderer::RenderText(GLContext& context, std::string text, float x, flo
 		// Render quad
 		glDrawArrays(GL_TRIANGLES, 0, VERTEX_COUNT);
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+		x += (character.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);

@@ -6,6 +6,8 @@ class GUIManager;
 
 class API GUIObject
 {
+	friend class GUIManager;
+
 public:
 	GUIObject(float width, float height);
 
@@ -19,11 +21,12 @@ public:
 
 	bool IsDirty() const noexcept;
 
+protected:
 	virtual void OnAdded(GUIManager* guiManager);
 	virtual void OnRemoved(GUIManager* guiManager);
 
 	virtual void OnUpdate(float dtS);
-	virtual void OnRender(const GLContext* context);
+	virtual void OnRender(GLContext* context);
 
 	virtual void OnMousePressed(MouseButton mousebutton);
 	virtual void OnMouseReleased(MouseButton mousebutton);
@@ -33,6 +36,8 @@ public:
 	virtual void OnKeyDown(KEY keycode);
 
 private:
+	void InternalOnRender(GLContext* context);
+
 	GUIManager* m_GUIManager;
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_position;

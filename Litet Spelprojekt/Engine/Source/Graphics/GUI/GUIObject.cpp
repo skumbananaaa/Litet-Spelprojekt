@@ -11,7 +11,7 @@ GUIObject::GUIObject(float width, float height) : m_GUIManager(nullptr)
 	desc.Width = width;
 	desc.Height = height;
 
-	this->m_pFramebuffer = new Framebuffer(desc);
+	m_pFramebuffer = new Framebuffer(desc);
 }
 
 float GUIObject::GetWidth() const noexcept
@@ -68,9 +68,9 @@ void GUIObject::OnUpdate(float dtS)
 	
 }
 
-void GUIObject::OnRender(const GLContext* context)
+void GUIObject::OnRender(GLContext* context)
 {
-
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void GUIObject::OnMousePressed(MouseButton mousebutton)
@@ -96,4 +96,18 @@ void GUIObject::OnKeyUp(KEY keycode)
 void GUIObject::OnKeyDown(KEY keycode)
 {
 
+}
+
+void GUIObject::InternalOnRender(GLContext* context)
+{
+	context->SetFramebuffer(m_pFramebuffer);
+	context->SetClearColor(0.0, 0.0, 0.0, 0.0);
+	context->Clear(CLEAR_FLAG_COLOR);
+	glm::vec4 currentViewPort = context->GetViewPort();
+	context->SetViewport(GetWidth(), GetHeight(), 0, 0);
+
+	this->OnRender(context);
+
+	context->SetFramebuffer(nullptr);
+	context->SetViewport(currentViewPort);
 }

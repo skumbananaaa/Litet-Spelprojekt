@@ -31,6 +31,19 @@ struct LightPassBuffer
 	glm::vec3 CameraPosition;
 };
 
+struct WaterPassPerFrame
+{
+	glm::mat4 CameraCombined;
+	glm::vec3 CameraPosition;
+	float DistortionMoveFactor;
+	glm::vec4 ClipPlane;
+};
+
+struct WaterPassPerObjectVS
+{
+	glm::mat4 Model;
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -47,17 +60,24 @@ public:
 private:
 	void Create() noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
-	void GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera) const noexcept;
-	void LightPass(const Scene& scene) const noexcept;
+	void GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept;
+	void LightPass(const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept;
 	void WaterPass(const Scene& sceen) const noexcept;
 
 private:
 	Framebuffer* m_pGBuffer;
+	Framebuffer* m_pFinalFramebuffer;
+	Framebuffer* m_pWaterGBuffer;
+	Framebuffer* m_pReflection;
 	FullscreenTri* m_pTriangle;
 	UniformBuffer* m_pGPassVSPerFrame;
 	UniformBuffer* m_pGPassVSPerObject;
 	UniformBuffer* m_pGPassFSPerObject;
 	UniformBuffer* m_pLightPassBuffer;
+	UniformBuffer* m_pWaterPassPerFrame;
+	UniformBuffer* m_pWaterPassPerObject;
+	Texture2D* m_pWaterNormalMap;
+	Texture2D* m_pWaterDistortionMap;
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pLightPassProgram;

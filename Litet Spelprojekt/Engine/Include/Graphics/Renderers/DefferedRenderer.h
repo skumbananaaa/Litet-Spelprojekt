@@ -76,10 +76,12 @@ private:
 	UniformBuffer* m_pLightPassBuffer;
 	UniformBuffer* m_pWaterPassPerFrame;
 	UniformBuffer* m_pWaterPassPerObject;
+	IndexedMesh* m_pDecalMesh;
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;
+	ShaderProgram* m_pDecalsPassProgram;
 	ShaderProgram* m_pLightPassProgram;
 	ShaderProgram* m_pWaterpassProgram;
 };

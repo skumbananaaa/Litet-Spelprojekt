@@ -11,6 +11,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pWaterGBuffer(nullptr),
 	m_pReflection(nullptr),
 	m_pTriangle(nullptr),
+	m_pDecalMesh(nullptr),
 	m_pGPassVSPerFrame(nullptr),
 	m_pGPassVSPerObject(nullptr),
 	m_pGPassFSPerObject(nullptr),
@@ -20,6 +21,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pWaterNormalMap(nullptr),
 	m_pWaterDistortionMap(nullptr),
 	m_pDepthPrePassProgram(nullptr),
+	m_pDecalsPassProgram(nullptr),
 	m_pGeometryPassProgram(nullptr),
 	m_pLightPassProgram(nullptr),
 	m_pWaterpassProgram(nullptr)
@@ -34,6 +36,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pWaterGBuffer);
 	DeleteSafe(m_pReflection);
 	DeleteSafe(m_pTriangle);
+	DeleteSafe(m_pDecalMesh);
 	DeleteSafe(m_pGPassVSPerFrame);
 	DeleteSafe(m_pGPassVSPerObject);
 	DeleteSafe(m_pGPassFSPerObject);
@@ -43,6 +46,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pWaterNormalMap);
 	DeleteSafe(m_pWaterDistortionMap);
 	DeleteSafe(m_pDepthPrePassProgram);
+	DeleteSafe(m_pDecalsPassProgram);
 	DeleteSafe(m_pGeometryPassProgram);
 	DeleteSafe(m_pLightPassProgram);
 	DeleteSafe(m_pWaterpassProgram);
@@ -61,6 +65,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	//DepthPrePass(scene);
 
 	GeometryPass(scene.GetGameObjects(), scene.GetCamera(), m_pGBuffer);
+	DecalPass(scene);
 	LightPass(scene.GetCamera(), nullptr, m_pGBuffer);
 
 	context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
@@ -186,6 +191,25 @@ void DefferedRenderer::Create() noexcept
 		delete pFrag;
 	}
 
+	{
+		Shader* pVert = new Shader();
+		if (pVert->CompileFromFile("Resources/Shaders/defferedDecalsVert.glsl", VERTEX_SHADER))
+		{
+			std::cout << "Created Decal Vertex shader" << std::endl;
+		}
+
+		Shader* pFrag = new Shader();
+		if (pFrag->CompileFromFile("Resources/Shaders/defferedDecalsFrag.glsl", FRAGMENT_SHADER))
+		{
+			std::cout << "Created Decal Fragment shader" << std::endl;
+		}
+
+		m_pDecalsPassProgram = new ShaderProgram(*pVert, *pFrag);
+
+		delete pVert;
+		delete pFrag;
+	}
+
 	//We can destroy object when uniformbuffer is created
 	{
 		GPassVSPerFrame object = {};
@@ -235,10 +259,6 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		m_pTriangle = new FullscreenTri();
-	}
-
-	{
 		TextureParams params = {};
 		params.Wrap = TEX_PARAM_REPEAT;
 		params.MinFilter = TEX_LINEAR;
@@ -246,6 +266,11 @@ void DefferedRenderer::Create() noexcept
 
 		m_pWaterDistortionMap = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGB, false, params);
 		m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGB, false, params);
+	}
+
+	{
+		m_pDecalMesh = IndexedMesh::CreateCube();
+		m_pTriangle = new FullscreenTri();
 	}
 }
 
@@ -280,13 +305,31 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 
 void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 {
-	/*for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
-	{
-		perObject.Model = scene.GetGameObjects()[i]->GetTransform();
-		m_pGPassVSPerObject->UpdateData(&perObject);
+	GLContext& context = Application::GetInstance().GetContext();
 
-		context.DrawIndexedMesh(scene.GetGameObjects()[i]->GetMesh());
-	}*/
+	context.SetProgram(m_pDecalsPassProgram);
+
+	context.SetUniformBuffer(m_pGPassVSPerFrame, 0);
+	context.SetUniformBuffer(m_pGPassVSPerObject, 1);
+	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
+
+	GPassVSPerFrame perFrame = {};
+	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
+	perFrame.CameraPosition = scene.GetCamera().GetPosition();
+	m_pGPassVSPerFrame->UpdateData(&perFrame);
+
+	GPassVSPerObject perObject = {};
+	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	{
+		GameObject& gameobject = *scene.GetGameObjects()[i];
+		if (gameobject.HasDecal())
+		{
+			perObject.Model = gameobject.GetTransform();
+			m_pGPassVSPerObject->UpdateData(&perObject);
+
+			context.DrawIndexedMesh(*m_pDecalMesh);
+		}
+	}
 }
 
 void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept

@@ -46,6 +46,8 @@ Game::Game() noexcept
 
 	pGameObject = new GameObject();
 	pGameObject->SetDecal(m_pDecal);
+	pGameObject->SetPosition(glm::vec3(0.0f, 5.0f, 1.0f));
+	pGameObject->SetScale(glm::vec3(0.01f, 0.005f, 0.01f));
 	m_pScene->AddGameObject(pGameObject);
 
 	pGameObject = new GameObject();

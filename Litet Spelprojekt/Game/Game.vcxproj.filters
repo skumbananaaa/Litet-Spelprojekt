@@ -40,6 +40,7 @@
     <None Include="Resources\Shaders\FShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
+    <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -51,5 +52,8 @@
     <Image Include="Resources\Textures\waterNormalMap.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
   </ItemGroup>
 </Project>

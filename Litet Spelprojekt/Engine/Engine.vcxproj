@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Audio\ALContext.h" />
+    <ClInclude Include="Include\Audio\IAudioContext.h" />
+    <ClInclude Include="Include\Audio\Listeners\AudioListener.h" />
+    <ClInclude Include="Include\Audio\SoundEffect.h" />
+    <ClInclude Include="Include\Audio\Sources\AudioSource.h" />
     <ClInclude Include="Include\EnginePch.h" />
     <ClInclude Include="Include\GLAD\glad.h" />
     <ClInclude Include="Include\GLAD\khrplatform.h" />
@@ -55,6 +60,11 @@
     <ClInclude Include="Include\Graphics\Materials\Material.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Audio\ALContext.cpp" />
+    <ClCompile Include="Source\Audio\IAudioContext.cpp" />
+    <ClCompile Include="Source\Audio\Listeners\AudioListener.cpp" />
+    <ClCompile Include="Source\Audio\SoundEffect.cpp" />
+    <ClCompile Include="Source\Audio\Sources\AudioSource.cpp" />
     <ClCompile Include="Source\Graphics\Camera.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextView.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp">
@@ -191,7 +201,7 @@
       <PreprocessorDefinitions>ENGINE_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freetype.lib;glfw3.lib;assimp-vc140-mt.lib;IrrXML.lib;zlibstaticd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype.lib;glfw3.lib;assimp-vc140-mt.lib;IrrXML.lib;OpenAL32.lib;EFX-Util.lib;zlibstaticd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -226,7 +236,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>freetype.lib;glfw3.lib;assimp-vc140-mt.lib;IrrXML.lib;zlibstatic.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype.lib;glfw3.lib;assimp-vc140-mt.lib;IrrXML.lib;OpenAL32.lib;EFX-Util.lib;zlibstatic.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

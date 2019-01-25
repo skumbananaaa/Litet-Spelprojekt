@@ -3,6 +3,7 @@
 
 GameObject::GameObject() noexcept
 	: m_pMesh(nullptr),
+	m_pDecal(nullptr),
 	m_pMaterial(nullptr),
 	m_position(0.0f),
 	m_rotation(1.0f, 0.0f, 0.0f, 0.0f),

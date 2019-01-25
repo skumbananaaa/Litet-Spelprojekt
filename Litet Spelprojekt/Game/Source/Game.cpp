@@ -46,6 +46,8 @@ Game::Game() noexcept
 
 	pGameObject = new GameObject();
 	pGameObject->SetDecal(m_pDecal);
+	pGameObject->SetPosition(glm::vec3(0.0f, 5.0f, 1.0f));
+	pGameObject->SetScale(glm::vec3(0.01f, 0.005f, 0.01f));
 	m_pScene->AddGameObject(pGameObject);
 
 	pGameObject = new GameObject();
@@ -91,6 +93,14 @@ Game::Game() noexcept
 
 	GetGUIManager().AddGUIObject(m_pTextViewFPS);
 	GetGUIManager().AddGUIObject(m_pTextViewUPS);
+
+	//Audio
+	m_pSoundEffect = new SoundEffect("Resources/Audio/fart2.wav");
+	m_pTestAudioSource = new AudioSource(*m_pSoundEffect);
+	m_pTestAudioSource->SetPitch(2.0f);
+	m_pTestAudioSource->Play();
+
+	AudioListener::SetPosition(glm::vec3(0.0f));
 }
 
 Game::~Game()
@@ -110,6 +120,8 @@ Game::~Game()
 	Delete(m_pGroundMaterial);
 	Delete(m_pTextViewFPS);
 	Delete(m_pTextViewUPS);
+	Delete(m_pSoundEffect);
+	Delete(m_pTestAudioSource);
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -256,6 +268,8 @@ void Game::OnUpdate(float dtS)
 
 	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
 	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
+
+	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
 }
 
 void Game::OnRender(float dtS)

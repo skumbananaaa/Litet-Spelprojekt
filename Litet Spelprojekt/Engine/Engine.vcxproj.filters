@@ -28,6 +28,11 @@
     <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextView.cpp" />
     <ClCompile Include="Source\Graphics\Material\Decal.cpp" />
+    <ClCompile Include="Source\Audio\ALContext.cpp" />
+    <ClCompile Include="Source\Audio\IAudioContext.cpp" />
+    <ClCompile Include="Source\Audio\SoundEffect.cpp" />
+    <ClCompile Include="Source\Audio\Sources\AudioSource.cpp" />
+    <ClCompile Include="Source\Audio\Listeners\AudioListener.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -64,5 +69,10 @@
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
+    <ClInclude Include="Include\Audio\ALContext.h" />
+    <ClInclude Include="Include\Audio\IAudioContext.h" />
+    <ClInclude Include="Include\Audio\Sources\AudioSource.h" />
+    <ClInclude Include="Include\Audio\SoundEffect.h" />
+    <ClInclude Include="Include\Audio\Listeners\AudioListener.h" />
   </ItemGroup>
 </Project>

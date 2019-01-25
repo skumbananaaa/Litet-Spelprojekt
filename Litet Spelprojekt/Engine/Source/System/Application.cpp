@@ -7,7 +7,7 @@ Application* Application::s_Instance = nullptr;
 
 Application::Application()
 	: m_pWindow(nullptr), 
-	m_pContext(nullptr), 
+	m_pGraphicsContext(nullptr),
 	m_pGUIManager(nullptr),
 	m_fps(0), 
 	m_ups(0)
@@ -28,6 +28,8 @@ Application::Application()
 		m_pContext = new GLContext(m_pWindow->GetWidth(), m_pWindow->GetHeight());
 		m_pGUIManager = new GUIManager(m_pWindow->GetWidth(), m_pWindow->GetHeight());
 	}
+
+	m_pAudioContext = IAudioContext::CreateContext();
 	
 	std::cout << "Application Initalized" << std::endl;
 }
@@ -43,16 +45,22 @@ Application::~Application()
 		m_pWindow = nullptr;
 	}
 
-	if (m_pContext != nullptr)
+	if (m_pGraphicsContext != nullptr)
 	{
-		delete m_pContext;
-		m_pContext = nullptr;
+		delete m_pGraphicsContext;
+		m_pGraphicsContext = nullptr;
 	}
 
 	if (m_pGUIManager != nullptr)
 	{
 		delete m_pGUIManager;
 		m_pGUIManager = nullptr;
+	}
+
+	if (m_pAudioContext != nullptr)
+	{
+		delete m_pAudioContext;
+		m_pAudioContext = nullptr;
 	}
 
 	glfwTerminate();
@@ -75,13 +83,13 @@ int32_t Application::Run()
 	int32 fps = 0;
 	int32 ups = 0;
 
-	m_pContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
+	m_pGraphicsContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	while (!m_pWindow->IsClosed())
 	{
 		Input::Update();
 
 		m_pWindow->PollEvents();
-		m_pContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
+		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
 
 		currentTime = clock::now();
 		deltaTime = std::chrono::duration_cast<duration>(currentTime - prevTime).count();

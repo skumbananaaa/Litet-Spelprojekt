@@ -10,6 +10,9 @@
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/Materials/Decal.h>
+#include <Audio/Listeners/AudioListener.h>
+#include <Audio/Sources/AudioSource.h>
+#include <Audio/SoundEffect.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
@@ -50,4 +53,8 @@ private:
 	TextView* m_pTextViewUPS;
 	
 	bool cartesianCamera;
+
+	//Sound
+	SoundEffect* m_pSoundEffect;
+	AudioSource* m_pTestAudioSource;
 };

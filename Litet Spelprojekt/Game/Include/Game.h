@@ -9,6 +9,9 @@
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/Renderers/FontRenderer.h>
+#include <Audio/Listeners/AudioListener.h>
+#include <Audio/Sources/AudioSource.h>
+#include <Audio/SoundEffect.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
@@ -61,4 +64,8 @@ private:
 	float m_DistortionMoveFactor;
 
 	FontRenderer* m_pFontRenderer;
+
+	//Sound
+	SoundEffect* m_pSoundEffect;
+	AudioSource* m_pTestAudioSource;
 };

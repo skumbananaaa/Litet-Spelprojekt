@@ -108,10 +108,18 @@ Game::Game() noexcept
 	m_pDUDVTexture = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 	m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 
-	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
+	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetGraphicsContext(), "Resources/Fonts/arial.ttf", 800, 600);
 
-	GetContext().Enable(Cap::DEPTH_TEST);
-	GetContext().Enable(Cap::CULL_FACE);
+	//Audio
+	m_pSoundEffect = new SoundEffect("Resources/Audio/fart2.wav");
+	m_pTestAudioSource = new AudioSource(*m_pSoundEffect);
+	m_pTestAudioSource->SetPitch(2.0f);
+	m_pTestAudioSource->Play();
+
+	AudioListener::SetPosition(glm::vec3(0.0f));
+
+	GetGraphicsContext().Enable(Cap::DEPTH_TEST);
+	GetGraphicsContext().Enable(Cap::CULL_FACE);
 }
 
 Game::~Game()
@@ -293,6 +301,8 @@ void Game::OnUpdate(float dtS)
 		m_pScene->GetCamera().UpdateFromLookAt();
 	}
 
+	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
+
 	Application::OnUpdate(dtS);
 }
 
@@ -300,8 +310,8 @@ void Game::OnRender(float dtS)
 {
 	m_pRenderer->DrawScene(*m_pScene, dtS);
 
-	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
-	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetGraphicsContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetGraphicsContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
 	
 	Application::OnRender(dtS);
 }

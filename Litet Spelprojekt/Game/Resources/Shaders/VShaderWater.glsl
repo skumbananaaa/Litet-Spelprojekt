@@ -25,7 +25,7 @@ out VS_OUT
 	vec4 ClipSpacePosition;
 } vs_out;
 
-const float tiling = 4.0; //Hur fan funkar detta?
+const float tiling = 4.0;
 
 void main()
 {

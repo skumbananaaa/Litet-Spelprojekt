@@ -34,7 +34,7 @@ Editor::Editor() noexcept : Application(true)
 
 	m_pScene = new Scene();
 
-	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
+	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetGraphicsContext(), "Resources/Fonts/arial.ttf", 800, 600);
 
 	
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
@@ -122,16 +122,16 @@ void Editor::OnUpdate(float dtS)
 
 void Editor::OnRender()
 {
-	GetContext().SetProgram(m_pShaderProgramDefault);
-	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
+	GetGraphicsContext().SetProgram(m_pShaderProgramDefault);
+	GetGraphicsContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 
 
-	GetContext().SetUniformBuffer(m_pGridUniform, 0);
-	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
+	GetGraphicsContext().SetUniformBuffer(m_pGridUniform, 0);
+	GetGraphicsContext().DrawMesh(*m_pGridMesh, PT_LINES);
 
 
-	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
-	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetGraphicsContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
+	m_pFontRenderer->RenderText(GetGraphicsContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
 
 	Application::OnRender();
 }

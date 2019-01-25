@@ -14,10 +14,8 @@ unsigned int FontRenderer::m_VAO;
 unsigned int FontRenderer::m_VBO;
 std::vector<FontRenderer*> FontRenderer::m_Fontrenderers;
 
-FontRenderer::FontRenderer(const GLContext& context, void* face)
+FontRenderer::FontRenderer(void* face)
 {
-	context.SetProgram(m_pShaderProgram);
-
 	m_pPerFrameUniform = new UniformBuffer(&m_PerFrameData, 1, sizeof(PerFrameFontRenderer));
 
 	
@@ -103,15 +101,15 @@ FontRenderer::~FontRenderer()
 	}
 }
 
-void FontRenderer::RenderText(GLContext& context, std::string text, float x, float y, float scale)
+void FontRenderer::RenderText(GLContext* context, std::string text, float x, float y, float scale)
 {	
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	context.SetProgram(m_pShaderProgram);
+	context->SetProgram(m_pShaderProgram);
 
-	context.SetUniformBuffer(m_pPerFrameUniform, 0);
+	context->SetUniformBuffer(m_pPerFrameUniform, 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(m_VAO);
@@ -165,7 +163,25 @@ void FontRenderer::SetColor(const glm::vec3& color)
 	m_pPerFrameUniform->UpdateData(&m_PerFrameData);
 }
 
-FontRenderer* FontRenderer::CreateFontRenderer(const GLContext& context, const char* font, int width, int height)
+glm::vec2 FontRenderer::CalculateSize(std::string text, float scale)
+{
+	std::string::const_iterator c;
+	glm::vec2 size(0, 0);
+	for (c = text.begin(); c != text.end(); c++)
+	{
+		Character character = m_Characters[*c];
+		float h = character.Bearing.y * scale;
+		if (h > size.y)
+		{
+			size.y = h;
+		}
+	
+		size.x += (character.Advance >> 6) * scale;
+	}
+	return size;
+}
+
+FontRenderer* FontRenderer::CreateFontRenderer(const char* font, int width, int height)
 {
 	FT_Library freeType;
 
@@ -195,7 +211,7 @@ FontRenderer* FontRenderer::CreateFontRenderer(const GLContext& context, const c
 		m_pShaderProgram = new ShaderProgram(vShader, fShader);
 	}
 
-	FontRenderer* fontRenderer = new FontRenderer(context, &face);
+	FontRenderer* fontRenderer = new FontRenderer(&face);
 	fontRenderer->SetColor(glm::vec3(1.0, 1.0, 1.0));
 	fontRenderer->UpdateRenderTargetSize(width, height);
 

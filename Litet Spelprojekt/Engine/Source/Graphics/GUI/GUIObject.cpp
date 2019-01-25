@@ -1,7 +1,7 @@
 #include <Graphics/GUI/GUIObject.h>
 #include <Graphics/GUI/GUIManager.h>
 
-GUIObject::GUIObject(float width, float height) : m_GUIManager(nullptr)
+GUIObject::GUIObject(float x, float y, float width, float height) : m_GUIManager(nullptr)
 {
 	FramebufferDesc desc;
 	desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
@@ -11,7 +11,18 @@ GUIObject::GUIObject(float width, float height) : m_GUIManager(nullptr)
 	desc.Width = width;
 	desc.Height = height;
 
+	m_position.x = x;
+	m_position.y = y;
+
 	m_pFramebuffer = new Framebuffer(desc);
+
+	m_pBackgroundTexture = new Texture2D("Resources/Textures/test.png", TEX_FORMAT_RGBA, false);
+}
+
+GUIObject::~GUIObject()
+{
+	delete m_pBackgroundTexture;
+	delete m_pFramebuffer;
 }
 
 float GUIObject::GetWidth() const noexcept
@@ -26,12 +37,12 @@ float GUIObject::GetHeight() const noexcept
 
 float GUIObject::GetX() const noexcept
 {
-	return 0;
+	return m_position.x;
 }
 
 float GUIObject::GetY() const noexcept
 {
-	return 0;
+	return m_position.y;
 }
 
 int32 GUIObject::GetDepth() const noexcept
@@ -68,9 +79,15 @@ void GUIObject::OnUpdate(float dtS)
 	
 }
 
-void GUIObject::OnRender(GLContext* context)
+void GUIObject::OnRender(GLContext* context, FontRenderer* fontRenderer)
 {
+	context->SetTexture(m_pBackgroundTexture, 0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	context->SetTexture(nullptr, 0);
+
+	glm::vec2 size = fontRenderer->CalculateSize("Effective Text :)", 0.4);
+
+	fontRenderer->RenderText(context, "Effective Text :)", (GetWidth() - size.x) / 2, (GetHeight() - size.y) / 2, 0.4);
 }
 
 void GUIObject::OnMousePressed(MouseButton mousebutton)
@@ -98,16 +115,10 @@ void GUIObject::OnKeyDown(KEY keycode)
 
 }
 
-void GUIObject::InternalOnRender(GLContext* context)
+void GUIObject::RequestRepaint()
 {
-	context->SetFramebuffer(m_pFramebuffer);
-	context->SetClearColor(0.0, 0.0, 0.0, 0.0);
-	context->Clear(CLEAR_FLAG_COLOR);
-	glm::vec4 currentViewPort = context->GetViewPort();
-	context->SetViewport(GetWidth(), GetHeight(), 0, 0);
-
-	this->OnRender(context);
-
-	context->SetFramebuffer(nullptr);
-	context->SetViewport(currentViewPort);
+	if (m_GUIManager)
+	{
+		m_GUIManager->RequestRepaint(this);
+	}
 }

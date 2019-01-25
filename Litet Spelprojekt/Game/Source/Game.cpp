@@ -108,7 +108,13 @@ Game::Game() noexcept
 	m_pDUDVTexture = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 	m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
 
-	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
+
+	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
+	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+
+	GetGUIManager().AddGUIObject(m_pTextViewFPS);
+	GetGUIManager().AddGUIObject(m_pTextViewUPS);
+
 
 	GetContext().Enable(Cap::DEPTH_TEST);
 	GetContext().Enable(Cap::CULL_FACE);
@@ -148,7 +154,8 @@ Game::~Game()
 	delete m_pWaterNormalMap;
 	delete m_pDUDVTexture;
 
-	delete m_pFontRenderer;
+	delete m_pTextViewFPS;
+	delete m_pTextViewUPS;
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -310,6 +317,9 @@ void Game::OnUpdate(float dtS)
 	m_DistortionMoveFactor += 0.02f * dtS;
 	m_DistortionMoveFactor = fmodf(m_DistortionMoveFactor, 1.0f);
 
+	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
+	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
+
 	Application::OnUpdate(dtS);
 }
 
@@ -413,8 +423,5 @@ void Game::OnRender()
 
 	m_pRenderer->DrawScene(*m_pScene);
 
-	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
-	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
-	
 	Application::OnRender();
 }

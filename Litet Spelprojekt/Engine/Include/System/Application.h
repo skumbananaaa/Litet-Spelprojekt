@@ -14,7 +14,7 @@ public:
 	Application& operator=(Application&& other) = delete;
 	Application& operator=(const Application& other) = delete;
 
-	Application(bool tempGUI_test = false);
+	Application();
 	~Application();
 
 	int32_t Run();
@@ -62,20 +62,13 @@ private:
 inline void Application::InternalOnRender()
 {
 	OnRender();
-
-	if (m_pGUIManager != nullptr)
-	{
-		m_pGUIManager->OnRender(m_pContext);
-	}
+	m_pGUIManager->OnRender(m_pContext);
 }
 
 inline void Application::InternalOnUpdate(float dtS)
 {
+	m_pGUIManager->OnUpdate(dtS);
 	OnUpdate(dtS);
-	if (m_pGUIManager != nullptr)
-	{
-		m_pGUIManager->OnUpdate(dtS);
-	}
 }
 
 inline void Application::InternalOnMouseMove(const glm::vec2& position)
@@ -90,19 +83,13 @@ inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool dow
 		if (down)
 		{
 			OnMousePressed(mousebutton);
-			if (m_pGUIManager != nullptr)
-			{
-				m_pGUIManager->OnMousePressed(mousebutton);
-			}
+			m_pGUIManager->OnMousePressed(mousebutton);
 			std::cout << "Mousebutton " << mousebutton << " Pressed" << std::endl;
 		}
 		else
 		{
 			OnMouseReleased(mousebutton);
-			if (m_pGUIManager != nullptr)
-			{
-				m_pGUIManager->OnMouseReleased(mousebutton);
-			}
+			m_pGUIManager->OnMouseReleased(mousebutton);
 			std::cout << "Mousebutton " << mousebutton << " Released" << std::endl;
 		}
 	}

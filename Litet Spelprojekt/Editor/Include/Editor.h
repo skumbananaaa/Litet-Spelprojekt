@@ -5,7 +5,7 @@
 #include <Graphics\Buffers\UniformBuffer.h>
 #include <Graphics\Camera.h>
 #include <Graphics\Scene.h>
-#include <Graphics/Renderers/FontRenderer.h>
+#include <Graphics/GUI/TextView.h>
 //#include "../../Game/Include/IO/WorldSerializer.h"
 
 #include <GLM\glm.hpp>
@@ -33,5 +33,6 @@ private:
 	Mesh* m_pGridMesh;
 	UniformBuffer* m_pGridUniform;
 
-	FontRenderer* m_pFontRenderer;;
+	TextView* m_pTextViewFPS;
+	TextView* m_pTextViewUPS;
 };

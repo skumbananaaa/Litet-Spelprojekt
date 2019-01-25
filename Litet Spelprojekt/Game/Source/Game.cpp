@@ -59,7 +59,6 @@ Game::Game() noexcept
 	m_pScene->AddGameObject(pGameObject);
 	m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
 
-	//Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), 0.0f, 0.0f);
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), glm::vec3(1.0, 0.0, 0.0));
 	pCamera->SetProjectionMatrix(glm::perspective(
 		glm::radians<float>(90.0F),
@@ -81,6 +80,7 @@ Game::Game() noexcept
 	pWaterMaterial->SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
 	m_pWaterGameObject = new GameObject();
+	m_pWaterGameObject->SetMaterial(nullptr);
 	m_pWaterGameObject->SetMesh(m_pWaterMesh);
 	m_pWaterGameObject->SetScale(glm::vec3(15.0f));
 	m_pWaterGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
@@ -177,16 +177,6 @@ void Game::OnMouseMove(const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
-	static float tempRotation = 0.0f;
-	tempRotation += 1.0f * dtS;
-
-	/*for (uint32 i = 0; i < 1; i++)
-	{
-		//m_pScene->GetGameObjects()[i]->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, tempRotation));
-		m_pScene->GetGameObjects()[i]->UpdateTransform();
-		m_GameObjectUniforms[i]->UpdateData(glm::value_ptr(m_pScene->GetGameObjects()[i]->GetTransform()));
-	}*/
-	
 	if (cartesianCamera)
 	{
 		//Cartesian
@@ -239,8 +229,6 @@ void Game::OnUpdate(float dtS)
 		}
 
 		m_pScene->GetCamera().UpdateFromPitchYaw();
-		m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-		m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 	}
 	else
 	{
@@ -303,118 +291,17 @@ void Game::OnUpdate(float dtS)
 		}
 
 		m_pScene->GetCamera().UpdateFromLookAt();
-		m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-		m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
 	}
-
-	m_DistortionMoveFactor += 0.02f * dtS;
-	m_DistortionMoveFactor = fmodf(m_DistortionMoveFactor, 1.0f);
 
 	Application::OnUpdate(dtS);
 }
 
-void Game::OnRender()
+void Game::OnRender(float dtS)
 {
-	/*GetContext().SetProgram(m_pShaderProgramDefault);
-
-	assert(m_pScene->GetGameObjects().size() == m_GameObjectUniforms.size());
-
-	GetContext().Enable(Cap::CLIP_DISTANCE0);
-
-	//Draw Scene for reflection
-	static float waterHeight = 0.0f;
-	static float cutoffOffset = 0.01f;
-
-	glm::vec3 cameraPos = m_pScene->GetCamera().GetPosition();
-	glm::vec3 lookAt = m_pScene->GetCamera().GetLookAt();
-	float reflDistance = cameraPos.y * 2;
-	m_pScene->GetCamera().SetPos(m_pScene->GetCamera().GetPosition() - glm::vec3(0.0f, reflDistance, 0.0f));
-	m_pScene->GetCamera().InvertPitch();
-	m_pScene->GetCamera().UpdateFromPitchYaw();
-
-	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-	m_PerFrameArray[20] = 0.0f;
-	m_PerFrameArray[21] = 1.0f;
-	m_PerFrameArray[22] = 0.0f;
-	m_PerFrameArray[23] = waterHeight + cutoffOffset;
-	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
-	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
-
-	GetContext().SetFramebuffer(m_pReflectionFBO);
-	GetContext().Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
-
-
-	for (uint32 i = 0; i < m_GameObjectUniforms.size(); i++)
-	{
-		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
-		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
-	}
-
-	m_pScene->GetCamera().SetPos(cameraPos);
-	m_pScene->GetCamera().SetLookAt(lookAt);
-	m_pScene->GetCamera().InvertPitch();
-
-	if (cartesianCamera)
-	{
-		m_pScene->GetCamera().UpdateFromPitchYaw();
-	}
-	else
-	{
-		m_pScene->GetCamera().UpdateFromLookAt();
-	}
-
-	//Draw Scene for refraction
-	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-	m_PerFrameArray[20] = 0.0f;
-	m_PerFrameArray[21] = -1.0f;
-	m_PerFrameArray[22] = 0.0f;
-	m_PerFrameArray[23] = waterHeight - cutoffOffset;
-	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
-	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
-
-	GetContext().SetFramebuffer(m_pRefractionFBO);
-	GetContext().Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
-
-	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
-	{
-		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
-		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
-	}
-
-	GetContext().Disable(Cap::CLIP_DISTANCE0);
-
-	//Draw Scene to screen
-	GetContext().Enable(Cap::BLEND);
-	GetContext().SetFramebuffer(nullptr);
-
-	for (unsigned int i = 0; i < m_GameObjectUniforms.size(); i++)
-	{
-		GetContext().SetUniformBuffer(m_GameObjectUniforms[i], 0);
-		GetContext().DrawIndexedMesh(m_pScene->GetGameObjects()[i]->GetMesh());
-	}
-
-	//Draw Water to screen
-
-	GetContext().SetProgram(m_pShaderProgramWater);
-	m_PerFrameArray[19] = m_DistortionMoveFactor; //Per Frame Fistortion Move Factor
-	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
-	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
-	GetContext().SetUniformBuffer(m_pWaterUniform, 0);
-
-	GetContext().SetTexture(m_pReflectionFBO->GetColorAttachment(0), 0);
-	GetContext().SetTexture(m_pRefractionFBO->GetColorAttachment(0), 1);
-	GetContext().SetTexture(m_pDUDVTexture, 2);
-	GetContext().SetTexture(m_pWaterNormalMap, 3);
-	GetContext().SetTexture(m_pRefractionFBO->GetDepthAttachment(), 4);
-
-	GetContext().DrawIndexedMesh(m_pWaterGameObject->GetMesh());
-
-	GetContext().Disable(Cap::BLEND);*/
-
-	m_pRenderer->DrawScene(*m_pScene);
+	m_pRenderer->DrawScene(*m_pScene, dtS);
 
 	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
 	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
 	
-	Application::OnRender();
+	Application::OnRender(dtS);
 }

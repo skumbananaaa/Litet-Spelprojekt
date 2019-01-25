@@ -29,5 +29,7 @@ void main()
 	mappedNormal = (mappedNormal.r * fs_in.Tangent) + (mappedNormal.g * fs_in.Binormal) + (mappedNormal.b * fs_in.Normal); 
 
 	vec3 normal = (fs_in.Normal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
-	g_Normal = vec4(normalize(normal), gl_FragCoord.z);
+	normal = (normalize(normal) + vec3(1.0f)) * 0.5f;
+
+	g_Normal = vec4(normal, gl_FragCoord.z);
 }

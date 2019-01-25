@@ -13,7 +13,6 @@ layout (std140, binding = 1) uniform PerFrameBlock
 	mat4 cameraCombined;
 	vec3 cameraPosition;
 	float distortionMoveFactor;
-	vec4 clipPlane;
 };
 
 layout (binding = 0) uniform sampler2D reflectionTexture;
@@ -84,7 +83,8 @@ void main()
 	//Fog
 	float visibility = clamp(exp(-pow(distFromCamera * fogDensity, fogGradient)), 0.0, 1.0);
 
-	FragColor = mix(reflectionColor, refractionColor, refractionFactor);
+	//FragColor = mix(reflectionColor, refractionColor, refractionFactor);
+	FragColor = mix(reflectionColor, vec4(0.0, 0.0, 1.0, 1.0), refractionFactor);
 	FragColor = mix(FragColor, vec4(0.7, 0.25, 0.33, 1.0), 0.25) + vec4(specular, 0.0);
 	//FragColor = mix(vec4(0.392, 0.584, 0.929, 1.0), FragColor, visibility); //Fog
 	FragColor.a = clamp(waterDepth / depthOfFullOpaque, 0.0, 1.0);

@@ -12,5 +12,5 @@ public:
 	IRenderer() {};
 	virtual ~IRenderer() {};
 
-	virtual void DrawScene(const Scene& scene) const = 0;
+	virtual void DrawScene(const Scene& scene, float dtS) const = 0;
 };

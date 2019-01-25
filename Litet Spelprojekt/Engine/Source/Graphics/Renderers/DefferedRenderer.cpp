@@ -3,7 +3,7 @@
 #include <System/Window.h>
 #include <System/Application.h>
 
-#define REFLECTIONSIZE 256
+#define REFLECTIONSIZE 512
 
 DefferedRenderer::DefferedRenderer()
 	: m_pGBuffer(nullptr),
@@ -76,7 +76,7 @@ DefferedRenderer::~DefferedRenderer()
 	}
 }
 
-void DefferedRenderer::DrawScene(const Scene& scene) const
+void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetContext();
 
@@ -86,12 +86,16 @@ void DefferedRenderer::DrawScene(const Scene& scene) const
 	//DepthPrePass(scene);
 
 	GeometryPass(scene.GetGameObjects(), scene.GetCamera(), m_pGBuffer);
-	LightPass(scene.GetCamera(), nullptr);
-	//WaterPass(scene);
+	LightPass(scene.GetCamera(), nullptr, m_pGBuffer);
+
+	context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
+
+	WaterPass(scene, dtS);
 
 	context.Enable(DEPTH_TEST);
 	context.SetDepthMask(true);
 	context.SetDepthFunc(FUNC_LESS);
+	context.SetFramebuffer(nullptr);
 }
 
 void DefferedRenderer::Create() noexcept
@@ -102,7 +106,7 @@ void DefferedRenderer::Create() noexcept
 	{
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA16F;
+		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA;
 		desc.NumColorAttachments = 2;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
 		//desc.Width = 1920; 
@@ -116,7 +120,7 @@ void DefferedRenderer::Create() noexcept
 	{
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA16F;
+		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA;
 		desc.NumColorAttachments = 2;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
 		desc.Width = REFLECTIONSIZE;
@@ -127,9 +131,15 @@ void DefferedRenderer::Create() noexcept
 
 
 	{
+		TextureParams params = {};
+		params.Wrap = TEX_PARAM_REPEAT;
+		params.MinFilter = TEX_LINEAR;
+		params.MagFilter = TEX_LINEAR;
+
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.NumColorAttachments = 1;
+		desc.SamplingParams = params;
 		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
 		desc.Width = REFLECTIONSIZE;
 		desc.Height = REFLECTIONSIZE;
@@ -233,7 +243,6 @@ void DefferedRenderer::Create() noexcept
 		WaterPassPerFrame object = {};
 		object.CameraCombined = glm::mat4(1.0f);
 		object.CameraPosition = glm::vec3();
-		object.ClipPlane = glm::vec4();
 		object.DistortionMoveFactor = 0.0f;
 
 		m_pWaterPassPerFrame = new UniformBuffer(&object, 1, sizeof(WaterPassPerFrame));
@@ -257,6 +266,16 @@ void DefferedRenderer::Create() noexcept
 
 	{
 		m_pTriangle = new FullscreenTri();
+	}
+
+	{
+		TextureParams params = {};
+		params.Wrap = TEX_PARAM_REPEAT;
+		params.MinFilter = TEX_LINEAR;
+		params.MagFilter = TEX_LINEAR;
+
+		m_pWaterDistortionMap = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGB, false, params);
+		m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGB, false, params);
 	}
 }
 
@@ -348,7 +367,7 @@ void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects,
 	}
 }
 
-void DefferedRenderer::LightPass(const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept
+void DefferedRenderer::LightPass(const Camera& camera, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetContext();
 
@@ -357,7 +376,15 @@ void DefferedRenderer::LightPass(const Camera& camera, const Framebuffer* const 
 
 	context.Disable(DEPTH_TEST);
 
-	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	if (pGBuffer != nullptr)
+	{
+		context.SetViewport(pGBuffer->GetWidth(), pGBuffer->GetHeight(), 0, 0);
+	}
+	else
+	{
+		context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	}
+
 	context.SetProgram(m_pLightPassProgram);
 	context.SetUniformBuffer(m_pLightPassBuffer, 0);
 
@@ -370,37 +397,55 @@ void DefferedRenderer::LightPass(const Camera& camera, const Framebuffer* const 
 		m_pLightPassBuffer->UpdateData(&buff);
 	}
 
-	context.SetTexture(m_pGBuffer->GetColorAttachment(0), 0);
-	context.SetTexture(m_pGBuffer->GetColorAttachment(1), 1);
+	context.SetTexture(pGBuffer->GetColorAttachment(0), 0);
+	context.SetTexture(pGBuffer->GetColorAttachment(1), 1);
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 }
 
-void DefferedRenderer::WaterPass(const Scene& scene) const noexcept
+void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 {
+	static float dist = 0.0f;
+
 	GLContext& context = Application::GetInstance().GetContext();
 
-	context.SetProgram(m_pWaterpassProgram);
 	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
 
 	Camera reflectionCam = scene.GetCamera();
-	float reflDistance = reflectionCam.GetPosition().y * 2;
+	float reflDistance = reflectionCam.GetPosition().y * 2.0f;
 	reflectionCam.SetPos(reflectionCam.GetPosition() - glm::vec3(0.0f, reflDistance, 0.0f));
 	reflectionCam.InvertPitch();
 	reflectionCam.UpdateFromPitchYaw();
 
+	context.Enable(Cap::CLIP_DISTANCE0);
 	GeometryPass(scene.GetGameObjects(), reflectionCam, m_pWaterGBuffer);
-	LightPass(reflectionCam, m_pReflection);
+	context.Disable(Cap::CLIP_DISTANCE0);
+	
+	LightPass(reflectionCam, m_pReflection, m_pWaterGBuffer);
 
-	//context.con
+	//Start rendering forward
+	context.SetProgram(m_pWaterpassProgram);
+	context.Enable(DEPTH_TEST);
+
+	context.SetFramebuffer(nullptr);
+	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	
+	context.SetTexture(m_pReflection->GetColorAttachment(0), 0);
+	context.SetTexture(m_pWaterDistortionMap, 2);
+	context.SetTexture(m_pWaterNormalMap, 3);
+	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 4);
 
 	WaterPassPerFrame perFrame = {};
 	perFrame.CameraCombined = scene.GetCamera().GetCombinedMatrix();
 	perFrame.CameraPosition = scene.GetCamera().GetPosition();
-	perFrame.ClipPlane = glm::vec4(0.0f, 1.0f, 0.0f, 0.01f);
-	perFrame.DistortionMoveFactor = 0.0f;
+	
+	dist += 0.02f * dtS;
+	perFrame.DistortionMoveFactor = dist;
 
 	m_pWaterPassPerFrame->UpdateData(&perFrame);
+
+	context.SetUniformBuffer(m_pWaterPassPerObject, 0);
+	context.SetUniformBuffer(m_pWaterPassPerFrame, 1);
 
 	WaterPassPerObjectVS perObject= {};
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
@@ -409,11 +454,7 @@ void DefferedRenderer::WaterPass(const Scene& scene) const noexcept
 		if (!gameobject.HasMaterial())
 		{
 			perObject.Model = gameobject.GetTransform();
-			m_pWaterPassPerFrame->UpdateData(&perObject);
-
-			//context.SetUniformBuffer();
-			//context.SetUniformBuffer();
-			//context.SetUniformBuffer();
+			m_pWaterPassPerObject->UpdateData(&perObject);
 
 			context.DrawIndexedMesh(gameobject.GetMesh());
 		}

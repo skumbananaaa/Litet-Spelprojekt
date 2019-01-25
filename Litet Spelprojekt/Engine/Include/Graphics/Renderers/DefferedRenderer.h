@@ -36,7 +36,6 @@ struct WaterPassPerFrame
 	glm::mat4 CameraCombined;
 	glm::vec3 CameraPosition;
 	float DistortionMoveFactor;
-	glm::vec4 ClipPlane;
 };
 
 struct WaterPassPerObjectVS
@@ -55,14 +54,14 @@ public:
 	DefferedRenderer();
 	~DefferedRenderer();
 
-	void DrawScene(const Scene& scene) const override final;
+	void DrawScene(const Scene& scene, float dtS) const override final;
 
 private:
 	void Create() noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
 	void GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept;
-	void LightPass(const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept;
-	void WaterPass(const Scene& sceen) const noexcept;
+	void LightPass(const Camera& camera, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept;
+	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 
 private:
 	Framebuffer* m_pGBuffer;

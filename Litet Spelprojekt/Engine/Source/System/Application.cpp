@@ -20,7 +20,7 @@ Application::Application(bool tempGUI_test)
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1024, 768, 1);
+		m_pWindow = new Window("Small Game Project", 1600, 900, 1);
 		m_pContext = new GLContext(m_pWindow->GetWidth(), m_pWindow->GetHeight());
 
 		if(tempGUI_test)
@@ -107,7 +107,7 @@ int32_t Application::Run()
 			ups++;
 		}
 
-		InternalOnRender();
+		InternalOnRender(deltaTime);
 		fps++;
 
 		m_pWindow->SwapBuffers();

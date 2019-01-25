@@ -31,6 +31,8 @@
     </None>
     <None Include="Resources\Shaders\FShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderFont.glsl" />
+    <None Include="Resources\Shaders\VShaderGUI.glsl" />
+    <None Include="Resources\Shaders\FShaderGUI.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Editor.h">

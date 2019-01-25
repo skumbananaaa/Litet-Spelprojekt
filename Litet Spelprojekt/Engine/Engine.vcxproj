@@ -24,7 +24,7 @@
     <ClInclude Include="Include\GLAD\khrplatform.h" />
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Camera.h" />
-    <ClInclude Include="Include\Graphics\GUI\GUI.h" />
+    <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\FullscreenTri.h" />
@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Graphics\Camera.cpp" />
-    <ClCompile Include="Source\Graphics\GUI\GUI.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp" />
     <ClCompile Include="Source\Graphics\GameObject.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\FullscreenTri.cpp" />

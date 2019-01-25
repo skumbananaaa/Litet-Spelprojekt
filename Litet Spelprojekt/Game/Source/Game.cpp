@@ -157,6 +157,9 @@ Game::~Game()
 	delete m_pDUDVTexture;
 
 	delete m_pFontRenderer;
+
+	delete m_pSoundEffect;
+	delete m_pTestAudioSource;
 }
 
 void Game::OnKeyUp(KEY keycode)

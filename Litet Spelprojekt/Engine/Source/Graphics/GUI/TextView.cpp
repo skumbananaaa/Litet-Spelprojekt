@@ -53,27 +53,30 @@ TextAlignment TextView::GetTextAlignment()
 
 void TextView::OnRender(GLContext* context, FontRenderer* fontRenderer)
 {
+	GUIObject::OnRender(context, fontRenderer);
+
 	if (!m_Text.empty())
 	{
 		glm::vec2 size = fontRenderer->CalculateSize(m_Text, 0.4);
-		glm::vec2 position(0, 0);
+		float x = 0;
+		float y = 0;
 
 		switch (m_TextAlignment)
 		{
 		case CENTER:
-			position.x = (GetWidth() - size.x) / 2;
-			position.y = (GetHeight() - size.y) / 2;
+			x = (GetWidth() - size.x) / 2;
+			y = (GetHeight() - size.y) / 2;
 			break;
 		case CENTER_VERTICAL:
-			position.y = (GetHeight() - size.y) / 2;
+			y = (GetHeight() - size.y) / 2;
 			break;
 		case CENTER_HORIZONTAL:
-			position.x = (GetWidth() - size.x) / 2;
+			x = (GetWidth() - size.x) / 2;
 			break;
 		default:
 			break;
 		}
 
-		fontRenderer->RenderText(context, m_Text, position.x, position.y, m_Size / 100.0F);
+		fontRenderer->RenderText(context, m_Text, x, y, m_Size / 100.0F);
 	}
 }

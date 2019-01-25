@@ -22,6 +22,9 @@ public:
 	int32 GetDepth() const noexcept;
 	void SetDepth(int32 depth) noexcept;
 
+	Texture2D* GetTexture() const noexcept;
+	void SetTexture(Texture2D* texture);
+
 	bool IsDirty() const noexcept;
 
 protected:

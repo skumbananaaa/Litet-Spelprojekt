@@ -1,7 +1,9 @@
 #include <Graphics/GUI/GUIObject.h>
 #include <Graphics/GUI/GUIManager.h>
 
-GUIObject::GUIObject(float x, float y, float width, float height) : m_GUIManager(nullptr)
+GUIObject::GUIObject(float x, float y, float width, float height) :
+	m_GUIManager(nullptr),
+	m_pBackgroundTexture(nullptr)
 {
 	FramebufferDesc desc;
 	desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
@@ -15,13 +17,10 @@ GUIObject::GUIObject(float x, float y, float width, float height) : m_GUIManager
 	m_position.y = y;
 
 	m_pFramebuffer = new Framebuffer(desc);
-
-	m_pBackgroundTexture = new Texture2D("Resources/Textures/test.png", TEX_FORMAT_RGBA, false);
 }
 
 GUIObject::~GUIObject()
 {
-	delete m_pBackgroundTexture;
 	delete m_pFramebuffer;
 }
 
@@ -59,6 +58,16 @@ void GUIObject::SetDepth(int32 depth) noexcept
 	}
 }
 
+Texture2D* GUIObject::GetTexture() const noexcept
+{
+	return m_pBackgroundTexture;
+}
+
+void GUIObject::SetTexture(Texture2D* texture)
+{
+	m_pBackgroundTexture = texture;
+}
+
 bool GUIObject::IsDirty() const noexcept
 {
 	return m_IsDirty;
@@ -81,13 +90,12 @@ void GUIObject::OnUpdate(float dtS)
 
 void GUIObject::OnRender(GLContext* context, FontRenderer* fontRenderer)
 {
-	context->SetTexture(m_pBackgroundTexture, 0);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	context->SetTexture(nullptr, 0);
-
-	glm::vec2 size = fontRenderer->CalculateSize("Effective Text :)", 0.4);
-
-	fontRenderer->RenderText(context, "Effective Text :)", (GetWidth() - size.x) / 2, (GetHeight() - size.y) / 2, 0.4);
+	if (m_pBackgroundTexture)
+	{
+		context->SetTexture(m_pBackgroundTexture, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		context->SetTexture(nullptr, 0);
+	}
 }
 
 void GUIObject::OnMousePressed(MouseButton mousebutton)

@@ -15,7 +15,6 @@ layout (std140, binding = 1) uniform PerFrameBlock
 	mat4 cameraCombined;
 	vec3 cameraPosition;
 	float distortionMoveFactor;
-	vec4 clipPlane;
 };
 
 out VS_OUT
@@ -37,5 +36,4 @@ void main()
 	vs_out.TexCoords = texCoords * tiling;
 	vs_out.ClipSpacePosition = cameraCombined * worldPos;
 	gl_Position = vs_out.ClipSpacePosition;
-
 }

@@ -79,6 +79,7 @@ public:
 	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept;
 	void SetViewport(const glm::vec4& viewport) noexcept;
 	const glm::vec4 GetViewPort() const noexcept;
+
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
 	void SetClearDepth(float depth) const noexcept;
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
@@ -89,6 +90,8 @@ public:
 	void SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) const noexcept;
 	void SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept;
 	
+	void BlitFramebuffer(const Framebuffer* const pDst, const Framebuffer* const pSrc, uint32 flags);
+
 	void Clear(uint32 flags) const noexcept;
 
 	void DrawIndexedMesh(const IndexedMesh& mesh) const noexcept;

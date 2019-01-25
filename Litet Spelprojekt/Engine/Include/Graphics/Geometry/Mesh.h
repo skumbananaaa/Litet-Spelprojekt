@@ -11,20 +11,20 @@ public:
 	Mesh& operator=(Mesh&& other) = delete;
 	Mesh& operator=(const Mesh& other) = delete;
 
-	Mesh(const Vertex* const vertices, unsigned int numVertices) noexcept;
+	Mesh(const Vertex* const vertices, uint32 numVertices) noexcept;
 	~Mesh();
 
-	unsigned int GetVertexCount() const noexcept;
+	uint32 GetVertexCount() const noexcept;
 
 private:
-	unsigned int m_VAO;
-	unsigned int m_VBO;
-	unsigned int m_VertexCount;
+	uint32 m_VAO;
+	uint32 m_VBO;
+	uint32 m_VertexCount;
 
 public:
 	static Mesh* CreateMeshFromFile(const char* pFilename);
 	static Mesh* CreateCube();
-	static Mesh* CreateGrid(int width, int height, int depth);
+	static Mesh* CreateGrid(int32 width, int32 height, int32 depth);
 };
 
 inline unsigned int Mesh::GetVertexCount() const noexcept

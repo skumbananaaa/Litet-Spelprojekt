@@ -15,7 +15,7 @@ public:
 	Application& operator=(const Application& other) = delete;
 
 	Application();
-	~Application();
+	virtual ~Application();
 
 	int32_t Run();
 
@@ -28,7 +28,7 @@ public:
 
 protected:
 	virtual void OnUpdate(float dtS) {};
-	virtual void OnRender() {};
+	virtual void OnRender(float dtS) {};
 	virtual void OnMouseMove(const glm::vec2& position) {};
 	virtual void OnMousePressed(MouseButton mousebutton) {};
 	virtual void OnMouseReleased(MouseButton mousebutton) {};
@@ -43,7 +43,7 @@ private:
 	int32 m_fps;
 	int32 m_ups;
 
-	void InternalOnRender();
+	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);
 	void InternalOnMouseMove(const glm::vec2& position);
 	void InternalOnMouseButton(MouseButton mousebutton, bool down);
@@ -59,9 +59,9 @@ private:
 };
 
 
-inline void Application::InternalOnRender()
+inline void Application::InternalOnRender(float dtS)
 {
-	OnRender();
+	OnRender(dtS);
 	m_pGUIManager->OnRender(m_pContext);
 }
 

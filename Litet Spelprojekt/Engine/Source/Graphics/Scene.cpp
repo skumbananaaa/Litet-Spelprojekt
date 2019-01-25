@@ -37,12 +37,8 @@ void Scene::RemoveGameObject(uint32 index) noexcept
 
 void Scene::OnUpdate(float dtS) noexcept
 {
-	//m_pCamera->Update();
-	
 	for (uint32 i = 0; i < m_GameObjects.size(); i++)
 	{
 		m_GameObjects[i]->UpdateTransform();
 	}
 }
-
-

@@ -402,6 +402,8 @@ Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noe
 	assert(s_pMainWindow == nullptr);
 	s_pMainWindow = this;
 
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
 	glfwWindowHint(GLFW_RED_BITS, 8);
 	glfwWindowHint(GLFW_GREEN_BITS, 8);
 	glfwWindowHint(GLFW_BLUE_BITS, 8);

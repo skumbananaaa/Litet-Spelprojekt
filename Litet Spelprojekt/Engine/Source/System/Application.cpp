@@ -6,7 +6,11 @@ constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
 Application::Application()
-	: m_pWindow(nullptr), m_pContext(nullptr), m_fps(0), m_ups(0)
+	: m_pWindow(nullptr), 
+	m_pContext(nullptr), 
+	m_pGUIManager(nullptr),
+	m_fps(0), 
+	m_ups(0)
 {
 	std::cout << "Application" << std::endl;
 
@@ -20,7 +24,7 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1024, 768, 1);
+		m_pWindow = new Window("Small Game Project", 1600, 900, 1);
 		m_pContext = new GLContext(m_pWindow->GetWidth(), m_pWindow->GetHeight());
 		m_pGUIManager = new GUIManager(m_pWindow->GetWidth(), m_pWindow->GetHeight());
 	}
@@ -105,7 +109,7 @@ int32_t Application::Run()
 			ups++;
 		}
 
-		InternalOnRender();
+		InternalOnRender(deltaTime);
 		fps++;
 
 		m_pWindow->SwapBuffers();

@@ -29,12 +29,17 @@ vec3 PositionFromDepth(float depth)
 	return worldPosition.xyz;
 }
 
+vec3 NormalDecode(vec3 mappedNormal)
+{
+	return (mappedNormal * 2.0f) - vec3(1.0f);
+}
+
 void main()
 {
 	vec4 normalDepth = texture(g_NormalDepth, fs_in.TexCoords);
 	vec3 position = PositionFromDepth(normalDepth.w);
 
-	vec3 normal = normalize(normalDepth.xyz);
+	vec3 normal = normalize(NormalDecode(normalDepth.xyz));
 	vec4 color = texture(g_Color, fs_in.TexCoords);
 	vec3 lightDir = normalize(vec3(0.0f, 1.0f, 0.5f));
 	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);

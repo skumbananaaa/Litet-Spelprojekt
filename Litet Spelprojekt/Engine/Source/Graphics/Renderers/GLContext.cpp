@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics/Renderers/GLContext.h>
+#include <System/Window.h>
 
 GLContext::GLContext(float width, float height)
 {
@@ -79,6 +80,46 @@ void GLContext::SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, pFramebuffer->m_Framebuffer);
 	}
+}
+
+void GLContext::BlitFramebuffer(const Framebuffer* const pDst, const Framebuffer* const pSrc, uint32 flags)
+{
+	uint32 srcWidth = 0;
+	uint32 srcHeight = 0;
+	uint32 srcFBO = 0;
+	uint32 dstWidth = 0;
+	uint32 dstHeight = 0;
+	uint32 dstFBO = 0;
+
+	if (pDst == nullptr)
+	{
+		dstWidth = Window::GetCurrentWindow().GetWidth();
+		dstHeight = Window::GetCurrentWindow().GetHeight();
+		srcWidth = pSrc->GetWidth();
+		srcHeight = pSrc->GetHeight();
+		srcFBO = pSrc->m_Framebuffer;
+		dstFBO = 0;
+	}
+	else if (pSrc == nullptr)
+	{
+		dstWidth = pDst->GetWidth();
+		dstHeight = pSrc->GetHeight();
+		srcWidth = Window::GetCurrentWindow().GetWidth();
+		srcHeight = Window::GetCurrentWindow().GetHeight();
+		srcFBO = 0;
+		dstFBO = pDst->m_Framebuffer;
+	}
+	else
+	{
+		srcFBO = pSrc->m_Framebuffer;
+		dstFBO = pDst->m_Framebuffer;
+	}
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO);
+	glBlitFramebuffer(0, 0, srcWidth, srcHeight, 0, 0, dstWidth, dstHeight, flags, GL_NEAREST);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept

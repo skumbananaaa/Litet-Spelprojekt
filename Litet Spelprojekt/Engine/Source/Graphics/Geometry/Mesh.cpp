@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-Mesh::Mesh(const Vertex* const vertices, unsigned int numVertices) noexcept
+Mesh::Mesh(const Vertex* const vertices, uint32 numVertices) noexcept
 {
 	m_VertexCount = numVertices;
 
@@ -109,18 +109,18 @@ Mesh* Mesh::CreateCube()
 	return new Mesh(triangleVertices, 24);
 }
 
-Mesh* Mesh::CreateGrid(int width, int height, int depth)
+Mesh* Mesh::CreateGrid(int32 width, int32 height, int32 depth)
 {
 	int nrOfVertices = ((width + 1) * (height + 1) + (height + 1) * (depth + 1) + (width + 1) * (depth + 1)) * 2;
-	Vertex* vertices = new Vertex[nrOfVertices];
+	Vertex* pVertices = new Vertex[nrOfVertices];
 	int counter = 0;
 
 	for (int y = -height / 2; y <= height / 2; y++)
 	{
 		for (int x = -width / 2; x <= width / 2; x++)
 		{
-			vertices[counter++] = { glm::vec3(x, y, -depth / 2),	glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
-			vertices[counter++] = { glm::vec3(x, y, depth / 2), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, y, -depth / 2),	glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, y, depth / 2), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
 		}
 	}
 
@@ -128,8 +128,8 @@ Mesh* Mesh::CreateGrid(int width, int height, int depth)
 	{
 		for (int z = -depth / 2; z <= depth / 2; z++)
 		{
-			vertices[counter++] = { glm::vec3(-width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
-			vertices[counter++] = { glm::vec3(width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(-width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
 		}
 	}
 
@@ -137,12 +137,13 @@ Mesh* Mesh::CreateGrid(int width, int height, int depth)
 	{
 		for (int z = -depth / 2; z <= depth / 2; z++)
 		{
-			vertices[counter++] = { glm::vec3(x, -height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
-			vertices[counter++] = { glm::vec3(x, height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, -height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
 		}
 	}
 
-	Mesh* mesh = new Mesh(vertices, counter);
-	//sdelete[] vertices;
-	return mesh;
+	Mesh* pMesh = new Mesh(pVertices, counter);
+	delete[] pVertices;
+
+	return pMesh;
 }

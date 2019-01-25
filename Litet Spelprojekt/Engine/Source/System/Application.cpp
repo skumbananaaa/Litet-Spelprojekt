@@ -5,8 +5,12 @@
 constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
-Application::Application(bool tempGUI_test)
-	: m_pWindow(nullptr), m_pGraphicsContext(nullptr), m_fps(0), m_ups(0)
+Application::Application()
+	: m_pWindow(nullptr), 
+	m_pGraphicsContext(nullptr),
+	m_pGUIManager(nullptr),
+	m_fps(0), 
+	m_ups(0)
 {
 	std::cout << "Application" << std::endl;
 
@@ -21,10 +25,8 @@ Application::Application(bool tempGUI_test)
 	else
 	{
 		m_pWindow = new Window("Small Game Project", 1600, 900, 1);
-		m_pGraphicsContext = new GLContext(m_pWindow->GetWidth(), m_pWindow->GetHeight());
-
-		if(tempGUI_test)
-			m_pGUIManager = new GUIManager(m_pWindow->GetWidth(), m_pWindow->GetHeight());
+		m_pContext = new GLContext(m_pWindow->GetWidth(), m_pWindow->GetHeight());
+		m_pGUIManager = new GUIManager(m_pWindow->GetWidth(), m_pWindow->GetHeight());
 	}
 
 	m_pAudioContext = IAudioContext::CreateContext();

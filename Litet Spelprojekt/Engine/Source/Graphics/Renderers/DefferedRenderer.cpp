@@ -7,78 +7,53 @@
 
 DefferedRenderer::DefferedRenderer()
 	: m_pGBuffer(nullptr),
-	m_pDepthPrePassProgram(nullptr),
-	m_pGeometryPassProgram(nullptr),
-	m_pLightPassProgram(nullptr),
+	m_pFinalFramebuffer(nullptr),
+	m_pWaterGBuffer(nullptr),
+	m_pReflection(nullptr),
+	m_pTriangle(nullptr),
 	m_pGPassVSPerFrame(nullptr),
 	m_pGPassVSPerObject(nullptr),
 	m_pGPassFSPerObject(nullptr),
 	m_pLightPassBuffer(nullptr),
-	m_pTriangle(nullptr)
+	m_pWaterPassPerFrame(nullptr),
+	m_pWaterPassPerObject(nullptr),
+	m_pWaterNormalMap(nullptr),
+	m_pWaterDistortionMap(nullptr),
+	m_pDepthPrePassProgram(nullptr),
+	m_pGeometryPassProgram(nullptr),
+	m_pLightPassProgram(nullptr),
+	m_pWaterpassProgram(nullptr)
 {
 	Create();
 }
 
 DefferedRenderer::~DefferedRenderer()
 {
-	if (m_pGBuffer != nullptr)
-	{
-		delete m_pGBuffer;
-		m_pGBuffer = nullptr;
-	}
-
-	if (m_pGeometryPassProgram != nullptr)
-	{
-		delete m_pGeometryPassProgram;
-		m_pGeometryPassProgram = nullptr;
-	}
-
-	if (m_pLightPassProgram != nullptr)
-	{
-		delete m_pLightPassProgram;
-		m_pLightPassProgram = nullptr;
-	}
-
-	if (m_pGPassVSPerFrame != nullptr)
-	{
-		delete m_pGPassVSPerFrame;
-		m_pGPassVSPerFrame = nullptr;
-	}
-
-	if (m_pGPassVSPerObject != nullptr)
-	{
-		delete m_pGPassVSPerObject;
-		m_pGPassVSPerObject = nullptr;
-	}
-
-	if (m_pLightPassBuffer != nullptr)
-	{
-		delete m_pLightPassBuffer;
-		m_pLightPassBuffer = nullptr;
-	}
-
-	if (m_pTriangle != nullptr)
-	{
-		delete m_pTriangle;
-		m_pTriangle = nullptr;
-	}
-
-	if (m_pDepthPrePassProgram != nullptr)
-	{
-		delete m_pDepthPrePassProgram;
-		m_pDepthPrePassProgram = nullptr;
-	}
-
-	if (m_pGPassFSPerObject != nullptr)
-	{
-		delete m_pGPassFSPerObject;
-		m_pGPassFSPerObject = nullptr;
-	}
+	DeleteSafe(m_pGBuffer);
+	DeleteSafe(m_pFinalFramebuffer);
+	DeleteSafe(m_pWaterGBuffer);
+	DeleteSafe(m_pReflection);
+	DeleteSafe(m_pTriangle);
+	DeleteSafe(m_pGPassVSPerFrame);
+	DeleteSafe(m_pGPassVSPerObject);
+	DeleteSafe(m_pGPassFSPerObject);
+	DeleteSafe(m_pLightPassBuffer);
+	DeleteSafe(m_pWaterPassPerFrame);
+	DeleteSafe(m_pWaterPassPerObject);
+	DeleteSafe(m_pWaterNormalMap);
+	DeleteSafe(m_pWaterDistortionMap);
+	DeleteSafe(m_pDepthPrePassProgram);
+	DeleteSafe(m_pGeometryPassProgram);
+	DeleteSafe(m_pLightPassProgram);
+	DeleteSafe(m_pWaterpassProgram);
 }
 
 void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
+	
+	context.Enable(DEPTH_TEST);
+	context.Enable(CULL_FACE);
 
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
@@ -91,11 +66,6 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
 
 	WaterPass(scene, dtS);
-
-	context.Enable(DEPTH_TEST);
-	context.SetDepthMask(true);
-	context.SetDepthFunc(FUNC_LESS);
-	context.SetFramebuffer(nullptr);
 }
 
 void DefferedRenderer::Create() noexcept
@@ -308,6 +278,17 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	context.SetDepthMask(false);
 }
 
+void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
+{
+	/*for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	{
+		perObject.Model = scene.GetGameObjects()[i]->GetTransform();
+		m_pGPassVSPerObject->UpdateData(&perObject);
+
+		context.DrawIndexedMesh(scene.GetGameObjects()[i]->GetMesh());
+	}*/
+}
+
 void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
@@ -333,7 +314,7 @@ void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects,
 	for (uint32 i = 0; i < gameobjects.size(); i++)
 	{
 		GameObject& gameobject = *gameobjects[i];
-		if (gameobject.HasMaterial())
+		if (gameobject.HasMaterial() && gameobject.HasMesh())
 		{
 			perObjectVS.Model = gameobject.GetTransform();
 			m_pGPassVSPerObject->UpdateData(&perObjectVS);
@@ -451,7 +432,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
 	{
 		GameObject& gameobject = *scene.GetGameObjects()[i];
-		if (!gameobject.HasMaterial())
+		if (!gameobject.HasMaterial() && gameobject.HasMesh())
 		{
 			perObject.Model = gameobject.GetTransform();
 			m_pWaterPassPerObject->UpdateData(&perObject);

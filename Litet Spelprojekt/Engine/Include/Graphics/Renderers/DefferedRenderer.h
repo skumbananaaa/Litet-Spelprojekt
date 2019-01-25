@@ -59,6 +59,7 @@ public:
 private:
 	void Create() noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
+	void DecalPass(const Scene& scene) const noexcept;
 	void GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept;
 	void LightPass(const Camera& camera, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;

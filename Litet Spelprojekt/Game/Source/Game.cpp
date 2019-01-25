@@ -3,29 +3,26 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 
 Game::Game() noexcept
-	: m_pRenderer(nullptr)
+	: m_pFontRenderer(nullptr),
+	m_pRenderer(nullptr),
+	m_pScene(nullptr),
+	m_pTestMesh(nullptr),
+	m_pWaterMesh(nullptr),
+	m_pGroundTestMesh(nullptr),
+	m_pBoatTexture(nullptr),
+	m_pBoatNormalMap(nullptr),
+	m_pBloodTexture(nullptr),
+	m_pBloodNormal(nullptr),
+	m_pBoatMaterial(nullptr),
+	m_pGroundMaterial(nullptr),
+	m_pDecal(nullptr),
+	cartesianCamera(true)
 {
-	Shader vShaderDefault;
-	Shader fShaderDefault;
-
-	vShaderDefault.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
-	fShaderDefault.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
-
-	m_pShaderProgramDefault = new ShaderProgram(vShaderDefault, fShaderDefault);
-
-	Shader vShaderWater;
-	Shader fShaderWater;
-
-	vShaderWater.CompileFromFile("Resources/Shaders/VShaderWater.glsl", VERTEX_SHADER);
-	fShaderWater.CompileFromFile("Resources/Shaders/FShaderWater.glsl", FRAGMENT_SHADER);
-
-	m_pShaderProgramWater = new ShaderProgram(vShaderWater, fShaderWater);
+	m_pRenderer = new DefferedRenderer();
 
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 	m_pGroundTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cliff_3_low.obj");
-
-	m_pRenderer = new DefferedRenderer();
 
 	m_pBoatTexture = new Texture2D("Resources/Textures/ship.jpg", TEX_FORMAT_RGBA);
 	m_pBoatNormalMap = new Texture2D("Resources/Textures/shipNormalMap.png", TEX_FORMAT_RGBA);
@@ -38,8 +35,19 @@ Game::Game() noexcept
 	m_pGroundMaterial = new Material();
 	m_pGroundMaterial->SetColor(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f));
 
+	m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA);
+	m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormal.png", TEX_FORMAT_RGBA);
+
+	m_pDecal = new Decal();
+	m_pDecal->SetTexture(m_pBloodTexture);
+	m_pDecal->SetNormalMap(m_pBloodNormal);
+
 	GameObject* pGameObject = nullptr;
-	
+
+	pGameObject = new GameObject();
+	pGameObject->SetDecal(m_pDecal);
+	m_pScene->AddGameObject(pGameObject);
+
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pBoatMaterial);
 	pGameObject->SetMesh(m_pTestMesh);
@@ -47,7 +55,6 @@ Game::Game() noexcept
 	pGameObject->SetScale(glm::vec3(6.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
-	m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
 
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pGroundMaterial);
@@ -57,7 +64,6 @@ Game::Game() noexcept
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
-	m_GameObjectUniforms.push_back(new UniformBuffer(glm::value_ptr(pGameObject->GetTransform()), 1, sizeof(glm::mat4)));
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), glm::vec3(1.0, 0.0, 0.0));
 	pCamera->SetProjectionMatrix(glm::perspective(
@@ -68,47 +74,23 @@ Game::Game() noexcept
 	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
-	cartesianCamera = true;
-
-	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-	m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
-
 	//Water Stuff
 	m_pWaterMesh = IndexedMesh::CreateQuad();
 
-	Material* pWaterMaterial = new Material();
-	pWaterMaterial->SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	pGameObject = new GameObject();
+	pGameObject->SetMaterial(nullptr);
+	pGameObject->SetMesh(m_pWaterMesh);
+	pGameObject->SetScale(glm::vec3(15.0f));
+	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
 
-	m_pWaterGameObject = new GameObject();
-	m_pWaterGameObject->SetMaterial(nullptr);
-	m_pWaterGameObject->SetMesh(m_pWaterMesh);
-	m_pWaterGameObject->SetScale(glm::vec3(15.0f));
-	m_pWaterGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
-	m_pWaterGameObject->UpdateTransform();
 
-	m_pScene->AddGameObject(m_pWaterGameObject);
+	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
+	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
 
-	m_pWaterUniform = new UniformBuffer(glm::value_ptr(m_pWaterGameObject->GetTransform()), 1, sizeof(glm::mat4));
-
-	m_WaterTextureParams.Wrap = TEX_PARAM_REPEAT;
-	m_WaterTextureParams.MinFilter = TEX_LINEAR;
-	m_WaterTextureParams.MagFilter = TEX_LINEAR;
-
-	FramebufferDesc fboDescReflRefr;
-	fboDescReflRefr.ColorAttchmentFormats[0] = TEX_FORMAT::TEX_FORMAT_RGBA;
-	fboDescReflRefr.NumColorAttachments = 1;
-	fboDescReflRefr.SamplingParams = m_WaterTextureParams;
-	fboDescReflRefr.DepthStencilFormat = TEX_FORMAT::TEX_FORMAT_DEPTH;
-	fboDescReflRefr.Width = GetWindow().GetWidth();
-	fboDescReflRefr.Height = GetWindow().GetHeight();
-
-	m_pReflectionFBO = new Framebuffer(fboDescReflRefr);
-	m_pRefractionFBO = new Framebuffer(fboDescReflRefr);
-
-	m_pDUDVTexture = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
-	m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGBA, false, m_WaterTextureParams);
-
-	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetGraphicsContext(), "Resources/Fonts/arial.ttf", 800, 600);
+	GetGUIManager().AddGUIObject(m_pTextViewFPS);
+	GetGUIManager().AddGUIObject(m_pTextViewUPS);
 
 	//Audio
 	m_pSoundEffect = new SoundEffect("Resources/Audio/fart2.wav");
@@ -117,49 +99,27 @@ Game::Game() noexcept
 	m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
-
-	GetGraphicsContext().Enable(Cap::DEPTH_TEST);
-	GetGraphicsContext().Enable(Cap::CULL_FACE);
 }
 
 Game::~Game()
 {
-	delete m_pShaderProgramDefault;
-	delete m_pShaderProgramWater;
-
-	delete m_pRenderer;
-	delete m_pScene;
-
-	delete m_pBoatTexture;
-	delete m_pBoatNormalMap;
-
-	delete m_pBoatMaterial;
-	delete m_pGroundMaterial;
-	for (uint32 i = 0; i < m_GameObjectUniforms.size(); i++)
-	{
-		delete m_GameObjectUniforms[i];
-		m_GameObjectUniforms[i] = nullptr;
-	}
-
-	delete m_pPerFrameUniform;
-
-	delete m_pTestMesh;
-	delete m_pGroundTestMesh;
-
-	delete m_pWaterMesh;
-	delete m_pWaterGameObject;
-	delete m_pWaterUniform;
-
-	delete m_pReflectionFBO;
-	delete m_pRefractionFBO;
-
-	delete m_pWaterNormalMap;
-	delete m_pDUDVTexture;
-
-	delete m_pFontRenderer;
-
-	delete m_pSoundEffect;
-	delete m_pTestAudioSource;
+	Delete(m_pBloodTexture);
+	Delete(m_pBloodNormal);
+	Delete(m_pFontRenderer);
+	Delete(m_pRenderer);
+	Delete(m_pScene);
+	Delete(m_pTestMesh);
+	Delete(m_pWaterMesh);
+	Delete(m_pGroundTestMesh);
+	Delete(m_pBoatTexture);
+	Delete(m_pBoatNormalMap);
+	Delete(m_pDecal);
+	Delete(m_pBoatMaterial);
+	Delete(m_pGroundMaterial);
+	Delete(m_pTextViewFPS);
+	Delete(m_pTextViewUPS);
+	Delete(m_pSoundEffect);
+	Delete(m_pTestAudioSource);
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -304,17 +264,13 @@ void Game::OnUpdate(float dtS)
 		m_pScene->GetCamera().UpdateFromLookAt();
 	}
 
-	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
+	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
+	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 
-	Application::OnUpdate(dtS);
+	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
 }
 
 void Game::OnRender(float dtS)
 {
 	m_pRenderer->DrawScene(*m_pScene, dtS);
-
-	m_pFontRenderer->RenderText(GetGraphicsContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
-	m_pFontRenderer->RenderText(GetGraphicsContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
-	
-	Application::OnRender(dtS);
 }

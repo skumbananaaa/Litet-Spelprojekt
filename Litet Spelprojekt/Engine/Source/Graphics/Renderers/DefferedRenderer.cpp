@@ -54,7 +54,7 @@ DefferedRenderer::~DefferedRenderer()
 
 void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
-	GLContext& context = Application::GetInstance().GetContext();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
 	
 	context.Enable(DEPTH_TEST);
 	context.Enable(CULL_FACE);
@@ -276,7 +276,7 @@ void DefferedRenderer::Create() noexcept
 
 void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 {
-	GLContext& context = Application::GetInstance().GetContext();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetProgram(m_pDepthPrePassProgram);
 
@@ -334,7 +334,7 @@ void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 
 void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept
 {
-	GLContext& context = Application::GetInstance().GetContext();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetViewport(pFramebuffer->GetWidth(), pFramebuffer->GetHeight(), 0, 0);
 	context.SetFramebuffer(pFramebuffer);
@@ -393,7 +393,7 @@ void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects,
 
 void DefferedRenderer::LightPass(const Camera& camera, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept
 {
-	GLContext& context = Application::GetInstance().GetContext();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetFramebuffer(pFramebuffer);
 	context.Clear(CLEAR_FLAG_COLOR);
@@ -431,7 +431,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 {
 	static float dist = 0.0f;
 
-	GLContext& context = Application::GetInstance().GetContext();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
 
@@ -455,9 +455,9 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
 	
 	context.SetTexture(m_pReflection->GetColorAttachment(0), 0);
-	context.SetTexture(m_pWaterDistortionMap, 2);
-	context.SetTexture(m_pWaterNormalMap, 3);
-	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 4);
+	context.SetTexture(m_pWaterDistortionMap, 1);
+	context.SetTexture(m_pWaterNormalMap, 2);
+	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 3);
 
 	WaterPassPerFrame perFrame = {};
 	perFrame.CameraCombined = scene.GetCamera().GetCombinedMatrix();

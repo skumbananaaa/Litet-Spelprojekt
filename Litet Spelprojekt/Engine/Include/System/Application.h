@@ -1,8 +1,9 @@
 #pragma once
 #include <System\Window.h>
 #include <Graphics\Renderers\GLContext.h>
-#include "Input.h"
 #include <Graphics/GUI/GUIManager.h>
+#include <Audio\IAudioContext.h>
+#include "Input.h"
 
 class API Application
 {
@@ -20,7 +21,7 @@ public:
 	int32_t Run();
 
 	Window& GetWindow();
-	GLContext& GetContext();
+	GLContext& GetGraphicsContext();
 	GUIManager& GetGUIManager();
 
 	int32 GetFPS() const noexcept;
@@ -38,8 +39,9 @@ protected:
 
 private:
 	Window* m_pWindow;
-	GLContext* m_pContext;
+	GLContext* m_pGraphicsContext;
 	GUIManager* m_pGUIManager;
+	IAudioContext* m_pAudioContext;
 	int32 m_fps;
 	int32 m_ups;
 
@@ -109,7 +111,7 @@ inline void Application::InternalOnKeyDown(KEY keycode)
 
 inline void Application::InternalOnResize(uint32 width, uint32 height)
 {
-	m_pContext->SetViewport(width, height, 0, 0);
+	m_pGraphicsContext->SetViewport(width, height, 0, 0);
 	OnResize(width, height);
 }
 
@@ -125,10 +127,10 @@ inline Window& Application::GetWindow()
 	return *m_pWindow;
 }
 
-inline GLContext& Application::GetContext()
+inline GLContext& Application::GetGraphicsContext()
 {
-	assert(m_pContext != nullptr);
-	return *m_pContext;
+	assert(m_pGraphicsContext != nullptr);
+	return *m_pGraphicsContext;
 }
 
 inline GUIManager& Application::GetGUIManager()

@@ -123,11 +123,9 @@ void Editor::OnUpdate(float dtS)
 
 	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
 	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
-
-	Application::OnUpdate(dtS);
 }
 
-void Editor::OnRender()
+void Editor::OnRender(float dtS)
 {
 	GetContext().SetProgram(m_pShaderProgramDefault);
 	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
@@ -135,6 +133,4 @@ void Editor::OnRender()
 
 	GetContext().SetUniformBuffer(m_pGridUniform, 0);
 	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
-
-	Application::OnRender();
 }

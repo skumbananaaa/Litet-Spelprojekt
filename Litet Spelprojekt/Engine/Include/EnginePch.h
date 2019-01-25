@@ -4,6 +4,8 @@
 #if defined(ENGINE_EXPORT)
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
 #endif
 
 #include "Defines.h"

@@ -2,13 +2,14 @@
 
 #include <System/Application.h>
 #include <Graphics/GameObject.h>
-#include <Graphics/Buffers\UniformBuffer.h>
+#include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Camera.h>
 #include <Graphics/Scene.h>
 #include <Graphics/Renderers/IRenderer.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/Renderers/FontRenderer.h>
+#include <Graphics/Materials/Decal.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
@@ -37,6 +38,10 @@ private:
 
 	Texture2D* m_pBoatTexture;
 	Texture2D* m_pBoatNormalMap;
+	Texture2D* m_pBloodTexture;
+	Texture2D* m_pBloodNormal;
+
+	Decal* m_pDecal;
 
 	Material* m_pBoatMaterial;
 	Material* m_pGroundMaterial;

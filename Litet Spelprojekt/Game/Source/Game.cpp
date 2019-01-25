@@ -11,8 +11,11 @@ Game::Game() noexcept
 	m_pGroundTestMesh(nullptr),
 	m_pBoatTexture(nullptr),
 	m_pBoatNormalMap(nullptr),
+	m_pBloodTexture(nullptr),
+	m_pBloodNormal(nullptr),
 	m_pBoatMaterial(nullptr),
 	m_pGroundMaterial(nullptr),
+	m_pDecal(nullptr),
 	cartesianCamera(true)
 {
 	m_pRenderer = new DefferedRenderer();
@@ -32,8 +35,19 @@ Game::Game() noexcept
 	m_pGroundMaterial = new Material();
 	m_pGroundMaterial->SetColor(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f));
 
+	m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA);
+	m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormal.png", TEX_FORMAT_RGBA);
+
+	m_pDecal = new Decal();
+	m_pDecal->SetTexture(m_pBloodTexture);
+	m_pDecal->SetNormalMap(m_pBloodNormal);
+
 	GameObject* pGameObject = nullptr;
-	
+
+	pGameObject = new GameObject();
+	pGameObject->SetDecal(m_pDecal);
+	m_pScene->AddGameObject(pGameObject);
+
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pBoatMaterial);
 	pGameObject->SetMesh(m_pTestMesh);
@@ -76,6 +90,8 @@ Game::Game() noexcept
 
 Game::~Game()
 {
+	Delete(m_pBloodTexture);
+	Delete(m_pBloodNormal);
 	Delete(m_pFontRenderer);
 	Delete(m_pRenderer);
 	Delete(m_pScene);
@@ -84,6 +100,7 @@ Game::~Game()
 	Delete(m_pGroundTestMesh);
 	Delete(m_pBoatTexture);
 	Delete(m_pBoatNormalMap);
+	Delete(m_pDecal);
 	Delete(m_pBoatMaterial);
 	Delete(m_pGroundMaterial);
 }

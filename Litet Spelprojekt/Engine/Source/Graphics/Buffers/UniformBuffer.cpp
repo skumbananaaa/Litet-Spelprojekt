@@ -30,7 +30,7 @@ void UniformBuffer::Create(const void* pInitalData, uint32 count, uint32 stride)
 	glGenBuffers(1, &m_Buffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_Buffer);
 	
-	glBufferData(GL_UNIFORM_BUFFER, count * stride, pInitalData, GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, count * stride, pInitalData, GL_DYNAMIC_DRAW);
 	m_Count = count;
 	m_Stride = stride;
 

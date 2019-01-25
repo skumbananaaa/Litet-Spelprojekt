@@ -278,6 +278,17 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	context.SetDepthMask(false);
 }
 
+void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
+{
+	/*for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	{
+		perObject.Model = scene.GetGameObjects()[i]->GetTransform();
+		m_pGPassVSPerObject->UpdateData(&perObject);
+
+		context.DrawIndexedMesh(scene.GetGameObjects()[i]->GetMesh());
+	}*/
+}
+
 void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetContext();
@@ -303,7 +314,7 @@ void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects,
 	for (uint32 i = 0; i < gameobjects.size(); i++)
 	{
 		GameObject& gameobject = *gameobjects[i];
-		if (gameobject.HasMaterial())
+		if (gameobject.HasMaterial() && gameobject.HasMesh())
 		{
 			perObjectVS.Model = gameobject.GetTransform();
 			m_pGPassVSPerObject->UpdateData(&perObjectVS);
@@ -421,7 +432,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
 	{
 		GameObject& gameobject = *scene.GetGameObjects()[i];
-		if (!gameobject.HasMaterial())
+		if (!gameobject.HasMaterial() && gameobject.HasMesh())
 		{
 			perObject.Model = gameobject.GetTransform();
 			m_pWaterPassPerObject->UpdateData(&perObject);

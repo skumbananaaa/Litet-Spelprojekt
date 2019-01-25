@@ -26,6 +26,7 @@
     <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
+    <ClCompile Include="Source\Graphics\Material\Decal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -60,5 +61,6 @@
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIManager.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
+    <ClInclude Include="Include\Graphics\Materials\Decal.h" />
   </ItemGroup>
 </Project>

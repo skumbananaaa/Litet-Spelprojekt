@@ -25,6 +25,7 @@
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Camera.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
+    <ClInclude Include="Include\Graphics\Materials\Decal.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\FullscreenTri.h" />
@@ -54,14 +55,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Graphics\Camera.cpp" />
-    <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
-    <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\Material\Decal.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\Graphics\GameObject.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\FullscreenTri.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Mesh.cpp" />
     <ClCompile Include="Source\Graphics\Material\Material.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
-    <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />
     <ClCompile Include="Source\IO\WorldSerializer.cpp">

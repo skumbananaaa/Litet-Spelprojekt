@@ -3,6 +3,7 @@
 #include <System/Input.h>
 #include <Graphics/Renderers/GLContext.h>
 #include <Graphics/Buffers/UniformBuffer.h>
+#include <Graphics/Renderers/FontRenderer.h>
 
 #include <algorithm> 
 
@@ -12,11 +13,10 @@ struct VertexGUI
 {
 	glm::vec2 position;
 	glm::vec2 texCoords;
-	glm::vec3 color;
 
 	inline bool operator==(const VertexGUI& rs) const
 	{
-		return (position == rs.position) && (texCoords == rs.texCoords) && (color == rs.color);
+		return (position == rs.position) && (texCoords == rs.texCoords);
 	}
 };
 
@@ -29,6 +29,7 @@ struct PerObjectDataGUI
 class API GUIManager
 {
 	friend class Application;
+	friend class GUIObject;
 
 public:
 	GUIManager(float width, float height);
@@ -47,6 +48,7 @@ private:
 	PerObjectDataGUI m_PerObjectDataGUI;
 	UniformBuffer* m_pPerObjectUniform;
 	ShaderProgram* m_pShaderProgram;
+	FontRenderer* m_pFontRenderer;
 	bool m_OrderIsDirty;
 	unsigned int m_VAO;
 	unsigned int m_VBO;
@@ -54,7 +56,7 @@ private:
 
 	bool ContainsGUIObject(const std::vector<GUIObject*>& list, GUIObject* object);
 	void RequestRepaint(GUIObject* object);
-	void SetVertexQuadData(float x, float y, float width, float height, glm::vec4 color);
+	void SetVertexQuadData(float x, float y, float width, float height);
 
 	virtual void OnUpdate(float dtS);
 	virtual void OnRender(GLContext* context);

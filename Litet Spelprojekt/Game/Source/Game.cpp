@@ -85,6 +85,13 @@ Game::Game() noexcept
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
+
+	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
+	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+
+	GetGUIManager().AddGUIObject(m_pTextViewFPS);
+	GetGUIManager().AddGUIObject(m_pTextViewUPS);
+
 	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
 }
 
@@ -103,6 +110,8 @@ Game::~Game()
 	Delete(m_pDecal);
 	Delete(m_pBoatMaterial);
 	Delete(m_pGroundMaterial);
+	Delete(m_pTextViewFPS);
+	Delete(m_pTextViewUPS);
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -247,20 +256,11 @@ void Game::OnUpdate(float dtS)
 		m_pScene->GetCamera().UpdateFromLookAt();
 	}
 
-	Application::OnUpdate(dtS);
+	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
+	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 }
 
 void Game::OnRender(float dtS)
 {
 	m_pRenderer->DrawScene(*m_pScene, dtS);
-
-	GetContext().Enable(DEPTH_TEST);
-	GetContext().SetDepthMask(true);
-	GetContext().SetDepthFunc(FUNC_LESS);
-	GetContext().SetFramebuffer(nullptr);
-
-	m_pFontRenderer->RenderText(GetContext(), "FPS " + std::to_string(GetFPS()), 0.0f, 570.0f, 0.5f);
-	m_pFontRenderer->RenderText(GetContext(), "UPS " + std::to_string(GetUPS()), 0.0f, 540.0f, 0.5f);
-	
-	Application::OnRender(dtS);
 }

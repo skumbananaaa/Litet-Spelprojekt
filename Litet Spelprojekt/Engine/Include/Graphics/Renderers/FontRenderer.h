@@ -23,7 +23,7 @@ struct PerFrameFontRenderer
 class API FontRenderer
 {
 private:
-	FontRenderer(const GLContext& context, void* face);
+	FontRenderer(void* face);
 
 	static ShaderProgram* m_pShaderProgram;
 	static unsigned int m_VAO;
@@ -37,9 +37,10 @@ private:
 public:
 	~FontRenderer();
 
-	void RenderText(GLContext& context, std::string text, float x, float y, float scale);
+	void RenderText(GLContext* context, std::string text, float x, float y, float scale);
 	void UpdateRenderTargetSize(int width, int height);
 	void SetColor(const glm::vec3& color);
+	glm::vec2 CalculateSize(std::string text, float scale);
 
-	static FontRenderer* CreateFontRenderer(const GLContext& context, const char* font, int width, int height);
+	static FontRenderer* CreateFontRenderer(const char* font, int width, int height);
 };

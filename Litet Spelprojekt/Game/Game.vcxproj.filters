@@ -36,6 +36,10 @@
     <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
     <None Include="Resources\Shaders\FShaderWater.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />
+    <None Include="Resources\Shaders\FShaderGUI.glsl" />
+    <None Include="Resources\Shaders\FShaderFont.glsl" />
+    <None Include="Resources\Shaders\VShaderFont.glsl" />
+    <None Include="Resources\Shaders\VShaderGUI.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

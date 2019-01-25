@@ -5,7 +5,7 @@
 constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
-Application::Application(bool tempGUI_test)
+Application::Application()
 	: m_pWindow(nullptr), 
 	m_pContext(nullptr), 
 	m_pGUIManager(nullptr),
@@ -26,9 +26,7 @@ Application::Application(bool tempGUI_test)
 	{
 		m_pWindow = new Window("Small Game Project", 1600, 900, 1);
 		m_pContext = new GLContext(m_pWindow->GetWidth(), m_pWindow->GetHeight());
-
-		if(tempGUI_test)
-			m_pGUIManager = new GUIManager(m_pWindow->GetWidth(), m_pWindow->GetHeight());
+		m_pGUIManager = new GUIManager(m_pWindow->GetWidth(), m_pWindow->GetHeight());
 	}
 	
 	std::cout << "Application Initalized" << std::endl;

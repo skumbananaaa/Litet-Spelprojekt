@@ -6,7 +6,11 @@ constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
 Application::Application(bool tempGUI_test)
-	: m_pWindow(nullptr), m_pContext(nullptr), m_fps(0), m_ups(0)
+	: m_pWindow(nullptr), 
+	m_pContext(nullptr), 
+	m_pGUIManager(nullptr),
+	m_fps(0), 
+	m_ups(0)
 {
 	std::cout << "Application" << std::endl;
 

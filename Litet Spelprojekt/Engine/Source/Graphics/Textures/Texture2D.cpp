@@ -86,4 +86,6 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 	std::cout << "Loaded Texture2D" << std::endl;
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	delete textureData;
 }

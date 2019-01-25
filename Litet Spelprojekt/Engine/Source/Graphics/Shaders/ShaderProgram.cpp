@@ -81,7 +81,7 @@ ShaderProgram::~ShaderProgram()
 	glDeleteProgram(m_Program);
 }
 
-int ShaderProgram::GetUniformLocation(const char* name) noexcept
+int32 ShaderProgram::GetUniformLocation(const char* name) noexcept
 {
 	return glGetUniformLocation(m_Program, name);
 }

@@ -15,7 +15,7 @@ public:
 	Application& operator=(const Application& other) = delete;
 
 	Application(bool tempGUI_test = false);
-	~Application();
+	virtual ~Application();
 
 	int32_t Run();
 

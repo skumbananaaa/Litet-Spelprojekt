@@ -87,6 +87,7 @@ FontRenderer::FontRenderer(const GLContext& context, void* face)
 FontRenderer::~FontRenderer()
 {
 	delete m_pPerFrameUniform;
+
 	int counter = 0;
 	for (FontRenderer* renderer : m_Fontrenderers)
 	{
@@ -97,6 +98,7 @@ FontRenderer::~FontRenderer()
 		}
 		counter++;
 	}
+
 	if (m_Fontrenderers.size() == 0)
 	{
 		delete m_pShaderProgram;

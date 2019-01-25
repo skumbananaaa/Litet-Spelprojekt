@@ -18,7 +18,7 @@ public:
 	~Editor();
 
 	void OnUpdate(float dtS) override;
-	void OnRender() override;
+	void OnRender(float dtS) override;
 
 private:
 	ShaderProgram* m_pShaderProgramDefault;

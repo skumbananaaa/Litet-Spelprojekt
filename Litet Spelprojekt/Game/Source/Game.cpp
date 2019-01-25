@@ -91,8 +91,6 @@ Game::Game() noexcept
 
 	GetGUIManager().AddGUIObject(m_pTextViewFPS);
 	GetGUIManager().AddGUIObject(m_pTextViewUPS);
-
-	m_pFontRenderer = FontRenderer::CreateFontRenderer(GetContext(), "Resources/Fonts/arial.ttf", 800, 600);
 }
 
 Game::~Game()

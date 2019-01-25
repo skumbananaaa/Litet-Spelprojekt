@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
 
 TextView::TextView(float x, float y, float width, float height, const std::string& text, int size) : GUIObject(x, y, width, height), 

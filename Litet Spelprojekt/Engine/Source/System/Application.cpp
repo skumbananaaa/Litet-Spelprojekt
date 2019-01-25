@@ -20,12 +20,12 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Little HOMO", 1024, 768, 1);
+		m_pWindow = new Window("Small Game Project", 1024, 768, 1);
 		m_pContext = new GLContext();
 		m_pGUIManager = new GUIManager();
 	}
 	
-	std::cout << "Send Nudes" << std::endl;
+	std::cout << "Application Initalized" << std::endl;
 }
 
 Application::~Application()
@@ -53,7 +53,7 @@ Application::~Application()
 
 	glfwTerminate();
 
-	std::cout << "Nudes deleted" << std::endl;
+	std::cout << "Application deleted" << std::endl;
 }
 
 int32_t Application::Run()
@@ -86,7 +86,7 @@ int32_t Application::Run()
 
 		if (totalTime > 1.0f)
 		{
-			std::string title = "Little HOBO [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
+			std::string title = "Small Game Project [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
 			m_pWindow->SetTitle(title.c_str());
 
 			this->m_fps = fps;

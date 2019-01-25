@@ -1,5 +1,5 @@
 #include <EnginePch.h>
-#include "..\..\..\Include\Graphics\Buffers\UniformBuffer.h"
+#include <Graphics\Buffers\UniformBuffer.h>
 
 UniformBuffer::UniformBuffer(const void * pInitalData, uint32 count, uint32 stride)
 	: m_Buffer(0),

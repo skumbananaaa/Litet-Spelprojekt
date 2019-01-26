@@ -67,7 +67,9 @@ void main()
 		discard;
 	
 	vec3 mappedNormal = (texture(g_NormalMap, decalTexCoords).xyz * 2.0f) - vec3(1.0f);
-	mappedNormal = (mappedNormal.r * tangent) + (mappedNormal.g * binormal) + (mappedNormal.b * normal);
+	
+	mat3 tbn = mat3(tangent, binormal, normal);
+	mappedNormal = tbn * mappedNormal;
 
 	mappedNormal = (normalize(mappedNormal) + vec3(1.0f)) * 0.5f;
 	g_Normal = vec4(normalize(mappedNormal), mappedTexture.a);

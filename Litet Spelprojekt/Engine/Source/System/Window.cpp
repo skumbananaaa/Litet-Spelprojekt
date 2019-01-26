@@ -415,10 +415,13 @@ Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noe
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #if defined(_DEBUG)
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#else
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_FALSE);
 #endif
 
 	m_pWindow = glfwCreateWindow(width, height, pTitle, nullptr, nullptr);
@@ -462,6 +465,7 @@ void Window::PollEvents() noexcept
 
 void Window::SwapBuffers() noexcept
 {
+	glFlush();
 	glfwSwapBuffers(m_pWindow);
 }
 

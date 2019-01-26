@@ -25,8 +25,12 @@ Application::Application()
 	else
 	{
 		m_pWindow = new Window("Small Game Project", 1600, 900, 1);
-		m_pContext = new GLContext(m_pWindow->GetWidth(), m_pWindow->GetHeight());
-		m_pGUIManager = new GUIManager(m_pWindow->GetWidth(), m_pWindow->GetHeight());
+
+		float width = static_cast<float>(m_pWindow->GetWidth());
+		float height = static_cast<float>(m_pWindow->GetHeight());
+
+		m_pGraphicsContext = new GLContext(width, height);
+		m_pGUIManager = new GUIManager(width, height);
 	}
 
 	m_pAudioContext = IAudioContext::CreateContext();
@@ -39,29 +43,10 @@ Application::~Application()
 	assert(s_Instance == this);
 	s_Instance = nullptr;
 
-	if (m_pWindow != nullptr)
-	{
-		delete m_pWindow;
-		m_pWindow = nullptr;
-	}
-
-	if (m_pGraphicsContext != nullptr)
-	{
-		delete m_pGraphicsContext;
-		m_pGraphicsContext = nullptr;
-	}
-
-	if (m_pGUIManager != nullptr)
-	{
-		delete m_pGUIManager;
-		m_pGUIManager = nullptr;
-	}
-
-	if (m_pAudioContext != nullptr)
-	{
-		delete m_pAudioContext;
-		m_pAudioContext = nullptr;
-	}
+	DeleteSafe(m_pWindow);
+	DeleteSafe(m_pGraphicsContext);
+	DeleteSafe(m_pGUIManager);
+	DeleteSafe(m_pAudioContext);
 
 	glfwTerminate();
 

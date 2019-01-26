@@ -57,5 +57,5 @@ void main()
 	vec3 specular = vec3(spec) * lightColor;
 
 	vec3 finalColor = ((ambient + diffuse) * color.rgb * lightColor) + specular;
-	g_OutColor = vec4(clamp(finalColor, 0.0f, 1.0f), 1.0f);
+	g_OutColor = vec4(finalColor, 1.0f);
 }

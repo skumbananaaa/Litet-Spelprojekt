@@ -27,7 +27,6 @@ layout(std140, binding = 1) uniform VSPerObject
 void main()
 {
 	vec4 worldPos = g_Model * vec4(g_Position, 1.0);
-	gl_ClipDistance[0] = dot(worldPos, vec4(0.0f, 1.0f, 0.0f, 0.01f));
 
 	vec4 normal = g_Model * vec4(g_Normal, 0.0f);
 	vec4 tangent = g_Model * vec4(g_Tangent, 0.0f);

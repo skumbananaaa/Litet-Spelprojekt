@@ -23,8 +23,12 @@ layout(binding = 2) uniform FSPerObject
 
 void main()
 {
-	g_OutColor = (g_Color * (1.0f - g_HasTexture)) + (texture(g_Texture, fs_in.TexCoords) * g_HasTexture);
+	//COLOR
+	vec3 mappedColor = texture(g_Texture, fs_in.TexCoords).rgb * g_HasTexture;
+	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasTexture);
+	g_OutColor = vec4(uniformColor + mappedColor, 1.0f);
 	
+	//NORMAL
 	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
 	mappedNormal = (mappedNormal.r * fs_in.Tangent) + (mappedNormal.g * fs_in.Binormal) + (mappedNormal.b * fs_in.Normal); 
 

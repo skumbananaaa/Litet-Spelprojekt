@@ -28,6 +28,7 @@ private:
 	static ShaderProgram* m_pShaderProgram;
 	static unsigned int m_VAO;
 	static unsigned int m_VBO;
+	//Maybe intref count is enough?
 	static std::vector<FontRenderer*> m_Fontrenderers;
 
 	PerFrameFontRenderer m_PerFrameData;

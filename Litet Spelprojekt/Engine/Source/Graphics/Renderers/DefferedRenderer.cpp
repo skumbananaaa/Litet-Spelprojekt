@@ -58,6 +58,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	
 	context.Enable(DEPTH_TEST);
 	context.Enable(CULL_FACE);
+	context.Disable(BLEND);
 
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
@@ -305,7 +306,7 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 
 void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 {
-	GLContext& context = Application::GetInstance().GetContext();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetProgram(m_pDecalsPassProgram);
 

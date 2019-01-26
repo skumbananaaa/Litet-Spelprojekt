@@ -54,6 +54,9 @@ public:
 	const glm::mat4& GetViewMatrix() const noexcept;
 	const glm::mat4& GetProjectionMatrix() const noexcept;
 	const glm::mat4& GetCombinedMatrix() const noexcept;
+	const glm::mat4& GetInverseViewMatrix() const noexcept;
+	const glm::mat4& GetInverseProjectionMatrix() const noexcept;
+	const glm::mat4& GetInverseCombinedMatrix() const noexcept;
 
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec3& GetLookAt() const noexcept;
@@ -70,6 +73,9 @@ private:
 	glm::mat4 m_ViewMatrix;
 	glm::mat4 m_ProjectionMatrix;
 	glm::mat4 m_CombinedMatrix;
+	glm::mat4 m_InverseViewMatrix;
+	glm::mat4 m_InverseProjectionMatrix;
+	glm::mat4 m_InverseCombinedMatrix;
 
 	glm::vec3 m_Position;
 	glm::vec3 m_LookAt;
@@ -96,6 +102,21 @@ inline const glm::mat4& Camera::GetProjectionMatrix() const noexcept
 inline const glm::mat4& Camera::GetCombinedMatrix() const noexcept
 {
 	return m_CombinedMatrix;
+}
+
+inline const glm::mat4& Camera::GetInverseViewMatrix() const noexcept
+{
+	return m_InverseViewMatrix;
+}
+
+inline const glm::mat4& Camera::GetInverseProjectionMatrix() const noexcept
+{
+	return m_InverseProjectionMatrix;
+}
+
+inline const glm::mat4& Camera::GetInverseCombinedMatrix() const noexcept
+{
+	return m_InverseCombinedMatrix;
 }
 
 inline const glm::vec3& Camera::GetPosition() const noexcept

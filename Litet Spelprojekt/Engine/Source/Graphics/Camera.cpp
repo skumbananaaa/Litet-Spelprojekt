@@ -44,6 +44,10 @@ void Camera::UpdateFromPitchYaw() noexcept
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
+
+		m_InverseViewMatrix = glm::inverse(m_ViewMatrix);
+		m_InverseCombinedMatrix = glm::inverse(m_CombinedMatrix);
+		m_InverseProjectionMatrix = glm::inverse(m_ProjectionMatrix);
 	}
 }
 
@@ -59,6 +63,10 @@ void Camera::UpdateFromLookAt() noexcept
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
+
+		m_InverseViewMatrix = glm::inverse(m_ViewMatrix);
+		m_InverseCombinedMatrix = glm::inverse(m_CombinedMatrix);
+		m_InverseProjectionMatrix = glm::inverse(m_ProjectionMatrix);
 	}
 }
 

@@ -14,8 +14,9 @@ in VS_OUT
 layout(binding = 0) uniform sampler2D g_Texture;
 layout(binding = 1) uniform sampler2D g_NormalMap;
 
-layout(binding = 2) uniform FSPerObject
+layout(std140, binding = 1) uniform PerObject
 {
+	mat4 g_Model;
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;

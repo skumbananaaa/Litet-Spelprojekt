@@ -14,14 +14,9 @@ struct GPassVSPerFrame
 	glm::vec3 CameraPosition;
 };
 
-struct GPassVSPerObject
+struct GeometryPassPerObject
 {
 	glm::mat4 Model;
-};
-
-
-struct GPassFSPerObject
-{
 	glm::vec4 Color;
 	float HasTexture;
 	float HasNormalMap;
@@ -115,8 +110,7 @@ private:
 	FullscreenTri* m_pTriangle;
 	
 	UniformBuffer* m_pGPassVSPerFrame;
-	UniformBuffer* m_pGPassVSPerObject;
-	UniformBuffer* m_pGPassFSPerObject;
+	UniformBuffer* m_pGeoPassPerObject;
 	UniformBuffer* m_pLightPassBuffer;
 	
 	UniformBuffer* m_pDecalVSPerFrame;

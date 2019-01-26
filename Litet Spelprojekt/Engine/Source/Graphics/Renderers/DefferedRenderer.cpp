@@ -13,8 +13,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
 	m_pGPassVSPerFrame(nullptr),
-	m_pGPassVSPerObject(nullptr),
-	m_pGPassFSPerObject(nullptr),
+	m_pGeoPassPerObject(nullptr),
 	m_pDecalVSPerFrame(nullptr),
 	m_pDecalVSPerObject(nullptr),
 	m_pDecalFSPerFrame(nullptr),
@@ -44,8 +43,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pDecalMesh);
 	
 	DeleteSafe(m_pGPassVSPerFrame);
-	DeleteSafe(m_pGPassVSPerObject);
-	DeleteSafe(m_pGPassFSPerObject);
+	DeleteSafe(m_pGeoPassPerObject);
 	DeleteSafe(m_pLightPassBuffer);
 
 	DeleteSafe(m_pDecalVSPerFrame);
@@ -241,17 +239,10 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		GPassVSPerObject object = {};
-		object.Model = glm::mat4(1.0f);
-
-		m_pGPassVSPerObject = new UniformBuffer(&object, 1, sizeof(GPassVSPerObject));
-	}
-
-	{
-		GPassFSPerObject object = {};
+		GeometryPassPerObject object = {};
 		object.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		m_pGPassFSPerObject = new UniformBuffer(&object, 1, sizeof(GPassFSPerObject));
+		m_pGeoPassPerObject = new UniformBuffer(&object, 1, sizeof(GeometryPassPerObject));
 	}
 
 	{
@@ -338,11 +329,11 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	perFrame.CameraPosition = scene.GetCamera().GetPosition();
 	m_pGPassVSPerFrame->UpdateData(&perFrame);
 
-	GPassVSPerObject perObject = {};
+	GeometryPassPerObject perObject = {};
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
 	{
 		perObject.Model = scene.GetGameObjects()[i]->GetTransform();
-		m_pGPassVSPerObject->UpdateData(&perObject);
+		m_pGeoPassPerObject->UpdateData(&perObject);
 
 		context.DrawIndexedMesh(scene.GetGameObjects()[i]->GetMesh());
 	}
@@ -377,8 +368,8 @@ void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 
 	{
 		DecalPassFSPerFrame perFrameFS = {};
-		perFrameFS.InverseView = glm::inverse(scene.GetCamera().GetViewMatrix());
-		perFrameFS.InverseProjection = glm::inverse(scene.GetCamera().GetProjectionMatrix());
+		perFrameFS.InverseView = scene.GetCamera().GetInverseViewMatrix();
+		perFrameFS.InverseProjection = scene.GetCamera().GetInverseProjectionMatrix();
 		m_pDecalFSPerFrame->UpdateData(&perFrameFS);
 	}
 
@@ -425,49 +416,44 @@ void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects,
 	context.SetProgram(m_pGeometryPassProgram);
 
 	context.SetUniformBuffer(m_pGPassVSPerFrame, 0);
-	context.SetUniformBuffer(m_pGPassVSPerObject, 1);
-	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
+	context.SetUniformBuffer(m_pGeoPassPerObject, 1);
 
 	GPassVSPerFrame perFrame = {};
 	perFrame.ViewProjection = camera.GetCombinedMatrix();
 	perFrame.CameraPosition = camera.GetPosition();
 	m_pGPassVSPerFrame->UpdateData(&perFrame);
 
-	GPassVSPerObject perObjectVS = {};
-	GPassFSPerObject perObjectFS = {};
-
+	GeometryPassPerObject perObject = {};
 	for (uint32 i = 0; i < gameobjects.size(); i++)
 	{
 		GameObject& gameobject = *gameobjects[i];
 		if (gameobject.HasMaterial() && gameobject.HasMesh())
 		{
-			perObjectVS.Model = gameobject.GetTransform();
-			m_pGPassVSPerObject->UpdateData(&perObjectVS);
-
 			const Material& material = gameobject.GetMaterial();
-			perObjectFS.Color = material.GetColor();
+			perObject.Model = gameobject.GetTransform();
+			perObject.Color = material.GetColor();
+
 			if (material.HasTexture())
 			{
-				perObjectFS.HasTexture = 1.0f;
+				perObject.HasTexture = 1.0f;
 				context.SetTexture(material.GetTexture(), 0);
 			}
 			else
 			{
-				perObjectFS.HasTexture = 0.0f;
+				perObject.HasTexture = 0.0f;
 			}
 
 			if (material.HasNormalMap())
 			{
-				perObjectFS.HasNormalMap = 1.0f;
+				perObject.HasNormalMap = 1.0f;
 				context.SetTexture(material.GetNormalMap(), 1);
 			}
 			else
 			{
-				perObjectFS.HasNormalMap = 0.0f;
+				perObject.HasNormalMap = 0.0f;
 			}
 
-			m_pGPassFSPerObject->UpdateData(&perObjectFS);
-
+			m_pGeoPassPerObject->UpdateData(&perObject);
 			context.DrawIndexedMesh(gameobject.GetMesh());
 		}
 	}
@@ -496,8 +482,8 @@ void DefferedRenderer::LightPass(const Camera& camera, const Scene& scene, const
 
 	{
 		LightPassBuffer buff = {};
-		buff.InverseView = glm::inverse(camera.GetViewMatrix());
-		buff.InverseProjection = glm::inverse(camera.GetProjectionMatrix());
+		buff.InverseView = camera.GetInverseViewMatrix();
+		buff.InverseProjection = camera.GetInverseProjectionMatrix();
 		buff.CameraPosition = camera.GetPosition();
 
 		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
@@ -529,8 +515,6 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	static float dist = 0.0f;
 
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
-
-	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
 
 	Camera reflectionCam = scene.GetCamera();
 	float reflDistance = reflectionCam.GetPosition().y * 2.0f;

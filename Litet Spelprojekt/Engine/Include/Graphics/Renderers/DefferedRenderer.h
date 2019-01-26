@@ -5,6 +5,9 @@
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
 
+#define NUM_DIRECTIONAL_LIGHTS 1
+#define NUM_POINT_LIGHTS 8
+
 struct GPassVSPerFrame
 {
 	glm::mat4 ViewProjection;
@@ -46,11 +49,28 @@ struct DecalPassFSPerObject
 	glm::mat4 InverseModel;
 };
 
+//Uniformbuffers requires a 16 multiple so we pad 
+//the struct in case we want to add more lights
+__declspec(align(16)) struct DirectionalLightBuffer
+{
+	glm::vec4 Color = glm::vec4(0.0f);
+	glm::vec3 Direction = glm::vec3(0.0f);
+};
+
+__declspec(align(16)) struct PointLightBuffer
+{
+	glm::vec4 Color = glm::vec4(0.0f);
+	glm::vec3 Position = glm::vec3(0.0f);
+};
+
 struct LightPassBuffer
 {
 	glm::mat4 InverseView;
 	glm::mat4 InverseProjection;
 	glm::vec3 CameraPosition;
+	float pad1;
+	DirectionalLightBuffer DirectionalLights[NUM_DIRECTIONAL_LIGHTS];
+	PointLightBuffer PointLights[NUM_POINT_LIGHTS];
 };
 
 struct WaterPassPerFrame
@@ -83,7 +103,7 @@ private:
 	void DepthPrePass(const Scene& scene) const noexcept;
 	void DecalPass(const Scene& scene) const noexcept;
 	void GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept;
-	void LightPass(const Camera& camera, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept;
+	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 
 private:

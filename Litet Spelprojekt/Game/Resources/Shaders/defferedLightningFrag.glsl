@@ -1,5 +1,8 @@
 #version 420
 
+#define NUM_DIRECTIONAL_LIGHTS 1
+#define NUM_POINT_LIGHTS 8
+
 layout(location = 0) out vec4 g_OutColor;
 
 in VS_OUT
@@ -8,13 +11,29 @@ in VS_OUT
 } fs_in;
 
 layout(binding = 0) uniform sampler2D g_Color;
-layout(binding = 1) uniform sampler2D g_NormalDepth;
+layout(binding = 1) uniform sampler2D g_Normal;
+layout(binding = 2) uniform sampler2D g_Depth;
+
+struct DirectionalLight
+{
+	vec4 Color;
+	vec4 Direction;
+};
+
+struct PointLight
+{
+	vec4 Color;
+	vec4 Position;
+};
+
 
 layout(binding = 0) uniform LightPassBuffer
 {
 	mat4 g_InverseView;
 	mat4 g_InverseProjection;
-	vec3 g_CameraPosition;
+	vec4 g_CameraPosition;
+	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
+	PointLight g_PointLights[NUM_POINT_LIGHTS];
 };
 
 vec3 PositionFromDepth(float depth)
@@ -34,20 +53,12 @@ vec3 NormalDecode(vec3 mappedNormal)
 	return (mappedNormal * 2.0f) - vec3(1.0f);
 }
 
-void main()
+vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color)
 {
-	vec4 normalDepth = texture(g_NormalDepth, fs_in.TexCoords);
-	vec3 position = PositionFromDepth(normalDepth.w);
-
-	vec3 normal = normalize(NormalDecode(normalDepth.xyz));
-	vec4 color = texture(g_Color, fs_in.TexCoords);
-	vec3 lightDir = normalize(vec3(0.0f, 1.0f, 0.5f));
-	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-	vec3 viewDir = normalize(g_CameraPosition - position);
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 
 	//AMBIENT
-	vec3 ambient = vec3(0.3f);
+	vec3 ambient = vec3(0.1f);
 
 	//DIFFUSE
 	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f));
@@ -56,6 +67,39 @@ void main()
 	float spec = pow(max(dot(normal, halfwayDir), 0.0), 256.0);
 	vec3 specular = vec3(spec) * lightColor;
 
-	vec3 finalColor = ((ambient + diffuse) * color.rgb * lightColor) + specular;
-	g_OutColor = vec4(finalColor, 1.0f);
+	return ((ambient + diffuse) * color * lightColor) + specular;
+}
+
+void main()
+{
+	float depth = texture(g_Depth, fs_in.TexCoords).r;
+	vec3 normal = normalize(texture(g_Normal, fs_in.TexCoords).xyz);
+	vec3 position = PositionFromDepth(depth);
+
+	vec3 color = texture(g_Color, fs_in.TexCoords).rgb;
+	vec3 viewDir = normalize(g_CameraPosition.xyz - position);
+	
+	//Do  lightcalculation
+	vec3 c = vec3(0.0f);
+	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
+	{
+		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
+		vec3 lightColor = g_DirLights[i].Color.rgb;
+
+		c += CalcLight(lightDir, lightColor, viewDir, normal, color);
+	}
+
+	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
+	{
+		vec3 lightDir = g_PointLights[i].Position.xyz - position;
+		float distance = length(lightDir);
+		lightDir = normalize(lightDir);
+
+		float attenuation = 1.0f / (distance * distance);
+		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
+
+		c += CalcLight(lightDir, lightColor, viewDir, normal, color);
+	}
+
+	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);
 }

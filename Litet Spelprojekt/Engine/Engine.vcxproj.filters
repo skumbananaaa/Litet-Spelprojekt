@@ -33,6 +33,8 @@
     <ClCompile Include="Source\Audio\SoundEffect.cpp" />
     <ClCompile Include="Source\Audio\Sources\AudioSource.cpp" />
     <ClCompile Include="Source\Audio\Listeners\AudioListener.cpp" />
+    <ClCompile Include="Source\Graphics\Lights\DirectionalLight.cpp" />
+    <ClCompile Include="Source\Graphics\Lights\PointLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -74,5 +76,7 @@
     <ClInclude Include="Include\Audio\Sources\AudioSource.h" />
     <ClInclude Include="Include\Audio\SoundEffect.h" />
     <ClInclude Include="Include\Audio\Listeners\AudioListener.h" />
+    <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
+    <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
   </ItemGroup>
 </Project>

@@ -8,15 +8,21 @@ Scene::Scene() noexcept
 
 Scene::~Scene()
 {
-	if (m_pCamera != nullptr)
+	DeleteSafe(m_pCamera);
+
+	for (size_t i = 0; i < m_GameObjects.size(); i++)
 	{
-		delete m_pCamera;
+		DeleteSafe(m_GameObjects[i]);
 	}
 
-	for (uint32 i = 0; i < m_GameObjects.size(); i++)
+	for (size_t i = 0; i < m_DirectionalLights.size(); i++)
 	{
-		delete m_GameObjects[i];
-		m_GameObjects[i] = nullptr;
+		DeleteSafe(m_DirectionalLights[i]);
+	}
+
+	for (size_t i = 0; i < m_PointLights.size(); i++)
+	{
+		DeleteSafe(m_PointLights[i]);
 	}
 }
 
@@ -28,6 +34,16 @@ void Scene::SetCamera(Camera* pCamera) noexcept
 void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
 	m_GameObjects.push_back(pGameObject);
+}
+
+void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
+{
+	m_DirectionalLights.push_back(pLight);
+}
+
+void Scene::AddPointLight(PointLight* pLight) noexcept
+{
+	m_PointLights.push_back(pLight);
 }
 
 void Scene::RemoveGameObject(uint32 index) noexcept

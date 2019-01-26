@@ -81,7 +81,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	GeometryPass(scene.GetGameObjects(), scene.GetCamera(), m_pGBuffer);
 	DecalPass(scene);
-	LightPass(scene.GetCamera(), nullptr, m_pGBuffer);
+	LightPass(scene.GetCamera(), scene, nullptr, m_pGBuffer);
 
 	context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
 
@@ -473,7 +473,7 @@ void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects,
 	}
 }
 
-void DefferedRenderer::LightPass(const Camera& camera, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept
+void DefferedRenderer::LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -500,11 +500,26 @@ void DefferedRenderer::LightPass(const Camera& camera, const Framebuffer* const 
 		buff.InverseProjection = glm::inverse(camera.GetProjectionMatrix());
 		buff.CameraPosition = camera.GetPosition();
 
+		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
+		for (size_t i = 0; i < directionalLights.size(); i++)
+		{
+			buff.DirectionalLights[i].Color = directionalLights[i]->GetColor();
+			buff.DirectionalLights[i].Direction = directionalLights[i]->GetDirection();
+		}
+
+		const std::vector<PointLight*>& pointLights = scene.GetPointLights();
+		for (size_t i = 0; i < pointLights.size(); i++)
+		{
+			buff.PointLights[i].Color = pointLights[i]->GetColor();
+			buff.PointLights[i].Position = pointLights[i]->GetPosition();
+		}
+
 		m_pLightPassBuffer->UpdateData(&buff);
 	}
 
 	context.SetTexture(pGBuffer->GetColorAttachment(0), 0);
 	context.SetTexture(pGBuffer->GetColorAttachment(1), 1);
+	context.SetTexture(pGBuffer->GetDepthAttachment(), 2);
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 }
@@ -527,7 +542,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	GeometryPass(scene.GetGameObjects(), reflectionCam, m_pWaterGBuffer);
 	context.Disable(Cap::CLIP_DISTANCE0);
 	
-	LightPass(reflectionCam, m_pReflection, m_pWaterGBuffer);
+	LightPass(reflectionCam, scene, m_pReflection, m_pWaterGBuffer);
 
 	//Start rendering forward
 	context.SetProgram(m_pWaterpassProgram);

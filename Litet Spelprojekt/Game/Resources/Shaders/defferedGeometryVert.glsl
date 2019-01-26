@@ -32,12 +32,12 @@ void main()
 	vec4 worldPos = g_Model * vec4(g_Position, 1.0);
 	gl_ClipDistance[0] = dot(worldPos, vec4(0.0f, 1.0f, 0.0f, 0.01f));
 
-	vec4 normal = g_Model * vec4(g_Normal, 0.0f);
-	vec4 tangent = g_Model * vec4(g_Tangent, 0.0f);
+	vec3 normal = (g_Model * vec4(g_Normal, 0.0f)).xyz;
+	vec3 tangent = (g_Model * vec4(g_Tangent, 0.0f)).xyz;
 	
-	vs_out.Normal = normal.xyz;
-	vs_out.Tangent = tangent.xyz;
-	vs_out.Binormal = cross(normal.xyz, tangent.xyz);
+	vs_out.Normal = normal;
+	vs_out.Tangent = tangent;
+	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
 	vs_out.TexCoords = g_TexCoords;
 
 	gl_Position = g_ViewProjection * worldPos;

@@ -58,14 +58,13 @@ void main()
 	vec3 ddxWp = dFdx(worldPosition);
 	vec3 ddyWp = dFdy(worldPosition);
 
-	vec3 normal = normalize(cross(ddxWp, ddyWp));
+	vec3 binormal = normalize(ddxWp);
+	vec3 tangent = normalize(ddyWp);
+	vec3 normal = cross(binormal, tangent);
 
 	//Reject if on a side TODO: Fix all sides
 	if (abs(dot(normal, vec3(0.0f, 1.0f, 0.0f))) < 0.5f)
 		discard;
-
-	vec3 binormal = normalize(ddxWp);
-	vec3 tangent = normalize(ddyWp);
 	
 	vec3 mappedNormal = (texture(g_NormalMap, decalTexCoords).xyz * 2.0f) - vec3(1.0f);
 	mappedNormal = (mappedNormal.r * tangent) + (mappedNormal.g * binormal) + (mappedNormal.b * normal);

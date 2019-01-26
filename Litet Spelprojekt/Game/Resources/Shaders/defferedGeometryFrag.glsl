@@ -31,10 +31,12 @@ void main()
 	
 	//NORMAL
 	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
-	mappedNormal = (mappedNormal.r * normalize(fs_in.Tangent)) + (mappedNormal.g * normalize(fs_in.Binormal)) + (mappedNormal.b * normalize(fs_in.Normal)); 
+	
+	mat3 tbn = mat3(fs_in.Tangent, fs_in.Binormal, fs_in.Normal);
+	mappedNormal = tbn * mappedNormal;
 
 	vec3 normal = (fs_in.Normal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
 	normal = (normalize(normal) + vec3(1.0f)) * 0.5f;
 
-	g_Normal = vec4(normal, gl_FragCoord.z);
+	g_Normal = vec4(normal, 1.0f);
 }

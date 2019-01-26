@@ -32,7 +32,6 @@ struct DecalPassVSPerObject
 	glm::mat4 Model;
 };
 
-
 struct DecalPassFSPerFrame
 {
 	glm::mat4 InverseView;

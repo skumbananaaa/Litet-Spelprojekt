@@ -78,7 +78,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	//DepthPrePass(scene);
 
 	GeometryPass(scene.GetGameObjects(), scene.GetCamera(), m_pGBuffer);
-	DecalPass(scene);
+	//DecalPass(scene);
 	LightPass(scene.GetCamera(), scene, nullptr, m_pGBuffer);
 
 	context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);

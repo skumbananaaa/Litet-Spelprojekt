@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include "../../Include/IO/WorldSerializer.h"
 
 bool WorldSerializer::Read(const char* filename, std::function<void(int)> callback)

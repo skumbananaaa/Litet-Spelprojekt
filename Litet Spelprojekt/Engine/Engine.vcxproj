@@ -33,6 +33,7 @@
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
+    <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
@@ -75,6 +76,7 @@
     </ClCompile>
     <ClCompile Include="Source\Graphics\Lights\DirectionalLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\PointLight.cpp" />
+    <ClCompile Include="Source\Graphics\Lights\Spotlight.cpp" />
     <ClCompile Include="Source\Graphics\Material\Decal.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -96,9 +98,11 @@
     <ClCompile Include="Source\EnginePch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">EnginePch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Include\GLAD\glad.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\Graphics\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\IndexedMesh.cpp" />
@@ -203,6 +207,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>ENGINE_EXPORT;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>EnginePch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype.lib;glfw3.lib;assimp-vc140-mt.lib;IrrXML.lib;OpenAL32.lib;EFX-Util.lib;zlibstaticd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>

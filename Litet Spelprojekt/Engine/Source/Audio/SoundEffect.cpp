@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Audio/SoundEffect.h>
 
 SoundEffect::SoundEffect(const char* const path) noexcept : m_BufferId(0)

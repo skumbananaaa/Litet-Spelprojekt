@@ -21,7 +21,7 @@ UniformBuffer::~UniformBuffer()
 void UniformBuffer::UpdateData(const void* pData) noexcept 
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, m_Buffer);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, m_Count * m_Stride, pData);
+	glBufferData(GL_UNIFORM_BUFFER, m_Count * m_Stride, pData, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

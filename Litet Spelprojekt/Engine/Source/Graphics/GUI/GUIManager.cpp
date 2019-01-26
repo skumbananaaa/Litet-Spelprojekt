@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Graphics/GUI/GUIManager.h>
 #include <Graphics/GUI/GUIObject.h>
 #include <System/Application.h>

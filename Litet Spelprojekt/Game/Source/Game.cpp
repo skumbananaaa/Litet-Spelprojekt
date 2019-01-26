@@ -2,6 +2,9 @@
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
 
+
+GameObject* g_pDecalObject = nullptr;
+
 Game::Game() noexcept
 	: m_pFontRenderer(nullptr),
 	m_pRenderer(nullptr),
@@ -24,6 +27,20 @@ Game::Game() noexcept
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 	m_pGroundTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cliff_3_low.obj");
 
+	{
+		TextureParams params = {};
+		params.Wrap = TEX_PARAM_REPEAT;
+		params.MinFilter = TEX_LINEAR;
+		params.MagFilter = TEX_LINEAR;
+
+		m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA, true, params);
+		m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormalMap.png", TEX_FORMAT_RGBA, true, params);
+	}
+
+	m_pDecal = new Decal();
+	m_pDecal->SetTexture(m_pBloodTexture);
+	m_pDecal->SetNormalMap(m_pBloodNormal);
+
 	m_pBoatTexture = new Texture2D("Resources/Textures/ship.jpg", TEX_FORMAT_RGBA);
 	m_pBoatNormalMap = new Texture2D("Resources/Textures/shipNormalMap.png", TEX_FORMAT_RGBA);
 
@@ -35,25 +52,21 @@ Game::Game() noexcept
 	m_pGroundMaterial = new Material();
 	m_pGroundMaterial->SetColor(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f));
 
-	m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA);
-	m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormal.png", TEX_FORMAT_RGBA);
-
-	m_pDecal = new Decal();
-	m_pDecal->SetTexture(m_pBloodTexture);
-	m_pDecal->SetNormalMap(m_pBloodNormal);
-
 	GameObject* pGameObject = nullptr;
 
 	pGameObject = new GameObject();
 	pGameObject->SetDecal(m_pDecal);
-	pGameObject->SetPosition(glm::vec3(0.0f, 5.0f, 1.0f));
-	pGameObject->SetScale(glm::vec3(0.01f, 0.005f, 0.01f));
+	pGameObject->SetPosition(glm::vec3(-6.0f, 2.0f, 0.0f));
+	pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
+	pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+	pGameObject->UpdateTransform();
+	g_pDecalObject = pGameObject;
 	m_pScene->AddGameObject(pGameObject);
 
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pBoatMaterial);
 	pGameObject->SetMesh(m_pTestMesh);
-	pGameObject->SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+	pGameObject->SetPosition(glm::vec3(0.0f, -0.8f, 0.0f));
 	pGameObject->SetScale(glm::vec3(6.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
@@ -67,12 +80,9 @@ Game::Game() noexcept
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), glm::vec3(1.0, 0.0, 0.0));
-	pCamera->SetProjectionMatrix(glm::perspective(
-		glm::radians<float>(90.0F),
-		(float)GetWindow().GetWidth() /
-		(float)GetWindow().GetHeight(),
-		0.1F, 100.0F));
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
@@ -270,6 +280,12 @@ void Game::OnUpdate(float dtS)
 	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 
 	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
+
+	static float decalRot = 0.0f;
+	decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
+	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
+	g_pDecalObject->SetPosition(g_pDecalObject->GetPosition() + glm::vec3(0.3f * dtS, 0.0f, 0.0f));
+	g_pDecalObject->UpdateTransform();
 }
 
 void Game::OnRender(float dtS)

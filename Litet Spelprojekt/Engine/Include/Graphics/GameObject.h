@@ -28,6 +28,8 @@ public:
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
 
+	const glm::vec3& GetPosition() const noexcept;
+
 	void UpdateTransform() noexcept;
 
 private:
@@ -40,6 +42,11 @@ private:
 	glm::mat4 m_transform;
 	bool m_IsDirty;
 };
+
+inline const glm::vec3& GameObject::GetPosition() const noexcept
+{
+	return m_position;
+}
 
 inline void GameObject::SetDecal(const Decal* const pDecal) noexcept
 {

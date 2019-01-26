@@ -57,7 +57,7 @@ void TextView::OnRender(GLContext* context, FontRenderer* fontRenderer)
 
 	if (!m_Text.empty())
 	{
-		glm::vec2 size = fontRenderer->CalculateSize(m_Text, 0.4);
+		glm::vec2 size = fontRenderer->CalculateSize(m_Text, 0.4f);
 		float x = 0;
 		float y = 0;
 
@@ -77,6 +77,6 @@ void TextView::OnRender(GLContext* context, FontRenderer* fontRenderer)
 			break;
 		}
 
-		fontRenderer->RenderText(context, m_Text, x, y, m_Size / 100.0F);
+		fontRenderer->RenderText(context, m_Text, x, y, m_Size / 100.0f);
 	}
 }

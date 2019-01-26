@@ -30,7 +30,7 @@ void main()
 	
 	//NORMAL
 	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
-	mappedNormal = (mappedNormal.r * fs_in.Tangent) + (mappedNormal.g * fs_in.Binormal) + (mappedNormal.b * fs_in.Normal); 
+	mappedNormal = (mappedNormal.r * normalize(fs_in.Tangent)) + (mappedNormal.g * normalize(fs_in.Binormal)) + (mappedNormal.b * normalize(fs_in.Normal)); 
 
 	vec3 normal = (fs_in.Normal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
 	normal = (normalize(normal) + vec3(1.0f)) * 0.5f;

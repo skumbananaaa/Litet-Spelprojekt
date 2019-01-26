@@ -62,9 +62,18 @@ void Camera::UpdateFromLookAt() noexcept
 	}
 }
 
-void Camera::SetProjectionMatrix(const glm::mat4& matrix) noexcept
+/*void Camera::SetProjectionMatrix(const glm::mat4& matrix) noexcept
 {
 	m_ProjectionMatrix = matrix;
+	m_IsDirty = true;
+}*/
+
+void Camera::CreatePerspective(float fovRad, float aspectWihe, float nearPlane, float farPlane) noexcept
+{
+	m_ProjectionMatrix = glm::perspective(fovRad, aspectWihe, nearPlane, farPlane);
+	m_Near = nearPlane;
+	m_Far = farPlane;
+
 	m_IsDirty = true;
 }
 

@@ -22,7 +22,7 @@ GUIManager::GUIManager(float width, float height) : m_OrderIsDirty(false)
 
 	m_pShaderProgram = new ShaderProgram(vShader, fShader);
 
-	m_pFontRenderer = FontRenderer::CreateFontRenderer("Resources/Fonts/arial.ttf", width, height);
+	m_pFontRenderer = FontRenderer::CreateFontRenderer("Resources/Fonts/arial.ttf", static_cast<int32>(width), static_cast<int32>(height));
 
 	m_VertexQuad[0].texCoords.x = 0.0;
 	m_VertexQuad[0].texCoords.y = 0.0;
@@ -194,7 +194,7 @@ void GUIManager::OnRender(GLContext* context)
 		context->SetFramebuffer(object->m_pFramebuffer);
 		context->SetClearColor(0.0, 0.0, 0.0, 0.0);
 		context->Clear(CLEAR_FLAG_COLOR);
-		context->SetViewport(object->GetWidth(), object->GetHeight(), 0, 0);
+		context->SetViewport(static_cast<uint32>(object->GetWidth()), static_cast<uint32>(object->GetHeight()), 0, 0);
 
 		glBindVertexArray(m_VAO);
 		context->SetProgram(m_pShaderProgram);

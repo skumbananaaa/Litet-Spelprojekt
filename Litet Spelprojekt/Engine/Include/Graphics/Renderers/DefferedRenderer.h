@@ -24,6 +24,28 @@ struct GPassFSPerObject
 	float HasNormalMap;
 };
 
+struct DecalPassVSPerFrame
+{
+	glm::mat4 ViewProj;
+};
+
+struct DecalPassVSPerObject
+{
+	glm::mat4 Model;
+};
+
+
+struct DecalPassFSPerFrame
+{
+	glm::mat4 InverseView;
+	glm::mat4 InverseProjection;
+};
+
+struct DecalPassFSPerObject
+{
+	glm::mat4 InverseModel;
+};
+
 struct LightPassBuffer
 {
 	glm::mat4 InverseView;
@@ -69,16 +91,27 @@ private:
 	Framebuffer* m_pFinalFramebuffer;
 	Framebuffer* m_pWaterGBuffer;
 	Framebuffer* m_pReflection;
+	
 	FullscreenTri* m_pTriangle;
+	
 	UniformBuffer* m_pGPassVSPerFrame;
 	UniformBuffer* m_pGPassVSPerObject;
 	UniformBuffer* m_pGPassFSPerObject;
 	UniformBuffer* m_pLightPassBuffer;
+	
+	UniformBuffer* m_pDecalVSPerFrame;
+	UniformBuffer* m_pDecalVSPerObject;
+	UniformBuffer* m_pDecalFSPerFrame;
+	UniformBuffer* m_pDecalFSPerObject;
+
 	UniformBuffer* m_pWaterPassPerFrame;
 	UniformBuffer* m_pWaterPassPerObject;
+	
 	IndexedMesh* m_pDecalMesh;
+	
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
+	
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pDecalsPassProgram;

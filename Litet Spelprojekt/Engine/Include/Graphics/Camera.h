@@ -34,7 +34,9 @@ public:
 	void UpdateFromPitchYaw() noexcept;
 	void UpdateFromLookAt() noexcept;
 
-	void SetProjectionMatrix(const glm::mat4& matrix) noexcept;
+	//void SetProjectionMatrix(const glm::mat4& matrix) noexcept;
+
+	void CreatePerspective(float fovRad, float aspectWihe, float nearPlane, float farPlane) noexcept;
 
 	void MoveCartesian(CameraDirCartesian dir, float amount) noexcept;
 	void MovePosPolar(CameraPosPolar dir, float amount) noexcept;
@@ -59,6 +61,8 @@ public:
 
 	float GetYaw() const noexcept;
 	float GetPitch() const noexcept;
+	float GetFarPlane() const noexcept;
+	float GetNearPlane() const noexcept;
 
 	void CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept;
 
@@ -73,6 +77,8 @@ private:
 
 	float m_Yaw;
 	float m_Pitch;
+	float m_Far;
+	float m_Near;
 
 	bool m_IsDirty;
 };
@@ -115,4 +121,14 @@ inline float Camera::GetYaw() const noexcept
 inline float Camera::GetPitch() const noexcept
 {
 	return m_Pitch;
+}
+
+inline float Camera::GetFarPlane() const noexcept
+{
+	return m_Far;
+}
+
+inline float Camera::GetNearPlane() const noexcept
+{
+	return m_Near;
 }

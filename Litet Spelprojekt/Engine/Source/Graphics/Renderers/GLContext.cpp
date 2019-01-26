@@ -14,7 +14,7 @@ GLContext::GLContext(float width, float height)
 		std::cout << glGetString(GL_VENDOR) << std::endl;
 		std::cout << glGetString(GL_RENDERER) << std::endl;
 
-		SetViewport(width, height, 0, 0);
+		SetViewport(static_cast<uint32>(width), static_cast<uint32>(height), 0, 0);
 	}
 }
 
@@ -126,10 +126,10 @@ void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 top
 {
 	glViewport(topX, topY, width, height);
 	glScissor(topX, topY, width, height);
-	m_ViewPort.x = width;
-	m_ViewPort.y = height;
-	m_ViewPort.z = topX;
-	m_ViewPort.w = topY;
+	m_ViewPort.x = static_cast<float>(width);
+	m_ViewPort.y = static_cast<float>(height);
+	m_ViewPort.z = static_cast<float>(topX);
+	m_ViewPort.w = static_cast<float>(topY);
 }
 
 void GLContext::SetViewport(const glm::vec4& viewport) noexcept

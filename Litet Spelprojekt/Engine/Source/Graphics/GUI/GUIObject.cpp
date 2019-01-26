@@ -10,8 +10,8 @@ GUIObject::GUIObject(float x, float y, float width, float height) :
 	desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 	desc.SamplingParams = TextureParams();
 	desc.NumColorAttachments = 1;
-	desc.Width = width;
-	desc.Height = height;
+	desc.Width = static_cast<uint32>(width);
+	desc.Height = static_cast<uint32>(height);
 
 	m_position.x = x;
 	m_position.y = y;

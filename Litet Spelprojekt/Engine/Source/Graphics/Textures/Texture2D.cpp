@@ -59,6 +59,11 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 	int height;
 	int nrChannels;
 	uint8* textureData = stbi_load(path, &width, &height, &nrChannels, FormatToNrChannels(format));
+	if (textureData == nullptr)
+	{
+		std::cout << "Error: Could not load texture '" << path << "'" << std::endl;
+		return;
+	}
 
 	glGenTextures(1, &m_Texture);
 	SetParameters(params);

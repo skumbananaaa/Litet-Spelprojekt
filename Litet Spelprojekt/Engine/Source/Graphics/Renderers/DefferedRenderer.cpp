@@ -15,6 +15,10 @@ DefferedRenderer::DefferedRenderer()
 	m_pGPassVSPerFrame(nullptr),
 	m_pGPassVSPerObject(nullptr),
 	m_pGPassFSPerObject(nullptr),
+	m_pDecalVSPerFrame(nullptr),
+	m_pDecalVSPerObject(nullptr),
+	m_pDecalFSPerFrame(nullptr),
+	m_pDecalFSPerObject(nullptr),
 	m_pLightPassBuffer(nullptr),
 	m_pWaterPassPerFrame(nullptr),
 	m_pWaterPassPerObject(nullptr),
@@ -35,16 +39,26 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pFinalFramebuffer);
 	DeleteSafe(m_pWaterGBuffer);
 	DeleteSafe(m_pReflection);
+	
 	DeleteSafe(m_pTriangle);
 	DeleteSafe(m_pDecalMesh);
+	
 	DeleteSafe(m_pGPassVSPerFrame);
 	DeleteSafe(m_pGPassVSPerObject);
 	DeleteSafe(m_pGPassFSPerObject);
 	DeleteSafe(m_pLightPassBuffer);
+
+	DeleteSafe(m_pDecalVSPerFrame);
+	DeleteSafe(m_pDecalVSPerObject);
+	DeleteSafe(m_pDecalFSPerFrame);
+	DeleteSafe(m_pDecalFSPerObject);
+
 	DeleteSafe(m_pWaterPassPerFrame);
 	DeleteSafe(m_pWaterPassPerObject);
+	
 	DeleteSafe(m_pWaterNormalMap);
 	DeleteSafe(m_pWaterDistortionMap);
+	
 	DeleteSafe(m_pDepthPrePassProgram);
 	DeleteSafe(m_pDecalsPassProgram);
 	DeleteSafe(m_pGeometryPassProgram);
@@ -80,6 +94,11 @@ void DefferedRenderer::Create() noexcept
 
 	//We can destroy desc when gbuffer is created
 	{
+		TextureParams params = {};
+		params.MinFilter = TEX_NEAREST;
+		params.MagFilter = TEX_NEAREST;
+		params.Wrap = TEX_PARAM_REPEAT;
+
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA;
@@ -89,6 +108,7 @@ void DefferedRenderer::Create() noexcept
 		desc.Width = Window::GetCurrentWindow().GetWidth();
 		//desc.Height = 1080;
 		desc.Height = Window::GetCurrentWindow().GetHeight();
+		desc.SamplingParams = params;
 
 		m_pGBuffer = new Framebuffer(desc);
 	}
@@ -235,6 +255,35 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
+		DecalPassVSPerFrame object = {};
+		object.ViewProj = glm::mat4(1.0f);
+
+		m_pDecalVSPerFrame = new UniformBuffer(&object, 1, sizeof(DecalPassVSPerFrame));
+	}
+
+	{
+		DecalPassVSPerObject object = {};
+		object.Model = glm::mat4(1.0f);
+
+		m_pDecalVSPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassVSPerObject));
+	}
+
+	{
+		DecalPassFSPerFrame object = {};
+		object.InverseView = glm::mat4(1.0f);
+		object.InverseProjection = glm::mat4(1.0f);
+
+		m_pDecalFSPerFrame = new UniformBuffer(&object, 1, sizeof(DecalPassFSPerFrame));
+	}
+
+	{
+		DecalPassFSPerObject object = {};
+		object.InverseModel = glm::mat4(1.0f);
+
+		m_pDecalFSPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassFSPerObject));
+	}
+
+	{
 		WaterPassPerFrame object = {};
 		object.CameraCombined = glm::mat4(1.0f);
 		object.CameraPosition = glm::vec3();
@@ -265,8 +314,8 @@ void DefferedRenderer::Create() noexcept
 		params.MinFilter = TEX_LINEAR;
 		params.MagFilter = TEX_LINEAR;
 
-		m_pWaterDistortionMap = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT::TEX_FORMAT_RGB, false, params);
-		m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT::TEX_FORMAT_RGB, false, params);
+		m_pWaterDistortionMap = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT_RGB, true, params);
+		m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT_RGB, true, params);
 	}
 
 	{
@@ -309,28 +358,60 @@ void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetProgram(m_pDecalsPassProgram);
+	context.SetDepthMask(false);
+	context.Enable(BLEND);
+	context.Disable(CULL_FACE);
 
-	context.SetUniformBuffer(m_pGPassVSPerFrame, 0);
-	context.SetUniformBuffer(m_pGPassVSPerObject, 1);
-	context.SetUniformBuffer(m_pGPassFSPerObject, 2);
+	context.SetUniformBuffer(m_pDecalVSPerFrame, 0);
+	context.SetUniformBuffer(m_pDecalVSPerObject, 1);
+	context.SetUniformBuffer(m_pDecalFSPerFrame, 2);
+	context.SetUniformBuffer(m_pDecalFSPerObject, 3);
 
-	GPassVSPerFrame perFrame = {};
-	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
-	perFrame.CameraPosition = scene.GetCamera().GetPosition();
-	m_pGPassVSPerFrame->UpdateData(&perFrame);
+	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 2);
 
-	GPassVSPerObject perObject = {};
+	{
+		DecalPassVSPerFrame perFrameVS = {};
+		perFrameVS.ViewProj = scene.GetCamera().GetCombinedMatrix();
+		m_pDecalVSPerFrame->UpdateData(&perFrameVS);
+	}
+
+	{
+		DecalPassFSPerFrame perFrameFS = {};
+		perFrameFS.InverseView = glm::inverse(scene.GetCamera().GetViewMatrix());
+		perFrameFS.InverseProjection = glm::inverse(scene.GetCamera().GetProjectionMatrix());
+		m_pDecalFSPerFrame->UpdateData(&perFrameFS);
+	}
+
+	DecalPassVSPerObject perObjectVS = {};
+	DecalPassFSPerObject perObjectFS = {};
+
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
 	{
 		GameObject& gameobject = *scene.GetGameObjects()[i];
 		if (gameobject.HasDecal())
 		{
-			perObject.Model = gameobject.GetTransform();
-			m_pGPassVSPerObject->UpdateData(&perObject);
+			perObjectVS.Model = gameobject.GetTransform();
+			m_pDecalVSPerObject->UpdateData(&perObjectVS);
+
+			perObjectFS.InverseModel = glm::inverse(gameobject.GetTransform());
+			m_pDecalFSPerObject->UpdateData(&perObjectFS);
+
+			if (gameobject.GetDecal().HasTexture())
+			{
+				context.SetTexture(gameobject.GetDecal().GetTexture(), 0);
+			}
+
+			if (gameobject.GetDecal().HasNormalMap())
+			{
+				context.SetTexture(gameobject.GetDecal().GetNormalMap(), 1);
+			}
 
 			context.DrawIndexedMesh(*m_pDecalMesh);
 		}
 	}
+
+	context.SetDepthMask(true);
+	context.Enable(CULL_FACE);
 }
 
 void DefferedRenderer::GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept

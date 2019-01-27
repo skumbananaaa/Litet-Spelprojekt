@@ -45,9 +45,7 @@ void Camera::UpdateFromPitchYaw() noexcept
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
 
-		m_InverseViewMatrix = glm::inverse(m_ViewMatrix);
-		m_InverseCombinedMatrix = glm::inverse(m_CombinedMatrix);
-		m_InverseProjectionMatrix = glm::inverse(m_ProjectionMatrix);
+		CalcInverses();
 	}
 }
 
@@ -64,9 +62,7 @@ void Camera::UpdateFromLookAt() noexcept
 		m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
 
-		m_InverseViewMatrix = glm::inverse(m_ViewMatrix);
-		m_InverseCombinedMatrix = glm::inverse(m_CombinedMatrix);
-		m_InverseProjectionMatrix = glm::inverse(m_ProjectionMatrix);
+		CalcInverses();
 	}
 }
 
@@ -82,6 +78,7 @@ void Camera::CreatePerspective(float fovRad, float aspectWihe, float nearPlane, 
 	m_Near = nearPlane;
 	m_Far = farPlane;
 
+	m_InverseProjectionMatrix = glm::inverse(m_ProjectionMatrix);
 	m_IsDirty = true;
 }
 
@@ -313,4 +310,10 @@ void Camera::CopyShaderDataToArray(float* const arr, uint32 startIndex) const no
 	arr[startIndex + 16] = m_Position.x;
 	arr[startIndex + 17] = m_Position.y;
 	arr[startIndex + 18] = m_Position.z;
+}
+
+void Camera::CalcInverses()
+{
+	m_InverseViewMatrix = glm::inverse(m_ViewMatrix);
+	m_InverseCombinedMatrix = m_InverseViewMatrix * m_InverseProjectionMatrix;
 }

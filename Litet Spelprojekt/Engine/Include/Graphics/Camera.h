@@ -70,6 +70,9 @@ public:
 	void CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept;
 
 private:
+	void CalcInverses();
+
+private:
 	glm::mat4 m_ViewMatrix;
 	glm::mat4 m_ProjectionMatrix;
 	glm::mat4 m_CombinedMatrix;

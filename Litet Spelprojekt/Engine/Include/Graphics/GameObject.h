@@ -23,6 +23,7 @@ public:
 	const Material& GetMaterial() const noexcept;
 	const IndexedMesh& GetMesh() const noexcept;
 	const glm::mat4& GetTransform() const noexcept;
+	const glm::mat4& GetInverseTransform() const noexcept;
 
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
@@ -40,6 +41,7 @@ private:
 	glm::vec4 m_rotation;
 	glm::vec3 m_scale;
 	glm::mat4 m_transform;
+	glm::mat4 m_InverseTransform;
 	bool m_IsDirty;
 };
 
@@ -79,6 +81,11 @@ inline const IndexedMesh& GameObject::GetMesh() const noexcept
 inline const glm::mat4& GameObject::GetTransform() const noexcept
 {
 	return m_transform;
+}
+
+inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
+{
+	return m_InverseTransform;
 }
 
 inline bool GameObject::HasMaterial() const noexcept

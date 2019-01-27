@@ -357,7 +357,7 @@ void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 		if (gameobject.HasDecal())
 		{
 			perObject.Model = gameobject.GetTransform();
-			perObject.InverseModel = glm::inverse(gameobject.GetTransform());
+			perObject.InverseModel = gameobject.GetInverseTransform();
 
 			if (gameobject.GetDecal().HasTexture())
 			{

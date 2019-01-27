@@ -10,7 +10,8 @@ Application::Application()
 	m_pGraphicsContext(nullptr),
 	m_pGUIManager(nullptr),
 	m_fps(0), 
-	m_ups(0)
+	m_ups(0),
+	m_ShouldRun(true)
 {
 	std::cout << "Application" << std::endl;
 
@@ -24,7 +25,7 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1600, 900, 1);
+		m_pWindow = new Window("Small Game Project", 1600, 900, false);
 
 		float width = static_cast<float>(m_pWindow->GetWidth());
 		float height = static_cast<float>(m_pWindow->GetHeight());
@@ -69,7 +70,7 @@ int32_t Application::Run()
 	int32 ups = 0;
 
 	m_pGraphicsContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
-	while (!m_pWindow->IsClosed())
+	while (!m_pWindow->IsClosed() && m_ShouldRun)
 	{
 		Input::Update();
 

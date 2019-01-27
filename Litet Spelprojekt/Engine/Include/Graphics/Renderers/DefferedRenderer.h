@@ -22,24 +22,16 @@ struct GeometryPassPerObject
 	float HasNormalMap;
 };
 
-struct DecalPassVSPerFrame
+struct DecalPassPerFrame
 {
 	glm::mat4 ViewProj;
-};
-
-struct DecalPassVSPerObject
-{
-	glm::mat4 Model;
-};
-
-struct DecalPassFSPerFrame
-{
 	glm::mat4 InverseView;
 	glm::mat4 InverseProjection;
 };
 
-struct DecalPassFSPerObject
+struct DecalPassPerObject
 {
+	glm::mat4 Model;
 	glm::mat4 InverseModel;
 };
 
@@ -112,10 +104,8 @@ private:
 	UniformBuffer* m_pGeoPassPerObject;
 	UniformBuffer* m_pLightPassBuffer;
 	
-	UniformBuffer* m_pDecalVSPerFrame;
-	UniformBuffer* m_pDecalVSPerObject;
-	UniformBuffer* m_pDecalFSPerFrame;
-	UniformBuffer* m_pDecalFSPerObject;
+	UniformBuffer* m_pDecalPassPerFrame;
+	UniformBuffer* m_pDecalPassPerObject;
 
 	UniformBuffer* m_pWaterPassPerFrame;
 	UniformBuffer* m_pWaterPassPerObject;

@@ -44,6 +44,7 @@ private:
 	IAudioContext* m_pAudioContext;
 	int32 m_fps;
 	int32 m_ups;
+	bool m_ShouldRun;
 
 	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);
@@ -105,6 +106,11 @@ inline void Application::InternalOnKeyUp(KEY keycode)
 
 inline void Application::InternalOnKeyDown(KEY keycode)
 {
+	if (keycode == KEY_ESCAPE)
+	{
+		m_ShouldRun = false;
+	}
+
 	Input::KeyState(keycode, true);
 	OnKeyDown(keycode);
 }

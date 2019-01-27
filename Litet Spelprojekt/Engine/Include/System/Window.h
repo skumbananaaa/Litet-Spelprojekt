@@ -14,7 +14,7 @@ public:
 	Window& operator=(Window&& other) = delete;
 	Window& operator=(const Window& other) = delete;
 
-	Window(const char* pTitle, int32 width, int32 height, int32 samples) noexcept;
+	Window(const char* pTitle, int32 width, int32 height, bool fullscreen) noexcept;
 	~Window();
 
 	bool IsClosed() noexcept;

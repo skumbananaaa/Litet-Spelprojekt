@@ -394,7 +394,7 @@ void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
 	Application::GetInstance().InternalOnResize(width, height);
 }
 
-Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noexcept
+Window::Window(const char* pTitle, int32 width, int32 height, bool fullscreen) noexcept
 	: m_pWindow(nullptr),
 	m_Width(0),
 	m_Height(0)
@@ -424,7 +424,17 @@ Window::Window(const char* pTitle, int32 width, int32 height, int32 samples) noe
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_FALSE);
 #endif
 
-	m_pWindow = glfwCreateWindow(width, height, pTitle, nullptr, nullptr);
+	GLFWmonitor* pMonitor = nullptr;
+	if (fullscreen)
+	{
+		pMonitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(pMonitor);
+
+		width = mode->width;
+		height = mode->height;
+	}
+
+	m_pWindow = glfwCreateWindow(width, height, pTitle, pMonitor, nullptr);
 	if (m_pWindow == nullptr)
 	{
 		std::cout << "Failed to create window" << std::endl;

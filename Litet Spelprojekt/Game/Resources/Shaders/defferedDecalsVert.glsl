@@ -5,14 +5,17 @@ layout(location = 1) in vec3 g_Normal;
 layout(location = 2) in vec3 g_Tangent;
 layout(location = 3) in vec2 g_TexCoords;
 
-layout(std140, binding = 0) uniform VSPerFrame
+layout(std140, binding = 0) uniform PerFrame
 {
 	mat4 g_ViewProjection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
 };
 
-layout(std140, binding = 1) uniform VSPerObject
+layout(std140, binding = 1) uniform PerObject
 {
 	mat4 g_Model;
+	mat4 g_InverseModel;
 };
 
 out VS_OUT

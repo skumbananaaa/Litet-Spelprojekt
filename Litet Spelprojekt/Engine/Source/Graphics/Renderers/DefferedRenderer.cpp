@@ -14,10 +14,8 @@ DefferedRenderer::DefferedRenderer()
 	m_pDecalMesh(nullptr),
 	m_pGPassVSPerFrame(nullptr),
 	m_pGeoPassPerObject(nullptr),
-	m_pDecalVSPerFrame(nullptr),
-	m_pDecalVSPerObject(nullptr),
-	m_pDecalFSPerFrame(nullptr),
-	m_pDecalFSPerObject(nullptr),
+	m_pDecalPassPerFrame(nullptr),
+	m_pDecalPassPerObject(nullptr),
 	m_pLightPassBuffer(nullptr),
 	m_pWaterPassPerFrame(nullptr),
 	m_pWaterPassPerObject(nullptr),
@@ -46,10 +44,8 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pGeoPassPerObject);
 	DeleteSafe(m_pLightPassBuffer);
 
-	DeleteSafe(m_pDecalVSPerFrame);
-	DeleteSafe(m_pDecalVSPerObject);
-	DeleteSafe(m_pDecalFSPerFrame);
-	DeleteSafe(m_pDecalFSPerObject);
+	DeleteSafe(m_pDecalPassPerFrame);
+	DeleteSafe(m_pDecalPassPerObject);
 
 	DeleteSafe(m_pWaterPassPerFrame);
 	DeleteSafe(m_pWaterPassPerObject);
@@ -78,7 +74,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	//DepthPrePass(scene);
 
 	GeometryPass(scene.GetGameObjects(), scene.GetCamera(), m_pGBuffer);
-	//DecalPass(scene);
+	DecalPass(scene);
 	LightPass(scene.GetCamera(), scene, nullptr, m_pGBuffer);
 
 	context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
@@ -246,32 +242,20 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		DecalPassVSPerFrame object = {};
+		DecalPassPerFrame object = {};
 		object.ViewProj = glm::mat4(1.0f);
-
-		m_pDecalVSPerFrame = new UniformBuffer(&object, 1, sizeof(DecalPassVSPerFrame));
-	}
-
-	{
-		DecalPassVSPerObject object = {};
-		object.Model = glm::mat4(1.0f);
-
-		m_pDecalVSPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassVSPerObject));
-	}
-
-	{
-		DecalPassFSPerFrame object = {};
 		object.InverseView = glm::mat4(1.0f);
 		object.InverseProjection = glm::mat4(1.0f);
 
-		m_pDecalFSPerFrame = new UniformBuffer(&object, 1, sizeof(DecalPassFSPerFrame));
+		m_pDecalPassPerFrame = new UniformBuffer(&object, 1, sizeof(DecalPassPerFrame));
 	}
 
 	{
-		DecalPassFSPerObject object = {};
+		DecalPassPerObject object = {};
+		object.Model = glm::mat4(1.0f);
 		object.InverseModel = glm::mat4(1.0f);
 
-		m_pDecalFSPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassFSPerObject));
+		m_pDecalPassPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassPerObject));
 	}
 
 	{
@@ -353,39 +337,27 @@ void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 	context.Enable(BLEND);
 	context.Disable(CULL_FACE);
 
-	context.SetUniformBuffer(m_pDecalVSPerFrame, 0);
-	context.SetUniformBuffer(m_pDecalVSPerObject, 1);
-	context.SetUniformBuffer(m_pDecalFSPerFrame, 2);
-	context.SetUniformBuffer(m_pDecalFSPerObject, 3);
+	context.SetUniformBuffer(m_pDecalPassPerFrame, 0);
+	context.SetUniformBuffer(m_pDecalPassPerObject, 1);
 
 	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 2);
 
 	{
-		DecalPassVSPerFrame perFrameVS = {};
-		perFrameVS.ViewProj = scene.GetCamera().GetCombinedMatrix();
-		m_pDecalVSPerFrame->UpdateData(&perFrameVS);
+		DecalPassPerFrame perFrame = {};
+		perFrame.ViewProj = scene.GetCamera().GetCombinedMatrix();
+		perFrame.InverseView = scene.GetCamera().GetInverseViewMatrix();
+		perFrame.InverseProjection = scene.GetCamera().GetInverseProjectionMatrix();
+		m_pDecalPassPerFrame->UpdateData(&perFrame);
 	}
 
-	{
-		DecalPassFSPerFrame perFrameFS = {};
-		perFrameFS.InverseView = scene.GetCamera().GetInverseViewMatrix();
-		perFrameFS.InverseProjection = scene.GetCamera().GetInverseProjectionMatrix();
-		m_pDecalFSPerFrame->UpdateData(&perFrameFS);
-	}
-
-	DecalPassVSPerObject perObjectVS = {};
-	DecalPassFSPerObject perObjectFS = {};
-
+	DecalPassPerObject perObject = {};
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
 	{
 		GameObject& gameobject = *scene.GetGameObjects()[i];
 		if (gameobject.HasDecal())
 		{
-			perObjectVS.Model = gameobject.GetTransform();
-			m_pDecalVSPerObject->UpdateData(&perObjectVS);
-
-			perObjectFS.InverseModel = glm::inverse(gameobject.GetTransform());
-			m_pDecalFSPerObject->UpdateData(&perObjectFS);
+			perObject.Model = gameobject.GetTransform();
+			perObject.InverseModel = glm::inverse(gameobject.GetTransform());
 
 			if (gameobject.GetDecal().HasTexture())
 			{
@@ -397,6 +369,7 @@ void DefferedRenderer::DecalPass(const Scene& scene) const noexcept
 				context.SetTexture(gameobject.GetDecal().GetNormalMap(), 1);
 			}
 
+			m_pDecalPassPerObject->UpdateData(&perObject);
 			context.DrawIndexedMesh(*m_pDecalMesh);
 		}
 	}

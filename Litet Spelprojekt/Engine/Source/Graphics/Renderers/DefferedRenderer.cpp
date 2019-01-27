@@ -573,13 +573,13 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	context.SetFramebuffer(m_pReflection);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
+	context.Enable(DEPTH_TEST);
 	context.Enable(Cap::CLIP_DISTANCE0);
 	ForwardPass(reflectionCam, scene);
 	context.Disable(Cap::CLIP_DISTANCE0);
 
 	//Start rendering forward
 	context.SetProgram(m_pWaterpassProgram);
-	context.Enable(DEPTH_TEST);
 
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
 	context.SetFramebuffer(nullptr);

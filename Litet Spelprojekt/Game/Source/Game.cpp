@@ -16,6 +16,9 @@ Game::Game() noexcept
 	m_pBoatNormalMap(nullptr),
 	m_pBloodTexture(nullptr),
 	m_pBloodNormal(nullptr),
+	m_pRedMaterial(nullptr),
+	m_pGreenMaterial(nullptr),
+	m_pBlueMaterial(nullptr),
 	m_pBoatMaterial(nullptr),
 	m_pGroundMaterial(nullptr),
 	m_pDecal(nullptr),
@@ -26,6 +29,7 @@ Game::Game() noexcept
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 	m_pGroundTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cliff_3_low.obj");
+	m_pSphereMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/sphere.obj");
 
 	{
 		TextureParams params = {};
@@ -52,8 +56,16 @@ Game::Game() noexcept
 	m_pGroundMaterial = new Material();
 	m_pGroundMaterial->SetColor(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f));
 
-	GameObject* pGameObject = nullptr;
+	m_pRedMaterial = new Material();
+	m_pRedMaterial->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
+	m_pGreenMaterial = new Material();
+	m_pGreenMaterial->SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+	m_pBlueMaterial = new Material();
+	m_pBlueMaterial->SetColor(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+	GameObject* pGameObject = nullptr;
 	pGameObject = new GameObject();
 	pGameObject->SetDecal(m_pDecal);
 	pGameObject->SetPosition(glm::vec3(-6.0f, 2.0f, 0.0f));
@@ -77,6 +89,30 @@ Game::Game() noexcept
 	pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
 	pGameObject->SetScale(glm::vec3(0.4f));
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+
+	pGameObject = new GameObject();
+	pGameObject->SetMaterial(m_pRedMaterial);
+	pGameObject->SetMesh(m_pSphereMesh);
+	pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, 0.0f));
+	pGameObject->SetScale(glm::vec3(0.25f));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+
+	pGameObject = new GameObject();
+	pGameObject->SetMaterial(m_pGreenMaterial);
+	pGameObject->SetMesh(m_pSphereMesh);
+	pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, 0.0f));
+	pGameObject->SetScale(glm::vec3(0.25f));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+
+	pGameObject = new GameObject();
+	pGameObject->SetMaterial(m_pBlueMaterial);
+	pGameObject->SetMesh(m_pSphereMesh);
+	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, 0.0f));
+	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
@@ -124,20 +160,32 @@ Game::~Game()
 {
 	Delete(m_pBloodTexture);
 	Delete(m_pBloodNormal);
+
 	Delete(m_pFontRenderer);
 	Delete(m_pRenderer);
+	
 	Delete(m_pScene);
+	
+	Delete(m_pSphereMesh);
 	Delete(m_pTestMesh);
 	Delete(m_pWaterMesh);
 	Delete(m_pGroundTestMesh);
+	
 	Delete(m_pBoatTexture);
 	Delete(m_pBoatNormalMap);
+	
 	Delete(m_pDecal);
+	Delete(m_pRedMaterial);
+	Delete(m_pGreenMaterial);
+	Delete(m_pBlueMaterial);
 	Delete(m_pBoatMaterial);
 	Delete(m_pGroundMaterial);
+	
 	Delete(m_pTextViewFPS);
 	Delete(m_pTextViewUPS);
+	
 	Delete(m_pSoundEffect);
+	
 	Delete(m_pTestAudioSource);
 }
 
@@ -289,9 +337,23 @@ void Game::OnUpdate(float dtS)
 	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
 
 	static float decalRot = 0.0f;
+	static float decalX = g_pDecalObject->GetPosition().x;
+	static float decalXSpeed = -1.0f;
+	
+	if (decalX > 6.5f)
+	{
+		decalXSpeed = -1.0f;
+	}
+	else if (decalX < -6.5f)
+	{
+		decalXSpeed = 1.0f;
+	}
+
+	decalX += decalXSpeed * dtS;
 	decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
+
 	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
-	g_pDecalObject->SetPosition(g_pDecalObject->GetPosition() + glm::vec3(0.3f * dtS, 0.0f, 0.0f));
+	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
 }
 

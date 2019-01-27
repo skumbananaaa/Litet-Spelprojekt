@@ -36,6 +36,7 @@ private:
 	Scene* m_pScene;
 
 	IndexedMesh* m_pTestMesh;
+	IndexedMesh* m_pSphereMesh;
 	IndexedMesh* m_pWaterMesh;
 	IndexedMesh* m_pGroundTestMesh;
 
@@ -48,6 +49,9 @@ private:
 
 	Material* m_pBoatMaterial;
 	Material* m_pGroundMaterial;
+	Material* m_pRedMaterial;
+	Material* m_pGreenMaterial;
+	Material* m_pBlueMaterial;
 
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;

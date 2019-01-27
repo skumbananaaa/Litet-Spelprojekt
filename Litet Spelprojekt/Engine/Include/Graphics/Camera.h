@@ -33,6 +33,8 @@ public:
 
 	void UpdateFromPitchYaw() noexcept;
 	void UpdateFromLookAt() noexcept;
+	void UpdateFromPitchYawNoInverse() noexcept;
+	void UpdateFromLookAtNoInverse() noexcept;
 
 	//void SetProjectionMatrix(const glm::mat4& matrix) noexcept;
 
@@ -71,6 +73,8 @@ public:
 
 private:
 	void CalcInverses();
+	void UpdateFromPitchYawInternal() noexcept;
+	void UpdateFromLookAtInternal() noexcept;
 
 private:
 	glm::mat4 m_ViewMatrix;
@@ -90,6 +94,7 @@ private:
 	float m_Near;
 
 	bool m_IsDirty;
+	bool m_InverseIsDirty;
 };
 
 inline const glm::mat4& Camera::GetViewMatrix() const noexcept

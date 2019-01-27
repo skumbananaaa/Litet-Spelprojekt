@@ -493,7 +493,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	float reflDistance = reflectionCam.GetPosition().y * 2.0f;
 	reflectionCam.SetPos(reflectionCam.GetPosition() - glm::vec3(0.0f, reflDistance, 0.0f));
 	reflectionCam.InvertPitch();
-	reflectionCam.UpdateFromPitchYaw();
+	reflectionCam.UpdateFromPitchYawNoInverse();
 
 	context.Enable(Cap::CLIP_DISTANCE0);
 	GeometryPass(scene.GetGameObjects(), reflectionCam, m_pWaterGBuffer);

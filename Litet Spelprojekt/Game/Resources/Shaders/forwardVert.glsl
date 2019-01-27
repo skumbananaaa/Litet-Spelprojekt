@@ -7,6 +7,7 @@ layout(location = 3) in vec2 g_TexCoords;
 
 out VS_OUT
 {
+	vec3 WorldPosition;
 	vec3 Normal;
 	vec3 Tangent;
 	vec3 Binormal;
@@ -30,9 +31,12 @@ layout(std140, binding = 1) uniform PerObject
 void main()
 {
 	vec4 worldPos = g_Model * vec4(g_Position, 1.0);
+	gl_ClipDistance[0] = dot(worldPos, vec4(0.0f, 1.0f, 0.0f, 0.01f));
+
 	vec3 normal = (g_Model * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_Model * vec4(g_Tangent, 0.0f)).xyz;
-	
+
+	vs_out.WorldPosition = worldPos.xyz;
 	vs_out.Normal = normal;
 	vs_out.Tangent = tangent;
 	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);

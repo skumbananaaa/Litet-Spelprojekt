@@ -41,6 +41,7 @@
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
     <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
+    <None Include="Resources\Shaders\forwardFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -55,5 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
+    <Text Include="Resources\Shaders\forwardVert.glsl" />
   </ItemGroup>
 </Project>

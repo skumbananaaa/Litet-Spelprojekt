@@ -26,7 +26,6 @@ struct PointLight
 	vec4 Position;
 };
 
-
 layout(binding = 0) uniform LightPassBuffer
 {
 	mat4 g_InverseView;

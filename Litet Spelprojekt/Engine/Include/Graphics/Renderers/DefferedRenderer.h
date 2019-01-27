@@ -87,15 +87,14 @@ public:
 private:
 	void Create() noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
-	void DecalPass(const Scene& scene) const noexcept;
-	void GeometryPass(const std::vector<GameObject*>& gameobjects, const Camera& camera, const Framebuffer* const pFramebuffer) const noexcept;
-	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pFramebuffer, const Framebuffer* const pGBuffer) const noexcept;
+	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
+	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
+	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
+	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 
 private:
 	Framebuffer* m_pGBuffer;
-	Framebuffer* m_pFinalFramebuffer;
-	Framebuffer* m_pWaterGBuffer;
 	Framebuffer* m_pReflection;
 	
 	FullscreenTri* m_pTriangle;
@@ -119,5 +118,6 @@ private:
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pDecalsPassProgram;
 	ShaderProgram* m_pLightPassProgram;
+	ShaderProgram* m_pForwardPass;
 	ShaderProgram* m_pWaterpassProgram;
 };

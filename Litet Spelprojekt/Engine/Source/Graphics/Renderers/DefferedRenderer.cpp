@@ -3,7 +3,7 @@
 #include <System/Window.h>
 #include <System/Application.h>
 
-#define REFLECTIONSIZE 512
+#define REFLECTIONSIZE 384
 
 DefferedRenderer::DefferedRenderer()
 	: m_pGBuffer(nullptr),

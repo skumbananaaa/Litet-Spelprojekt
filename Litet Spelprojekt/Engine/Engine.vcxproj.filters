@@ -36,6 +36,7 @@
     <ClCompile Include="Source\Graphics\Lights\DirectionalLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\PointLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\Spotlight.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\Button.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -80,5 +81,6 @@
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
+    <ClInclude Include="Include\Graphics\GUI\Button.h" />
   </ItemGroup>
 </Project>

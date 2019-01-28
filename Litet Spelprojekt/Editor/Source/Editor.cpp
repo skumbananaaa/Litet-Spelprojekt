@@ -32,12 +32,9 @@ Editor::Editor() noexcept : Application()
 
 	m_pScene = new Scene();
 
-	Camera* pCamera = new Camera(glm::vec3(-2.0F, 1.0F, 0.0F), -0.5f, 0.0f);
-	pCamera->SetProjectionMatrix(glm::perspective(
-		glm::radians<float>(90.0F),
-		(float)GetWindow().GetWidth() /
-		(float)GetWindow().GetHeight(),
-		0.1F, 100.0F));
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
@@ -127,10 +124,10 @@ void Editor::OnUpdate(float dtS)
 
 void Editor::OnRender(float dtS)
 {
-	GetContext().SetProgram(m_pShaderProgramDefault);
-	GetContext().SetUniformBuffer(m_pPerFrameUniform, 1);
+	GetGraphicsContext().SetProgram(m_pShaderProgramDefault);
+	GetGraphicsContext().SetUniformBuffer(m_pPerFrameUniform, 1);
 
 
-	GetContext().SetUniformBuffer(m_pGridUniform, 0);
-	GetContext().DrawMesh(*m_pGridMesh, PT_LINES);
+	GetGraphicsContext().SetUniformBuffer(m_pGridUniform, 0);
+	GetGraphicsContext().DrawMesh(*m_pGridMesh, PT_LINES);
 }

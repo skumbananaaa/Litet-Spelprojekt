@@ -29,6 +29,7 @@
     <ClInclude Include="Include\GLAD\khrplatform.h" />
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Camera.h" />
+    <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="Source\Audio\SoundEffect.cpp" />
     <ClCompile Include="Source\Audio\Sources\AudioSource.cpp" />
     <ClCompile Include="Source\Graphics\Camera.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\Button.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextView.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

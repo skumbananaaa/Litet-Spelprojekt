@@ -24,6 +24,7 @@ void Crew::expand()
 Crew::Crew(const int & cap)
 {
 	m_cap = cap;
+	m_nrOf = 0;
 	m_ppMembers = new Crewmember*[cap];
 	for (int i = 0; i < cap; i++)
 	{

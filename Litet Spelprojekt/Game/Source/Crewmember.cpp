@@ -12,6 +12,17 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 	this->UpdateTransform();
 }
 
+Crewmember::Crewmember(Crewmember & other): m_pLight(new PointLight(other.m_pLight->GetColor(), other.GetPosition())), m_pMesh(other.m_pMesh)
+{
+	m_ActionCap = other.m_ActionCap;
+	m_Name = other.m_Name;
+	m_pMaterial = new Material(*other.m_pMaterial);
+	this->SetMaterial(m_pMaterial);
+	this->SetMesh(m_pMesh);
+	this->SetPosition(other.GetPosition());
+	this->UpdateTransform();
+}
+
 Crewmember::~Crewmember()
 {
 	delete m_pMaterial;

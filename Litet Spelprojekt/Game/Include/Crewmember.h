@@ -12,7 +12,7 @@ private:
 	PointLight * m_pLight;
 	IndexedMesh * m_pMesh;
 public:
-	Crewmember(const glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), const float actionCap = 100, const std::string name = "");
+	Crewmember(const glm::vec4 & lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3 & position = glm::vec3(0.0f, 0.0f, 0.0f), const float & actionCap = 100, const std::string & name = "");
 	~Crewmember();
 	PointLight * getLight() const;
 	void move(const glm::vec3 & dir);

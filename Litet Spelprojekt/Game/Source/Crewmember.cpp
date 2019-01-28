@@ -1,6 +1,6 @@
 #include "..\Include\Crewmember.h"
 
-Crewmember::Crewmember(const glm::vec4 lightColor, const glm::vec3 position, const float actionCap, const std::string name) : m_pLight(new PointLight(lightColor, position)), m_pMesh(IndexedMesh::CreateCube())
+Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name) : m_pLight(new PointLight(lightColor, position)), m_pMesh(IndexedMesh::CreateCube())
 {
 	m_ActionCap = actionCap;
 	m_Name = name;

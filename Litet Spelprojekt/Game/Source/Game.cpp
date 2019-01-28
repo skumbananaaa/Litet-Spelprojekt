@@ -1,9 +1,11 @@
 #include "..\Include\Game.h"
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
+#include "..\Include\Crewmember.h"
 
 
 GameObject* g_pDecalObject = nullptr;
+Crewmember * g_member;
 
 Game::Game() noexcept
 	: m_pFontRenderer(nullptr),
@@ -115,6 +117,10 @@ Game::Game() noexcept
 	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
+
+	g_member = new Crewmember(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 10.0f, 0.0f));
+	m_pScene->AddGameObject(g_member);
+	m_pScene->AddPointLight(g_member->getLight());
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());

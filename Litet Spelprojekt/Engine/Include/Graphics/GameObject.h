@@ -10,7 +10,7 @@ class API GameObject
 {
 public:
 	GameObject() noexcept;
-	~GameObject();
+	virtual ~GameObject();
 
 	void SetMesh(const IndexedMesh* const pMesh) noexcept;
 	void SetMaterial(const Material* const pMaterial) noexcept;

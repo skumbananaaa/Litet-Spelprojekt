@@ -146,10 +146,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Crewmember.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Crew.h" />
+    <ClInclude Include="Include\Crewmember.h" />
     <ClInclude Include="Include\Game.h" />
   </ItemGroup>
   <ItemGroup>

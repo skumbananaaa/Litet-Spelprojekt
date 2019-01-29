@@ -2,10 +2,11 @@
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Crew.h"
-
+#include "..\Include\Grid.h"
 
 GameObject* g_pDecalObject = nullptr;
 Crew g_Crew;
+Grid * g_Grid;
 float g_Rot = 1.0;
 
 Game::Game() noexcept
@@ -120,9 +121,19 @@ Game::Game() noexcept
 	m_pScene->AddGameObject(pGameObject);
 
 	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
-
 	m_pScene->AddGameObject(g_Crew.getMember(0));
 	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());
+//	m_pScene->AddGameObject(new Tile(glm::vec3(0.0f, 10.0f, 0.0f)));
+
+	g_Grid = new Grid(glm::ivec2(10, 10), glm::vec3(0.0f, 10.0f, 0.0f));
+	for (int i = 0; i < g_Grid->GetSize().x; i++)
+	{
+		for (int j = 0; j < g_Grid->GetSize().y; j++)
+		{
+			g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(i / 10.0f, j / 10.0f, 0.0f, 1.0f));
+			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
+		}
+	}
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
@@ -195,6 +206,8 @@ Game::~Game()
 	Delete(m_pSoundEffect);
 	
 	Delete(m_pTestAudioSource);
+
+	Delete(g_Grid);
 }
 
 void Game::OnKeyUp(KEY keycode)

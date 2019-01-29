@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/GUIManager.h>
 
-GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0, "GUI Manager"), m_LastMousePosition(0, 0)
+GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0), m_LastMousePosition(0, 0)
 {
 	Shader vShader;
 	Shader fShader;

@@ -1,10 +1,15 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
 
-TextView::TextView(float x, float y, float width, float height, const std::string& text, int textSize) : GUIObject(x, y, width, height, "TextView"),
+TextView::TextView(float x, float y, float width, float height, const std::string& text, int textSize) : GUIObject(x, y, width, height),
 	m_Text(text), 
 	m_TextSize(textSize),
 	m_TextAlignment(CENTER_VERTICAL)
+{
+
+}
+
+TextView::~TextView()
 {
 
 }

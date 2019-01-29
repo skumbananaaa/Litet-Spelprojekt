@@ -10,7 +10,6 @@ class API GUIObject
 	friend class GUIManager;
 
 public:
-	GUIObject(float x, float y, float width, float height, std::string name);
 	virtual ~GUIObject();
 
 	bool HasParent() const;
@@ -32,6 +31,8 @@ public:
 	void SetTexture(Texture2D* texture);
 
 protected:
+	GUIObject(float x, float y, float width, float height);
+
 	virtual void OnAdded(GUIObject* parent) {};
 	virtual void OnRemoved(GUIObject* parent) {};
 
@@ -87,7 +88,6 @@ private:
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_Position;
 	bool m_IsDirty;
-	std::string m_Name;
 	Texture2D* m_pBackgroundTexture;
 
 	static std::vector<IMouseListener*> m_MouseListeners;

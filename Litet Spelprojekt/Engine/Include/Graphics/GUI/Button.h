@@ -7,6 +7,7 @@ class API Button : public TextView, public IMouseListener
 {
 public:
 	Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*) = nullptr, void(*onReleasedCallback)(Button*) = nullptr, int textSize = 50);
+	virtual ~Button();
 
 	Texture2D* GetOnPressedTexture() const noexcept;
 	void SetOnPressedTexture(Texture2D* texture);

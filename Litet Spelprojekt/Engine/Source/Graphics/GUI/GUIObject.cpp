@@ -8,7 +8,7 @@
 
 std::vector<IMouseListener*> GUIObject::m_MouseListeners;
 
-GUIObject::GUIObject(float x, float y, float width, float height, std::string name) :
+GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_Position(x, y),
 	m_pFramebuffer(nullptr),
 	m_pBackgroundTexture(nullptr)
@@ -25,7 +25,6 @@ GUIObject::GUIObject(float x, float y, float width, float height, std::string na
 
 		m_pFramebuffer = new Framebuffer(desc);
 	}
-	m_Name = name;
 }
 
 GUIObject::~GUIObject()

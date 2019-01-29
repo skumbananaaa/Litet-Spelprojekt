@@ -13,6 +13,7 @@ class API TextView : public GUIObject
 {
 public:
 	TextView(float x, float y, float width, float height, const std::string& text, int size = 50);
+	virtual ~TextView();
 
 	void SetText(const std::string& text);
 	const std::string& GetText() const;

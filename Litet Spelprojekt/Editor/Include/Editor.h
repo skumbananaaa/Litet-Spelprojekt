@@ -7,6 +7,7 @@
 #include <Graphics\Scene.h>
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
+#include <Graphics/GUI/Panel.h>
 //#include "../../Game/Include/IO/WorldSerializer.h"
 
 #include <GLM\glm.hpp>
@@ -37,4 +38,6 @@ private:
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;
 	Button* m_pButton;
+	Button* m_pButton2;
+	Panel* m_pPanel;
 };

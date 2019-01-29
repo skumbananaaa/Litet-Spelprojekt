@@ -10,6 +10,10 @@ Button::Button(float x, float y, float width, float height, const std::string& t
 	SetTextAlignment(CENTER);
 }
 
+Button::~Button()
+{
+}
+
 Texture2D* Button::GetOnPressedTexture() const noexcept
 {
 	return m_pOnPressedTexture;

@@ -29,40 +29,29 @@ Crewmember::~Crewmember()
 	delete m_pMesh;
 }
 
-PointLight * Crewmember::getLight() const
+void Crewmember::Move(const glm::vec3 & dir)
+{
+	glm::vec3 res = this->GetPosition() + dir;
+	GameObject::SetPosition(res);
+}
+
+PointLight * Crewmember::GetLight() const
 {
 	return m_pLight;
 }
 
-const float Crewmember::getActionCapacity() const
+const float Crewmember::GetActionCapacity() const
 {
 	return m_ActionCap;
 }
 
-void Crewmember::move(const glm::vec3 & dir)
-{
-	glm::vec3 res = this->GetPosition() + dir;
-	SetPosition(res);
-}
-
-void Crewmember::setPosition(const glm::vec3 & position)
-{
-	SetPosition(position);
-	UpdateTransform();
-}
-
-void Crewmember::setActionCapacity(const float actionCap)
+void Crewmember::SetActionCapacity(const float actionCap)
 {
 	m_ActionCap = actionCap;
 }
 
-const glm::vec3 Crewmember::getPos() const
+void Crewmember::UpdateTransform() noexcept
 {
-	return GetPosition();
-}
-
-void Crewmember::update()
-{
-	UpdateTransform();
+	GameObject::UpdateTransform();
 	m_pLight->SetPosition(GetPosition());
 }

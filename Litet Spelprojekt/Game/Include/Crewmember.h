@@ -17,19 +17,15 @@ public:
 	Crewmember(Crewmember & other);
 	~Crewmember();
 	///<summary>Moves the objects position in the given direction, use update to apply.</summary>
-	void move(const glm::vec3 & dir);
-	///<summary>Moves the object to the specified position.</summary>
-	void setPosition(const glm::vec3 & position);
+	void Move(const glm::vec3 & dir);
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
-	void setActionCapacity(const float actionCap);
-	///<summary>Returns the position of the object.</summary>
-	const glm::vec3 getPos() const;
+	void SetActionCapacity(const float actionCap);
 	///<summary>Returns a reference to the pointLight object.</summary>
-	PointLight * getLight() const;
+	PointLight * GetLight() const;
 	///<summary>returns the current action capacity of the crewmember.</summary>
-	const float getActionCapacity() const;
+	const float GetActionCapacity() const;
 	///<summary>Updates matrix of the object.</summary>
-	void update();
+	void UpdateTransform() noexcept;
 };
 
 #endif

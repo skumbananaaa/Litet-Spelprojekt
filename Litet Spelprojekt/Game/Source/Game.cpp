@@ -122,7 +122,7 @@ Game::Game() noexcept
 	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
 
 	m_pScene->AddGameObject(g_Crew.getMember(0));
-	m_pScene->AddPointLight(g_Crew.getMember(0)->getLight());
+	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
@@ -362,7 +362,6 @@ void Game::OnUpdate(float dtS)
 	Crewmember * derp = g_Crew.getMember(0);
 	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	derp->UpdateTransform();
-
 	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();

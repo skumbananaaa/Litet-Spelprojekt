@@ -4,6 +4,7 @@
 #include <Graphics/GUI/GUIContext.h>
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/GUI/IMouseListener.h>
+#include <Graphics/GUI/IRealTimeRendered.h>
 
 class API GUIObject
 {
@@ -67,6 +68,9 @@ protected:
 	static void AddMouseListener(IMouseListener* listener);
 	static void RemoveMouseListener(IMouseListener* listener);
 
+	static void AddRealTimeRenderer(IRealTimeRendered* listener);
+	static void RemoveRealTimeRenderer(IRealTimeRendered* listener);
+
 private:
 	void InternalOnUpdate(float dtS);
 	void InternalOnRender(GUIContext* context);
@@ -91,4 +95,5 @@ private:
 	Texture2D* m_pBackgroundTexture;
 
 	static std::vector<IMouseListener*> m_MouseListeners;
+	static std::vector<IRealTimeRendered*> m_RealTimeRenderers;
 };

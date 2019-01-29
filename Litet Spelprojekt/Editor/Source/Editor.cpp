@@ -65,8 +65,21 @@ Editor::Editor() noexcept : Application()
 	m_pButton2->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 	m_pButton2->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 
+	Texture2D* b = new Texture2D("Resources/Textures/test4.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
+	Texture2D* f = new Texture2D("Resources/Textures/test5.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
+
+	m_pSlider = new Slider(50, 50, 400, 30, b, f);
+	m_pSlider->SetRatio(0.5F);
+	m_pSlider->SetPercentage(1.0F);
+
+	m_pSlider2 = new Slider(50, 100, 400, 30, b, f);
+	m_pSlider2->SetRatio(0.5F);
+	m_pSlider2->SetPercentage(0.0F);
+
 	m_pPanel->Add(m_pButton);
 	m_pPanel->Add(m_pButton2);
+	m_pPanel->Add(m_pSlider);
+	m_pPanel->Add(m_pSlider2);
 
 	GetGUIManager().Add(m_pPanel);
 	GetGUIManager().Add(m_pTextViewFPS);

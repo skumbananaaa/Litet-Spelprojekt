@@ -8,6 +8,7 @@
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
 #include <Graphics/GUI/Panel.h>
+#include <Graphics/GUI/Slider.h>
 //#include "../../Game/Include/IO/WorldSerializer.h"
 
 #include <GLM\glm.hpp>
@@ -39,5 +40,7 @@ private:
 	TextView* m_pTextViewUPS;
 	Button* m_pButton;
 	Button* m_pButton2;
+	Slider* m_pSlider;
+	Slider* m_pSlider2;
 	Panel* m_pPanel;
 };

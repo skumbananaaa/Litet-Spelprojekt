@@ -7,6 +7,7 @@
 #include <GLM/gtc/type_ptr.hpp>
 
 std::vector<IMouseListener*> GUIObject::m_MouseListeners;
+std::vector<IRealTimeRendered*> GUIObject::m_RealTimeRenderers;
 
 GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_Position(x, y),
@@ -80,6 +81,10 @@ void GUIObject::AddMouseListener(IMouseListener* listener)
 	{
 		m_MouseListeners.push_back(listener);
 	}
+	else
+	{
+		std::cout << "MouseListener already added" << std::endl;
+	}
 }
 
 void GUIObject::RemoveMouseListener(IMouseListener* listener)
@@ -90,6 +95,32 @@ void GUIObject::RemoveMouseListener(IMouseListener* listener)
 		if (object == listener)
 		{
 			m_MouseListeners.erase(m_MouseListeners.begin() + counter);
+			return;
+		}
+		counter++;
+	}
+}
+
+void GUIObject::AddRealTimeRenderer(IRealTimeRendered* listener)
+{
+	if (!Contains<IRealTimeRendered>(m_RealTimeRenderers, listener))
+	{
+		m_RealTimeRenderers.push_back(listener);
+	}
+	else
+	{
+		std::cout << "RealtimeRenderer already added" << std::endl;
+	}
+}
+
+void GUIObject::RemoveRealTimeRenderer(IRealTimeRendered* listener)
+{
+	int32 counter = 0;
+	for (IRealTimeRendered* object : m_RealTimeRenderers)
+	{
+		if (object == listener)
+		{
+			m_RealTimeRenderers.erase(m_RealTimeRenderers.begin() + counter);
 			return;
 		}
 		counter++;
@@ -242,6 +273,11 @@ void GUIObject::InternalRootOnRender(GUIContext* context)
 	*/
 	context->BeginRootRendering();
 	RenderChildrensFrameBuffers(context);
+
+	for (IRealTimeRendered* renderer : m_RealTimeRenderers)
+	{
+		renderer->RenderRealTime(context);
+	}
 }
 
 void GUIObject::RerenderChildren(GUIContext* context)

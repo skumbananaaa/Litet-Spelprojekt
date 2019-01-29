@@ -147,8 +147,8 @@ Game::Game() noexcept
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
 
-	GetGUIManager().AddGUIObject(m_pTextViewFPS);
-	GetGUIManager().AddGUIObject(m_pTextViewUPS);
+	GetGUIManager().Add(m_pTextViewFPS);
+	GetGUIManager().Add(m_pTextViewUPS);
 
 	//Audio
 	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");

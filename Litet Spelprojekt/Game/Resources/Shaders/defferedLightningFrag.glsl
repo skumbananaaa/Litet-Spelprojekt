@@ -115,7 +115,7 @@ void main()
 	{
 		vec3 lightDir = normalize(g_SpotLights[i].Position.xyz - position);
 		vec3 targetDir = g_SpotLights[i].TargetDirection - g_SpotLights[i].Position.xyz;
-		vec3 lightColor = g_SpotLights[i].g_SpotLights[i].OuterAngleolor.rgb;
+		vec3 lightColor = g_SpotLights[i].Color.rgb;
 
 		float theta = dot(lightDir, normalize(-targetDir));
 		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;

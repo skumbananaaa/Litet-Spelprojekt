@@ -11,15 +11,16 @@ public:
 	GUIManager(GLContext* glContext);
 	~GUIManager();
 
-	void OnRender();
+	void InternalRootOnRender();
 	void InternalRootOnUpdate(float dtS);
-	void OnMousePressed(MouseButton mousebutton);
-	void OnMouseReleased(MouseButton mousebutton);
-	void OnMouseMove(const glm::vec2& position);
+	void InternalRootOnMousePressed(MouseButton mousebutton);
+	void InternalRootOnMouseReleased(MouseButton mousebutton);
+	void InternalRootOnMouseMove(const glm::vec2& position);
 
-	void OnKeyUp(KEY keycode);
-	void OnKeyDown(KEY keycode);
+	void InternalRootOnKeyUp(KEY keycode);
+	void InternalRootOnKeyDown(KEY keycode);
 
 private:
 	GUIContext* context;
+	glm::vec2 m_LastMousePosition;
 };

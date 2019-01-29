@@ -86,5 +86,6 @@
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Audio\Music.h" />
+    <ClInclude Include="Include\Graphics\GUI\IMouseListener.h" />
   </ItemGroup>
 </Project>

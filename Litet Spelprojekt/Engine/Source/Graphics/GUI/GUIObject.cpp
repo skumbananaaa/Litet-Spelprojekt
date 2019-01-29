@@ -6,6 +6,8 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 
+std::vector<IMouseListener*> GUIObject::m_MouseListeners;
+
 GUIObject::GUIObject(float x, float y, float width, float height, std::string name) :
 	m_Position(x, y),
 	m_pFramebuffer(nullptr),
@@ -46,7 +48,7 @@ GUIObject* GUIObject::GetParent() const
 
 void GUIObject::Add(GUIObject* object)
 {
-	if (!Contains(m_Children, object) && !Contains(m_ChildrenToAdd, object))
+	if (!Contains<GUIObject>(m_Children, object) && !Contains<GUIObject>(m_ChildrenToAdd, object))
 	{
 		m_ChildrenToAdd.push_back(object);
 	}
@@ -54,22 +56,10 @@ void GUIObject::Add(GUIObject* object)
 
 void GUIObject::Remove(GUIObject* object)
 {
-	if (Contains(m_Children, object))
+	if (Contains<GUIObject>(m_Children, object))
 	{
 		m_ChildrenToRemove.push_back(object);
 	}
-}
-
-bool GUIObject::Contains(const std::vector<GUIObject*>& list, GUIObject* object)
-{
-	for (GUIObject* parent : list)
-	{
-		if (parent == object)
-		{
-			return true;
-		}
-	}
-	return false;
 }
 
 void GUIObject::RequestRepaint()
@@ -85,6 +75,28 @@ void GUIObject::RequestRepaint()
 	m_IsDirty = true;
 }
 
+void GUIObject::AddMouseListener(IMouseListener* listener)
+{
+	if (!Contains<IMouseListener>(m_MouseListeners, listener))
+	{
+		m_MouseListeners.push_back(listener);
+	}
+}
+
+void GUIObject::RemoveMouseListener(IMouseListener* listener)
+{
+	int32 counter = 0;
+	for (IMouseListener* object : m_MouseListeners)
+	{
+		if (object == listener)
+		{
+			m_MouseListeners.erase(m_MouseListeners.begin() + counter);
+			return;
+		}
+		counter++;
+	}
+}
+
 bool GUIObject::IsDirty() const noexcept
 {
 	return m_IsDirty;
@@ -97,7 +109,11 @@ Texture2D* GUIObject::GetTexture() const noexcept
 
 void GUIObject::SetTexture(Texture2D* texture)
 {
-	m_pBackgroundTexture = texture;
+	if (m_pBackgroundTexture != texture)
+	{
+		m_pBackgroundTexture = texture;
+		RequestRepaint();
+	}
 }
 
 float GUIObject::GetWidth() const noexcept
@@ -120,14 +136,24 @@ float GUIObject::GetY() const noexcept
 	return m_Position.y;
 }
 
-void GUIObject::OnAdded(GUIObject* parent)
+float GUIObject::GetXInWorld() const noexcept
 {
-	
+	float value = GetX();
+	if (HasParent())
+	{
+		value += GetParent()->GetXInWorld();
+	}
+	return value;
 }
 
-void GUIObject::OnRemoved(GUIObject* parent)
+float GUIObject::GetYInWorld() const noexcept
 {
-	
+	float value = GetY();
+	if (HasParent())
+	{
+		value += GetParent()->GetYInWorld();
+	}
+	return value;
 }
 
 void GUIObject::InternalOnUpdate(float dtS)
@@ -178,11 +204,6 @@ void GUIObject::InternalOnUpdate(float dtS)
 	* Finally update my self and do what ever I want to do
 	*/
 	this->OnUpdate(dtS);
-}
-
-void GUIObject::OnUpdate(float dtS)
-{
-	
 }
 
 
@@ -243,6 +264,11 @@ void GUIObject::RenderChildrensFrameBuffers(GUIContext* context)
 
 void GUIObject::OnRender(GUIContext* context)
 {
+	RenderBackgroundTexture(context);
+}
+
+void GUIObject::RenderBackgroundTexture(GUIContext* context)
+{
 	context->SetVertexQuadData(0, 0, GetWidth(), GetHeight());
 	if (m_pBackgroundTexture)
 	{
@@ -252,27 +278,41 @@ void GUIObject::OnRender(GUIContext* context)
 	}
 }
 
-void GUIObject::OnMousePressed(MouseButton mousebutton)
+bool GUIObject::ContainsPoint(const glm::vec2& position)
 {
+	float x = GetXInWorld();
+	float y = GetYInWorld();
 
+	if (position.x > x && position.x < x + GetWidth())
+	{
+		if (position.y > y && position.y < y + GetHeight())
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
-void GUIObject::OnMouseReleased(MouseButton mousebutton)
+void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
-
+	for (IMouseListener* listener : m_MouseListeners)
+	{
+		listener->OnMousePressed(position, mousebutton);
+	}
 }
 
-void GUIObject::OnMouseMove(const glm::vec2& position)
+void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 {
-
+	for (IMouseListener* listener : m_MouseListeners)
+	{
+		listener->OnMouseReleased(position, mousebutton);
+	}
 }
 
-void GUIObject::OnKeyUp(KEY keycode)
+void GUIObject::InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-
-}
-
-void GUIObject::OnKeyDown(KEY keycode)
-{
-
+	for (IMouseListener* listener : m_MouseListeners)
+	{
+		listener->OnMouseMove(lastPosition, position);
+	}
 }

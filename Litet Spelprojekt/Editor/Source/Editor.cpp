@@ -1,5 +1,15 @@
 #include "..\Include\Editor.h"
 
+void OnButtonPressed(Button* button)
+{
+	std::cout << "Button Pressed" << std::endl;
+}
+
+void OnButtonReleased(Button* button)
+{
+	std::cout << "Button Released" << std::endl;
+}
+
 Editor::Editor() noexcept : Application()
 {
 	std::cout << "Editor" << std::endl;
@@ -44,9 +54,13 @@ Editor::Editor() noexcept : Application()
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+	m_pButton = new Button(200, 590, 200, 50, "Button", OnButtonPressed, OnButtonReleased);
+	m_pButton->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
+	m_pButton->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
+	GetGUIManager().Add(m_pButton);
 
 	//GetContext().Enable(Cap::DEPTH_TEST);
 }

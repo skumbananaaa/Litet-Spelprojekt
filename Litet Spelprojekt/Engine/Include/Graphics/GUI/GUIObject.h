@@ -3,6 +3,7 @@
 #include <System/Input.h>
 #include <Graphics/GUI/GUIContext.h>
 #include <Graphics/Textures/Texture2D.h>
+#include <Graphics/GUI/IMouseListener.h>
 
 class API GUIObject
 {
@@ -22,6 +23,8 @@ public:
 	float GetHeight() const noexcept;
 	float GetX() const noexcept;
 	float GetY() const noexcept;
+	float GetXInWorld() const noexcept;
+	float GetYInWorld() const noexcept;
 
 	bool IsDirty() const noexcept;
 
@@ -29,28 +32,49 @@ public:
 	void SetTexture(Texture2D* texture);
 
 protected:
-	virtual void OnAdded(GUIObject* parent);
-	virtual void OnRemoved(GUIObject* parent);
+	virtual void OnAdded(GUIObject* parent) {};
+	virtual void OnRemoved(GUIObject* parent) {};
 
-	virtual void OnUpdate(float dtS);
+	virtual void OnUpdate(float dtS) {};
 	virtual void OnRender(GUIContext* context);
 
-	virtual void OnMousePressed(MouseButton mousebutton);
-	virtual void OnMouseReleased(MouseButton mousebutton);
-	virtual void OnMouseMove(const glm::vec2& position);
+	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
 
-	virtual void OnKeyUp(KEY keycode);
-	virtual void OnKeyDown(KEY keycode);
+	virtual void OnKeyUp(KEY keycode) {};
+	virtual void OnKeyDown(KEY keycode) {};
 
-	bool Contains(const std::vector<GUIObject*>& list, GUIObject* object);
+	virtual void RenderBackgroundTexture(GUIContext* context);
+	bool ContainsPoint(const glm::vec2& position);
+
+	template<class T>
+	static bool Contains(const std::vector<T*>& list, T* object)
+	{
+		for (T* currentObject : list)
+		{
+			if (currentObject == object)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void RequestRepaint();
+
+	static void AddMouseListener(IMouseListener* listener);
+	static void RemoveMouseListener(IMouseListener* listener);
 
 private:
 	void InternalOnUpdate(float dtS);
 	void InternalOnRender(GUIContext* context);
 
-	void InternalRootOnUpdate(float dtS) {};
 	void InternalRootOnRender(GUIContext* context);
+
+	void InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton);
+	void InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton);
+	void InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
 
 	void RerenderChildren(GUIContext* context);
 	void RenderChildrensFrameBuffers(GUIContext* context);
@@ -65,4 +89,6 @@ private:
 	bool m_IsDirty;
 	std::string m_Name;
 	Texture2D* m_pBackgroundTexture;
+
+	static std::vector<IMouseListener*> m_MouseListeners;
 };

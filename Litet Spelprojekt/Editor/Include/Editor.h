@@ -6,6 +6,7 @@
 #include <Graphics\Camera.h>
 #include <Graphics\Scene.h>
 #include <Graphics/GUI/TextView.h>
+#include <Graphics/GUI/Button.h>
 //#include "../../Game/Include/IO/WorldSerializer.h"
 
 #include <GLM\glm.hpp>
@@ -35,4 +36,5 @@ private:
 
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;
+	Button* m_pButton;
 };

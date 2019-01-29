@@ -33,6 +33,7 @@
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
+    <ClInclude Include="Include\Graphics\GUI\IMouseListener.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />

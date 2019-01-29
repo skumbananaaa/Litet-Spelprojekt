@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/GUIManager.h>
 
-GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0, "GUI Manager")
+GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0, "GUI Manager"), m_LastMousePosition(0, 0)
 {
 	Shader vShader;
 	Shader fShader;
@@ -21,14 +21,14 @@ GUIManager::~GUIManager()
 	delete context;
 }
 
-void GUIManager::OnRender()
+void GUIManager::InternalRootOnRender()
 {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_DEPTH_TEST);
 	
-	InternalRootOnRender(context);
+	GUIObject::InternalRootOnRender(context);
 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -38,27 +38,28 @@ void GUIManager::InternalRootOnUpdate(float dtS)
 	InternalOnUpdate(dtS);
 }
 
-void GUIManager::OnMousePressed(MouseButton mousebutton)
+void GUIManager::InternalRootOnMousePressed(MouseButton mousebutton)
 {
-	
+	GUIObject::InternalRootOnMousePressed(m_LastMousePosition, mousebutton);
 }
 
-void GUIManager::OnMouseReleased(MouseButton mousebutton)
+void GUIManager::InternalRootOnMouseReleased(MouseButton mousebutton)
 {
-	
+	GUIObject::InternalRootOnMouseReleased(m_LastMousePosition, mousebutton);
 }
 
-void GUIManager::OnMouseMove(const glm::vec2& position)
+void GUIManager::InternalRootOnMouseMove(const glm::vec2& position)
 {
-	
+	GUIObject::InternalRootOnMouseMove(m_LastMousePosition, position);
+	m_LastMousePosition = position;
 }
 
-void GUIManager::OnKeyUp(KEY keycode)
+void GUIManager::InternalRootOnKeyUp(KEY keycode)
 {
-	
+
 }
 
-void GUIManager::OnKeyDown(KEY keycode)
+void GUIManager::InternalRootOnKeyDown(KEY keycode)
 {
 	
 }

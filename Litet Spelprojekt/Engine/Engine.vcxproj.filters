@@ -25,7 +25,6 @@
     <ClCompile Include="Source\Graphics\Material\Material.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp" />
-    <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextView.cpp" />
     <ClCompile Include="Source\Graphics\Material\Decal.cpp" />
     <ClCompile Include="Source\Audio\ALContext.cpp" />
@@ -37,6 +36,8 @@
     <ClCompile Include="Source\Graphics\Lights\PointLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\Spotlight.cpp" />
     <ClCompile Include="Source\Graphics\GUI\Button.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\GUIContext.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -70,7 +71,6 @@
     <ClInclude Include="Include\Graphics\Materials\Material.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIManager.h" />
-    <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
     <ClInclude Include="Include\Audio\ALContext.h" />
@@ -82,5 +82,7 @@
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
+    <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
+    <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
   </ItemGroup>
 </Project>

@@ -65,12 +65,12 @@ private:
 inline void Application::InternalOnRender(float dtS)
 {
 	OnRender(dtS);
-	m_pGUIManager->OnRender(m_pGraphicsContext);
+	m_pGUIManager->OnRender();
 }
 
 inline void Application::InternalOnUpdate(float dtS)
 {
-	m_pGUIManager->OnUpdate(dtS);
+	m_pGUIManager->InternalRootOnUpdate(dtS);
 	OnUpdate(dtS);
 }
 

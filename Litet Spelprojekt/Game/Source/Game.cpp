@@ -137,9 +137,11 @@ Game::Game() noexcept
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
 
-	m_pScene->AddPointLight(new PointLight(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec3(5.0f, 2.0f, 0.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec3(2.0f, 2.0f, 0.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec3(-5.0f, 2.0f, 0.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -351,6 +353,11 @@ void Game::OnUpdate(float dtS)
 
 	decalX += decalXSpeed * dtS;
 	decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
+
+
+	/*g_pSpotLights->SetPosition(glm::vec3(-decalX, 0.0f, 0.0f));
+	g_pSpotLights->SetDirection(glm::vec3(-decalX, 0.0f, 0.0f));
+	g_pSpotLights->UpdateTransform();*/
 
 	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));

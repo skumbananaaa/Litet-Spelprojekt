@@ -7,6 +7,7 @@
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 8
+#define NUM_SPOT_LIGHTS 1
 
 struct GPassVSPerFrame
 {
@@ -49,6 +50,16 @@ __declspec(align(16)) struct PointLightBuffer
 	glm::vec3 Position = glm::vec3(0.0f);
 };
 
+__declspec(align(16)) struct SpotLightBuffer
+{
+	glm::vec4 Color = glm::vec4(0.0f);
+	glm::vec3 Position = glm::vec3(0.0f);
+	float pad1;
+	glm::vec3 Direction = glm::vec3(0.0f);
+	float CutOffAngle = 1.0f;
+	float OuterCutOffAngle = 1.0f;
+};
+
 struct LightPassBuffer
 {
 	glm::mat4 InverseView;
@@ -57,6 +68,7 @@ struct LightPassBuffer
 	float pad1;
 	DirectionalLightBuffer DirectionalLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLightBuffer PointLights[NUM_POINT_LIGHTS];
+	SpotLightBuffer SpotLights[NUM_SPOT_LIGHTS];
 };
 
 struct WaterPassPerFrame

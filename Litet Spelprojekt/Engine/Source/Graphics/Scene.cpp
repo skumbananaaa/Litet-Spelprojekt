@@ -46,6 +46,11 @@ void Scene::AddPointLight(PointLight* pLight) noexcept
 	m_PointLights.push_back(pLight);
 }
 
+void Scene::AddSpotLight(SpotLight* pLight) noexcept
+{
+	m_SpotLights.push_back(pLight);
+}
+
 void Scene::RemoveGameObject(uint32 index) noexcept
 {
 	m_GameObjects.erase(m_GameObjects.begin() + index);

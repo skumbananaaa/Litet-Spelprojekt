@@ -9,7 +9,17 @@ AudioSource::AudioSource(const SoundEffect& soundEffect, const glm::vec3& pos, c
 	alSource3f(m_SourceId, AL_VELOCITY, vel.x, vel.y, vel.z);
 	alSourcef(m_SourceId, AL_GAIN, 1.0f);
 	alSourcef(m_SourceId, AL_PITCH, 1.0f);
-	alSourcei(m_SourceId, AL_LOOPING, true);
+	alSourcei(m_SourceId, AL_LOOPING, FALSE);
+}
+
+AudioSource::AudioSource(const Music& music) noexcept
+{
+	alGenSources(1, &m_SourceId);
+	alSourcei(m_SourceId, AL_BUFFER, music.m_BufferId);
+	alSourcef(m_SourceId, AL_GAIN, 1.0f);
+	alSourcef(m_SourceId, AL_PITCH, 1.0f);
+	alSourcei(m_SourceId, AL_LOOPING, FALSE);
+	alSourcef(m_SourceId, AL_ROLLOFF_FACTOR, 0.0f);
 }
 
 AudioSource::~AudioSource()
@@ -17,42 +27,54 @@ AudioSource::~AudioSource()
 	alDeleteSources(1, &m_SourceId);
 }
 
-void AudioSource::Play() noexcept
+void AudioSource::Play() const noexcept
 {
 	alSourcePlay(m_SourceId);
 }
 
-void AudioSource::Pause() noexcept
+void AudioSource::Pause() const noexcept
 {
 	alSourcePause(m_SourceId);
 }
 
-void AudioSource::Stop() noexcept
+void AudioSource::Stop() const noexcept
 {
 	alSourceStop(m_SourceId);
 }
 
-void AudioSource::SetPosition(const glm::vec3& pos) noexcept
+void AudioSource::SetPosition(const glm::vec3& pos) const noexcept
 {
 	alSource3f(m_SourceId, AL_POSITION, pos.x, pos.y, pos.z);
 }
 
-void AudioSource::SetVelocity(const glm::vec3& vel) noexcept
+void AudioSource::SetVolume(float vol) const noexcept
 {
-	alSource3f(m_SourceId, AL_VELOCITY, vel.x, vel.y, vel.z);
-}
-
-void AudioSource::SetVolume(float vol) noexcept
-{
+	assert(vol >= 0.0f);
 	alSourcef(m_SourceId, AL_GAIN, vol);
 }
 
-void AudioSource::SetPitch(float pitch) noexcept
+void AudioSource::SetPitch(float pitch) const noexcept
 {
+	assert(pitch > 0.0f);
 	alSourcef(m_SourceId, AL_PITCH, pitch);
 }
 
-void AudioSource::SetLooping(bool looping) noexcept
+void AudioSource::SetLooping(bool looping) const noexcept
 {
 	alSourcei(m_SourceId, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
+}
+
+void AudioSource::SetRollOffFactor(float value) const noexcept
+{
+	alSourcef(m_SourceId, AL_ROLLOFF_FACTOR, value);
+}
+
+void AudioSource::SetReferenceDistance(float value) const noexcept
+{
+	alSourcef(m_SourceId, AL_REFERENCE_DISTANCE, value);
+}
+
+void AudioSource::SetMaxDistance(float value) const noexcept
+{
+	alSourcef(m_SourceId, AL_MAX_DISTANCE, value);
 }

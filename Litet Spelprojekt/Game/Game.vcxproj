@@ -153,6 +153,7 @@
     <ClInclude Include="Include\Game.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Downloads\AerisPianoByTannerHelland.ogg" />
     <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />

@@ -34,8 +34,8 @@ Game::Game() noexcept
 	{
 		TextureParams params = {};
 		params.Wrap = TEX_PARAM_REPEAT;
-		params.MinFilter = TEX_LINEAR;
-		params.MagFilter = TEX_LINEAR;
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
 
 		m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA, true, params);
 		m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormalMap.png", TEX_FORMAT_RGBA, true, params);

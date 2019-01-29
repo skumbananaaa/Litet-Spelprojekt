@@ -8,8 +8,19 @@
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
 
+#if defined(_DEBUG)
+#define GL_DEBUG_ASSERT
+#endif
+
+#if defined(GL_DEBUG_ASSERT)
+#define GL_CALL(x) GLContext::GetCurrentContext().ClearErrors(); x; assert(GLContext::GetCurrentContext().HasErrors() == false)
+#else
+#define GL_CALL(x) x
+#endif
+
 enum Capability : uint32
 {
+	MULTISAMPLE = 0x809D,
 	DEPTH_TEST = 0x0B71,
 	STENCIL_TEST = 0x0B90,
 	CULL_FACE = 0x0B44,
@@ -113,7 +124,16 @@ public:
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
 	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
 
+	bool HasErrors() const noexcept;
+	void ClearErrors() const noexcept;
+
 private:
 	glm::vec4 m_ViewPort;
 	mutable uint32 m_CurrentTextures[16];
+
+public:
+	static GLContext& GetCurrentContext() noexcept;
+
+private:
+	static GLContext* s_CurrentContext;
 };

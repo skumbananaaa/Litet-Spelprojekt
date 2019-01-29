@@ -2,8 +2,13 @@
 #include <Graphics/Renderers/GLContext.h>
 #include <System/Window.h>
 
+GLContext* GLContext::s_CurrentContext = nullptr;
+
 GLContext::GLContext(float width, float height)
 {
+	assert(s_CurrentContext == nullptr);
+	s_CurrentContext = this;
+
 	if (!gladLoadGL())
 	{
 		std::cout << "Failed to initialize OpenGL" << std::endl;
@@ -24,37 +29,38 @@ GLContext::~GLContext()
 
 void GLContext::Enable(Cap cap) const noexcept
 {
-	glEnable(cap);
+	GL_CALL(glEnable(cap));
 }
 
 void GLContext::Disable(Cap cap) const noexcept
 {
-	glDisable(cap);
+	GL_CALL(glDisable(cap));
 }
 
 void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 {
 	if (pProgram == nullptr)
 	{
-		glUseProgram(0);
+		GL_CALL(glUseProgram(0));
 	}
 	else
 	{
-		glUseProgram(pProgram->m_Program);
+		GL_CALL(glUseProgram(pProgram->m_Program));
 	}
 }
 
 void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 {
-	glActiveTexture(GL_TEXTURE0 + slot);
+	GL_CALL(glActiveTexture(GL_TEXTURE0 + slot));
 
 	if (pTexture == nullptr)
 	{
-		glBindTexture(GL_TEXTURE_2D, 0);
+		GL_CALL(glBindTexture(m_CurrentTextures[slot], 0));
 	}
 	else
 	{
-		glBindTexture(GL_TEXTURE_2D, pTexture->m_Texture);
+		m_CurrentTextures[slot] = pTexture->GetType();
+		GL_CALL(glBindTexture(m_CurrentTextures[slot], pTexture->m_Texture));
 	}
 }
 
@@ -62,11 +68,11 @@ void GLContext::SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) cons
 {
 	if (pBuffer == nullptr)
 	{
-		glBindBufferBase(GL_UNIFORM_BUFFER, slot, 0);
+		GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, slot, 0));
 	}
 	else
 	{
-		glBindBufferBase(GL_UNIFORM_BUFFER, slot, pBuffer->m_Buffer);
+		GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, slot, pBuffer->m_Buffer));
 	}
 }
 
@@ -74,11 +80,11 @@ void GLContext::SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept
 {
 	if (pFramebuffer == nullptr)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 	}
 	else
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pFramebuffer->m_Framebuffer);
+		GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, pFramebuffer->m_Framebuffer));
 	}
 }
 
@@ -115,17 +121,17 @@ void GLContext::BlitFramebuffer(const Framebuffer* const pDst, const Framebuffer
 		dstFBO = pDst->m_Framebuffer;
 	}
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO);
-	glBlitFramebuffer(0, 0, srcWidth, srcHeight, 0, 0, dstWidth, dstHeight, flags, GL_NEAREST);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO));
+	GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFBO));
+	GL_CALL(glBlitFramebuffer(0, 0, srcWidth, srcHeight, 0, 0, dstWidth, dstHeight, flags, GL_NEAREST));
+	GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
+	GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
 }
 
 void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept
 {
-	glViewport(topX, topY, width, height);
-	glScissor(topX, topY, width, height);
+	GL_CALL(glViewport(topX, topY, width, height));
+	GL_CALL(glScissor(topX, topY, width, height));
 	m_ViewPort.x = static_cast<float>(width);
 	m_ViewPort.y = static_cast<float>(height);
 	m_ViewPort.z = static_cast<float>(topX);
@@ -144,66 +150,120 @@ const glm::vec4 GLContext::GetViewPort() const noexcept
 
 void GLContext::SetClearColor(float r, float g, float b, float a) const noexcept
 {
-	glClearColor(r, g, b, a);
+	GL_CALL(glClearColor(r, g, b, a));
 }
 
 void GLContext::SetClearDepth(float depth) const noexcept
 {
-	glClearDepthf(depth);
+	GL_CALL(glClearDepthf(depth));
 }
 
 void GLContext::SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept
 {
-	glColorMask(r, g, b, a);
+	GL_CALL(glColorMask(r, g, b, a));
 }
 
 void GLContext::SetDepthMask(bool writeDepth) const noexcept
 {
-	glDepthMask((writeDepth) ? GL_TRUE : GL_FALSE);
+	GL_CALL(glDepthMask((writeDepth) ? GL_TRUE : GL_FALSE));
 }
 
 void GLContext::SetStencilMask(uint8 mask) const noexcept
 {
-	glStencilMask(mask);
+	GL_CALL(glStencilMask(mask));
 }
 
 void GLContext::SetDepthFunc(Func func) const noexcept
 {
-	glDepthFunc(func);
+	GL_CALL(glDepthFunc(func));
 }
 
 void GLContext::SetStencilFunc(Func func, uint8 ref, uint8 mask) const noexcept
 {
-	glStencilFunc(func, ref, mask);
+	GL_CALL(glStencilFunc(func, ref, mask));
 }
 
 void GLContext::SetStencilOp(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
 {
-	glStencilOp(sFail, dpFail, dpPass);
+	GL_CALL(glStencilOp(sFail, dpFail, dpPass));
 }
 
 void GLContext::Clear(uint32 flags) const noexcept
 {
-	glClear(flags);
+	GL_CALL(glClear(flags));
 }
 
 void GLContext::DrawIndexedMesh(const IndexedMesh& mesh) const noexcept
 {
-	glBindVertexArray(mesh.m_VAO);
-	glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr);
-	glBindVertexArray(0);
+	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	GL_CALL(glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr));
+	GL_CALL(glBindVertexArray(0));
 }
 
 void GLContext::DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept
 {
-	glBindVertexArray(mesh.m_VAO);
-	glDrawArrays(primitiveTopology, 0, mesh.GetVertexCount());
-	glBindVertexArray(0);
+	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	GL_CALL(glDrawArrays(primitiveTopology, 0, mesh.GetVertexCount()));
+	GL_CALL(glBindVertexArray(0));
 }
 
 void GLContext::DrawFullscreenTriangle(const FullscreenTri & triangle) const noexcept
 {
-	glBindVertexArray(triangle.m_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	glBindVertexArray(0);
+	GL_CALL(glBindVertexArray(triangle.m_VAO));
+	GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 3));
+	GL_CALL(glBindVertexArray(0));
+}
+
+bool GLContext::HasErrors() const noexcept
+{
+	int32 lastError = GL_NO_ERROR;
+	int32 error = GL_NO_ERROR;
+
+	while ((error = glGetError()) != GL_NO_ERROR)
+	{
+		std::cout << "OpenGL Error - Code(" << error << ") - ";
+
+		switch (error)
+		{
+		case GL_NO_ERROR:
+			std::cout << "GL_NO_ERROR" << std::endl;
+			break;
+		case GL_INVALID_ENUM:
+			std::cout << "GL_INVALID_ENUM" << std::endl;
+			break;
+		case GL_INVALID_VALUE:
+			std::cout << "GL_INVALID_VALUE" << std::endl;
+			break;
+		case GL_INVALID_OPERATION:
+			std::cout << "GL_INVALID_OPERATION" << std::endl;
+			break;
+		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			std::cout << "GL_INVALID_FRAMEBUFFER_OPERATION" << std::endl;
+			break;
+		case GL_OUT_OF_MEMORY:
+			std::cout << "GL_OUT_OF_MEMORY" << std::endl;
+			break;
+		case GL_STACK_UNDERFLOW:
+			std::cout << "GL_STACK_UNDERFLOW" << std::endl;
+			break;
+		case GL_STACK_OVERFLOW:
+			std::cout << "GL_STACK_OVERFLOW" << std::endl;
+			break;
+		}
+
+		lastError = error;
+	}
+
+	return (lastError != GL_NO_ERROR);
+}
+
+void GLContext::ClearErrors() const noexcept
+{
+	while (glGetError() != GL_NO_ERROR);
+}
+
+GLContext& GLContext::GetCurrentContext() noexcept
+{
+	assert(s_CurrentContext != nullptr);
+	return *s_CurrentContext;
 }

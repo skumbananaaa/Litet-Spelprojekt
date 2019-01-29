@@ -9,7 +9,8 @@ Framebuffer::Framebuffer(const FramebufferDesc& desc)
 	m_Framebuffer(0),
 	m_IsOwner(true),
 	m_Width(0),
-	m_Height(0)
+	m_Height(0),
+	m_Samples(0)
 {
 	Create(desc);
 }
@@ -21,7 +22,8 @@ Framebuffer::Framebuffer(const Texture* texture)
 	m_Framebuffer(0),
 	m_IsOwner(false),
 	m_Width(0),
-	m_Height(0)
+	m_Height(0),
+	m_Samples(0)
 {
 	Create(texture);
 }
@@ -55,23 +57,31 @@ Framebuffer::~Framebuffer()
 
 void Framebuffer::Create(const FramebufferDesc& desc)
 {
+	TextureDesc textureDesc = {};
+	textureDesc.GenerateMips = false;
+	textureDesc.Width = desc.Width;
+	textureDesc.Height = desc.Height;
+	textureDesc.Samples = desc.Samples;
+
+	m_NumColorAttachments = desc.NumColorAttachments;
 	for (uint32 i = 0; i < desc.NumColorAttachments; i++)
 	{
 		if (desc.ColorAttchmentFormats[i] != TEX_FORMAT_UNKNOWN)
 		{
-			m_ppColor[i] = new Texture2D(nullptr, desc.ColorAttchmentFormats[i], desc.Width, desc.Height, false, desc.SamplingParams);
+			textureDesc.Format = desc.ColorAttchmentFormats[i];
+			m_ppColor[i] = new Texture2D(nullptr, textureDesc, desc.SamplingParams);
 		}
 	}
 
-	m_NumColorAttachments = desc.NumColorAttachments;
-
 	if (desc.DepthStencilFormat != TEX_FORMAT_UNKNOWN)
 	{
-		m_pDepth = new Texture2D(nullptr, desc.DepthStencilFormat, desc.Width, desc.Height, false, desc.SamplingParams);
+		textureDesc.Format = desc.DepthStencilFormat;
+		m_pDepth = new Texture2D(nullptr, textureDesc, desc.SamplingParams);
 	}
 
 	m_Width = desc.Width;
 	m_Height = desc.Height;
+	m_Samples = desc.Samples;
 
 	CreateFramebuffer();
 }
@@ -94,7 +104,7 @@ void Framebuffer::CreateFramebuffer()
 		if (m_ppColor[i] != nullptr)
 		{
 			drawBuffers[buf] = GL_COLOR_ATTACHMENT0 + buf;
-			glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[buf], GL_TEXTURE_2D, m_ppColor[i]->m_Texture, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[buf], m_ppColor[i]->GetType(), m_ppColor[i]->m_Texture, 0);
 
 			buf++;
 		}
@@ -106,11 +116,11 @@ void Framebuffer::CreateFramebuffer()
 	{
 		if (m_pDepth->GetFormat() == TEX_FORMAT_DEPTH)
 		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepth->m_Texture, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_pDepth->GetType(), m_pDepth->m_Texture, 0);
 		}
 		else if (m_pDepth->GetFormat() == TEX_FORMAT_DEPTH_STENCIL)
 		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_pDepth->m_Texture, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, m_pDepth->GetType(), m_pDepth->m_Texture, 0);
 		}
 		else
 		{

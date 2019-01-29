@@ -10,6 +10,7 @@ struct FramebufferDesc
 	uint32 NumColorAttachments = 0;
 	uint32 Width = 0;
 	uint32 Height = 0;
+	uint32 Samples = 1;
 };
 
 class API Framebuffer
@@ -39,6 +40,7 @@ private:
 	uint32 m_Framebuffer;
 	uint32 m_Width;
 	uint32 m_Height;
+	uint32 m_Samples;
 	bool m_IsOwner;
 };
 

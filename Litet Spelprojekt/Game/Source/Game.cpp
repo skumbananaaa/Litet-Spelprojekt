@@ -29,7 +29,7 @@ Game::Game() noexcept
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 	m_pGroundTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cliff_3_low.obj");
-	m_pSphereMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/sphere.obj");
+	m_pSphereMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cube.obj");
 
 	{
 		TextureParams params = {};

@@ -75,7 +75,7 @@ int32_t Application::Run()
 		Input::Update();
 
 		m_pWindow->PollEvents();
-		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
+		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 		currentTime = clock::now();
 		deltaTime = std::chrono::duration_cast<duration>(currentTime - prevTime).count();

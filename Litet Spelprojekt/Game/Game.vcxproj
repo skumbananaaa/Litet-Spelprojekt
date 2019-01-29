@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Tile.cpp" />
     <ClCompile Include="Source\Grid.cpp" />
     <ClCompile Include="Source\Crew.cpp" />
     <ClCompile Include="Source\Crewmember.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Include\Crewmember.h" />
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\Grid.h" />
+    <ClInclude Include="Include\Tile.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />

@@ -60,6 +60,11 @@ const glm::ivec2 Grid::GetSize() const
 	return m_Size;
 }
 
+const Tile *** Grid::GetGrid() const
+{
+	return m_pppTiles;
+}
+
 void Grid::SetColor(const glm::ivec2 & pos, const glm::vec4 & color)
 {
 	m_pppTiles[pos.x][pos.y]->SetColor(color);

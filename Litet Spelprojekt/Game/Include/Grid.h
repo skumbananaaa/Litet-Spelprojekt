@@ -19,6 +19,8 @@ public:
 	Tile * GetTile(const glm::ivec2 & pos);
 	///<summary>Returns the size of the grid.</summary>
 	const glm::ivec2 GetSize() const;
+	///<summary>Returns all the pointers to tiles in a double pointer array.</summary>
+	const Tile *** GetGrid() const;
 
 	///<summary>Sets the color of the specified tile to the specified color.</summary>
 	void SetColor(const glm::ivec2 & pos, const glm::vec4 & color);

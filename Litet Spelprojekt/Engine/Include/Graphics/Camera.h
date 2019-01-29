@@ -63,6 +63,7 @@ public:
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec3& GetLookAt() const noexcept;
 	const glm::vec3& GetFront() const noexcept;
+	const glm::vec3& GetUp() const noexcept;
 
 	float GetYaw() const noexcept;
 	float GetPitch() const noexcept;
@@ -87,6 +88,7 @@ private:
 	glm::vec3 m_Position;
 	glm::vec3 m_LookAt;
 	glm::vec3 m_Front;
+	glm::vec3 m_Up;
 
 	float m_Yaw;
 	float m_Pitch;
@@ -140,6 +142,11 @@ inline const glm::vec3& Camera::GetLookAt() const noexcept
 inline const glm::vec3& Camera::GetFront() const noexcept
 {
 	return m_Front;
+}
+
+inline const glm::vec3& Camera::GetUp() const noexcept
+{
+	return m_Up;
 }
 
 inline float Camera::GetYaw() const noexcept

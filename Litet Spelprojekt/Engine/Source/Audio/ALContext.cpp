@@ -11,6 +11,7 @@ ALContext::ALContext()
 	{
 		ListAudioDevices();
 		m_pDevice = alcOpenDevice(NULL);
+		std::cout << "Default Audio Device selected" << std::endl;
 	}
 	else
 	{
@@ -28,17 +29,17 @@ ALContext::ALContext()
 	{
 		std::cout << "Could not make OpenAL Context Current" << std::endl;
 	}
-
-	if (ALContext::HasErrors())
-	{
-		std::cout << "OpenAL could not be initialized" << std::endl;
-	}
 	else
 	{
-		std::cout << "OpenAL initialized" << std::endl;
+		if (ALContext::HasErrors())
+		{
+			std::cout << "OpenAL could not be initialized" << std::endl;
+		}
+		else
+		{
+			std::cout << "OpenAL initialized" << std::endl;
+		}
 	}
-
-	
 }
 
 ALContext::~ALContext()
@@ -55,6 +56,11 @@ ALContext::~ALContext()
 		alcCloseDevice(m_pDevice);
 		m_pDevice = nullptr;
 	}
+}
+
+void ALContext::SetDistanceModel(DistanceModel distanceModel) const noexcept
+{
+	alDistanceModel(distanceModel);
 }
 
 bool ALContext::HasErrors()

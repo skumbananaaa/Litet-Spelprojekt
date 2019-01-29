@@ -11,6 +11,7 @@ Camera::Camera(const glm::vec3& pos, float pitch, float yaw) noexcept
 		cosf(m_Pitch) * cosf(m_Yaw),
 		sinf(m_Pitch),
 		cosf(m_Pitch) * sinf(m_Yaw)));
+	m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
 	m_LookAt = m_Position + m_Front;
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
 
@@ -24,6 +25,7 @@ Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt) noexcept
 	m_Position = pos;
 	m_LookAt = lookAt;
 	m_Front = glm::normalize(m_LookAt - m_Position);
+	m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
 	m_Pitch = asinf(m_Front.y);
 	m_Yaw = atan2(m_Front.x, m_Front.z) - glm::half_pi<float>();
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
@@ -336,6 +338,7 @@ void Camera::UpdateFromPitchYawInternal() noexcept
 			sinf(m_Pitch),
 			cosf(m_Pitch) * sinf(m_Yaw)));
 		m_LookAt = m_Position + m_Front;
+		m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
@@ -351,6 +354,7 @@ void Camera::UpdateFromLookAtInternal() noexcept
 		m_Front = glm::normalize(m_LookAt - m_Position);
 		//m_Pitch = asinf(m_Front.y);
 		//m_Yaw = atan2(m_Front.x, m_Front.z);
+		m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
 
 		m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;

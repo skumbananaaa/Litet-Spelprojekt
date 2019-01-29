@@ -116,7 +116,8 @@ Game::Game() noexcept
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
@@ -150,9 +151,12 @@ Game::Game() noexcept
 	GetGUIManager().AddGUIObject(m_pTextViewUPS);
 
 	//Audio
-	m_pSoundEffect = new SoundEffect("Resources/Audio/fart2.wav");
-	m_pTestAudioSource = new AudioSource(*m_pSoundEffect);
-	m_pTestAudioSource->SetPitch(2.0f);
+	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");
+	m_pSoundEffect = new SoundEffect("Resources/Audio/Mono/fart.wav");
+	m_pMusic = new Music("Resources/Audio/Music/CyaronsGate.ogg");
+	m_pTestAudioSource = new AudioSource(*m_pMusic);
+	m_pTestAudioSource->SetPitch(1.0f);
+	m_pTestAudioSource->SetLooping(true);
 	m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
@@ -187,6 +191,7 @@ Game::~Game()
 	Delete(m_pTextViewUPS);
 	
 	Delete(m_pSoundEffect);
+	Delete(m_pMusic);
 	
 	Delete(m_pTestAudioSource);
 }
@@ -337,6 +342,7 @@ void Game::OnUpdate(float dtS)
 	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 
 	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
+	AudioListener::SetOrientation(m_pScene->GetCamera().GetFront(), m_pScene->GetCamera().GetUp());
 
 	static float decalRot = 0.0f;
 	static float decalX = g_pDecalObject->GetPosition().x;

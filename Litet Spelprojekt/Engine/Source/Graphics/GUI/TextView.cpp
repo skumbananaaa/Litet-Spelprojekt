@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
 
-TextView::TextView(float x, float y, float width, float height, const std::string& text, int size) : GUIObject(x, y, width, height), 
+TextView::TextView(float x, float y, float width, float height, const std::string& text, int size) : GUIObject(x, y, width, height, "TextView"),
 	m_Text(text), 
 	m_Size(size), 
 	m_TextAlignment(CENTER_VERTICAL)
@@ -51,13 +51,14 @@ TextAlignment TextView::GetTextAlignment()
 	return m_TextAlignment;
 }
 
-void TextView::OnRender(GLContext* context, FontRenderer* fontRenderer)
+void TextView::OnRender(GUIContext* context)
 {
-	GUIObject::OnRender(context, fontRenderer);
+	GUIObject::OnRender(context);
+	context->GetFontRenderer()->UpdateRenderTargetSize(GetWidth(), GetHeight());
 
 	if (!m_Text.empty())
 	{
-		glm::vec2 size = fontRenderer->CalculateSize(m_Text, 0.4f);
+		glm::vec2 size = context->CalculateTextSize(m_Text, 0.4f);
 		float x = 0;
 		float y = 0;
 
@@ -77,6 +78,6 @@ void TextView::OnRender(GLContext* context, FontRenderer* fontRenderer)
 			break;
 		}
 
-		fontRenderer->RenderText(context, m_Text, x, y, m_Size / 100.0f);
+		context->RenderText(m_Text, x, y, m_Size / 100.0f);
 	}
 }

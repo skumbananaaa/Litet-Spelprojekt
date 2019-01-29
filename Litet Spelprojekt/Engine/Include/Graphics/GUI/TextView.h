@@ -24,7 +24,7 @@ public:
 	TextAlignment GetTextAlignment();
 
 protected:
-	virtual void OnRender(GLContext* context, FontRenderer* fontRenderer) override;
+	virtual void OnRender(GUIContext* context) override;
 
 private:
 	std::string m_Text;

@@ -6,6 +6,7 @@
 
 GameObject* g_pDecalObject = nullptr;
 Crew g_Crew;
+float g_Rot = 1.0;
 
 Game::Game() noexcept
 	: m_pFontRenderer(nullptr),
@@ -118,7 +119,7 @@ Game::Game() noexcept
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-	g_Crew.addMember();
+	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
 
 	m_pScene->AddGameObject(g_Crew.getMember(0));
 	m_pScene->AddPointLight(g_Crew.getMember(0)->getLight());
@@ -358,6 +359,9 @@ void Game::OnUpdate(float dtS)
 
 	decalX += decalXSpeed * dtS;
 	decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
+	Crewmember * derp = g_Crew.getMember(0);
+	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
+	derp->UpdateTransform();
 
 	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));

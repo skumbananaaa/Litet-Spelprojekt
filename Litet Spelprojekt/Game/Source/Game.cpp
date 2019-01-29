@@ -3,10 +3,23 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Crew.h"
 #include "..\Include\Grid.h"
+#include "..\Include\Path.h"
+
 
 GameObject* g_pDecalObject = nullptr;
 Crew g_Crew;
 Grid * g_Grid;
+Path* g_Path;
+
+
+Crewmember * derp;
+glm::ivec2 temp_playerTile(1, 1);
+glm::ivec2 temp_targetTile = temp_playerTile;
+glm::ivec2* temp_path;
+glm::vec3 temp_targetPos(temp_targetTile.x * 2, 10.5f, temp_targetTile.y * 2);
+int temp_nrOfPathTiles = 0;
+
+
 float g_Rot = 1.0;
 
 Game::Game() noexcept
@@ -126,9 +139,9 @@ Game::Game() noexcept
 
 	g_Grid = new Grid(glm::ivec2(20, 20), glm::vec3(0.0f, 10.0f, 0.0f));
 
-	int map[20][20]{
+	int temp_map[20][20]{
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
+		{1, 3, 3, 3, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
 		{1, 3, 2, 2, 2, 2, 0, 3, 3, 3, 5, 5, 2, 2, 2, 2, 0, 4, 4, 1 },
 		{1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
 		{1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
@@ -149,15 +162,20 @@ Game::Game() noexcept
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
 	};
 
+	derp = g_Crew.getMember(0);
+	derp->SetPosition(glm::vec3(2.0f, 10.5f, 2.0f));
+
 	for (int i = 0; i < g_Grid->GetSize().x; i++)
 	{
 		for (int j = 0; j < g_Grid->GetSize().y; j++)
 		{
-			g_Grid->GetTile(glm::ivec2(i, j))->SetID(map[i][j]);
-			g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(map[i][j] / 10.0f, map[i][j] / 10.0f, 0.0f, 1.0f));
+			g_Grid->GetTile(glm::ivec2(i, j))->SetID(temp_map[i][j]);
+			g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
 			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
 		}
 	}
+
+	g_Path = new Path(g_Grid->GetGrid(), g_Grid->GetSize());
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
@@ -232,6 +250,8 @@ Game::~Game()
 	Delete(m_pTestAudioSource);
 
 	Delete(g_Grid);
+
+	Delete(g_Path);
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -396,12 +416,37 @@ void Game::OnUpdate(float dtS)
 
 	decalX += decalXSpeed * dtS;
 	decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
-	Crewmember * derp = g_Crew.getMember(0);
+	//Crewmember * derp = g_Crew.getMember(0);
 	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	derp->UpdateTransform();
 	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
+
+	
+
+	if (Input::IsKeyDown(KEY_ENTER) && !g_Path->IsGoalSet() && temp_nrOfPathTiles == 0)
+	{
+		glm::ivec2 goalPos (std::rand() % 19, std::rand() % 19);
+		//glm::ivec2 goalPos(7, 14);
+		std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
+		temp_path = g_Path->FindPath(temp_playerTile, goalPos);
+		temp_nrOfPathTiles = g_Path->GetNrOfPathTiles();
+	}
+
+	if (temp_nrOfPathTiles > 0) {
+		if (temp_playerTile == temp_targetTile) {
+			temp_targetTile = temp_path[--temp_nrOfPathTiles];
+			temp_targetPos = glm::vec3(temp_targetTile.x * 2, 10.5f, temp_targetTile.y * 2);
+		}
+	}
+	if (std::abs(derp->GetPosition().x - temp_targetPos.x) > 0.001 || std::abs(derp->GetPosition().z - temp_targetPos.z) > 0.001) {
+		glm::vec2 move(temp_targetPos.x - derp->GetPosition().x, temp_targetPos.z - derp->GetPosition().z);
+		move = glm::normalize(move);
+		derp->Move(glm::vec3(move.x * 10 * dtS, 0.0f, move.y * 10 * dtS));
+		derp->UpdateTransform();
+		temp_playerTile = glm::ivec2(std::round(derp->GetPosition().x / 2.0f), std::round(derp->GetPosition().z / 2.0f));
+	}
 }
 
 void Game::OnRender(float dtS)

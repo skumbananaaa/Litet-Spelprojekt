@@ -10,7 +10,7 @@ Grid::Grid(const glm::ivec2 & size, const unsigned int ** tileVal, const glm::ve
 		m_pppTiles[i] = new Tile*[size.y];
 		for (int j = 0; j < size.y; j++)
 		{
-			m_pppTiles[i][j] = new Tile(position + glm::vec3(i, 0.0f, j));
+			m_pppTiles[i][j] = new Tile(position + glm::vec3(i*2, 0.0f, j*2));
 			m_pppTiles[i][j]->SetID(tileVal[i][j]);
 		}
 	}
@@ -25,7 +25,7 @@ Grid::Grid(const glm::ivec2 & size, const glm::vec3 position)
 		m_pppTiles[i] = new Tile*[size.y];
 		for (int j = 0; j < size.y; j++)
 		{
-			m_pppTiles[i][j] = new Tile(position + glm::vec3(i, 0.0f, j));
+			m_pppTiles[i][j] = new Tile(position + glm::vec3(i*2, 0.0f, j*2));
 			m_pppTiles[i][j]->SetID(0);
 		}
 	}
@@ -62,7 +62,7 @@ const glm::ivec2 Grid::GetSize() const
 
 const Tile *** Grid::GetGrid() const
 {
-	return m_pppTiles;
+	return (const Tile***)m_pppTiles;
 }
 
 void Grid::SetColor(const glm::ivec2 & pos, const glm::vec4 & color)

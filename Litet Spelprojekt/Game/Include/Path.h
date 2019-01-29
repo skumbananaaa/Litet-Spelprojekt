@@ -1,6 +1,7 @@
 #pragma once
 #include <GLM\vec2.hpp>
 #include "..\Include\Grid.h"
+#include "..\Include\Tile.h"
 #include <math.h>
 #include <algorithm>
 
@@ -21,10 +22,12 @@ private:
 	glm::ivec2 m_goalTile;
 	glm::ivec2 m_startTile;
 	glm::ivec2 m_closestTile;
+	glm::ivec2 m_size;
 	int** m_ppMap;
 	int m_smallestH;
 	int m_nrOfTilesOpen;
 	int m_nrOfPathTiles = 0;
+	bool m_goalSet;
 
 private:
 	void AddToOpen(int x, int y, int addX, int addY);
@@ -32,10 +35,11 @@ private:
 	bool MoveToNextTile();
 
 public:
-	Path(int** map, int sizeX, int sizeY);
+	Path(const Tile*** pppTilemap, glm::ivec2 size);
 	~Path();
 
-	void FindPath(glm::ivec2 start, glm::ivec2 goal);
-
+	glm::ivec2* FindPath(glm::ivec2 start, glm::ivec2 goal);
+	bool IsGoalSet();
+	int GetNrOfPathTiles();
 };
 

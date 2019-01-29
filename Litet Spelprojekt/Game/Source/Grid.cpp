@@ -1,4 +1,4 @@
-#include "Grid.h"
+#include "..\Include\Grid.h"
 
 Grid::Grid(const glm::ivec2 & size, const int ** tiles)
 {

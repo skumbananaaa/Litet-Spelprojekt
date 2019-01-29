@@ -15,6 +15,6 @@ public:
 
 	void edit(const glm::ivec2 & pos, const int & val);
 	const int getVal(const glm::ivec2 & pos) const;
-	void onDraw(); //????????
+	void onRender(); //????????
 };
 #endif

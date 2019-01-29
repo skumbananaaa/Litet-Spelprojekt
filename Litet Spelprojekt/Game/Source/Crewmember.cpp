@@ -34,6 +34,11 @@ PointLight * Crewmember::getLight() const
 	return m_pLight;
 }
 
+const float Crewmember::getActionCapacity() const
+{
+	return m_ActionCap;
+}
+
 void Crewmember::move(const glm::vec3 & dir)
 {
 	glm::vec3 res = this->GetPosition() + dir;
@@ -44,6 +49,11 @@ void Crewmember::setPosition(const glm::vec3 & position)
 {
 	SetPosition(position);
 	UpdateTransform();
+}
+
+void Crewmember::setActionCapacity(const float actionCap)
+{
+	m_ActionCap = actionCap;
 }
 
 const glm::vec3 Crewmember::getPos() const

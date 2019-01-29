@@ -423,12 +423,9 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
 
-	
-
 	if (Input::IsKeyDown(KEY_ENTER) && !g_Path->IsGoalSet() && temp_nrOfPathTiles == 0)
 	{
 		glm::ivec2 goalPos (std::rand() % 19, std::rand() % 19);
-		//glm::ivec2 goalPos(7, 14);
 		std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
 		temp_path = g_Path->FindPath(temp_playerTile, goalPos);
 		temp_nrOfPathTiles = g_Path->GetNrOfPathTiles();
@@ -440,10 +437,10 @@ void Game::OnUpdate(float dtS)
 			temp_targetPos = glm::vec3(temp_targetTile.x * 2, 10.5f, temp_targetTile.y * 2);
 		}
 	}
-	if (std::abs(derp->GetPosition().x - temp_targetPos.x) > 0.001 || std::abs(derp->GetPosition().z - temp_targetPos.z) > 0.001) {
+	if (std::abs(derp->GetPosition().x - temp_targetPos.x) > 0.01 || std::abs(derp->GetPosition().z - temp_targetPos.z) > 0.01) {
 		glm::vec2 move(temp_targetPos.x - derp->GetPosition().x, temp_targetPos.z - derp->GetPosition().z);
 		move = glm::normalize(move);
-		derp->Move(glm::vec3(move.x * 10 * dtS, 0.0f, move.y * 10 * dtS));
+		derp->Move(glm::vec3(move.x * dtS, 0.0f, move.y * dtS));
 		derp->UpdateTransform();
 		temp_playerTile = glm::ivec2(std::round(derp->GetPosition().x / 2.0f), std::round(derp->GetPosition().z / 2.0f));
 	}

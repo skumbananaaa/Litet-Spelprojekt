@@ -5,17 +5,17 @@ void Path::AddToOpen(int x, int y, int addX, int addY)
 {
 	int newX = x + addX;
 	int newY = y + addY;
-	if (!( m_ppTiles[newX][newY].m_closed)) {
-		if ( m_ppTiles[newX][newY].m_g == 0 || m_ppTiles[newX][newY].m_g > m_ppTiles[x][y].m_g) {
-			if (( m_ppMap[newX][newY] == m_ppMap[x][y] || m_ppMap[x][y] == 0 || m_ppMap[newX][newY] == 0) && m_ppMap[newX][newY] != 1) {
-				 m_openList[ m_nrOfTilesOpen++] = glm::ivec2(newX, newY);
-				 m_ppTiles[newX][newY].m_parentTile = glm::ivec2(x, y);
-				 m_ppTiles[newX][newY].m_g = m_ppTiles[x][y].m_g + 1;
-				int h = std::abs( m_goalTile.x - newX) + std::abs( m_goalTile.y - newY);
-				 m_ppTiles[newX][newY].m_f = m_ppTiles[newX][newY].m_g + h;
+	if (!(m_ppTiles[newX][newY].m_closed)) {
+		if (m_ppTiles[newX][newY].m_g == 0 || m_ppTiles[newX][newY].m_g > m_ppTiles[x][y].m_g) {
+			if ((m_ppMap[newX][newY] == m_ppMap[x][y] || m_ppMap[x][y] == 0 || m_ppMap[newX][newY] == 0) && m_ppMap[newX][newY] != 1) {
+				m_openList[m_nrOfTilesOpen++] = glm::ivec2(newX, newY);
+				m_ppTiles[newX][newY].m_parentTile = glm::ivec2(x, y);
+				m_ppTiles[newX][newY].m_g = m_ppTiles[x][y].m_g + 1;
+				int h = std::abs(m_goalTile.x - newX) + std::abs(m_goalTile.y - newY);
+				m_ppTiles[newX][newY].m_f = m_ppTiles[newX][newY].m_g + h;
 				if (h < m_smallestH) {
-					 m_smallestH = h;
-					 m_closestTile = glm::ivec2(newX, newY);
+					m_smallestH = h;
+					m_closestTile = glm::ivec2(newX, newY);
 				}
 			}
 		}
@@ -24,31 +24,31 @@ void Path::AddToOpen(int x, int y, int addX, int addY)
 
 void Path::CheckAdjacent()
 {
-	AddToOpen( m_currentTile.x, m_currentTile.y, 1, 0);
-	AddToOpen( m_currentTile.x, m_currentTile.y, -1, 0);
-	AddToOpen( m_currentTile.x, m_currentTile.y, 0, 1);
-	AddToOpen( m_currentTile.x, m_currentTile.y, 0, -1);
+	AddToOpen(m_currentTile.x, m_currentTile.y, 1, 0);
+	AddToOpen(m_currentTile.x, m_currentTile.y, -1, 0);
+	AddToOpen(m_currentTile.x, m_currentTile.y, 0, 1);
+	AddToOpen(m_currentTile.x, m_currentTile.y, 0, -1);
 }
 
 bool Path::MoveToNextTile()
 {
-	if ( m_nrOfTilesOpen != 0) {
+	if (m_nrOfTilesOpen != 0) {
 		int index = m_nrOfTilesOpen - 1;
-		int tempF = m_ppTiles[ m_openList[index].x][ m_openList[index].y].m_f;
+		int tempF = m_ppTiles[m_openList[index].x][m_openList[index].y].m_f;
 		for (int i = m_nrOfTilesOpen - 1; i >= 0; i--) {
-			if (( m_ppTiles[ m_openList[i].x][ m_openList[i].y].m_f < tempF) && !( m_ppTiles[ m_openList[i].x][ m_openList[i].y].m_closed)) {
-				tempF = m_ppTiles[ m_openList[i].x][ m_openList[i].y].m_f;
+			if ((m_ppTiles[m_openList[i].x][m_openList[i].y].m_f < tempF) && !(m_ppTiles[m_openList[i].x][m_openList[i].y].m_closed)) {
+				tempF = m_ppTiles[m_openList[i].x][m_openList[i].y].m_f;
 				index = i;
 			}
 		}
 
-		 m_currentTile = glm::ivec2( m_openList[index].x, m_openList[index].y);
-		 m_ppTiles[ m_currentTile.x][ m_currentTile.y].m_closed = true;
-		 m_openList[index] = m_openList[-- m_nrOfTilesOpen];
+		m_currentTile = glm::ivec2(m_openList[index].x, m_openList[index].y);
+		m_ppTiles[m_currentTile.x][m_currentTile.y].m_closed = true;
+		m_openList[index] = m_openList[--m_nrOfTilesOpen];
 
 		CheckAdjacent();
 
-		if ( m_currentTile == m_goalTile) {
+		if (m_currentTile == m_goalTile) {
 			return true;
 		}
 	}
@@ -58,20 +58,16 @@ bool Path::MoveToNextTile()
 
 Path::Path(const Tile*** pppTilemap, glm::ivec2 size)
 {
-	 m_size = size;
-	 m_ppMap = new int*[size.x];
+	m_size = size;
+	m_ppMap = new int*[size.x];
 	for (int i = 0; i < size.x; i++) {
-		 m_ppMap[i] = new int[size.y];
+		m_ppMap[i] = new int[size.y];
 		for (int j = 0; j < size.y; j++) {
-			 m_ppMap[i][j] = pppTilemap[i][j]->GetID();
+			m_ppMap[i][j] = pppTilemap[i][j]->GetID();
 		}
 	}
-	 m_openList = new glm::ivec2[size.x * size.y];
-	 m_pPath = new glm::ivec2[size.x * size.y];
-	 m_ppTiles = new tls*[size.x];
-	for (int i = 0; i < size.x; i++) {
-		 m_ppTiles[i] = new tls[size.y];
-	}
+	m_pPath = new glm::ivec2[size.x * size.y];
+	m_openList = new glm::ivec2[m_size.x * m_size.y];
 }
 
 Path::~Path()
@@ -80,53 +76,51 @@ Path::~Path()
 		delete[] m_ppMap[i];
 	}
 	delete[] m_ppMap;
-	delete[] m_openList;
 	delete[] m_pPath;
+	delete[] m_openList;
 }
 
 glm::ivec2* Path::FindPath(glm::ivec2 start, glm::ivec2 goal)
 {
 	m_ppTiles = new tls*[m_size.x];
 	for (int i = 0; i < m_size.x; i++) {
-		 m_ppTiles[i] = new tls[m_size.y];
+		m_ppTiles[i] = new tls[m_size.y];
 	}
 
-	 m_startTile = start;
-	 m_ppTiles[ m_startTile.x][ m_startTile.y].m_parentTile = start;
-	 m_currentTile = m_startTile;
-	 m_ppTiles[ m_currentTile.x][ m_currentTile.y].m_closed = true;
+	m_nrOfTilesOpen = 0;
+	m_nrOfPathTiles = 0;
 
-	/*int x = std::max(std::min(goal.y / 35, 19), 0);
-	int y = std::max(std::min(goal.x / 35, 19), 0);
-	 m_goalTile = glm::ivec2(x, y);*/
-	 m_goalTile = goal;
-	 m_smallestH = std::abs( m_goalTile.x - m_startTile.x) + std::abs( m_goalTile.y - m_startTile.y);
-	 m_closestTile = m_startTile;
+	m_startTile = start;
+	m_ppTiles[m_startTile.x][m_startTile.y].m_parentTile = start;
+	m_currentTile = m_startTile;
+	m_ppTiles[m_currentTile.x][m_currentTile.y].m_closed = true;
 
-	 m_nrOfPathTiles = 0;
+	m_goalTile = goal;
+	m_smallestH = std::abs(m_goalTile.x - m_startTile.x) + std::abs(m_goalTile.y - m_startTile.y);
+	m_closestTile = m_startTile;
 
-	 m_goalSet = true;
+	m_goalSet = true;
 
 	CheckAdjacent();
 
-	 m_ppTiles[ m_currentTile.x][ m_currentTile.y].m_closed = true;
+	m_ppTiles[m_currentTile.x][m_currentTile.y].m_closed = true;
 
 	bool found = false;
 
 	do {
 		found = MoveToNextTile();
-	} while ( m_nrOfTilesOpen > 0 && !found);
+	} while (m_nrOfTilesOpen > 0 && !found);
 
 	if (!found) {
-		 m_currentTile = m_closestTile;
+		m_currentTile = m_closestTile;
 	}
 
 	do {
-		 m_pPath[ m_nrOfPathTiles++] = m_currentTile;
-		 m_currentTile = m_ppTiles[ m_currentTile.x][ m_currentTile.y].m_parentTile;
-	} while ( m_currentTile != m_startTile);
+		m_pPath[m_nrOfPathTiles++] = m_currentTile;
+		m_currentTile = m_ppTiles[m_currentTile.x][m_currentTile.y].m_parentTile;
+	} while (m_currentTile != m_startTile);
 
-	 m_goalSet = false;
+	m_goalSet = false;
 
 	 for (int i = 0; i < m_size.x; i++) {
 		 delete[] m_ppTiles[i];

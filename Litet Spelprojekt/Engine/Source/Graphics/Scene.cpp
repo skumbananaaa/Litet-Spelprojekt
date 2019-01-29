@@ -24,6 +24,11 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_PointLights[i]);
 	}
+
+	for (size_t i = 0; i < m_SpotLights.size(); i++)
+	{
+		DeleteSafe(m_SpotLights[i]);
+	}
 }
 
 void Scene::SetCamera(Camera* pCamera) noexcept

@@ -109,8 +109,10 @@ private:
 
 private:
 	Framebuffer* m_pGBuffer;
-	Framebuffer* m_pResolveTarget;
+	Framebuffer* m_pResolveTargets[2];
 	Framebuffer* m_pReflection;
+	mutable Framebuffer* m_pCurrentResolveTarget;
+	mutable Framebuffer* m_pLastResolveTarget;
 	
 	FullscreenTri* m_pTriangle;
 	
@@ -138,4 +140,6 @@ private:
 	ShaderProgram* m_pLightPassProgram;
 	ShaderProgram* m_pForwardPass;
 	ShaderProgram* m_pWaterpassProgram;
+	
+	mutable uint64 m_FrameCount;
 };

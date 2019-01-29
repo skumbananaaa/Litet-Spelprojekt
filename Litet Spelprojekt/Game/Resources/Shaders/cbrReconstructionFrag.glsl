@@ -9,6 +9,8 @@ in VS_OUT
 
 layout(binding = 0) uniform sampler2D g_Color;
 layout(binding = 1) uniform sampler2D g_Depth;
+layout(binding = 2) uniform sampler2D g_LastColor;
+layout(binding = 3) uniform sampler2D g_LastDepth;
 
 void main()
 {
@@ -18,15 +20,21 @@ void main()
 	ivec2 frameCoord = ivec2(frameSize * fs_in.TexCoords);
 	ivec2 modFrameCoord = frameCoord % 2;
 
-	ivec2 sampleCoord = ivec2(coord.x, (frameCoord.y - (frameCoord.x % 2)) / 2);
+	vec4 color = vec4(0.0f);
+	float depth = 0.0f;
 	if (modFrameCoord.x == modFrameCoord.y)
 	{
-		g_OutColor = texelFetch(g_Color, sampleCoord, 0);
-		gl_FragDepth = texelFetch(g_Depth, sampleCoord, 0).r;
+		ivec2 sampleCoord = ivec2(coord.x, (frameCoord.y - (frameCoord.x % 2)) / 2);
+		color = texelFetch(g_Color, sampleCoord, 0);
+		depth = texelFetch(g_Depth, sampleCoord, 0).r;
 	}
 	else
 	{
-		g_OutColor = vec4(0.0f);
-		gl_FragDepth = 0.0f;
+		ivec2 sampleCoord = ivec2(coord.x, (frameCoord.y - ((frameCoord.x + 1) % 2)) / 2);
+		color = texelFetch(g_LastColor, sampleCoord, 0);
+		depth = texelFetch(g_LastDepth, sampleCoord, 0).r;
 	}
+
+	g_OutColor = color;
+	gl_FragDepth = depth;
 }

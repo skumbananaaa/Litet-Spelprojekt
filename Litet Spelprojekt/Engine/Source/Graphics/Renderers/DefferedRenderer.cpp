@@ -7,10 +7,11 @@
 
 DefferedRenderer::DefferedRenderer()
 	: m_pGBuffer(nullptr),
-	m_pResolveTarget(nullptr),
 	m_pReflection(nullptr),
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
+	m_pLastResolveTarget(nullptr),
+	m_pCurrentResolveTarget(nullptr),
 	m_pGPassVSPerFrame(nullptr),
 	m_pGeoPassPerObject(nullptr),
 	m_pDecalPassPerFrame(nullptr),
@@ -27,7 +28,9 @@ DefferedRenderer::DefferedRenderer()
 	m_pDecalsPassProgram(nullptr),
 	m_pGeometryPassProgram(nullptr),
 	m_pLightPassProgram(nullptr),
-	m_pWaterpassProgram(nullptr)
+	m_pWaterpassProgram(nullptr),
+	m_pResolveTargets(),
+	m_FrameCount(0)
 {
 	Create();
 }
@@ -36,7 +39,11 @@ DefferedRenderer::~DefferedRenderer()
 {
 	DeleteSafe(m_pGBuffer);
 	DeleteSafe(m_pReflection);
-	DeleteSafe(m_pResolveTarget);
+
+	for (uint32 i = 0; i < 2; i++)
+	{
+		DeleteSafe(m_pResolveTargets[i]);
+	}
 
 	DeleteSafe(m_pTriangle);
 	DeleteSafe(m_pDecalMesh);
@@ -86,19 +93,25 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	context.Disable(MULTISAMPLE);
 
-	context.SetFramebuffer(m_pResolveTarget);
-	context.SetViewport(m_pResolveTarget->GetWidth(), m_pResolveTarget->GetHeight(), 0, 0);
+	context.SetFramebuffer(m_pCurrentResolveTarget);
+	context.SetViewport(m_pCurrentResolveTarget->GetWidth(), m_pCurrentResolveTarget->GetHeight(), 0, 0);
 	CBRResolvePass(scene.GetCamera(), scene, m_pGBuffer);
 
 	context.SetFramebuffer(nullptr);
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	
+	context.Enable(DEPTH_TEST);
 	ReconstructionPass();
 
 	//LightPass(scene.GetCamera(), scene, m_pGBuffer);
 
 	//context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
 
-	//WaterPass(scene, dtS);
+	WaterPass(scene, dtS);
+
+	m_FrameCount++;
+	m_pLastResolveTarget = m_pCurrentResolveTarget;
+	m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
 }
 
 void DefferedRenderer::Create() noexcept
@@ -140,7 +153,13 @@ void DefferedRenderer::Create() noexcept
 		desc.SamplingParams = params;
 		desc.Samples = 1;
 
-		m_pResolveTarget = new Framebuffer(desc);
+		for (uint32 i = 0; i < 2; i++)
+		{
+			m_pResolveTargets[i] = new Framebuffer(desc);
+		}
+
+		m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
+		m_pLastResolveTarget = m_pCurrentResolveTarget;
 	}
 
 	{
@@ -492,10 +511,18 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 
 	context.SetProgram(m_pCbrReconstructionProgram);
 
+	//Current frame
+
 	//Color
-	context.SetTexture(m_pResolveTarget->GetColorAttachment(0), 0);
+	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(0), 0);
 	//Depth
-	context.SetTexture(m_pResolveTarget->GetColorAttachment(1), 1);
+	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(1), 1);
+
+	//Last frame
+	//Color
+	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(0), 2);
+	//Depth
+	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(1), 3);
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 }
@@ -701,7 +728,6 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	context.SetFramebuffer(m_pReflection);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
-	context.Enable(DEPTH_TEST);
 	context.Enable(Cap::CLIP_DISTANCE0);
 	ForwardPass(reflectionCam, scene);
 	context.Disable(Cap::CLIP_DISTANCE0);

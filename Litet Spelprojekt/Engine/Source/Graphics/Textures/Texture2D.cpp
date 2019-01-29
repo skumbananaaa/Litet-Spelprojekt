@@ -1,5 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/Textures/Texture2D.h>
+#include <Graphics/Renderers/GLContext.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <STB/stb_image.h>
 
@@ -34,20 +36,20 @@ Texture2D::~Texture2D()
 
 void Texture2D::Create(const void* pInitalData, const TextureDesc& desc, const TextureParams& params)
 {
-	glGenTextures(1, &m_Texture);
+	GL_CALL(glGenTextures(1, &m_Texture));
 	m_Type = GL_TEXTURE_2D;
 
 	Texture::SetParameters(params);
 
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_Texture));
 
 	uint32 glformat = Texture::TexFormatToGL(desc.Format);
 	uint32 internalFormat = Texture::TexFormatToGLInternal(desc.Format);
 	uint32 type = Texture::TexFormatToGLType(desc.Format);
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, desc.Width, desc.Height, 0, glformat, type, pInitalData);
+	GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, desc.Width, desc.Height, 0, glformat, type, pInitalData));
 	if (desc.GenerateMips)
 	{
-		glGenerateMipmap(GL_TEXTURE_2D);
+		GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 	else
 	{
@@ -61,22 +63,22 @@ void Texture2D::Create(const void* pInitalData, const TextureDesc& desc, const T
 	
 	std::cout << "Created Texture2D" << std::endl;
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
 {
-	glGenTextures(1, &m_Texture);
+	GL_CALL(glGenTextures(1, &m_Texture));
 	m_Type = GL_TEXTURE_2D_MULTISAMPLE;
-	
+
 	Texture::SetParameters(params);
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_Texture);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_Texture));
 
 	uint32 glformat = Texture::TexFormatToGL(desc.Format);
 	uint32 internalFormat = Texture::TexFormatToGLInternal(desc.Format);
 	uint32 type = Texture::TexFormatToGLType(desc.Format);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, desc.Samples, internalFormat, desc.Width, desc.Height, false);
+	GL_CALL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, desc.Samples, internalFormat, desc.Width, desc.Height, false));
 	
 	if (desc.GenerateMips)
 	{
@@ -90,7 +92,7 @@ void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
 
 	std::cout << "Created Texture2D with " << desc.Samples << "X MSAA"<< std::endl;
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
 }
 
 void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
@@ -105,19 +107,21 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 		return;
 	}
 
-	glGenTextures(1, &m_Texture);
+	GL_CALL(glGenTextures(1, &m_Texture));
+	m_Type = GL_TEXTURE_2D;
+
 	SetParameters(params);
 
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_Texture));
 
 	uint32 glformat = Texture::TexFormatToGL(format);
 	uint32 internalFormat = Texture::TexFormatToGLInternal(format);
 	uint32 type = Texture::TexFormatToGLType(format);
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, glformat, type, textureData);
+	GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, glformat, type, textureData));
 
 	if (generateMipmaps)
 	{
-		glGenerateMipmap(GL_TEXTURE_2D);
+		GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 	else
 	{
@@ -130,7 +134,7 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 
 	std::cout << "Loaded Texture2D" << std::endl;
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
 	delete textureData;
 }

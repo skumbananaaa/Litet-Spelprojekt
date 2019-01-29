@@ -89,12 +89,15 @@ private:
 	void DepthPrePass(const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
+	void CBRResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
+	void ReconstructionPass() const noexcept;
 	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 
 private:
 	Framebuffer* m_pGBuffer;
+	Framebuffer* m_pResolveTarget;
 	Framebuffer* m_pReflection;
 	
 	FullscreenTri* m_pTriangle;
@@ -114,6 +117,8 @@ private:
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
 	
+	ShaderProgram* m_pCbrReconstructionProgram;
+	ShaderProgram* m_pCbrResolveProgram;
 	ShaderProgram* m_pCbrStencilProgram;
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;

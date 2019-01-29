@@ -4,6 +4,7 @@
 #define NUM_POINT_LIGHTS 8
 
 layout(location = 0) out vec4 g_OutColor;
+layout(location = 1) out float g_OutDepth;
 
 in VS_OUT
 {
@@ -72,15 +73,17 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 vec4 sampleMSAATexture(sampler2DMS tex, vec2 nTexCoords)
 {
 	ivec2 texSize = textureSize(tex);
-	ivec2 framebufSize = texSize * 2;
+	ivec2 framebufSize = ivec2(texSize.x * 2, texSize.y);
 	ivec2 texCoord = ivec2(nTexCoords * texSize);
 
-	return texelFetch(tex, texCoord, (framebufSize.x + framebufSize.y) % 2);
+	return texelFetch(tex, texCoord, framebufSize.x % 2);
 }
 
 void main()
 {
 	float depth = sampleMSAATexture(g_Depth, fs_in.TexCoords).r;
+	g_OutDepth = depth;
+
 	vec3 normal = normalize(sampleMSAATexture(g_Normal, fs_in.TexCoords).xyz);
 	vec3 position = PositionFromDepth(depth);
 

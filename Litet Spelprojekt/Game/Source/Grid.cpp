@@ -45,14 +45,14 @@ void Grid::edit(const glm::ivec2 & pos, const unsigned int & val)
 	m_pppTiles[pos.x][pos.y]->SetID(val);
 }
 
-const int Grid::getVal(const glm::ivec2 & pos) const
+const unsigned int Grid::getVal(const glm::ivec2 & pos) const
 {
 	return m_pppTiles[pos.x][pos.y]->GetID();
 }
 
-Tile * Grid::GetTile(const glm::ivec2 & index)
+Tile * Grid::GetTile(const glm::ivec2 & pos)
 {
-	return m_pppTiles[index.x][index.y];
+	return m_pppTiles[pos.x][pos.y];
 }
 
 const glm::ivec2 Grid::GetSize() const

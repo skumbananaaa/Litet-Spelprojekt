@@ -20,6 +20,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pWaterNormalMap(nullptr),
 	m_pWaterDistortionMap(nullptr),
 	m_pForwardPass(nullptr),
+	m_pCbrStencilProgram(nullptr),
 	m_pDepthPrePassProgram(nullptr),
 	m_pDecalsPassProgram(nullptr),
 	m_pGeometryPassProgram(nullptr),
@@ -50,6 +51,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pWaterNormalMap);
 	DeleteSafe(m_pWaterDistortionMap);
 	
+	DeleteSafe(m_pCbrStencilProgram);
 	DeleteSafe(m_pDepthPrePassProgram);
 	DeleteSafe(m_pDecalsPassProgram);
 	DeleteSafe(m_pGeometryPassProgram);
@@ -74,6 +76,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 	//DepthPrePass(scene);
+
 	GeometryPass(scene.GetCamera(), scene);
 	DecalPass(scene.GetCamera(), scene);
 
@@ -102,12 +105,13 @@ void DefferedRenderer::Create() noexcept
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA;
 		desc.NumColorAttachments = 2;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
+		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
 		//desc.Width = 1920; 
 		desc.Width = Window::GetCurrentWindow().GetWidth();
 		//desc.Height = 1080;
 		desc.Height = Window::GetCurrentWindow().GetHeight();
 		desc.SamplingParams = params;
+		desc.Samples = 2;
 
 		m_pGBuffer = new Framebuffer(desc);
 	}
@@ -130,6 +134,17 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
+		m_pDecalMesh = IndexedMesh::CreateCube();
+		m_pTriangle = new FullscreenTri();
+	}
+
+	Shader fullscreenTri = Shader();
+	if (fullscreenTri.CompileFromFile("Resources/Shaders/fullscreenTriVert.glsl", VERTEX_SHADER))
+	{
+		std::cout << "Created fullscreen Vertex shader" << std::endl;
+	}
+
+	{
 		Shader* pVert = new Shader();
 		if (pVert->CompileFromFile("Resources/Shaders/defferedGeometryVert.glsl", VERTEX_SHADER))
 		{
@@ -149,21 +164,14 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/defferedLightningVert.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created Lightpass Vertex shader" << std::endl;
-		}
-
 		Shader* pFrag = new Shader();
 		if (pFrag->CompileFromFile("Resources/Shaders/defferedLightningFrag.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created Lightpass Fragment shader" << std::endl;
 		}
 
-		m_pLightPassProgram = new ShaderProgram(*pVert, *pFrag);
+		m_pLightPassProgram = new ShaderProgram(fullscreenTri, *pFrag);
 
-		delete pVert;
 		delete pFrag;
 	}
 
@@ -306,11 +314,6 @@ void DefferedRenderer::Create() noexcept
 
 		m_pWaterDistortionMap = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT_RGB, true, params);
 		m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT_RGB, true, params);
-	}
-
-	{
-		m_pDecalMesh = IndexedMesh::CreateCube();
-		m_pTriangle = new FullscreenTri();
 	}
 }
 

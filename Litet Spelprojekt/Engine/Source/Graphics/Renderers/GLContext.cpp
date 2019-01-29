@@ -162,9 +162,24 @@ void GLContext::SetDepthMask(bool writeDepth) const noexcept
 	glDepthMask((writeDepth) ? GL_TRUE : GL_FALSE);
 }
 
+void GLContext::SetStencilMask(uint8 mask) const noexcept
+{
+	glStencilMask(mask);
+}
+
 void GLContext::SetDepthFunc(Func func) const noexcept
 {
 	glDepthFunc(func);
+}
+
+void GLContext::SetStencilFunc(Func func, uint8 ref, uint8 mask) const noexcept
+{
+	glStencilFunc(func, ref, mask);
+}
+
+void GLContext::SetStencilOp(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
+{
+	glStencilOp(sFail, dpFail, dpPass);
 }
 
 void GLContext::Clear(uint32 flags) const noexcept

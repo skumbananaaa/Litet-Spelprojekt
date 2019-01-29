@@ -36,6 +36,15 @@ struct TextureParams
 	TEX_PARAM MinFilter = TEX_NEAREST;
 };
 
+struct TextureDesc
+{
+	TEX_FORMAT Format = TEX_FORMAT_UNKNOWN;
+	uint32 Width = 0;
+	uint32 Height = 0;
+	uint32 Samples = 1;
+	bool GenerateMips = true;
+};
+
 class API Texture
 {
 	friend class GLContext;
@@ -53,9 +62,13 @@ public:
 	void SetParameters(const TextureParams& params) noexcept;
 	TEX_FORMAT GetFormat() const noexcept;
 
+private:
+	uint32 GetType() const noexcept;
+
 protected:
 	TEX_FORMAT m_Format;
 	uint32 m_Texture;
+	uint32 m_Type;
 
 public:
 	static uint32 TexParamToGL(TEX_PARAM param) noexcept;
@@ -68,4 +81,9 @@ public:
 inline TEX_FORMAT Texture::GetFormat() const noexcept
 {
 	return m_Format;
+}
+
+inline uint32 Texture::GetType() const noexcept
+{
+	return m_Type;
 }

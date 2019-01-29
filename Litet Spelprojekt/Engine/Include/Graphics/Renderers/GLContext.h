@@ -59,6 +59,18 @@ enum Func : uint32
 	FUNC_ALWAYS = 0x0207,
 };
 
+enum StencilOp : uint32
+{
+	KEEP = 0x1E00,
+	ZERO = 0,
+	REPLACE = 0x1E01,
+	INCR = 0x1E02,
+	INCR_WRAP = 0x8507,
+	DECR = 0x1E03,
+	DECR_WRAP = 0x8508,
+	INVERT = 0x150A,
+};
+
 typedef Capability Cap;
 
 
@@ -84,7 +96,10 @@ public:
 	void SetClearDepth(float depth) const noexcept;
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
 	void SetDepthMask(bool writeDepth) const noexcept;
+	void SetStencilMask(uint8 mask) const noexcept;
+	void SetStencilOp(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept;
 	void SetDepthFunc(Func func) const noexcept;
+	void SetStencilFunc(Func func, uint8 ref, uint8 mask) const noexcept;
 	void SetProgram(const ShaderProgram* pProgram) const noexcept;
 	void SetTexture(const Texture* pTexture, uint32 slot) const noexcept;
 	void SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) const noexcept;
@@ -100,4 +115,5 @@ public:
 
 private:
 	glm::vec4 m_ViewPort;
+	mutable uint32 m_CurrentTextures[16];
 };

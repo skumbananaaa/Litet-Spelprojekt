@@ -114,6 +114,7 @@ private:
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
 	
+	ShaderProgram* m_pCbrStencilProgram;
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pDecalsPassProgram;

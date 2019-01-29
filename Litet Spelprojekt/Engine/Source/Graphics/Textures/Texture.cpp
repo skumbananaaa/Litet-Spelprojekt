@@ -18,12 +18,12 @@ Texture::~Texture()
 
 void Texture::SetParameters(const TextureParams& params) noexcept
 {
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap));
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(m_Type, m_Texture);
+	glTexParameteri(m_Type, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter));
+	glTexParameteri(m_Type, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter));
+	glTexParameteri(m_Type, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap));
+	glTexParameteri(m_Type, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap));
+	glBindTexture(m_Type, 0);
 }
 
 uint32 Texture::TexParamToGL(TEX_PARAM param) noexcept

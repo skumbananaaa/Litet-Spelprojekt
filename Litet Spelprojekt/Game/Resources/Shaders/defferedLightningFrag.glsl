@@ -10,9 +10,9 @@ in VS_OUT
 	vec2 TexCoords;
 } fs_in;
 
-layout(binding = 0) uniform sampler2D g_Color;
-layout(binding = 1) uniform sampler2D g_Normal;
-layout(binding = 2) uniform sampler2D g_Depth;
+layout(binding = 0) uniform sampler2DMS g_Color;
+layout(binding = 1) uniform sampler2DMS g_Normal;
+layout(binding = 2) uniform sampler2DMS g_Depth;
 
 struct DirectionalLight
 {
@@ -69,13 +69,27 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 	return ((ambient + diffuse) * color * lightColor) + specular;
 }
 
+vec4 sampleMSAATexture(sampler2DMS tex, vec2 nTexCoords)
+{
+	ivec2 texSize = textureSize(tex, 0);
+	ivec2 texCoord = ivec2(nTexCoords) * texSize;
+
+	vec4 color = vec4(0.0f);
+	for (int i = 0; i < 2; i++)
+	{
+		color += texelFetch(tex, texCoord, i);
+	}
+
+	return color;
+}
+
 void main()
 {
-	float depth = texture(g_Depth, fs_in.TexCoords).r;
-	vec3 normal = normalize(texture(g_Normal, fs_in.TexCoords).xyz);
+	float depth = sampleMSAATexture(g_Depth, fs_in.TexCoords).r;
+	vec3 normal = normalize(sampleMSAATexture(g_Normal, fs_in.TexCoords).xyz);
 	vec3 position = PositionFromDepth(depth);
 
-	vec3 color = texture(g_Color, fs_in.TexCoords).rgb;
+	vec3 color = sampleMSAATexture(g_Color, fs_in.TexCoords).rgb;
 	vec3 viewDir = normalize(g_CameraPosition.xyz - position);
 	
 	//Do  lightcalculation

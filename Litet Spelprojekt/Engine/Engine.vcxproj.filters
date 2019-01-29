@@ -35,6 +35,7 @@
     <ClCompile Include="Source\Graphics\Lights\DirectionalLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\PointLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\Spotlight.cpp" />
+    <ClCompile Include="Source\Audio\Music.cpp" />
     <ClCompile Include="Source\Graphics\GUI\Button.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIContext.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
@@ -84,5 +85,6 @@
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
+    <ClInclude Include="Include\Audio\Music.h" />
   </ItemGroup>
 </Project>

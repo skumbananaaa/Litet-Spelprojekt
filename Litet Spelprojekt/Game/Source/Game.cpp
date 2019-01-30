@@ -131,7 +131,7 @@ Game::Game() noexcept
 	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, 0.0f));
 	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);1,
+	m_pScene->AddGameObject(pGameObject);
 
 	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
 	m_pScene->AddGameObject(g_Crew.getMember(0));

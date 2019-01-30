@@ -25,21 +25,25 @@ void main()
 	if (modFrameCoord.x == modFrameCoord.y)
 	{
 		ivec2 sampleCoord = ivec2(coord.x, (frameCoord.y - (frameCoord.x % 2)) / 2);
-		color = (	texelFetch(g_LastColor, sampleCoord + ivec2(-1, 0),	0) +
-					texelFetch(g_LastColor, sampleCoord,				0) +
-					texelFetch(g_Color,		sampleCoord,				0) + 
-					texelFetch(g_LastColor, sampleCoord + ivec2(1, 0),	0) + 
-					texelFetch(g_LastColor, sampleCoord + ivec2(1, 1),	0)) / 5.0f;
+		color = (	
+			texelFetch(g_LastColor,		sampleCoord,					0) +
+			texelFetch(g_Color,			sampleCoord,					0) +
+			texelFetch(g_LastColor,		sampleCoord + ivec2( 0, 1),		0) + 			
+			texelFetch(g_LastColor,		sampleCoord + ivec2(-1, 0),		0) +
+			texelFetch(g_LastColor,		sampleCoord + ivec2( 1, 0),		0)
+			) / 5.0f;
 		//depth = texelFetch(g_Depth, sampleCoord, 0).r;
 	}
 	else
 	{
 		ivec2 sampleCoord = ivec2(coord.x, (frameCoord.y - ((frameCoord.x + 1) % 2)) / 2);
-		color = (	texelFetch(g_LastColor, sampleCoord + ivec2(-1, 0),	0) +
-					texelFetch(g_LastColor, sampleCoord,				0) +
-					texelFetch(g_Color,		sampleCoord,				0) + 
-					texelFetch(g_LastColor, sampleCoord + ivec2(1, 0),	0) + 
-					texelFetch(g_LastColor, sampleCoord + ivec2(1, 1),	0)) / 5.0f;
+		color = (	
+			texelFetch(g_Color,		sampleCoord,					0) +
+			texelFetch(g_LastColor,	sampleCoord,					0) +
+			texelFetch(g_Color,		sampleCoord + ivec2( 0, 1),		0) + 			
+			texelFetch(g_Color,		sampleCoord + ivec2(-1, 0),		0) +
+			texelFetch(g_Color,		sampleCoord + ivec2( 1, 0),		0)
+			) / 5.0f;
 		//depth = texelFetch(g_LastDepth, sampleCoord, 0).r;
 	}
 

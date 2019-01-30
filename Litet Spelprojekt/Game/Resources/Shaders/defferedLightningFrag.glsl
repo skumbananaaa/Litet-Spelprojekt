@@ -130,14 +130,11 @@ void main()
 		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
 		float intensity = clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
 
-		if(theta > g_SpotLights[i].OuterAngle){
+		if(theta > g_SpotLights[i].OuterAngle)
+		{
 			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, intensity);
 		}
-
-
 	}
-
-
 
 	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);
 }

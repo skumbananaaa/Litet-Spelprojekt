@@ -6,7 +6,7 @@
 #define REFLECTIONSIZE 384
 
 DefferedRenderer::DefferedRenderer()
-	: m_pGBuffer(nullptr),
+	: m_pGBufferCBR(nullptr),
 	m_pReflection(nullptr),
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
@@ -38,7 +38,7 @@ DefferedRenderer::DefferedRenderer()
 
 DefferedRenderer::~DefferedRenderer()
 {
-	DeleteSafe(m_pGBuffer);
+	DeleteSafe(m_pGBufferCBR);
 	DeleteSafe(m_pReflection);
 
 	for (uint32 i = 0; i < 2; i++)
@@ -84,8 +84,8 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
 
-	context.SetViewport(m_pGBuffer->GetWidth(), m_pGBuffer->GetHeight(), 0, 0);
-	context.SetFramebuffer(m_pGBuffer);
+	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
+	context.SetFramebuffer(m_pGBufferCBR);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 	context.Enable(MULTISAMPLE);
@@ -97,7 +97,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	context.SetFramebuffer(m_pCurrentResolveTarget);
 	context.SetViewport(m_pCurrentResolveTarget->GetWidth(), m_pCurrentResolveTarget->GetHeight(), 0, 0);
-	CBRResolvePass(scene.GetCamera(), scene, m_pGBuffer);
+	CBRResolvePass(scene.GetCamera(), scene, m_pGBufferCBR);
 
 	context.SetFramebuffer(nullptr);
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
@@ -139,7 +139,7 @@ void DefferedRenderer::Create() noexcept
 		desc.SamplingParams = params;
 		desc.Samples = 2;
 
-		m_pGBuffer = new Framebuffer(desc);
+		m_pGBufferCBR = new Framebuffer(desc);
 	}
 
 	{
@@ -152,8 +152,8 @@ void DefferedRenderer::Create() noexcept
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.ColorAttchmentFormats[1] = TEX_FORMAT_R;
 		desc.NumColorAttachments = 2;
-		desc.Width = m_pGBuffer->GetWidth() * 2;
-		desc.Height = m_pGBuffer->GetHeight();
+		desc.Width = m_pGBufferCBR->GetWidth() * 2;
+		desc.Height = m_pGBufferCBR->GetHeight();
 		desc.SamplingParams = params;
 		desc.Samples = 1;
 
@@ -433,7 +433,7 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	context.SetUniformBuffer(m_pDecalPassPerFrame, 0);
 	context.SetUniformBuffer(m_pDecalPassPerObject, 1);
 
-	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 2);
+	context.SetTexture(m_pGBufferCBR->GetDepthAttachment(), 2);
 
 	DecalPassPerFrame perFrame = {};
 	perFrame.ViewProj = camera.GetCombinedMatrix();
@@ -499,14 +499,29 @@ void DefferedRenderer::CBRResolvePass(const Camera& camera, const Scene& scene, 
 			buff.PointLights[i].Position = pointLights[i]->GetPosition();
 		}
 
+		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
+		for (size_t i = 0; i < spotLights.size(); i++)
+		{
+			buff.SpotLights[i].Color = spotLights[i]->GetColor();
+			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
+			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
+			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
+			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
+		}
+
 		m_pLightPassBuffer->UpdateData(&buff);
 	}
 
-	context.SetTexture(pGBuffer->GetColorAttachment(0), 0);
-	context.SetTexture(pGBuffer->GetColorAttachment(1), 1);
-	context.SetTexture(pGBuffer->GetDepthAttachment(), 2);
+	context.SetTexture(pGBuffer->GetColorAttachment(0), 0); //color buffer
+	context.SetTexture(pGBuffer->GetColorAttachment(1), 1); //normal buffer
+	context.SetTexture(pGBuffer->GetDepthAttachment(), 2);  //depth buffer
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
+
+	//Unbind resources = no bugs
+	context.SetTexture(nullptr, 0);
+	context.SetTexture(nullptr, 1);
+	context.SetTexture(nullptr, 2);
 }
 
 void DefferedRenderer::ReconstructionPass() const noexcept
@@ -745,7 +760,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	context.SetTexture(m_pReflection->GetColorAttachment(0), 0);
 	context.SetTexture(m_pWaterDistortionMap, 1);
 	context.SetTexture(m_pWaterNormalMap, 2);
-	context.SetTexture(m_pGBuffer->GetDepthAttachment(), 3);
+	context.SetTexture(m_pGBufferCBR->GetDepthAttachment(), 3);
 
 	WaterPassPerFrame perFrame = {};
 	perFrame.CameraCombined = scene.GetCamera().GetCombinedMatrix();

@@ -7,7 +7,7 @@
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 8
-#define NUM_SPOT_LIGHTS 1
+#define NUM_SPOT_LIGHTS 8
 
 struct GPassVSPerFrame
 {
@@ -108,8 +108,9 @@ private:
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 
 private:
-	Framebuffer* m_pGBuffer;
+	Framebuffer* m_pGBufferCBR;
 	Framebuffer* m_pResolveTargets[2];
+	Framebuffer* m_pForwardCBR;
 	Framebuffer* m_pReflection;
 	mutable Framebuffer* m_pCurrentResolveTarget;
 	mutable Framebuffer* m_pLastResolveTarget;

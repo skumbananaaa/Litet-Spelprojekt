@@ -189,6 +189,12 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\Textures\skybox\ss_bk.png" />
+    <Image Include="Resources\Textures\skybox\ss_dn.png" />
+    <Image Include="Resources\Textures\skybox\ss_ft.png" />
+    <Image Include="Resources\Textures\skybox\ss_lf.png" />
+    <Image Include="Resources\Textures\skybox\ss_rt.png" />
+    <Image Include="Resources\Textures\skybox\ss_up.png" />
     <Image Include="Resources\Textures\waterDUDV.png" />
     <Image Include="Resources\Textures\waterNormalMap.png" />
   </ItemGroup>

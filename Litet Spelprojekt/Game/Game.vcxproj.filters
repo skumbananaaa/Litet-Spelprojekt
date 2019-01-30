@@ -79,6 +79,24 @@
     <Image Include="Resources\Textures\waterNormalMap.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\Textures\skybox\ss_bk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_dn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_ft.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_lf.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_rt.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_up.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />

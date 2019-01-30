@@ -193,6 +193,7 @@ Game::~Game()
 
 	DeleteSafe(m_pScene);
 	
+	Delete(m_pSkyBoxTex);
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
 	

@@ -33,6 +33,16 @@ Game::Game() noexcept :
 
 	
 
+		const void * paths[6];
+		paths[0] = "Resources/Textures/SkyBoxTextures/ss_rt"; //right
+		paths[1] = "Resources/Textures/SkyBoxTextures/ss_lf"; //left
+		paths[2] = "Resources/Textures/SkyBoxTextures/ss_up"; //up
+		paths[3] = "Resources/Textures/SkyBoxTextures/ss_dn"; //down
+		paths[4] = "Resources/Textures/SkyBoxTextures/ss_ft"; //forward
+		paths[5] = "Resources/Textures/SkyBoxTextures/ss_bk"; //back
+		m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, (uint32)1422, (uint32)1422, params);
+	}
+
 	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
 	m_pScene->AddGameObject(g_Crew.getMember(0));
 	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());

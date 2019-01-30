@@ -22,6 +22,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pWaterNormalMap(nullptr),
 	m_pWaterDistortionMap(nullptr),
 	m_pForwardPass(nullptr),
+	m_pCbrReconstructionProgram(nullptr),
 	m_pCbrResolveProgram(nullptr),
 	m_pCbrStencilProgram(nullptr),
 	m_pDepthPrePassProgram(nullptr),
@@ -61,6 +62,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pWaterNormalMap);
 	DeleteSafe(m_pWaterDistortionMap);
 	
+	DeleteSafe(m_pCbrReconstructionProgram);
 	DeleteSafe(m_pCbrResolveProgram);
 	DeleteSafe(m_pCbrStencilProgram);
 	DeleteSafe(m_pDepthPrePassProgram);

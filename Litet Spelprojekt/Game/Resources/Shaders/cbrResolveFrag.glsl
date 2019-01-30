@@ -103,10 +103,10 @@ void main()
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
 		vec3 lightDir = g_PointLights[i].Position.xyz - position;
-		float distance = length(lightDir);
+		float dist = length(lightDir);
 		lightDir = normalize(lightDir);
 
-		float attenuation = 1.0f / (distance * distance);
+		float attenuation = 1.0f / (dist * dist);
 		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
 
 		c += CalcLight(lightDir, lightColor, viewDir, normal, color);

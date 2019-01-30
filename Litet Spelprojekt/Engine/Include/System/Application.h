@@ -48,7 +48,7 @@ private:
 
 	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);
-	void InternalOnMouseMove(const glm::vec2& position);
+	void InternalOnMouseMove(glm::vec2& position);
 	void InternalOnMouseButton(MouseButton mousebutton, bool down);
 	void InternalOnKeyUp(KEY keycode);
 	void InternalOnKeyDown(KEY keycode);
@@ -65,18 +65,20 @@ private:
 inline void Application::InternalOnRender(float dtS)
 {
 	OnRender(dtS);
-	m_pGUIManager->OnRender(m_pGraphicsContext);
+	m_pGUIManager->InternalRootOnRender();
 }
 
 inline void Application::InternalOnUpdate(float dtS)
 {
-	m_pGUIManager->OnUpdate(dtS);
+	m_pGUIManager->InternalRootOnUpdate(dtS);
 	OnUpdate(dtS);
 }
 
-inline void Application::InternalOnMouseMove(const glm::vec2& position)
+inline void Application::InternalOnMouseMove(glm::vec2& position)
 {
 	OnMouseMove(position);
+	position.y = m_pWindow->GetHeight() - position.y;
+	m_pGUIManager->InternalRootOnMouseMove(position);
 }
 
 inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool down)
@@ -86,14 +88,12 @@ inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool dow
 		if (down)
 		{
 			OnMousePressed(mousebutton);
-			m_pGUIManager->OnMousePressed(mousebutton);
-			std::cout << "Mousebutton " << mousebutton << " Pressed" << std::endl;
+			m_pGUIManager->InternalRootOnMousePressed(mousebutton);
 		}
 		else
 		{
 			OnMouseReleased(mousebutton);
-			m_pGUIManager->OnMouseReleased(mousebutton);
-			std::cout << "Mousebutton " << mousebutton << " Released" << std::endl;
+			m_pGUIManager->InternalRootOnMouseReleased(mousebutton);
 		}
 	}
 }

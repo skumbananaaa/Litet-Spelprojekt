@@ -25,6 +25,7 @@ public:
 	const glm::mat4& GetTransform() const noexcept;
 	const glm::mat4& GetInverseTransform() const noexcept;
 
+
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
@@ -87,6 +88,8 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 {
 	return m_InverseTransform;
 }
+
+
 
 inline bool GameObject::HasMaterial() const noexcept
 {

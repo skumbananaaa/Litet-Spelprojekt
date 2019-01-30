@@ -1,36 +1,22 @@
 #pragma once
 #include <EnginePch.h>
+#include "Graphics/GameObject.h"
 
-class API PointLight
+class API PointLight :
+	public GameObject
 {
 public:
-	PointLight(const glm::vec4& color, const glm::vec3& position);
+	PointLight(const glm::vec3& pos, const glm::vec4& color = glm::vec4(1.0f)) noexcept;
 	~PointLight();
 
-	void SetColor(const glm::vec4& color) noexcept;
-	void SetPosition(const glm::vec3& direction) noexcept;
-	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec4& GetColor() const noexcept;
+
+public:
 
 private:
 	glm::vec4 m_Color;
-	glm::vec3 m_Position;
+
 };
-
-inline void PointLight::SetColor(const glm::vec4& color) noexcept
-{
-	m_Color = color;
-}
-
-inline void PointLight::SetPosition(const glm::vec3& position) noexcept
-{
-	m_Position = position;
-}
-
-inline const glm::vec3& PointLight::GetPosition() const noexcept
-{
-	return m_Position;
-}
 
 inline const glm::vec4& PointLight::GetColor() const noexcept
 {

@@ -1,5 +1,15 @@
 #include "..\Include\Editor.h"
 
+void OnButtonPressed(Button* button)
+{
+	std::cout << "Button Pressed" << std::endl;
+}
+
+void OnButtonReleased(Button* button)
+{
+	std::cout << "Button Released" << std::endl;
+}
+
 Editor::Editor() noexcept : Application()
 {
 	std::cout << "Editor" << std::endl;
@@ -45,8 +55,35 @@ Editor::Editor() noexcept : Application()
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
 
-	GetGUIManager().AddGUIObject(m_pTextViewFPS);
-	GetGUIManager().AddGUIObject(m_pTextViewUPS);
+	m_pPanel = new Panel(50, 50, 500, 500, new Texture2D("Resources/Textures/test3.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
+
+	m_pButton = new Button(25, 400, 200, 50, "Button 1", OnButtonPressed, OnButtonReleased);
+	m_pButton->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
+	m_pButton->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
+
+	m_pButton2 = new Button(275, 400, 200, 50, "Button 2", OnButtonPressed, OnButtonReleased);
+	m_pButton2->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
+	m_pButton2->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
+
+	Texture2D* b = new Texture2D("Resources/Textures/test4.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
+	Texture2D* f = new Texture2D("Resources/Textures/test5.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
+
+	m_pSlider = new Slider(50, 50, 400, 30, b, f);
+	m_pSlider->SetRatio(0.5F);
+	m_pSlider->SetPercentage(1.0F);
+
+	m_pSlider2 = new Slider(50, 100, 400, 30, b, f);
+	m_pSlider2->SetRatio(0.5F);
+	m_pSlider2->SetPercentage(0.0F);
+
+	m_pPanel->Add(m_pButton);
+	m_pPanel->Add(m_pButton2);
+	m_pPanel->Add(m_pSlider);
+	m_pPanel->Add(m_pSlider2);
+
+	GetGUIManager().Add(m_pPanel);
+	GetGUIManager().Add(m_pTextViewFPS);
+	GetGUIManager().Add(m_pTextViewUPS);
 
 	//GetContext().Enable(Cap::DEPTH_TEST);
 }

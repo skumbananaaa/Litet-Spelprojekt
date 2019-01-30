@@ -24,6 +24,11 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_PointLights[i]);
 	}
+
+	for (size_t i = 0; i < m_SpotLights.size(); i++)
+	{
+		DeleteSafe(m_SpotLights[i]);
+	}
 }
 
 void Scene::SetCamera(Camera* pCamera) noexcept
@@ -44,6 +49,11 @@ void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
 void Scene::AddPointLight(PointLight* pLight) noexcept
 {
 	m_PointLights.push_back(pLight);
+}
+
+void Scene::AddSpotLight(SpotLight* pLight) noexcept
+{
+	m_SpotLights.push_back(pLight);
 }
 
 void Scene::RemoveGameObject(uint32 index) noexcept

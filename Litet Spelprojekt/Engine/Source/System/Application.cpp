@@ -31,7 +31,7 @@ Application::Application()
 		float height = static_cast<float>(m_pWindow->GetHeight());
 
 		m_pGraphicsContext = new GLContext(width, height);
-		m_pGUIManager = new GUIManager(width, height);
+		m_pGUIManager = new GUIManager(m_pGraphicsContext);
 	}
 
 	m_pAudioContext = IAudioContext::CreateContext();

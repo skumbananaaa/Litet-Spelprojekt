@@ -1,10 +1,15 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
 
-TextView::TextView(float x, float y, float width, float height, const std::string& text, int size) : GUIObject(x, y, width, height), 
+TextView::TextView(float x, float y, float width, float height, const std::string& text, int textSize) : GUIObject(x, y, width, height),
 	m_Text(text), 
-	m_Size(size), 
+	m_TextSize(textSize),
 	m_TextAlignment(CENTER_VERTICAL)
+{
+
+}
+
+TextView::~TextView()
 {
 
 }
@@ -23,18 +28,18 @@ const std::string& TextView::GetText() const
 	return m_Text;
 }
 
-void TextView::SetSize(int size)
+void TextView::SetTextSize(int size)
 {
-	if (m_Size != size)
+	if (m_TextSize != size)
 	{
-		m_Size = size;
+		m_TextSize = size;
 		RequestRepaint();
 	}
 }
 
-int TextView::GetSize() const
+int TextView::GetTextSize() const
 {
-	return m_Size;
+	return m_TextSize;
 }
 
 void TextView::SetTextAlignment(TextAlignment textAlignment)
@@ -51,13 +56,20 @@ TextAlignment TextView::GetTextAlignment()
 	return m_TextAlignment;
 }
 
-void TextView::OnRender(GLContext* context, FontRenderer* fontRenderer)
+void TextView::OnRender(GUIContext* context)
 {
-	GUIObject::OnRender(context, fontRenderer);
+	GUIObject::OnRender(context);
+	RenderText(context);
+}
 
+void TextView::RenderText(GUIContext* context)
+{
 	if (!m_Text.empty())
 	{
-		glm::vec2 size = fontRenderer->CalculateSize(m_Text, 0.4f);
+		context->GetFontRenderer()->UpdateRenderTargetSize(GetWidth(), GetHeight());
+
+		float scale = m_TextSize / 100.0f;
+		glm::vec2 size = context->CalculateTextSize(m_Text, scale);
 		float x = 0;
 		float y = 0;
 
@@ -77,6 +89,6 @@ void TextView::OnRender(GLContext* context, FontRenderer* fontRenderer)
 			break;
 		}
 
-		fontRenderer->RenderText(context, m_Text, x, y, m_Size / 100.0f);
+		context->RenderText(m_Text, x, y, scale);
 	}
 }

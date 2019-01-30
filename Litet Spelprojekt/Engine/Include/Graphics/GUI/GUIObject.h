@@ -1,55 +1,99 @@
+#pragma once
 #include <EnginePch.h>
-#include <Graphics/Textures/Framebuffer.h>
 #include <System/Input.h>
+#include <Graphics/GUI/GUIContext.h>
 #include <Graphics/Textures/Texture2D.h>
-#include <Graphics/Renderers/FontRenderer.h>
-
-class GUIManager;
+#include <Graphics/GUI/IMouseListener.h>
+#include <Graphics/GUI/IRealTimeRendered.h>
 
 class API GUIObject
 {
 	friend class GUIManager;
 
 public:
-	GUIObject(float x, float y, float width, float height);
 	virtual ~GUIObject();
+
+	bool HasParent() const;
+	GUIObject* GetParent() const;
+
+	void Add(GUIObject* parent);
+	void Remove(GUIObject* parent);
 
 	float GetWidth() const noexcept;
 	float GetHeight() const noexcept;
 	float GetX() const noexcept;
 	float GetY() const noexcept;
+	float GetXInWorld() const noexcept;
+	float GetYInWorld() const noexcept;
 
-	int32 GetDepth() const noexcept;
-	void SetDepth(int32 depth) noexcept;
+	bool IsDirty() const noexcept;
 
 	Texture2D* GetTexture() const noexcept;
 	void SetTexture(Texture2D* texture);
 
-	bool IsDirty() const noexcept;
-
 protected:
-	virtual void OnAdded(GUIManager* guiManager);
-	virtual void OnRemoved(GUIManager* guiManager);
+	GUIObject(float x, float y, float width, float height);
 
-	virtual void OnUpdate(float dtS);
-	virtual void OnRender(GLContext* context, FontRenderer* fontRenderer);
+	virtual void OnAdded(GUIObject* parent) {};
+	virtual void OnRemoved(GUIObject* parent) {};
 
-	virtual void OnMousePressed(MouseButton mousebutton);
-	virtual void OnMouseReleased(MouseButton mousebutton);
-	virtual void OnMouseMove(const glm::vec2& position);
+	virtual void OnUpdate(float dtS) {};
+	virtual void OnRender(GUIContext* context);
 
-	virtual void OnKeyUp(KEY keycode);
-	virtual void OnKeyDown(KEY keycode);
+	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
+
+	virtual void OnKeyUp(KEY keycode) {};
+	virtual void OnKeyDown(KEY keycode) {};
+
+	virtual void RenderBackgroundTexture(GUIContext* context);
+	bool ContainsPoint(const glm::vec2& position);
+
+	template<class T>
+	static bool Contains(const std::vector<T*>& list, T* object)
+	{
+		for (T* currentObject : list)
+		{
+			if (currentObject == object)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 	void RequestRepaint();
 
-	Texture2D* m_pBackgroundTexture;
+	static void AddMouseListener(IMouseListener* listener);
+	static void RemoveMouseListener(IMouseListener* listener);
+
+	static void AddRealTimeRenderer(IRealTimeRendered* listener);
+	static void RemoveRealTimeRenderer(IRealTimeRendered* listener);
 
 private:
+	void InternalOnUpdate(float dtS);
+	void InternalOnRender(GUIContext* context);
 
-	GUIManager* m_GUIManager;
+	void InternalRootOnRender(GUIContext* context);
+
+	void InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton);
+	void InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton);
+	void InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
+
+	void RerenderChildren(GUIContext* context);
+	void RenderChildrensFrameBuffers(GUIContext* context);
+
+	GUIObject* m_pParent;
+	std::vector<GUIObject*> m_Children;
+	std::vector<GUIObject*> m_ChildrenToRemove;
+	std::vector<GUIObject*> m_ChildrenToAdd;
+	std::vector<GUIObject*> m_ChildrenDirty;
 	Framebuffer* m_pFramebuffer;
-	glm::vec2 m_position;
-	int32 m_Depth;
+	glm::vec2 m_Position;
 	bool m_IsDirty;
+	Texture2D* m_pBackgroundTexture;
+
+	static std::vector<IMouseListener*> m_MouseListeners;
+	static std::vector<IRealTimeRendered*> m_RealTimeRenderers;
 };

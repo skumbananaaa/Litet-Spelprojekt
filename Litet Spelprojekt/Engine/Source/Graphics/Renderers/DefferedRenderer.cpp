@@ -472,12 +472,22 @@ void DefferedRenderer::LightPass(const Camera& camera, const Scene& scene, const
 			buff.PointLights[i].Position = pointLights[i]->GetPosition();
 		}
 
+		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
+		for (size_t i = 0; i < spotLights.size(); i++)
+		{
+			buff.SpotLights[i].Color = spotLights[i]->GetColor();
+			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
+			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
+			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
+			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
+		}
+
 		m_pLightPassBuffer->UpdateData(&buff);
 	}
 
-	context.SetTexture(pGBuffer->GetColorAttachment(0), 0);
-	context.SetTexture(pGBuffer->GetColorAttachment(1), 1);
-	context.SetTexture(pGBuffer->GetDepthAttachment(), 2);
+	context.SetTexture(pGBuffer->GetColorAttachment(0), 0); //color buffer
+	context.SetTexture(pGBuffer->GetColorAttachment(1), 1); //normal buffer
+	context.SetTexture(pGBuffer->GetDepthAttachment(), 2);  //depth buffer
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 }
@@ -510,6 +520,17 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 		{
 			buff.PointLights[i].Color = pointLights[i]->GetColor();
 			buff.PointLights[i].Position = pointLights[i]->GetPosition();
+		}
+
+		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
+		for (size_t i = 0; i < spotLights.size(); i++)
+		{
+			buff.SpotLights[i].Color = spotLights[i]->GetColor();
+			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
+			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
+			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
+			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
+			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
 		}
 
 		m_pLightPassBuffer->UpdateData(&buff);

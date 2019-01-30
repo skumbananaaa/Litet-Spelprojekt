@@ -25,7 +25,7 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1024, 768, false);
+		m_pWindow = new Window("Small Game Project", 1920, 1080, false);
 
 		float width = static_cast<float>(m_pWindow->GetWidth());
 		float height = static_cast<float>(m_pWindow->GetHeight());

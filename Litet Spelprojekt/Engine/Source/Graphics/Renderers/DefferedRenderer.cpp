@@ -139,8 +139,8 @@ void DefferedRenderer::Create() noexcept
 	//We can destroy desc when gbuffer is created
 	{
 		TextureParams params = {};
-		params.MinFilter = TEX_PARAM_LINEAR;
-		params.MagFilter = TEX_PARAM_LINEAR;
+		params.MinFilter = TEX_PARAM_NEAREST;
+		params.MagFilter = TEX_PARAM_NEAREST;
 		params.Wrap = TEX_PARAM_EDGECLAMP;
 
 		FramebufferDesc desc = {};
@@ -163,8 +163,8 @@ void DefferedRenderer::Create() noexcept
 
 	{
 		TextureParams params = {};
-		params.MinFilter = TEX_PARAM_LINEAR;
-		params.MagFilter = TEX_PARAM_LINEAR;
+		params.MinFilter = TEX_PARAM_NEAREST;
+		params.MagFilter = TEX_PARAM_NEAREST;
 		params.Wrap = TEX_PARAM_EDGECLAMP;
 
 		FramebufferDesc desc = {};

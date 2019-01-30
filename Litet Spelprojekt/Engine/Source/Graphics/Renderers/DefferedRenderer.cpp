@@ -109,7 +109,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
 
-	WaterPass(scene, dtS);
+	//WaterPass(scene, dtS);
 
 	m_FrameCount++;
 	m_pLastResolveTarget = m_pCurrentResolveTarget;

@@ -21,7 +21,7 @@ void main()
 	ivec2 modFrameCoord = frameCoord % 2;
 
 	vec4 color = vec4(0.0f);
-	float depth = 0.0f;
+	//float depth = 0.0f;
 	if (modFrameCoord.x == modFrameCoord.y)
 	{
 		ivec2 sampleCoord = ivec2(coord.x, (frameCoord.y - (frameCoord.x % 2)) / 2);
@@ -30,19 +30,19 @@ void main()
 					texelFetch(g_Color,		sampleCoord,				0) + 
 					texelFetch(g_LastColor, sampleCoord + ivec2(1, 0),	0) + 
 					texelFetch(g_LastColor, sampleCoord + ivec2(1, 1),	0)) / 5.0f;
-		depth = texelFetch(g_Depth, sampleCoord, 0).r;
+		//depth = texelFetch(g_Depth, sampleCoord, 0).r;
 	}
 	else
 	{
 		ivec2 sampleCoord = ivec2(coord.x, (frameCoord.y - ((frameCoord.x + 1) % 2)) / 2);
-		color = (	texelFetch(g_Color,		sampleCoord + ivec2(-1, 0),	0) +
-					texelFetch(g_Color,		sampleCoord,				0) +
-					texelFetch(g_LastColor,	sampleCoord,				0) + 
-					texelFetch(g_Color,		sampleCoord + ivec2(1, 0),	0) + 
-					texelFetch(g_Color,		sampleCoord + ivec2(1, 1),	0)) / 5.0f;
-		depth = texelFetch(g_LastDepth, sampleCoord, 0).r;
+		color = (	texelFetch(g_LastColor, sampleCoord + ivec2(-1, 0),	0) +
+					texelFetch(g_LastColor, sampleCoord,				0) +
+					texelFetch(g_Color,		sampleCoord,				0) + 
+					texelFetch(g_LastColor, sampleCoord + ivec2(1, 0),	0) + 
+					texelFetch(g_LastColor, sampleCoord + ivec2(1, 1),	0)) / 5.0f;
+		//depth = texelFetch(g_LastDepth, sampleCoord, 0).r;
 	}
 
 	g_OutColor = color;
-	gl_FragDepth = depth;
+	//gl_FragDepth = depth;
 }

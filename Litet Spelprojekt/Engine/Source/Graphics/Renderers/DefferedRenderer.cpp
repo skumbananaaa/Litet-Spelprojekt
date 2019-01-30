@@ -169,7 +169,7 @@ void DefferedRenderer::Create() noexcept
 
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.ColorAttchmentFormats[1] = TEX_FORMAT_R;
+		desc.ColorAttchmentFormats[1] = TEX_FORMAT_R32F;
 		desc.NumColorAttachments = 2;
 		desc.Width = m_pGBufferCBR->GetWidth() * 2;
 		desc.Height = m_pGBufferCBR->GetHeight();
@@ -559,24 +559,16 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 
 	context.SetProgram(m_pCbrReconstructionProgram);
 
-	//Current frame
-	//Color
-	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(0), 0);
-	//Depth
-	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(1), 1);
-	//Last frame
-	//Color
-	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(0), 2);
-	//Depth
-	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(1), 3);
+	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(0), 0);	//Color
+	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(1), 1);	//Depth
+	context.SetTexture(m_pForwardCBR->GetColorAttachment(0), 2); //Forward color
+	context.SetTexture(m_pForwardCBR->GetDepthAttachment(), 3); //Forward depth
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 
 	//Unbind = no bugs
 	context.SetTexture(nullptr, 0);
 	context.SetTexture(nullptr, 1);
-	context.SetTexture(nullptr, 2);
-	context.SetTexture(nullptr, 3);
 }
 
 void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) const noexcept

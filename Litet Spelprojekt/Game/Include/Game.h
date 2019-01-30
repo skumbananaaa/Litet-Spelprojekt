@@ -8,6 +8,7 @@
 #include <Graphics/Renderers/IRenderer.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Textures/Texture2D.h>
+#include <Graphics/Textures/TextureCube.h>
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/Materials/Decal.h>
 #include <Audio/Listeners/AudioListener.h>
@@ -49,6 +50,7 @@ private:
 	Texture2D* m_pBoatNormalMap;
 	Texture2D* m_pBloodTexture;
 	Texture2D* m_pBloodNormal;
+	TextureCube * m_pSkyBoxTex;
 
 	Decal* m_pDecal;
 

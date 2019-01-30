@@ -9,6 +9,7 @@
 #include <Graphics/GUI/Button.h>
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
+#include <Graphics/GUI/PanelScrollable.h>
 //#include "../../Game/Include/IO/WorldSerializer.h"
 
 #include <GLM\glm.hpp>
@@ -43,4 +44,6 @@ private:
 	Slider* m_pSlider;
 	Slider* m_pSlider2;
 	Panel* m_pPanel;
+
+	PanelScrollable* m_pPanelScrollable;
 };

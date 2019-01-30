@@ -48,6 +48,7 @@ protected:
 	virtual void OnKeyDown(KEY keycode) {};
 
 	virtual void RenderBackgroundTexture(GUIContext* context);
+	virtual void RenderChildrensFrameBuffers(GUIContext* context);
 	bool ContainsPoint(const glm::vec2& position);
 
 	template<class T>
@@ -82,7 +83,6 @@ private:
 	void InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
 
 	void RerenderChildren(GUIContext* context);
-	void RenderChildrensFrameBuffers(GUIContext* context);
 
 	GUIObject* m_pParent;
 	std::vector<GUIObject*> m_Children;

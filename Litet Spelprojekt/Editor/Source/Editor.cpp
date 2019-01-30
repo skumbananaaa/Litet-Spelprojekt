@@ -57,10 +57,13 @@ Editor::Editor() noexcept : Application(false)
 	m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
 	
 
+	Texture2D* b = new Texture2D("Resources/Textures/test4.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
+	Texture2D* f = new Texture2D("Resources/Textures/test5.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
+
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
 
-	m_pPanel = new Panel(50, 50, 500, 500, new Texture2D("Resources/Textures/test3.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
+	m_pPanel = new Panel(0, 50, 500, 500, new Texture2D("Resources/Textures/test3.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 
 	m_pButton = new Button(25, 400, 200, 50, "Button 1", OnButtonPressed, OnButtonReleased);
 	m_pButton->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
@@ -70,9 +73,6 @@ Editor::Editor() noexcept : Application(false)
 	m_pButton2->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 	m_pButton2->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 
-	Texture2D* b = new Texture2D("Resources/Textures/test4.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
-	Texture2D* f = new Texture2D("Resources/Textures/test5.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
-
 	m_pSlider = new Slider(10, 100, 400, 30, b, f, OnSliderChanged);
 	m_pSlider->SetRatio(0.5F);
 	m_pSlider->SetPercentage(0.0F);
@@ -81,14 +81,17 @@ Editor::Editor() noexcept : Application(false)
 	m_pSlider2->SetRatio(0.5F);
 	m_pSlider2->SetPercentage(0.0F);
 
-	m_pPanel->Add(m_pButton);
-	m_pPanel->Add(m_pButton2);
+	m_pPanelScrollable = new PanelScrollable(520, 50, 500, 500, 1000, 1000, new Texture2D("Resources/Textures/test6.png", TEX_FORMAT::TEX_FORMAT_RGBA, false), b, f);
+
+	m_pPanelScrollable->Add(m_pButton);
+	m_pPanelScrollable->Add(m_pButton2);
 	m_pPanel->Add(m_pSlider);
 	m_pPanel->Add(m_pSlider2);
 
 	GetGUIManager().Add(m_pPanel);
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
+	GetGUIManager().Add(m_pPanelScrollable);
 
 	//GetContext().Enable(Cap::DEPTH_TEST);
 }

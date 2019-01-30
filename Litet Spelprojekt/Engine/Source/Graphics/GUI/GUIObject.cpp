@@ -207,20 +207,31 @@ void GUIObject::InternalOnUpdate(float dtS)
 			counter++;
 		}
 	}
+	m_ChildrenToRemove.clear();
 
 	/*
 	* Add the children who wants to be added
 	*/
-	for (GUIObject* objectToAdd : m_ChildrenToAdd)
+	if (!m_ChildrenToAdd.empty())
 	{
-		m_Children.push_back(objectToAdd);
-		m_ChildrenDirty.push_back(objectToAdd);
-		objectToAdd->m_pParent = this;
-		objectToAdd->OnAdded(this);
-		std::cout << "GUI Object Added" << std::endl;
+		static std::vector<GUIObject*> newChildren;
+
+		for (GUIObject* objectToAdd : m_ChildrenToAdd)
+		{
+			newChildren.push_back(objectToAdd);
+		}
+		m_ChildrenToAdd.clear();
+		
+		for (GUIObject* objectToAdd : newChildren)
+		{
+			m_Children.push_back(objectToAdd);
+			m_ChildrenDirty.push_back(objectToAdd);
+			objectToAdd->m_pParent = this;
+			objectToAdd->OnAdded(this);
+			std::cout << "GUI Object Added" << std::endl;
+		}
+		newChildren.clear();
 	}
-	m_ChildrenToRemove.clear();
-	m_ChildrenToAdd.clear();
 
 	/*
 	* Let the children do the same checks as above

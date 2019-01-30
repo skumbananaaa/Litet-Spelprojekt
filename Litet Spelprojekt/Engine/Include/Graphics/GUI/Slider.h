@@ -3,10 +3,18 @@
 #include <Graphics/GUI/GUIObject.h>
 #include <Graphics/GUI/IRealTimeRendered.h>
 
+class Slider;
+
+class API ISliderListener
+{
+public:
+	virtual void OnSliderChange(Slider* slider, float percentage) = 0;
+};
+
 class API Slider : public GUIObject, public IMouseListener, public IRealTimeRendered
 {
 public:
-	Slider(float x, float y, float width, float height, Texture2D* textureBackground, Texture2D* textureForeground, void(*onChangedCallback)(Slider*, float));
+	Slider(float x, float y, float width, float height, Texture2D* textureBackground, Texture2D* textureForeground, void(*onChangedCallback)(Slider*, float) = nullptr);
 	virtual ~Slider();
 
 	bool isVertical() const noexcept;
@@ -19,6 +27,9 @@ public:
 
 	void SetPercentage(float percentage);
 	float GetPercentage() const noexcept;
+
+	void AddSliderListener(ISliderListener* listener);
+	void RemoveSliderListener(ISliderListener* listener);
 
 	void SetOnSliderChanged(void(*callback)(Slider*, float));
 
@@ -37,6 +48,6 @@ private:
 	float m_MouseOffset;
 	float m_SliderPos;
 	float m_Ratio;
-
+	std::vector<ISliderListener*> m_SliderListeners;
 	void(*m_OnChangedCallback)(Slider*, float);
 };

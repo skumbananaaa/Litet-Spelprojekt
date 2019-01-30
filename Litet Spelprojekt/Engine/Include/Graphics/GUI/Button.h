@@ -3,6 +3,16 @@
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/IMouseListener.h>
 
+class Button;
+
+class API IButtonListener
+{
+public:
+	virtual void OnButtonPressed(Button* button) = 0;
+	virtual void OnButtonReleased(Button* button) = 0;
+};
+
+
 class API Button : public TextView, public IMouseListener
 {
 public:
@@ -11,6 +21,9 @@ public:
 
 	Texture2D* GetOnPressedTexture() const noexcept;
 	void SetOnPressedTexture(Texture2D* texture);
+
+	void AddButtonListener(IButtonListener* listener);
+	void RemoveButtonListener(IButtonListener* listener);
 
 	void SetOnButtonPressed(void(*callback)(Button*));
 	void SetOnButtonCallback(void(*callback)(Button*));
@@ -28,6 +41,7 @@ protected:
 private:
 	Texture2D* m_pOnPressedTexture;
 	bool m_IsPressed;
+	std::vector<IButtonListener*> m_ButtonListeners;
 	void (*m_OnPressedCallback)(Button*);
 	void (*m_OnReleasedCallback)(Button*);
 };

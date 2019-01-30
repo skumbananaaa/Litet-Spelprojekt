@@ -36,6 +36,7 @@
     <ClInclude Include="Include\Graphics\GUI\IMouseListener.h" />
     <ClInclude Include="Include\Graphics\GUI\IRealTimeRendered.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
+    <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
@@ -83,6 +84,7 @@
     <ClCompile Include="Source\Graphics\GUI\GUIContext.cpp" />
     <ClCompile Include="Source\Graphics\GUI\GUIObject.cpp" />
     <ClCompile Include="Source\Graphics\GUI\Panel.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\PanelScrollable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\Slider.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextView.cpp" />
     <ClCompile Include="Source\Graphics\Lights\DirectionalLight.cpp" />

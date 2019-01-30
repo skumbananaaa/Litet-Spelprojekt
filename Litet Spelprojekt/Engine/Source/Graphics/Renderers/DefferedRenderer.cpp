@@ -77,6 +77,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 	
+	//Setup for start rendering
 	context.Enable(DEPTH_TEST);
 	context.Enable(CULL_FACE);
 	context.Disable(BLEND);
@@ -84,34 +85,47 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
 
+	//Render reflection for water
+	context.SetViewport(m_pReflection->GetWidth(), m_pReflection->GetHeight(), 0, 0);
+	context.SetFramebuffer(m_pReflection);
+	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
+
+	WaterReflectionPass(scene);
+
+	//Render geometry to MSAA targets for checkerboard rendering
+	context.Enable(MULTISAMPLE);
 	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pGBufferCBR);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
-	context.Enable(MULTISAMPLE);
-
+	//First the deffered rendering passes
 	GeometryPass(scene.GetCamera(), scene);
 	DecalPass(scene.GetCamera(), scene);
+	
+	//Then the forwards passes (Only water for now)
+	context.SetViewport(m_pForwardCBR->GetWidth(), m_pForwardCBR->GetHeight(), 0, 0);
+	context.SetFramebuffer(m_pForwardCBR);
+	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
+	WaterPass(scene, dtS);
 	context.Disable(MULTISAMPLE);
 
+	//Resolve the gbuffer (aka we render the rendertargets to a non-MSAA target)
 	context.SetFramebuffer(m_pCurrentResolveTarget);
 	context.SetViewport(m_pCurrentResolveTarget->GetWidth(), m_pCurrentResolveTarget->GetHeight(), 0, 0);
-	CBRResolvePass(scene.GetCamera(), scene, m_pGBufferCBR);
+	context.Disable(DEPTH_TEST);
+	GBufferResolvePass(scene.GetCamera(), scene, m_pGBufferCBR);
 
-	context.SetFramebuffer(nullptr);
+	//Render to the window, now we want to put everything together
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	context.SetFramebuffer(nullptr);
 	
 	context.Enable(DEPTH_TEST);
 	context.SetDepthFunc(FUNC_ALWAYS);
+
 	ReconstructionPass();
+	
 	context.SetDepthFunc(FUNC_LESS);
-
-	//LightPass(scene.GetCamera(), scene, m_pGBuffer);
-
-	//context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
-
-	//WaterPass(scene, dtS);
 
 	m_FrameCount++;
 	m_pLastResolveTarget = m_pCurrentResolveTarget;
@@ -133,13 +147,18 @@ void DefferedRenderer::Create() noexcept
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA;
 		desc.NumColorAttachments = 2;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
+		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
 		desc.Width = Window::GetCurrentWindow().GetWidth() / 2;
 		desc.Height = Window::GetCurrentWindow().GetHeight() / 2;
 		desc.SamplingParams = params;
 		desc.Samples = 2;
 
 		m_pGBufferCBR = new Framebuffer(desc);
+
+		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.NumColorAttachments = 1;
+
+		m_pForwardCBR = new Framebuffer(desc);
 	}
 
 	{
@@ -428,7 +447,6 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	
 	context.SetDepthMask(false);
 	context.Enable(BLEND);
-	context.Disable(CULL_FACE);
 
 	context.SetUniformBuffer(m_pDecalPassPerFrame, 0);
 	context.SetUniformBuffer(m_pDecalPassPerObject, 1);
@@ -465,20 +483,25 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 		}
 	}
 
+	//Unbind = no bugs
+	context.SetUniformBuffer(nullptr, 0);
+	context.SetUniformBuffer(nullptr, 1);
+
+	context.SetTexture(nullptr, 0);
+	context.SetTexture(nullptr, 1);
+	context.SetTexture(nullptr, 2);
+
 	context.SetDepthMask(true);
-	context.Enable(CULL_FACE);
 	context.Disable(BLEND);
 }
 
-void DefferedRenderer::CBRResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer)  const noexcept
+void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer)  const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
-	context.Disable(DEPTH_TEST);
-
 	context.SetProgram(m_pCbrResolveProgram);
-	context.SetUniformBuffer(m_pLightPassBuffer, 0);
 
+	context.SetUniformBuffer(m_pLightPassBuffer, 0);
 	{
 		LightPassBuffer buff = {};
 		buff.InverseView = camera.GetInverseViewMatrix();
@@ -519,6 +542,8 @@ void DefferedRenderer::CBRResolvePass(const Camera& camera, const Scene& scene, 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 
 	//Unbind resources = no bugs
+	context.SetUniformBuffer(nullptr, 0);
+
 	context.SetTexture(nullptr, 0);
 	context.SetTexture(nullptr, 1);
 	context.SetTexture(nullptr, 2);
@@ -531,12 +556,10 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 	context.SetProgram(m_pCbrReconstructionProgram);
 
 	//Current frame
-
 	//Color
 	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(0), 0);
 	//Depth
 	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(1), 1);
-
 	//Last frame
 	//Color
 	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(0), 2);
@@ -544,6 +567,12 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(1), 3);
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
+
+	//Unbind = no bugs
+	context.SetTexture(nullptr, 0);
+	context.SetTexture(nullptr, 1);
+	context.SetTexture(nullptr, 2);
+	context.SetTexture(nullptr, 3);
 }
 
 void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) const noexcept
@@ -594,6 +623,13 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 			context.DrawIndexedMesh(gameobject.GetMesh());
 		}
 	}
+
+	//Unbind = no bugs
+	context.SetUniformBuffer(nullptr, 0);
+	context.SetUniformBuffer(nullptr, 1);
+
+	context.SetTexture(nullptr, 0);
+	context.SetTexture(nullptr, 1);
 }
 
 void DefferedRenderer::LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept
@@ -728,12 +764,18 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 			context.DrawIndexedMesh(gameobject.GetMesh());
 		}
 	}
+
+	//Unbind = no bugs
+	context.SetUniformBuffer(nullptr, 0);
+	context.SetUniformBuffer(nullptr, 1);
+	context.SetUniformBuffer(nullptr, 2);
+
+	context.SetTexture(nullptr, 0);
+	context.SetTexture(nullptr, 1);
 }
 
-void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
+void DefferedRenderer::WaterReflectionPass(const Scene& scene) const noexcept
 {
-	static float dist = 0.0f;
-
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	Camera reflectionCam = scene.GetCamera();
@@ -742,21 +784,20 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	reflectionCam.InvertPitch();
 	reflectionCam.UpdateFromPitchYawNoInverse();
 
-	//Render reflection
-	context.SetViewport(m_pReflection->GetWidth(), m_pReflection->GetHeight(), 0, 0);
-	context.SetFramebuffer(m_pReflection);
-	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
-
-	context.Enable(Cap::CLIP_DISTANCE0);
+	context.Enable(CLIP_DISTANCE0);
 	ForwardPass(reflectionCam, scene);
-	context.Disable(Cap::CLIP_DISTANCE0);
+	context.Disable(CLIP_DISTANCE0);
+}
 
-	//Start rendering forward
+void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
+{
+	static float dist = 0.0f;
+
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	//Start water with forward rendering
 	context.SetProgram(m_pWaterpassProgram);
 
-	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
-	context.SetFramebuffer(nullptr);
-	
 	context.SetTexture(m_pReflection->GetColorAttachment(0), 0);
 	context.SetTexture(m_pWaterDistortionMap, 1);
 	context.SetTexture(m_pWaterNormalMap, 2);
@@ -786,4 +827,13 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 			context.DrawIndexedMesh(gameobject.GetMesh());
 		}
 	}
+
+	//Unbind = no bugs
+	context.SetTexture(nullptr, 0);
+	context.SetTexture(nullptr, 1);
+	context.SetTexture(nullptr, 2);
+	context.SetTexture(nullptr, 3);
+
+	context.SetUniformBuffer(nullptr, 0);
+	context.SetUniformBuffer(nullptr, 1);
 }

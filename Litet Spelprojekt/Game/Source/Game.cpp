@@ -489,9 +489,9 @@ void Game::OnUpdate(float dtS)
 	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	derp->UpdateTransform();
 
-	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
-	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));
-	g_pDecalObject->UpdateTransform();
+	//g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
+	//g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));
+	//g_pDecalObject->UpdateTransform();
 
 	if (Input::IsKeyDown(KEY_ENTER) && !g_Path->IsGoalSet() && temp_nrOfPathTiles == 0)
 	{

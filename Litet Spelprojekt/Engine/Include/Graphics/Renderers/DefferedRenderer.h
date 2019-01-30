@@ -101,10 +101,11 @@ private:
 	void DepthPrePass(const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
-	void CBRResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
+	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ReconstructionPass() const noexcept;
 	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
+	void WaterReflectionPass(const Scene& sceen) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 
 private:

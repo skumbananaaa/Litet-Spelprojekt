@@ -23,7 +23,7 @@ private:
 	glm::ivec2 m_startTile;
 	glm::ivec2 m_closestTile;
 	glm::ivec2 m_size;
-	int** m_ppMap;
+	const uint32* const* m_ppMap;
 	int m_smallestH;
 	int m_nrOfTilesOpen;
 	int m_nrOfPathTiles = 0;
@@ -35,7 +35,7 @@ private:
 	bool MoveToNextTile();
 
 public:
-	Path(const Tile*** pppTilemap, glm::ivec2 size);
+	Path(const uint32* const* map, glm::ivec2 size);
 	~Path();
 
 	glm::ivec2* FindPath(glm::ivec2 start, glm::ivec2 goal);

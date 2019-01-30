@@ -13,7 +13,8 @@ Grid * g_Grid;
 float g_Rot = 1.0;
 
 Game::Game() noexcept
-	: m_pFontRenderer(nullptr),
+	: Application(false),
+	m_pFontRenderer(nullptr),
 	m_pRenderer(nullptr),
 	m_pScene(nullptr),
 	m_pTestMesh(nullptr),
@@ -127,45 +128,6 @@ Game::Game() noexcept
 	m_pScene->AddGameObject(g_Crew.getMember(0));
 	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());
 
-	g_Grid = new Grid(glm::ivec2(20, 20), glm::vec3(0.0f, 10.0f, 0.0f));
-
-	int temp_map[20][20]{
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-		{1, 3, 3, 3, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{1, 3, 2, 2, 2, 2, 0, 3, 3, 3, 5, 5, 2, 2, 2, 2, 0, 4, 4, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{1, 3, 2, 0, 2, 2, 2, 3, 0, 3, 5, 5, 2, 2, 2, 0, 2, 4, 0, 1 },
-		{1, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 2, 5, 5, 3, 3, 1 },
-		{1, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 3, 1 },
-		{1, 3, 3, 3, 3, 3, 4, 4, 4, 4, 0, 5, 5, 5, 5, 5, 5, 3, 3, 1 },
-		{1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 1, 4, 4, 3, 2, 2, 2, 2, 2, 2, 0, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 2, 2, 1 },
-		{1, 3, 2, 2, 2, 2, 0, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{1, 3, 2, 2, 2, 0, 2, 5, 0, 5, 3, 3, 2, 2, 2, 0, 2, 4, 0, 1 },
-		{1, 3, 3, 3, 2, 3, 5, 5, 5, 5, 3, 3, 3, 3, 2, 3, 4, 4, 4, 1 },
-		{1, 3, 3, 3, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1 },
-		{1, 3, 3, 3, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1 },
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	};
-
-	for (int i = 0; i < g_Grid->GetSize().x; i++)
-	{
-		for (int j = 0; j < g_Grid->GetSize().y; j++)
-		{
-			g_Grid->GetTile(glm::ivec2(i, j))->SetID(temp_map[i][j]);
-			g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
-			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
-		}
-	}
-
-	Crewmember * derp = g_Crew.getMember(0);
-	derp->SetPosition(glm::vec3(2.0f, 10.5f, 2.0f));
-	derp->SetPath(g_Grid->GetGrid(), g_Grid->GetSize());
-
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
@@ -265,13 +227,34 @@ Game::Game() noexcept
 		worldLevel2,
 	};
 
-	World* world = new World(worldLevels, 3);
-	WorldSerializer::Write("test.json", *world);
+	//World* world = new World(worldLevels, 3);
+	/*WorldSerializer::Write("test.json", *world);
 	Delete(world);
 
 	world = WorldSerializer::Read("test.json");
 	WorldSerializer::Write("test2.json", *world);
-	Delete(world);
+	Delete(world);*/
+
+	//m_pWorld = new World(worldLevels, 3);
+	m_pWorld = WorldSerializer::Read("test.json");
+
+	const uint32* const* map = m_pWorld->GetLevel(0)->GetLevel();
+
+	g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(0)->GetSizeX(), m_pWorld->GetLevel(0)->GetSizeZ()), glm::vec3(0.0f, 10.0f, 0.0f));
+
+	for (int i = 0; i < g_Grid->GetSize().x; i++)
+	{
+		for (int j = 0; j < g_Grid->GetSize().y; j++)
+		{
+			g_Grid->GetTile(glm::ivec2(i, j))->SetID(map[i][j]);
+			g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(map[i][j] / 10.0f, map[i][j] / 10.0f, map[i][j] / 10.0f, 1.0f));
+			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
+		}
+	}
+
+	Crewmember * derp = g_Crew.getMember(0);
+	derp->SetPosition(glm::vec3(2.0f, 10.5f, 2.0f));
+	derp->SetPath(map, g_Grid->GetSize());
 }
 
 Game::~Game()
@@ -308,6 +291,7 @@ Game::~Game()
 	Delete(m_pTestAudioSource);
 
 	Delete(g_Grid);
+
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -482,7 +466,7 @@ void Game::OnUpdate(float dtS)
 	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	if (Input::IsKeyDown(KEY_ENTER) && !derp->IsMoving())
 	{
-		glm::ivec2 goalPos (std::rand() % 19, std::rand() % 19);
+		glm::ivec2 goalPos (std::rand() % 9, std::rand() % 9);
 		std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
 		derp->FindPath(goalPos);
 	}

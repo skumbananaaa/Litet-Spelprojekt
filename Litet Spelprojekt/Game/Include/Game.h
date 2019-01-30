@@ -37,6 +37,8 @@ private:
 	IRenderer* m_pRenderer;
 	Scene* m_pScene;
 
+	World* m_pWorld;
+
 	IndexedMesh* m_pTestMesh;
 	IndexedMesh* m_pSphereMesh;
 	IndexedMesh* m_pWaterMesh;

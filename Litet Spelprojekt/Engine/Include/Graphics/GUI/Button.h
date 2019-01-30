@@ -1,7 +1,6 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
-#include <Graphics/GUI/IMouseListener.h>
 
 class Button;
 
@@ -13,7 +12,7 @@ public:
 };
 
 
-class API Button : public TextView, public IMouseListener
+class API Button : public TextView
 {
 public:
 	Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*) = nullptr, void(*onReleasedCallback)(Button*) = nullptr, int textSize = 50);

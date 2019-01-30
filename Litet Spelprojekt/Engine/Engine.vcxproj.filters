@@ -91,7 +91,6 @@
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Audio\Music.h" />
-    <ClInclude Include="Include\Graphics\GUI\IMouseListener.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\World\World.h" />

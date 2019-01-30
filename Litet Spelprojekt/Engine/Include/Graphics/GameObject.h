@@ -10,14 +10,14 @@ class API GameObject
 {
 public:
 	GameObject() noexcept;
-	~GameObject();
+	virtual ~GameObject();
 
-	void SetMesh(const IndexedMesh* const pMesh) noexcept;
-	void SetMaterial(const Material* const pMaterial) noexcept;
-	void SetDecal(const Decal* const pDecal) noexcept;
-	void SetPosition(const glm::vec3& position) noexcept;
-	void SetRotation(const glm::vec4& rotation) noexcept;
-	void SetScale(const glm::vec3& scale) noexcept;
+	virtual void SetMesh(const IndexedMesh* const pMesh) noexcept;
+	virtual void SetMaterial(const Material* const pMaterial) noexcept;
+	virtual void SetDecal(const Decal* const pDecal) noexcept;
+	virtual void SetPosition(const glm::vec3& position) noexcept;
+	virtual void SetRotation(const glm::vec4& rotation) noexcept;
+	virtual void SetScale(const glm::vec3& scale) noexcept;
 
 	const Decal& GetDecal() const noexcept;
 	const Material& GetMaterial() const noexcept;
@@ -30,9 +30,9 @@ public:
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
 
-	const glm::vec3& GetPosition() const noexcept;
+	virtual const glm::vec3& GetPosition() const noexcept;
 
-	void UpdateTransform() noexcept;
+	virtual void UpdateTransform() noexcept;
 
 private:
 	const IndexedMesh* m_pMesh;

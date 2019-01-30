@@ -146,11 +146,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Tile.cpp" />
+    <ClCompile Include="Source\Grid.cpp" />
+    <ClCompile Include="Source\Crew.cpp" />
+    <ClCompile Include="Source\Crewmember.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\Path.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Crew.h" />
+    <ClInclude Include="Include\Crewmember.h" />
     <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\Grid.h" />
+    <ClInclude Include="Include\Tile.h" />
+    <ClInclude Include="Include\Path.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Downloads\AerisPianoByTannerHelland.ogg" />

@@ -60,6 +60,8 @@
     <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\Window.h" />
     <ClInclude Include="Include\Types.h" />
+    <ClInclude Include="Include\World\World.h" />
+    <ClInclude Include="Include\World\WorldLevel.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3native.h" />
     <ClInclude Include="Include\Graphics\Materials\Material.h" />
@@ -118,6 +120,8 @@
     <ClCompile Include="Source\Graphics\Textures\TextureCube.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
+    <ClCompile Include="Source\World\World.cpp" />
+    <ClCompile Include="Source\World\WorldLevel.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{58070825-549E-4173-8861-4C6341B6E166}</ProjectGuid>

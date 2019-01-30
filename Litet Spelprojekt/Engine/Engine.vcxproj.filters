@@ -38,6 +38,8 @@
     <ClCompile Include="Source\Graphics\Lights\Spotlight.cpp" />
     <ClCompile Include="Source\Audio\Music.cpp" />
     <ClCompile Include="Source\Graphics\GUI\Button.cpp" />
+    <ClCompile Include="Source\World\World.cpp" />
+    <ClCompile Include="Source\World\WorldLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -84,5 +86,7 @@
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Audio\Music.h" />
+    <ClInclude Include="Include\World\World.h" />
+    <ClInclude Include="Include\World\WorldLevel.h" />
   </ItemGroup>
 </Project>

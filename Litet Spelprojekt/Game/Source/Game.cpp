@@ -158,6 +158,66 @@ Game::Game() noexcept
 	m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
+
+	/*const uint32 level0SizeX = 10;
+	const uint32 level0SizeZ = 10;
+	uint32 level0[level0SizeX * level0SizeZ] =
+	{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+	};
+
+	const uint32 level1SizeX = 10;
+	const uint32 level1SizeZ = 10;
+	uint32 level1[level1SizeX * level1SizeZ] =
+	{
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
+	};
+
+	const uint32 level2SizeX = 5;
+	const uint32 level2SizeZ = 8;
+	uint32 level2[level2SizeX * level2SizeZ] =
+	{
+		1337, 420, 69, 5, 1337, 420, 69, 5,
+		1337, 420, 69, 5, 1337, 420, 69, 5,
+		1337, 420, 69, 5, 1337, 420, 69, 5,
+		1337, 420, 69, 5, 1337, 420, 69, 5,
+		1337, 420, 69, 5, 1337, 420, 69, 5,
+	};
+
+	WorldLevel* worldLevel0 = new WorldLevel(level0, level0SizeX, level0SizeZ);
+	WorldLevel* worldLevel1 = new WorldLevel(level1, level1SizeX, level1SizeZ);
+	WorldLevel* worldLevel2 = new WorldLevel(level2, level2SizeX, level2SizeZ);
+
+	WorldLevel* worldLevels[3] =
+	{
+		worldLevel0,
+		worldLevel1,
+		worldLevel2,
+	};
+
+	World* world = new World(worldLevels, 3);
+	WorldSerializer::Write("test.json", *world);
+	Delete(world);
+
+	WorldSerializer::Read("test.json", *world);*/
 }
 
 Game::~Game()

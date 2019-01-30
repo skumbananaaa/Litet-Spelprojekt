@@ -14,6 +14,7 @@
 #include <Audio/Sources/AudioSource.h>
 #include <Audio/SoundEffect.h>
 #include <Audio/Music.h>
+#include <IO/WorldSerializer.h>
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>

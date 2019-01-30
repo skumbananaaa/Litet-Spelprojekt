@@ -1,13 +1,10 @@
 #pragma once
-#include "../EnginePch.h"
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <functional>
+#include <EnginePch.h>
+#include <World/World.h>
 
 class API WorldSerializer
 {
 public:
-	static bool Read(const char* filename, std::function<void(int)> callback);
-	//static bool Write(const std::string filename, const std::vector<std::string> data);
+	static void Read(const char* const path, World& world);
+	static void Write(const char* const path, const World& world);
 };

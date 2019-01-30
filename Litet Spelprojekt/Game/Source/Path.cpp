@@ -3,8 +3,8 @@
 
 void Path::AddToOpen(int x, int y, int addX, int addY)
 {
-	int newX = x + addX;
-	int newY = y + addY;
+	int newX = std::max(x + addX, 0);
+	int newY = std::max(y + addY, 0);
 	if (!(m_ppTiles[newX][newY].m_closed)) {
 		if (m_ppTiles[newX][newY].m_g == 0 || m_ppTiles[newX][newY].m_g > m_ppTiles[x][y].m_g) {
 			if ((m_ppMap[newX][newY] == m_ppMap[x][y] || m_ppMap[x][y] == 0 || m_ppMap[newX][newY] == 0) && m_ppMap[newX][newY] != 1) {

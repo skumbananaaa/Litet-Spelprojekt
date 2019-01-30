@@ -10,3 +10,8 @@ Panel::~Panel()
 {
 
 }
+
+void Panel::PrintName() const
+{
+	std::cout << "Panel";
+}

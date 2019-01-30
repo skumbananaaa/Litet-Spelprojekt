@@ -1,5 +1,7 @@
 #include "..\Include\Editor.h"
 
+Slider* m_pSlider2;
+
 void OnButtonPressed(Button* button)
 {
 	std::cout << "Button Pressed" << std::endl;
@@ -8,6 +10,7 @@ void OnButtonPressed(Button* button)
 void OnButtonReleased(Button* button)
 {
 	std::cout << "Button Released" << std::endl;
+	m_pSlider2->SetVisible(!m_pSlider2->IsVisible());
 }
 
 void OnSliderChanged(Slider* slider, float percentage)
@@ -69,7 +72,7 @@ Editor::Editor() noexcept : Application(false)
 	m_pButton->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 	m_pButton->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 
-	m_pButton2 = new Button(275, 400, 200, 50, "Button 2", OnButtonPressed, OnButtonReleased);
+	m_pButton2 = new Button(350, 400, 200, 50, "Button 2", OnButtonPressed, OnButtonReleased);
 	m_pButton2->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 	m_pButton2->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 
@@ -81,12 +84,13 @@ Editor::Editor() noexcept : Application(false)
 	m_pSlider2->SetRatio(0.5F);
 	m_pSlider2->SetPercentage(0.0F);
 
-	m_pPanelScrollable = new PanelScrollable(520, 50, 500, 500, 1000, 1000, new Texture2D("Resources/Textures/test6.png", TEX_FORMAT::TEX_FORMAT_RGBA, false), b, f);
+
+	m_pPanelScrollable = new PanelScrollable(520, 50, 500, 500, 500, 1000, new Texture2D("Resources/Textures/test6.png", TEX_FORMAT::TEX_FORMAT_RGBA, false), b, f);
 
 	m_pPanelScrollable->Add(m_pButton);
 	m_pPanelScrollable->Add(m_pButton2);
-	m_pPanel->Add(m_pSlider);
-	m_pPanel->Add(m_pSlider2);
+	m_pPanelScrollable->Add(m_pSlider);
+	m_pPanelScrollable->Add(m_pSlider2);
 
 	GetGUIManager().Add(m_pPanel);
 	GetGUIManager().Add(m_pTextViewFPS);

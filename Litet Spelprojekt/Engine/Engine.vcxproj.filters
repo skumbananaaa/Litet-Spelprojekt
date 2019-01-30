@@ -94,7 +94,6 @@
     <ClInclude Include="Include\Graphics\GUI\IMouseListener.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
-    <ClInclude Include="Include\Graphics\GUI\IRealTimeRendered.h" />
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />

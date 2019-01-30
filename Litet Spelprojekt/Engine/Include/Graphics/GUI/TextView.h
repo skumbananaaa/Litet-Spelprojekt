@@ -27,6 +27,7 @@ public:
 protected:
 	virtual void OnRender(GUIContext* context) override;
 	virtual void RenderText(GUIContext* context);
+	virtual void PrintName() const override;
 
 private:
 	std::string m_Text;

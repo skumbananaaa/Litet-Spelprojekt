@@ -51,6 +51,9 @@ void PanelScrollable::SetClientSize(float width, float height)
 	m_pSliderVertical->SetPercentage(0.0F);
 	m_pSliderHorizontal->SetPercentage(0.0F);
 
+	m_pSliderVertical->SetVisible(m_pSliderVertical->GetRatio() != 1);
+	m_pSliderHorizontal->SetVisible(m_pSliderHorizontal->GetRatio() != 1);
+
 	RequestRepaint();
 }
 
@@ -127,10 +130,34 @@ void PanelScrollable::RenderRealTime(GUIContext* context)
 	context->SetVertexQuadData(GetXInWorld() - m_ClientOffset.x, GetYInWorld() + m_ClientOffset.y, GetClientWidth(), GetClientHeight());
 	context->GetGraphicsContext()->SetTexture(m_pFrameBufferClientArea->GetColorAttachment(0), 0);
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
-	glScissor(GetXInWorld(), GetYInWorld(), GetWidth(), GetHeight());
+	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
+	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
+	glScissor(GetXInWorld(), GetYInWorld() + heightIndent, GetWidth() - widthIndent, GetHeight() - heightIndent);
 	glEnable(GL_SCISSOR_TEST);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
 	glDisable(GL_SCISSOR_TEST);
 	context->GetGraphicsContext()->SetTexture(nullptr, 0);
+}
+
+void PanelScrollable::ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child)
+{
+	Panel::ControllRealTimeRenderingForChildPre(context, child);
+	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
+	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
+	glScissor(GetXInWorld(), GetYInWorld() + heightIndent, GetWidth() - widthIndent, GetHeight() - heightIndent);
+	glEnable(GL_SCISSOR_TEST);
+}
+
+void PanelScrollable::ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child)
+{
+	Panel::ControllRealTimeRenderingForChildPost(context, child);
+	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
+	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
+	glDisable(GL_SCISSOR_TEST);
+}
+
+void PanelScrollable::PrintName() const
+{
+	std::cout << "Panel Scrollable";
 }

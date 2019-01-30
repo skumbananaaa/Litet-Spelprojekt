@@ -42,7 +42,6 @@ private:
 	Button* m_pButton;
 	Button* m_pButton2;
 	Slider* m_pSlider;
-	Slider* m_pSlider2;
 	Panel* m_pPanel;
 
 	PanelScrollable* m_pPanelScrollable;

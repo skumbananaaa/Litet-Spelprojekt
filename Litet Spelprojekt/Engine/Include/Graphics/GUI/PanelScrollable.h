@@ -3,7 +3,7 @@
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
 
-class API PanelScrollable : public Panel, public ISliderListener, public IRealTimeRendered
+class API PanelScrollable : public Panel, public ISliderListener
 {
 public:
 	PanelScrollable(float x, float y, float width, float height, float clientWidth, float clientHeight, Texture2D* texture, Texture2D* sliderBackground, Texture2D* sliderForeground);
@@ -24,6 +24,11 @@ public:
 
 	void RenderChildrensFrameBuffers(GUIContext* context) override;
 	void RenderRealTime(GUIContext* context) override;
+	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child) override;
+	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child) override;
+
+protected:
+	virtual void PrintName() const override;
 
 private:
 	Slider* m_pSliderVertical;

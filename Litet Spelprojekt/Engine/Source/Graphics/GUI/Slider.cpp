@@ -150,6 +150,11 @@ void Slider::RenderRealTime(GUIContext* context)
 	}
 }
 
+void Slider::PrintName() const
+{
+	std::cout << "Slider";
+}
+
 void Slider::SetRatio(float ratio)
 {
 	m_Ratio = ratio;

@@ -132,3 +132,8 @@ void Button::RenderBackgroundTexture(GUIContext* context)
 		GUIObject::RenderBackgroundTexture(context);
 	}
 }
+
+void Button::PrintName() const
+{
+	std::cout << "Button";
+}

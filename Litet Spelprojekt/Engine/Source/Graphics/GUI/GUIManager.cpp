@@ -73,3 +73,8 @@ void GUIManager::InternalRootOnKeyDown(KEY keycode)
 {
 	
 }
+
+void GUIManager::PrintName() const
+{
+	std::cout << "GUI Manager";
+}

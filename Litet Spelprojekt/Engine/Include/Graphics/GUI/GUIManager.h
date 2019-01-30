@@ -23,6 +23,9 @@ public:
 	void InternalRootOnKeyUp(KEY keycode);
 	void InternalRootOnKeyDown(KEY keycode);
 
+protected:
+	virtual void PrintName() const override;
+
 private:
 	GUIContext* context;
 	glm::vec2 m_LastMousePosition;

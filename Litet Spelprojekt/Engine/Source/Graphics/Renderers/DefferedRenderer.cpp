@@ -101,7 +101,9 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
 	
 	context.Enable(DEPTH_TEST);
+	context.SetDepthFunc(FUNC_ALWAYS);
 	ReconstructionPass();
+	context.SetDepthFunc(FUNC_LESS);
 
 	//LightPass(scene.GetCamera(), scene, m_pGBuffer);
 

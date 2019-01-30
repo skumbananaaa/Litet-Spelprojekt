@@ -112,6 +112,7 @@ private:
 	Framebuffer* m_pGBufferCBR;
 	Framebuffer* m_pResolveTargets[2];
 	Framebuffer* m_pForwardCBR;
+	Framebuffer* m_pBlur;
 	Framebuffer* m_pReflection;
 	mutable Framebuffer* m_pCurrentResolveTarget;
 	mutable Framebuffer* m_pLastResolveTarget;
@@ -133,6 +134,7 @@ private:
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
 	
+	ShaderProgram* m_pCbrBlurProgram;
 	ShaderProgram* m_pCbrReconstructionProgram;
 	ShaderProgram* m_pCbrResolveProgram;
 	ShaderProgram* m_pCbrStencilProgram;

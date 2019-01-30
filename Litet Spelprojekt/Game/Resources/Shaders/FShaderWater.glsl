@@ -18,7 +18,7 @@ layout (std140, binding = 1) uniform PerFrameBlock
 layout (binding = 0) uniform sampler2D reflectionTexture;
 layout (binding = 1) uniform sampler2D dudvMap;
 layout (binding = 2) uniform sampler2D normalMap;
-layout (binding = 3) uniform sampler2D depthMap;
+layout (binding = 3) uniform sampler2DMS depthMap;
 
 out vec4 FragColor;
 
@@ -33,6 +33,20 @@ const float depthOfFullSpecular = 0.7;
 
 const float fogDensity = 0.075;
 const float fogGradient = 5.0;
+
+float SampleDepth(vec2 texCoords)
+{
+	ivec2 size = textureSize(depthMap);
+	ivec2 coords = ivec2(size * texCoords);
+
+	float depth = 1.0f;
+	for (int i = 0; i < 2; i++)
+	{
+		depth = min(depth, texelFetch(depthMap, coords, i).r);
+	}
+
+	return depth;
+}
 
 void main()
 {
@@ -49,7 +63,7 @@ void main()
 
 	float near = 0.1;
 	float far = 100.0; //FIX THESE AS UNIFORMS
-	float depth = texture(depthMap, depthTexCoords).x;
+	float depth = SampleDepth(depthTexCoords);
 	float groundDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
 	depth = gl_FragCoord.z;
 	float waterDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));

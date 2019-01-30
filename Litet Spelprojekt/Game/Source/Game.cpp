@@ -171,7 +171,7 @@ Game::Game() noexcept
 		{
 			g_Grid->GetTile(glm::ivec2(i, j))->SetID(temp_map[i][j]);
 			g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
-			//m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
+			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
 		}
 	}
 

@@ -118,7 +118,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//Render to the window, now we want to put everything together
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
-	context.SetFramebuffer(nullptr);
+	context.SetFramebuffer(m_pBlur);
 	
 	context.Enable(DEPTH_TEST);
 	context.SetDepthFunc(FUNC_ALWAYS);
@@ -203,6 +203,23 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
+		TextureParams params = {};
+		params.Wrap = TEX_PARAM_REPEAT;
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
+
+		FramebufferDesc desc = {};
+		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.NumColorAttachments = 1;
+		desc.SamplingParams = params;
+		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
+		desc.Width = Window::GetCurrentWindow().GetWidth();
+		desc.Height = Window::GetCurrentWindow().GetHeight();
+
+		m_pBlur = new Framebuffer(desc);
+	}
+
+	{
 		m_pDecalMesh = IndexedMesh::CreateCube();
 		m_pTriangle = new FullscreenTri();
 	}
@@ -233,6 +250,18 @@ void DefferedRenderer::Create() noexcept
 		}
 
 		m_pCbrReconstructionProgram = new ShaderProgram(fullscreenTri, *pFrag);
+
+		delete pFrag;
+	}
+
+	{
+		Shader* pFrag = new Shader();
+		if (pFrag->CompileFromFile("Resources/Shaders/cbrFilterFrag.glsl", FRAGMENT_SHADER))
+		{
+			std::cout << "Created CBR Blur Fragment shader" << std::endl;
+		}
+
+		m_pCbrBlurProgram = new ShaderProgram(fullscreenTri, *pFrag);
 
 		delete pFrag;
 	}
@@ -566,9 +595,20 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 
+	context.SetProgram(m_pCbrBlurProgram);
+
+	context.SetTexture(m_pBlur->GetColorAttachment(0), 0);
+	context.SetFramebuffer(nullptr);
+	
+	context.DrawFullscreenTriangle(*m_pTriangle);
+
+	//Unbind = no bugs
+	context.SetTexture(nullptr, 1);
+	context.SetTexture(nullptr, 2);
+	context.SetTexture(nullptr, 3);
+
 	//Unbind = no bugs
 	context.SetTexture(nullptr, 0);
-	context.SetTexture(nullptr, 1);
 }
 
 void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) const noexcept

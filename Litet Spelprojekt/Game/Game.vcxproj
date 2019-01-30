@@ -167,6 +167,7 @@
     <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
     <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
+    <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
     <None Include="Resources\Shaders\forwardFrag.glsl" />
     <None Include="Resources\Shaders\FShader.glsl" />
@@ -176,6 +177,7 @@
     <None Include="Resources\Shaders\orthoFrag.glsl" />
     <None Include="Resources\Shaders\orthoVert.glsl" />
     <None Include="Resources\Shaders\VShader.glsl" />
+    <None Include="Resources\Shaders\VShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />

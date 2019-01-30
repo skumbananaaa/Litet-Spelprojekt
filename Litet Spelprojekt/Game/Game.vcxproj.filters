@@ -64,6 +64,10 @@
     <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
     <None Include="Resources\Shaders\orthoVert.glsl" />
     <None Include="Resources\Shaders\orthoFrag.glsl" />
+    <None Include="Resources\Shaders\debugVert.glsl" />
+    <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
+    <None Include="Resources\Shaders\VShaderSkyBox.glsl" />
+    <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

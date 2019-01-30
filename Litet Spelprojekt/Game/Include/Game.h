@@ -8,6 +8,7 @@
 #include <Graphics/Renderers/IRenderer.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Textures/Texture2D.h>
+#include <Graphics/Textures/TextureCube.h>
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/Materials/Decal.h>
 #include <Audio/Listeners/AudioListener.h>

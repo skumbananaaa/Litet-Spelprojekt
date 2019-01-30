@@ -1,5 +1,5 @@
 #pragma once
-#include "Texture.h"
+#include <Graphics/Textures/Texture.h>
 
 class API TextureCube : public Texture
 {

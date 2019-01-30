@@ -12,8 +12,8 @@ World* WorldSerializer::Read(const char* const path)
 	std::string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	Document document;
 	document.Parse(data.c_str(), data.length());
-	const Value& object = document.GetObjectA();
-	const Value& levels = object["levels"];
+	const Value& jsonObject = document.GetObjectA();
+	const Value& levels = jsonObject["levels"];
 	
 	WorldLevel** worldLevels = new WorldLevel*[levels.Size()];
 
@@ -39,9 +39,23 @@ World* WorldSerializer::Read(const char* const path)
 		levelIndexes = nullptr;
 	}
 
-	World* world = new World(worldLevels, levels.Size());
+	const Value& objects = jsonObject["objects"];
+	WorldObject* worldObjects = new WorldObject[objects.Size()];
+
+	for (uint32 objectId = 0; objectId < objects.Size(); objectId++)
+	{
+		worldObjects[objectId].TileId.x = objects[objectId]["tileIdX"].GetUint();
+		worldObjects[objectId].TileId.y = objects[objectId]["tileIdY"].GetUint();
+		worldObjects[objectId].TileId.z = objects[objectId]["tileIdZ"].GetUint();
+		worldObjects[objectId].MeshId = objects[objectId]["meshId"].GetUint();
+		worldObjects[objectId].MaterialId = objects[objectId]["materialId"].GetUint();
+	}
+
+	World* world = new World(worldLevels, levels.Size(), worldObjects, objects.Size());
 	delete[] worldLevels;
 	worldLevels = nullptr;
+	delete[] worldObjects;
+	worldObjects = nullptr;
 	return world;
 }
 
@@ -55,16 +69,13 @@ void WorldSerializer::Write(const char* const path, const World& world)
 	writer.StartObject();
 	writer.String("levels");
 	writer.StartArray();
-	//Loop through each world level
 	for (uint32 levelId = 0; levelId < world.GetNumLevels(); levelId++)
 	{
 		const WorldLevel* level = world.GetLevel(levelId);
-		//writer.String(("level" + std::to_string(levelId)).c_str());
 		writer.StartArray();
 
 		for (uint32 x = 0; x < level->GetSizeX(); x++)
 		{
-			//writer.String(("x" + std::to_string(x)).c_str());
 			writer.StartArray();
 
 			for (uint32 z = 0; z < level->GetSizeZ(); z++)
@@ -78,6 +89,29 @@ void WorldSerializer::Write(const char* const path, const World& world)
 		writer.EndArray();
 	}
 	writer.EndArray();
+
+	writer.String("objects");
+	writer.StartArray();
+
+	for (uint32 objectId = 0; objectId < world.GetNumWorldObjects(); objectId++)
+	{
+		const WorldObject& currentObject = world.GetWorldObject(objectId);
+		writer.StartObject();
+		writer.String("tileIdX");
+		writer.Uint(currentObject.TileId.x);
+		writer.String("tileIdY");
+		writer.Uint(currentObject.TileId.y);
+		writer.String("tileIdZ");
+		writer.Uint(currentObject.TileId.z);
+		writer.String("meshId");
+		writer.Uint(currentObject.MeshId);
+		writer.String("materialId");
+		writer.Uint(currentObject.MaterialId);
+		writer.EndObject();
+	}
+
+	writer.EndArray();
+
 	writer.EndObject();
 
 	//std::cout << stringBuffer.GetString() << std::endl;

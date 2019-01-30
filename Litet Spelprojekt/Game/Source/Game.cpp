@@ -12,8 +12,9 @@ Grid * g_Grid;
 
 float g_Rot = 1.0;
 
-Game::Game() noexcept
-	: m_pFontRenderer(nullptr),
+Game::Game() noexcept : 
+	Application(false),
+	m_pFontRenderer(nullptr),
 	m_pRenderer(nullptr),
 	m_pScene(nullptr),
 	m_pTestMesh(nullptr),
@@ -31,6 +32,8 @@ Game::Game() noexcept
 	m_pDecal(nullptr),
 	cartesianCamera(true)
 {
+	
+
 	m_pRenderer = new DefferedRenderer();
 
 	m_pScene = new Scene();
@@ -265,7 +268,16 @@ Game::Game() noexcept
 		worldLevel2,
 	};
 
-	World* world = new World(worldLevels, 3);
+	WorldObject worldObjects[5] =
+	{
+		{ glm::uvec3(0, 1, 2), 1337, 69 },
+		{ glm::uvec3(3, 4, 5), 1337, 420 },
+		{ glm::uvec3(6, 7, 8), 1337, 5 },
+		{ glm::uvec3(9, 10, 11), 1337, 15 },
+		{ glm::uvec3(12, 13, 14), 1337, 8 },
+	};
+
+	World* world = new World(worldLevels, 3, worldObjects, 5);
 	WorldSerializer::Write("test.json", *world);
 	Delete(world);
 

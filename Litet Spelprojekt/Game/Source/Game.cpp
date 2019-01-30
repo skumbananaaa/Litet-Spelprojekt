@@ -222,7 +222,7 @@ Game::Game() noexcept
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 
-	/*const uint32 level0SizeX = 10;
+	const uint32 level0SizeX = 10;
 	const uint32 level0SizeZ = 10;
 	uint32 level0[level0SizeX * level0SizeZ] =
 	{
@@ -280,7 +280,9 @@ Game::Game() noexcept
 	WorldSerializer::Write("test.json", *world);
 	Delete(world);
 
-	WorldSerializer::Read("test.json", *world);*/
+	world = WorldSerializer::Read("test.json");
+	WorldSerializer::Write("test2.json", *world);
+	Delete(world);
 }
 
 Game::~Game()

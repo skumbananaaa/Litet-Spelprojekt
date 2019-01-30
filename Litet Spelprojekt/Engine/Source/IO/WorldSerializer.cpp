@@ -4,7 +4,7 @@
 #include <rapidjson/document.h>
 #include <IO/WorldSerializer.h>
 
-void WorldSerializer::Read(const char* const path, World& world)
+World* WorldSerializer::Read(const char* const path)
 {
 	using namespace rapidjson;
 
@@ -12,8 +12,37 @@ void WorldSerializer::Read(const char* const path, World& world)
 	std::string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	Document document;
 	document.Parse(data.c_str(), data.length());
-	std::cout << data << std::endl;
-	int i = 0;
+	const Value& object = document.GetObjectA();
+	const Value& levels = object["levels"];
+	
+	WorldLevel** worldLevels = new WorldLevel*[levels.Size()];
+
+	for (uint32 levelId = 0; levelId < levels.Size(); levelId++)
+	{
+		const Value& level = levels[levelId];
+		uint32 xSize = level.Size();
+		uint32 zSize = level[0].Size();
+		uint32* levelIndexes = new uint32[xSize * zSize];
+
+		for (uint32 xId = 0; xId < xSize; xId++)
+		{
+			const Value& x = level[xId];
+
+			for (uint32 zId = 0; zId < zSize; zId++)
+			{
+				levelIndexes[xId *  zSize + zId] = x[zId].GetUint();
+			}
+		}
+
+		worldLevels[levelId] = new WorldLevel(levelIndexes, xSize, zSize);
+		delete[] levelIndexes;
+		levelIndexes = nullptr;
+	}
+
+	World* world = new World(worldLevels, levels.Size());
+	delete[] worldLevels;
+	worldLevels = nullptr;
+	return world;
 }
 
 void WorldSerializer::Write(const char* const path, const World& world)
@@ -30,12 +59,12 @@ void WorldSerializer::Write(const char* const path, const World& world)
 	for (uint32 levelId = 0; levelId < world.GetNumLevels(); levelId++)
 	{
 		const WorldLevel* level = world.GetLevel(levelId);
-		writer.String(("level" + std::to_string(levelId)).c_str());
+		//writer.String(("level" + std::to_string(levelId)).c_str());
 		writer.StartArray();
 
 		for (uint32 x = 0; x < level->GetSizeX(); x++)
 		{
-			writer.String(("x" + std::to_string(x)).c_str());
+			//writer.String(("x" + std::to_string(x)).c_str());
 			writer.StartArray();
 
 			for (uint32 z = 0; z < level->GetSizeZ(); z++)

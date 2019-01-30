@@ -132,6 +132,11 @@ bool GUIObject::IsDirty() const noexcept
 	return m_IsDirty;
 }
 
+bool GUIObject::IsMyChild(const GUIObject* child) const noexcept
+{
+	return Contains<GUIObject>(m_Children, child);
+}
+
 Texture2D* GUIObject::GetTexture() const noexcept
 {
 	return m_pBackgroundTexture;
@@ -166,22 +171,22 @@ float GUIObject::GetY() const noexcept
 	return m_Position.y;
 }
 
-float GUIObject::GetXInWorld() const noexcept
+float GUIObject::GetXInWorld(const GUIObject* child) const noexcept
 {
 	float value = GetX();
 	if (HasParent())
 	{
-		value += GetParent()->GetXInWorld();
+		value += GetParent()->GetXInWorld(this);
 	}
 	return value;
 }
 
-float GUIObject::GetYInWorld() const noexcept
+float GUIObject::GetYInWorld(const GUIObject* child) const noexcept
 {
 	float value = GetY();
 	if (HasParent())
 	{
-		value += GetParent()->GetYInWorld();
+		value += GetParent()->GetYInWorld(this);
 	}
 	return value;
 }
@@ -333,6 +338,10 @@ bool GUIObject::ContainsPoint(const glm::vec2& position)
 	{
 		if (position.y > y && position.y < y + GetHeight())
 		{
+			if (HasParent())
+			{
+				return GetParent()->ContainsPoint(position);
+			}
 			return true;
 		}
 	}

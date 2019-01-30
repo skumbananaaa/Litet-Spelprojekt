@@ -54,6 +54,34 @@ void PanelScrollable::SetClientSize(float width, float height)
 	RequestRepaint();
 }
 
+float PanelScrollable::GetXInWorld(const GUIObject* child) const noexcept
+{
+	float value = GetX();
+	if (child && IsMyChild(child))
+	{
+		value -= m_ClientOffset.x;
+	}
+	if (HasParent())
+	{
+		value += GetParent()->GetXInWorld(this);
+	}
+	return value;
+}
+
+float PanelScrollable::GetYInWorld(const GUIObject* child) const noexcept
+{
+	float value = GetY();
+	if (child && IsMyChild(child))
+	{
+		value += m_ClientOffset.y;
+	}
+	if (HasParent())
+	{
+		value += GetParent()->GetYInWorld(this);
+	}
+	return value;
+}
+
 void PanelScrollable::OnAdded(GUIObject* parent)
 {
 	m_pSliderVertical->AddSliderListener(this);

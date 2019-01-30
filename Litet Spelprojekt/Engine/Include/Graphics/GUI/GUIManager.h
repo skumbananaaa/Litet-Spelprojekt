@@ -11,6 +11,9 @@ public:
 	GUIManager(GLContext* glContext);
 	~GUIManager();
 
+	virtual float GetWidth() const noexcept override;
+	virtual float GetHeight() const noexcept override;
+
 	void InternalRootOnRender();
 	void InternalRootOnUpdate(float dtS);
 	void InternalRootOnMousePressed(MouseButton mousebutton);

@@ -19,14 +19,15 @@ public:
 	void Add(GUIObject* parent);
 	void Remove(GUIObject* parent);
 
-	float GetWidth() const noexcept;
-	float GetHeight() const noexcept;
+	virtual float GetWidth() const noexcept;
+	virtual float GetHeight() const noexcept;
 	float GetX() const noexcept;
 	float GetY() const noexcept;
-	float GetXInWorld() const noexcept;
-	float GetYInWorld() const noexcept;
+	virtual float GetXInWorld(const GUIObject* child = nullptr) const noexcept;
+	virtual float GetYInWorld(const GUIObject* child = nullptr) const noexcept;
 
 	bool IsDirty() const noexcept;
+	bool IsMyChild(const GUIObject* child) const noexcept;
 
 	Texture2D* GetTexture() const noexcept;
 	void SetTexture(Texture2D* texture);
@@ -52,7 +53,7 @@ protected:
 	bool ContainsPoint(const glm::vec2& position);
 
 	template<class T>
-	static bool Contains(const std::vector<T*>& list, T* object)
+	static bool Contains(const std::vector<T*>& list, const T* object)
 	{
 		for (T* currentObject : list)
 		{

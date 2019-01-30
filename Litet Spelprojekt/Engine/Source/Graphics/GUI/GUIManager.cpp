@@ -21,6 +21,16 @@ GUIManager::~GUIManager()
 	delete context;
 }
 
+float GUIManager::GetWidth() const noexcept
+{
+	return Window::GetCurrentWindow().GetWidth();
+}
+
+float GUIManager::GetHeight() const noexcept
+{
+	return Window::GetCurrentWindow().GetHeight();
+}
+
 void GUIManager::InternalRootOnRender()
 {
 	glEnable(GL_CULL_FACE);

@@ -33,7 +33,7 @@ public:
 
 	void RenderFrameBuffer(Framebuffer* frameBuffer, float x, float y);
 	void RenderText(const std::string& text, int32 x, int32 y, float scale);
-	glm::vec2& CalculateTextSize(const std::string& text, float scale);
+	glm::vec2 CalculateTextSize(const std::string& text, float scale);
 	void SetVertexQuadData(float x, float y, float width, float height);
 
 	GLContext* GetGraphicsContext() const;

@@ -14,6 +14,9 @@ public:
 
 	void SetClientSize(float width, float height);
 
+	virtual float GetXInWorld(const GUIObject* child = nullptr) const noexcept;
+	virtual float GetYInWorld(const GUIObject* child = nullptr) const noexcept;
+
 	virtual void OnAdded(GUIObject* parent) override;
 	virtual void OnRemoved(GUIObject* parent) override;
 

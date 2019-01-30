@@ -6,7 +6,7 @@
 class API Slider : public GUIObject, public IMouseListener, public IRealTimeRendered
 {
 public:
-	Slider(float x, float y, float width, float height, Texture2D* textureBackground, Texture2D* textureForeground);
+	Slider(float x, float y, float width, float height, Texture2D* textureBackground, Texture2D* textureForeground, void(*onChangedCallback)(Slider*, float));
 	virtual ~Slider();
 
 	bool isVertical() const noexcept;
@@ -20,6 +20,8 @@ public:
 	void SetPercentage(float percentage);
 	float GetPercentage() const noexcept;
 
+	void SetOnSliderChanged(void(*callback)(Slider*, float));
+
 	virtual void OnAdded(GUIObject* parent) override;
 	virtual void OnRemoved(GUIObject* parent) override;
 
@@ -32,7 +34,9 @@ public:
 private:
 	Texture2D* m_pTextureForeground;
 	bool m_IsPressed;
-	float m_Offset;
+	float m_MouseOffset;
+	float m_SliderPos;
 	float m_Ratio;
-	float m_Percentage;
+
+	void(*m_OnChangedCallback)(Slider*, float);
 };

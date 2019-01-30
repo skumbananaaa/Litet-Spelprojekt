@@ -10,7 +10,12 @@ void OnButtonReleased(Button* button)
 	std::cout << "Button Released" << std::endl;
 }
 
-Editor::Editor() noexcept : Application()
+void OnSliderChanged(Slider* slider, float percentage)
+{
+	std::cout << "Slider: "  << percentage << std::endl;
+}
+
+Editor::Editor() noexcept : Application(false)
 {
 	std::cout << "Editor" << std::endl;
 
@@ -68,11 +73,11 @@ Editor::Editor() noexcept : Application()
 	Texture2D* b = new Texture2D("Resources/Textures/test4.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
 	Texture2D* f = new Texture2D("Resources/Textures/test5.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
 
-	m_pSlider = new Slider(50, 50, 400, 30, b, f);
+	m_pSlider = new Slider(10, 100, 400, 30, b, f, OnSliderChanged);
 	m_pSlider->SetRatio(0.5F);
-	m_pSlider->SetPercentage(1.0F);
+	m_pSlider->SetPercentage(0.0F);
 
-	m_pSlider2 = new Slider(50, 100, 400, 30, b, f);
+	m_pSlider2 = new Slider(450, 50, 30, 400, b, f, OnSliderChanged);
 	m_pSlider2->SetRatio(0.5F);
 	m_pSlider2->SetPercentage(0.0F);
 

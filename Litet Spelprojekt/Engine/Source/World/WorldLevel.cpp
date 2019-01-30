@@ -12,7 +12,7 @@ WorldLevel::WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 si
 
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
-			m_ppLevel[x][z] = levelIndexes[x * m_SizeX + z];
+			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
 		}
 	}
 }

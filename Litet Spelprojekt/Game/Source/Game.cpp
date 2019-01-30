@@ -301,6 +301,10 @@ Game::~Game()
 	DeleteSafe(m_pBlueMaterial);
 	DeleteSafe(m_pBoatMaterial);
 	DeleteSafe(m_pGroundMaterial);
+	Delete(m_pBoatTexture);
+	Delete(m_pBoatNormalMap);
+
+	Delete(m_pSkyBoxTex);
 	
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);

@@ -446,6 +446,8 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	context.SetProgram(m_pDecalsPassProgram);
 	
 	context.SetDepthMask(false);
+	context.Disable(DEPTH_TEST);
+	context.Disable(CULL_FACE);
 	context.Enable(BLEND);
 
 	context.SetUniformBuffer(m_pDecalPassPerFrame, 0);
@@ -493,6 +495,8 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 
 	context.SetDepthMask(true);
 	context.Disable(BLEND);
+	context.Enable(CULL_FACE);
+	context.Enable(DEPTH_TEST);
 }
 
 void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer)  const noexcept

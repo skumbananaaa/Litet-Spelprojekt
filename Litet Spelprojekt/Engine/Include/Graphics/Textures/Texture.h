@@ -7,12 +7,12 @@ enum TEX_PARAM : uint32
 	TEX_PARAM_REPEAT = 1,
 	TEX_PARAM_EDGECLAMP = 2, //Sets to textureedge
 	TEX_PARAM_BORDERCLAMP = 3, //Sets to a color
-	TEX_NEAREST = 4,
-	TEX_LINEAR = 5,
-	TEX_NEAREST_MIPMAP_NEAREST = 6,
-	TEX_LINEAR_MIPMAP_NEAREST = 7,
-	TEX_NEAREST_MIPMAP_LINEAR = 8,
-	TEX_LINEAR_MIPMAP_LINEAR = 9,
+	TEX_PARAM_NEAREST = 4,
+	TEX_PARAM_LINEAR = 5,
+	TEX_PARAM_NEAREST_MIPMAP_NEAREST = 6,
+	TEX_PARAM_LINEAR_MIPMAP_NEAREST = 7,
+	TEX_PARAM_NEAREST_MIPMAP_LINEAR = 8,
+	TEX_PARAM_LINEAR_MIPMAP_LINEAR = 9,
 	TEX_PARAM_COUNT = 10,
 };
 
@@ -32,8 +32,17 @@ enum TEX_FORMAT: uint32
 struct TextureParams
 {
 	TEX_PARAM Wrap = TEX_PARAM_EDGECLAMP;
-	TEX_PARAM MagFilter = TEX_NEAREST;
-	TEX_PARAM MinFilter = TEX_NEAREST;
+	TEX_PARAM MagFilter = TEX_PARAM_NEAREST;
+	TEX_PARAM MinFilter = TEX_PARAM_NEAREST;
+};
+
+struct TextureDesc
+{
+	TEX_FORMAT Format = TEX_FORMAT_UNKNOWN;
+	uint32 Width = 0;
+	uint32 Height = 0;
+	uint32 Samples = 1;
+	bool GenerateMips = true;
 };
 
 class API Texture
@@ -53,9 +62,13 @@ public:
 	void SetParameters(const TextureParams& params) noexcept;
 	TEX_FORMAT GetFormat() const noexcept;
 
+private:
+	uint32 GetType() const noexcept;
+
 protected:
 	TEX_FORMAT m_Format;
 	uint32 m_Texture;
+	uint32 m_Type;
 
 public:
 	static uint32 TexParamToGL(TEX_PARAM param) noexcept;
@@ -68,4 +81,9 @@ public:
 inline TEX_FORMAT Texture::GetFormat() const noexcept
 {
 	return m_Format;
+}
+
+inline uint32 Texture::GetType() const noexcept
+{
+	return m_Type;
 }

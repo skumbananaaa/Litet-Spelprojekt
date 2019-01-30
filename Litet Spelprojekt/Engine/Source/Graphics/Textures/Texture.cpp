@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics/Textures/Texture.h>
+#include <Graphics/Renderers/GLContext.h>
 
 Texture::Texture() noexcept
 	: m_Format(TEX_FORMAT_UNKNOWN),
@@ -11,19 +12,22 @@ Texture::~Texture()
 {
 	if (glIsTexture(m_Texture))
 	{
-		glDeleteTextures(1, &m_Texture);
+		GL_CALL(glDeleteTextures(1, &m_Texture));
 		m_Texture = 0;
 	}
 }
 
 void Texture::SetParameters(const TextureParams& params) noexcept
 {
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap));
-	glBindTexture(GL_TEXTURE_2D, 0);
+	if (m_Type != GL_TEXTURE_2D_MULTISAMPLE)
+	{
+		GL_CALL(glBindTexture(m_Type, m_Texture));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap)));
+		GL_CALL(glBindTexture(m_Type, 0));
+	}
 }
 
 uint32 Texture::TexParamToGL(TEX_PARAM param) noexcept

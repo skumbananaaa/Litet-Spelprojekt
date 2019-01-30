@@ -68,7 +68,6 @@ IndexedMesh* IndexedMesh::CreateIndexedMeshFromFile(const char* pFilename)
 		vertices[i].tangent = (pMesh->HasTangentsAndBitangents()) ? glm::vec3(pMesh->mTangents[i].x, pMesh->mTangents[i].y, pMesh->mTangents[i].z) : glm::vec3();
 	}
 
-
 	std::vector<uint32> indices;
 	for (uint32 i = 0; i < pMesh->mNumFaces; i++)
 	{

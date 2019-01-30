@@ -25,7 +25,7 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1024, 768, false);
+		m_pWindow = new Window("Small Game Project", 1024, 768, true);
 
 		float width = static_cast<float>(m_pWindow->GetWidth());
 		float height = static_cast<float>(m_pWindow->GetHeight());
@@ -75,7 +75,7 @@ int32_t Application::Run()
 		Input::Update();
 
 		m_pWindow->PollEvents();
-		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
+		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 		currentTime = clock::now();
 		deltaTime = std::chrono::duration_cast<duration>(currentTime - prevTime).count();

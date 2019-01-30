@@ -10,6 +10,8 @@ DefferedRenderer::DefferedRenderer()
 	m_pReflection(nullptr),
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
+	m_pLastResolveTarget(nullptr),
+	m_pCurrentResolveTarget(nullptr),
 	m_pGPassVSPerFrame(nullptr),
 	m_pGeoPassPerObject(nullptr),
 	m_pDecalPassPerFrame(nullptr),
@@ -20,11 +22,15 @@ DefferedRenderer::DefferedRenderer()
 	m_pWaterNormalMap(nullptr),
 	m_pWaterDistortionMap(nullptr),
 	m_pForwardPass(nullptr),
+	m_pCbrResolveProgram(nullptr),
+	m_pCbrStencilProgram(nullptr),
 	m_pDepthPrePassProgram(nullptr),
 	m_pDecalsPassProgram(nullptr),
 	m_pGeometryPassProgram(nullptr),
 	m_pLightPassProgram(nullptr),
-	m_pWaterpassProgram(nullptr)
+	m_pWaterpassProgram(nullptr),
+	m_pResolveTargets(),
+	m_FrameCount(0)
 {
 	Create();
 }
@@ -33,7 +39,12 @@ DefferedRenderer::~DefferedRenderer()
 {
 	DeleteSafe(m_pGBuffer);
 	DeleteSafe(m_pReflection);
-	
+
+	for (uint32 i = 0; i < 2; i++)
+	{
+		DeleteSafe(m_pResolveTargets[i]);
+	}
+
 	DeleteSafe(m_pTriangle);
 	DeleteSafe(m_pDecalMesh);
 	
@@ -50,6 +61,8 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pWaterNormalMap);
 	DeleteSafe(m_pWaterDistortionMap);
 	
+	DeleteSafe(m_pCbrResolveProgram);
+	DeleteSafe(m_pCbrStencilProgram);
 	DeleteSafe(m_pDepthPrePassProgram);
 	DeleteSafe(m_pDecalsPassProgram);
 	DeleteSafe(m_pGeometryPassProgram);
@@ -73,18 +86,34 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetFramebuffer(m_pGBuffer);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
-	//DepthPrePass(scene);
+	context.Enable(MULTISAMPLE);
+
 	GeometryPass(scene.GetCamera(), scene);
 	DecalPass(scene.GetCamera(), scene);
 
+	context.Disable(MULTISAMPLE);
+
+	context.SetFramebuffer(m_pCurrentResolveTarget);
+	context.SetViewport(m_pCurrentResolveTarget->GetWidth(), m_pCurrentResolveTarget->GetHeight(), 0, 0);
+	CBRResolvePass(scene.GetCamera(), scene, m_pGBuffer);
+
 	context.SetFramebuffer(nullptr);
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	
+	context.Enable(DEPTH_TEST);
+	context.SetDepthFunc(FUNC_ALWAYS);
+	ReconstructionPass();
+	context.SetDepthFunc(FUNC_LESS);
 
-	LightPass(scene.GetCamera(), scene, m_pGBuffer);
+	//LightPass(scene.GetCamera(), scene, m_pGBuffer);
 
-	context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
+	//context.BlitFramebuffer(nullptr, m_pGBuffer, CLEAR_FLAG_DEPTH);
 
-	WaterPass(scene, dtS);
+	//WaterPass(scene, dtS);
+
+	m_FrameCount++;
+	m_pLastResolveTarget = m_pCurrentResolveTarget;
+	m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
 }
 
 void DefferedRenderer::Create() noexcept
@@ -94,29 +123,52 @@ void DefferedRenderer::Create() noexcept
 	//We can destroy desc when gbuffer is created
 	{
 		TextureParams params = {};
-		params.MinFilter = TEX_NEAREST;
-		params.MagFilter = TEX_NEAREST;
-		params.Wrap = TEX_PARAM_REPEAT;
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
+		params.Wrap = TEX_PARAM_EDGECLAMP;
 
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA;
 		desc.NumColorAttachments = 2;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
-		//desc.Width = 1920; 
-		desc.Width = Window::GetCurrentWindow().GetWidth();
-		//desc.Height = 1080;
-		desc.Height = Window::GetCurrentWindow().GetHeight();
+		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
+		desc.Width = Window::GetCurrentWindow().GetWidth() / 2;
+		desc.Height = Window::GetCurrentWindow().GetHeight() / 2;
 		desc.SamplingParams = params;
+		desc.Samples = 2;
 
 		m_pGBuffer = new Framebuffer(desc);
 	}
 
 	{
 		TextureParams params = {};
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
+		params.Wrap = TEX_PARAM_EDGECLAMP;
+
+		FramebufferDesc desc = {};
+		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.ColorAttchmentFormats[1] = TEX_FORMAT_R;
+		desc.NumColorAttachments = 2;
+		desc.Width = m_pGBuffer->GetWidth() * 2;
+		desc.Height = m_pGBuffer->GetHeight();
+		desc.SamplingParams = params;
+		desc.Samples = 1;
+
+		for (uint32 i = 0; i < 2; i++)
+		{
+			m_pResolveTargets[i] = new Framebuffer(desc);
+		}
+
+		m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
+		m_pLastResolveTarget = m_pCurrentResolveTarget;
+	}
+
+	{
+		TextureParams params = {};
 		params.Wrap = TEX_PARAM_REPEAT;
-		params.MinFilter = TEX_LINEAR;
-		params.MagFilter = TEX_LINEAR;
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
 
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
@@ -127,6 +179,41 @@ void DefferedRenderer::Create() noexcept
 		desc.Height = REFLECTIONSIZE;
 
 		m_pReflection = new Framebuffer(desc);
+	}
+
+	{
+		m_pDecalMesh = IndexedMesh::CreateCube();
+		m_pTriangle = new FullscreenTri();
+	}
+
+	Shader fullscreenTri = Shader();
+	if (fullscreenTri.CompileFromFile("Resources/Shaders/fullscreenTriVert.glsl", VERTEX_SHADER))
+	{
+		std::cout << "Created fullscreen Vertex shader" << std::endl;
+	}
+
+	{
+		Shader* pFrag = new Shader();
+		if (pFrag->CompileFromFile("Resources/Shaders/cbrResolveFrag.glsl", FRAGMENT_SHADER))
+		{
+			std::cout << "Created CBR Resolve Fragment shader" << std::endl;
+		}
+
+		m_pCbrResolveProgram = new ShaderProgram(fullscreenTri, *pFrag);
+		
+		delete pFrag;
+	}
+
+	{
+		Shader* pFrag = new Shader();
+		if (pFrag->CompileFromFile("Resources/Shaders/cbrReconstructionFrag.glsl", FRAGMENT_SHADER))
+		{
+			std::cout << "Created CBR Reconstruction Fragment shader" << std::endl;
+		}
+
+		m_pCbrReconstructionProgram = new ShaderProgram(fullscreenTri, *pFrag);
+
+		delete pFrag;
 	}
 
 	{
@@ -149,21 +236,14 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/defferedLightningVert.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created Lightpass Vertex shader" << std::endl;
-		}
-
 		Shader* pFrag = new Shader();
 		if (pFrag->CompileFromFile("Resources/Shaders/defferedLightningFrag.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created Lightpass Fragment shader" << std::endl;
 		}
 
-		m_pLightPassProgram = new ShaderProgram(*pVert, *pFrag);
+		m_pLightPassProgram = new ShaderProgram(fullscreenTri, *pFrag);
 
-		delete pVert;
 		delete pFrag;
 	}
 
@@ -301,16 +381,11 @@ void DefferedRenderer::Create() noexcept
 	{
 		TextureParams params = {};
 		params.Wrap = TEX_PARAM_REPEAT;
-		params.MinFilter = TEX_LINEAR;
-		params.MagFilter = TEX_LINEAR;
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
 
 		m_pWaterDistortionMap = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT_RGB, true, params);
 		m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT_RGB, true, params);
-	}
-
-	{
-		m_pDecalMesh = IndexedMesh::CreateCube();
-		m_pTriangle = new FullscreenTri();
 	}
 }
 
@@ -391,6 +466,67 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	context.SetDepthMask(true);
 	context.Enable(CULL_FACE);
 	context.Disable(BLEND);
+}
+
+void DefferedRenderer::CBRResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer)  const noexcept
+{
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	context.Disable(DEPTH_TEST);
+
+	context.SetProgram(m_pCbrResolveProgram);
+	context.SetUniformBuffer(m_pLightPassBuffer, 0);
+
+	{
+		LightPassBuffer buff = {};
+		buff.InverseView = camera.GetInverseViewMatrix();
+		buff.InverseProjection = camera.GetInverseProjectionMatrix();
+		buff.CameraPosition = camera.GetPosition();
+
+		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
+		for (size_t i = 0; i < directionalLights.size(); i++)
+		{
+			buff.DirectionalLights[i].Color = directionalLights[i]->GetColor();
+			buff.DirectionalLights[i].Direction = directionalLights[i]->GetDirection();
+		}
+
+		const std::vector<PointLight*>& pointLights = scene.GetPointLights();
+		for (size_t i = 0; i < pointLights.size(); i++)
+		{
+			buff.PointLights[i].Color = pointLights[i]->GetColor();
+			buff.PointLights[i].Position = pointLights[i]->GetPosition();
+		}
+
+		m_pLightPassBuffer->UpdateData(&buff);
+	}
+
+	context.SetTexture(pGBuffer->GetColorAttachment(0), 0);
+	context.SetTexture(pGBuffer->GetColorAttachment(1), 1);
+	context.SetTexture(pGBuffer->GetDepthAttachment(), 2);
+
+	context.DrawFullscreenTriangle(*m_pTriangle);
+}
+
+void DefferedRenderer::ReconstructionPass() const noexcept
+{
+	GLContext& context = GLContext::GetCurrentContext();
+
+	context.SetProgram(m_pCbrReconstructionProgram);
+
+	//Current frame
+
+	//Color
+	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(0), 0);
+	//Depth
+	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(1), 1);
+
+	//Last frame
+	//Color
+	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(0), 2);
+	//Depth
+	context.SetTexture(m_pLastResolveTarget->GetColorAttachment(1), 3);
+
+	context.DrawFullscreenTriangle(*m_pTriangle);
 }
 
 void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) const noexcept
@@ -594,7 +730,6 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	context.SetFramebuffer(m_pReflection);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
-	context.Enable(DEPTH_TEST);
 	context.Enable(Cap::CLIP_DISTANCE0);
 	ForwardPass(reflectionCam, scene);
 	context.Disable(Cap::CLIP_DISTANCE0);

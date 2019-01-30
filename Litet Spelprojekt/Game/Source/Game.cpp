@@ -46,13 +46,13 @@ Game::Game() noexcept
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 	m_pGroundTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cliff_3_low.obj");
-	m_pSphereMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/sphere.obj");
+	m_pSphereMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cube.obj");
 
 	{
 		TextureParams params = {};
 		params.Wrap = TEX_PARAM_REPEAT;
-		params.MinFilter = TEX_LINEAR;
-		params.MagFilter = TEX_LINEAR;
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
 
 		m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA, true, params);
 		m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormalMap.png", TEX_FORMAT_RGBA, true, params);

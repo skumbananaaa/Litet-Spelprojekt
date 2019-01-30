@@ -62,7 +62,6 @@
     <None Include="Resources\Shaders\FShader.glsl" />
     <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
-    <None Include="Resources\Shaders\defferedLightningVert.glsl" />
     <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
     <None Include="Resources\Shaders\FShaderWater.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />
@@ -72,7 +71,9 @@
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
     <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
     <None Include="Resources\Shaders\forwardFrag.glsl" />
-    <None Include="..\..\..\..\..\Downloads\AerisPianoByTannerHelland.ogg" />
+    <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
+    <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
+    <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

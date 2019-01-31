@@ -154,15 +154,10 @@ void FontRenderer::RenderText(GLContext* context, std::string text, float x, flo
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void FontRenderer::UpdateRenderTargetSize(int width, int height)
-{
-	m_PerFrameData.projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
-	m_pPerFrameUniform->UpdateData(&m_PerFrameData);
-}
-
-void FontRenderer::SetColor(const glm::vec3& color)
+void FontRenderer::UpdateBuffer(int width, int height, const glm::vec4& color)
 {
 	m_PerFrameData.color = color;
+	m_PerFrameData.projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height));
 	m_pPerFrameUniform->UpdateData(&m_PerFrameData);
 }
 
@@ -215,8 +210,7 @@ FontRenderer* FontRenderer::CreateFontRenderer(const char* font, int width, int 
 	}
 
 	FontRenderer* fontRenderer = new FontRenderer(&face);
-	fontRenderer->SetColor(glm::vec3(1.0, 1.0, 1.0));
-	fontRenderer->UpdateRenderTargetSize(width, height);
+	fontRenderer->UpdateBuffer(width, height, glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));
 
 	FT_Done_Face(face);
 	FT_Done_FreeType(freeType);

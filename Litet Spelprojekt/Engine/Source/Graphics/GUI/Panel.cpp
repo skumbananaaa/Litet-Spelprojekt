@@ -1,9 +1,9 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/Panel.h>
 
-Panel::Panel(float x, float y, float width, float height, Texture2D* texture) : GUIObject(x, y, width, height)
+Panel::Panel(float x, float y, float width, float height) : GUIObject(x, y, width, height)
 {
-	SetTexture(texture);
+	SetBackgroundColor(glm::vec4(0.118F, 0.118F, 0.118F, 1.0F));
 }
 
 Panel::~Panel()

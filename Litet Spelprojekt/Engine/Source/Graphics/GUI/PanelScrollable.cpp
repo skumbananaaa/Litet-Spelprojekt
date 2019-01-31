@@ -1,13 +1,14 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/PanelScrollable.h>
 
-PanelScrollable::PanelScrollable(float x, float y, float width, float height, float clientWidth, float clientHeight, Texture2D* texture, Texture2D* sliderBackground, Texture2D* sliderForeground) : Panel(x, y, width, height, texture),
+#define SLIDER_SIZE 20
+
+PanelScrollable::PanelScrollable(float x, float y, float width, float height, float clientWidth, float clientHeight) : Panel(x, y, width, height),
 	m_pFrameBufferClientArea(nullptr),
 	m_ClientOffset(0, 0)
 {
-	static float size = 20;
-	m_pSliderVertical = new Slider(x + width - size, y + size, size, height - size, sliderBackground, sliderForeground);
-	m_pSliderHorizontal = new Slider(x, y, width - size, size, sliderBackground, sliderForeground);
+	m_pSliderVertical = new Slider(x + width - SLIDER_SIZE, y + SLIDER_SIZE, SLIDER_SIZE, height - SLIDER_SIZE);
+	m_pSliderHorizontal = new Slider(x, y, width - SLIDER_SIZE, SLIDER_SIZE);
 	SetClientSize(clientWidth, clientHeight);
 }
 
@@ -45,14 +46,33 @@ void PanelScrollable::SetClientSize(float width, float height)
 
 	m_pFrameBufferClientArea = new Framebuffer(desc);
 
-	m_pSliderVertical->SetRatio(GetHeight() / (float)desc.Height);
-	m_pSliderHorizontal->SetRatio(GetWidth() / (float)desc.Width);
+	m_pSliderVertical->SetVisible(desc.Height > GetHeight());
+	m_pSliderHorizontal->SetVisible(desc.Width > GetWidth());
+
+	if (m_pSliderVertical->IsVisible() && !m_pSliderHorizontal->IsVisible())
+	{
+		m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY());
+		m_pSliderVertical->SetSize(SLIDER_SIZE, GetHeight());
+	}
+	else if (!m_pSliderVertical->IsVisible() && m_pSliderHorizontal->IsVisible())
+	{
+		m_pSliderHorizontal->SetSize(GetWidth(), SLIDER_SIZE);
+	}
+	else if (m_pSliderVertical->IsVisible() && m_pSliderHorizontal->IsVisible())
+	{
+		m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY() + SLIDER_SIZE);
+		m_pSliderVertical->SetSize(SLIDER_SIZE, GetHeight() - SLIDER_SIZE);
+		m_pSliderHorizontal->SetSize(GetWidth() - SLIDER_SIZE, SLIDER_SIZE);
+	}
+
+	m_pSliderVertical->SetRatio(m_pSliderVertical->GetHeight() / (float)desc.Height);
+	m_pSliderHorizontal->SetRatio(m_pSliderHorizontal->GetWidth() / (float)desc.Width);
 
 	m_pSliderVertical->SetPercentage(0.0F);
 	m_pSliderHorizontal->SetPercentage(0.0F);
 
-	m_pSliderVertical->SetVisible(m_pSliderVertical->GetRatio() != 1);
-	m_pSliderHorizontal->SetVisible(m_pSliderHorizontal->GetRatio() != 1);
+	OnSliderChange(m_pSliderVertical, 0.0F);
+	OnSliderChange(m_pSliderHorizontal, 0.0F);
 
 	RequestRepaint();
 }
@@ -111,23 +131,27 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 {
 	if (slider == m_pSliderVertical)
 	{
-		m_ClientOffset.y = slider->GetRatio() * GetClientHeight() * percentage;
+		m_ClientOffset.y = (1.0 - slider->GetRatio()) * GetClientHeight() * (percentage - 1.0);
+		if (m_pSliderHorizontal->IsVisible())
+		{
+			m_ClientOffset.y += SLIDER_SIZE;
+		}
 	}
 	else if (slider == m_pSliderHorizontal)
 	{
-		m_ClientOffset.x = slider->GetRatio() * GetClientWidth() * percentage;
+		m_ClientOffset.x = (1.0 - slider->GetRatio()) * GetClientWidth() * percentage;
 	}
 }
 
 void PanelScrollable::RenderChildrensFrameBuffers(GUIContext* context)
 {
-	context->BeginSelfRendering(m_pFrameBufferClientArea);
+	context->BeginSelfRendering(m_pFrameBufferClientArea, GetBackgroundColor());
 	Panel::RenderChildrensFrameBuffers(context);
 }
 
 void PanelScrollable::RenderRealTime(GUIContext* context)
 {
-	context->SetVertexQuadData(GetXInWorld() - m_ClientOffset.x, GetYInWorld() + m_ClientOffset.y, GetClientWidth(), GetClientHeight());
+	context->SetVertexQuadData(GetXInWorld() - m_ClientOffset.x, GetYInWorld() + m_ClientOffset.y, GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
 	context->GetGraphicsContext()->SetTexture(m_pFrameBufferClientArea->GetColorAttachment(0), 0);
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
 	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();

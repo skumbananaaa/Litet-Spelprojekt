@@ -4,10 +4,16 @@
 Button::Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*), void(*onReleasedCallback)(Button*), int textSize) : TextView(x, y, width, height, text, textSize),
 	m_pOnPressedTexture(nullptr),
 	m_IsPressed(false),
+	m_IsHovered(false),
+	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
+	m_HoverColor(0.6F, 0.6F, 0.6F, 1.0F),
+	m_PressedTextColor(0.0F, 0.0F, 0.0F, 1.0F),
+	m_HoverTextColor(1.0F, 1.0F, 1.0F, 1.0F),
 	m_OnPressedCallback(onPressedCallback),
 	m_OnReleasedCallback(onReleasedCallback)
 {
 	SetTextAlignment(CENTER);
+	SetBackgroundColor(glm::vec4(0.408F, 0.408F, 0.408F, 1.0F));
 }
 
 Button::~Button()
@@ -25,6 +31,74 @@ void Button::SetOnPressedTexture(Texture2D* texture)
 	{
 		m_pOnPressedTexture = texture;
 		RequestRepaint();
+	}
+}
+
+const glm::vec4& Button::GetOnPressedColor() const noexcept
+{
+	return m_PressedColor;
+}
+
+void Button::SetOnPressedColor(const glm::vec4& color)
+{
+	if (m_PressedColor != color)
+	{
+		m_PressedColor = color;
+		if (m_IsPressed)
+		{
+			RequestRepaint();
+		}
+	}
+}
+
+const glm::vec4& Button::GetOnHoverColor() const noexcept
+{
+	return m_HoverColor;
+}
+
+void Button::SetOnHoverColor(const glm::vec4& color)
+{
+	if (m_HoverColor != color)
+	{
+		m_HoverColor = color;
+		if (m_IsHovered)
+		{
+			RequestRepaint();
+		}
+	}
+}
+
+const glm::vec4& Button::GetOnPressedTextColor() const noexcept
+{
+	return m_PressedTextColor;
+}
+
+void Button::SetOnPressedTextColor(const glm::vec4& color)
+{
+	if (m_PressedTextColor != color)
+	{
+		m_PressedTextColor = color;
+		if (m_IsHovered)
+		{
+			RequestRepaint();
+		}
+	}
+}
+
+const glm::vec4& Button::GetOnHoverTextColor() const noexcept
+{
+	return m_HoverTextColor;
+}
+
+void Button::SetOnHoverTextColor(const glm::vec4& color)
+{
+	if (m_HoverTextColor != color)
+	{
+		m_HoverTextColor = color;
+		if (m_IsHovered)
+		{
+			RequestRepaint();
+		}
 	}
 }
 
@@ -100,7 +174,19 @@ void Button::OnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 
 void Button::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-
+	if (ContainsPoint(position))
+	{
+		if (!m_IsHovered)
+		{
+			m_IsHovered = true;
+			RequestRepaint();
+		}
+	}
+	else if (m_IsHovered)
+	{
+		m_IsHovered = false;
+		RequestRepaint();
+	}
 }
 
 void Button::OnAdded(GUIObject* parent)
@@ -113,27 +199,42 @@ void Button::OnRemoved(GUIObject* parent)
 	RemoveMouseListener(this);
 }
 
-void Button::RenderBackgroundTexture(GUIContext* context)
-{
-	context->SetVertexQuadData(0, 0, GetWidth(), GetHeight());
-	if (GetTexture())
-	{
-		if (m_pOnPressedTexture)
-		{
-			if (m_IsPressed)
-			{
-				context->SetVertexQuadData(0, 0, GetWidth(), GetHeight());
-				context->GetGraphicsContext()->SetTexture(m_pOnPressedTexture, 0);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-				context->GetGraphicsContext()->SetTexture(nullptr, 0);
-				return;
-			}
-		}
-		GUIObject::RenderBackgroundTexture(context);
-	}
-}
-
 void Button::PrintName() const
 {
 	std::cout << "Button";
+}
+
+const glm::vec4& Button::GetClearColor() const
+{
+	if (m_IsPressed)
+	{
+		return GetOnPressedColor();
+	}
+	else if (m_IsHovered)
+	{
+		return GetOnHoverColor();
+	}
+	return TextView::GetClearColor();
+}
+
+Texture2D* Button::GetClearTexture() const
+{
+	if (m_IsPressed)
+	{
+		return GetOnPressedTexture();
+	}
+	return TextView::GetClearTexture();
+}
+
+const glm::vec4& Button::GetClearTextColor() const
+{
+	if (m_IsPressed)
+	{
+		return GetOnPressedTextColor();
+	}
+	else if (m_IsHovered)
+	{
+		return GetOnHoverTextColor();
+	}
+	return TextView::GetClearTextColor();
 }

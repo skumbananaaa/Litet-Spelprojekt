@@ -1,7 +1,5 @@
 #include "..\Include\Editor.h"
 
-Slider* m_pSlider2;
-
 void OnButtonPressed(Button* button)
 {
 	std::cout << "Button Pressed" << std::endl;
@@ -10,7 +8,6 @@ void OnButtonPressed(Button* button)
 void OnButtonReleased(Button* button)
 {
 	std::cout << "Button Released" << std::endl;
-	m_pSlider2->SetVisible(!m_pSlider2->IsVisible());
 }
 
 void OnSliderChanged(Slider* slider, float percentage)
@@ -59,40 +56,28 @@ Editor::Editor() noexcept : Application(false)
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
 	
-
-	Texture2D* b = new Texture2D("Resources/Textures/test4.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
-	Texture2D* f = new Texture2D("Resources/Textures/test5.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
-
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
 
-	m_pPanel = new Panel(0, 50, 500, 500, new Texture2D("Resources/Textures/test3.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-
 	m_pButton = new Button(25, 400, 200, 50, "Button 1", OnButtonPressed, OnButtonReleased);
-	m_pButton->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-	m_pButton->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
 
-	m_pButton2 = new Button(350, 400, 200, 50, "Button 2", OnButtonPressed, OnButtonReleased);
-	m_pButton2->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-	m_pButton2->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-
-	m_pSlider = new Slider(10, 100, 400, 30, b, f, OnSliderChanged);
-	m_pSlider->SetRatio(0.5F);
-	m_pSlider->SetPercentage(0.0F);
-
-	m_pSlider2 = new Slider(450, 50, 30, 400, b, f, OnSliderChanged);
-	m_pSlider2->SetRatio(0.5F);
-	m_pSlider2->SetPercentage(0.0F);
+	m_pButton2 = new Button(250, 400, 200, 50, "Button 2", OnButtonPressed, OnButtonReleased);
 
 
-	m_pPanelScrollable = new PanelScrollable(520, 50, 500, 500, 500, 1000, new Texture2D("Resources/Textures/test6.png", TEX_FORMAT::TEX_FORMAT_RGBA, false), b, f);
 
-	m_pPanelScrollable->Add(m_pButton);
-	m_pPanelScrollable->Add(m_pButton2);
-	m_pPanelScrollable->Add(m_pSlider);
-	m_pPanelScrollable->Add(m_pSlider2);
+	m_pPanelScrollable = new PanelScrollable(100, 10, 700, 700, 2000, 1000);
 
-	GetGUIManager().Add(m_pPanel);
+	/*m_pPanelScrollable->Add(m_pButton);
+	m_pPanelScrollable->Add(m_pButton2);*/
+
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 0; y < 20; y++)
+		{
+			m_pPanelScrollable->Add(new Button(x * 200 + 1, y * 50 + 1, 198, 48, "Button " + std::to_string(x) + ":" + std::to_string(y)));
+		}
+	}
+
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pPanelScrollable);
@@ -175,7 +160,6 @@ void Editor::OnRender(float dtS)
 {
 	GetGraphicsContext().SetProgram(m_pShaderProgramDefault);
 	GetGraphicsContext().SetUniformBuffer(m_pPerFrameUniform, 1);
-
 
 	GetGraphicsContext().SetUniformBuffer(m_pGridUniform, 0);
 	GetGraphicsContext().DrawMesh(*m_pGridMesh, PT_LINES);

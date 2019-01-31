@@ -6,7 +6,7 @@
 class API PanelScrollable : public Panel, public ISliderListener
 {
 public:
-	PanelScrollable(float x, float y, float width, float height, float clientWidth, float clientHeight, Texture2D* texture, Texture2D* sliderBackground, Texture2D* sliderForeground);
+	PanelScrollable(float x, float y, float width, float height, float clientWidth, float clientHeight);
 	virtual ~PanelScrollable();
 
 	float GetClientWidth() const noexcept;

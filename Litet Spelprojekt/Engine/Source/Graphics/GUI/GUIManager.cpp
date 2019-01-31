@@ -12,6 +12,8 @@ GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0), m_LastMous
 	FontRenderer* fontRenderer = FontRenderer::CreateFontRenderer("Resources/Fonts/arial.ttf", 10, 10);
 
 	context = new GUIContext(glContext, new ShaderProgram(vShader, fShader), fontRenderer);
+
+	CreateDefaultTexture();
 }
 
 GUIManager::~GUIManager()
@@ -19,6 +21,7 @@ GUIManager::~GUIManager()
 	delete context->GetFontRenderer();
 	delete context->GetShaderProgram();
 	delete context;
+	DeleteDefaultTexture();
 }
 
 float GUIManager::GetWidth() const noexcept

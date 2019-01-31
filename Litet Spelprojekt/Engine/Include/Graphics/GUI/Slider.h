@@ -13,19 +13,25 @@ public:
 class API Slider : public GUIObject
 {
 public:
-	Slider(float x, float y, float width, float height, Texture2D* textureBackground, Texture2D* textureForeground, void(*onChangedCallback)(Slider*, float) = nullptr);
+	Slider(float x, float y, float width, float height, void(*onChangedCallback)(Slider*, float) = nullptr);
 	virtual ~Slider();
 
 	bool isVertical() const noexcept;
-	
-	void SetForgroundTexture(Texture2D* texture);
-	Texture2D* GetForegroundTexture() const;
 
 	void SetRatio(float ratio);
 	float GetRatio() const noexcept;
 
 	void SetPercentage(float percentage);
 	float GetPercentage() const noexcept;
+
+	const glm::vec4& GetSliderColor() const noexcept;
+	void SetSliderColor(const glm::vec4& color);
+
+	const glm::vec4& GetOnPressedColor() const noexcept;
+	void SetOnPressedColor(const glm::vec4& color);
+
+	const glm::vec4& GetOnHoverColor() const noexcept;
+	void SetOnHoverColor(const glm::vec4& color);
 
 	void AddSliderListener(ISliderListener* listener);
 	void RemoveSliderListener(ISliderListener* listener);
@@ -43,13 +49,18 @@ public:
 
 protected:
 	virtual void PrintName() const override;
+	virtual const glm::vec4& GetSliderClearColor() const;
 
 private:
 	Texture2D* m_pTextureForeground;
 	bool m_IsPressed;
+	bool m_IsHovered;
 	float m_MouseOffset;
 	float m_SliderPos;
 	float m_Ratio;
+	glm::vec4 m_SliderColor;
+	glm::vec4 m_PressedColor;
+	glm::vec4 m_HoverColor;
 	std::vector<ISliderListener*> m_SliderListeners;
 	void(*m_OnChangedCallback)(Slider*, float);
 };

@@ -103,6 +103,7 @@ public:
 	void SetViewport(const glm::vec4& viewport) noexcept;
 	const glm::vec4 GetViewPort() const noexcept;
 
+	void ResetClearColor() const noexcept;
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
 	void SetClearDepth(float depth) const noexcept;
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
@@ -129,6 +130,7 @@ public:
 
 private:
 	glm::vec4 m_ViewPort;
+	glm::vec4 m_DefaultClearColor;
 	mutable uint32 m_CurrentTextures[16];
 
 public:

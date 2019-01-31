@@ -4,7 +4,7 @@
 
 GLContext* GLContext::s_CurrentContext = nullptr;
 
-GLContext::GLContext(float width, float height)
+GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.584f, 0.929f, 1.0f)
 {
 	assert(s_CurrentContext == nullptr);
 	s_CurrentContext = this;
@@ -146,6 +146,11 @@ void GLContext::SetViewport(const glm::vec4& viewport) noexcept
 const glm::vec4 GLContext::GetViewPort() const noexcept
 {
 	return m_ViewPort;
+}
+
+void GLContext::ResetClearColor() const noexcept
+{
+	GL_CALL(glClearColor(m_DefaultClearColor.r, m_DefaultClearColor.g, m_DefaultClearColor.b, m_DefaultClearColor.a));
 }
 
 void GLContext::SetClearColor(float r, float g, float b, float a) const noexcept

@@ -41,8 +41,5 @@ private:
 	TextView* m_pTextViewUPS;
 	Button* m_pButton;
 	Button* m_pButton2;
-	Slider* m_pSlider;
-	Panel* m_pPanel;
-
 	PanelScrollable* m_pPanelScrollable;
 };

@@ -1,15 +1,18 @@
 #include <EnginePch.h>
 #include <Graphics\GUI\Slider.h>
 
-Slider::Slider(float x, float y, float width, float height, Texture2D* textureBackground, Texture2D* textureForeground, void(*onChangedCallback)(Slider*, float)) : GUIObject(x, y, width, height),
-	m_pTextureForeground(textureForeground),
+Slider::Slider(float x, float y, float width, float height, void(*onChangedCallback)(Slider*, float)) : GUIObject(x, y, width, height),
 	m_IsPressed(false),
+	m_IsHovered(false),
 	m_MouseOffset(0),
 	m_SliderPos(0),
-	m_Ratio(1)
+	m_Ratio(1),
+	m_SliderColor(0.408F, 0.408F, 0.408F, 1.0F),
+	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
+	m_HoverColor(0.6F, 0.6F, 0.6F, 1.0F)
 {
-	SetTexture(textureBackground);
 	m_OnChangedCallback = onChangedCallback;
+	SetBackgroundColor(glm::vec4(0.243F, 0.243F, 0.259F, 1.0F));
 }
 
 Slider::~Slider()
@@ -20,20 +23,6 @@ Slider::~Slider()
 bool Slider::isVertical() const noexcept
 {
 	return GetWidth() < GetHeight();
-}
-
-void Slider::SetForgroundTexture(Texture2D* texture)
-{
-	if (m_pTextureForeground != texture)
-	{
-		m_pTextureForeground = texture;
-		RequestRepaint();
-	}
-}
-
-Texture2D* Slider::GetForegroundTexture() const
-{
-	return m_pTextureForeground;
 }
 
 void Slider::OnAdded(GUIObject* parent)
@@ -118,36 +107,49 @@ void Slider::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& positio
 			}
 		}
 	}
+	else
+	{
+		if (ContainsPoint(position))
+		{
+			if (!m_IsHovered)
+			{
+				m_IsHovered = true;
+				RequestRepaint();
+			}
+		}
+		else if (m_IsHovered)
+		{
+			m_IsHovered = false;
+			RequestRepaint();
+		}
+	}
 }
 
 void Slider::RenderRealTime(GUIContext* context)
 {
-	if (m_pTextureForeground)
+	float x = GetXInWorld();
+	float y = GetYInWorld();
+
+	if (isVertical())
 	{
-		float x = GetXInWorld();
-		float y = GetYInWorld();
+		float indent = GetWidth() * 0.2;
+		float width = GetWidth() - indent * 2;
+		float height = GetHeight() * m_Ratio - indent * 2;
 
-		if (isVertical())
-		{
-			float indent = GetWidth() * 0.1;
-			float width = GetWidth() - indent * 2;
-			float height = GetHeight() * m_Ratio - indent * 2;
-
-			context->SetVertexQuadData(x + indent, y + m_SliderPos + indent, width, height);
-		}
-		else
-		{
-			float indent = GetHeight() * 0.1;
-			float width = GetWidth() * m_Ratio - indent * 2;
-			float height = GetHeight() - indent * 2;
-			
-			context->SetVertexQuadData(x + m_SliderPos + indent, y + indent, width, height);
-		}
-
-		context->GetGraphicsContext()->SetTexture(m_pTextureForeground, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		context->GetGraphicsContext()->SetTexture(nullptr, 0);
+		context->SetVertexQuadData(x + indent, y + m_SliderPos + indent, width, height, GetSliderClearColor());
 	}
+	else
+	{
+		float indent = GetHeight() * 0.2;
+		float width = GetWidth() * m_Ratio - indent * 2;
+		float height = GetHeight() - indent * 2;
+			
+		context->SetVertexQuadData(x + m_SliderPos + indent, y + indent, width, height, GetSliderClearColor());
+	}
+
+	context->GetGraphicsContext()->SetTexture(GetDefaultTexture(), 0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	context->GetGraphicsContext()->SetTexture(nullptr, 0);
 }
 
 void Slider::PrintName() const
@@ -195,6 +197,53 @@ float Slider::GetPercentage() const noexcept
 	}
 }
 
+const glm::vec4& Slider::GetSliderColor() const noexcept
+{
+	return m_SliderColor;
+}
+
+void Slider::SetSliderColor(const glm::vec4& color)
+{
+	if (m_SliderColor != color)
+	{
+		m_SliderColor = color;
+	}
+}
+
+const glm::vec4& Slider::GetOnPressedColor() const noexcept
+{
+	return m_PressedColor;
+}
+
+void Slider::SetOnPressedColor(const glm::vec4& color)
+{
+	if (m_PressedColor != color)
+	{
+		m_PressedColor = color;
+		if (m_IsPressed)
+		{
+			RequestRepaint();
+		}
+	}
+}
+
+const glm::vec4& Slider::GetOnHoverColor() const noexcept
+{
+	return m_HoverColor;
+}
+
+void Slider::SetOnHoverColor(const glm::vec4& color)
+{
+	if (m_HoverColor != color)
+	{
+		m_HoverColor = color;
+		if (m_IsHovered)
+		{
+			RequestRepaint();
+		}
+	}
+}
+
 void Slider::AddSliderListener(ISliderListener* listener)
 {
 	if (!Contains<ISliderListener>(m_SliderListeners, listener))
@@ -224,4 +273,17 @@ void Slider::RemoveSliderListener(ISliderListener* listener)
 void Slider::SetOnSliderChanged(void(*callback)(Slider*, float))
 {
 	m_OnChangedCallback = callback;
+}
+
+const glm::vec4& Slider::GetSliderClearColor() const
+{
+	if (m_IsPressed)
+	{
+		return GetOnPressedColor();
+	}
+	else if (m_IsHovered)
+	{
+		return GetOnHoverColor();
+	}
+	return GetSliderColor();
 }

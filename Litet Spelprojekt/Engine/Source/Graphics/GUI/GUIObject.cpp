@@ -6,27 +6,21 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 
-std::vector<GUIObject*> GUIObject::m_MouseListeners;
-std::vector<GUIObject*> GUIObject::m_RealTimeRenderers;
+std::vector<GUIObject*> GUIObject::s_MouseListeners;
+std::vector<GUIObject*> GUIObject::s_RealTimeRenderers;
+Texture2D* GUIObject::s_pDefaultTexture = nullptr;
 
 GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_Position(x, y),
 	m_pFramebuffer(nullptr),
 	m_pBackgroundTexture(nullptr),
 	m_pParent(nullptr),
-	m_IsVisible(true)
+	m_IsVisible(true),
+	m_BackgroundColor(1.0, 1.0, 1.0, 1.0)
 {
 	if (width > 0 && height > 0)
 	{
-		FramebufferDesc desc;
-		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.SamplingParams = TextureParams();
-		desc.NumColorAttachments = 1;
-		desc.Width = static_cast<uint32>(width);
-		desc.Height = static_cast<uint32>(height);
-
-		m_pFramebuffer = new Framebuffer(desc);
+		RecreateFrameBuffer(width, height);
 	}
 }
 
@@ -38,17 +32,17 @@ GUIObject::~GUIObject()
 	}
 }
 
-bool GUIObject::HasParent() const
+bool GUIObject::HasParent() const noexcept
 {
 	return m_pParent != nullptr;
 }
 
-GUIObject* GUIObject::GetParent() const
+GUIObject* GUIObject::GetParent() const noexcept
 {
 	return m_pParent;
 }
 
-void GUIObject::Add(GUIObject* object)
+void GUIObject::Add(GUIObject* object) noexcept
 {
 	if (!Contains<GUIObject>(m_Children, object) && !Contains<GUIObject>(m_ChildrenToAdd, object))
 	{
@@ -56,7 +50,7 @@ void GUIObject::Add(GUIObject* object)
 	}
 }
 
-void GUIObject::Remove(GUIObject* object)
+void GUIObject::Remove(GUIObject* object) noexcept
 {
 	if (Contains<GUIObject>(m_Children, object))
 	{
@@ -79,9 +73,9 @@ void GUIObject::RequestRepaint()
 
 void GUIObject::AddMouseListener(GUIObject* listener)
 {
-	if (!Contains<GUIObject>(m_MouseListeners, listener))
+	if (!Contains<GUIObject>(s_MouseListeners, listener))
 	{
-		m_MouseListeners.push_back(listener);
+		s_MouseListeners.push_back(listener);
 	}
 	else
 	{
@@ -92,11 +86,11 @@ void GUIObject::AddMouseListener(GUIObject* listener)
 void GUIObject::RemoveMouseListener(GUIObject* listener)
 {
 	int32 counter = 0;
-	for (GUIObject* object : m_MouseListeners)
+	for (GUIObject* object : s_MouseListeners)
 	{
 		if (object == listener)
 		{
-			m_MouseListeners.erase(m_MouseListeners.begin() + counter);
+			s_MouseListeners.erase(s_MouseListeners.begin() + counter);
 			return;
 		}
 		counter++;
@@ -105,9 +99,9 @@ void GUIObject::RemoveMouseListener(GUIObject* listener)
 
 void GUIObject::AddRealTimeRenderer(GUIObject* listener)
 {
-	if (!Contains<GUIObject>(m_RealTimeRenderers, listener))
+	if (!Contains<GUIObject>(s_RealTimeRenderers, listener))
 	{
-		m_RealTimeRenderers.push_back(listener);
+		s_RealTimeRenderers.push_back(listener);
 	}
 	else
 	{
@@ -118,11 +112,11 @@ void GUIObject::AddRealTimeRenderer(GUIObject* listener)
 void GUIObject::RemoveRealTimeRenderer(GUIObject* listener)
 {
 	int32 counter = 0;
-	for (GUIObject* object : m_RealTimeRenderers)
+	for (GUIObject* object : s_RealTimeRenderers)
 	{
 		if (object == listener)
 		{
-			m_RealTimeRenderers.erase(m_RealTimeRenderers.begin() + counter);
+			s_RealTimeRenderers.erase(s_RealTimeRenderers.begin() + counter);
 			return;
 		}
 		counter++;
@@ -139,16 +133,30 @@ bool GUIObject::IsMyChild(const GUIObject* child) const noexcept
 	return Contains<GUIObject>(m_Children, child);
 }
 
-Texture2D* GUIObject::GetTexture() const noexcept
+Texture2D* GUIObject::GetBackgroundTexture() const noexcept
 {
 	return m_pBackgroundTexture;
 }
 
-void GUIObject::SetTexture(Texture2D* texture)
+void GUIObject::SetBackgroundTexture(Texture2D* texture)
 {
 	if (m_pBackgroundTexture != texture)
 	{
-		m_pBackgroundTexture = texture;
+		m_pBackgroundTexture = GetDefaultTexture();
+		RequestRepaint();
+	}
+}
+
+const glm::vec4& GUIObject::GetBackgroundColor() const noexcept
+{
+	return m_BackgroundColor;
+}
+
+void GUIObject::SetBackgroundColor(const glm::vec4& color) noexcept
+{
+	if (m_BackgroundColor != color)
+	{
+		m_BackgroundColor = color;
 		RequestRepaint();
 	}
 }
@@ -191,6 +199,25 @@ float GUIObject::GetYInWorld(const GUIObject* child) const noexcept
 		value += GetParent()->GetYInWorld(this);
 	}
 	return value;
+}
+
+void GUIObject::SetSize(float width, float height) noexcept
+{
+	if (GetWidth() != width || GetHeight() != height)
+	{
+		RecreateFrameBuffer(width, height);
+		RequestRepaint();
+	}
+}
+
+void GUIObject::SetPosition(float x, float y) noexcept
+{
+	if (m_Position.x != x || m_Position.y != y)
+	{
+		m_Position.x = x;
+		m_Position.y = y;
+		RequestRepaint();
+	}
 }
 
 void GUIObject::SetVisible(bool visible) noexcept
@@ -283,7 +310,7 @@ void GUIObject::InternalOnRender(GUIContext* context)
 	/*
 	* Render my self
 	*/
-	context->BeginSelfRendering(m_pFramebuffer);
+	context->BeginSelfRendering(m_pFramebuffer, GetClearColor());
 	this->OnRender(context);
 
 	/*
@@ -310,7 +337,7 @@ void GUIObject::InternalRootOnRender(GUIContext* context)
 	context->BeginRootRendering();
 	RenderChildrensFrameBuffers(context);
 
-	for (GUIObject* object : m_RealTimeRenderers)
+	for (GUIObject* object : s_RealTimeRenderers)
 	{
 		if (object->IsVisible())
 		{
@@ -335,6 +362,49 @@ void GUIObject::RerenderChildren(GUIContext* context)
 		child->InternalOnRender(context);
 	}
 	m_ChildrenDirty.clear();
+}
+
+void GUIObject::RecreateFrameBuffer(float width, float height)
+{
+	if (m_pFramebuffer)
+	{
+		delete m_pFramebuffer;
+	}
+
+	FramebufferDesc desc;
+	desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
+	desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+	desc.SamplingParams = TextureParams();
+	desc.NumColorAttachments = 1;
+	desc.Width = static_cast<uint32>(width);
+	desc.Height = static_cast<uint32>(height);
+
+	m_pFramebuffer = new Framebuffer(desc);
+}
+
+void GUIObject::CreateDefaultTexture()
+{
+	if (!s_pDefaultTexture)
+	{
+		TextureDesc desc;
+		desc.Format = TEX_FORMAT_RGBA;
+		desc.Width = 1;
+		desc.Height = 1;
+		desc.Samples = 0;
+		desc.GenerateMips = false;
+
+		uint8 pixel[] = { 255, 255, 255, 255 };
+
+		s_pDefaultTexture = new Texture2D(pixel, desc);
+	}
+}
+
+void GUIObject::DeleteDefaultTexture()
+{
+	if (s_pDefaultTexture)
+	{
+		delete s_pDefaultTexture;
+	}
 }
 
 void GUIObject::RenderChildrensFrameBuffers(GUIContext* context)
@@ -369,10 +439,11 @@ void GUIObject::OnRender(GUIContext* context)
 
 void GUIObject::RenderBackgroundTexture(GUIContext* context)
 {
-	context->SetVertexQuadData(0, 0, GetWidth(), GetHeight());
-	if (m_pBackgroundTexture)
+	context->SetVertexQuadData(0, 0, GetWidth(), GetHeight(), GUIContext::COLOR_WHITE);
+	Texture2D* texture = GetClearTexture();
+	if (texture)
 	{
-		context->GetGraphicsContext()->SetTexture(m_pBackgroundTexture, 0);
+		context->GetGraphicsContext()->SetTexture(texture, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		context->GetGraphicsContext()->SetTexture(nullptr, 0);
 	}
@@ -397,9 +468,24 @@ bool GUIObject::ContainsPoint(const glm::vec2& position)
 	return false;
 }
 
+Texture2D* GUIObject::GetDefaultTexture() const
+{
+	return s_pDefaultTexture;
+}
+
+const glm::vec4& GUIObject::GetClearColor() const
+{
+	return GetBackgroundColor();
+}
+
+Texture2D* GUIObject::GetClearTexture() const
+{
+	return GetBackgroundTexture();
+}
+
 void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (GUIObject* object : m_MouseListeners)
+	for (GUIObject* object : s_MouseListeners)
 	{
 		if (object->IsVisible())
 		{
@@ -410,7 +496,7 @@ void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButto
 
 void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (GUIObject* object : m_MouseListeners)
+	for (GUIObject* object : s_MouseListeners)
 	{
 		if (object->IsVisible())
 		{
@@ -421,7 +507,7 @@ void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButt
 
 void GUIObject::InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	for (GUIObject* object : m_MouseListeners)
+	for (GUIObject* object : s_MouseListeners)
 	{
 		if (object->IsVisible())
 		{

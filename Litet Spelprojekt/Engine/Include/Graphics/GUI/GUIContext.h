@@ -9,17 +9,17 @@ struct VertexGUI
 {
 	glm::vec2 position;
 	glm::vec2 texCoords;
+	glm::vec4 color;
 
 	inline bool operator==(const VertexGUI& rs) const
 	{
-		return (position == rs.position) && (texCoords == rs.texCoords);
+		return (position == rs.position) && (texCoords == rs.texCoords) && (color == rs.color);
 	}
 };
 
 struct GUIUniformData
 {
 	glm::mat4 projection;
-	glm::vec3 color;
 };
 
 class API GUIContext
@@ -28,17 +28,19 @@ public:
 	GUIContext(GLContext* context, ShaderProgram* shaderProgram, FontRenderer* fontRenderer);
 	~GUIContext();
 
-	void BeginSelfRendering(Framebuffer* frameBuffer);
+	void BeginSelfRendering(Framebuffer* frameBuffer, const glm::vec4& clearColor);
 	void BeginRootRendering();
 
 	void RenderFrameBuffer(Framebuffer* frameBuffer, float x, float y);
 	void RenderText(const std::string& text, int32 x, int32 y, float scale);
 	glm::vec2 CalculateTextSize(const std::string& text, float scale);
-	void SetVertexQuadData(float x, float y, float width, float height);
+	void SetVertexQuadData(float x, float y, float width, float height, const glm::vec4& color);
 
 	GLContext* GetGraphicsContext() const;
 	FontRenderer* GetFontRenderer() const;
 	ShaderProgram* GetShaderProgram() const;
+
+	static const glm::vec4 COLOR_WHITE;
 
 private:
 	GUIUniformData m_UniformData;

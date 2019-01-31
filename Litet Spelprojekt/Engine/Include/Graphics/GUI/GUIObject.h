@@ -11,11 +11,11 @@ class API GUIObject
 public:
 	virtual ~GUIObject();
 
-	bool HasParent() const;
-	GUIObject* GetParent() const;
+	bool HasParent() const noexcept;
+	GUIObject* GetParent() const noexcept;
 
-	void Add(GUIObject* parent);
-	void Remove(GUIObject* parent);
+	void Add(GUIObject* parent) noexcept;
+	void Remove(GUIObject* parent) noexcept;
 
 	virtual float GetWidth() const noexcept;
 	virtual float GetHeight() const noexcept;
@@ -24,14 +24,20 @@ public:
 	virtual float GetXInWorld(const GUIObject* child = nullptr) const noexcept;
 	virtual float GetYInWorld(const GUIObject* child = nullptr) const noexcept;
 
+	virtual void SetSize(float width, float height) noexcept;
+	virtual void SetPosition(float x, float y) noexcept;
+
 	void SetVisible(bool visible) noexcept;
 	bool IsVisible() noexcept;
 
 	bool IsDirty() const noexcept;
 	bool IsMyChild(const GUIObject* child) const noexcept;
 
-	Texture2D* GetTexture() const noexcept;
-	void SetTexture(Texture2D* texture);
+	Texture2D* GetBackgroundTexture() const noexcept;
+	void SetBackgroundTexture(Texture2D* texture);
+
+	const glm::vec4& GetBackgroundColor() const noexcept;
+	void SetBackgroundColor(const glm::vec4& color) noexcept;
 
 protected:
 	GUIObject(float x, float y, float width, float height);
@@ -56,6 +62,10 @@ protected:
 	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child);
 	bool ContainsPoint(const glm::vec2& position);
 	virtual void PrintName() const = 0;
+	Texture2D* GetDefaultTexture() const;
+	virtual const glm::vec4& GetClearColor() const;
+	virtual Texture2D* GetClearTexture() const;
+
 
 	template<class T>
 	static bool Contains(const std::vector<T*>& list, const T* object)
@@ -90,6 +100,11 @@ private:
 
 	void RerenderChildren(GUIContext* context);
 
+	void RecreateFrameBuffer(float width, float height);
+
+	static void CreateDefaultTexture();
+	static void DeleteDefaultTexture();
+
 	GUIObject* m_pParent;
 	std::vector<GUIObject*> m_Children;
 	std::vector<GUIObject*> m_ChildrenToRemove;
@@ -100,7 +115,9 @@ private:
 	bool m_IsDirty;
 	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;
+	glm::vec4 m_BackgroundColor;
 
-	static std::vector<GUIObject*> m_MouseListeners;
-	static std::vector<GUIObject*> m_RealTimeRenderers;
+	static std::vector<GUIObject*> s_MouseListeners;
+	static std::vector<GUIObject*> s_RealTimeRenderers;
+	static Texture2D* s_pDefaultTexture;
 };

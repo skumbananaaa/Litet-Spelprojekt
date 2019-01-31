@@ -157,10 +157,10 @@ IndexedMesh* IndexedMesh::CreateQuad()
 {
 	Vertex vertices[]
 	{
-		{ glm::vec3(-1.0F,  1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) }
+		{ glm::vec3(-0.5F,  0.5F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(0.5F,  0.5F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(0.5F, -0.5F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(-0.5F, -0.5F,  0.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) }
 	};
 
 	uint32 indices[]

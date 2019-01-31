@@ -50,6 +50,7 @@
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIManager.h" />
+    <ClInclude Include="Include\Graphics\Renderers\OrthographicRenderer.h" />
     <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
@@ -64,6 +65,8 @@
     <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\Window.h" />
     <ClInclude Include="Include\Types.h" />
+    <ClInclude Include="Include\World\Grid.h" />
+    <ClInclude Include="Include\World\Tile.h" />
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
@@ -100,6 +103,7 @@
     <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\Renderers\OrthographicRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />
     <ClCompile Include="Source\IO\WorldSerializer.cpp">
@@ -125,6 +129,8 @@
     <ClCompile Include="Source\Graphics\Textures\TextureCube.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
+    <ClCompile Include="Source\World\Grid.cpp" />
+    <ClCompile Include="Source\World\Tile.cpp" />
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\World\WorldLevel.cpp" />
   </ItemGroup>

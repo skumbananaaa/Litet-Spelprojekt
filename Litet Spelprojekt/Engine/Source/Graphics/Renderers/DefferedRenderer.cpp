@@ -120,7 +120,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 void DefferedRenderer::Create() noexcept
 {
-	std::cout << "Createing deffered renderer" << std::endl;
+	std::cout << "Creating deffered renderer" << std::endl;
 
 	//We can destroy desc when gbuffer is created
 	{

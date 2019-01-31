@@ -96,7 +96,7 @@ void Crewmember::SetActionCapacity(const float actionCap)
 	m_ActionCap = actionCap;
 }
 
-void Crewmember::SetPath(const Tile *** pppTilemap, glm::ivec2 size)
+void Crewmember::SetPath(const Tile* const * const * pppTilemap, glm::ivec2 size)
 {
 	m_pPathFinder = new Path(pppTilemap, size);
 }

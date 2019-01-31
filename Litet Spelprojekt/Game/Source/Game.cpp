@@ -1,8 +1,8 @@
 #include "..\Include\Game.h"
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
+#include <World/Grid.h>
 #include "..\Include\Crew.h"
-#include "..\Include\Grid.h"
 #include "..\Include\Path.h"
 
 
@@ -130,7 +130,7 @@ Game::Game() noexcept :
 	m_pScene->AddGameObject(g_Crew.getMember(0));
 	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());
 
-	g_Grid = new Grid(glm::ivec2(20, 20), glm::vec3(0.0f, 10.0f, 0.0f));
+	g_Grid = new Grid(glm::ivec2(20, 20), glm::vec3(-10.0f, 0.0f, -10.0f));
 
 	int temp_map[20][20]{
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },

@@ -143,6 +143,27 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 	}
 }
 
+bool PanelScrollable::ContainsPoint(const glm::vec2& position) const noexcept
+{
+	float x = GetXInWorld();
+	float y = GetYInWorld();
+	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
+	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
+
+	if (position.x > x && position.x < x + GetWidth() - widthIndent)
+	{
+		if (position.y > y + heightIndent && position.y < y + GetHeight())
+		{
+			if (HasParent())
+			{
+				return GetParent()->ContainsPoint(position);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
 void PanelScrollable::RenderChildrensFrameBuffers(GUIContext* context)
 {
 	context->BeginSelfRendering(m_pFrameBufferClientArea, GetBackgroundColor());

@@ -39,6 +39,8 @@ public:
 	const glm::vec4& GetBackgroundColor() const noexcept;
 	void SetBackgroundColor(const glm::vec4& color) noexcept;
 
+	virtual bool ContainsPoint(const glm::vec2& position) const noexcept;
+
 protected:
 	GUIObject(float x, float y, float width, float height);
 
@@ -60,7 +62,7 @@ protected:
 	virtual void RenderRealTime(GUIContext* context);
 	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child);
 	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child);
-	bool ContainsPoint(const glm::vec2& position);
+
 	virtual void PrintName() const = 0;
 	Texture2D* GetDefaultTexture() const;
 	virtual const glm::vec4& GetClearColor() const;

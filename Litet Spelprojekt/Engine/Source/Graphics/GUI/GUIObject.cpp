@@ -449,7 +449,7 @@ void GUIObject::RenderBackgroundTexture(GUIContext* context)
 	}
 }
 
-bool GUIObject::ContainsPoint(const glm::vec2& position)
+bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();

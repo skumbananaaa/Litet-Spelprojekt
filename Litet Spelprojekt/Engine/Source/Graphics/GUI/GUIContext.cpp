@@ -66,7 +66,7 @@ void GUIContext::RenderText(const std::string& text, int32 x, int32 y, float sca
 	m_pFontRenderer->RenderText(m_pContext, text, x, y, scale);
 }
 
-glm::vec2& GUIContext::CalculateTextSize(const std::string& text, float scale)
+glm::vec2 GUIContext::CalculateTextSize(const std::string& text, float scale)
 {
 	return m_pFontRenderer->CalculateSize(text, scale);
 }

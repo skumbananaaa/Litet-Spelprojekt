@@ -3,8 +3,6 @@
 #include <System/Input.h>
 #include <Graphics/GUI/GUIContext.h>
 #include <Graphics/Textures/Texture2D.h>
-#include <Graphics/GUI/IMouseListener.h>
-#include <Graphics/GUI/IRealTimeRendered.h>
 
 class API GUIObject
 {
@@ -19,14 +17,18 @@ public:
 	void Add(GUIObject* parent);
 	void Remove(GUIObject* parent);
 
-	float GetWidth() const noexcept;
-	float GetHeight() const noexcept;
+	virtual float GetWidth() const noexcept;
+	virtual float GetHeight() const noexcept;
 	float GetX() const noexcept;
 	float GetY() const noexcept;
-	float GetXInWorld() const noexcept;
-	float GetYInWorld() const noexcept;
+	virtual float GetXInWorld(const GUIObject* child = nullptr) const noexcept;
+	virtual float GetYInWorld(const GUIObject* child = nullptr) const noexcept;
+
+	void SetVisible(bool visible) noexcept;
+	bool IsVisible() noexcept;
 
 	bool IsDirty() const noexcept;
+	bool IsMyChild(const GUIObject* child) const noexcept;
 
 	Texture2D* GetTexture() const noexcept;
 	void SetTexture(Texture2D* texture);
@@ -48,10 +50,15 @@ protected:
 	virtual void OnKeyDown(KEY keycode) {};
 
 	virtual void RenderBackgroundTexture(GUIContext* context);
+	virtual void RenderChildrensFrameBuffers(GUIContext* context);
+	virtual void RenderRealTime(GUIContext* context);
+	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child);
+	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child);
 	bool ContainsPoint(const glm::vec2& position);
+	virtual void PrintName() const = 0;
 
 	template<class T>
-	static bool Contains(const std::vector<T*>& list, T* object)
+	static bool Contains(const std::vector<T*>& list, const T* object)
 	{
 		for (T* currentObject : list)
 		{
@@ -65,11 +72,11 @@ protected:
 
 	void RequestRepaint();
 
-	static void AddMouseListener(IMouseListener* listener);
-	static void RemoveMouseListener(IMouseListener* listener);
+	static void AddMouseListener(GUIObject* listener);
+	static void RemoveMouseListener(GUIObject* listener);
 
-	static void AddRealTimeRenderer(IRealTimeRendered* listener);
-	static void RemoveRealTimeRenderer(IRealTimeRendered* listener);
+	static void AddRealTimeRenderer(GUIObject* listener);
+	static void RemoveRealTimeRenderer(GUIObject* listener);
 
 private:
 	void InternalOnUpdate(float dtS);
@@ -82,7 +89,6 @@ private:
 	void InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
 
 	void RerenderChildren(GUIContext* context);
-	void RenderChildrensFrameBuffers(GUIContext* context);
 
 	GUIObject* m_pParent;
 	std::vector<GUIObject*> m_Children;
@@ -92,8 +98,9 @@ private:
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_Position;
 	bool m_IsDirty;
+	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;
 
-	static std::vector<IMouseListener*> m_MouseListeners;
-	static std::vector<IRealTimeRendered*> m_RealTimeRenderers;
+	static std::vector<GUIObject*> m_MouseListeners;
+	static std::vector<GUIObject*> m_RealTimeRenderers;
 };

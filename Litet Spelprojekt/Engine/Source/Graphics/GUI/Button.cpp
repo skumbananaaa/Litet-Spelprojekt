@@ -38,6 +38,32 @@ void Button::SetOnButtonCallback(void(*callback)(Button*))
 	m_OnReleasedCallback = callback;
 }
 
+void Button::AddButtonListener(IButtonListener* listener)
+{
+	if (!Contains<IButtonListener>(m_ButtonListeners, listener))
+	{
+		m_ButtonListeners.push_back(listener);
+	}
+	else
+	{
+		std::cout << "ButtonListener already added" << std::endl;
+	}
+}
+
+void Button::RemoveButtonListener(IButtonListener* listener)
+{
+	int32 counter = 0;
+	for (IButtonListener* object : m_ButtonListeners)
+	{
+		if (object == listener)
+		{
+			m_ButtonListeners.erase(m_ButtonListeners.begin() + counter);
+			return;
+		}
+		counter++;
+	}
+}
+
 void Button::OnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
 	if (ContainsPoint(position))
@@ -47,6 +73,10 @@ void Button::OnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 		if (m_OnPressedCallback)
 		{
 			m_OnPressedCallback(this);
+		}
+		for (IButtonListener* listener : m_ButtonListeners)
+		{
+			listener->OnButtonPressed(this);
 		}
 	}
 }
@@ -60,6 +90,10 @@ void Button::OnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 		if (m_OnReleasedCallback)
 		{
 			m_OnReleasedCallback(this);
+		}
+		for (IButtonListener* listener : m_ButtonListeners)
+		{
+			listener->OnButtonReleased(this);
 		}
 	}
 }
@@ -97,4 +131,9 @@ void Button::RenderBackgroundTexture(GUIContext* context)
 		}
 		GUIObject::RenderBackgroundTexture(context);
 	}
+}
+
+void Button::PrintName() const
+{
+	std::cout << "Button";
 }

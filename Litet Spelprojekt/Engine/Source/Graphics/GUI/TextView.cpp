@@ -92,3 +92,8 @@ void TextView::RenderText(GUIContext* context)
 		context->RenderText(m_Text, x, y, scale);
 	}
 }
+
+void TextView::PrintName() const
+{
+	std::cout << "TextView";
+}

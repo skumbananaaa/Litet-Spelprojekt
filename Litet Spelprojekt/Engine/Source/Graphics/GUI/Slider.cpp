@@ -112,6 +112,10 @@ void Slider::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& positio
 			{
 				m_OnChangedCallback(this, currentValue);
 			}
+			for (ISliderListener* listener : m_SliderListeners)
+			{
+				listener->OnSliderChange(this, currentValue);
+			}
 		}
 	}
 }
@@ -144,6 +148,11 @@ void Slider::RenderRealTime(GUIContext* context)
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		context->GetGraphicsContext()->SetTexture(nullptr, 0);
 	}
+}
+
+void Slider::PrintName() const
+{
+	std::cout << "Slider";
 }
 
 void Slider::SetRatio(float ratio)
@@ -183,6 +192,32 @@ float Slider::GetPercentage() const noexcept
 	else
 	{
 		return m_SliderPos / (GetWidth() - GetWidth() * m_Ratio);
+	}
+}
+
+void Slider::AddSliderListener(ISliderListener* listener)
+{
+	if (!Contains<ISliderListener>(m_SliderListeners, listener))
+	{
+		m_SliderListeners.push_back(listener);
+	}
+	else
+	{
+		std::cout << "SliderListener already added" << std::endl;
+	}
+}
+
+void Slider::RemoveSliderListener(ISliderListener* listener)
+{
+	int32 counter = 0;
+	for (ISliderListener* object : m_SliderListeners)
+	{
+		if (object == listener)
+		{
+			m_SliderListeners.erase(m_SliderListeners.begin() + counter);
+			return;
+		}
+		counter++;
 	}
 }
 

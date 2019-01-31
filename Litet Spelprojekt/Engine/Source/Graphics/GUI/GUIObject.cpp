@@ -6,13 +6,15 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 
-std::vector<IMouseListener*> GUIObject::m_MouseListeners;
-std::vector<IRealTimeRendered*> GUIObject::m_RealTimeRenderers;
+std::vector<GUIObject*> GUIObject::m_MouseListeners;
+std::vector<GUIObject*> GUIObject::m_RealTimeRenderers;
 
 GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_Position(x, y),
 	m_pFramebuffer(nullptr),
-	m_pBackgroundTexture(nullptr)
+	m_pBackgroundTexture(nullptr),
+	m_pParent(nullptr),
+	m_IsVisible(true)
 {
 	if (width > 0 && height > 0)
 	{
@@ -75,9 +77,9 @@ void GUIObject::RequestRepaint()
 	m_IsDirty = true;
 }
 
-void GUIObject::AddMouseListener(IMouseListener* listener)
+void GUIObject::AddMouseListener(GUIObject* listener)
 {
-	if (!Contains<IMouseListener>(m_MouseListeners, listener))
+	if (!Contains<GUIObject>(m_MouseListeners, listener))
 	{
 		m_MouseListeners.push_back(listener);
 	}
@@ -87,10 +89,10 @@ void GUIObject::AddMouseListener(IMouseListener* listener)
 	}
 }
 
-void GUIObject::RemoveMouseListener(IMouseListener* listener)
+void GUIObject::RemoveMouseListener(GUIObject* listener)
 {
 	int32 counter = 0;
-	for (IMouseListener* object : m_MouseListeners)
+	for (GUIObject* object : m_MouseListeners)
 	{
 		if (object == listener)
 		{
@@ -101,9 +103,9 @@ void GUIObject::RemoveMouseListener(IMouseListener* listener)
 	}
 }
 
-void GUIObject::AddRealTimeRenderer(IRealTimeRendered* listener)
+void GUIObject::AddRealTimeRenderer(GUIObject* listener)
 {
-	if (!Contains<IRealTimeRendered>(m_RealTimeRenderers, listener))
+	if (!Contains<GUIObject>(m_RealTimeRenderers, listener))
 	{
 		m_RealTimeRenderers.push_back(listener);
 	}
@@ -113,10 +115,10 @@ void GUIObject::AddRealTimeRenderer(IRealTimeRendered* listener)
 	}
 }
 
-void GUIObject::RemoveRealTimeRenderer(IRealTimeRendered* listener)
+void GUIObject::RemoveRealTimeRenderer(GUIObject* listener)
 {
 	int32 counter = 0;
-	for (IRealTimeRendered* object : m_RealTimeRenderers)
+	for (GUIObject* object : m_RealTimeRenderers)
 	{
 		if (object == listener)
 		{
@@ -130,6 +132,11 @@ void GUIObject::RemoveRealTimeRenderer(IRealTimeRendered* listener)
 bool GUIObject::IsDirty() const noexcept
 {
 	return m_IsDirty;
+}
+
+bool GUIObject::IsMyChild(const GUIObject* child) const noexcept
+{
+	return Contains<GUIObject>(m_Children, child);
 }
 
 Texture2D* GUIObject::GetTexture() const noexcept
@@ -166,24 +173,38 @@ float GUIObject::GetY() const noexcept
 	return m_Position.y;
 }
 
-float GUIObject::GetXInWorld() const noexcept
+float GUIObject::GetXInWorld(const GUIObject* child) const noexcept
 {
 	float value = GetX();
 	if (HasParent())
 	{
-		value += GetParent()->GetXInWorld();
+		value += GetParent()->GetXInWorld(this);
 	}
 	return value;
 }
 
-float GUIObject::GetYInWorld() const noexcept
+float GUIObject::GetYInWorld(const GUIObject* child) const noexcept
 {
 	float value = GetY();
 	if (HasParent())
 	{
-		value += GetParent()->GetYInWorld();
+		value += GetParent()->GetYInWorld(this);
 	}
 	return value;
+}
+
+void GUIObject::SetVisible(bool visible) noexcept
+{
+	if (m_IsVisible != visible)
+	{
+		m_IsVisible = visible;
+		RequestRepaint();
+	}
+}
+
+bool GUIObject::IsVisible() noexcept
+{
+	return m_IsVisible;
 }
 
 void GUIObject::InternalOnUpdate(float dtS)
@@ -207,20 +228,35 @@ void GUIObject::InternalOnUpdate(float dtS)
 			counter++;
 		}
 	}
+	m_ChildrenToRemove.clear();
 
 	/*
 	* Add the children who wants to be added
 	*/
-	for (GUIObject* objectToAdd : m_ChildrenToAdd)
+	if (!m_ChildrenToAdd.empty())
 	{
-		m_Children.push_back(objectToAdd);
-		m_ChildrenDirty.push_back(objectToAdd);
-		objectToAdd->m_pParent = this;
-		objectToAdd->OnAdded(this);
-		std::cout << "GUI Object Added" << std::endl;
+		static std::vector<GUIObject*> newChildren;
+
+		for (GUIObject* objectToAdd : m_ChildrenToAdd)
+		{
+			newChildren.push_back(objectToAdd);
+		}
+		m_ChildrenToAdd.clear();
+		
+		for (GUIObject* objectToAdd : newChildren)
+		{
+			m_Children.push_back(objectToAdd);
+			m_ChildrenDirty.push_back(objectToAdd);
+			objectToAdd->m_pParent = this;
+			objectToAdd->OnAdded(this);
+			std::cout << "Added: ";
+			objectToAdd->PrintName();
+			std::cout << ", Parent: ";
+			PrintName();
+			std::cout << std::endl;
+		}
+		newChildren.clear();
 	}
-	m_ChildrenToRemove.clear();
-	m_ChildrenToAdd.clear();
 
 	/*
 	* Let the children do the same checks as above
@@ -274,9 +310,21 @@ void GUIObject::InternalRootOnRender(GUIContext* context)
 	context->BeginRootRendering();
 	RenderChildrensFrameBuffers(context);
 
-	for (IRealTimeRendered* renderer : m_RealTimeRenderers)
+	for (GUIObject* object : m_RealTimeRenderers)
 	{
-		renderer->RenderRealTime(context);
+		if (object->IsVisible())
+		{
+			if (object->HasParent())
+			{
+				object->GetParent()->ControllRealTimeRenderingForChildPre(context, object);
+				object->RenderRealTime(context);
+				object->GetParent()->ControllRealTimeRenderingForChildPost(context, object);
+			}
+			else
+			{
+				object->RenderRealTime(context);
+			}
+		}
 	}
 }
 
@@ -293,8 +341,25 @@ void GUIObject::RenderChildrensFrameBuffers(GUIContext* context)
 {
 	for (GUIObject* child : m_Children)
 	{
-		context->RenderFrameBuffer(child->m_pFramebuffer, child->GetX(), child->GetY());
+		if (child->IsVisible())
+		{
+			context->RenderFrameBuffer(child->m_pFramebuffer, child->GetX(), child->GetY());
+		}
 	}
+}
+
+void GUIObject::RenderRealTime(GUIContext* context)
+{
+}
+
+void GUIObject::ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child)
+{
+	
+}
+
+void GUIObject::ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child)
+{
+	
 }
 
 void GUIObject::OnRender(GUIContext* context)
@@ -322,6 +387,10 @@ bool GUIObject::ContainsPoint(const glm::vec2& position)
 	{
 		if (position.y > y && position.y < y + GetHeight())
 		{
+			if (HasParent())
+			{
+				return GetParent()->ContainsPoint(position);
+			}
 			return true;
 		}
 	}
@@ -330,24 +399,33 @@ bool GUIObject::ContainsPoint(const glm::vec2& position)
 
 void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (IMouseListener* listener : m_MouseListeners)
+	for (GUIObject* object : m_MouseListeners)
 	{
-		listener->OnMousePressed(position, mousebutton);
+		if (object->IsVisible())
+		{
+			object->OnMousePressed(position, mousebutton);
+		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (IMouseListener* listener : m_MouseListeners)
+	for (GUIObject* object : m_MouseListeners)
 	{
-		listener->OnMouseReleased(position, mousebutton);
+		if (object->IsVisible())
+		{
+			object->OnMouseReleased(position, mousebutton);
+		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	for (IMouseListener* listener : m_MouseListeners)
+	for (GUIObject* object : m_MouseListeners)
 	{
-		listener->OnMouseMove(lastPosition, position);
+		if (object->IsVisible())
+		{
+			object->OnMouseMove(lastPosition, position);
+		}
 	}
 }

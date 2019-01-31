@@ -43,6 +43,7 @@
     <ClCompile Include="Source\Graphics\GUI\Slider.cpp" />
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\World\WorldLevel.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\PanelScrollable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -90,11 +91,10 @@
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Audio\Music.h" />
-    <ClInclude Include="Include\Graphics\GUI\IMouseListener.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
-    <ClInclude Include="Include\Graphics\GUI\IRealTimeRendered.h" />
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
+    <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
   </ItemGroup>
 </Project>

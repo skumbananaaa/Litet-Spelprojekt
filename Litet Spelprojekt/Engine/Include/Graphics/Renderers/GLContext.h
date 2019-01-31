@@ -9,7 +9,7 @@
 #include <Graphics/Geometry/FullscreenTri.h>
 
 #if defined(_DEBUG)
-//#define GL_DEBUG_ASSERT
+#define GL_DEBUG_ASSERT
 #endif
 
 #if defined(GL_DEBUG_ASSERT)

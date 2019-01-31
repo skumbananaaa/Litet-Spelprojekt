@@ -55,6 +55,8 @@ uint32 Texture::TexFormatToGL(TEX_FORMAT format) noexcept
 	{
 		0,
 		GL_RED,
+		GL_RED,
+		GL_RED,
 		GL_RG,
 		GL_RGB,
 		GL_RGBA,
@@ -72,6 +74,8 @@ uint32 Texture::TexFormatToGLInternal(TEX_FORMAT format) noexcept
 	{
 		0,
 		GL_RED,
+		GL_R16F,
+		GL_R32F,
 		GL_RG,
 		GL_RGB,
 		GL_RGBA,
@@ -89,6 +93,8 @@ uint32 Texture::TexFormatToGLType(TEX_FORMAT format) noexcept
 	{
 		0,
 		GL_UNSIGNED_BYTE,
+		GL_FLOAT,
+		GL_FLOAT,
 		GL_UNSIGNED_BYTE,
 		GL_UNSIGNED_BYTE,
 		GL_UNSIGNED_BYTE,

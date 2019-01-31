@@ -191,6 +191,7 @@
     <Image Include="Resources\Textures\waterNormalMap.png" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
   </ItemGroup>

@@ -1,3 +1,4 @@
+#include <EnginePch.h>
 #include <Graphics/SkyBox.h>
 
 SkyBox::SkyBox(TextureCube * texture): m_Mesh(IndexedMesh::CreateCube())

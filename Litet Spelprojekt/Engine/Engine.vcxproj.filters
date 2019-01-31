@@ -54,6 +54,7 @@
     <ClCompile Include="Source\IO\R_MATERIAL.cpp" />
     <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
     <ClCompile Include="Source\System\ThreadHandler.cpp" />
+    <ClCompile Include="Source\Graphics\SkyBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -105,6 +106,7 @@
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
+    <ClInclude Include="Include\Graphics\SkyBox.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
     <ClInclude Include="Include\World\Grid.h" />
     <ClInclude Include="Include\World\Tile.h" />

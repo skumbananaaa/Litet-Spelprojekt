@@ -231,6 +231,10 @@ void GUIObject::SetVisible(bool visible) noexcept
 
 bool GUIObject::IsVisible() noexcept
 {
+	if (HasParent())
+	{
+		return m_IsVisible && GetParent()->IsVisible();
+	}
 	return m_IsVisible;
 }
 

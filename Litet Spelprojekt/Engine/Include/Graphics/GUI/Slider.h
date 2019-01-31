@@ -39,10 +39,13 @@ public:
 	void SetOnSliderChanged(void(*callback)(Slider*, float));
 
 	void MoveSlider(float offset);
+	void AccelerateSlider(float offset);
 
 protected:
 	virtual void PrintName() const override;
 	virtual const glm::vec4& GetSliderClearColor() const;
+
+	virtual void OnUpdate(float dtS) override;
 
 	virtual void OnAdded(GUIObject* parent) override;
 	virtual void OnRemoved(GUIObject* parent) override;
@@ -60,6 +63,7 @@ private:
 	bool m_IsHovered;
 	float m_MouseOffset;
 	float m_SliderPos;
+	float m_SliderVel;
 	float m_Ratio;
 	glm::vec4 m_SliderColor;
 	glm::vec4 m_PressedColor;

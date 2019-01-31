@@ -210,11 +210,11 @@ void PanelScrollable::OnMouseScroll(const glm::vec2& position, const glm::vec2& 
 	{
 		if (m_pSliderVertical->IsVisible())
 		{
-			m_pSliderVertical->MoveSlider(offset.y * 20 * m_pSliderVertical->GetRatio());
+			m_pSliderVertical->AccelerateSlider(offset.y * 600 * m_pSliderVertical->GetRatio());
 		}
 		else if (m_pSliderHorizontal->IsVisible())
 		{
-			m_pSliderHorizontal->MoveSlider(-offset.y * 20 * m_pSliderHorizontal->GetRatio());
+			m_pSliderHorizontal->AccelerateSlider(-offset.y * 600 * m_pSliderHorizontal->GetRatio());
 		}
 	}
 }

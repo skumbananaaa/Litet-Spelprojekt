@@ -41,6 +41,7 @@
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
+    <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\FullscreenTri.h" />
@@ -89,6 +90,7 @@
     <ClCompile Include="Source\Graphics\Lights\PointLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\Spotlight.cpp" />
     <ClCompile Include="Source\Graphics\Material\Decal.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\DebugRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>

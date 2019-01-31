@@ -18,6 +18,7 @@ layout(std140, binding = 1) uniform PerObject
 {
 	mat4 g_Model;
 	mat4 g_InverseModel;
+	vec4 g_Direction;
 };
 
 in VS_OUT
@@ -79,8 +80,8 @@ void main()
 	vec3 tangent = normalize(ddyWp);
 	vec3 normal = cross(binormal, tangent);
 
-	//Reject if on a side TODO: Fix all sides
-	if (abs(dot(normal, vec3(0.0f, 1.0f, 0.0f))) < 0.5f)
+	//Reject if on a side
+	if (max(dot(normal, normalize(g_Direction.xyz)), 0.0f) < 0.2f)
 	{
 		discard;
 	}

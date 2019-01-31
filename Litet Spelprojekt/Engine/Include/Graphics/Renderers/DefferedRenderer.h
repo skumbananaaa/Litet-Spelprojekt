@@ -34,6 +34,7 @@ struct DecalPassPerObject
 {
 	glm::mat4 Model;
 	glm::mat4 InverseModel;
+	glm::vec4 Direction;
 };
 
 //Uniformbuffers requires a 16 multiple so we pad 

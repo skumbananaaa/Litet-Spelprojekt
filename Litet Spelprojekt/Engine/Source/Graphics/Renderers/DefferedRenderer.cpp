@@ -504,6 +504,7 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 		{
 			perObject.Model = gameobject.GetTransform();
 			perObject.InverseModel = gameobject.GetInverseTransform();
+			perObject.Direction = perObject.Model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
 
 			if (gameobject.GetDecal().HasTexture())
 			{

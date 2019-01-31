@@ -5,6 +5,9 @@
 #include "..\Include\Grid.h"
 #include "..\Include\Path.h"
 
+#if defined(_DEBUG)
+#define DRAW_DEBUG_BOXES
+#endif
 
 GameObject* g_pDecalObject = nullptr;
 Crew g_Crew;
@@ -16,6 +19,7 @@ Game::Game() noexcept :
 	Application(false),
 	m_pFontRenderer(nullptr),
 	m_pRenderer(nullptr),
+	m_pDebugRenderer(nullptr),
 	m_pScene(nullptr),
 	m_pTestMesh(nullptr),
 	m_pWaterMesh(nullptr),
@@ -32,9 +36,8 @@ Game::Game() noexcept :
 	m_pDecal(nullptr),
 	cartesianCamera(true)
 {
-	
-
 	m_pRenderer = new DefferedRenderer();
+	m_pDebugRenderer = new DebugRenderer();
 
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
@@ -265,36 +268,37 @@ Game::Game() noexcept :
 
 Game::~Game()
 {
-	Delete(m_pBloodTexture);
-	Delete(m_pBloodNormal);
+	DeleteSafe(m_pBloodTexture);
+	DeleteSafe(m_pBloodNormal);
 
-	Delete(m_pFontRenderer);
-	Delete(m_pRenderer);
+	DeleteSafe(m_pFontRenderer);
+	DeleteSafe(m_pRenderer);
+	DeleteSafe(m_pDebugRenderer);
+
+	DeleteSafe(m_pScene);
 	
-	Delete(m_pScene);
+	DeleteSafe(m_pSphereMesh);
+	DeleteSafe(m_pTestMesh);
+	DeleteSafe(m_pWaterMesh);
+	DeleteSafe(m_pGroundTestMesh);
 	
-	Delete(m_pSphereMesh);
-	Delete(m_pTestMesh);
-	Delete(m_pWaterMesh);
-	Delete(m_pGroundTestMesh);
+	DeleteSafe(m_pBoatTexture);
+	DeleteSafe(m_pBoatNormalMap);
 	
-	Delete(m_pBoatTexture);
-	Delete(m_pBoatNormalMap);
+	DeleteSafe(m_pDecal);
+	DeleteSafe(m_pRedMaterial);
+	DeleteSafe(m_pGreenMaterial);
+	DeleteSafe(m_pBlueMaterial);
+	DeleteSafe(m_pBoatMaterial);
+	DeleteSafe(m_pGroundMaterial);
 	
-	Delete(m_pDecal);
-	Delete(m_pRedMaterial);
-	Delete(m_pGreenMaterial);
-	Delete(m_pBlueMaterial);
-	Delete(m_pBoatMaterial);
-	Delete(m_pGroundMaterial);
+	DeleteSafe(m_pTextViewFPS);
+	DeleteSafe(m_pTextViewUPS);
 	
-	Delete(m_pTextViewFPS);
-	Delete(m_pTextViewUPS);
+	DeleteSafe(m_pSoundEffect);
+	DeleteSafe(m_pMusic);
 	
-	Delete(m_pSoundEffect);
-	Delete(m_pMusic);
-	
-	Delete(m_pTestAudioSource);
+	DeleteSafe(m_pTestAudioSource);
 
 	Delete(g_Grid);
 	Delete(m_pWorld);
@@ -463,10 +467,10 @@ void Game::OnUpdate(float dtS)
 	}
 
 	decalX += decalXSpeed * dtS;
-	decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
+	//decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
 
-	g_pDecalObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
-	g_pDecalObject->SetPosition(glm::vec3(decalX, 0.0f, 0.0f));
+	g_pDecalObject->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(-45.0f)));
+	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
 
 	Crewmember * derp = g_Crew.getMember(0);
@@ -484,4 +488,8 @@ void Game::OnUpdate(float dtS)
 void Game::OnRender(float dtS)
 {
 	m_pRenderer->DrawScene(*m_pScene, dtS);
+	
+#if defined(DRAW_DEBUG_BOXES)
+	m_pDebugRenderer->DrawScene(*m_pScene);
+#endif
 }

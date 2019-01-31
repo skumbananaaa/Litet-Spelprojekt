@@ -6,7 +6,7 @@
 #include "..\Include\Path.h"
 
 #if defined(_DEBUG)
-#define DRAW_DEBUG_BOXES
+//#define DRAW_DEBUG_BOXES
 #endif
 
 GameObject* g_pDecalObject = nullptr;
@@ -28,6 +28,7 @@ Game::Game() noexcept :
 	m_pBoatNormalMap(nullptr),
 	m_pBloodTexture(nullptr),
 	m_pBloodNormal(nullptr),
+	m_pSkyBoxTex(nullptr),
 	m_pRedMaterial(nullptr),
 	m_pGreenMaterial(nullptr),
 	m_pBlueMaterial(nullptr),
@@ -52,6 +53,22 @@ Game::Game() noexcept :
 
 		m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA, true, params);
 		m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormalMap.png", TEX_FORMAT_RGBA, true, params);
+
+		//const void * paths[6];
+		const char* paths[6];
+		paths[0] = "Resources/Textures/SkyBoxTextures/ss_ft.png"; //forward
+		paths[1] = "Resources/Textures/SkyBoxTextures/ss_bk.png"; //back
+		paths[2] = "Resources/Textures/SkyBoxTextures/ss_up.png"; //up
+		paths[3] = "Resources/Textures/SkyBoxTextures/ss_dn.png"; //down
+		paths[4] = "Resources/Textures/SkyBoxTextures/ss_rt.png"; //right
+		paths[5] = "Resources/Textures/SkyBoxTextures/ss_lf.png"; //left
+
+		TextureParams cubeParams = {};
+		cubeParams.Wrap = TEX_PARAM_EDGECLAMP;
+		cubeParams.MagFilter = TEX_PARAM_LINEAR;
+		cubeParams.MinFilter = TEX_PARAM_LINEAR;
+		m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, cubeParams);
+		m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 	}
 
 	m_pDecal = new Decal();
@@ -291,6 +308,10 @@ Game::~Game()
 	DeleteSafe(m_pBlueMaterial);
 	DeleteSafe(m_pBoatMaterial);
 	DeleteSafe(m_pGroundMaterial);
+	Delete(m_pBoatTexture);
+	Delete(m_pBoatNormalMap);
+
+	//Delete(m_pSkyBoxTex);
 	
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);

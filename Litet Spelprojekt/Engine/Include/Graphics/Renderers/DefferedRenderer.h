@@ -84,6 +84,17 @@ struct WaterPassPerObjectVS
 	glm::mat4 Model;
 };
 
+struct SkyBoxPassBuffer
+{
+	glm::mat4 CameraCombined;
+	glm::vec4 CameraPosition;
+};
+
+struct SkyBoxPassPerObject
+{
+	glm::mat4 model;
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -108,6 +119,7 @@ private:
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void WaterReflectionPass(const Scene& sceen) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
+	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
 
 private:
 	Framebuffer* m_pGBufferCBR;
@@ -130,6 +142,9 @@ private:
 	UniformBuffer* m_pWaterPassPerFrame;
 	UniformBuffer* m_pWaterPassPerObject;
 	
+	UniformBuffer* m_pSkyBoxPassPerFrame;
+	UniformBuffer* m_pSkyBoxPassPerObject;
+	
 	IndexedMesh* m_pDecalMesh;
 	
 	Texture2D* m_pWaterNormalMap;
@@ -145,6 +160,7 @@ private:
 	ShaderProgram* m_pLightPassProgram;
 	ShaderProgram* m_pForwardPass;
 	ShaderProgram* m_pWaterpassProgram;
+	ShaderProgram* m_pSkyBoxPassProgram;
 	
 	mutable uint64 m_FrameCount;
 };

@@ -76,6 +76,8 @@
     <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
     <None Include="Resources\Shaders\debugVert.glsl" />
     <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
+    <None Include="Resources\Shaders\VShaderSkyBox.glsl" />
+    <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -85,6 +87,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Resources\Textures\waterNormalMap.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_bk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_dn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_ft.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_lf.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_rt.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_up.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

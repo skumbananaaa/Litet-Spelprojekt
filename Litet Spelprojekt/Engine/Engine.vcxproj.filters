@@ -45,6 +45,7 @@
     <ClCompile Include="Source\World\WorldLevel.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelScrollable.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\DebugRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\SkyBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -96,6 +97,7 @@
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
+    <ClInclude Include="Include\Graphics\SkyBox.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
   </ItemGroup>

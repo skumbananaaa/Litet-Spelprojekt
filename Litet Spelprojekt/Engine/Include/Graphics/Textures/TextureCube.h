@@ -1,5 +1,7 @@
 #pragma once
-#include "Texture.h"
+#include <Graphics/Textures/Texture.h>
+
+
 
 class API TextureCube : public Texture
 {
@@ -9,7 +11,8 @@ public:
 	TextureCube& operator=(TextureCube&& other) = delete;
 	TextureCube& operator=(const TextureCube& other) = delete;
 
-	TextureCube(const void* ppInitalData[6], TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params = TextureParams());
+	//TextureCube(const void* ppInitalData[6], TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params = TextureParams());
+	TextureCube(const char* const paths[6], TEX_FORMAT format, const TextureParams & params = TextureParams());
 	~TextureCube();
 
 	uint32 GetWidth() const noexcept;
@@ -17,10 +20,12 @@ public:
 
 private:
 	void Create(const void** ppInitalData, TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params);
+	void Create(const char* const paths[6], TEX_FORMAT format, const TextureParams & params);
 
 private:
 	uint32 m_Width;
 	uint32 m_Height;
+	unsigned char * m_pData[6];
 };
 
 

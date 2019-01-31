@@ -35,7 +35,10 @@ public:
 private:
 	FontRenderer* m_pFontRenderer;
 	IRenderer* m_pRenderer;
+	DebugRenderer* m_pDebugRenderer;
 	Scene* m_pScene;
+
+	World* m_pWorld;
 
 	IndexedMesh* m_pTestMesh;
 	IndexedMesh* m_pSphereMesh;

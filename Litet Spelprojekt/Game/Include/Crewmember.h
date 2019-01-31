@@ -28,13 +28,13 @@ public:
 	///<summary>Moves the objects position in the given direction, use update to apply.</summary>
 	void Move(const glm::vec3 & dir);
 	///<summary>Finds a path to the goal position.</summary>
-	void FindPath(glm::ivec2 goalPos);
+	void FindPath(const glm::ivec2& goalPos);
 	///<summary>Moves along the path towards the goal position.</summary>
 	void FollowPath(float dtS);
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
-	void SetActionCapacity(const float actionCap);
+	void SetActionCapacity(float actionCap);
 	///<summary>Sets a grid for the path finding algorithm.</summary>
-	void SetPath(const Tile*** pppTilemap, glm::ivec2 size);
+	void SetPath(const uint32* const* map, const glm::ivec2& size);
 	///<summary>Returns a reference to the pointLight object.</summary>
 	PointLight * GetLight() const;
 	///<summary>returns the current action capacity of the crewmember.</summary>

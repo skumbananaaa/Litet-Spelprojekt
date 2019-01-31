@@ -44,6 +44,7 @@
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\World\WorldLevel.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelScrollable.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\DebugRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -96,5 +97,6 @@
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
+    <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
   </ItemGroup>
 </Project>

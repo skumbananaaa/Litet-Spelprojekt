@@ -165,6 +165,8 @@
   <ItemGroup>
     <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
+    <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
+    <None Include="Resources\Shaders\debugVert.glsl" />
     <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
@@ -191,6 +193,7 @@
     <Image Include="Resources\Textures\waterNormalMap.png" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
   </ItemGroup>

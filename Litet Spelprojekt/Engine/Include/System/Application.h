@@ -1,8 +1,9 @@
 #pragma once
-#include <System\Window.h>
-#include <Graphics\Renderers\GLContext.h>
+#include <System/Window.h>
+#include <Audio/IAudioContext.h>
 #include <Graphics/GUI/GUIManager.h>
-#include <Audio\IAudioContext.h>
+#include <Graphics/Renderers/GLContext.h>
+#include <Graphics/Renderers/DebugRenderer.h>
 #include "Input.h"
 
 class API Application

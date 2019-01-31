@@ -74,6 +74,8 @@
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
     <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
+    <None Include="Resources\Shaders\debugVert.glsl" />
+    <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -89,5 +91,6 @@
   <ItemGroup>
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
+    <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
   </ItemGroup>
 </Project>

@@ -34,6 +34,7 @@ struct DecalPassPerObject
 {
 	glm::mat4 Model;
 	glm::mat4 InverseModel;
+	glm::vec4 Direction;
 };
 
 //Uniformbuffers requires a 16 multiple so we pad 
@@ -101,16 +102,18 @@ private:
 	void DepthPrePass(const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
-	void CBRResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
+	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ReconstructionPass() const noexcept;
 	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
+	void WaterReflectionPass(const Scene& sceen) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 
 private:
 	Framebuffer* m_pGBufferCBR;
 	Framebuffer* m_pResolveTargets[2];
 	Framebuffer* m_pForwardCBR;
+	Framebuffer* m_pBlur;
 	Framebuffer* m_pReflection;
 	mutable Framebuffer* m_pCurrentResolveTarget;
 	mutable Framebuffer* m_pLastResolveTarget;
@@ -132,6 +135,7 @@ private:
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
 	
+	ShaderProgram* m_pCbrBlurProgram;
 	ShaderProgram* m_pCbrReconstructionProgram;
 	ShaderProgram* m_pCbrResolveProgram;
 	ShaderProgram* m_pCbrStencilProgram;

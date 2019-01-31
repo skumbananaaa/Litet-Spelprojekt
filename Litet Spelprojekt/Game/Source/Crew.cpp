@@ -21,7 +21,7 @@ void Crew::expand()
 	}
 }
 
-Crew::Crew(const int & cap)
+Crew::Crew(int cap)
 {
 	m_cap = cap;
 	m_nrOf = 0;
@@ -34,7 +34,7 @@ Crew::Crew(const int & cap)
 
 Crew::~Crew()
 {
-	delete m_ppMembers;
+	Delete(m_ppMembers);
 }
 
 void Crew::addMember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name)
@@ -43,7 +43,7 @@ void Crew::addMember(const glm::vec4 & lightColor, const glm::vec3 & position, c
 	m_ppMembers[m_nrOf++] = new Crewmember(lightColor, position, actionCap, name);
 }
 
-Crewmember * Crew::getMember(const int & index)
+Crewmember * Crew::getMember(int index)
 {
 	return m_ppMembers[index];
 }

@@ -53,5 +53,5 @@ const WorldObject& World::GetWorldObject(uint32 index) const noexcept
 
 uint32 World::GetNumWorldObjects() const noexcept
 {
-	return m_Objects.size();
+	return static_cast<uint32>(m_Objects.size());
 }

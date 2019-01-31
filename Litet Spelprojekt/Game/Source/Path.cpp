@@ -3,8 +3,8 @@
 
 void Path::AddToOpen(int x, int y, int addX, int addY)
 {
-	int newX = std::max(x + addX, 0);
-	int newY = std::max(y + addY, 0);
+	int newX = std::min(std::max(x + addX, 0), (m_size.x - 1));
+	int newY = std::min(std::max(y + addY, 0), (m_size.y - 1));
 	if (!(m_ppTiles[newX][newY].m_closed)) {
 		if (m_ppTiles[newX][newY].m_g == 0 || m_ppTiles[newX][newY].m_g > m_ppTiles[x][y].m_g) {
 			if ((m_ppMap[newX][newY] == m_ppMap[x][y] || m_ppMap[x][y] == 0 || m_ppMap[newX][newY] == 0) && m_ppMap[newX][newY] != 1) {
@@ -56,31 +56,24 @@ bool Path::MoveToNextTile()
 	return false;
 }
 
-Path::Path(const Tile*** pppTilemap, glm::ivec2 size)
+Path::Path(const uint32* const* map, const glm::ivec2& size)
 {
 	m_size = size;
-	m_ppMap = new int*[size.x];
-	for (int i = 0; i < size.x; i++) {
-		m_ppMap[i] = new int[size.y];
-		for (int j = 0; j < size.y; j++) {
-			m_ppMap[i][j] = pppTilemap[i][j]->GetID();
-		}
-	}
+	m_ppMap = map;
 	m_pPath = new glm::ivec2[size.x * size.y];
 	m_openList = new glm::ivec2[m_size.x * m_size.y];
 }
 
 Path::~Path()
 {
-	for (int i = 0; i < m_size.x; i++) {
-		delete[] m_ppMap[i];
-	}
-	delete[] m_ppMap;
 	delete[] m_pPath;
 	delete[] m_openList;
+	m_ppMap = nullptr;
+	m_pPath = nullptr;
+	m_openList = nullptr;
 }
 
-glm::ivec2* Path::FindPath(glm::ivec2 start, glm::ivec2 goal)
+glm::ivec2* Path::FindPath(glm::ivec2 start, const glm::ivec2& goal)
 {
 	m_ppTiles = new tls*[m_size.x];
 	for (int i = 0; i < m_size.x; i++) {
@@ -124,8 +117,10 @@ glm::ivec2* Path::FindPath(glm::ivec2 start, glm::ivec2 goal)
 
 	 for (int i = 0; i < m_size.x; i++) {
 		 delete[] m_ppTiles[i];
+		 m_ppTiles[i] = nullptr;
 	 }
 	 delete[] m_ppTiles;
+	 m_ppTiles = nullptr;
 
 	return m_pPath;
 }

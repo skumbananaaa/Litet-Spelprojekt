@@ -106,12 +106,12 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//Render geometry to MSAA targets for checkerboard rendering
 	context.Enable(MULTISAMPLE);
-	SkyBoxPass(scene.GetCamera(), scene);
 	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pGBufferCBR);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 	//First the deffered rendering passes
+	SkyBoxPass(scene.GetCamera(), scene);
 	GeometryPass(scene.GetCamera(), scene);
 	DecalPass(scene.GetCamera(), scene);
 	

@@ -66,6 +66,19 @@ void Camera::UpdateFromLookAtNoInverse() noexcept
 	m_IsDirty = true;
 }*/
 
+void Camera::CreateOrthographic(float windowWidth, float windowHeight, float nearPlane, float farPlane) noexcept
+{
+	float windowWidth_2 = windowWidth / 2.0f;
+	float windowHeight_2 = windowHeight / 2.0f;
+	m_ProjectionMatrix = glm::ortho(-windowWidth_2, windowWidth_2, -windowHeight_2, windowHeight_2);
+	m_Near = nearPlane;
+	m_Far = farPlane;
+
+	m_InverseProjectionMatrix = glm::inverse(m_ProjectionMatrix);
+	m_IsDirty = true;
+	m_InverseIsDirty = true;
+}
+
 void Camera::CreatePerspective(float fovRad, float aspectWihe, float nearPlane, float farPlane) noexcept
 {
 	m_ProjectionMatrix = glm::perspective(fovRad, aspectWihe, nearPlane, farPlane);
@@ -301,19 +314,6 @@ void Camera::SetPitch(float pitch) noexcept
 	{
 		m_Pitch = -1.55334303f;
 	}
-}
-
-void Camera::CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept
-{
-	const float* pSource = (const float*)glm::value_ptr(m_CombinedMatrix);
-	for (int i = 0; i < 16; i++)
-	{
-		arr[startIndex + i] = pSource[i];
-	}
-
-	arr[startIndex + 16] = m_Position.x;
-	arr[startIndex + 17] = m_Position.y;
-	arr[startIndex + 18] = m_Position.z;
 }
 
 void Camera::CalcInverses()

@@ -33,6 +33,8 @@
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
     <None Include="Resources\Shaders\FShaderGUI.glsl" />
+    <None Include="Resources\Shaders\orthoVert.glsl" />
+    <None Include="Resources\Shaders\orthoFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Editor.h">

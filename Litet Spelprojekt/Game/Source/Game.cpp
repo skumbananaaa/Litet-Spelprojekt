@@ -1,8 +1,8 @@
 #include "..\Include\Game.h"
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
+#include <World/Grid.h>
 #include "..\Include\Crew.h"
-#include "..\Include\Grid.h"
 #include "..\Include\Path.h"
 
 #if defined(_DEBUG)

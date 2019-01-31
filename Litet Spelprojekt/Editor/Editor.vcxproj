@@ -152,6 +152,8 @@
     <None Include="Resources\Shaders\FShader.glsl" />
     <None Include="Resources\Shaders\FShaderFont.glsl" />
     <None Include="Resources\Shaders\FShaderGUI.glsl" />
+    <None Include="Resources\Shaders\orthoFrag.glsl" />
+    <None Include="Resources\Shaders\orthoVert.glsl" />
     <None Include="Resources\Shaders\VShader.glsl" />
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />

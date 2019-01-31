@@ -23,7 +23,6 @@ enum CameraPosPolar : uint8
 	RotateUp,
 	RotateDown
 };
-
 class API Camera
 {
 public:
@@ -38,6 +37,7 @@ public:
 
 	//void SetProjectionMatrix(const glm::mat4& matrix) noexcept;
 
+	void CreateOrthographic(float windowWidth, float windowHeight, float nearPlane, float farPlane) noexcept;
 	void CreatePerspective(float fovRad, float aspectWihe, float nearPlane, float farPlane) noexcept;
 
 	void MoveCartesian(CameraDirCartesian dir, float amount) noexcept;
@@ -69,8 +69,6 @@ public:
 	float GetPitch() const noexcept;
 	float GetFarPlane() const noexcept;
 	float GetNearPlane() const noexcept;
-
-	void CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept;
 
 private:
 	void CalcInverses();

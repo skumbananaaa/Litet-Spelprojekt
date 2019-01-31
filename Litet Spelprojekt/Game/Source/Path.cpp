@@ -56,7 +56,7 @@ bool Path::MoveToNextTile()
 	return false;
 }
 
-Path::Path(const uint32* const* map, const glm::ivec2& size)
+Path::Path(const Tile* const * const * pppTilemap, const glm::ivec2& size)
 {
 	m_size = size;
 	m_ppMap = map;

@@ -1,7 +1,7 @@
 #pragma once
 #include <GLM\vec2.hpp>
-#include "..\Include\Grid.h"
-#include "..\Include\Tile.h"
+#include <World/Grid.h>
+#include <World/Tile.h>
 #include <math.h>
 #include <algorithm>
 
@@ -35,7 +35,7 @@ private:
 	bool MoveToNextTile();
 
 public:
-	Path(const uint32* const* map, const glm::ivec2& size);
+	Path(const Tile* const * const * pppTilemap, const glm::ivec2& size);
 	~Path();
 
 	glm::ivec2* FindPath(glm::ivec2 start, const glm::ivec2& goal);

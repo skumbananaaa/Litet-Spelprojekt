@@ -60,25 +60,17 @@ Path::Path(const uint32* const* map, glm::ivec2 size)
 {
 	m_size = size;
 	m_ppMap = map;
-	/*m_ppMap = new uint32*[size.x];
-	for (int i = 0; i < size.x; i++) {
-		m_ppMap[i] = new uint32[size.y];
-		for (int j = 0; j < size.y; j++) {
-			m_ppMap[i][j] = map[i][j];
-		}
-	}*/
 	m_pPath = new glm::ivec2[size.x * size.y];
 	m_openList = new glm::ivec2[m_size.x * m_size.y];
 }
 
 Path::~Path()
 {
-	for (int i = 0; i < m_size.x; i++) {
-		delete[] m_ppMap[i];
-	}
-	delete[] m_ppMap;
 	delete[] m_pPath;
 	delete[] m_openList;
+	m_ppMap = nullptr;
+	m_pPath = nullptr;
+	m_openList = nullptr;
 }
 
 glm::ivec2* Path::FindPath(glm::ivec2 start, glm::ivec2 goal)
@@ -125,8 +117,10 @@ glm::ivec2* Path::FindPath(glm::ivec2 start, glm::ivec2 goal)
 
 	 for (int i = 0; i < m_size.x; i++) {
 		 delete[] m_ppTiles[i];
+		 m_ppTiles[i] = nullptr;
 	 }
 	 delete[] m_ppTiles;
+	 m_ppTiles = nullptr;
 
 	return m_pPath;
 }

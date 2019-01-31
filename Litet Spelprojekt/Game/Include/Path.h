@@ -24,6 +24,7 @@ private:
 	glm::ivec2 m_closestTile;
 	glm::ivec2 m_size;
 	const uint32* const* m_ppMap;
+	//uint32** m_ppMap;
 	int m_smallestH;
 	int m_nrOfTilesOpen;
 	int m_nrOfPathTiles = 0;

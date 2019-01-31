@@ -33,9 +33,10 @@ Crewmember::Crewmember(Crewmember & other): m_pLight(new PointLight(other.GetPos
 
 Crewmember::~Crewmember()
 {
-	delete m_pMaterial;
-	delete m_pMesh;
+	Delete(m_pMaterial);
+	Delete(m_pMesh);
 	Delete(m_pPathFinder);
+
 }
 
 void Crewmember::Move(const glm::vec3 & dir)

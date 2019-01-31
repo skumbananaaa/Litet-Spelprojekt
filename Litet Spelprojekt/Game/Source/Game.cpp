@@ -173,7 +173,7 @@ Game::Game() noexcept
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 
-	const uint32 level0SizeX = 10;
+	/*const uint32 level0SizeX = 10;
 	const uint32 level0SizeZ = 10;
 	uint32 level0[level0SizeX * level0SizeZ] =
 	{
@@ -225,7 +225,7 @@ Game::Game() noexcept
 		worldLevel0,
 		worldLevel1,
 		worldLevel2,
-	};
+	};*/
 
 	//World* world = new World(worldLevels, 3);
 	/*WorldSerializer::Write("test.json", *world);
@@ -236,10 +236,10 @@ Game::Game() noexcept
 	Delete(world);*/
 
 	//m_pWorld = new World(worldLevels, 3);
+	
 	m_pWorld = WorldSerializer::Read("test.json");
 
 	const uint32* const* map = m_pWorld->GetLevel(0)->GetLevel();
-
 	g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(0)->GetSizeX(), m_pWorld->GetLevel(0)->GetSizeZ()), glm::vec3(0.0f, 10.0f, 0.0f));
 
 	for (int i = 0; i < g_Grid->GetSize().x; i++)
@@ -291,6 +291,7 @@ Game::~Game()
 	Delete(m_pTestAudioSource);
 
 	Delete(g_Grid);
+	Delete(m_pWorld);
 
 }
 
@@ -466,7 +467,7 @@ void Game::OnUpdate(float dtS)
 	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	if (Input::IsKeyDown(KEY_ENTER) && !derp->IsMoving())
 	{
-		glm::ivec2 goalPos (std::rand() % 9, std::rand() % 9);
+		glm::ivec2 goalPos (std::rand() % (m_pWorld->GetLevel(0)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(0)->GetSizeZ() - 1));
 		std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
 		derp->FindPath(goalPos);
 	}

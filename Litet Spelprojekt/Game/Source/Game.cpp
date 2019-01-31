@@ -54,14 +54,15 @@ Game::Game() noexcept :
 		m_pBloodTexture = new Texture2D("Resources/Textures/blood.png", TEX_FORMAT_RGBA, true, params);
 		m_pBloodNormal = new Texture2D("Resources/Textures/bloodNormalMap.png", TEX_FORMAT_RGBA, true, params);
 
-		const void * paths[6];
-		paths[0] = "Resources/Textures/SkyBoxTextures/ss_rt"; //right
-		paths[1] = "Resources/Textures/SkyBoxTextures/ss_lf"; //left
-		paths[2] = "Resources/Textures/SkyBoxTextures/ss_up"; //up
-		paths[3] = "Resources/Textures/SkyBoxTextures/ss_dn"; //down
-		paths[4] = "Resources/Textures/SkyBoxTextures/ss_ft"; //forward
-		paths[5] = "Resources/Textures/SkyBoxTextures/ss_bk"; //back
-		m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, (uint32)1422, (uint32)1422, params);
+		//const void * paths[6];
+		const char* paths[6];
+		paths[0] = "Resources/Textures/SkyBoxTextures/ss_rt.png"; //right
+		paths[1] = "Resources/Textures/SkyBoxTextures/ss_lf.png"; //left
+		paths[2] = "Resources/Textures/SkyBoxTextures/ss_up.png"; //up
+		paths[3] = "Resources/Textures/SkyBoxTextures/ss_dn.png"; //down
+		paths[4] = "Resources/Textures/SkyBoxTextures/ss_ft.png"; //forward
+		paths[5] = "Resources/Textures/SkyBoxTextures/ss_bk.png"; //back
+		m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, params);
 	}
 
 	m_pDecal = new Decal();

@@ -56,47 +56,8 @@ uint32 World::GetNumWorldObjects() const noexcept
 	return m_Objects.size();
 }
 
-const glm::vec4 & World::GetWall(uint32 index) const noexcept
-{
-	assert(index < m_Walls.size());
-	return m_Walls[index];
-}
-
-uint32 World::GetNrOfWalls() const noexcept
-{
-	return m_Walls.size();
-}
-
 void World::GenerateWalls(uint32 level)
 {
-	bool wallH = false, wallV = false;
-	glm::vec2 startWallH(0, 0), endWallH(0, 0);
-	glm::vec2 startWallV(0, 0), endWallV(0, 0);
-	const uint32* const* map = m_pLevels[level]->GetLevel();
-
-	for (int i = 0; i < m_pLevels[0]->GetSizeX() - 1; i++) {
-		for (int j = 0; j < m_pLevels[0]->GetSizeZ(); j++) {
-
-			wallH = (map[i][j] != map[i + 1][j]);
-			if (wallH && startWallH == glm::vec2(0, 0)) {
-				startWallH = glm::vec2(i + 0.5, j - 0.5);
-			}
-			else if (!wallH && startWallH != glm::vec2(0, 0)) {
-				endWallH = glm::vec2(i + 0.5, j - 0.5);
-				m_Walls.push_back(glm::vec4((startWallH + endWallH) / 2.0f, endWallH - startWallH));
-				startWallH = glm::vec2(0, 0);
-			}
-			
-			wallV = (map[j][i] != map[j][i + 1]);
-			if (wallV && startWallV == glm::vec2(0, 0)) {
-				startWallV = glm::vec2(j - 0.5, i + 0.5);
-			}
-			else if (!wallV && startWallV != glm::vec2(0, 0)) {
-				endWallV = glm::vec2(j - 0.5, i + 0.5);
-				m_Walls.push_back(glm::vec4((startWallV + endWallV) / 2.0f, endWallV - startWallV));
-				startWallV = glm::vec2(0, 0);
-			}
-		}
-	}
+	m_pLevels[level]->GenerateWalls();
 }
 

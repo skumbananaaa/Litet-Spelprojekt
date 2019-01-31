@@ -9,7 +9,7 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 	m_nrOfPathTiles = 0;
 	m_playerTile = glm::ivec2(std::round(position.x), std::round(position.z));
 	m_targetTile = m_playerTile;
-	m_targetPos = glm::vec3(m_targetTile.x, 10.5f, m_targetTile.y);
+	m_targetPos = glm::vec3(m_targetTile.x, this->GetPosition().y, m_targetTile.y);
 	this->SetMaterial(m_pMaterial);
 	this->SetMesh(m_pMesh);
 	this->SetPosition(position);
@@ -25,7 +25,7 @@ Crewmember::Crewmember(Crewmember & other): m_pLight(new PointLight(other.GetPos
 	m_nrOfPathTiles = 0;
 	m_playerTile = glm::ivec2(std::round(other.GetPosition().x), std::round(other.GetPosition().z));
 	m_targetTile = m_playerTile;
-	m_targetPos = glm::vec3(m_targetTile.x, 10.5f, m_targetTile.y);
+	m_targetPos = glm::vec3(m_targetTile.x, this->GetPosition().y, m_targetTile.y);
 	this->SetMaterial(m_pMaterial);
 	this->SetMesh(m_pMesh);
 	this->SetPosition(other.GetPosition());
@@ -58,14 +58,14 @@ const float Crewmember::GetActionCapacity() const
 
 const bool Crewmember::IsMoving() const
 {
-	return (bool)m_nrOfPathTiles;
+	return (bool)m_nrOfPathTiles || m_pPathFinder->IsGoalSet();
 }
 
 void Crewmember::SetPosition(const glm::vec3 & position) noexcept
 {
 	m_playerTile = glm::ivec2(std::round(position.x), std::round(position.z));
 	m_targetTile = m_playerTile;
-	m_targetPos = glm::vec3(m_targetTile.x, 10.5f, m_targetTile.y);
+	m_targetPos = glm::vec3(m_targetTile.x, this->GetPosition().y, m_targetTile.y);
 	GameObject::SetPosition(position);
 }
 
@@ -82,7 +82,7 @@ void Crewmember::FollowPath(float dtS)
 	if (m_nrOfPathTiles > 0) {
 		if (m_playerTile == m_targetTile) {
 			m_targetTile = m_pPath[--m_nrOfPathTiles];
-			m_targetPos = glm::vec3(m_targetTile.x, 10.5f, m_targetTile.y);
+			m_targetPos = glm::vec3(m_targetTile.x, this->GetPosition().y, m_targetTile.y);
 		}
 	}
 	if (std::abs(this->GetPosition().x - m_targetPos.x) > 0.01 || std::abs(this->GetPosition().z - m_targetPos.z) > 0.01) {

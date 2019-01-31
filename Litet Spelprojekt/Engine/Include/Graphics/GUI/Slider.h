@@ -16,7 +16,7 @@ public:
 	Slider(float x, float y, float width, float height, void(*onChangedCallback)(Slider*, float) = nullptr);
 	virtual ~Slider();
 
-	bool isVertical() const noexcept;
+	bool IsVertical() const noexcept;
 
 	void SetRatio(float ratio);
 	float GetRatio() const noexcept;
@@ -38,18 +38,21 @@ public:
 
 	void SetOnSliderChanged(void(*callback)(Slider*, float));
 
+	void MoveSlider(float offset);
+
+protected:
+	virtual void PrintName() const override;
+	virtual const glm::vec4& GetSliderClearColor() const;
+
 	virtual void OnAdded(GUIObject* parent) override;
 	virtual void OnRemoved(GUIObject* parent) override;
 
 	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) override;
 	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) override;
 	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) override;
 
 	void RenderRealTime(GUIContext* context) override;
-
-protected:
-	virtual void PrintName() const override;
-	virtual const glm::vec4& GetSliderClearColor() const;
 
 private:
 	Texture2D* m_pTextureForeground;

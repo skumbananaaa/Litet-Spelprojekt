@@ -28,6 +28,8 @@ public:
 	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child) override;
 	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child) override;
 
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) override;
+
 protected:
 	virtual void PrintName() const override;
 

@@ -114,6 +114,7 @@ void PanelScrollable::OnAdded(GUIObject* parent)
 	parent->Add(m_pSliderHorizontal);
 
 	AddRealTimeRenderer(this);
+	AddMouseListener(this);
 }
 
 void PanelScrollable::OnRemoved(GUIObject* parent)
@@ -125,6 +126,7 @@ void PanelScrollable::OnRemoved(GUIObject* parent)
 	parent->Remove(m_pSliderHorizontal);
 
 	RemoveRealTimeRenderer(this);
+	RemoveMouseListener(this);
 }
 
 void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
@@ -200,6 +202,21 @@ void PanelScrollable::ControllRealTimeRenderingForChildPost(GUIContext* context,
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
 	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
 	glDisable(GL_SCISSOR_TEST);
+}
+
+void PanelScrollable::OnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
+{
+	if (ContainsPoint(position))
+	{
+		if (m_pSliderVertical->IsVisible())
+		{
+			m_pSliderVertical->MoveSlider(offset.y * 20 * m_pSliderVertical->GetRatio());
+		}
+		else if (m_pSliderHorizontal->IsVisible())
+		{
+			m_pSliderHorizontal->MoveSlider(-offset.y * 20 * m_pSliderHorizontal->GetRatio());
+		}
+	}
 }
 
 void PanelScrollable::PrintName() const

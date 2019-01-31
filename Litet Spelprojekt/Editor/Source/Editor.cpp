@@ -65,7 +65,7 @@ Editor::Editor() noexcept : Application(false)
 
 
 
-	m_pPanelScrollable = new PanelScrollable(100, 10, 700, 700, 2000, 1000);
+	m_pPanelScrollable = new PanelScrollable(100, 10, 700, 700, 2000, 700);
 
 	/*m_pPanelScrollable->Add(m_pButton);
 	m_pPanelScrollable->Add(m_pButton2);*/

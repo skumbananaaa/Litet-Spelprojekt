@@ -385,6 +385,11 @@ void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action
 	Application::GetInstance().InternalOnMouseButton((MouseButton)button, action == GLFW_PRESS);
 }
 
+void Window::MouseScrollCallback(GLFWwindow* pWindow, double offsetX, double offsetY)
+{
+	Application::GetInstance().InternalOnMouseScroll(glm::vec2(offsetX, offsetY));
+}
+
 void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
 {
 	Window* pMyWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(pWindow));
@@ -453,6 +458,7 @@ Window::Window(const char* pTitle, int32 width, int32 height, bool fullscreen) n
 	glfwSetCursorPosCallback(m_pWindow, MouseMoveCallback);
 	glfwSetMouseButtonCallback(m_pWindow, MouseButtonCallback);
 	glfwSetWindowSizeCallback(m_pWindow, ResizeCallback);
+	glfwSetScrollCallback(m_pWindow, MouseScrollCallback);
 
 	glfwSetWindowUserPointer(m_pWindow, this);
 }

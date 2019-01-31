@@ -6,8 +6,6 @@ struct GLFWwindow;
 
 class API Window
 {
-	friend void ResizeCallback(GLFWwindow*, int32, int32);
-
 public:
 	Window(Window&& other) = delete;
 	Window(const Window& other) = delete;
@@ -36,6 +34,7 @@ private:
 	static void KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 action, int32 mods);
 	static void MouseMoveCallback(GLFWwindow* pWindow, double x, double y);
 	static void MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action, int32 mods);
+	static void MouseScrollCallback(GLFWwindow* pWindow, double offsetX, double offsetY);
 	static void ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height);
 
 public:

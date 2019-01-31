@@ -67,6 +67,11 @@ void GUIManager::InternalRootOnMouseMove(const glm::vec2& position)
 	m_LastMousePosition = position;
 }
 
+void GUIManager::InternalRootOnMouseScroll(const glm::vec2& offset)
+{
+	GUIObject::InternalRootOnMouseScroll(m_LastMousePosition, offset);
+}
+
 void GUIManager::InternalRootOnKeyUp(KEY keycode)
 {
 

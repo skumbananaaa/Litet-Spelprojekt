@@ -515,3 +515,14 @@ void GUIObject::InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm
 		}
 	}
 }
+
+void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
+{
+	for (GUIObject* object : s_MouseListeners)
+	{
+		if (object->IsVisible())
+		{
+			object->OnMouseScroll(position, offset);
+		}
+	}
+}

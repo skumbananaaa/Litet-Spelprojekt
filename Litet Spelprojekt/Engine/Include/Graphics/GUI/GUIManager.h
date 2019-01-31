@@ -19,6 +19,7 @@ public:
 	void InternalRootOnMousePressed(MouseButton mousebutton);
 	void InternalRootOnMouseReleased(MouseButton mousebutton);
 	void InternalRootOnMouseMove(const glm::vec2& position);
+	void InternalRootOnMouseScroll(const glm::vec2& offset);
 
 	void InternalRootOnKeyUp(KEY keycode);
 	void InternalRootOnKeyDown(KEY keycode);

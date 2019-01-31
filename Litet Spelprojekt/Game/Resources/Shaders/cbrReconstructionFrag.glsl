@@ -28,34 +28,30 @@ void main()
 	float d1 = texelFetch(g_Depth, sampleCoord, 0).r;
 	float d2 = texelFetch(g_ForDepth, forSampleCoord, subsample).r;
 
-	if (modFrameCoord.x == modFrameCoord.y)
+	if ((modFrameCoord.x == modFrameCoord.y) && (d1 <= d2))
 	{
-		if (d1 < d2)
-		{
-			color = texelFetch(g_Color, sampleCoord, 0);
-		}
-		else
-		{
-			color = texelFetch(g_ForColor, forSampleCoord, subsample);
-		}
+		color = texelFetch(g_Color, sampleCoord, 0);
 	}
-	else
+	else if ((modFrameCoord.x != modFrameCoord.y) && (d1 <= d2))
 	{
-		if (d1 < d2)
-		{
-			color = (texelFetch(g_Color, sampleCoord, 0) +
-				texelFetch(g_Color, sampleCoord + ivec2(-1, 0), 0) +
-				texelFetch(g_Color, sampleCoord + ivec2(1, 0), 0) +
-				texelFetch(g_Color, sampleCoord + ivec2(0, 1), 0));
-		}
-		else
-		{
-			color = (texelFetch(g_ForColor, forSampleCoord, 0) +
-				texelFetch(g_ForColor, forSampleCoord + ivec2(-1, 0), 0) +
-				texelFetch(g_ForColor, forSampleCoord + ivec2(1, 0), 0) +
-				texelFetch(g_ForColor, forSampleCoord + ivec2(0, 1), 0));
-		}
-
+		color = 
+			texelFetch(g_Color, sampleCoord, 0) +
+			texelFetch(g_Color, sampleCoord + ivec2(-1, 0), 0) +
+			texelFetch(g_Color, sampleCoord + ivec2(1, 0), 0) +
+			texelFetch(g_Color, sampleCoord + ivec2(0, 1), 0);
+		color = color / 4.0f;
+	}
+	else if ((modFrameCoord.x == modFrameCoord.y) && (d1 > d2))
+	{
+		color = texelFetch(g_ForColor, forSampleCoord, subsample);
+	}
+	else if ((modFrameCoord.x == modFrameCoord.y) && (d1 > d2))
+	{
+		color = 
+			texelFetch(g_ForColor, forSampleCoord, subsample) +
+			texelFetch(g_ForColor, forSampleCoord + ivec2(-1, 0), subsample) +
+			texelFetch(g_ForColor, forSampleCoord + ivec2(1, 0), subsample) +
+			texelFetch(g_ForColor, forSampleCoord + ivec2(0, 1), subsample);
 		color = color / 4.0f;
 	}
 

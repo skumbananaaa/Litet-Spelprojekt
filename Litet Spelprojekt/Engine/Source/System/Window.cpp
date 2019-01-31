@@ -474,7 +474,6 @@ void Window::PollEvents() noexcept
 
 void Window::SwapBuffers() noexcept
 {
-	//glFlush();
 	glfwSwapBuffers(m_pWindow);
 }
 

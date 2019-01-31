@@ -259,8 +259,22 @@ Game::Game() noexcept :
 	}
 
 	Crewmember * derp = g_Crew.getMember(0);
-	derp->SetPosition(glm::vec3(2.0f, 10.5f, 2.0f));
+	derp->SetPosition(glm::vec3(1.0f, 10.9f, 1.0f));
 	derp->SetPath(map, g_Grid->GetSize());
+
+	m_pWorld->GenerateWalls(0);
+	glm::vec4 wall;
+	
+	for (int i = 0; i < m_pWorld->GetNrOfWalls(); i++) {
+		wall = m_pWorld->GetWall(i);
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(m_pBlueMaterial);
+		pGameObject->SetMesh(IndexedMesh::CreateCube());
+		pGameObject->SetPosition(glm::vec3(wall.x, 11.0f, wall.y));
+		pGameObject->SetScale(glm::vec3(std::max(wall.z, 0.1f), 2.0f, std::max(wall.w, 0.1f)));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
 }
 
 Game::~Game()
@@ -470,7 +484,7 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->UpdateTransform();
 
 	Crewmember * derp = g_Crew.getMember(0);
-	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
+	//derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
 	if (Input::IsKeyDown(KEY_ENTER) && !derp->IsMoving())
 	{
 		glm::ivec2 goalPos (std::rand() % (m_pWorld->GetLevel(0)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(0)->GetSizeZ() - 1));

@@ -27,9 +27,17 @@ public:
 	uint32 GetNumLevels() const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
+	///<summary>Returns a vec4. The first two values are the position of the wall (x, z), the second two are the dimensions of the wall (x, z)</summary>
+	const glm::vec4& GetWall(uint32 index) const noexcept;
+	uint32 GetNrOfWalls() const noexcept;
+	void GenerateWalls(uint32 level);
 
 private:
 	WorldLevel** m_pLevels;
 	uint32 m_NumLevels;
 	std::vector<WorldObject> m_Objects;
+
+	uint32 m_nrOfWalls;
+	std::vector<glm::vec4> m_Walls;
+
 };

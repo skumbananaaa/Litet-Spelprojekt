@@ -17,7 +17,7 @@ public:
 	World& operator=(World&& other) = delete;
 	World& operator=(const World& other) = delete;
 
-	///<summry>Summary: Each level is a ship level, not a grid level. This object deletes the worldlevel and worldobject objects on deletion.</summary>
+	///<summary>Summary: Each level is a ship level, not a grid level. This object deletes the worldlevel and worldobject objects on deletion.</summary>
 	World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects = nullptr, uint32 numObjects = 0) noexcept;
 	~World();
 

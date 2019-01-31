@@ -56,7 +56,7 @@ bool Path::MoveToNextTile()
 	return false;
 }
 
-Path::Path(const uint32* const* map, glm::ivec2 size)
+Path::Path(const uint32* const* map, const glm::ivec2& size)
 {
 	m_size = size;
 	m_ppMap = map;
@@ -73,7 +73,7 @@ Path::~Path()
 	m_openList = nullptr;
 }
 
-glm::ivec2* Path::FindPath(glm::ivec2 start, glm::ivec2 goal)
+glm::ivec2* Path::FindPath(glm::ivec2 start, const glm::ivec2& goal)
 {
 	m_ppTiles = new tls*[m_size.x];
 	for (int i = 0; i < m_size.x; i++) {

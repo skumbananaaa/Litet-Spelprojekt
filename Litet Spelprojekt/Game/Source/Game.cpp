@@ -227,7 +227,7 @@ Game::Game() noexcept :
 		worldLevel0,
 		worldLevel1,
 		worldLevel2,
-	};*/
+	};
 
 	WorldObject worldObjects[5] =
 	{
@@ -240,15 +240,8 @@ Game::Game() noexcept :
 
 	World* world = new World(worldLevels, 3, worldObjects, 5);
 	WorldSerializer::Write("test.json", *world);
-	//World* world = new World(worldLevels, 3);
-	/*WorldSerializer::Write("test.json", *world);
-	Delete(world);
-
-	world = WorldSerializer::Read("test.json");
-	WorldSerializer::Write("test2.json", *world);
+	
 	Delete(world);*/
-
-	//m_pWorld = new World(worldLevels, 3);
 	
 	m_pWorld = WorldSerializer::Read("test.json");
 

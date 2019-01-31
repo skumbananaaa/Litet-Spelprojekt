@@ -6,7 +6,7 @@
 #include "..\Include\Path.h"
 
 #if defined(_DEBUG)
-#define DRAW_DEBUG_BOXES
+//#define DRAW_DEBUG_BOXES
 #endif
 
 GameObject* g_pDecalObject = nullptr;

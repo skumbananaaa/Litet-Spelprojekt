@@ -296,6 +296,7 @@
                 5
             ]
         ]
+<<<<<<< HEAD
     ],
     "objects": [
         {
@@ -333,5 +334,7 @@
             "meshId": 1337,
             "materialId": 8
         }
+=======
+>>>>>>> World-Pathfinding
     ]
 }

@@ -33,9 +33,10 @@ Crewmember::Crewmember(Crewmember & other): m_pLight(new PointLight(other.GetPos
 
 Crewmember::~Crewmember()
 {
-	delete m_pMaterial;
-	delete m_pMesh;
+	Delete(m_pMaterial);
+	Delete(m_pMesh);
 	Delete(m_pPathFinder);
+
 }
 
 void Crewmember::Move(const glm::vec3 & dir)
@@ -96,9 +97,9 @@ void Crewmember::SetActionCapacity(const float actionCap)
 	m_ActionCap = actionCap;
 }
 
-void Crewmember::SetPath(const Tile *** pppTilemap, glm::ivec2 size)
+void Crewmember::SetPath(const uint32* const* map, glm::ivec2 size)
 {
-	m_pPathFinder = new Path(pppTilemap, size);
+	m_pPathFinder = new Path(map, size);
 }
 
 void Crewmember::UpdateTransform() noexcept

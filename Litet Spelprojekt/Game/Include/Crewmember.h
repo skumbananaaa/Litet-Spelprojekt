@@ -34,7 +34,7 @@ public:
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
 	void SetActionCapacity(const float actionCap);
 	///<summary>Sets a grid for the path finding algorithm.</summary>
-	void SetPath(const Tile*** pppTilemap, glm::ivec2 size);
+	void SetPath(const uint32* const* map, glm::ivec2 size);
 	///<summary>Returns a reference to the pointLight object.</summary>
 	PointLight * GetLight() const;
 	///<summary>returns the current action capacity of the crewmember.</summary>

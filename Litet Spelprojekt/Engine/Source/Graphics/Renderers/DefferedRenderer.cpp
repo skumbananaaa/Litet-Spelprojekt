@@ -10,6 +10,8 @@ DefferedRenderer::DefferedRenderer()
 	m_pReflection(nullptr),
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
+	m_pForwardCBR(nullptr),
+	m_pBlur(nullptr),
 	m_pLastResolveTarget(nullptr),
 	m_pCurrentResolveTarget(nullptr),
 	m_pGPassVSPerFrame(nullptr),
@@ -22,12 +24,13 @@ DefferedRenderer::DefferedRenderer()
 	m_pWaterNormalMap(nullptr),
 	m_pWaterDistortionMap(nullptr),
 	m_pForwardPass(nullptr),
+	m_pCbrBlurProgram(nullptr),
 	m_pCbrReconstructionProgram(nullptr),
 	m_pCbrResolveProgram(nullptr),
 	m_pCbrStencilProgram(nullptr),
 	m_pDepthPrePassProgram(nullptr),
-	m_pDecalsPassProgram(nullptr),
 	m_pGeometryPassProgram(nullptr),
+	m_pDecalsPassProgram(nullptr),
 	m_pLightPassProgram(nullptr),
 	m_pWaterpassProgram(nullptr),
 	m_pResolveTargets(),
@@ -40,6 +43,8 @@ DefferedRenderer::~DefferedRenderer()
 {
 	DeleteSafe(m_pGBufferCBR);
 	DeleteSafe(m_pReflection);
+	DeleteSafe(m_pBlur);
+	DeleteSafe(m_pForwardCBR);
 
 	for (uint32 i = 0; i < 2; i++)
 	{
@@ -62,15 +67,16 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pWaterNormalMap);
 	DeleteSafe(m_pWaterDistortionMap);
 	
+	DeleteSafe(m_pCbrBlurProgram);
 	DeleteSafe(m_pCbrReconstructionProgram);
 	DeleteSafe(m_pCbrResolveProgram);
 	DeleteSafe(m_pCbrStencilProgram);
 	DeleteSafe(m_pDepthPrePassProgram);
-	DeleteSafe(m_pDecalsPassProgram);
 	DeleteSafe(m_pGeometryPassProgram);
+	DeleteSafe(m_pDecalsPassProgram);
 	DeleteSafe(m_pLightPassProgram);
-	DeleteSafe(m_pWaterpassProgram);
 	DeleteSafe(m_pForwardPass);
+	DeleteSafe(m_pWaterpassProgram);
 }
 
 void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const

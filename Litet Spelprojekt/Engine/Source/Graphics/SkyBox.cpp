@@ -1,23 +1,23 @@
 #include <EnginePch.h>
 #include <Graphics/SkyBox.h>
 
-SkyBox::SkyBox(TextureCube * texture): m_Mesh(IndexedMesh::CreateCube())
+SkyBox::SkyBox(TextureCube * texture): m_pMesh(IndexedMesh::CreateCube())
 {
-	m_TextureCube = texture;
+	m_pTextureCube = texture;
 }
 
 SkyBox::~SkyBox()
 {
-	delete m_Mesh;
-	delete m_TextureCube;
+	delete m_pMesh;
+	delete m_pTextureCube;
 }
 
-TextureCube * SkyBox::GetTexture()
+TextureCube & SkyBox::GetTexture() const noexcept
 {
-	return m_TextureCube;
+	return *m_pTextureCube;
 }
 
-IndexedMesh * SkyBox::GetMesh()
+IndexedMesh& SkyBox::GetMesh() const noexcept
 {
-	return m_Mesh;
+	return *m_pMesh;
 }

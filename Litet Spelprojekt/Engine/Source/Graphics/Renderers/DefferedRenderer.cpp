@@ -33,6 +33,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pDecalsPassProgram(nullptr),
 	m_pLightPassProgram(nullptr),
 	m_pWaterpassProgram(nullptr),
+	m_pSkyBoxPassProgram(nullptr),
 	m_pResolveTargets(),
 	m_FrameCount(0)
 {
@@ -66,6 +67,9 @@ DefferedRenderer::~DefferedRenderer()
 	
 	DeleteSafe(m_pWaterNormalMap);
 	DeleteSafe(m_pWaterDistortionMap);
+
+	DeleteSafe(m_pSkyBoxPassPerFrame);
+	DeleteSafe(m_pSkyBoxPassPerObject);
 	
 	DeleteSafe(m_pCbrBlurProgram);
 	DeleteSafe(m_pCbrReconstructionProgram);
@@ -77,6 +81,8 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pLightPassProgram);
 	DeleteSafe(m_pForwardPass);
 	DeleteSafe(m_pWaterpassProgram);
+	DeleteSafe(m_pForwardPass);
+	DeleteSafe(m_pSkyBoxPassProgram);
 }
 
 void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
@@ -100,6 +106,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//Render geometry to MSAA targets for checkerboard rendering
 	context.Enable(MULTISAMPLE);
+	SkyBoxPass(scene.GetCamera(), scene);
 	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pGBufferCBR);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
@@ -373,6 +380,25 @@ void DefferedRenderer::Create() noexcept
 		delete pFrag;
 	}
 
+	{
+		Shader* pVert = new Shader();
+		if (pVert->CompileFromFile("Resources/Shaders/VShaderSkyBox.glsl", VERTEX_SHADER))
+		{
+			std::cout << "Created SkyBox pass Vertex shader" << std::endl;
+		}
+
+		Shader* pFrag = new Shader();
+		if (pFrag->CompileFromFile("Resources/Shaders/FShaderSkyBox.glsl", FRAGMENT_SHADER))
+		{
+			std::cout << "Created SkyBox pass Fragment shader" << std::endl;
+		}
+
+		m_pSkyBoxPassProgram = new ShaderProgram(*pVert, *pFrag);
+
+		delete pVert;
+		delete pFrag;
+	}
+
 	//We can destroy object when uniformbuffer is created
 	{
 		GPassVSPerFrame object = {};
@@ -432,6 +458,19 @@ void DefferedRenderer::Create() noexcept
 		buff.CameraPosition = glm::vec3();
 
 		m_pLightPassBuffer = new UniformBuffer(&buff, 1, sizeof(LightPassBuffer));
+	}
+
+	{
+		SkyBoxPassBuffer buff= {};
+		buff.CameraCombined = glm::mat4(1.0f);
+		buff.CameraPosition = glm::vec4();
+
+		m_pSkyBoxPassPerFrame = new UniformBuffer(&buff, 1, sizeof(SkyBoxPassBuffer));
+
+		SkyBoxPassPerObject object = {};
+		object.model = glm::mat4(1.0f);
+
+		m_pSkyBoxPassPerObject = new UniformBuffer(&object, 1, sizeof(SkyBoxPassPerObject));
 	}
 
 	{
@@ -874,4 +913,33 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 
 	context.SetUniformBuffer(nullptr, 0);
 	context.SetUniformBuffer(nullptr, 1);
+}
+
+void DefferedRenderer::SkyBoxPass(const Camera & camera, const Scene & screen) const noexcept
+{
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+	context.SetProgram(m_pSkyBoxPassProgram);
+
+	context.Disable(CULL_FACE);
+	context.Disable(BLEND);
+	context.Disable(DEPTH_TEST);
+
+	SkyBoxPassBuffer perFrame = {};
+	perFrame.CameraCombined = camera.GetProjectionMatrix() * glm::mat4(glm::mat3(camera.GetViewMatrix()));
+	perFrame.CameraPosition = glm::vec4(camera.GetPosition(), 1.0f);
+	m_pSkyBoxPassPerFrame->UpdateData(&perFrame);
+
+	SkyBoxPassPerObject perObject;
+	perObject.model = glm::mat4(1.0f);
+	m_pSkyBoxPassPerObject->UpdateData(&perObject);
+
+	context.SetTexture(&screen.GetSkyBox().GetTexture(),0);
+
+	context.SetUniformBuffer(m_pSkyBoxPassPerObject, 0);
+	context.SetUniformBuffer(m_pSkyBoxPassPerFrame, 1);
+
+	context.DrawIndexedMesh(screen.GetSkyBox().GetMesh());
+
+	context.Enable(DEPTH_TEST);
+	context.Enable(CULL_FACE);
 }

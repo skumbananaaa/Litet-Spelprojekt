@@ -26,6 +26,8 @@ GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.
 	{
 		m_CurrentTextures[i] = GL_TEXTURE_2D;
 	}
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 GLContext::~GLContext()

@@ -27,6 +27,7 @@ public:
 	uint32 GetNumLevels() const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
+	void GenerateWalls(uint32 level);
 
 private:
 	WorldLevel** m_pLevels;

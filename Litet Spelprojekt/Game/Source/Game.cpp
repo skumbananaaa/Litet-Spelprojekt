@@ -130,8 +130,12 @@ Game::Game() noexcept :
 	m_pScene->AddGameObject(pGameObject);
 
 	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
-	m_pScene->AddGameObject(g_Crew.getMember(0));
-	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());
+	g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
+	g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
+	for (int i = 0; i < g_Crew.getCount(); i++) {
+		m_pScene->AddGameObject(g_Crew.getMember(i));
+		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
+	}
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -246,24 +250,43 @@ Game::Game() noexcept :
 	
 	Delete(world);*/
 	
-	m_pWorld = WorldSerializer::Read("test.json");
+	m_pWorld = WorldSerializer::Read("world.json");
 
-	const uint32* const* map = m_pWorld->GetLevel(0)->GetLevel();
-	g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(0)->GetSizeX(), m_pWorld->GetLevel(0)->GetSizeZ()), glm::vec3(0.0f, 10.0f, 0.0f));
+	m_pWallMesh = IndexedMesh::CreateCube();
 
-	for (int i = 0; i < g_Grid->GetSize().x; i++)
-	{
-		for (int j = 0; j < g_Grid->GetSize().y; j++)
+	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
+		const uint32* const* map = m_pWorld->GetLevel(level)->GetLevel();
+		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());
+		/*g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ()), glm::vec3(0.0f, 10.0f + 2.0f * level, 0.0f));
+
+		for (int i = 0; i < g_Grid->GetSize().x; i++)
 		{
-			g_Grid->GetTile(glm::ivec2(i, j))->SetID(map[i][j]);
-			g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(map[i][j] / 10.0f, map[i][j] / 10.0f, map[i][j] / 10.0f, 1.0f));
-			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
+			for (int j = 0; j < g_Grid->GetSize().y; j++)
+			{
+				g_Grid->GetTile(glm::ivec2(i, j))->SetID(map[i][j]);
+				g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+				m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
+			}
+		}*/
+
+		Crewmember * CurrentCrewMember = g_Crew.getMember(level);
+		CurrentCrewMember->SetPosition(glm::vec3(1.0f, 10.9f + 2.0f * level, 1.0f));
+		CurrentCrewMember->SetPath(map, size);
+
+		m_pWorld->GenerateWalls(level);
+		glm::vec4 wall;
+
+		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++) {
+			wall = m_pWorld->GetLevel(level)->GetWall(i);
+			pGameObject = new GameObject();
+			pGameObject->SetMaterial(m_pBlueMaterial);
+			pGameObject->SetMesh(m_pWallMesh);
+			pGameObject->SetPosition(glm::vec3(wall.x, 11.0f + 2.0f * level, wall.y));
+			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
+			pGameObject->UpdateTransform();
+			m_pScene->AddGameObject(pGameObject);
 		}
 	}
-
-	Crewmember * derp = g_Crew.getMember(0);
-	derp->SetPosition(glm::vec3(2.0f, 10.5f, 2.0f));
-	derp->SetPath(map, g_Grid->GetSize());
 }
 
 Game::~Game()
@@ -282,6 +305,7 @@ Game::~Game()
 	DeleteSafe(m_pWaterMesh);
 	DeleteSafe(m_pGroundTestMesh);
 	
+	Delete(m_pWallMesh);
 	DeleteSafe(m_pBoatTexture);
 	DeleteSafe(m_pBoatNormalMap);
 	
@@ -300,7 +324,7 @@ Game::~Game()
 	
 	DeleteSafe(m_pTestAudioSource);
 
-	Delete(g_Grid);
+	DeleteSafe(g_Grid);
 	Delete(m_pWorld);
 
 }
@@ -473,16 +497,21 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
 
-	Crewmember * derp = g_Crew.getMember(0);
-	derp->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, decalRot));
-	if (Input::IsKeyDown(KEY_ENTER) && !derp->IsMoving())
-	{
-		glm::ivec2 goalPos (std::rand() % (m_pWorld->GetLevel(0)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(0)->GetSizeZ() - 1));
-		std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
-		derp->FindPath(goalPos);
+	Crewmember * CurrentCrewMember[3] = {
+		g_Crew.getMember(0),
+		g_Crew.getMember(1),
+		g_Crew.getMember(2)
+	};
+	for (int i = 0; i < 3; i++) {
+		if (Input::IsKeyDown(KEY_ENTER) && !CurrentCrewMember[i]->IsMoving())
+		{
+			glm::ivec2 goalPos(std::rand() % (m_pWorld->GetLevel(i)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(i)->GetSizeZ() - 1));
+			std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
+			CurrentCrewMember[i]->FindPath(goalPos);
+		}
+		CurrentCrewMember[i]->FollowPath(dtS);
+		CurrentCrewMember[i]->UpdateTransform();
 	}
-	derp->FollowPath(dtS);
-	derp->UpdateTransform();
 }
 
 void Game::OnRender(float dtS)

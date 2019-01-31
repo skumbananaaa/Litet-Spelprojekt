@@ -8,6 +8,7 @@ Tile::Tile(const glm::vec3 & pos, const glm::vec4 & color, const unsigned int & 
 	GameObject::SetMaterial(m_pMaterial);
 	GameObject::SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::pi<float>()/2.0f));
 	GameObject::SetPosition(pos);
+	GameObject::SetScale(glm::vec3(0.5, 0.5, 1));
 	GameObject::UpdateTransform();
 }
 

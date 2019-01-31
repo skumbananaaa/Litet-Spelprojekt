@@ -55,3 +55,9 @@ uint32 World::GetNumWorldObjects() const noexcept
 {
 	return static_cast<uint32>(m_Objects.size());
 }
+
+void World::GenerateWalls(uint32 level)
+{
+	m_pLevels[level]->GenerateWalls();
+}
+

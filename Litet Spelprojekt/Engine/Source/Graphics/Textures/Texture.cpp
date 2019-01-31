@@ -19,13 +19,23 @@ Texture::~Texture()
 
 void Texture::SetParameters(const TextureParams& params) noexcept
 {
-	if (m_Type != GL_TEXTURE_2D_MULTISAMPLE)
+	if (m_Type == GL_TEXTURE_2D)
 	{
 		GL_CALL(glBindTexture(m_Type, m_Texture));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter)));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter)));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap)));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap)));
+		GL_CALL(glBindTexture(m_Type, 0));
+	}
+	else if (m_Type == GL_TEXTURE_CUBE_MAP)
+	{
+		GL_CALL(glBindTexture(m_Type, m_Texture));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_R, TexParamToGL(params.Wrap)));
 		GL_CALL(glBindTexture(m_Type, 0));
 	}
 }

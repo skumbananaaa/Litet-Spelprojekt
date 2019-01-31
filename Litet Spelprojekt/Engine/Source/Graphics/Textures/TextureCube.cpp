@@ -54,6 +54,7 @@ TextureCube::~TextureCube()
 void TextureCube::Create(const char* const paths[6], TEX_FORMAT format, const TextureParams & params)
 {
 	bool res = true;
+	m_Type = GL_TEXTURE_CUBE_MAP;
 	GL_CALL(glGenTextures(1, &m_Texture));
 	Texture::SetParameters(params);
 

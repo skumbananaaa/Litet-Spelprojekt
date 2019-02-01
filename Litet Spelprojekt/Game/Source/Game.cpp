@@ -499,10 +499,10 @@ void Game::OnUpdate(float dtS)
 		g_Crew.getMember(1),
 		g_Crew.getMember(2)
 	};
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 1; i++) {
 		if (Input::IsKeyDown(KEY_ENTER) && !CurrentCrewMember[i]->IsMoving())
 		{
-			glm::ivec2 goalPos(std::rand() % (m_pWorld->GetLevel(i)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(i)->GetSizeZ() - 1));
+			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(i)->GetSizeX() - 1), 1, std::rand() % (m_pWorld->GetLevel(i)->GetSizeZ() - 1));
 			std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
 			CurrentCrewMember[i]->FindPath(goalPos);
 		}

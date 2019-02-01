@@ -63,8 +63,7 @@ Editor::Editor() noexcept : Application(false)
 
 	const int32 gridWidth = 40;
 	const int32 gridHeight = 20;
-	m_pGrid = new Grid(glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
-	m_pGrid = new Grid(Resources::MATERIAL_WHITE, glm::ivec2(20, 20), glm::vec3(-10.0f, 0.0f, -10.0f));
+	m_pGrid = new Grid(Resources::MATERIAL_WHITE, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
 
 	/*int temp_map[gridHeiht][gridWidth]{
 		{0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },

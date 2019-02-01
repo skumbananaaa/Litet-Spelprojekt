@@ -29,7 +29,6 @@
 #define TILE_LADDER_DOWN 3
 #define TILE_SMALLEST_FREE 4
 
-class Editor : public Application, public IResourceListener
 enum EditingMode : uint32
 {
 	NONE,
@@ -40,7 +39,7 @@ enum EditingMode : uint32
 	REMOVE_DOOR
 };
 
-class Editor : public Application
+class Editor : public Application, public IResourceListener
 {
 public:
 	Editor() noexcept;

@@ -13,16 +13,23 @@
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
 #include <World/Grid.h>
-//#include "../../Game/Include/IO/WorldSerializer.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <GLM/gtx/string_cast.hpp>
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
+
 
 class Editor : public Application
 {
 public:
 	Editor() noexcept;
 	~Editor();
+
+	void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) override;
+	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
+	void OnKeyUp(KEY keycode) override;
+	void OnKeyDown(KEY keycode) override;
 
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;

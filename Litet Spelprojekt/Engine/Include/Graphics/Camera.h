@@ -26,8 +26,8 @@ enum CameraPosPolar : uint8
 class API Camera
 {
 public:
-	Camera(const glm::vec3& pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = 0.0f) noexcept;
-	Camera(const glm::vec3& pos, const glm::vec3& lookAt) noexcept;
+	Camera(const glm::vec3& pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = 0.0f, const glm::vec3& upVector = UP_VECTOR) noexcept;
+	Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& upVector = UP_VECTOR) noexcept;
 	~Camera();
 
 	void UpdateFromPitchYaw() noexcept;
@@ -87,6 +87,7 @@ private:
 	glm::vec3 m_LookAt;
 	glm::vec3 m_Front;
 	glm::vec3 m_Up;
+	glm::vec3 m_WorldUp;
 
 	float m_Yaw;
 	float m_Pitch;

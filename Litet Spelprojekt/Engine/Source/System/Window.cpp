@@ -377,12 +377,13 @@ void Window::KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 a
 
 void Window::MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 {
-	Application::GetInstance().InternalOnMouseMove(glm::vec2(x, y));
+	s_pMainWindow->m_LastMousePosition = glm::vec2(x, y);
+	Application::GetInstance().InternalOnMouseMove(s_pMainWindow->m_LastMousePosition);
 }
 
 void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action, int32 mods)
 {
-	Application::GetInstance().InternalOnMouseButton((MouseButton)button, action == GLFW_PRESS);
+	Application::GetInstance().InternalOnMouseButton((MouseButton)button, action == GLFW_PRESS, s_pMainWindow->m_LastMousePosition);
 }
 
 void Window::MouseScrollCallback(GLFWwindow* pWindow, double offsetX, double offsetY)

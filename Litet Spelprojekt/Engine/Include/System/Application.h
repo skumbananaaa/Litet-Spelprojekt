@@ -32,8 +32,8 @@ protected:
 	virtual void OnUpdate(float dtS) {};
 	virtual void OnRender(float dtS) {};
 	virtual void OnMouseMove(const glm::vec2& position) {};
-	virtual void OnMousePressed(MouseButton mousebutton) {};
-	virtual void OnMouseReleased(MouseButton mousebutton) {};
+	virtual void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) {};
+	virtual void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnKeyUp(KEY keycode) {};
 	virtual void OnKeyDown(KEY keycode) {};
 	virtual void OnResize(uint32 width, uint32 height) {};
@@ -51,7 +51,7 @@ private:
 	void InternalOnUpdate(float dtS);
 	void InternalOnMouseMove(glm::vec2& position);
 	void InternalOnMouseScroll(glm::vec2& offset);
-	void InternalOnMouseButton(MouseButton mousebutton, bool down);
+	void InternalOnMouseButton(MouseButton mousebutton, bool down, const glm::vec2& position);
 	void InternalOnKeyUp(KEY keycode);
 	void InternalOnKeyDown(KEY keycode);
 	void InternalOnResize(uint32 width, uint32 height);
@@ -88,18 +88,18 @@ inline void Application::InternalOnMouseScroll(glm::vec2& offset)
 	m_pGUIManager->InternalRootOnMouseScroll(offset);
 }
 
-inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool down)
+inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool down, const glm::vec2& position)
 {
 	if (Input::ButtonState(mousebutton, down))
 	{
 		if (down)
 		{
-			OnMousePressed(mousebutton);
+			OnMousePressed(mousebutton, position);
 			m_pGUIManager->InternalRootOnMousePressed(mousebutton);
 		}
 		else
 		{
-			OnMouseReleased(mousebutton);
+			OnMouseReleased(mousebutton, position);
 			m_pGUIManager->InternalRootOnMouseReleased(mousebutton);
 		}
 	}

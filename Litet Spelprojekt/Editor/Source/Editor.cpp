@@ -34,12 +34,11 @@ Editor::Editor() noexcept : Application(false)
 
 	m_pScene = new Scene();
 
-	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f);
+	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
 	//pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
-	pCamera->CreateOrthographic(30.0f, 30.0f, 0.01f, 100.0f);
+	pCamera->CreateOrthographic(30.0f * aspect, 30.0f, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
-	//pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
 	//m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
@@ -197,6 +196,55 @@ Editor* Editor::GetEditor()
 	return (Editor*)&GetInstance();
 }
 
+void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
+{
+	glm::vec2 clipSpacePosition(position.x / static_cast<float>(GetWindow().GetWidth()), position.y / static_cast<float>(GetWindow().GetHeight()));
+	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
+	glm::vec3 worldPosition = m_pScene->GetCamera().GetInverseCombinedMatrix() * glm::vec4(0.0f, clipSpacePosition.y, clipSpacePosition.x, 1.0f);
+	glm::uvec2 gridPosition(static_cast<uint32>(worldPosition.z) + 10, static_cast<uint32>(worldPosition.y) + 10);
+	gridPosition.x = glm::clamp<uint32>(gridPosition.x, 0, m_pGrid->GetSize().x - 1);
+	gridPosition.y = glm::clamp<uint32>(gridPosition.y, 0, m_pGrid->GetSize().y - 1);
+
+	Tile* tile = m_pGrid->GetTile(gridPosition);
+
+	//Material* material = new Material(tile->GetMaterial());
+	tile->SetColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+	//material->SetColor();
+	//tile->SetMaterial(material);
+	std::cout << glm::to_string(clipSpacePosition) << std::endl;
+	std::cout << glm::to_string(worldPosition) << std::endl;
+}
+
+void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
+{
+}
+
+void Editor::OnKeyUp(KEY keycode)
+{
+}
+
+void Editor::OnKeyDown(KEY keycode)
+{
+	switch (keycode)
+	{
+		case KEY_O:
+		{
+			using namespace std;
+			Camera& camera = m_pScene->GetCamera();
+			const glm::mat4& view = camera.GetViewMatrix();
+			const glm::mat4& projection = camera.GetProjectionMatrix();
+			const glm::mat4& combined = camera.GetCombinedMatrix();
+
+			cout << "View: " << glm::to_string<glm::mat4>(view) << endl;
+			cout << "Projection: " << glm::to_string<glm::mat4>(projection) << endl;
+			cout << "Combined: " << glm::to_string<glm::mat4>(combined) << endl;
+
+			break;
+		}
+	}
+}
+
+
 void Editor::OnUpdate(float dtS)
 {
 	static float tempRotation = 0.0f;
@@ -222,6 +270,15 @@ void Editor::OnUpdate(float dtS)
 	{
 		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
 	}
+
+	/*if (Input::IsKeyDown(KEY_Q))
+	{
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cameraSpeed * dtS);
+	}
+	else if (Input::IsKeyDown(KEY_E))
+	{
+		m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cameraSpeed * dtS);
+	}*/
 
 	m_pScene->GetCamera().UpdateFromPitchYaw();
 

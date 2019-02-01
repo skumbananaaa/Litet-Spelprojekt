@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <World/Grid.h>
 
-Grid::Grid(const glm::ivec2& size, uint32** ppTileVal, const glm::vec3& position)
+Grid::Grid(const glm::uvec2& size, uint32** ppTileVal, const glm::vec3& position)
 {
 	m_Size = size;
 	m_pppTiles = new Tile**[size.x];
@@ -18,7 +18,7 @@ Grid::Grid(const glm::ivec2& size, uint32** ppTileVal, const glm::vec3& position
 	}
 }
 
-Grid::Grid(const glm::ivec2& size, const glm::vec3& position)
+Grid::Grid(const glm::uvec2& size, const glm::vec3& position)
 {
 	m_Size = size;
 	m_pppTiles = new Tile**[size.x];
@@ -47,12 +47,12 @@ Grid::~Grid()
 	m_pppTiles = nullptr;
 }
 
-void Grid::Edit(const glm::ivec2& pos, uint32 val)
+void Grid::Edit(const glm::uvec2& pos, uint32 val)
 {
 	m_pppTiles[pos.x][pos.y]->SetID(val);
 }
 
-void Grid::SetColor(const glm::ivec2& pos, const glm::vec4& color)
+void Grid::SetColor(const glm::uvec2& pos, const glm::vec4& color)
 {
 	m_pppTiles[pos.x][pos.y]->SetColor(color);
 }

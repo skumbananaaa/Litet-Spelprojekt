@@ -29,6 +29,8 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
 
+	//context.SetViewport(Application::GetInstance().GetWindow().GetWidth(), Application::GetInstance().GetWindow().GetHeight(), 0, 0);
+
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 	context.SetProgram(m_pOrthographicProgram);

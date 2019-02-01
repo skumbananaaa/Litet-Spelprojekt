@@ -115,7 +115,7 @@ Game::Game() noexcept :
 	//Audio
 	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");
 	m_pSoundEffect = new SoundEffect("Resources/Audio/Mono/fart.wav");
-	m_pMusic = new Music("Resources/Audio/Music/CyaronsGate.ogg");
+	m_pMusic = new Music("Resources/Audio/Music/WavesAndSeagulls.ogg");
 	m_pTestAudioSource = new AudioSource(*m_pMusic);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
@@ -280,9 +280,15 @@ void Game::OnResourcesLoaded()
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
+	/*Material* colours[3] = {
+		m_pRedMaterial,
+		m_pGreenMaterial,
+		m_pBlueMaterial
+	};*/
+
 	/*for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
 		const uint32* const* map = m_pWorld->GetLevel(level)->GetLevel();
-		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());
+		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());*/
 		/*g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ()), glm::vec3(0.0f, 10.0f + 2.0f * level, 0.0f));
 
 		for (int i = 0; i < g_Grid->GetSize().x; i++)
@@ -327,6 +333,11 @@ void Game::OnKeyDown(KEY keycode)
 		case KEY_O:
 		{
 			cartesianCamera = !cartesianCamera;
+			break;
+		}
+		case KEY_P:
+		{
+			m_pTestAudioSource->TogglePause();
 			break;
 		}
 	}

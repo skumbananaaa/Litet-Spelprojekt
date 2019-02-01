@@ -377,7 +377,7 @@ void Window::KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 a
 
 void Window::MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 {
-	s_pMainWindow->m_LastMousePosition = glm::vec2(x, y);
+	s_pMainWindow->m_LastMousePosition = glm::vec2(x, Window::GetCurrentWindow().m_Height - y);
 	Application::GetInstance().InternalOnMouseMove(s_pMainWindow->m_LastMousePosition);
 }
 

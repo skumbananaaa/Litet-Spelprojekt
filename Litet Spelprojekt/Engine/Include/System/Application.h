@@ -79,7 +79,6 @@ inline void Application::InternalOnUpdate(float dtS)
 inline void Application::InternalOnMouseMove(glm::vec2& position)
 {
 	OnMouseMove(position);
-	position.y = m_pWindow->GetHeight() - position.y;
 	m_pGUIManager->InternalRootOnMouseMove(position);
 }
 

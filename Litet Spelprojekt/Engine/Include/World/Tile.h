@@ -12,6 +12,10 @@ public:
 	void SetID(uint32 id);
 	///<summary>Sets the color of the tile.</summary>
 	void SetColor(const glm::vec4& color);
+	///<summary>Sets a tint on top of the color of the tile.</summary>
+	void SetTint(const glm::vec4& tint);
+	///<summary>Resets the color of the tile to the default color.</summary>
+	void ResetColor();
 
 	///<summary>Returns the id of the tile.</summary>
 	const uint32 GetID() const;
@@ -20,6 +24,7 @@ private:
 	uint32 m_Id;
 	IndexedMesh* m_pMesh;
 	Material* m_pMaterial;
+	glm::vec4 m_Color;
 };
 
 inline const uint32 Tile::GetID() const

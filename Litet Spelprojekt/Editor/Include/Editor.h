@@ -13,12 +13,29 @@
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
 #include <World/Grid.h>
+#include <IO/WorldSerializer.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/string_cast.hpp>
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
+#define NUM_ROOM_COLORS 6
+#define TILE_UNDEFINED_INDEX 0
+#define TILE_DOOR_INDEX 1
+#define TILE_LADDER_UP 2
+#define TILE_LADDER_DOWN 3
+#define TILE_SMALLEST_FREE 4
+
+enum EditingMode : uint32
+{
+	NONE,
+	ADD_ROOM,
+	EDIT_ROOM,
+	DELETE_ROOM,
+	ADD_DOOR,
+	REMOVE_DOOR
+};
 
 class Editor : public Application
 {
@@ -29,6 +46,7 @@ public:
 	glm::ivec2 CalculateGridPosition(const glm::vec2& mousePosition) noexcept;
 	glm::ivec2 CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept;
 
+	void OnMouseMove(const glm::vec2& position) override;
 	void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnKeyUp(KEY keycode) override;
@@ -44,8 +62,16 @@ private:
 	IRenderer* m_pRenderer;
 	Scene* m_pScene;
 
+	EditingMode m_CurrentEditingMode;
+
+	glm::vec3 m_RoomColors[NUM_ROOM_COLORS];
+	uint32 m_LargestIndexUsed;
+
 	bool m_Dragging;
+	int32 m_RoomBeingEdited;
 	glm::ivec2 m_FirstCorner;
+
+	glm::vec3 m_MouseColor;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
 
@@ -68,5 +94,7 @@ private:
 	Button* m_pButtonAdd;
 	Button* m_pButtonEdit;
 	Button* m_pButtonRemove;
+	Button* m_pButtonAddDoor;
+	Button* m_pButtonRemoveDoor;
 	Panel* m_pPanelEditor;
 };

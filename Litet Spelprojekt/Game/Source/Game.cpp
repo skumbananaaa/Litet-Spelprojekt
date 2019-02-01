@@ -6,7 +6,7 @@
 #include "..\Include\Path.h"
 
 #if defined(_DEBUG)
-#define DRAW_DEBUG_BOXES
+//#define DRAW_DEBUG_BOXES
 #endif
 
 GameObject* g_pDecalObject = nullptr;
@@ -174,7 +174,7 @@ Game::Game() noexcept :
 	//Audio
 	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");
 	m_pSoundEffect = new SoundEffect("Resources/Audio/Mono/fart.wav");
-	m_pMusic = new Music("Resources/Audio/Music/CyaronsGate.ogg");
+	m_pMusic = new Music("Resources/Audio/Music/WavesAndSeagulls.ogg");
 	m_pTestAudioSource = new AudioSource(*m_pMusic);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
@@ -254,6 +254,12 @@ Game::Game() noexcept :
 
 	m_pWallMesh = IndexedMesh::CreateCube();
 
+	Material* colours[3] = {
+		m_pRedMaterial,
+		m_pGreenMaterial,
+		m_pBlueMaterial
+	};
+
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
 		const uint32* const* map = m_pWorld->GetLevel(level)->GetLevel();
 		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());
@@ -279,7 +285,7 @@ Game::Game() noexcept :
 		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++) {
 			wall = m_pWorld->GetLevel(level)->GetWall(i);
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(m_pBlueMaterial);
+			pGameObject->SetMaterial(colours[i % 3]);
 			pGameObject->SetMesh(m_pWallMesh);
 			pGameObject->SetPosition(glm::vec3(wall.x, 11.0f + 2.0f * level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
@@ -341,6 +347,11 @@ void Game::OnKeyDown(KEY keycode)
 		case KEY_O:
 		{
 			cartesianCamera = !cartesianCamera;
+			break;
+		}
+		case KEY_P:
+		{
+			m_pTestAudioSource->TogglePause();
 			break;
 		}
 	}

@@ -52,54 +52,49 @@ Editor::Editor() noexcept : Application(false)
 
 	m_pScene = new Scene();
 
-	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f);
+	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
 	//pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
-	pCamera->CreateOrthographic(30.0f, 30.0f, 0.01f, 100.0f);
+	pCamera->CreateOrthographic(30.0f * aspect, 30.0f, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
-	//pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
-	//m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-	//m_pPerFrameUniform = new UniformBuffer(m_PerFrameArray, 1, sizeof(m_PerFrameArray));
-	
+	m_pPanelTop = new Panel(0, GetWindow().GetHeight() - 70, GetWindow().GetWidth(), 70);
+	m_pButtonSave = new Button(10, 10, 140, 50, "Save", nullptr, OnButtonReleased);
+	m_pButtonLoad = new Button(160, 10, 140, 50, "Load", nullptr, OnButtonReleased);
+	m_pButtonRoom = new Button(310, 10, 140, 50, "Room Editor", nullptr, OnButtonReleased);
+	m_pButtonMesh = new Button(460, 10, 140, 50, "Mesh Editor", nullptr, OnButtonReleased);
+	m_pPanelTop->Add(m_pButtonSave);
+	m_pPanelTop->Add(m_pButtonLoad);
+	m_pPanelTop->Add(m_pButtonRoom);
+	m_pPanelTop->Add(m_pButtonMesh);
+	m_pPanelTop->SetDeleteAllChildrenOnDestruction(true);
 
-	Texture2D* b = new Texture2D("Resources/Textures/test4.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
-	Texture2D* f = new Texture2D("Resources/Textures/test5.png", TEX_FORMAT::TEX_FORMAT_RGBA, false);
+	m_pPanelFloor = new Panel(0, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
+	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Select Floor", TextAlignment::CENTER);
+	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "Floor 1", nullptr, OnButtonReleased);
+	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "Floor 2", nullptr, OnButtonReleased);
+	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "Floor 3", nullptr, OnButtonReleased);
+	m_pPanelFloor->Add(m_pTextViewFloor);
+	m_pPanelFloor->Add(m_pButtonFloor1);
+	m_pPanelFloor->Add(m_pButtonFloor2);
+	m_pPanelFloor->Add(m_pButtonFloor3);
+	m_pPanelFloor->SetDeleteAllChildrenOnDestruction(true);
 
-	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
-	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 160, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
+	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Select Tool", TextAlignment::CENTER);
+	m_pButtonAdd = new Button(10, m_pPanelEditor->GetHeight() - 100, 140, 50, "New room", nullptr, OnButtonReleased);
+	m_pButtonEdit = new Button(10, m_pPanelEditor->GetHeight() - 160, 140, 50, "Edit room", nullptr, OnButtonReleased);
+	m_pButtonRemove = new Button(10, m_pPanelEditor->GetHeight() - 220, 140, 50, "Delete room", nullptr, OnButtonReleased);
+	m_pPanelEditor->Add(m_pTextViewEditor);
+	m_pPanelEditor->Add(m_pButtonAdd);
+	m_pPanelEditor->Add(m_pButtonEdit);
+	m_pPanelEditor->Add(m_pButtonRemove);
+	m_pPanelEditor->SetDeleteAllChildrenOnDestruction(true);
 
-	m_pPanel = new Panel(0, 50, 500, 500, new Texture2D("Resources/Textures/test3.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-
-	m_pButton = new Button(25, 400, 200, 50, "Button 1", OnButtonPressed, OnButtonReleased);
-	m_pButton->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-	m_pButton->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-
-	m_pButton2 = new Button(350, 400, 200, 50, "Button 2", OnButtonPressed, OnButtonReleased);
-	m_pButton2->SetTexture(new Texture2D("Resources/Textures/test.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-	m_pButton2->SetOnPressedTexture(new Texture2D("Resources/Textures/test2.png", TEX_FORMAT::TEX_FORMAT_RGBA, false));
-
-	m_pSlider = new Slider(10, 100, 400, 30, b, f, OnSliderChanged);
-	m_pSlider->SetRatio(0.5F);
-	m_pSlider->SetPercentage(0.0F);
-
-	m_pSlider2 = new Slider(450, 50, 30, 400, b, f, OnSliderChanged);
-	m_pSlider2->SetRatio(0.5F);
-	m_pSlider2->SetPercentage(0.0F);
-
-
-	m_pPanelScrollable = new PanelScrollable(520, 50, 500, 500, 500, 1000, new Texture2D("Resources/Textures/test6.png", TEX_FORMAT::TEX_FORMAT_RGBA, false), b, f);
-
-	m_pPanelScrollable->Add(m_pButton);
-	m_pPanelScrollable->Add(m_pButton2);
-	m_pPanelScrollable->Add(m_pSlider);
-	m_pPanelScrollable->Add(m_pSlider2);
-
-	/*GetGUIManager().Add(m_pPanel);
-	GetGUIManager().Add(m_pTextViewFPS);
-	GetGUIManager().Add(m_pTextViewUPS);
-	GetGUIManager().Add(m_pPanelScrollable);*/
+	GetGUIManager().Add(m_pPanelTop);
+	GetGUIManager().Add(m_pPanelFloor);
+	GetGUIManager().Add(m_pPanelEditor);
 
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
@@ -145,12 +140,115 @@ Editor::Editor() noexcept : Application(false)
 
 Editor::~Editor()
 {
-	//Delete(m_pShaderProgramDefault);
 	Delete(m_pRenderer);
 	Delete(m_pGrid);
 	Delete(m_pScene);
-	Delete(m_pTextViewFPS);
-	Delete(m_pTextViewUPS);
+
+	Delete(m_pPanelTop);
+	Delete(m_pPanelFloor);
+	Delete(m_pPanelEditor);
+}
+
+void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
+{
+	glm::vec2 clipSpacePosition(position.x / static_cast<float>(GetWindow().GetWidth()), position.y / static_cast<float>(GetWindow().GetHeight()));
+	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
+	glm::vec3 worldPosition = m_pScene->GetCamera().GetInverseCombinedMatrix() * glm::vec4(0.0f, clipSpacePosition.y, clipSpacePosition.x, 1.0f);
+	glm::uvec2 gridPosition(static_cast<uint32>(worldPosition.z) + 10, static_cast<uint32>(worldPosition.y) + 10);
+	gridPosition.x = glm::clamp<uint32>(gridPosition.x, 0, m_pGrid->GetSize().x - 1);
+	gridPosition.y = glm::clamp<uint32>(gridPosition.y, 0, m_pGrid->GetSize().y - 1);
+
+	Tile* tile = m_pGrid->GetTile(gridPosition);
+
+	//Material* material = new Material(tile->GetMaterial());
+	tile->SetColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+	//material->SetColor();
+	//tile->SetMaterial(material);
+	std::cout << glm::to_string(clipSpacePosition) << std::endl;
+	std::cout << glm::to_string(worldPosition) << std::endl;
+}
+
+void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
+{
+}
+
+void Editor::OnKeyUp(KEY keycode)
+{
+}
+
+void Editor::OnKeyDown(KEY keycode)
+{
+	switch (keycode)
+	{
+		case KEY_O:
+		{
+			using namespace std;
+			Camera& camera = m_pScene->GetCamera();
+			const glm::mat4& view = camera.GetViewMatrix();
+			const glm::mat4& projection = camera.GetProjectionMatrix();
+			const glm::mat4& combined = camera.GetCombinedMatrix();
+
+			cout << "View: " << glm::to_string<glm::mat4>(view) << endl;
+			cout << "Projection: " << glm::to_string<glm::mat4>(projection) << endl;
+			cout << "Combined: " << glm::to_string<glm::mat4>(combined) << endl;
+
+			break;
+		}
+	}
+}
+
+void Editor::OnButtonReleased(Button* button)
+{
+	Editor* editor = GetEditor();
+	if (button == editor->m_pButtonSave)
+	{
+
+	}
+	else if (button == editor->m_pButtonLoad)
+	{
+
+	}
+	else if (button == editor->m_pButtonRoom)
+	{
+		editor->m_pButtonAdd->SetText("New Room");
+		editor->m_pButtonEdit->SetText("Edit Room");
+		editor->m_pButtonRemove->SetText("Delete Room");
+	}
+	else if (button == editor->m_pButtonMesh)
+	{
+		editor->m_pButtonAdd->SetText("New Mesh");
+		editor->m_pButtonEdit->SetText("Edit Mesh");
+		editor->m_pButtonRemove->SetText("Delete Mesh");
+	}
+	else if (button == editor->m_pButtonFloor1)
+	{
+
+	}
+	else if (button == editor->m_pButtonFloor2)
+	{
+
+	}
+	else if (button == editor->m_pButtonFloor3)
+	{
+
+	}
+	else if (button == editor->m_pButtonAdd)
+	{
+
+	}
+	else if (button == editor->m_pButtonEdit)
+	{
+
+	}
+	else if (button == editor->m_pButtonRemove)
+	{
+
+	}
+}
+
+Editor* Editor::GetEditor()
+{
+	return (Editor*)&GetInstance();
 }
 
 void Editor::OnUpdate(float dtS)
@@ -184,10 +282,6 @@ void Editor::OnUpdate(float dtS)
 	/*m_pScene->GetCamera().UpdateFromPitchYaw();
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
 	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);*/
-	
-
-	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
-	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 }
 
 void Editor::OnRender(float dtS)

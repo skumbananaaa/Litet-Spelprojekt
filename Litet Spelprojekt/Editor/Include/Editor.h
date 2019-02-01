@@ -13,10 +13,12 @@
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
 #include <World/Grid.h>
-//#include "../../Game/Include/IO/WorldSerializer.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <GLM/gtx/string_cast.hpp>
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
+
 
 class Editor : public Application
 {
@@ -24,8 +26,16 @@ public:
 	Editor() noexcept;
 	~Editor();
 
+	void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) override;
+	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
+	void OnKeyUp(KEY keycode) override;
+	void OnKeyDown(KEY keycode) override;
+
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
+
+	static void OnButtonReleased(Button* button);
+	static Editor* GetEditor();
 
 private:
 	//ShaderProgram* m_pShaderProgramDefault;
@@ -38,12 +48,21 @@ private:
 	Grid* m_pGrid;
 	UniformBuffer* m_pGridUniform;
 
-	TextView* m_pTextViewFPS;
-	TextView* m_pTextViewUPS;
-	Button* m_pButton;
-	Button* m_pButton2;
-	Slider* m_pSlider;
-	Panel* m_pPanel;
+	Button* m_pButtonSave;
+	Button* m_pButtonLoad;
+	Button* m_pButtonRoom;
+	Button* m_pButtonMesh;
+	Panel* m_pPanelTop;
 
-	PanelScrollable* m_pPanelScrollable;
+	TextView* m_pTextViewFloor;
+	Button* m_pButtonFloor1;
+	Button* m_pButtonFloor2;
+	Button* m_pButtonFloor3;
+	Panel* m_pPanelFloor;
+
+	TextView* m_pTextViewEditor;
+	Button* m_pButtonAdd;
+	Button* m_pButtonEdit;
+	Button* m_pButtonRemove;
+	Panel* m_pPanelEditor;
 };

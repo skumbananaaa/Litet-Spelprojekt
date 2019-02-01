@@ -13,8 +13,7 @@
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
 #include <World/Grid.h>
-#include <World/Resources.h>
-#include <World/IResourceListener.h>
+#include <IO/ResourceHandler.h>
 #include <IO/WorldSerializer.h>
 
 #define GLM_ENABLE_EXPERIMENTAL

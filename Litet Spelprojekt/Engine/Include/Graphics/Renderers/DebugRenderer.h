@@ -1,7 +1,7 @@
 #pragma once
 #include <Graphics/Scene.h>
 #include <Graphics/Shaders/ShaderProgram.h>
-#include <World/Resources.h>
+#include <IO/ResourceHandler.h>
 
 class UniformBuffer;
 class IndexedMesh;

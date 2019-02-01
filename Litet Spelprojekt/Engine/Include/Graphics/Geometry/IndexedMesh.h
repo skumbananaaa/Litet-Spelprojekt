@@ -18,7 +18,7 @@ struct Vertex
 class API IndexedMesh
 {
 	friend class GLContext;
-	friend class Resources;
+	friend class MESH;
 	friend class ResourceHandler;
 
 public:

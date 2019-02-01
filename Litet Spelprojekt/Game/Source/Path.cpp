@@ -59,7 +59,7 @@ bool Path::MoveToNextTile()
 Path::Path(const Tile* const * const * pppTilemap, const glm::ivec2& size)
 {
 	m_size = size;
-	m_ppMap = map;
+	//m_ppMap = map;
 	m_pPath = new glm::ivec2[size.x * size.y];
 	m_openList = new glm::ivec2[m_size.x * m_size.y];
 }

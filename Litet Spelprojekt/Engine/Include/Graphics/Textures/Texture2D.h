@@ -1,8 +1,12 @@
 #pragma once
 #include <Graphics/Textures/Texture.h>
 
+
 class API Texture2D : public Texture
 {
+	friend class TEXTURE;
+	friend class ResourceHandler;
+
 public:
 	Texture2D(Texture2D&& other) = delete;
 	Texture2D(const Texture2D& other) = delete;
@@ -10,12 +14,14 @@ public:
 	Texture2D& operator=(const Texture2D& other) = delete;
 
 	Texture2D(const void* pInitalData, const TextureDesc& desc, const TextureParams& params = TextureParams());
-	Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
 	~Texture2D();
 
 	uint32 GetWidth() const noexcept;
 	uint32 GetHeight() const noexcept;
 	uint32 GetSamples() const noexcept;
+
+private:
+	Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
 
 private:
 	void Create(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);

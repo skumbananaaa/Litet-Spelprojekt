@@ -5,8 +5,7 @@
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/Decal.h>
-#include <World/ResourceHandler.h>
-#include <World/Resources.h>
+#include <IO/ResourceHandler.h>
 
 class API GameObject
 {
@@ -95,8 +94,6 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 {
 	return m_InverseTransform;
 }
-
-
 
 inline bool GameObject::HasMaterial() const noexcept
 {

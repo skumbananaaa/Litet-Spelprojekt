@@ -226,7 +226,7 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		m_pDecalMesh = ResourceHandler::GetMesh(Resources::MESH_CUBE);
+		m_pDecalMesh = ResourceHandler::GetMesh(MESH::CUBE);
 		m_pTriangle = new FullscreenTri();
 	}
 
@@ -435,13 +435,8 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		TextureParams params = {};
-		params.Wrap = TEX_PARAM_REPEAT;
-		params.MinFilter = TEX_PARAM_LINEAR;
-		params.MagFilter = TEX_PARAM_LINEAR;
-
-		m_pWaterDistortionMap = new Texture2D("Resources/Textures/waterDUDV.png", TEX_FORMAT_RGB, true, params);
-		m_pWaterNormalMap = new Texture2D("Resources/Textures/waterNormalMap.png", TEX_FORMAT_RGB, true, params);
+		m_pWaterDistortionMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_DISTORTION);
+		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
 	}
 }
 

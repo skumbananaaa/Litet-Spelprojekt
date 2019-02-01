@@ -196,7 +196,7 @@ FontRenderer* FontRenderer::CreateFontRenderer(const char* font, int width, int 
 		return nullptr;
 	}
 
-	FT_Set_Pixel_Sizes(face, 0, 48);
+	FT_Set_Pixel_Sizes(face, 0, 18);
 
 	if (m_pShaderProgram == nullptr)
 	{

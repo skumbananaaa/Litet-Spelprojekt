@@ -14,7 +14,6 @@ DebugRenderer::~DebugRenderer()
 	DeleteSafe(m_pDecalProgram);
 	DeleteSafe(m_pPerFrame);
 	DeleteSafe(m_pPerObject);
-	DeleteSafe(m_pUnitCubeMesh);
 }
 
 void DebugRenderer::DrawScene(const Scene& scene) const noexcept
@@ -49,7 +48,7 @@ void DebugRenderer::Create() noexcept
 	m_pPerObject = new UniformBuffer(&perObject, 1, sizeof(DebugPerObject));
 
 	{
-		m_pUnitCubeMesh = ResourceHandler::GetMesh(Resources::MESH_CUBE);
+		m_pUnitCubeMesh = ResourceHandler::GetMesh(MESH::CUBE);
 	}
 }
 

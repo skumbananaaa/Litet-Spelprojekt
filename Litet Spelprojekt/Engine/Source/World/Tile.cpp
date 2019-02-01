@@ -4,7 +4,7 @@
 Tile::Tile(uint32 material, const glm::vec3& pos, uint32 id) : GameObject()
 {
 	//m_Color = color;
-	GameObject::SetMesh(Resources::MESH_QUAD);
+	GameObject::SetMesh(MESH::QUAD);
 	GameObject::SetMaterial(material);
 	GameObject::SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::pi<float>() / 2.0f));
 	GameObject::SetPosition(pos);

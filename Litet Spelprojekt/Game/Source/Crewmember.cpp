@@ -1,6 +1,6 @@
 #include "..\Include\Crewmember.h"
 
-Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name) : m_pLight(new PointLight(position, lightColor)), m_pMesh(IndexedMesh::CreateCube())
+Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name) : m_pLight(new PointLight(position, lightColor))
 {
 	m_ActionCap = actionCap;
 	m_Name = name;
@@ -10,8 +10,8 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 	m_playerTile = glm::ivec2(std::round(position.x), std::round(position.z));
 	m_targetTile = m_playerTile;
 	m_targetPos = glm::vec3(m_targetTile.x, this->GetPosition().y, m_targetTile.y);
-	this->SetMaterial(m_pMaterial);
-	this->SetMesh(m_pMesh);
+	/*this->SetMaterial(m_pMaterial);
+	this->SetMesh(m_pMesh);*/
 	this->SetPosition(position);
 	this->SetScale(glm::vec3(0.2, 1.8, 0.5));
 	this->UpdateTransform();
@@ -26,8 +26,8 @@ Crewmember::Crewmember(Crewmember & other): m_pLight(new PointLight(other.GetPos
 	m_playerTile = glm::ivec2(std::round(other.GetPosition().x), std::round(other.GetPosition().z));
 	m_targetTile = m_playerTile;
 	m_targetPos = glm::vec3(m_targetTile.x, this->GetPosition().y, m_targetTile.y);
-	this->SetMaterial(m_pMaterial);
-	this->SetMesh(m_pMesh);
+	/*this->SetMaterial(m_pMaterial);
+	this->SetMesh(m_pMesh);*/
 	this->SetPosition(other.GetPosition());
 	this->UpdateTransform();
 }
@@ -97,11 +97,11 @@ void Crewmember::SetActionCapacity(const float actionCap)
 {
 	m_ActionCap = actionCap;
 }
-
+/*
 void Crewmember::SetPath(const Tile* const * const * pppTilemap, const glm::ivec2& size)
 {
 	m_pPathFinder = new Path(map, size);
-}
+}*/
 
 void Crewmember::UpdateTransform() noexcept
 {

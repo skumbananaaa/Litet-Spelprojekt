@@ -48,8 +48,11 @@
     <ClCompile Include="Source\World\Tile.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\OrthographicRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\DebugRenderer.cpp" />
-    <ClCompile Include="Source\World\ResourceHandler.cpp" />
-    <ClCompile Include="Source\World\Resources.cpp" />
+    <ClCompile Include="Source\IO\ResourceHandler.cpp" />
+    <ClCompile Include="Source\IO\R_DECAL.cpp" />
+    <ClCompile Include="Source\IO\R_MESH.cpp" />
+    <ClCompile Include="Source\IO\R_MATERIAL.cpp" />
+    <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -106,8 +109,11 @@
     <ClInclude Include="Include\World\Tile.h" />
     <ClInclude Include="Include\Graphics\Renderers\OrthographicRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
-    <ClInclude Include="Include\World\ResourceHandler.h" />
-    <ClInclude Include="Include\World\Resources.h" />
-    <ClInclude Include="Include\World\IResourceListener.h" />
+    <ClInclude Include="Include\IO\IResourceListener.h" />
+    <ClInclude Include="Include\IO\ResourceHandler.h" />
+    <ClInclude Include="Include\IO\DECAL.h" />
+    <ClInclude Include="Include\IO\MATERIAL.h" />
+    <ClInclude Include="Include\IO\MESH.h" />
+    <ClInclude Include="Include\IO\TEXTURE.h" />
   </ItemGroup>
 </Project>

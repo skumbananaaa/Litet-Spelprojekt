@@ -3,13 +3,13 @@
 
 Editor::Editor() noexcept : Application(false)
 {
+	ResourceHandler::LoadResources(this);
+
 	m_pRenderer = new OrthographicRenderer();
 	std::cout << "Editor" << std::endl;
 
 	m_pScene = new Scene();
 
-	Resources::RegisterResources();
-	ResourceHandler::LoadResources(this);
 
 	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
@@ -63,7 +63,7 @@ Editor::Editor() noexcept : Application(false)
 
 	const int32 gridWidth = 40;
 	const int32 gridHeight = 20;
-	m_pGrid = new Grid(Resources::MATERIAL_WHITE, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
+	m_pGrid = new Grid(MATERIAL::WHITE, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
 
 	/*int temp_map[gridHeiht][gridWidth]{
 		{0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },

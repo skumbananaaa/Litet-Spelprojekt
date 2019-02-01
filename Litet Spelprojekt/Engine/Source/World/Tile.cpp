@@ -1,13 +1,11 @@
 #include <EnginePch.h>
 #include <World/Tile.h>
 
-Tile::Tile(const glm::vec3& pos, const glm::vec4& color, uint32 id) : m_pMesh(IndexedMesh::CreateQuad())
+Tile::Tile(uint32 material, const glm::vec3& pos, uint32 id) : GameObject()
 {
-	GameObject::SetMesh(m_pMesh);
-	m_pMaterial = new Material();
-	m_pMaterial->SetColor(color);
 	m_Color = color;
-	GameObject::SetMaterial(m_pMaterial);
+	GameObject::SetMesh(Resources::MESH_QUAD);
+	GameObject::SetMaterial(material);
 	GameObject::SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::pi<float>() / 2.0f));
 	GameObject::SetPosition(pos);
 	GameObject::UpdateTransform();
@@ -15,8 +13,7 @@ Tile::Tile(const glm::vec3& pos, const glm::vec4& color, uint32 id) : m_pMesh(In
 
 Tile::~Tile()
 {
-	Delete(m_pMesh);
-	Delete(m_pMaterial);
+	
 }
 
 void Tile::SetID(uint32 id)

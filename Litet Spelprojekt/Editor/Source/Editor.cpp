@@ -8,6 +8,9 @@ Editor::Editor() noexcept : Application(false)
 
 	m_pScene = new Scene();
 
+	Resources::RegisterResources();
+	ResourceHandler::LoadResources(this);
+
 	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
 	pCamera->CreateOrthographic(30.0f * aspect, 30.0f, 0.01f, 100.0f);
@@ -61,6 +64,7 @@ Editor::Editor() noexcept : Application(false)
 	const int32 gridWidth = 40;
 	const int32 gridHeight = 20;
 	m_pGrid = new Grid(glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
+	m_pGrid = new Grid(Resources::MATERIAL_WHITE, glm::ivec2(20, 20), glm::vec3(-10.0f, 0.0f, -10.0f));
 
 	/*int temp_map[gridHeiht][gridWidth]{
 		{0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -121,6 +125,13 @@ Editor::~Editor()
 	Delete(m_pPanelTop);
 	Delete(m_pPanelFloor);
 	Delete(m_pPanelEditor);
+
+	ResourceHandler::ReleaseResources();
+}
+
+void Editor::OnResourcesLoaded()
+{
+
 }
 
 glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcept

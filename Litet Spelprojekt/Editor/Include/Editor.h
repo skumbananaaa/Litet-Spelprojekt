@@ -13,6 +13,8 @@
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
 #include <World/Grid.h>
+#include <World/Resources.h>
+#include <World/IResourceListener.h>
 #include <IO/WorldSerializer.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -27,6 +29,7 @@
 #define TILE_LADDER_DOWN 3
 #define TILE_SMALLEST_FREE 4
 
+class Editor : public Application, public IResourceListener
 enum EditingMode : uint32
 {
 	NONE,
@@ -54,6 +57,8 @@ public:
 
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
+
+	void OnResourcesLoaded() override;
 
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();

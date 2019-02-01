@@ -5,8 +5,8 @@
 class API Grid
 {
 public:
-	Grid(const glm::ivec2& size, uint32** ppTileVal, const glm::vec3& position = glm::vec3(0.0f));
-	Grid(const glm::ivec2& size = glm::ivec2(0, 0), const glm::vec3& position = glm::vec3(0.0f));
+	Grid(uint32 material, const glm::ivec2& size, uint32** ppTileVal, const glm::vec3& position = glm::vec3(0.0f));
+	Grid(uint32 material, const glm::ivec2& size = glm::ivec2(0, 0), const glm::vec3& position = glm::vec3(0.0f));
 	~Grid();
 
 	///<summary>Edits the id value of the specified tile in the 2d grid.</summary>
@@ -20,9 +20,6 @@ public:
 	const glm::ivec2& GetSize() const;
 	///<summary>Returns all the pointers to tiles in a double pointer array.</summary>
 	const Tile* const * const * GetGrid() const;
-
-	///<summary>Sets the color of the specified tile to the specified color.</summary>
-	void SetColor(const glm::ivec2& pos, const glm::vec4& color);
 
 private:
 	glm::ivec2 m_Size;

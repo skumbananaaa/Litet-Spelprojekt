@@ -49,7 +49,7 @@ void DebugRenderer::Create() noexcept
 	m_pPerObject = new UniformBuffer(&perObject, 1, sizeof(DebugPerObject));
 
 	{
-		m_pUnitCubeMesh = IndexedMesh::CreateCube();
+		m_pUnitCubeMesh = ResourceHandler::GetMesh(Resources::MESH_CUBE);
 	}
 }
 

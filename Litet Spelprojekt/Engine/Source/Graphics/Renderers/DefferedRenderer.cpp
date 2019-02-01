@@ -226,7 +226,7 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		m_pDecalMesh = IndexedMesh::CreateCube();
+		m_pDecalMesh = ResourceHandler::GetMesh(Resources::MESH_CUBE);
 		m_pTriangle = new FullscreenTri();
 	}
 

@@ -18,6 +18,8 @@ struct Vertex
 class API IndexedMesh
 {
 	friend class GLContext;
+	friend class Resources;
+	friend class ResourceHandler;
 
 public:
 	IndexedMesh(IndexedMesh&& other) = delete;
@@ -38,7 +40,7 @@ private:
 	uint32 m_VertexCount;
 	uint32 m_IndexCount;
 
-public:
+private:
 	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);
 	static IndexedMesh* CreateCube();
 	static IndexedMesh* CreateQuad();

@@ -4,6 +4,7 @@
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
+#include <World/Resources.h>
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 8

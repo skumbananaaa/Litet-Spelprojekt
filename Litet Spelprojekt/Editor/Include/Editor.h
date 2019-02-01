@@ -26,6 +26,9 @@ public:
 	Editor() noexcept;
 	~Editor();
 
+	glm::ivec2 CalculateGridPosition(const glm::vec2& mousePosition) noexcept;
+	glm::ivec2 CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept;
+
 	void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnKeyUp(KEY keycode) override;
@@ -42,6 +45,8 @@ private:
 	IRenderer* m_pRenderer;
 	Scene* m_pScene;
 
+	bool m_Dragging;
+	glm::ivec2 m_FirstCorner;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
 

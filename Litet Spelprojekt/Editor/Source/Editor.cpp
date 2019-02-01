@@ -135,6 +135,7 @@ Editor::Editor() noexcept : Application(false)
 		}
 	}
 
+	m_Dragging = false;
 	//GetGraphicsContext().Disable(Cap::CULL_FACE);
 }
 
@@ -149,27 +150,62 @@ Editor::~Editor()
 	Delete(m_pPanelEditor);
 }
 
+glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcept
+{
+	glm::vec2 clipSpacePosition(mousePosition.x / static_cast<float>(GetWindow().GetWidth()), mousePosition.y / static_cast<float>(GetWindow().GetHeight()));
+	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
+	glm::vec3 worldPosition = m_pScene->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
+	glm::ivec2 gridPosition(
+		static_cast<uint32>(glm::round(worldPosition.x)) + m_pGrid->GetSize().x / 2, 
+		static_cast<uint32>(glm::round(worldPosition.z)) + m_pGrid->GetSize().y / 2);
+	return gridPosition;
+}
+
+glm::ivec2 Editor::CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept
+{
+	glm::ivec2 lowestCorner;
+	lowestCorner.x = glm::min(firstCorner.x, secondCorner.x);
+	lowestCorner.y = glm::min(firstCorner.y, secondCorner.y);
+	return lowestCorner;
+}
+
 void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 {
-	glm::vec2 clipSpacePosition(position.x / static_cast<float>(GetWindow().GetWidth()), position.y / static_cast<float>(GetWindow().GetHeight()));
-	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
-	glm::vec3 worldPosition = m_pScene->GetCamera().GetInverseCombinedMatrix() * glm::vec4(0.0f, clipSpacePosition.y, clipSpacePosition.x, 1.0f);
-	glm::uvec2 gridPosition(static_cast<uint32>(worldPosition.z) + 10, static_cast<uint32>(worldPosition.y) + 10);
-	gridPosition.x = glm::clamp<uint32>(gridPosition.x, 0, m_pGrid->GetSize().x - 1);
-	gridPosition.y = glm::clamp<uint32>(gridPosition.y, 0, m_pGrid->GetSize().y - 1);
+	if (!m_Dragging)
+	{
+		m_Dragging = true;
+		m_FirstCorner = CalculateGridPosition(position);
+		std::cout << glm::to_string(m_FirstCorner) << std::endl;
+	}
 
-	Tile* tile = m_pGrid->GetTile(gridPosition);
-
-	//Material* material = new Material(tile->GetMaterial());
-	tile->SetColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
-	//material->SetColor();
-	//tile->SetMaterial(material);
-	std::cout << glm::to_string(clipSpacePosition) << std::endl;
-	std::cout << glm::to_string(worldPosition) << std::endl;
+	/*if (gridPosition.x >= 0 && gridPosition.x <= m_pGrid->GetSize().x - 1 && gridPosition.y >= 0 && gridPosition.y <= m_pGrid->GetSize().y - 1)
+	{
+		m_pGrid->GetTile(gridPosition)->SetColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+	}*/
 }
 
 void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
+	if (m_Dragging)
+	{
+		m_Dragging = false;
+		glm::ivec2 secondCorner = CalculateGridPosition(position);
+		glm::ivec2 lowestCorner = CalculateLowestCorner(m_FirstCorner, secondCorner);
+		glm::ivec2 area = glm::abs(secondCorner - m_FirstCorner);
+		uint32 numTiles = area.x * area.y;
+
+		for (uint32 i = 0; i < numTiles; i++)
+		{
+			glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
+			std::cout << glm::to_string(currentPos) << std::endl;
+			if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
+			{
+				m_pGrid->GetTile(currentPos)->SetColor(glm::vec4(1.0, 0.0, 0.0, 1.0));
+			}
+		}
+
+		m_FirstCorner = glm::ivec2(0);
+	}
 }
 
 void Editor::OnKeyUp(KEY keycode)

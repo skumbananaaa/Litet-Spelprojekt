@@ -1,60 +1,15 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Editor.h"
 
-Slider* m_pSlider2;
-
-void OnButtonPressed(Button* button)
-{
-	std::cout << "Button Pressed" << std::endl;
-}
-
-void OnButtonReleased(Button* button)
-{
-	std::cout << "Button Released" << std::endl;
-	m_pSlider2->SetVisible(!m_pSlider2->IsVisible());
-}
-
-void OnSliderChanged(Slider* slider, float percentage)
-{
-	std::cout << "Slider: "  << percentage << std::endl;
-}
-
 Editor::Editor() noexcept : Application(false)
 {
 	m_pRenderer = new OrthographicRenderer();
 	std::cout << "Editor" << std::endl;
 
-	Shader vShader;
-	Shader fShader;
-
-	vShader.CompileFromFile("Resources/Shaders/VShader.glsl", VERTEX_SHADER);
-	fShader.CompileFromFile("Resources/Shaders/FShader.glsl", FRAGMENT_SHADER);
-
-	//m_pShaderProgramDefault = new ShaderProgram(vShader, fShader);
-
-	std::vector<std::string> data;
-	data.push_back("Line 1");
-	data.push_back("Line 2");
-	data.push_back("Line 3");
-	data.push_back("Line 4");
-
-	//WorldSerializer::Write("test.txt", data);
-
-
-	const int WIDTH = 10;
-	const int HEIGHT = 10;
-	const int DEPTH = 10;
-
-	glm::mat4 transform(1.0f);
-	this->m_pGridUniform = new UniformBuffer(glm::value_ptr(transform), 1, sizeof(glm::mat4));
-
-	//this->m_pGridMesh = Mesh::CreateGrid(WIDTH, HEIGHT, DEPTH);
-
 	m_pScene = new Scene();
 
 	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
-	//pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
 	pCamera->CreateOrthographic(30.0f * aspect, 30.0f, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
@@ -314,18 +269,9 @@ void Editor::OnUpdate(float dtS)
 	}
 
 	m_pScene->GetCamera().UpdateFromPitchYaw();
-
-	/*m_pScene->GetCamera().UpdateFromPitchYaw();
-	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);*/
 }
 
 void Editor::OnRender(float dtS)
 {
-	/*GetGraphicsContext().SetProgram(m_pShaderProgramDefault);
-	GetGraphicsContext().SetUniformBuffer(m_pPerFrameUniform, 1);
-
-	GetGraphicsContext().SetUniformBuffer(m_pGridUniform, 0);
-	GetGraphicsContext().DrawMesh(*m_pGridMesh, PT_LINES);*/
 	m_pRenderer->DrawScene(*m_pScene, dtS);
 }

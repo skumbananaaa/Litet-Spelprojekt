@@ -41,7 +41,6 @@ public:
 	static Editor* GetEditor();
 
 private:
-	//ShaderProgram* m_pShaderProgramDefault;
 	IRenderer* m_pRenderer;
 	Scene* m_pScene;
 

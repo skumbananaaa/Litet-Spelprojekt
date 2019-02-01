@@ -284,7 +284,7 @@ void Editor::OnUpdate(float dtS)
 
 	/*m_pScene->GetCamera().UpdateFromPitchYaw();
 	m_pScene->GetCamera().CopyShaderDataToArray(m_PerFrameArray, 0);
-	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);
+	m_pPerFrameUniform->UpdateData(&m_PerFrameArray);*/
 }
 
 void Editor::OnRender(float dtS)

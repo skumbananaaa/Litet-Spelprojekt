@@ -62,7 +62,7 @@ void Slider::OnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 	}
 }
 
-void Slider::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
+void Slider::OnMouseMove(const glm::vec2& position)
 {
 	if (m_IsPressed)
 	{

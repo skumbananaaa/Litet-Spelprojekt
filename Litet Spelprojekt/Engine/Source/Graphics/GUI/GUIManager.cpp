@@ -63,8 +63,8 @@ void GUIManager::InternalRootOnMouseReleased(MouseButton mousebutton)
 
 void GUIManager::InternalRootOnMouseMove(const glm::vec2& position)
 {
-	GUIObject::InternalRootOnMouseMove(m_LastMousePosition, position);
 	m_LastMousePosition = position;
+	GUIObject::InternalRootOnMouseMove(position);
 }
 
 void GUIManager::InternalRootOnMouseScroll(const glm::vec2& offset)

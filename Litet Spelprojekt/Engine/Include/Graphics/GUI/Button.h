@@ -42,7 +42,7 @@ public:
 protected:
 	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) override;
 	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) override;
-	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
+	virtual void OnMouseMove(const glm::vec2& position) override;
 
 	virtual void OnAdded(GUIObject* parent) override;
 	virtual void OnRemoved(GUIObject* parent) override;

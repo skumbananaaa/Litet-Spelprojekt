@@ -52,7 +52,7 @@ protected:
 
 	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
 	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
-	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
+	virtual void OnMouseMove(const glm::vec2& position) {};
 	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) {};
 
 	virtual void OnKeyUp(KEY keycode) {};
@@ -91,6 +91,8 @@ protected:
 	static void AddRealTimeRenderer(GUIObject* listener);
 	static void RemoveRealTimeRenderer(GUIObject* listener);
 
+	void InternalRootOnMouseMove(const glm::vec2& position);
+
 private:
 	void InternalOnUpdate(float dtS);
 	void InternalOnRender(GUIContext* context);
@@ -99,7 +101,6 @@ private:
 
 	void InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton);
 	void InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton);
-	void InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
 	void InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset);
 
 	void RerenderChildren(GUIContext* context);

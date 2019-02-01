@@ -38,4 +38,5 @@ private:
 	Slider* m_pSliderHorizontal;
 	Framebuffer* m_pFrameBufferClientArea;
 	glm::vec2 m_ClientOffset;
+	glm::vec2 m_LastMousePos;
 };

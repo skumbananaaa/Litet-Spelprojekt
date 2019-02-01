@@ -172,7 +172,7 @@ void Button::OnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 	}
 }
 
-void Button::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
+void Button::OnMouseMove(const glm::vec2& position)
 {
 	if (ContainsPoint(position))
 	{

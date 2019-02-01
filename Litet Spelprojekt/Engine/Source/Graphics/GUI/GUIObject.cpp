@@ -509,13 +509,13 @@ void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButt
 	}
 }
 
-void GUIObject::InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
+void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 {
 	for (GUIObject* object : s_MouseListeners)
 	{
 		if (object->IsVisible())
 		{
-			object->OnMouseMove(lastPosition, position);
+			object->OnMouseMove(position);
 		}
 	}
 }
@@ -529,4 +529,5 @@ void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::
 			object->OnMouseScroll(position, offset);
 		}
 	}
+	InternalRootOnMouseMove(position);
 }

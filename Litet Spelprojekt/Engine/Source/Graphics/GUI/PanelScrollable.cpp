@@ -143,6 +143,7 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 	{
 		m_ClientOffset.x = (1.0 - slider->GetRatio()) * GetClientWidth() * percentage;
 	}
+	InternalRootOnMouseMove(m_LastMousePos);
 }
 
 bool PanelScrollable::ContainsPoint(const glm::vec2& position) const noexcept
@@ -216,6 +217,7 @@ void PanelScrollable::OnMouseScroll(const glm::vec2& position, const glm::vec2& 
 		{
 			m_pSliderHorizontal->AccelerateSlider(-offset.y * 600 * m_pSliderHorizontal->GetRatio());
 		}
+		m_LastMousePos = position;
 	}
 }
 

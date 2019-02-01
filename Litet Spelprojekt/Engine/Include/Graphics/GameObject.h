@@ -12,6 +12,7 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
+	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetMesh(const IndexedMesh* const pMesh) noexcept;
 	virtual void SetMaterial(const Material* const pMaterial) noexcept;
 	virtual void SetDecal(const Decal* const pDecal) noexcept;
@@ -25,7 +26,7 @@ public:
 	const glm::mat4& GetTransform() const noexcept;
 	const glm::mat4& GetInverseTransform() const noexcept;
 
-
+	bool IsReflectable() const noexcept;
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
@@ -44,6 +45,7 @@ private:
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
 	bool m_IsDirty;
+	bool m_IsReflectable;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -90,6 +92,11 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 }
 
 
+
+inline bool GameObject::IsReflectable() const noexcept
+{
+	return m_IsReflectable;
+}
 
 inline bool GameObject::HasMaterial() const noexcept
 {

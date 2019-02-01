@@ -38,7 +38,22 @@ void Scene::SetCamera(Camera* pCamera) noexcept
 
 void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
+	assert(pGameObject != nullptr);
+
 	m_GameObjects.push_back(pGameObject);
+	if (pGameObject->HasMaterial() && pGameObject->HasMesh())
+	{
+		m_Drawables.push_back(pGameObject);
+	}
+	else if (pGameObject->HasDecal())
+	{
+		m_Decals.push_back(pGameObject);
+	}
+
+	if (pGameObject->IsReflectable())
+	{
+		m_GameObjects.push_back(pGameObject);
+	}
 }
 
 void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept

@@ -476,6 +476,14 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 
 void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const noexcept
 {
+	if (scene.GetDecals().size() < 1)
+	{
+#if defined(_DEBUG)
+		std::cout << "No decals, skipping decalspass" << std::endl;
+#endif
+		return;
+	}
+
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetProgram(m_pDecalsPassProgram);
@@ -497,28 +505,26 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	m_pDecalPassPerFrame->UpdateData(&perFrame);
 
 	DecalPassPerObject perObject = {};
-	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	for (uint32 i = 0; i < scene.GetDecals().size(); i++)
 	{
-		GameObject& gameobject = *scene.GetGameObjects()[i];
-		if (gameobject.HasDecal())
+		GameObject& gameobject = *scene.GetDecals()[i];
+
+		perObject.Model = gameobject.GetTransform();
+		perObject.InverseModel = gameobject.GetInverseTransform();
+		perObject.Direction = perObject.Model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+
+		if (gameobject.GetDecal().HasTexture())
 		{
-			perObject.Model = gameobject.GetTransform();
-			perObject.InverseModel = gameobject.GetInverseTransform();
-			perObject.Direction = perObject.Model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-
-			if (gameobject.GetDecal().HasTexture())
-			{
-				context.SetTexture(gameobject.GetDecal().GetTexture(), 0);
-			}
-
-			if (gameobject.GetDecal().HasNormalMap())
-			{
-				context.SetTexture(gameobject.GetDecal().GetNormalMap(), 1);
-			}
-
-			m_pDecalPassPerObject->UpdateData(&perObject);
-			context.DrawIndexedMesh(*m_pDecalMesh);
+			context.SetTexture(gameobject.GetDecal().GetTexture(), 0);
 		}
+
+		if (gameobject.GetDecal().HasNormalMap())
+		{
+			context.SetTexture(gameobject.GetDecal().GetNormalMap(), 1);
+		}
+
+		m_pDecalPassPerObject->UpdateData(&perObject);
+		context.DrawIndexedMesh(*m_pDecalMesh);
 	}
 
 	//Unbind = no bugs
@@ -620,6 +626,14 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 
 void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) const noexcept
 {
+	if (scene.GetDrawables().size() < 1)
+	{
+#if defined(_DEBUG)
+		std::cout << "No drawables, skipping geomtrypass" << std::endl;
+#endif
+		return;
+	}
+
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetProgram(m_pGeometryPassProgram);
@@ -636,36 +650,35 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
 	{
 		GameObject& gameobject = *scene.GetGameObjects()[i];
-		if (gameobject.HasMaterial() && gameobject.HasMesh())
+		const Material& material = gameobject.GetMaterial();
+		perObject.Model = gameobject.GetTransform();
+		perObject.Color = material.GetColor();
+
+		if (material.HasTexture())
 		{
-			const Material& material = gameobject.GetMaterial();
-			perObject.Model = gameobject.GetTransform();
-			perObject.Color = material.GetColor();
-
-			if (material.HasTexture())
-			{
-				perObject.HasTexture = 1.0f;
-				context.SetTexture(material.GetTexture(), 0);
-			}
-			else
-			{
-				perObject.HasTexture = 0.0f;
-			}
-
-			if (material.HasNormalMap())
-			{
-				perObject.HasNormalMap = 1.0f;
-				context.SetTexture(material.GetNormalMap(), 1);
-			}
-			else
-			{
-				perObject.HasNormalMap = 0.0f;
-			}
-
-			m_pGeoPassPerObject->UpdateData(&perObject);
-			context.DrawIndexedMesh(gameobject.GetMesh());
+			perObject.HasTexture = 1.0f;
+			context.SetTexture(material.GetTexture(), 0);
 		}
+		else
+		{
+			perObject.HasTexture = 0.0f;
+		}
+
+		if (material.HasNormalMap())
+		{
+			perObject.HasNormalMap = 1.0f;
+			context.SetTexture(material.GetNormalMap(), 1);
+		}
+		else
+		{
+			perObject.HasNormalMap = 0.0f;
+		}
+
+		(scene.GetGameObjects()[0])->GetMesh().SetInstance(gameobject.GetTransform(), i);
 	}
+
+	m_pGeoPassPerObject->UpdateData(&perObject);
+	context.DrawIndexedMeshInstanced((scene.GetGameObjects()[0])->GetMesh(), scene.GetGameObjects().size());
 
 	//Unbind = no bugs
 	context.SetUniformBuffer(nullptr, 0);
@@ -726,6 +739,12 @@ void DefferedRenderer::LightPass(const Camera& camera, const Scene& scene, const
 
 void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) const noexcept
 {
+	if (scene.GetDrawables().size() < 1)
+	{
+		std::cout << "No drawables, skipping forwardpass" << std::endl;
+		return;
+	}
+
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	context.SetProgram(m_pForwardPass);
@@ -774,39 +793,37 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 	m_pGPassVSPerFrame->UpdateData(&perFrame);
 
 	GeometryPassPerObject perObject = {};	
-	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	for (uint32 i = 0; i < scene.GetDrawables().size(); i++)
 	{
-		GameObject& gameobject = *scene.GetGameObjects()[i];
-		if (gameobject.HasMaterial() && gameobject.HasMesh())
+		GameObject& gameobject = *scene.GetDrawables()[i];
+		const Material& material = gameobject.GetMaterial();
+		perObject.Model = gameobject.GetTransform();
+		perObject.Color = material.GetColor();
+
+		if (material.HasTexture())
 		{
-			const Material& material = gameobject.GetMaterial();
-			perObject.Model = gameobject.GetTransform();
-			perObject.Color = material.GetColor();
-
-			if (material.HasTexture())
-			{
-				perObject.HasTexture = 1.0f;
-				context.SetTexture(material.GetTexture(), 0);
-			}
-			else
-			{
-				perObject.HasTexture = 0.0f;
-			}
-
-			if (material.HasNormalMap())
-			{
-				perObject.HasNormalMap = 1.0f;
-				context.SetTexture(material.GetNormalMap(), 1);
-			}
-			else
-			{
-				perObject.HasNormalMap = 0.0f;
-			}
-
-			m_pGeoPassPerObject->UpdateData(&perObject);
-			context.DrawIndexedMesh(gameobject.GetMesh());
+			perObject.HasTexture = 1.0f;
+			context.SetTexture(material.GetTexture(), 0);
 		}
+		else
+		{
+			perObject.HasTexture = 0.0f;
+		}
+
+		if (material.HasNormalMap())
+		{
+			perObject.HasNormalMap = 1.0f;
+			context.SetTexture(material.GetNormalMap(), 1);
+		}
+		else
+		{
+			perObject.HasNormalMap = 0.0f;
+		}
+
+		m_pGeoPassPerObject->UpdateData(&perObject);
+		context.DrawIndexedMesh(gameobject.GetMesh());
 	}
+	
 
 	//Unbind = no bugs
 	context.SetUniformBuffer(nullptr, 0);
@@ -819,6 +836,14 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 
 void DefferedRenderer::WaterReflectionPass(const Scene& scene) const noexcept
 {
+	if (scene.GetReflectables().size() < 1)
+	{
+#if defined(_DEBUG)
+		std::cout << "No reflectables, skipping reflectionpass" << std::endl;
+#endif
+		return;
+	}
+
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	Camera reflectionCam = scene.GetCamera();

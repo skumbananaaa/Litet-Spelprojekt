@@ -28,6 +28,8 @@ public:
 	IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
 	~IndexedMesh();
 
+	void SetInstance(const glm::mat4& transform, uint32 instanceIndex) const noexcept;
+
 	uint32 GetIndexCount() const noexcept;
 	uint32 GetVertexCount() const noexcept;
 
@@ -35,8 +37,10 @@ private:
 	uint32 m_VAO;
 	uint32 m_VBO;
 	uint32 m_IBO;
+	uint32 m_InstanceBuffer;
 	uint32 m_VertexCount;
 	uint32 m_IndexCount;
+	uint32 m_NumInstances;
 
 public:
 	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);

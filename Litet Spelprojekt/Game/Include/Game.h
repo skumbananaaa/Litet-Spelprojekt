@@ -37,6 +37,7 @@ private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	Scene* m_pScene;
+	Scene* m_pInstancingTestScene;
 
 	World* m_pWorld;
 

@@ -6,7 +6,7 @@
 #include "..\Include\Path.h"
 
 #if defined(_DEBUG)
-#define DRAW_DEBUG_BOXES
+//#define DRAW_DEBUG_BOXES
 #endif
 
 GameObject* g_pDecalObject = nullptr;
@@ -42,7 +42,7 @@ Game::Game() noexcept :
 	m_pScene = new Scene();
 	m_pTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/ship.obj");
 	m_pGroundTestMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cliff_3_low.obj");
-	m_pSphereMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/cube.obj");
+	m_pSphereMesh = IndexedMesh::CreateIndexedMeshFromFile("Resources/Meshes/sphere.obj");
 
 	{
 		TextureParams params = {};
@@ -156,14 +156,14 @@ Game::Game() noexcept :
 	m_pScene->AddGameObject(pGameObject);
 
 	//Lights
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
 
-	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
+	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -287,6 +287,41 @@ Game::Game() noexcept :
 			m_pScene->AddGameObject(pGameObject);
 		}
 	}
+
+	//Create instancing test scene
+	m_pInstancingTestScene = new Scene();
+	
+	//Add lights
+	m_pInstancingTestScene->AddDirectionalLight(new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f)));
+	
+	//Add camera
+	m_pInstancingTestScene->SetCamera(new Camera());
+	m_pInstancingTestScene->GetCamera().CreatePerspective(
+		glm::radians<float>(90.0f),
+		static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight()),
+		0.01f,
+		100.0f);
+
+	m_pInstancingTestScene->GetCamera().SetPos(glm::vec3(0.0f, 0.0f, -3.0f));
+	m_pInstancingTestScene->GetCamera().UpdateFromLookAt();
+
+	//Add gameobjects
+	constexpr uint32 numObject = 20;
+	for (uint32 y = 0; y < numObject; y++)
+	{
+		for (uint32 x = 0; x < numObject; x++)
+		{
+			pGameObject = new GameObject();
+			pGameObject->SetMesh(m_pTestMesh);
+			pGameObject->SetMaterial(m_pRedMaterial);
+			pGameObject->SetPosition(glm::vec3(0.0f + (x * 1.0f), 0.0f, 0.0f + (y * 1.0f)));
+			pGameObject->SetScale(glm::vec3(1.0f));
+			pGameObject->UpdateTransform();
+			m_pInstancingTestScene->AddGameObject(pGameObject);
+		}
+	}
+
+	return;
 }
 
 Game::~Game()
@@ -299,6 +334,7 @@ Game::~Game()
 	DeleteSafe(m_pDebugRenderer);
 
 	DeleteSafe(m_pScene);
+	DeleteSafe(m_pInstancingTestScene);
 	
 	DeleteSafe(m_pSphereMesh);
 	DeleteSafe(m_pTestMesh);
@@ -364,49 +400,61 @@ void Game::OnUpdate(float dtS)
 		if (Input::IsKeyDown(KEY_W))
 		{
 			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cartesianCameraSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cartesianCameraSpeed * dtS);
 		}
 		else if (Input::IsKeyDown(KEY_S))
 		{
 			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cartesianCameraSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cartesianCameraSpeed * dtS);
 		}
 
 		if (Input::IsKeyDown(KEY_A))
 		{
 			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Left, cartesianCameraSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().MoveCartesian(CameraDirCartesian::Left, cartesianCameraSpeed * dtS);
+
 		}
 		else if (Input::IsKeyDown(KEY_D))
 		{
 			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cartesianCameraSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cartesianCameraSpeed * dtS);
 		}
 
 		if (Input::IsKeyDown(KEY_E))
 		{
 			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Up, cartesianCameraSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().MoveCartesian(CameraDirCartesian::Up, cartesianCameraSpeed * dtS);
 		}
 		else if (Input::IsKeyDown(KEY_Q))
 		{
 			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
 		}
 
 		if (Input::IsKeyDown(KEY_UP))
 		{
 			m_pScene->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
 		}
 		else if (Input::IsKeyDown(KEY_DOWN))
 		{
 			m_pScene->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
 		}
 
 		if (Input::IsKeyDown(KEY_LEFT))
 		{
 			m_pScene->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
 		}
 		else if (Input::IsKeyDown(KEY_RIGHT))
 		{
 			m_pScene->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
+			m_pInstancingTestScene->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
 		}
 
 		m_pScene->GetCamera().UpdateFromPitchYaw();
+		m_pInstancingTestScene->GetCamera().UpdateFromPitchYaw();
 	}
 	else
 	{
@@ -502,7 +550,9 @@ void Game::OnUpdate(float dtS)
 		g_Crew.getMember(1),
 		g_Crew.getMember(2)
 	};
-	for (int i = 0; i < 3; i++) {
+
+	for (int i = 0; i < 3; i++) 
+	{
 		if (Input::IsKeyDown(KEY_ENTER) && !CurrentCrewMember[i]->IsMoving())
 		{
 			glm::ivec2 goalPos(std::rand() % (m_pWorld->GetLevel(i)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(i)->GetSizeZ() - 1));
@@ -516,9 +566,11 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*m_pScene, dtS);
+	//m_pRenderer->DrawScene(*m_pScene, dtS);
+	m_pRenderer->DrawScene(*m_pInstancingTestScene, dtS);
 	
 #if defined(DRAW_DEBUG_BOXES)
-	m_pDebugRenderer->DrawScene(*m_pScene);
+	//m_pDebugRenderer->DrawScene(*m_pScene);
+	m_pDebugRenderer->DrawScene(*m_pInstancingTestScene);
 #endif
 }

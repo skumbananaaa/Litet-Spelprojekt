@@ -84,6 +84,11 @@ struct WaterPassPerObjectVS
 	glm::mat4 Model;
 };
 
+struct DefferedBatch
+{
+
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:

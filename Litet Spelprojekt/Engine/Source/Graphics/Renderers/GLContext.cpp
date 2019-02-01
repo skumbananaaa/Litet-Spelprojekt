@@ -21,6 +21,11 @@ GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.
 
 		SetViewport(static_cast<uint32>(width), static_cast<uint32>(height), 0, 0);
 	}
+
+	for (uint32 i = 0; i < 16; i++)
+	{
+		m_CurrentTextures[i] = GL_TEXTURE_2D;
+	}
 }
 
 GLContext::~GLContext()
@@ -202,6 +207,13 @@ void GLContext::DrawIndexedMesh(const IndexedMesh& mesh) const noexcept
 {
 	GL_CALL(glBindVertexArray(mesh.m_VAO));
 	GL_CALL(glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr));
+	GL_CALL(glBindVertexArray(0));
+}
+
+void GLContext::DrawIndexedMeshInstanced(const IndexedMesh& mesh, uint32 numInstances) const noexcept
+{
+	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr, numInstances));
 	GL_CALL(glBindVertexArray(0));
 }
 

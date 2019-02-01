@@ -5,16 +5,22 @@ GameObject::GameObject() noexcept
 	: m_pMesh(nullptr),
 	m_pDecal(nullptr),
 	m_pMaterial(nullptr),
-	m_position(0.0f),
-	m_rotation(1.0f, 0.0f, 0.0f, 0.0f),
-	m_scale(1.0f),
-	m_IsDirty(true)
+	m_Position(0.0f),
+	m_Rotation(1.0f, 0.0f, 0.0f, 0.0f),
+	m_Scale(1.0f),
+	m_IsDirty(true),
+	m_IsReflectable(false)
 {
 	UpdateTransform();
 }
 
 GameObject::~GameObject()
 {
+}
+
+void GameObject::SetIsReflectable(bool isReflectable) noexcept
+{
+	m_IsReflectable = isReflectable;
 }
 
 void GameObject::SetMesh(const IndexedMesh* const mesh) noexcept
@@ -24,19 +30,19 @@ void GameObject::SetMesh(const IndexedMesh* const mesh) noexcept
 
 void GameObject::SetPosition(const glm::vec3& position) noexcept
 {
-	m_position = position;
+	m_Position = position;
 	m_IsDirty = true;
 }
 
 void GameObject::SetRotation(const glm::vec4& rotation) noexcept
 {
-	m_rotation = rotation;
+	m_Rotation = rotation;
 	m_IsDirty = true;
 }
 
 void GameObject::SetScale(const glm::vec3& scale) noexcept
 {
-	m_scale = scale;
+	m_Scale = scale;
 	m_IsDirty = true;
 }
 
@@ -45,9 +51,9 @@ void GameObject::UpdateTransform() noexcept
 	if (m_IsDirty)
 	{
 		glm::mat4 transform(1.0f);
-		transform = glm::translate(transform, m_position);
-		transform = glm::rotate(transform, m_rotation.w, glm::vec3(m_rotation.x, m_rotation.y, m_rotation.z));
-		transform = glm::scale(transform, m_scale);
+		transform = glm::translate(transform, m_Position);
+		transform = glm::rotate(transform, m_Rotation.w, glm::vec3(m_Rotation.x, m_Rotation.y, m_Rotation.z));
+		transform = glm::scale(transform, m_Scale);
 		m_transform = transform;
 		m_InverseTransform = glm::inverse(m_transform);
 		

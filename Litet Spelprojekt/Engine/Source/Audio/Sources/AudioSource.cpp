@@ -37,6 +37,17 @@ void AudioSource::Pause() const noexcept
 	alSourcePause(m_SourceId);
 }
 
+void AudioSource::TogglePause() noexcept
+{
+	if (m_Paused) {
+		alSourcePlay(m_SourceId);
+	}
+	else {
+		alSourcePause(m_SourceId);
+	}
+	m_Paused = !m_Paused;
+}
+
 void AudioSource::Stop() const noexcept
 {
 	alSourceStop(m_SourceId);
@@ -78,3 +89,4 @@ void AudioSource::SetMaxDistance(float value) const noexcept
 {
 	alSourcef(m_SourceId, AL_MAX_DISTANCE, value);
 }
+

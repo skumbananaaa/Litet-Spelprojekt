@@ -91,7 +91,7 @@ Game::Game() noexcept :
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pBoatMaterial);
 	pGameObject->SetMesh(m_pTestMesh);
-	pGameObject->SetPosition(glm::vec3(0.0f, -0.8f, 0.0f));
+	pGameObject->SetPosition(glm::vec3(0.0f, -0.8f, -10.0f));
 	pGameObject->SetScale(glm::vec3(6.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
@@ -260,7 +260,7 @@ Game::Game() noexcept :
 		m_pBlueMaterial
 	};
 
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
+	for (int level = 0; level < 1; level++) {
 		const uint32* const* map = m_pWorld->GetLevel(level)->GetLevel();
 		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());
 		/*g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ()), glm::vec3(0.0f, 10.0f + 2.0f * level, 0.0f));
@@ -276,8 +276,9 @@ Game::Game() noexcept :
 		}*/
 
 		Crewmember * CurrentCrewMember = g_Crew.getMember(level);
-		CurrentCrewMember->SetPosition(glm::vec3(1.0f, 10.9f + 2.0f * level, 1.0f));
-		CurrentCrewMember->SetPath(map, size);
+		CurrentCrewMember->SetPosition(glm::vec3(1.0f, 0.9f + 2.0f * level, 1.0f));
+		CurrentCrewMember->SetPath(m_pWorld, level);
+		CurrentCrewMember->UpdateTransform();
 
 		m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
@@ -287,7 +288,7 @@ Game::Game() noexcept :
 			pGameObject = new GameObject();
 			pGameObject->SetMaterial(colours[i % 3]);
 			pGameObject->SetMesh(m_pWallMesh);
-			pGameObject->SetPosition(glm::vec3(wall.x, 11.0f + 2.0f * level, wall.y));
+			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + 2.0f * level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
 			m_pScene->AddGameObject(pGameObject);
@@ -508,15 +509,15 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
 
-	Crewmember * CurrentCrewMember[3] = {
+	Crewmember* CurrentCrewMember[3] = {
 		g_Crew.getMember(0),
 		g_Crew.getMember(1),
 		g_Crew.getMember(2)
 	};
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 1; i++) {
 		if (Input::IsKeyDown(KEY_ENTER) && !CurrentCrewMember[i]->IsMoving())
 		{
-			glm::ivec2 goalPos(std::rand() % (m_pWorld->GetLevel(i)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(i)->GetSizeZ() - 1));
+			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(i)->GetSizeX() - 1), 1, std::rand() % (m_pWorld->GetLevel(i)->GetSizeZ() - 1));
 			std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
 			CurrentCrewMember[i]->FindPath(goalPos);
 		}

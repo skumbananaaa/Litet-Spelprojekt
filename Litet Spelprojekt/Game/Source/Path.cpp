@@ -7,11 +7,11 @@ void Path::AddToOpen(int x, int y, int addX, int addY)
 	int newY = std::min(std::max(y + addY, 0), (m_size.y - 1));
 	if (!(m_ppTiles[newX][newY].m_closed)) {
 		if (m_ppTiles[newX][newY].m_g == 0 || m_ppTiles[newX][newY].m_g > m_ppTiles[x][y].m_g) {
-			if ((m_ppMap[newX][newY] == m_ppMap[x][y] || m_ppMap[x][y] == 0 || m_ppMap[newX][newY] == 0) && m_ppMap[newX][newY] != 1) {
+			if ((m_ppMap[newX][newY] == m_ppMap[x][y] || m_ppMap[x][y] == 0 || m_ppMap[newX][newY] == 0 || m_ppMap[x][y] == 9 || m_ppMap[newX][newY] == 9 || m_ppMap[x][y] == 8) && m_ppMap[newX][newY] != 1) {
 				m_openList[m_nrOfTilesOpen++] = glm::ivec2(newX, newY);
 				m_ppTiles[newX][newY].m_parentTile = glm::ivec2(x, y);
 				m_ppTiles[newX][newY].m_g = m_ppTiles[x][y].m_g + 1;
-				int h = std::abs(m_goalTile.x - newX) + std::abs(m_goalTile.y - newY);
+				int h = std::abs(m_targetTile.x - newX) + std::abs(m_targetTile.y - newY);
 				m_ppTiles[newX][newY].m_f = m_ppTiles[newX][newY].m_g + h;
 				if (h < m_smallestH) {
 					m_smallestH = h;
@@ -48,7 +48,7 @@ bool Path::MoveToNextTile()
 
 		CheckAdjacent();
 
-		if (m_currentTile == m_goalTile) {
+		if (m_currentTile == m_targetTile) {
 			return true;
 		}
 	}
@@ -56,11 +56,54 @@ bool Path::MoveToNextTile()
 	return false;
 }
 
+const glm::ivec2 & Path::FindStairsUp(uint32 level)
+{
+	glm::ivec2 stair, closestStair;
+	float distance, closestDistance = 0;
+
+	for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfStairsUp(); i++) {
+		stair = m_pWorld->GetLevel(level)->GetStairsUp(i);
+		distance = std::abs(m_startTile.x - stair.x) + std::abs(m_startTile.y - stair.y);
+		if (distance < closestDistance || closestDistance == 0) {
+			closestStair = stair;
+			closestDistance = distance;
+		}
+	}
+
+	return closestStair;
+}
+
+const glm::ivec2 & Path::FindStairsDown(uint32 level)
+{
+	m_pWorld->GetLevel(level)->GetNrOfStairsDown();
+	glm::ivec2 stair, closestStair;
+	float distance, closestDistance = 0;
+
+	for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfStairsDown(); i++) {
+		glm::ivec2 stair = m_pWorld->GetLevel(level)->GetStairsDown(i);
+		distance = std::abs(m_startTile.x - stair.x) + std::abs(m_startTile.y - stair.y);
+		if (distance < closestDistance || closestDistance == 0) {
+			closestStair = stair;
+			closestDistance = distance;
+		}
+	}
+
+	return closestStair;
+}
+
 Path::Path(const uint32* const* map, const glm::ivec2& size)
 {
 	m_size = size;
 	m_ppMap = map;
-	m_pPath = new glm::ivec2[size.x * size.y];
+	m_pPath = new glm::ivec2[m_size.x * m_size.y];
+	m_openList = new glm::ivec2[m_size.x * m_size.y];
+}
+
+Path::Path(const World * world, uint32 level)
+{
+	m_pWorld = world;
+	this->SetLevel(level);
+	m_pPath = new glm::ivec2[m_size.x * m_size.y];
 	m_openList = new glm::ivec2[m_size.x * m_size.y];
 }
 
@@ -73,7 +116,7 @@ Path::~Path()
 	m_openList = nullptr;
 }
 
-glm::ivec2* Path::FindPath(glm::ivec2 start, const glm::ivec2& goal)
+glm::ivec2* Path::FindPath(const glm::ivec3& start, const glm::ivec3& goal)
 {
 	m_ppTiles = new tls*[m_size.x];
 	for (int i = 0; i < m_size.x; i++) {
@@ -82,14 +125,33 @@ glm::ivec2* Path::FindPath(glm::ivec2 start, const glm::ivec2& goal)
 
 	m_nrOfTilesOpen = 0;
 	m_nrOfPathTiles = 0;
+	m_stairTile = glm::ivec2(0, 0);
 
-	m_startTile = start;
+	m_startTile = glm::ivec2(start.x, start.z);
 	m_ppTiles[m_startTile.x][m_startTile.y].m_parentTile = start;
 	m_currentTile = m_startTile;
 	m_ppTiles[m_currentTile.x][m_currentTile.y].m_closed = true;
 
-	m_goalTile = goal;
-	m_smallestH = std::abs(m_goalTile.x - m_startTile.x) + std::abs(m_goalTile.y - m_startTile.y);
+	if (goal.y > start.y) {
+		m_stairTile = this->FindStairsUp(start.y);
+	}
+	else if (goal.y < start.y) {
+		m_stairTile = this->FindStairsDown(start.y);
+	}
+	else {
+		m_stairTile = glm::ivec2(0, 0);
+	}
+
+	m_goalTile = glm::ivec2(goal.x, goal.z);
+
+	if (m_stairTile == glm::ivec2(0, 0)) {
+		m_targetTile = m_goalTile;
+	}
+	else {
+		m_targetTile = m_stairTile;
+	}
+
+	m_smallestH = std::abs(m_targetTile.x - m_startTile.x) + std::abs(m_targetTile.y - m_startTile.y);
 	m_closestTile = m_startTile;
 
 	m_goalSet = true;
@@ -133,4 +195,10 @@ bool Path::IsGoalSet()
 int Path::GetNrOfPathTiles()
 {
 	return m_nrOfPathTiles;
+}
+
+void Path::SetLevel(uint32 newLevel)
+{
+	m_size = glm::ivec2(m_pWorld->GetLevel(newLevel)->GetSizeX(), m_pWorld->GetLevel(newLevel)->GetSizeZ());
+	m_ppMap = m_pWorld->GetLevel(newLevel)->GetLevel();
 }

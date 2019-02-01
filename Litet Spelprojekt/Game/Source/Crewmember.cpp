@@ -69,10 +69,10 @@ void Crewmember::SetPosition(const glm::vec3 & position) noexcept
 	GameObject::SetPosition(position);
 }
 
-void Crewmember::FindPath(const glm::ivec2& goalPos)
+void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
 	if (!m_pPathFinder->IsGoalSet() && m_nrOfPathTiles == 0) {
-		m_pPath = m_pPathFinder->FindPath(m_playerTile, goalPos);
+		m_pPath = m_pPathFinder->FindPath(glm::ivec3(m_playerTile.x, this->GetPosition().y / 2, m_playerTile.y), goalPos);
 		m_nrOfPathTiles = m_pPathFinder->GetNrOfPathTiles();
 	}
 }
@@ -101,6 +101,11 @@ void Crewmember::SetActionCapacity(const float actionCap)
 void Crewmember::SetPath(const uint32* const* map, const glm::ivec2& size)
 {
 	m_pPathFinder = new Path(map, size);
+}
+
+void Crewmember::SetPath(const World * world, uint32 level)
+{
+	m_pPathFinder = new Path(world, level);
 }
 
 void Crewmember::UpdateTransform() noexcept

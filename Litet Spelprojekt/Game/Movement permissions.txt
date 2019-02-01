@@ -1,0 +1,9 @@
+0: Door - always walkable
+1: Wall - never walkable
+8: Stairs down - move to level below
+9: Stairs up - move to level above
+Everything else: walkable if standing on same number or 0.
+ex:
+   2->2     walkable
+   2->3     not walkable
+   2->0->3  walkable

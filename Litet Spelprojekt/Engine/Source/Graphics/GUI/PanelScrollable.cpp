@@ -14,6 +14,11 @@ PanelScrollable::PanelScrollable(float x, float y, float width, float height, fl
 
 PanelScrollable::~PanelScrollable()
 {
+	if (HasParent())
+	{
+		GetParent()->Remove(m_pSliderVertical);
+		GetParent()->Remove(m_pSliderHorizontal);
+	}
 	delete m_pSliderVertical;
 	delete m_pSliderHorizontal;
 	delete m_pFrameBufferClientArea;

@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics\GUI\Button.h>
 
-Button::Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*), void(*onReleasedCallback)(Button*), int textSize) : TextView(x, y, width, height, text, textSize),
+Button::Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*), void(*onReleasedCallback)(Button*), int textSize) : TextView(x, y, width, height, text, TextAlignment::CENTER, textSize),
 	m_pOnPressedTexture(nullptr),
 	m_IsPressed(false),
 	m_IsHovered(false),

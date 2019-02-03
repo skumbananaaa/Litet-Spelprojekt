@@ -27,6 +27,8 @@ World::~World()
 
 	delete[] m_pLevels;
 	m_pLevels = nullptr;
+	delete[] m_pStairs;
+	m_pStairs = nullptr;
 }
 
 void World::AddWorldObject(const WorldObject& object) noexcept
@@ -59,5 +61,24 @@ uint32 World::GetNumWorldObjects() const noexcept
 void World::GenerateWalls(uint32 level)
 {
 	m_pLevels[level]->GenerateWalls();
+}
+
+void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
+{
+	m_NumStairs = nrOfStairs;
+	m_pStairs = new glm::ivec3[m_NumStairs];
+	for (int i = 0; i < m_NumStairs; i++) {
+		m_pStairs[i] = stairs[i];
+	}
+}
+
+glm::ivec3 * World::GetStairs() const noexcept
+{
+	return m_pStairs;
+}
+
+uint32 World::GetNumStairs() const noexcept
+{
+	return m_NumStairs;
 }
 

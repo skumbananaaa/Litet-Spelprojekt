@@ -91,7 +91,7 @@ Game::Game() noexcept :
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pBoatMaterial);
 	pGameObject->SetMesh(m_pTestMesh);
-	pGameObject->SetPosition(glm::vec3(0.0f, -0.8f, 0.0f));
+	pGameObject->SetPosition(glm::vec3(0.0f, -0.8f, -10.0f));
 	pGameObject->SetScale(glm::vec3(6.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
@@ -108,7 +108,7 @@ Game::Game() noexcept :
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pRedMaterial);
 	pGameObject->SetMesh(m_pSphereMesh);
-	pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, 0.0f));
+	pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, -10.0f));
 	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
@@ -116,7 +116,7 @@ Game::Game() noexcept :
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pGreenMaterial);
 	pGameObject->SetMesh(m_pSphereMesh);
-	pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, 0.0f));
+	pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, -10.0f));
 	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
@@ -124,18 +124,10 @@ Game::Game() noexcept :
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(m_pBlueMaterial);
 	pGameObject->SetMesh(m_pSphereMesh);
-	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, 0.0f));
+	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
 	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
-
-	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
-	g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
-	g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
-	for (int i = 0; i < g_Crew.getCount(); i++) {
-		m_pScene->AddGameObject(g_Crew.getMember(i));
-		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
-	}
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -159,11 +151,11 @@ Game::Game() noexcept :
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
 
-	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
+	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -252,33 +244,36 @@ Game::Game() noexcept :
 	
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	m_pWallMesh = IndexedMesh::CreateCube();
+	float x, y, z;
+	for (int i = 0; i < 5; i++) {
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+	}
+	for (int i = 0; i < g_Crew.getCount(); i++) {
+		m_pScene->AddGameObject(g_Crew.getMember(i));
+		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
+		g_Crew.getMember(i)->SetPath(m_pWorld);
+		g_Crew.getMember(i)->UpdateTransform();
+	}
 
 	Material* colours[3] = {
 		m_pRedMaterial,
 		m_pGreenMaterial,
 		m_pBlueMaterial
 	};
+	m_pWallMesh = IndexedMesh::CreateCube();
 
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
-		const uint32* const* map = m_pWorld->GetLevel(level)->GetLevel();
-		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());
-		/*g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ()), glm::vec3(0.0f, 10.0f + 2.0f * level, 0.0f));
-
-		for (int i = 0; i < g_Grid->GetSize().x; i++)
-		{
-			for (int j = 0; j < g_Grid->GetSize().y; j++)
-			{
-				g_Grid->GetTile(glm::ivec2(i, j))->SetID(map[i][j]);
-				g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-				m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
-			}
-		}*/
-
-		Crewmember * CurrentCrewMember = g_Crew.getMember(level);
-		CurrentCrewMember->SetPosition(glm::vec3(1.0f, 10.9f + 2.0f * level, 1.0f));
-		CurrentCrewMember->SetPath(map, size);
-
 		m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
 
@@ -287,7 +282,7 @@ Game::Game() noexcept :
 			pGameObject = new GameObject();
 			pGameObject->SetMaterial(colours[i % 3]);
 			pGameObject->SetMesh(m_pWallMesh);
-			pGameObject->SetPosition(glm::vec3(wall.x, 11.0f + 2.0f * level, wall.y));
+			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + 2.0f * level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
 			m_pScene->AddGameObject(pGameObject);
@@ -508,20 +503,18 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
 
-	Crewmember * CurrentCrewMember[3] = {
-		g_Crew.getMember(0),
-		g_Crew.getMember(1),
-		g_Crew.getMember(2)
-	};
-	for (int i = 0; i < 3; i++) {
-		if (Input::IsKeyDown(KEY_ENTER) && !CurrentCrewMember[i]->IsMoving())
+	int level;
+	for (int i = 0; i < g_Crew.getCount(); i++) {
+		if (Input::IsKeyDown(KEY_ENTER) && !g_Crew.getMember(i)->IsMoving())
 		{
-			glm::ivec2 goalPos(std::rand() % (m_pWorld->GetLevel(i)->GetSizeX() - 1), std::rand() % (m_pWorld->GetLevel(i)->GetSizeZ() - 1));
-			std::cout << "(" << goalPos.x << ", " << goalPos.y << ")\n";
-			CurrentCrewMember[i]->FindPath(goalPos);
+			level = std::rand() % m_pWorld->GetNumLevels();
+			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(level)->GetSizeX() - 1), level, std::rand() % (m_pWorld->GetLevel(level)->GetSizeZ() - 1));
+			//goalPos = glm::ivec3(18, 1, 1);
+			std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";
+			g_Crew.getMember(i)->FindPath(goalPos);
 		}
-		CurrentCrewMember[i]->FollowPath(dtS);
-		CurrentCrewMember[i]->UpdateTransform();
+		g_Crew.getMember(i)->FollowPath(dtS);
+		g_Crew.getMember(i)->UpdateTransform();
 	}
 }
 

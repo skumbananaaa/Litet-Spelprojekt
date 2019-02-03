@@ -14,9 +14,9 @@ private:
 	PointLight * m_pLight;
 	IndexedMesh * m_pMesh;
 	Path* m_pPathFinder;
-	glm::ivec2 m_playerTile;
-	glm::ivec2 m_targetTile;
-	glm::ivec2* m_pPath;
+	glm::ivec3 m_playerTile;
+	glm::ivec3 m_targetTile;
+	glm::ivec3* m_pPath;
 	glm::vec3 m_targetPos;
 	int m_nrOfPathTiles;
 
@@ -34,7 +34,7 @@ public:
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
 	void SetActionCapacity(float actionCap);
 	///<summary>Sets a grid for the path finding algorithm.</summary>
-	void SetPath(const World* world, uint32 level);
+	void SetPath(const World* world);
 	///<summary>Returns a reference to the pointLight object.</summary>
 	PointLight * GetLight() const;
 	///<summary>returns the current action capacity of the crewmember.</summary>

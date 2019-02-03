@@ -1,7 +1,7 @@
 #version 420
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 8
+#define NUM_POINT_LIGHTS 18
 
 layout(location = 0) out vec4 g_OutColor;
 

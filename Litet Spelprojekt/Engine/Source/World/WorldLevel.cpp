@@ -55,28 +55,6 @@ uint32 WorldLevel::GetNrOfWalls() const noexcept
 	return m_Walls.size();
 }
 
-const glm::ivec2 & WorldLevel::GetStairsUp(uint32 index) const noexcept
-{
-	assert(index < m_StairsUp.size());
-	return m_StairsUp[index];
-}
-
-uint32 WorldLevel::GetNrOfStairsUp() const noexcept
-{
-	return m_StairsUp.size();
-}
-
-const glm::ivec2 & WorldLevel::GetStairsDown(uint32 index) const noexcept
-{
-	assert(index < m_StairsDown.size());
-	return m_StairsDown[index];
-}
-
-uint32 WorldLevel::GetNrOfStairsDown() const noexcept
-{
-	return m_StairsDown.size();
-}
-
 void WorldLevel::GenerateWalls()
 {
 	bool wallH = false, wallV = false;
@@ -86,34 +64,25 @@ void WorldLevel::GenerateWalls()
 	for (int i = 0; i < m_SizeX - 1; i++) {
 		for (int j = 0; j < m_SizeZ; j++) {
 			wallH = (m_ppLevel[i][j] != m_ppLevel[i + 1][j]);
-			if ((!wallH || ((m_ppLevel[i][j] == 0 || m_ppLevel[i][j] == 9 || m_ppLevel[i][j] == 8) && m_ppLevel[i + 1][j] != 1) || ((m_ppLevel[i + 1][j] == 0 || m_ppLevel[i + 1][j] == 9 || m_ppLevel[i + 1][j] == 8) && m_ppLevel[i][j] != 1) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0)) {
+			if ((!wallH || (m_ppLevel[i][j] == 0 && m_ppLevel[i + 1][j] != 1) || (m_ppLevel[i + 1][j] == 0 && m_ppLevel[i][j] != 1) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0)) {
 				endWallH = glm::vec2(i + 0.5, j - 0.5);
 				m_Walls.push_back(glm::vec4((startWallH + endWallH) / 2.0f, endWallH - startWallH));
 				startWallH = glm::vec2(0, 0);
 			}
-			if (wallH && startWallH == glm::vec2(0, 0) && ((m_ppLevel[i][j] != 0 && m_ppLevel[i][j] != 9 && m_ppLevel[i][j] != 8) || m_ppLevel[i + 1][j] == 1) && ((m_ppLevel[i + 1][j] != 0 && m_ppLevel[i + 1][j] != 9 && m_ppLevel[i + 1][j] != 8) || m_ppLevel[i][j] == 1)) {
+			if (wallH && startWallH == glm::vec2(0, 0) && (m_ppLevel[i][j] != 0 || m_ppLevel[i + 1][j] == 1) && (m_ppLevel[i + 1][j] != 0 || m_ppLevel[i][j] == 1)) {
 				startWallH = glm::vec2(i + 0.5, j - 0.5);
-			}
-
-			if (m_ppLevel[i][j] == 9) {
-				startWallH = glm::vec2(i + 0.5, j - 0.5);
-				endWallH = glm::vec2(i + 0.5, j + 0.5);
-				m_StairsUp.push_back(glm::ivec2(i, j));
-			}
-			else if (m_ppLevel[i][j] == 8) {
-				m_StairsDown.push_back(glm::ivec2(i, j));
 			}
 		}
 	}
 	for (int i = 0; i < m_SizeZ - 1; i++) {
 		for (int j = 0; j < m_SizeX; j++) {
 			wallV = (m_ppLevel[j][i] != m_ppLevel[j][i + 1]);
-			if ((!wallV || ((m_ppLevel[j][i] == 0 || m_ppLevel[j][i] == 9 || m_ppLevel[j][i] == 8) && m_ppLevel[j][i + 1] != 1) || ((m_ppLevel[j][i + 1] == 0 || m_ppLevel[j][i + 1] == 9 || m_ppLevel[j][i + 1] == 8) && m_ppLevel[j][i] != 1) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0)) {
+			if ((!wallV || (m_ppLevel[j][i] == 0 && m_ppLevel[j][i + 1] != 1) || (m_ppLevel[j][i + 1] == 0 && m_ppLevel[j][i] != 1) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0)) {
 				endWallV = glm::vec2(j - 0.5, i + 0.5);
 				m_Walls.push_back(glm::vec4((startWallV + endWallV) / 2.0f, endWallV - startWallV));
 				startWallV = glm::vec2(0, 0);
 			}
-			if (wallV && startWallV == glm::vec2(0, 0) && ((m_ppLevel[j][i] != 0 && m_ppLevel[j][i] != 9 && m_ppLevel[j][i] != 8) || m_ppLevel[j][i + 1] == 1) && ((m_ppLevel[j][i + 1] != 0 && m_ppLevel[j][i + 1] != 9 && m_ppLevel[j][i + 1] != 8) || m_ppLevel[j][i] == 1)) {
+			if (wallV && startWallV == glm::vec2(0, 0) && (m_ppLevel[j][i] != 0 || m_ppLevel[j][i + 1] == 1) && (m_ppLevel[j][i + 1] != 0 || m_ppLevel[j][i] == 1)) {
 				startWallV = glm::vec2(j - 0.5, i + 0.5);
 			}
 		}

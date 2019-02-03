@@ -5,6 +5,8 @@
 #include <Graphics/Materials/Decal.h>
 #include <IO/IResourceListener.h>
 
+#include <System/ThreadHandler.h>
+
 #include <IO/MESH.h>
 #include <IO/TEXTURE.h>
 #include <IO/MATERIAL.h>
@@ -18,7 +20,7 @@ struct Texture2D_DESC
 	TextureParams params;
 };
 
-class API ResourceHandler
+class API ResourceHandler : public IRunable
 {
 public:
 	static uint32 RegisterMesh(const std::string& filename);
@@ -36,8 +38,9 @@ public:
 	static void LoadResources(IResourceListener* resourceListener);
 	static void ReleaseResources();
 
-private:
+	virtual void RunParallel();
 
+private:
 	static std::string m_pIndexedMeshFiles[64];
 	static IndexedMesh* m_pIndexedMeshes[64];
 	static uint32 m_NrOfMeshes;
@@ -53,4 +56,7 @@ private:
 	static uint32 m_NrOfDecals;
 
 	static IResourceListener* m_ResourceListener;
+
+	ResourceHandler();
+	static ResourceHandler* instance;
 };

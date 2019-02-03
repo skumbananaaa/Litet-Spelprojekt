@@ -113,6 +113,7 @@ Editor::Editor() noexcept : Application(false)
 	m_Dragging = false;
 	m_CurrentEditingMode = NONE;
 	//GetGraphicsContext().Disable(Cap::CULL_FACE);
+
 }
 
 Editor::~Editor()
@@ -130,7 +131,7 @@ Editor::~Editor()
 
 void Editor::OnResourcesLoaded()
 {
-
+	std::cout << "Resources Loaded!" << std::endl;
 }
 
 glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcept

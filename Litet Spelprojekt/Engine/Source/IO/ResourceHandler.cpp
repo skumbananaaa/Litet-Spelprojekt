@@ -17,6 +17,39 @@ uint32 ResourceHandler::m_NrOfDecals = 0;
 
 IResourceListener* ResourceHandler::m_ResourceListener;
 
+ResourceHandler* ResourceHandler::instance = nullptr;
+
+ResourceHandler::ResourceHandler()
+{
+	
+}
+
+void ResourceHandler::RunParallel()
+{
+	MESH::RegisterResources();
+	TEXTURE::RegisterResources();
+
+	for (int i = 0; i < m_NrOfMeshes; i++)
+	{
+		if (!m_pIndexedMeshFiles[i].empty())
+		{
+			std::cout << "Loading Mesh: " << m_pIndexedMeshFiles[i] << std::endl;
+			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile(("Resources/Meshes/" + m_pIndexedMeshFiles[i]).c_str());
+		}
+	}
+
+	for (int i = 0; i < m_NrOfTexture2D; i++)
+	{
+		Texture2D_DESC desc = m_pTexture2DFiles[i];
+		std::cout << "Loading Texture: " << desc.filename << std::endl;
+		m_pTexture2Ds[i] = new Texture2D(("Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
+	}
+
+	MATERIAL::RegisterResources();
+	DECAL::RegisterResources();
+
+	m_ResourceListener->OnResourcesLoaded();
+}
 
 uint32 ResourceHandler::RegisterMesh(const std::string& filename)
 {
@@ -100,31 +133,14 @@ Decal* ResourceHandler::GetDecal(uint32 decal)
 
 void ResourceHandler::LoadResources(IResourceListener* resourceListener)
 {
-	MESH::RegisterResources();
-	TEXTURE::RegisterResources();
-
-	m_ResourceListener = resourceListener;
-
-	for (int i = 0; i < m_NrOfMeshes; i++)
+	if (!instance)
 	{
-		if (!m_pIndexedMeshFiles[i].empty())
-		{
-			std::cout << "Loading Mesh: " << m_pIndexedMeshFiles[i] << std::endl;
-			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile(("Resources/Meshes/" + m_pIndexedMeshFiles[i]).c_str());
-		}
+		m_ResourceListener = resourceListener;
+		instance = new ResourceHandler();
+
+		instance->RunParallel();
+		//ThreadHandler::RequestExecution(instance);
 	}
-
-	for (int i = 0; i < m_NrOfTexture2D; i++)
-	{
-		Texture2D_DESC desc = m_pTexture2DFiles[i];
-		std::cout << "Loading Texture: " << desc.filename << std::endl;
-		m_pTexture2Ds[i] = new Texture2D(("Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
-	}
-
-	MATERIAL::RegisterResources();
-	DECAL::RegisterResources();
-
-	resourceListener->OnResourcesLoaded();
 }
 
 void ResourceHandler::ReleaseResources()
@@ -147,4 +163,6 @@ void ResourceHandler::ReleaseResources()
 		std::cout << "Deleting Material" << std::endl;
 		Delete(m_pMaterials[i]);
 	}
+
+	delete instance;
 }

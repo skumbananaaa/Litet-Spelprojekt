@@ -64,6 +64,8 @@
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
     <ClInclude Include="Include\System\Input.h" />
+    <ClInclude Include="Include\System\IRunable.h" />
+    <ClInclude Include="Include\System\ThreadHandler.h" />
     <ClInclude Include="Include\System\Window.h" />
     <ClInclude Include="Include\Types.h" />
     <ClInclude Include="Include\IO\IResourceListener.h" />
@@ -140,6 +142,7 @@
     <ClCompile Include="Source\Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="Source\Graphics\Textures\TextureCube.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
+    <ClCompile Include="Source\System\ThreadHandler.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
     <ClCompile Include="Source\IO\ResourceHandler.cpp" />
     <ClCompile Include="Source\World\Grid.cpp" />

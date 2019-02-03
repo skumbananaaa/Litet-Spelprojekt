@@ -52,6 +52,8 @@ Application::~Application()
 	glfwTerminate();
 
 	std::cout << "Application deleted" << std::endl;
+
+	ThreadHandler::Exit();
 }
 
 int32_t Application::Run()
@@ -68,6 +70,8 @@ int32_t Application::Run()
 	float accumulator = 0.0f;
 	int32 fps = 0;
 	int32 ups = 0;
+
+	ThreadHandler::Init();
 
 	m_pGraphicsContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	while (!m_pWindow->IsClosed() && m_ShouldRun)

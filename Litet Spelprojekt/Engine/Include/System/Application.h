@@ -5,6 +5,7 @@
 #include <Graphics/Renderers/GLContext.h>
 #include <Graphics/Renderers/DebugRenderer.h>
 #include "Input.h"
+#include <System/ThreadHandler.h>
 
 class API Application
 {

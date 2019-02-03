@@ -53,6 +53,7 @@
     <ClCompile Include="Source\IO\R_MESH.cpp" />
     <ClCompile Include="Source\IO\R_MATERIAL.cpp" />
     <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
+    <ClCompile Include="Source\System\ThreadHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -115,5 +116,7 @@
     <ClInclude Include="Include\IO\MATERIAL.h" />
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
+    <ClInclude Include="Include\System\IRunable.h" />
+    <ClInclude Include="Include\System\ThreadHandler.h" />
   </ItemGroup>
 </Project>

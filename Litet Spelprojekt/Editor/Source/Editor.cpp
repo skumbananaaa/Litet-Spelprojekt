@@ -295,7 +295,7 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					if (tile->GetID() >= TILE_DOOR_INDEX)
+					if (tile->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
 						tile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 					}
@@ -312,7 +312,7 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					if (tile->GetID() >= TILE_DOOR_INDEX)
+					if (tile->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
 						tile->SetMaterial(MATERIAL::BLACK);
 					}
@@ -355,7 +355,7 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 						{
 							uint32 tileIndex = m_pGrid->GetTile(currentPos)->GetID();
 
-							if (tileIndex >= TILE_DOOR_INDEX)
+							if (tileIndex >= TILE_NON_WALKABLE_INDEX)
 							{
 								m_RoomBeingEdited = tileIndex;
 							}
@@ -426,33 +426,41 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 
 		if (m_CurrentEditingMode == ADD_ROOM)
 		{
-			m_LargestIndexUsed++;
-			bool addedRoom = false;
-			for (uint32 i = 0; i < numTiles; i++)
+			if (m_LargestIndexUsed < MAX_NUM_ROOMS + TILE_SMALLEST_FREE - 1)
 			{
-				glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
-
-				if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
+				m_LargestIndexUsed++;
+				bool addedRoom = false;
+				for (uint32 i = 0; i < numTiles; i++)
 				{
-					Tile* tile = m_pGrid->GetTile(currentPos);
+					glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
 
-					if (tile->GetID() == TILE_NON_WALKABLE_INDEX)
+					if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
 					{
-						tile->SetID(m_LargestIndexUsed);
-						tile->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
-						addedRoom = true;
+						Tile* tile = m_pGrid->GetTile(currentPos);
+
+						if (tile->GetID() == TILE_NON_WALKABLE_INDEX)
+						{
+							tile->SetID(m_LargestIndexUsed);
+							tile->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							addedRoom = true;
+						}
 					}
 				}
-			}
 
-			if (!addedRoom)
-			{
-				std::cout << "Did not add room at: " << m_LargestIndexUsed << std::endl;
-				m_LargestIndexUsed--;
+				if (!addedRoom)
+				{
+					std::cout << "Did not add room at: " << m_LargestIndexUsed << std::endl;
+					m_LargestIndexUsed--;
+				}
+				else
+				{
+					std::cout << "Added room with index: " << m_LargestIndexUsed << std::endl;
+				}
+
 			}
 			else
 			{
-				std::cout << "Added room with index: " << m_LargestIndexUsed << std::endl;
+				std::cout << "MAX NUMBER OF ROOMS REACHED!" << std::endl;
 			}
 
 			m_FirstCorner = glm::ivec2(0);
@@ -467,7 +475,7 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					if (tile->GetID() >= TILE_DOOR_INDEX)
+					if (tile->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
 						tile->SetID(m_RoomBeingEdited);
 						tile->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
@@ -488,7 +496,7 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					if (tile->GetID() >= TILE_DOOR_INDEX)
+					if (tile->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
 						tile->SetID(TILE_NON_WALKABLE_INDEX);
 						tile->SetDefaultMaterial(MATERIAL::BLACK);

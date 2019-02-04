@@ -189,10 +189,10 @@ void Game::OnResourcesLoaded()
 	m_pScene->AddGameObject(pGameObject);
 
 	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::BOAT);
+	pGameObject->SetMaterial(MATERIAL::RED);
 	pGameObject->SetMesh(MESH::SHIP);
-	pGameObject->SetPosition(glm::vec3(0.0f, -0.8f, -10.0f));
-	pGameObject->SetScale(glm::vec3(6.0f));
+	pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
+	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
@@ -239,7 +239,7 @@ void Game::OnResourcesLoaded()
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) 
+	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
 	{
 
 		m_pWorld->GenerateWalls(level);
@@ -251,7 +251,7 @@ void Game::OnResourcesLoaded()
 			pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::WHITE);
 			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + 2.0f * level, wall.y));
+			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
 			m_pScene->AddGameObject(pGameObject);

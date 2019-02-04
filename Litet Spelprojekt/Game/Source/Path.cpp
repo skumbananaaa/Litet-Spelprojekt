@@ -102,7 +102,7 @@ Path::Path(const World * world)
 	for (uint32 i = 0; i < m_pWorld->GetNumStairs(); i++)
 	{
 		x = m_pWorld->GetStairs()[i].x;
-		y = m_pWorld->GetStairs()[i].y;
+		y = m_pWorld->GetStairs()[i].y / 2;
 		z = m_pWorld->GetStairs()[i].z;
 		m_pppTiles[x][y][z].stairsUp = true;
 		m_pppTiles[x][y + 1][z].stairsDown = true;

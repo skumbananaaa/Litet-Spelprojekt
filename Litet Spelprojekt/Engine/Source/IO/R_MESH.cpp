@@ -12,7 +12,7 @@ void MESH::RegisterResources()
 {
 	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
 	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
-	SHIP					= ResourceHandler::RegisterMesh("ship.obj");
+	SHIP					= ResourceHandler::RegisterMesh("ship1.obj");
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj");
 	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj");
 }

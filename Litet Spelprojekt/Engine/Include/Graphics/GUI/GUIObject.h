@@ -14,7 +14,7 @@ public:
 	bool HasParent() const noexcept;
 	GUIObject* GetParent() const noexcept;
 
-	void Add(GUIObject* parent) noexcept;
+	virtual void Add(GUIObject* parent) noexcept;
 	void Remove(GUIObject* parent) noexcept;
 
 	virtual float GetWidth() const noexcept;

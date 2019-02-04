@@ -55,6 +55,7 @@
     <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
     <ClCompile Include="Source\System\ThreadHandler.cpp" />
     <ClCompile Include="Source\Graphics\SkyBox.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -121,5 +122,7 @@
     <ClInclude Include="Include\System\ThreadHandler.h" />
     <ClInclude Include="Include\System\IRunnable.h" />
     <ClInclude Include="Include\Graphics\Textures\TextureHelper.h" />
+    <ClInclude Include="Include\Graphics\GUI\SelectionHandler.h" />
+    <ClInclude Include="Include\Graphics\GUI\ISelectable.h" />
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
+#include <Graphics/GUI/SelectionHandler.h>
 #include <World/Grid.h>
 #include <IO/ResourceHandler.h>
 #include <IO/WorldSerializer.h>
@@ -37,7 +38,7 @@ enum EditingMode : uint32
 	REMOVE_DOOR
 };
 
-class Editor : public Application, public IResourceListener
+class Editor : public Application, public IResourceListener, public ISelectionListener
 {
 public:
 	Editor() noexcept;
@@ -57,6 +58,8 @@ public:
 	void OnRender(float dtS) override;
 
 	void OnResourcesLoaded() override;
+	void OnSelected(const SelectionHandler* handler, ISelectable* selection) override;
+	void OnDeselected(const SelectionHandler* handler, ISelectable* selection) override;
 
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();
@@ -88,16 +91,18 @@ private:
 	Button* m_pButtonMesh;
 	Panel* m_pPanelTop;
 
+	SelectionHandler m_SelectionHandlerFloor;
 	TextView* m_pTextViewFloor;
 	Button* m_pButtonFloor1;
 	Button* m_pButtonFloor2;
 	Button* m_pButtonFloor3;
 	Panel* m_pPanelFloor;
 
+	SelectionHandler m_SelectionHandlerRoom;
 	TextView* m_pTextViewEditor;
-	Button* m_pButtonAdd;
-	Button* m_pButtonEdit;
-	Button* m_pButtonRemove;
+	Button* m_pButtonAddRoom;
+	Button* m_pButtonEditRoom;
+	Button* m_pButtonRemoveRoom;
 	Button* m_pButtonAddDoor;
 	Button* m_pButtonRemoveDoor;
 	Panel* m_pPanelEditor;

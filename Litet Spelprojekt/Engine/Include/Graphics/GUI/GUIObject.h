@@ -43,6 +43,8 @@ public:
 
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
 
+	const std::vector<GUIObject*>& GetChildren();
+
 protected:
 	GUIObject(float x, float y, float width, float height);
 

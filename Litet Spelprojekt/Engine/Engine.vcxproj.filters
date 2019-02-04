@@ -120,5 +120,6 @@
     <ClInclude Include="Include\IO\TEXTURE.h" />
     <ClInclude Include="Include\System\ThreadHandler.h" />
     <ClInclude Include="Include\System\IRunnable.h" />
+    <ClInclude Include="Include\Graphics\Textures\TextureHelper.h" />
   </ItemGroup>
 </Project>

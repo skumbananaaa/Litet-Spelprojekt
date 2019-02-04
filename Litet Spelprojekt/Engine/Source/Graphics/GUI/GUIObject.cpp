@@ -490,6 +490,11 @@ void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
 	m_DeleteAll = deleteAll;
 }
 
+const std::vector<GUIObject*>& GUIObject::GetChildren()
+{
+	return m_Children;
+}
+
 Texture2D* GUIObject::GetDefaultTexture() const
 {
 	return s_pDefaultTexture;

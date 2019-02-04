@@ -60,6 +60,7 @@
     <ClInclude Include="Include\Graphics\Textures\Texture.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture2D.h" />
     <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
+    <ClInclude Include="Include\Graphics\Textures\TextureHelper.h" />
     <ClInclude Include="Include\IO\WorldSerializer.h" />
     <ClInclude Include="Include\STB\stb_image.h" />
     <ClInclude Include="Include\System\Application.h" />

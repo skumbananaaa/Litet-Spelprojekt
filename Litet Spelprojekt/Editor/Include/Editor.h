@@ -15,18 +15,17 @@
 #include <World/Grid.h>
 #include <IO/ResourceHandler.h>
 #include <IO/WorldSerializer.h>
+#include <Graphics/Textures/TextureHelper.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/string_cast.hpp>
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
-#define NUM_ROOM_COLORS 6
-#define TILE_UNDEFINED_INDEX 0
-#define TILE_DOOR_INDEX 1
-#define TILE_LADDER_UP 2
-#define TILE_LADDER_DOWN 3
-#define TILE_SMALLEST_FREE 4
+#define MAX_NUM_ROOMS 32
+#define TILE_DOOR_INDEX 0
+#define TILE_NON_WALKABLE_INDEX 1
+#define TILE_SMALLEST_FREE 2
 
 enum EditingMode : uint32
 {
@@ -44,6 +43,7 @@ public:
 	Editor() noexcept;
 	~Editor();
 
+	void NormalizeTileIndexes() noexcept;
 	glm::ivec2 CalculateGridPosition(const glm::vec2& mousePosition) noexcept;
 	glm::ivec2 CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept;
 
@@ -67,14 +67,15 @@ private:
 
 	EditingMode m_CurrentEditingMode;
 
-	glm::vec3 m_RoomColors[NUM_ROOM_COLORS];
+	uint32 m_TileTints[MAX_NUM_ROOMS];
+	uint32 m_TileColors[MAX_NUM_ROOMS];
 	uint32 m_LargestIndexUsed;
 
 	bool m_Dragging;
 	int32 m_RoomBeingEdited;
 	glm::ivec2 m_FirstCorner;
 
-	glm::vec3 m_MouseColor;
+	uint32 m_MouseMaterial;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
 

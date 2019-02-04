@@ -63,7 +63,7 @@ Editor::Editor() noexcept : Application(false)
 
 	const int32 gridWidth = 40;
 	const int32 gridHeight = 20;
-	m_pGrid = new Grid(MATERIAL::WHITE, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
+	m_pGrid = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
 
 	/*int temp_map[gridHeiht][gridWidth]{
 		{0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -92,23 +92,16 @@ Editor::Editor() noexcept : Application(false)
 	{
 		for (int j = 0; j < m_pGrid->GetSize().y; j++)
 		{
-			m_pGrid->GetTile(glm::ivec2(i, j))->SetID(TILE_UNDEFINED_INDEX);
+			Tile* tile = m_pGrid->GetTile(glm::ivec2(i, j));
+			tile->SetID(TILE_NON_WALKABLE_INDEX);
 			//m_pGrid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
-			GameObject* g = m_pGrid->GetTile(glm::ivec2(i, j));
-			m_pScene->AddGameObject(g);
+			m_pScene->AddGameObject(tile);
 		}
 	}
 
-	m_RoomColors[0] = glm::vec3(1.0f, 0.0f, 0.0f);
-	m_RoomColors[1] = glm::vec3(0.0f, 1.0f, 0.0f);
-	m_RoomColors[2] = glm::vec3(0.0f, 0.0f, 1.0f);
-	m_RoomColors[3] = glm::vec3(1.0f, 1.0f, 0.0f);
-	m_RoomColors[4] = glm::vec3(0.0f, 1.0f, 1.0f);
-	m_RoomColors[5] = glm::vec3(1.0f, 0.0f, 1.0f);
-
 	m_RoomBeingEdited = -1;
-	m_LargestIndexUsed = TILE_SMALLEST_FREE;
-	m_MouseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
+	m_MouseMaterial = MATERIAL::WHITE;
 
 	m_Dragging = false;
 	m_CurrentEditingMode = NONE;
@@ -131,7 +124,83 @@ Editor::~Editor()
 
 void Editor::OnResourcesLoaded()
 {
+	float hDelta = 360.0f / (float)MAX_NUM_ROOMS;
+	float currentH = 0.0f;
+	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
+	{
+		m_TileColors[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, 1.0f, 1.0f, 1.0f)));
+		m_TileTints[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, 1.0f, 0.5f, 1.0f)));
+		currentH += hDelta;
+	}
+
 	std::cout << "Resources Loaded!" << std::endl;
+}
+
+void Editor::NormalizeTileIndexes() noexcept
+{
+	std::cout << "Normalizing Tile Indexes" << std::endl;
+	bool indexesExisting[MAX_NUM_ROOMS];
+	uint32 indexesMissingBefore[MAX_NUM_ROOMS];
+
+	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
+	{
+		indexesExisting[i] = false;
+		indexesMissingBefore[i] = 0;
+	}
+
+	for (uint32 x = 0; x < m_pGrid->GetSize().x; x++)
+	{
+		for (uint32 y = 0; y < m_pGrid->GetSize().y; y++)
+		{
+			Tile* tile = m_pGrid->GetTile(glm::ivec2(x, y));
+			int32 index = tile->GetID() - TILE_SMALLEST_FREE;
+
+			if (index >= 0)
+			{
+				indexesExisting[index] = true;
+			}
+		}
+	}
+
+	uint32 indexesMissing = 0;
+	bool someIndexExists = false;
+	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
+	{
+		if (!indexesExisting[i])
+		{
+			indexesMissing++;
+		}
+		else
+		{
+			someIndexExists = true;
+			m_LargestIndexUsed = i + TILE_SMALLEST_FREE - indexesMissing;
+		}
+
+		indexesMissingBefore[i] = indexesMissing;
+	}
+
+	if (!someIndexExists)
+	{
+		m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
+	}
+
+	std::cout << "New Largest Index Used: " << m_LargestIndexUsed << std::endl;
+
+	for (uint32 x = 0; x < m_pGrid->GetSize().x; x++)
+	{
+		for (uint32 y = 0; y < m_pGrid->GetSize().y; y++)
+		{
+			Tile* tile = m_pGrid->GetTile(glm::ivec2(x, y));
+			int32 index = tile->GetID() - TILE_SMALLEST_FREE;
+
+			if (index >= 0)
+			{
+				uint32 newIndex = tile->GetID() - indexesMissingBefore[index];
+				tile->SetID(newIndex);
+				tile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+			}
+		}
+	}
 }
 
 glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcept
@@ -159,14 +228,14 @@ void Editor::OnMouseMove(const glm::vec2& position)
 	{
 		for (uint32 y = 0; y < m_pGrid->GetSize().y; y++)
 		{
-			m_pGrid->GetTile(glm::ivec2(x, y))->ResetColor();
+			m_pGrid->GetTile(glm::ivec2(x, y))->ResetMaterial();
 		}
 	}
 
 	glm::ivec2 gridPos = CalculateGridPosition(position);
 	if (gridPos.x >= 0 && gridPos.x <= m_pGrid->GetSize().x - 1 && gridPos.y >= 0 && gridPos.y <= m_pGrid->GetSize().y - 1)
 	{
-		m_pGrid->GetTile(gridPos)->SetTint(glm::vec4(m_MouseColor, 1.0f));
+		m_pGrid->GetTile(gridPos)->SetMaterial(m_MouseMaterial);
 	}
 
 	if (m_Dragging)
@@ -185,9 +254,9 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					if (tile->GetID() == 0)
+					if (tile->GetID() == TILE_NON_WALKABLE_INDEX)
 					{
-						tile->SetTint(glm::vec4(m_RoomColors[(m_LargestIndexUsed + 1) % NUM_ROOM_COLORS], 1.0f));
+						tile->SetMaterial(m_TileTints[(m_LargestIndexUsed - TILE_SMALLEST_FREE + 1) % MAX_NUM_ROOMS]);
 					}
 				}
 			}
@@ -202,7 +271,10 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					tile->SetTint(glm::vec4(m_RoomColors[(m_RoomBeingEdited) % NUM_ROOM_COLORS], 1.0f));
+					if (tile->GetID() >= TILE_DOOR_INDEX)
+					{
+						tile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+					}
 				}
 			}
 		}
@@ -216,7 +288,10 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					tile->SetTint(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+					if (tile->GetID() >= TILE_DOOR_INDEX)
+					{
+						tile->SetMaterial(MATERIAL::BLACK);
+					}
 				}
 			}
 		}
@@ -225,74 +300,87 @@ void Editor::OnMouseMove(const glm::vec2& position)
 
 void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 {
-	if (mousebutton == MouseButton::MOUSE_BUTTON_LEFT)
+	bool clickedOnGUI = false;
+	for (GUIObject* object : GetGUIManager().GetChildren())
 	{
-		if (!m_Dragging)
+		if (object->ContainsPoint(position))
 		{
-			if (m_CurrentEditingMode == ADD_ROOM)
-			{
-				m_Dragging = true;
-				m_FirstCorner = CalculateGridPosition(position);
-			}
-			else if (m_CurrentEditingMode == EDIT_ROOM)
-			{
-				if (m_RoomBeingEdited == -1)
-				{
-					glm::ivec2 currentPos = CalculateGridPosition(position);
+			clickedOnGUI = true;
+			break;
+		}
+	}
 
-					if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
-					{
-						uint32 tileIndex = m_pGrid->GetTile(currentPos)->GetID();
-
-						if (tileIndex >= TILE_SMALLEST_FREE)
-						{
-							m_RoomBeingEdited = tileIndex;
-						}
-					}
-				}
-				else
+	if (!clickedOnGUI)
+	{
+		if (mousebutton == MouseButton::MOUSE_BUTTON_LEFT)
+		{
+			if (!m_Dragging)
+			{
+				if (m_CurrentEditingMode == ADD_ROOM)
 				{
 					m_Dragging = true;
 					m_FirstCorner = CalculateGridPosition(position);
 				}
-			}
-			else if (m_CurrentEditingMode == DELETE_ROOM)
-			{
-				m_Dragging = true;
-				m_FirstCorner = CalculateGridPosition(position);
-			}
-			else if (m_CurrentEditingMode == ADD_DOOR)
-			{
-				glm::ivec2 currentPos = CalculateGridPosition(position);
-				if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
+				else if (m_CurrentEditingMode == EDIT_ROOM)
 				{
-					Tile* tile = m_pGrid->GetTile(currentPos);
-					tile->SetID(TILE_DOOR_INDEX);
-					tile->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-				}
-			}
-			else if (m_CurrentEditingMode == REMOVE_DOOR)
-			{
-				glm::ivec2 currentPos = CalculateGridPosition(position);
-				if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
-				{
-					Tile* tile = m_pGrid->GetTile(currentPos);
-
-					if (tile->GetID() == TILE_DOOR_INDEX)
+					if (m_RoomBeingEdited == -1)
 					{
-						tile->SetID(TILE_UNDEFINED_INDEX);
-						tile->SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+						glm::ivec2 currentPos = CalculateGridPosition(position);
+
+						if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
+						{
+							uint32 tileIndex = m_pGrid->GetTile(currentPos)->GetID();
+
+							if (tileIndex >= TILE_DOOR_INDEX)
+							{
+								m_RoomBeingEdited = tileIndex;
+							}
+						}
+					}
+					else
+					{
+						m_Dragging = true;
+						m_FirstCorner = CalculateGridPosition(position);
+					}
+				}
+				else if (m_CurrentEditingMode == DELETE_ROOM)
+				{
+					m_Dragging = true;
+					m_FirstCorner = CalculateGridPosition(position);
+				}
+				else if (m_CurrentEditingMode == ADD_DOOR)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+					if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
+					{
+						Tile* tile = m_pGrid->GetTile(currentPos);
+						tile->SetID(TILE_DOOR_INDEX);
+						tile->SetDefaultMaterial(MATERIAL::WHITE);
+					}
+				}
+				else if (m_CurrentEditingMode == REMOVE_DOOR)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+					if (currentPos.x >= 0 && currentPos.x <= m_pGrid->GetSize().x - 1 && currentPos.y >= 0 && currentPos.y <= m_pGrid->GetSize().y - 1)
+					{
+						Tile* tile = m_pGrid->GetTile(currentPos);
+
+						if (tile->GetID() == TILE_DOOR_INDEX)
+						{
+							tile->SetID(TILE_NON_WALKABLE_INDEX);
+							tile->SetDefaultMaterial(MATERIAL::BLACK);
+						}
 					}
 				}
 			}
 		}
-	}
-	else if (mousebutton == MouseButton::MOUSE_BUTTON_RIGHT)
-	{
-		if (m_CurrentEditingMode == EDIT_ROOM)
+		else if (mousebutton == MouseButton::MOUSE_BUTTON_RIGHT)
 		{
-			m_RoomBeingEdited = -1;
-			m_Dragging = false;
+			if (m_CurrentEditingMode == EDIT_ROOM)
+			{
+				m_RoomBeingEdited = -1;
+				m_Dragging = false;
+			}
 		}
 	}
 
@@ -315,7 +403,7 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 		if (m_CurrentEditingMode == ADD_ROOM)
 		{
 			m_LargestIndexUsed++;
-
+			bool addedRoom = false;
 			for (uint32 i = 0; i < numTiles; i++)
 			{
 				glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
@@ -324,12 +412,23 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					if (tile->GetID() == 0)
+					if (tile->GetID() == TILE_NON_WALKABLE_INDEX)
 					{
 						tile->SetID(m_LargestIndexUsed);
-						tile->SetColor(glm::vec4(m_RoomColors[m_LargestIndexUsed % NUM_ROOM_COLORS], 1.0f));
+						tile->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						addedRoom = true;
 					}
 				}
+			}
+
+			if (!addedRoom)
+			{
+				std::cout << "Did not add room at: " << m_LargestIndexUsed << std::endl;
+				m_LargestIndexUsed--;
+			}
+			else
+			{
+				std::cout << "Added room with index: " << m_LargestIndexUsed << std::endl;
 			}
 
 			m_FirstCorner = glm::ivec2(0);
@@ -344,11 +443,15 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					tile->SetID(m_RoomBeingEdited);
-					tile->SetColor(glm::vec4(m_RoomColors[m_RoomBeingEdited % NUM_ROOM_COLORS], 1.0f));
+					if (tile->GetID() >= TILE_DOOR_INDEX)
+					{
+						tile->SetID(m_RoomBeingEdited);
+						tile->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+					}
 				}
 			}
 
+			NormalizeTileIndexes();
 			m_FirstCorner = glm::ivec2(0);
 		}
 		else if (m_CurrentEditingMode == DELETE_ROOM)
@@ -361,11 +464,15 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 				{
 					Tile* tile = m_pGrid->GetTile(currentPos);
 
-					tile->SetID(0);
-					tile->SetColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+					if (tile->GetID() >= TILE_DOOR_INDEX)
+					{
+						tile->SetID(TILE_NON_WALKABLE_INDEX);
+						tile->SetDefaultMaterial(MATERIAL::BLACK);
+					}
 				}
 			}
 
+			NormalizeTileIndexes();
 			m_FirstCorner = glm::ivec2(0);
 		}
 	}
@@ -472,7 +579,7 @@ void Editor::OnButtonReleased(Button* button)
 			editor->m_CurrentEditingMode = editor->m_CurrentEditingMode == ADD_ROOM ? NONE : ADD_ROOM;
 			editor->m_Dragging = false;
 			editor->m_RoomBeingEdited = -1;
-			editor->m_MouseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+			editor->m_MouseMaterial = MATERIAL::WHITE;
 		}
 	}
 	else if (button == editor->m_pButtonEdit)
@@ -482,7 +589,7 @@ void Editor::OnButtonReleased(Button* button)
 			editor->m_CurrentEditingMode = editor->m_CurrentEditingMode == EDIT_ROOM ? NONE : EDIT_ROOM;
 			editor->m_Dragging = false;
 			editor->m_RoomBeingEdited = -1;
-			editor->m_MouseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+			editor->m_MouseMaterial = MATERIAL::WHITE;
 		}
 	}
 	else if (button == editor->m_pButtonRemove)
@@ -492,7 +599,7 @@ void Editor::OnButtonReleased(Button* button)
 			editor->m_CurrentEditingMode = editor->m_CurrentEditingMode == DELETE_ROOM ? NONE : DELETE_ROOM;
 			editor->m_Dragging = false;
 			editor->m_RoomBeingEdited = -1;
-			editor->m_MouseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+			editor->m_MouseMaterial = MATERIAL::WHITE;
 		}
 	}
 	else if (button == editor->m_pButtonAddDoor)
@@ -500,14 +607,14 @@ void Editor::OnButtonReleased(Button* button)
 		editor->m_CurrentEditingMode = editor->m_CurrentEditingMode == ADD_DOOR ? NONE : ADD_DOOR;
 		editor->m_Dragging = false;
 		editor->m_RoomBeingEdited = -1;
-		editor->m_MouseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+		editor->m_MouseMaterial = MATERIAL::WHITE;
 	}
 	else if (button == editor->m_pButtonRemoveDoor)
 	{
 		editor->m_CurrentEditingMode = editor->m_CurrentEditingMode == REMOVE_DOOR ? NONE : REMOVE_DOOR;
 		editor->m_Dragging = false;
 		editor->m_RoomBeingEdited = -1;
-		editor->m_MouseColor = glm::vec3(0.5f, 0.5f, 0.5f);
+		editor->m_MouseMaterial = MATERIAL::WHITE;
 	}
 }
 

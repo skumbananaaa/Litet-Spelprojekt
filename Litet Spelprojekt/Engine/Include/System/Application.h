@@ -50,6 +50,7 @@ private:
 	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);
 	void InternalOnMouseMove(glm::vec2& position);
+	void InternalOnMouseScroll(glm::vec2& offset);
 	void InternalOnMouseButton(MouseButton mousebutton, bool down);
 	void InternalOnKeyUp(KEY keycode);
 	void InternalOnKeyDown(KEY keycode);
@@ -80,6 +81,11 @@ inline void Application::InternalOnMouseMove(glm::vec2& position)
 	OnMouseMove(position);
 	position.y = m_pWindow->GetHeight() - position.y;
 	m_pGUIManager->InternalRootOnMouseMove(position);
+}
+
+inline void Application::InternalOnMouseScroll(glm::vec2& offset)
+{
+	m_pGUIManager->InternalRootOnMouseScroll(offset);
 }
 
 inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool down)

@@ -1,0 +1,7 @@
+0: Door - always walkable
+1: Wall - never walkable
+Everything else: walkable if standing on same number or 0.
+ex:
+   2->2     walkable
+   2->3     not walkable
+   2->0->3  walkable

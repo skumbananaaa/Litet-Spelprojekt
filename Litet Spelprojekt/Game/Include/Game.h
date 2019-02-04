@@ -45,6 +45,7 @@ private:
 	IndexedMesh* m_pSphereMesh;
 	IndexedMesh* m_pWaterMesh;
 	IndexedMesh* m_pGroundTestMesh;
+	IndexedMesh* m_pWallMesh;
 
 	Texture2D* m_pBoatTexture;
 	Texture2D* m_pBoatNormalMap;

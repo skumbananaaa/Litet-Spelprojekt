@@ -30,6 +30,19 @@ GUIObject::~GUIObject()
 	{
 		delete m_pFramebuffer;
 	}
+
+	if (m_DeleteAll)
+	{
+		for (GUIObject* object : m_Children)
+		{
+			object->SetDeleteAllChildrenOnDestruction(true);
+			delete object;
+		}
+	}
+	m_Children.clear();
+	m_ChildrenToAdd.clear();
+	m_ChildrenToRemove.clear();
+	m_ChildrenDirty.clear();
 }
 
 bool GUIObject::HasParent() const noexcept
@@ -231,6 +244,10 @@ void GUIObject::SetVisible(bool visible) noexcept
 
 bool GUIObject::IsVisible() noexcept
 {
+	if (HasParent())
+	{
+		return m_IsVisible && GetParent()->IsVisible();
+	}
 	return m_IsVisible;
 }
 
@@ -449,7 +466,7 @@ void GUIObject::RenderBackgroundTexture(GUIContext* context)
 	}
 }
 
-bool GUIObject::ContainsPoint(const glm::vec2& position)
+bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();
@@ -466,6 +483,11 @@ bool GUIObject::ContainsPoint(const glm::vec2& position)
 		}
 	}
 	return false;
+}
+
+void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
+{
+	m_DeleteAll = deleteAll;
 }
 
 Texture2D* GUIObject::GetDefaultTexture() const
@@ -505,13 +527,25 @@ void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButt
 	}
 }
 
-void GUIObject::InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
+void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 {
 	for (GUIObject* object : s_MouseListeners)
 	{
 		if (object->IsVisible())
 		{
-			object->OnMouseMove(lastPosition, position);
+			object->OnMouseMove(position);
 		}
 	}
+}
+
+void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
+{
+	for (GUIObject* object : s_MouseListeners)
+	{
+		if (object->IsVisible())
+		{
+			object->OnMouseScroll(position, offset);
+		}
+	}
+	InternalRootOnMouseMove(position);
 }

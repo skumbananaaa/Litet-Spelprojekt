@@ -21,11 +21,14 @@ public:
 	virtual void OnRemoved(GUIObject* parent) override;
 
 	void OnSliderChange(Slider* slider, float percentage) override;
+	virtual bool ContainsPoint(const glm::vec2& position) const noexcept override;
 
 	void RenderChildrensFrameBuffers(GUIContext* context) override;
 	void RenderRealTime(GUIContext* context) override;
 	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child) override;
 	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child) override;
+
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) override;
 
 protected:
 	virtual void PrintName() const override;
@@ -35,4 +38,5 @@ private:
 	Slider* m_pSliderHorizontal;
 	Framebuffer* m_pFrameBufferClientArea;
 	glm::vec2 m_ClientOffset;
+	glm::vec2 m_LastMousePos;
 };

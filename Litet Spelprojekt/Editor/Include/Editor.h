@@ -24,6 +24,9 @@ public:
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 
+	static void OnButtonReleased(Button* button);
+	static Editor* GetEditor();
+
 private:
 	ShaderProgram* m_pShaderProgramDefault;
 
@@ -37,9 +40,21 @@ private:
 	Mesh* m_pGridMesh;
 	UniformBuffer* m_pGridUniform;
 
-	TextView* m_pTextViewFPS;
-	TextView* m_pTextViewUPS;
-	Button* m_pButton;
-	Button* m_pButton2;
-	PanelScrollable* m_pPanelScrollable;
+	Button* m_pButtonSave;
+	Button* m_pButtonLoad;
+	Button* m_pButtonRoom;
+	Button* m_pButtonMesh;
+	Panel* m_pPanelTop;
+
+	TextView* m_pTextViewFloor;
+	Button* m_pButtonFloor1;
+	Button* m_pButtonFloor2;
+	Button* m_pButtonFloor3;
+	Panel* m_pPanelFloor;
+
+	TextView* m_pTextViewEditor;
+	Button* m_pButtonAdd;
+	Button* m_pButtonEdit;
+	Button* m_pButtonRemove;
+	Panel* m_pPanelEditor;
 };

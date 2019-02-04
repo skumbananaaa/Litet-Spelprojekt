@@ -27,9 +27,16 @@ public:
 	uint32 GetNumLevels() const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
+	void GenerateWalls(uint32 level);
+	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
+	glm::ivec3* GetStairs() const noexcept;
+	uint32 GetNumStairs() const noexcept;
 
 private:
 	WorldLevel** m_pLevels;
 	uint32 m_NumLevels;
 	std::vector<WorldObject> m_Objects;
+
+	glm::ivec3* m_pStairs;
+	uint32 m_NumStairs;
 };

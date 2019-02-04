@@ -6,6 +6,7 @@ Slider::Slider(float x, float y, float width, float height, void(*onChangedCallb
 	m_IsHovered(false),
 	m_MouseOffset(0),
 	m_SliderPos(0),
+	m_SliderVel(0),
 	m_Ratio(1),
 	m_SliderColor(0.408F, 0.408F, 0.408F, 1.0F),
 	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
@@ -20,7 +21,7 @@ Slider::~Slider()
 
 }
 
-bool Slider::isVertical() const noexcept
+bool Slider::IsVertical() const noexcept
 {
 	return GetWidth() < GetHeight();
 }
@@ -42,7 +43,7 @@ void Slider::OnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 	if (ContainsPoint(position))
 	{
 		m_IsPressed = true;
-		if (isVertical())
+		if (IsVertical())
 		{
 			m_MouseOffset = position.y - m_SliderPos;
 		}
@@ -61,50 +62,17 @@ void Slider::OnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 	}
 }
 
-void Slider::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
+void Slider::OnMouseMove(const glm::vec2& position)
 {
 	if (m_IsPressed)
 	{
-		static float lastValue = 0;
-		lastValue = GetPercentage();
-
-		if (isVertical())
+		if (IsVertical())
 		{
-			m_SliderPos = position.y - m_MouseOffset;
-			if (m_SliderPos < 0)
-			{
-				m_SliderPos = 0;
-			}
-			else if (GetPercentage() < 0)
-			{
-				SetPercentage(0);
-			}
+			MoveSlider(position.y - m_MouseOffset - m_SliderPos);
 		}
 		else
 		{
-			m_SliderPos = position.x - m_MouseOffset;
-			if (m_SliderPos < 0)
-			{
-				m_SliderPos = 0;
-			}
-			else if (GetPercentage() > 1)
-			{
-				SetPercentage(1);
-			}		
-		}
-
-		static float currentValue = 0;
-		currentValue = GetPercentage();
-		if (lastValue != currentValue)
-		{
-			if (m_OnChangedCallback)
-			{
-				m_OnChangedCallback(this, currentValue);
-			}
-			for (ISliderListener* listener : m_SliderListeners)
-			{
-				listener->OnSliderChange(this, currentValue);
-			}
+			MoveSlider(position.x - m_MouseOffset - m_SliderPos);
 		}
 	}
 	else
@@ -125,12 +93,27 @@ void Slider::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& positio
 	}
 }
 
+void Slider::OnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
+{
+	if (ContainsPoint(position))
+	{
+		if (IsVertical())
+		{
+			AccelerateSlider(offset.y * 600 * GetRatio());
+		}
+		else
+		{
+			AccelerateSlider(-offset.y * 600 * GetRatio());
+		}
+	}
+}
+
 void Slider::RenderRealTime(GUIContext* context)
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();
 
-	if (isVertical())
+	if (IsVertical())
 	{
 		float indent = GetWidth() * 0.2;
 		float width = GetWidth() - indent * 2;
@@ -169,7 +152,7 @@ float Slider::GetRatio() const noexcept
 
 void Slider::SetPercentage(float percentage)
 {
-	if (isVertical())
+	if (IsVertical())
 	{
 		percentage = 1.0 - percentage;
 		m_SliderPos = percentage * (GetHeight() - GetHeight() * m_Ratio);
@@ -187,7 +170,7 @@ float Slider::GetPercentage() const noexcept
 		return 0;
 	}
 
-	if (isVertical())
+	if (IsVertical())
 	{
 		return 1.0 - m_SliderPos / (GetHeight() - GetHeight() * m_Ratio);
 	}
@@ -275,6 +258,53 @@ void Slider::SetOnSliderChanged(void(*callback)(Slider*, float))
 	m_OnChangedCallback = callback;
 }
 
+void Slider::MoveSlider(float offset)
+{
+	static float lastValue = 0;
+	lastValue = GetPercentage();
+
+	m_SliderPos += offset;
+
+	if (GetPercentage() < 0)
+	{
+		SetPercentage(0);
+		m_SliderVel = 0;
+	}
+	else if (GetPercentage() > 1)
+	{
+		SetPercentage(1);
+		m_SliderVel = 0;
+	}
+
+	static float currentValue = 0;
+	currentValue = GetPercentage();
+	if (lastValue != currentValue)
+	{
+		if (m_OnChangedCallback)
+		{
+			m_OnChangedCallback(this, currentValue);
+		}
+		for (ISliderListener* listener : m_SliderListeners)
+		{
+			listener->OnSliderChange(this, currentValue);
+		}
+	}
+}
+
+void Slider::AccelerateSlider(float offset)
+{
+	m_SliderVel += offset;
+
+	if (m_SliderVel > 2000 * GetRatio())
+	{
+		m_SliderVel = 2000 * GetRatio();
+	}
+	else if (m_SliderVel < -2000 * GetRatio())
+	{
+		m_SliderVel = -2000 * GetRatio();
+	}
+}
+
 const glm::vec4& Slider::GetSliderClearColor() const
 {
 	if (m_IsPressed)
@@ -286,4 +316,26 @@ const glm::vec4& Slider::GetSliderClearColor() const
 		return GetOnHoverColor();
 	}
 	return GetSliderColor();
+}
+
+void Slider::OnUpdate(float dtS)
+{
+	MoveSlider(m_SliderVel * dtS);
+
+	if (m_SliderVel > 0)
+	{
+		m_SliderVel -= 1500.0 * dtS * GetRatio();
+		if (m_SliderVel < 0)
+		{
+			m_SliderVel = 0;
+		}
+	}
+	else if(m_SliderVel < 0)
+	{
+		m_SliderVel += 1500.0 * dtS * GetRatio();
+		if (m_SliderVel > 0)
+		{
+			m_SliderVel = 0;
+		}
+	}
 }

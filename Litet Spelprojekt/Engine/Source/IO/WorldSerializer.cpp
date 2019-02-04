@@ -51,11 +51,23 @@ World* WorldSerializer::Read(const char* const path)
 		worldObjects[objectId].MaterialId = objects[objectId]["materialId"].GetUint();
 	}
 
+	const Value& stairs = jsonObject["stairs"];
+	glm::ivec3* worldStairs = new glm::ivec3[stairs.Size()];
+
+	for (uint32 stairId = 0; stairId < stairs.Size(); stairId++)
+	{
+		const Value& stair = stairs[stairId];
+		worldStairs[stairId] = glm::ivec3(stair[0].GetUint(), stair[1].GetUint(), stair[2].GetUint());
+	}
+
 	World* world = new World(worldLevels, levels.Size(), worldObjects, objects.Size());
+	world->SetStairs(worldStairs, stairs.Size());
 	delete[] worldLevels;
 	worldLevels = nullptr;
 	delete[] worldObjects;
 	worldObjects = nullptr;
+	delete[] worldStairs;
+	worldStairs = nullptr;
 	return world;
 }
 
@@ -110,6 +122,21 @@ void WorldSerializer::Write(const char* const path, const World& world)
 		writer.EndObject();
 	}
 
+	writer.EndArray();
+
+	writer.String("stairs");
+	writer.StartArray();
+	for (uint32 stairId = 0; stairId < world.GetNumStairs(); stairId++)
+	{
+		const glm::ivec3* stairs = world.GetStairs();
+		writer.StartArray();
+
+		writer.Uint(stairs[stairId].x);
+		writer.Uint(stairs[stairId].y);
+		writer.Uint(stairs[stairId].z);
+
+		writer.EndArray();
+	}
 	writer.EndArray();
 
 	writer.EndObject();

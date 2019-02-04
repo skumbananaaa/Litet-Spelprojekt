@@ -14,6 +14,11 @@ PanelScrollable::PanelScrollable(float x, float y, float width, float height, fl
 
 PanelScrollable::~PanelScrollable()
 {
+	if (HasParent())
+	{
+		GetParent()->Remove(m_pSliderVertical);
+		GetParent()->Remove(m_pSliderHorizontal);
+	}
 	delete m_pSliderVertical;
 	delete m_pSliderHorizontal;
 	delete m_pFrameBufferClientArea;
@@ -114,6 +119,7 @@ void PanelScrollable::OnAdded(GUIObject* parent)
 	parent->Add(m_pSliderHorizontal);
 
 	AddRealTimeRenderer(this);
+	AddMouseListener(this);
 }
 
 void PanelScrollable::OnRemoved(GUIObject* parent)
@@ -125,6 +131,7 @@ void PanelScrollable::OnRemoved(GUIObject* parent)
 	parent->Remove(m_pSliderHorizontal);
 
 	RemoveRealTimeRenderer(this);
+	RemoveMouseListener(this);
 }
 
 void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
@@ -141,6 +148,28 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 	{
 		m_ClientOffset.x = (1.0 - slider->GetRatio()) * GetClientWidth() * percentage;
 	}
+	InternalRootOnMouseMove(m_LastMousePos);
+}
+
+bool PanelScrollable::ContainsPoint(const glm::vec2& position) const noexcept
+{
+	float x = GetXInWorld();
+	float y = GetYInWorld();
+	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
+	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
+
+	if (position.x > x && position.x < x + GetWidth() - widthIndent)
+	{
+		if (position.y > y + heightIndent && position.y < y + GetHeight())
+		{
+			if (HasParent())
+			{
+				return GetParent()->ContainsPoint(position);
+			}
+			return true;
+		}
+	}
+	return false;
 }
 
 void PanelScrollable::RenderChildrensFrameBuffers(GUIContext* context)
@@ -179,6 +208,22 @@ void PanelScrollable::ControllRealTimeRenderingForChildPost(GUIContext* context,
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
 	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
 	glDisable(GL_SCISSOR_TEST);
+}
+
+void PanelScrollable::OnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
+{
+	if (ContainsPoint(position))
+	{
+		if (m_pSliderVertical->IsVisible())
+		{
+			m_pSliderVertical->AccelerateSlider(offset.y * 600 * m_pSliderVertical->GetRatio());
+		}
+		else if (m_pSliderHorizontal->IsVisible())
+		{
+			m_pSliderHorizontal->AccelerateSlider(-offset.y * 600 * m_pSliderHorizontal->GetRatio());
+		}
+		m_LastMousePos = position;
+	}
 }
 
 void PanelScrollable::PrintName() const

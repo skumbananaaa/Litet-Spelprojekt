@@ -13,6 +13,7 @@ public:
 
 	void Play() const noexcept;
 	void Pause() const noexcept;
+	void TogglePause() noexcept;
 	void Stop() const noexcept;
 
 	void SetPosition(const glm::vec3& pos) const noexcept;
@@ -34,4 +35,5 @@ public:
 
 private:
 	uint32 m_SourceId;
+	bool m_Paused = false;
 };

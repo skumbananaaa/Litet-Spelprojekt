@@ -39,6 +39,10 @@ public:
 	const glm::vec4& GetBackgroundColor() const noexcept;
 	void SetBackgroundColor(const glm::vec4& color) noexcept;
 
+	virtual bool ContainsPoint(const glm::vec2& position) const noexcept;
+
+	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
+
 protected:
 	GUIObject(float x, float y, float width, float height);
 
@@ -50,7 +54,8 @@ protected:
 
 	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
 	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
-	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
+	virtual void OnMouseMove(const glm::vec2& position) {};
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) {};
 
 	virtual void OnKeyUp(KEY keycode) {};
 	virtual void OnKeyDown(KEY keycode) {};
@@ -60,7 +65,7 @@ protected:
 	virtual void RenderRealTime(GUIContext* context);
 	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child);
 	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child);
-	bool ContainsPoint(const glm::vec2& position);
+
 	virtual void PrintName() const = 0;
 	Texture2D* GetDefaultTexture() const;
 	virtual const glm::vec4& GetClearColor() const;
@@ -88,6 +93,8 @@ protected:
 	static void AddRealTimeRenderer(GUIObject* listener);
 	static void RemoveRealTimeRenderer(GUIObject* listener);
 
+	void InternalRootOnMouseMove(const glm::vec2& position);
+
 private:
 	void InternalOnUpdate(float dtS);
 	void InternalOnRender(GUIContext* context);
@@ -96,7 +103,7 @@ private:
 
 	void InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton);
 	void InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton);
-	void InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
+	void InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset);
 
 	void RerenderChildren(GUIContext* context);
 
@@ -116,6 +123,7 @@ private:
 	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;
 	glm::vec4 m_BackgroundColor;
+	bool m_DeleteAll;
 
 	static std::vector<GUIObject*> s_MouseListeners;
 	static std::vector<GUIObject*> s_RealTimeRenderers;

@@ -11,41 +11,21 @@ Editor::Editor() noexcept : Application(false)
 	m_pScene = new Scene();
 
 
-	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	/*Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
 	pCamera->CreateOrthographic(30.0f * aspect, 30.0f, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
-	m_pScene->SetCamera(pCamera);
+	m_pScene->SetCamera(pCamera);*/
 
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
-	m_pScene->AddDirectionalLight(pDirectionalLight);
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
+	pCamera->UpdateFromPitchYaw();
+	m_pScene->SetCamera(pCamera);
 
 	const int32 gridWidth = 40;
 	const int32 gridHeight = 20;
 	m_pGrid = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
-
-	/*int temp_map[gridHeiht][gridWidth]{
-		{0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1, 1, 3, 3, 3, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 5, 5, 2, 2, 2, 2, 0, 4, 4, 1, 1, 3, 2, 2, 2, 2, 0, 3, 3, 3, 5, 5, 2, 2, 2, 2, 0, 4, 4, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1, 1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1, 1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 3, 0, 3, 5, 5, 2, 2, 2, 0, 2, 4, 0, 1, 1, 3, 2, 0, 2, 2, 2, 3, 0, 3, 5, 5, 2, 2, 2, 0, 2, 4, 0, 1 },
-		{0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 5, 5, 5, 5, 2, 5, 5, 3, 3, 1, 1, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 2, 5, 5, 3, 3, 1 },
-		{0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 3, 1, 1, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 3, 1 },
-		{0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 5, 5, 5, 5, 5, 5, 3, 3, 1, 1, 3, 3, 3, 3, 3, 4, 4, 4, 4, 0, 5, 5, 5, 5, 5, 5, 3, 3, 1 },
-		{0, 0, 0, 0, 0, 0, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 4, 1, 4, 4, 3, 2, 2, 2, 2, 2, 2, 0, 1, 1, 3, 2, 2, 2, 2, 2, 4, 1, 4, 4, 3, 2, 2, 2, 2, 2, 2, 0, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 2, 2, 1, 1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 2, 2, 1 },
-		{0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1, 1, 3, 2, 2, 2, 2, 0, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1, 1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1, 1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{0, 0, 0, 0, 0, 0, 2, 5, 0, 5, 3, 3, 2, 2, 2, 0, 2, 4, 0, 1, 1, 3, 2, 2, 2, 0, 2, 5, 0, 5, 3, 3, 2, 2, 2, 0, 2, 4, 0, 1 },
-		{0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 3, 3, 3, 3, 2, 3, 4, 4, 4, 1, 1, 3, 3, 3, 2, 3, 5, 5, 5, 5, 3, 3, 3, 3, 2, 3, 4, 4, 4, 1 },
-		{0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1, 1, 3, 3, 3, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1 },
-		{0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1, 1, 3, 3, 3, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1 },
-		{0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	};*/
 
 	for (int i = 0; i < m_pGrid->GetSize().x; i++)
 	{
@@ -53,7 +33,6 @@ Editor::Editor() noexcept : Application(false)
 		{
 			Tile* tile = m_pGrid->GetTile(glm::ivec2(i, j));
 			tile->SetID(TILE_NON_WALKABLE_INDEX);
-			//m_pGrid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
 			m_pScene->AddGameObject(tile);
 		}
 	}

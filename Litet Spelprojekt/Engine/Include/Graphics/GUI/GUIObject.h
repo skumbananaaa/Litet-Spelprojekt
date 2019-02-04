@@ -43,6 +43,9 @@ public:
 
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
 
+	void SetUserData(void* data);
+	void* GetUserData() const;
+
 	const std::vector<GUIObject*>& GetChildren();
 
 protected:
@@ -126,6 +129,7 @@ private:
 	Texture2D* m_pBackgroundTexture;
 	glm::vec4 m_BackgroundColor;
 	bool m_DeleteAll;
+	void* m_pUserData;
 
 	static std::vector<GUIObject*> s_MouseListeners;
 	static std::vector<GUIObject*> s_RealTimeRenderers;

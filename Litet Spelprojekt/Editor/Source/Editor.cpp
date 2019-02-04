@@ -17,47 +17,6 @@ Editor::Editor() noexcept : Application(false)
 	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
-	m_pPanelTop = new Panel(0, GetWindow().GetHeight() - 70, GetWindow().GetWidth(), 70);
-	m_pButtonSave = new Button(10, 10, 140, 50, "Save", nullptr, OnButtonReleased);
-	m_pButtonLoad = new Button(160, 10, 140, 50, "Load", nullptr, OnButtonReleased);
-	m_pButtonRoom = new Button(310, 10, 140, 50, "Room Editor", nullptr, OnButtonReleased);
-	m_pButtonMesh = new Button(460, 10, 140, 50, "Mesh Editor", nullptr, OnButtonReleased);
-	m_pPanelTop->Add(m_pButtonSave);
-	m_pPanelTop->Add(m_pButtonLoad);
-	m_pPanelTop->Add(m_pButtonRoom);
-	m_pPanelTop->Add(m_pButtonMesh);
-	m_pPanelTop->SetDeleteAllChildrenOnDestruction(true);
-
-	m_pPanelFloor = new Panel(0, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
-	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Select Floor", TextAlignment::CENTER);
-	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "Floor 1", nullptr, OnButtonReleased);
-	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "Floor 2", nullptr, OnButtonReleased);
-	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "Floor 3", nullptr, OnButtonReleased);
-	m_pPanelFloor->Add(m_pTextViewFloor);
-	m_pPanelFloor->Add(m_pButtonFloor1);
-	m_pPanelFloor->Add(m_pButtonFloor2);
-	m_pPanelFloor->Add(m_pButtonFloor3);
-	m_pPanelFloor->SetDeleteAllChildrenOnDestruction(true);
-
-	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 160, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
-	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Select Tool", TextAlignment::CENTER);
-	m_pButtonAdd = new Button(10, m_pPanelEditor->GetHeight() - 100, 140, 50, "New Room", nullptr, OnButtonReleased);
-	m_pButtonEdit = new Button(10, m_pPanelEditor->GetHeight() - 160, 140, 50, "Edit Room", nullptr, OnButtonReleased);
-	m_pButtonRemove = new Button(10, m_pPanelEditor->GetHeight() - 220, 140, 50, "Delete Room", nullptr, OnButtonReleased);
-	m_pButtonAddDoor = new Button(10, m_pPanelEditor->GetHeight() - 280, 140, 50, "Add Door", nullptr, OnButtonReleased);
-	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, 140, 50, "Remove Door", nullptr, OnButtonReleased);
-	m_pPanelEditor->Add(m_pTextViewEditor);
-	m_pPanelEditor->Add(m_pButtonAdd);
-	m_pPanelEditor->Add(m_pButtonEdit);
-	m_pPanelEditor->Add(m_pButtonRemove);
-	m_pPanelEditor->Add(m_pButtonAddDoor);
-	m_pPanelEditor->Add(m_pButtonRemoveDoor);
-	m_pPanelEditor->SetDeleteAllChildrenOnDestruction(true);
-
-	GetGUIManager().Add(m_pPanelTop);
-	GetGUIManager().Add(m_pPanelFloor);
-	GetGUIManager().Add(m_pPanelEditor);
-
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
 
@@ -124,6 +83,71 @@ Editor::~Editor()
 
 void Editor::OnResourcesLoaded()
 {
+	m_pPanelTop = new Panel(0, GetWindow().GetHeight() - 70, GetWindow().GetWidth(), 70);
+	m_pButtonSave = new Button(10, 10, 140, 50, "Save", nullptr, OnButtonReleased);
+	m_pButtonLoad = new Button(160, 10, 140, 50, "Load", nullptr, OnButtonReleased);
+	m_pButtonRoom = new Button(310, 10, 140, 50, "Room Editor", nullptr, OnButtonReleased);
+	m_pButtonMesh = new Button(460, 10, 140, 50, "Mesh Editor", nullptr, OnButtonReleased);
+	m_pPanelTop->Add(m_pButtonSave);
+	m_pPanelTop->Add(m_pButtonLoad);
+	m_pPanelTop->Add(m_pButtonRoom);
+	m_pPanelTop->Add(m_pButtonMesh);
+	m_pPanelTop->SetDeleteAllChildrenOnDestruction(true);
+
+	m_pPanelFloor = new Panel(0, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
+	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Select Floor", TextAlignment::CENTER);
+	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "Floor 1", nullptr, OnButtonReleased);
+	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "Floor 2", nullptr, OnButtonReleased);
+	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "Floor 3", nullptr, OnButtonReleased);
+	m_pPanelFloor->Add(m_pTextViewFloor);
+	m_pPanelFloor->Add(m_pButtonFloor1);
+	m_pPanelFloor->Add(m_pButtonFloor2);
+	m_pPanelFloor->Add(m_pButtonFloor3);
+	m_pPanelFloor->SetDeleteAllChildrenOnDestruction(true);
+
+	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 160, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
+	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Room Tool", TextAlignment::CENTER);
+	m_pButtonAdd = new Button(10, m_pPanelEditor->GetHeight() - 100, 140, 50, "New Room", nullptr, OnButtonReleased);
+	m_pButtonEdit = new Button(10, m_pPanelEditor->GetHeight() - 160, 140, 50, "Edit Room", nullptr, OnButtonReleased);
+	m_pButtonRemove = new Button(10, m_pPanelEditor->GetHeight() - 220, 140, 50, "Delete Room", nullptr, OnButtonReleased);
+	m_pButtonAddDoor = new Button(10, m_pPanelEditor->GetHeight() - 280, 140, 50, "Add Door", nullptr, OnButtonReleased);
+	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, 140, 50, "Remove Door", nullptr, OnButtonReleased);
+	m_pPanelEditor->Add(m_pTextViewEditor);
+	m_pPanelEditor->Add(m_pButtonAdd);
+	m_pPanelEditor->Add(m_pButtonEdit);
+	m_pPanelEditor->Add(m_pButtonRemove);
+	m_pPanelEditor->Add(m_pButtonAddDoor);
+	m_pPanelEditor->Add(m_pButtonRemoveDoor);
+	m_pPanelEditor->SetDeleteAllChildrenOnDestruction(true);
+
+
+	m_pPanelMesh = new Panel(GetWindow().GetWidth() - 160, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
+	m_pTextViewMesh = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Mesh Tool", TextAlignment::CENTER);
+	m_pPanelScrollableMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pTextViewMesh->GetHeight() - 10, m_pPanelMesh->GetWidth(), m_pPanelMesh->GetHeight() * 2);
+	m_pPanelMesh->Add(m_pTextViewMesh);
+	m_pPanelMesh->Add(m_pPanelScrollableMesh);
+	m_pPanelMesh->SetVisible(false);
+	m_pPanelMesh->SetDeleteAllChildrenOnDestruction(true);
+
+	GetGUIManager().Add(m_pPanelTop);
+	GetGUIManager().Add(m_pPanelFloor);
+	GetGUIManager().Add(m_pPanelEditor);
+	GetGUIManager().Add(m_pPanelMesh);
+
+
+	std::vector<MESH_DESC> meshDescs;
+	ResourceHandler::QuaryMeshes(meshDescs);
+	float buttonHeight = 50;
+	m_pPanelScrollableMesh->SetClientSize(m_pPanelScrollableMesh->GetWidth(), buttonHeight * meshDescs.size());
+
+	for (int64 i = 0; i < meshDescs.size(); i++)
+	{
+		MESH_DESC meshDesc = meshDescs[i];
+		Button* button = new Button(0, m_pPanelScrollableMesh->GetClientHeight() - (i + 1) * buttonHeight, m_pPanelScrollableMesh->GetClientWidth(), buttonHeight, meshDesc.name, nullptr, OnButtonReleased);
+		button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
+		button->SetUserData(reinterpret_cast<void*>(meshDesc.mesh));
+		m_pPanelScrollableMesh->Add(button);
+	}
 	float hDelta = 360.0f / (float)MAX_NUM_ROOMS;
 	float currentH = 0.0f;
 	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
@@ -546,19 +570,13 @@ void Editor::OnButtonReleased(Button* button)
 	}
 	else if (button == editor->m_pButtonRoom)
 	{
-		editor->m_pButtonAdd->SetText("New Room");
-		editor->m_pButtonEdit->SetText("Edit Room");
-		editor->m_pButtonRemove->SetText("Delete Room");
-		editor->m_pButtonAddDoor->SetVisible(true);
-		editor->m_pButtonRemoveDoor->SetVisible(true);
+		editor->m_pPanelEditor->SetVisible(true);
+		editor->m_pPanelMesh->SetVisible(false);
 	}
 	else if (button == editor->m_pButtonMesh)
 	{
-		editor->m_pButtonAdd->SetText("New Mesh");
-		editor->m_pButtonEdit->SetText("Edit Mesh");
-		editor->m_pButtonRemove->SetText("Delete Mesh");
-		editor->m_pButtonAddDoor->SetVisible(false);
-		editor->m_pButtonRemoveDoor->SetVisible(false);
+		editor->m_pPanelMesh->SetVisible(true);
+		editor->m_pPanelEditor->SetVisible(false);
 	}
 	else if (button == editor->m_pButtonFloor1)
 	{
@@ -615,6 +633,16 @@ void Editor::OnButtonReleased(Button* button)
 		editor->m_Dragging = false;
 		editor->m_RoomBeingEdited = -1;
 		editor->m_MouseMaterial = MATERIAL::WHITE;
+	}
+	else
+	{
+		uint32 id = reinterpret_cast<uint32>(button->GetUserData());
+		std::cout << "Creting Mesh from ID " << id << std::endl;
+
+		GameObject* gameObject = new GameObject();
+		gameObject->SetMaterial(MATERIAL::WHITE);
+		gameObject->SetPosition(glm::vec3(0, 0, 0));
+		editor->m_pScene->AddGameObject(gameObject);
 	}
 }
 

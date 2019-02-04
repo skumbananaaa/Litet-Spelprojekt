@@ -101,4 +101,8 @@ private:
 	Button* m_pButtonAddDoor;
 	Button* m_pButtonRemoveDoor;
 	Panel* m_pPanelEditor;
+
+	TextView* m_pTextViewMesh;
+	Panel* m_pPanelMesh;
+	PanelScrollable* m_pPanelScrollableMesh;
 };

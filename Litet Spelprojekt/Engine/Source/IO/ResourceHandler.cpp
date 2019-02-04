@@ -1,11 +1,11 @@
 #include <EnginePch.h>
 #include <IO\ResourceHandler.h>
 
-std::string ResourceHandler::m_pIndexedMeshFiles[64];
+ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pIndexedMeshFiles[64];
 IndexedMesh* ResourceHandler::m_pIndexedMeshes[64];
 uint32 ResourceHandler::m_NrOfMeshes = 0;
 
-Texture2D_DESC ResourceHandler::m_pTexture2DFiles[64];
+ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[64];
 Texture2D* ResourceHandler::m_pTexture2Ds[64];
 uint32 ResourceHandler::m_NrOfTexture2D = 0;
 
@@ -31,16 +31,17 @@ void ResourceHandler::RunParallel()
 
 	for (int i = 0; i < m_NrOfMeshes; i++)
 	{
-		if (!m_pIndexedMeshFiles[i].empty())
+		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
+		if (!desc.filename.empty())
 		{
-			std::cout << "Loading Mesh: " << m_pIndexedMeshFiles[i] << std::endl;
-			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile(("Resources/Meshes/" + m_pIndexedMeshFiles[i]).c_str());
+			std::cout << "Loading Mesh: " << desc.filename << std::endl;
+			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile(("Resources/Meshes/" + desc.filename).c_str());
 		}
 	}
 
 	for (int i = 0; i < m_NrOfTexture2D; i++)
 	{
-		Texture2D_DESC desc = m_pTexture2DFiles[i];
+		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
 		std::cout << "Loading Texture: " << desc.filename << std::endl;
 		m_pTexture2Ds[i] = new Texture2D(("Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
 	}
@@ -51,14 +52,15 @@ void ResourceHandler::RunParallel()
 	m_ResourceListener->OnResourcesLoaded();
 }
 
-uint32 ResourceHandler::RegisterMesh(const std::string& filename)
+uint32 ResourceHandler::RegisterMesh(const std::string& filename, bool showInEditor)
 {
-	m_pIndexedMeshFiles[m_NrOfMeshes] = filename;
+	m_pIndexedMeshFiles[m_NrOfMeshes] = { filename,  showInEditor };
 	return m_NrOfMeshes++;
 }
 
-uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh)
+uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh, bool showInEditor)
 {
+	m_pIndexedMeshFiles[m_NrOfMeshes] = { "",  showInEditor };
 	m_pIndexedMeshes[m_NrOfMeshes] = mesh;
 	return m_NrOfMeshes++;
 }
@@ -131,6 +133,18 @@ Decal* ResourceHandler::GetDecal(uint32 decal)
 	return m_pDecals[decal];
 }
 
+void ResourceHandler::QuaryMeshes(std::vector<MESH_DESC>& list)
+{
+	for (uint32 i = 0; i < m_NrOfMeshes; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
+		if (!desc.filename.empty() && desc.showInEditor)
+		{
+			list.push_back({i, desc.filename});
+		}
+	}
+}
+
 void ResourceHandler::LoadResources(IResourceListener* resourceListener)
 {
 	if (!instance)
@@ -147,13 +161,17 @@ void ResourceHandler::ReleaseResources()
 {
 	for (int i = 0; i < m_NrOfMeshes; i++)
 	{
-		std::cout << "Releasing Mesh: " << m_pIndexedMeshFiles[i] << std::endl;
+		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Releasing Mesh: " << desc.filename << std::endl;
+		}
 		Delete(m_pIndexedMeshes[i]);
 	}
 
 	for (int i = 0; i < m_NrOfTexture2D; i++)
 	{
-		Texture2D_DESC desc = m_pTexture2DFiles[i];
+		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
 		std::cout << "Releasing Texture: " << desc.filename << std::endl;
 		Delete(m_pTexture2Ds[i]);
 	}
@@ -166,7 +184,7 @@ void ResourceHandler::ReleaseResources()
 
 	for (int i = 0; i < m_NrOfDecals; i++)
 	{
-		std::cout << "Deleting Decals" << std::endl;
+		std::cout << "Deleting Decal" << std::endl;
 		Delete(m_pDecals[i]);
 	}
 

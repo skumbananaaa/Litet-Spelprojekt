@@ -37,11 +37,11 @@ private:
 	std::string m_Name;
 	PointLight * m_pLight;
 	Path* m_pPathFinder;
-	glm::ivec3 m_playerTile;
-	glm::ivec3 m_targetTile;
+	glm::ivec3 m_PlayerTile;
+	glm::ivec3 m_TargetTile;
 	glm::ivec3* m_pPath;
-	glm::vec3 m_targetPos;
-	int m_nrOfPathTiles;
+	glm::vec3 m_TargetPos;
+	int m_NrOfPathTiles;
 
 };
 

@@ -282,11 +282,13 @@ void Game::OnResourcesLoaded()
 		g_Crew.getMember(i)->UpdateTransform();
 	}
 
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
+	for (int level = 0; level < m_pWorld->GetNumLevels(); level++)
+	{
 	   	m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
 
-		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++) {
+		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++)
+		{
 			wall = m_pWorld->GetLevel(level)->GetWall(i);
 			pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::WHITE);

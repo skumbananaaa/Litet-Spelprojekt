@@ -27,6 +27,6 @@ private:
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
 
-	uint32 m_nrOfWalls;
+	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
 };

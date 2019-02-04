@@ -12,3 +12,5 @@ void main()
     localPos = aPos;  
     gl_Position =  projection * view * vec4(localPos, 1.0);
 }
+
+// ripped from https://learnopengl.com/PBR/IBL/Diffuse-irradiance

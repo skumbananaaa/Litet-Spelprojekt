@@ -20,3 +20,5 @@ void main()
     
     FragColor = vec4(color, 1.0);
 }
+
+// ripped from https://learnopengl.com/PBR/IBL/Diffuse-irradiance

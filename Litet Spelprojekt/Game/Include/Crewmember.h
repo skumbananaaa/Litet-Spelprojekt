@@ -2,10 +2,11 @@
 #define CREWMEMBER_H
 #include <Graphics/Lights/PointLight.h>
 #include <Graphics/GameObject.h>
+#include <System/ThreadHandler.h>
 #include <string>
 #include "..\Include\Path.h"
 
-class Crewmember : public GameObject
+class Crewmember : public GameObject, public IRunnable
 {
 public:
 	Crewmember(const glm::vec4 & lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3 & position = glm::vec3(0.0f, 0.0f, 0.0f), const float & actionCap = 100, const std::string & name = "");
@@ -32,13 +33,18 @@ public:
 	///<summary>Updates matrix of the object.</summary>
 	void UpdateTransform() noexcept;
 
+	virtual void RunParallel() override;
+	virtual void Update(float deltaTime) override;
+
 private:
 	float m_ActionCap;
+	float m_DeltaTime;
 	std::string m_Name;
 	PointLight * m_pLight;
 	Path* m_pPathFinder;
 	glm::ivec3 m_PlayerTile;
 	glm::ivec3 m_TargetTile;
+	glm::ivec3 m_GoalTile;
 	glm::ivec3* m_pPath;
 	glm::vec3 m_TargetPos;
 	int m_NrOfPathTiles;

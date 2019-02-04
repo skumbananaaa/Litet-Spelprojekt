@@ -239,52 +239,13 @@ void Game::OnResourcesLoaded()
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	/*g_Grid = new Grid(MATERIAL::WHITE, glm::ivec2(20, 20), glm::vec3(-10.0f, 0.0f, -10.0f));
 
-	for (int i = 0; i < g_Grid->GetSize().x; i++)
+	m_pWorld = WorldSerializer::Read("world.json");
+
+	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) 
 	{
-		for (int j = 0; j < g_Grid->GetSize().y; j++)
-		{
-			g_Grid->GetTile(glm::ivec2(i, j))->SetID(temp_map[i][j]);
-			//g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
-			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
-		}
-	}*/
 
-	/*Material* colours[3] = {
-		m_pRedMaterial,
-		m_pGreenMaterial,
-		m_pBlueMaterial
-	};*/
-
-	float x, y, z;
-	for (int i = 0; i < 5; i++)
-	{
-		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
-		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
-		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
-	}
-
-	for (int i = 0; i < g_Crew.GetCount(); i++)
-	{
-		m_pScene->AddGameObject(g_Crew.GetMember(i));
-		m_pScene->AddPointLight(g_Crew.GetMember(i)->GetLight());
-		g_Crew.GetMember(i)->SetPath(m_pWorld);
-		g_Crew.GetMember(i)->UpdateTransform();
-	}
-
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2)
-	{
-	   	m_pWorld->GenerateWalls(level);
+		m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
 
 		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++)
@@ -293,13 +254,37 @@ void Game::OnResourcesLoaded()
 			pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::WHITE);
 			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
+			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + 2.0f * level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
 			m_pScene->AddGameObject(pGameObject);
 		}
 	}
 
+	float x, y, z;
+	for (int i = 0; i < 5; i++)
+	{
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+	}
+
+	for (int i = 0; i < g_Crew.getCount(); i++)
+	{
+		m_pScene->AddGameObject(g_Crew.getMember(i));
+		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
+		g_Crew.getMember(i)->SetPath(m_pWorld);
+		g_Crew.getMember(i)->UpdateTransform();
+	}
 }
 
 void Game::OnKeyUp(KEY keycode)

@@ -101,5 +101,8 @@
   <ItemGroup>
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
+    <Text Include="Resources\Shaders\cbrFilterFrag.glsl">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

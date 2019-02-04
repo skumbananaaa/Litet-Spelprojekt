@@ -34,6 +34,19 @@ Crewmember::~Crewmember()
 	Delete(m_pPathFinder);
 }
 
+void Crewmember::RunParallel()
+{
+	if (!m_pPathFinder->IsGoalSet() && m_nrOfPathTiles == 0) {
+		m_pPath = m_pPathFinder->FindPath(m_PlayerTile, m_GoalTile);
+		m_nrOfPathTiles = m_pPathFinder->GetNrOfPathTiles();
+	}
+}
+
+void Crewmember::Update(float deltaTime)
+{
+
+}
+
 void Crewmember::Move(const glm::vec3 & dir)
 {
 	glm::vec3 res = this->GetPosition() + dir;
@@ -65,10 +78,8 @@ void Crewmember::SetPosition(const glm::vec3 & position) noexcept
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (!m_pPathFinder->IsGoalSet() && m_NrOfPathTiles == 0) {
-		m_pPath = m_pPathFinder->FindPath(m_PlayerTile, goalPos);
-		m_NrOfPathTiles = m_pPathFinder->GetNrOfPathTiles();
-	}
+	m_GoalTile = goalPos;
+	ThreadHandler::RequestExecution(this);
 }
 
 void Crewmember::FollowPath(float dtS)
@@ -103,7 +114,7 @@ void Crewmember::SetActionCapacity(const float actionCap)
 	m_ActionCap = actionCap;
 }
 
-void Crewmember::SetPath(const World * world)
+void Crewmember::SetPath(const World* world)
 {
 	m_pPathFinder = new Path(world);
 }

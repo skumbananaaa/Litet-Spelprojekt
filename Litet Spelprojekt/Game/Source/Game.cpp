@@ -100,11 +100,11 @@ Game::Game() noexcept :
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
 
-	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -306,9 +306,26 @@ void Game::OnResourcesLoaded()
 		m_pGreenMaterial,
 		m_pBlueMaterial
 	};*/
-	//m_pWallMesh = IndexedMesh::CreateCube();
 
 	/*for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
+		const uint32* const* map = m_pWorld->GetLevel(level)->GetLevel();
+		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());*/
+		/*g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ()), glm::vec3(0.0f, 10.0f + 2.0f * level, 0.0f));
+
+		for (int i = 0; i < g_Grid->GetSize().x; i++)
+		{
+			for (int j = 0; j < g_Grid->GetSize().y; j++)
+			{
+				g_Grid->GetTile(glm::ivec2(i, j))->SetID(map[i][j]);
+				g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+				m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
+			}
+		}*/
+
+		/*Crewmember * CurrentCrewMember = g_Crew.getMember(level);
+		CurrentCrewMember->SetPosition(glm::vec3(1.0f, 10.9f + 2.0f * level, 1.0f));
+		CurrentCrewMember->SetPath(map, size);
+
 		m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
 

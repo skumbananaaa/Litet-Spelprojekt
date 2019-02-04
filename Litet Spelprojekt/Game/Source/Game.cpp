@@ -260,18 +260,18 @@ void Game::OnResourcesLoaded()
 	float x, y, z;
 	for (int i = 0; i < 5; i++)
 	{
-		y = std::rand() % 3;
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
-		y = std::rand() % 3;
+		g_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
-		y = std::rand() % 3;
+		g_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		g_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
 	}
 
 	for (int i = 0; i < g_Crew.GetCount(); i++)
@@ -282,7 +282,7 @@ void Game::OnResourcesLoaded()
 		g_Crew.GetMember(i)->UpdateTransform();
 	}
 
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level++)
+	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2)
 	{
 	   	m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
@@ -293,7 +293,7 @@ void Game::OnResourcesLoaded()
 			pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::WHITE);
 			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + 2.0f * level, wall.y));
+			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
 			m_pScene->AddGameObject(pGameObject);
@@ -479,7 +479,7 @@ void Game::OnUpdate(float dtS)
 	for (int i = 0; i < g_Crew.GetCount(); i++) {
 		if (Input::IsKeyDown(KEY_ENTER) && !g_Crew.GetMember(i)->IsMoving())
 		{
-			level = std::rand() % m_pWorld->GetNumLevels();
+			level = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(level)->GetSizeX() - 1), level, std::rand() % (m_pWorld->GetLevel(level)->GetSizeZ() - 1));
 			//goalPos = glm::ivec3(18, 1, 1);
 			std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";

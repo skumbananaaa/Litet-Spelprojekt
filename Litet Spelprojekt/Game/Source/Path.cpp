@@ -4,7 +4,7 @@
 
 void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 {
-	int newY = std::min(std::max(y + addY, 0), ((int)m_pWorld->GetNumLevels() - 1));
+	int newY = std::min(std::max(y + addY, 0), ((int)m_pWorld->GetNumLevels() / 2 - 1));
 	int newX = std::min(std::max(x + addX, 0), (m_pSize[newY].x - 1));
 	int newZ = std::min(std::max(z + addZ, 0), (m_pSize[newY].y - 1));
 	if (addY == 0 || (addY == 1 && m_pppTiles[x][y][z].stairsUp) || (addY == -1 && m_pppTiles[x][y][z].stairsDown))
@@ -74,14 +74,14 @@ bool Path::MoveToNextTile()
 Path::Path(const World * world)
 {
 	m_pWorld = world;
-	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels()];
-	m_pSize = new glm::ivec2[m_pWorld->GetNumLevels()];
+	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels() / 2];
+	m_pSize = new glm::ivec2[m_pWorld->GetNumLevels() / 2];
 	int totalSize = 0;
-	for (int i = 0; i < m_pWorld->GetNumLevels(); i++)
+	for (int i = 0; i < (m_pWorld->GetNumLevels() / 2); i++)
 	{
-		m_pSize[i].x = m_pWorld->GetLevel(i)->GetSizeX();
-		m_pSize[i].y = m_pWorld->GetLevel(i)->GetSizeZ();
-		m_pppMap[i] = m_pWorld->GetLevel(i)->GetLevel();
+		m_pSize[i].x = m_pWorld->GetLevel(i * 2)->GetSizeX();
+		m_pSize[i].y = m_pWorld->GetLevel(i * 2)->GetSizeZ();
+		m_pppMap[i] = m_pWorld->GetLevel(i * 2)->GetLevel();
 		totalSize += m_pSize[i].x * m_pSize[i].y;
 		m_LargestX = std::max(m_LargestX, m_pSize[i].x);
 		m_LargestZ = std::max(m_LargestZ, m_pSize[i].y);
@@ -91,8 +91,8 @@ Path::Path(const World * world)
 	m_pppTiles = new tls**[m_LargestX];
 	for (int i = 0; i < m_LargestX; i++)
 	{
-		m_pppTiles[i] = new tls*[m_pWorld->GetNumLevels()];
-		for (int j = 0; j < m_pWorld->GetNumLevels(); j++)
+		m_pppTiles[i] = new tls*[m_pWorld->GetNumLevels() / 2];
+		for (int j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
 		{
 			m_pppTiles[i][j] = new tls[m_LargestZ];
 		}
@@ -113,7 +113,7 @@ Path::~Path()
 {
 	for (int i = 0; i < m_LargestX; i++)
 	{
-		for (int j = 0; j < m_pWorld->GetNumLevels(); j++)
+		for (int j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
 		{
 			DeleteArr(m_pppTiles[i][j]);
 		}
@@ -131,7 +131,7 @@ glm::ivec3* Path::FindPath(const glm::ivec3& start, const glm::ivec3& goal)
 {
 	for (int i = 0; i < m_LargestX; i++)
 	{
-		for (int j = 0; j < m_pWorld->GetNumLevels(); j++)
+		for (int j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
 		{
 			for (int k = 0; k < m_LargestZ; k++)
 			{

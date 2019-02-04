@@ -239,9 +239,6 @@ void Game::OnResourcesLoaded()
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
-
-	m_pWorld = WorldSerializer::Read("world.json");
-
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) 
 	{
 
@@ -264,26 +261,26 @@ void Game::OnResourcesLoaded()
 	float x, y, z;
 	for (int i = 0; i < 5; i++)
 	{
-		y = std::rand() % 3;
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
-		y = std::rand() % 3;
+		g_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
-		y = std::rand() % 3;
+		g_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		g_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
 	}
 
-	for (int i = 0; i < g_Crew.getCount(); i++)
+	for (int i = 0; i < g_Crew.GetCount(); i++)
 	{
-		m_pScene->AddGameObject(g_Crew.getMember(i));
-		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
-		g_Crew.getMember(i)->SetPath(m_pWorld);
-		g_Crew.getMember(i)->UpdateTransform();
+		m_pScene->AddGameObject(g_Crew.GetMember(i));
+		m_pScene->AddPointLight(g_Crew.GetMember(i)->GetLight());
+		g_Crew.GetMember(i)->SetPath(m_pWorld);
+		g_Crew.GetMember(i)->UpdateTransform();
 	}
 }
 

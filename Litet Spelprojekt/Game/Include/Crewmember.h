@@ -34,7 +34,7 @@ public:
 	void UpdateTransform() noexcept;
 
 	virtual void RunParallel() override;
-	virtual void Update(float deltaTime) override;
+	//virtual void Update(float deltaTime) override;
 
 private:
 	float m_ActionCap;

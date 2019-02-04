@@ -20,7 +20,7 @@ struct Texture2D_DESC
 	TextureParams params;
 };
 
-class API ResourceHandler : public IRunable
+class API ResourceHandler : public IRunnable
 {
 public:
 	static uint32 RegisterMesh(const std::string& filename);

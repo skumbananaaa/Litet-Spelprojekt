@@ -118,7 +118,7 @@
     <ClInclude Include="Include\IO\MATERIAL.h" />
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
-    <ClInclude Include="Include\System\IRunable.h" />
     <ClInclude Include="Include\System\ThreadHandler.h" />
+    <ClInclude Include="Include\System\IRunnable.h" />
   </ItemGroup>
 </Project>

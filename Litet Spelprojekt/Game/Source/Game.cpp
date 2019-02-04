@@ -11,16 +11,22 @@
 
 GameObject* g_pDecalObject = nullptr;
 Crew g_Crew;
-Grid * g_Grid;
+//Grid* g_Grid;
 
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
 	Application(false),
-	m_pFontRenderer(nullptr),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pScene(nullptr),
+	m_pSkyBoxTex(nullptr),
+	m_pWorld(nullptr),
+	m_pSoundEffect(nullptr),
+	m_pTextViewFPS(nullptr),
+	m_pTextViewUPS(nullptr),
+	m_pMusic(nullptr),
+	m_pTestAudioSource(nullptr),
 	cartesianCamera(true)
 {
 	m_pScene = new Scene();
@@ -29,65 +35,21 @@ Game::Game() noexcept :
 	m_pRenderer = new DefferedRenderer();
 	m_pDebugRenderer = new DebugRenderer();
 
+	//const void * paths[6];
+	const char* paths[6];
+	paths[0] = "Resources/Textures/SkyBoxTextures/ss_ft.png"; //forward
+	paths[1] = "Resources/Textures/SkyBoxTextures/ss_bk.png"; //back
+	paths[2] = "Resources/Textures/SkyBoxTextures/ss_up.png"; //up
+	paths[3] = "Resources/Textures/SkyBoxTextures/ss_dn.png"; //down
+	paths[4] = "Resources/Textures/SkyBoxTextures/ss_rt.png"; //right
+	paths[5] = "Resources/Textures/SkyBoxTextures/ss_lf.png"; //left
 
-
-	
-
-		//const void * paths[6];
-		const char* paths[6];
-		paths[0] = "Resources/Textures/SkyBoxTextures/ss_ft.png"; //forward
-		paths[1] = "Resources/Textures/SkyBoxTextures/ss_bk.png"; //back
-		paths[2] = "Resources/Textures/SkyBoxTextures/ss_up.png"; //up
-		paths[3] = "Resources/Textures/SkyBoxTextures/ss_dn.png"; //down
-		paths[4] = "Resources/Textures/SkyBoxTextures/ss_rt.png"; //right
-		paths[5] = "Resources/Textures/SkyBoxTextures/ss_lf.png"; //left
-
-		TextureParams cubeParams = {};
-		cubeParams.Wrap = TEX_PARAM_EDGECLAMP;
-		cubeParams.MagFilter = TEX_PARAM_LINEAR;
-		cubeParams.MinFilter = TEX_PARAM_LINEAR;
-		m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, cubeParams);
-		m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
-	}
-
-	g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
-	m_pScene->AddGameObject(g_Crew.getMember(0));
-	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());
-
-	g_Grid = new Grid(MATERIAL::WHITE, glm::ivec2(20, 20), glm::vec3(-10.0f, 0.0f, -10.0f));
-
-	int temp_map[20][20]{
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-		{1, 3, 3, 3, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{1, 3, 2, 2, 2, 2, 0, 3, 3, 3, 5, 5, 2, 2, 2, 2, 0, 4, 4, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 3, 3, 3, 5, 5, 2, 2, 2, 2, 2, 4, 4, 1 },
-		{1, 3, 2, 0, 2, 2, 2, 3, 0, 3, 5, 5, 2, 2, 2, 0, 2, 4, 0, 1 },
-		{1, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 2, 5, 5, 3, 3, 1 },
-		{1, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 3, 1 },
-		{1, 3, 3, 3, 3, 3, 4, 4, 4, 4, 0, 5, 5, 5, 5, 5, 5, 3, 3, 1 },
-		{1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 3, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 1, 4, 4, 3, 2, 2, 2, 2, 2, 2, 0, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 2, 2, 1 },
-		{1, 3, 2, 2, 2, 2, 0, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{1, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 3, 2, 2, 2, 2, 2, 3, 3, 1 },
-		{1, 3, 2, 2, 2, 0, 2, 5, 0, 5, 3, 3, 2, 2, 2, 0, 2, 4, 0, 1 },
-		{1, 3, 3, 3, 2, 3, 5, 5, 5, 5, 3, 3, 3, 3, 2, 3, 4, 4, 4, 1 },
-		{1, 3, 3, 3, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1 },
-		{1, 3, 3, 3, 3, 3, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 4, 4, 4, 1 },
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	};
-
-	for (int i = 0; i < g_Grid->GetSize().x; i++)
-	{
-		for (int j = 0; j < g_Grid->GetSize().y; j++)
-		{
-			g_Grid->GetTile(glm::ivec2(i, j))->SetID(temp_map[i][j]);
-			//g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
-			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
-		}
-	}
+	TextureParams cubeParams = {};
+	cubeParams.Wrap = TEX_PARAM_EDGECLAMP;
+	cubeParams.MagFilter = TEX_PARAM_LINEAR;
+	cubeParams.MinFilter = TEX_PARAM_LINEAR;
+	m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, cubeParams);
+	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -190,39 +152,17 @@ Game::Game() noexcept :
 	WorldSerializer::Write("test.json", *world);
 	
 	Delete(world);*/
-	
-		float x, y, z;
-	for (int i = 0; i < 5; i++) {
-		y = std::rand() % 3;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
-		y = std::rand() % 3;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
-		y = std::rand() % 3;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
-	}
-	for (int i = 0; i < g_Crew.getCount(); i++) {
-		m_pScene->AddGameObject(g_Crew.getMember(i));
-		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
-		g_Crew.getMember(i)->SetPath(m_pWorld);
-		g_Crew.getMember(i)->UpdateTransform();
-	}
 }
 
 Game::~Game()
 {
-	DeleteSafe(m_pFontRenderer);
 	DeleteSafe(m_pRenderer);
 	DeleteSafe(m_pDebugRenderer);
 
+	DeleteSafe(m_pSkyBoxTex);
+
 	DeleteSafe(m_pScene);
 	
-	Delete(m_pSkyBoxTex);
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
 	
@@ -230,8 +170,8 @@ Game::~Game()
 	DeleteSafe(m_pMusic);
 	
 	DeleteSafe(m_pTestAudioSource);
-	DeleteSafe(g_Grid);
-	Delete(m_pWorld);
+	//DeleteSafe(g_Grid);
+	DeleteSafe(m_pWorld);
 
 	ResourceHandler::ReleaseResources();
 }
@@ -299,7 +239,23 @@ void Game::OnResourcesLoaded()
 
 
 
-	m_pWorld = WorldSerializer::Read("world.json");
+	//m_pWorld = WorldSerializer::Read("world.json");
+
+	/*g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
+	m_pScene->AddGameObject(g_Crew.getMember(0));
+	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());*/
+
+	/*g_Grid = new Grid(MATERIAL::WHITE, glm::ivec2(20, 20), glm::vec3(-10.0f, 0.0f, -10.0f));
+
+	for (int i = 0; i < g_Grid->GetSize().x; i++)
+	{
+		for (int j = 0; j < g_Grid->GetSize().y; j++)
+		{
+			g_Grid->GetTile(glm::ivec2(i, j))->SetID(temp_map[i][j]);
+			//g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
+			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
+		}
+	}*/
 
 	/*Material* colours[3] = {
 		m_pRedMaterial,
@@ -339,6 +295,31 @@ void Game::OnResourcesLoaded()
 			pGameObject->UpdateTransform();
 			m_pScene->AddGameObject(pGameObject);
 		}
+	}*/
+
+	/*float x, y, z;
+	for (int i = 0; i < 5; i++)
+	{
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		y = std::rand() % 3;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+	}
+
+	for (int i = 0; i < g_Crew.getCount(); i++)
+	{
+		m_pScene->AddGameObject(g_Crew.getMember(i));
+		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
+		g_Crew.getMember(i)->SetPath(m_pWorld);
+		g_Crew.getMember(i)->UpdateTransform();
 	}*/
 }
 

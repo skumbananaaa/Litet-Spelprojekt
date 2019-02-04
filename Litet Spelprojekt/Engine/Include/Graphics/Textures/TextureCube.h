@@ -25,7 +25,6 @@ private:
 private:
 	uint32 m_Width;
 	uint32 m_Height;
-	unsigned char * m_pData[6];
 };
 
 

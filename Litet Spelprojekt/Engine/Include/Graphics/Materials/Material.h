@@ -4,18 +4,22 @@
 
 class API Material
 {
+	friend class ResourceHandler;
+
 public:
 	Material();
 	~Material();
 
-	void SetTexture(const Texture2D* const pTexture);
-	void SetNormalMap(const Texture2D* const pNormalMap);
-	void SetColor(const glm::vec4& color);
 	const glm::vec4& GetColor() const;
 	const Texture2D* GetTexture() const;
 	const Texture2D* GetNormalMap() const;
 	bool HasTexture() const;
 	bool HasNormalMap() const;
+
+private:
+	void SetTexture(const Texture2D* const pTexture);
+	void SetNormalMap(const Texture2D* const pNormalMap);
+	void SetColor(const glm::vec4& color);
 
 private:
 	const Texture2D* m_pTexture;

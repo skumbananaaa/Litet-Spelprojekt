@@ -164,5 +164,11 @@ void ResourceHandler::ReleaseResources()
 		Delete(m_pMaterials[i]);
 	}
 
-	delete instance;
+	for (int i = 0; i < m_NrOfDecals; i++)
+	{
+		std::cout << "Deleting Decals" << std::endl;
+		Delete(m_pDecals[i]);
+	}
+
+	Delete(instance);
 }

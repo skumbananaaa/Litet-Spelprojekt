@@ -33,9 +33,9 @@ private:
 	Camera* m_pCamera;
 	std::vector<GameObject*> m_GameObjects;
 	std::vector<DirectionalLight*> m_DirectionalLights;
-	std::vector<PointLight* > m_PointLights;
-	std::vector<SpotLight* > m_SpotLights;
-	SkyBox * m_pSkyBox;
+	std::vector<PointLight*> m_PointLights;
+	std::vector<SpotLight*> m_SpotLights;
+	SkyBox* m_pSkyBox;
 };
 
 inline Camera& Scene::GetCamera() const noexcept
@@ -43,7 +43,7 @@ inline Camera& Scene::GetCamera() const noexcept
 	return *m_pCamera;
 }
 
-inline SkyBox & Scene::GetSkyBox() const noexcept
+inline SkyBox& Scene::GetSkyBox() const noexcept
 {
 	return *m_pSkyBox;
 }

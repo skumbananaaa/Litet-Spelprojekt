@@ -22,10 +22,6 @@ TextureCube::TextureCube(const char* const paths[6], TEX_FORMAT format, const Te
 
 TextureCube::~TextureCube()
 {
-	for (int i = 0; i < 6; i++)
-	{
-		stbi_image_free(m_pData[i]);
-	}
 }
 
 /*void TextureCube::Create(const void** ppInitalData, TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params)
@@ -65,16 +61,16 @@ void TextureCube::Create(const char* const paths[6], TEX_FORMAT format, const Te
 	
 	for (int i = 0; i < 6; i++)
 	{
-		m_pData[i] = stbi_load(paths[i], (int*)&m_Width, (int*)&m_Height, (int*)&format, 0);
+		uint8* pData = stbi_load(paths[i], (int*)&m_Width, (int*)&m_Height, (int*)&format, 0);
 
-		if (m_pData[i])
+		if (pData)
 		{
-			GL_CALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, m_Width, m_Height, 0, glFormat, type, m_pData[i]));
+			GL_CALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, m_Width, m_Height, 0, glFormat, type, pData));
+			stbi_image_free(pData);
 		}
 		else
 		{
 			std::cout << "ERROR! Cubemap texture failed to load at path: " << paths[i] << std::endl;
-			stbi_image_free(m_pData[i]);
 			res = false;
 		}
 	}

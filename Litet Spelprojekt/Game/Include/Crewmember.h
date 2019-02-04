@@ -7,21 +7,7 @@
 
 class Crewmember : public GameObject
 {
-private:
-	float m_ActionCap;
-	std::string m_Name;
-	Material * m_pMaterial;
-	PointLight * m_pLight;
-	IndexedMesh * m_pMesh;
-	Path* m_pPathFinder;
-	glm::ivec3 m_playerTile;
-	glm::ivec3 m_targetTile;
-	glm::ivec3* m_pPath;
-	glm::vec3 m_targetPos;
-	int m_nrOfPathTiles;
-
 public:
-
 	Crewmember(const glm::vec4 & lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3 & position = glm::vec3(0.0f, 0.0f, 0.0f), const float & actionCap = 100, const std::string & name = "");
 	Crewmember(Crewmember & other);
 	~Crewmember();
@@ -45,6 +31,18 @@ public:
 	void SetPosition(const glm::vec3& position) noexcept;
 	///<summary>Updates matrix of the object.</summary>
 	void UpdateTransform() noexcept;
+
+private:
+	float m_ActionCap;
+	std::string m_Name;
+	PointLight * m_pLight;
+	Path* m_pPathFinder;
+	glm::ivec3 m_playerTile;
+	glm::ivec3 m_targetTile;
+	glm::ivec3* m_pPath;
+	glm::vec3 m_targetPos;
+	int m_nrOfPathTiles;
+
 };
 
 #endif

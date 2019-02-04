@@ -1,12 +1,12 @@
 #include <EnginePch.h>
 #include <System\ThreadHandler.h>
 
-std::queue<IRunable*> ThreadHandler::executionQueue;
+std::queue<IRunnable*> ThreadHandler::executionQueue;
 bool ThreadHandler::exit = true;
 std::thread ThreadHandler::thread;
 std::mutex ThreadHandler::mutex;
 
-void ThreadHandler::RequestExecution(IRunable* runable) noexcept
+void ThreadHandler::RequestExecution(IRunnable* runable) noexcept
 {
 	mutex.lock();
 	executionQueue.push(runable);
@@ -25,6 +25,7 @@ void ThreadHandler::Init() noexcept
 void ThreadHandler::Exit() noexcept
 {
 	exit = true;
+	thread.join();
 }
 
 void ThreadHandler::Run() noexcept
@@ -32,19 +33,19 @@ void ThreadHandler::Run() noexcept
 	std::cout << "New Thread Started! ID: " << thread.get_id() << std::endl;
 	while (!exit)
 	{
-		IRunable* runable = nullptr;
+		IRunnable* runnable = nullptr;
 
 		if (!executionQueue.empty())
 		{
 			mutex.lock();
-			runable = executionQueue.front();
+			runnable = executionQueue.front();
 			executionQueue.pop();
 			mutex.unlock();
 		}
 
-		if (runable)
+		if (runnable)
 		{
-			runable->RunParallel();
+			runnable->RunParallel();
 		}
 	}
 	std::cout << "Thread Terminated! ID: " << thread.get_id() << std::endl;

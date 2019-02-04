@@ -53,7 +53,7 @@ DefferedRenderer::~DefferedRenderer()
 	}
 
 	DeleteSafe(m_pTriangle);
-	DeleteSafe(m_pDecalMesh);
+	//DeleteSafe(m_pDecalMesh);
 	
 	DeleteSafe(m_pGPassVSPerFrame);
 	DeleteSafe(m_pGeoPassPerObject);
@@ -65,8 +65,8 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pWaterPassPerFrame);
 	DeleteSafe(m_pWaterPassPerObject);
 	
-	DeleteSafe(m_pWaterNormalMap);
-	DeleteSafe(m_pWaterDistortionMap);
+	//DeleteSafe(m_pWaterNormalMap);
+	//DeleteSafe(m_pWaterDistortionMap);
 
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);

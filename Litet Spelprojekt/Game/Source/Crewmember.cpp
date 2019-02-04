@@ -4,40 +4,34 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 {
 	m_ActionCap = actionCap;
 	m_Name = name;
-	m_pMaterial = new Material();
-	m_pMaterial->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	m_nrOfPathTiles = 0;
 	m_playerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
 	m_targetTile = m_playerTile;
 	m_targetPos = glm::vec3(m_targetTile.x, m_targetTile.y * 2 + 0.9, m_targetTile.z);
-	/*this->SetMaterial(m_pMaterial);
-	this->SetMesh(m_pMesh);*/
+	this->SetMaterial(MATERIAL::WHITE);
+	this->SetMesh(MESH::CUBE);
 	this->SetPosition(position);
 	this->SetScale(glm::vec3(0.2, 1.8, 0.5));
 	this->UpdateTransform();
 }
 
-Crewmember::Crewmember(Crewmember & other): m_pLight(new PointLight(other.GetPosition(), other.m_pLight->GetColor())), m_pMesh(other.m_pMesh)
+Crewmember::Crewmember(Crewmember& other): m_pLight(new PointLight(other.GetPosition(), other.m_pLight->GetColor()))
 {
 	m_ActionCap = other.m_ActionCap;
 	m_Name = other.m_Name;
-	m_pMaterial = new Material(*other.m_pMaterial);
 	m_nrOfPathTiles = 0;
 	m_playerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y - 0.9) / 2),std::round(other.GetPosition().z));
 	m_targetTile = m_playerTile;
 	m_targetPos = glm::vec3(m_targetTile.x, m_targetTile.y * 2 + 0.9, m_targetTile.z);
-	//this->SetMaterial(m_pMaterial);
-	//this->SetMesh(m_pMesh);
+	this->SetMaterial(MATERIAL::WHITE);
+	this->SetMesh(MESH::CUBE);
 	this->SetPosition(other.GetPosition());
 	this->UpdateTransform();
 }
 
 Crewmember::~Crewmember()
 {
-	Delete(m_pMaterial);
-	Delete(m_pMesh);
 	Delete(m_pPathFinder);
-
 }
 
 void Crewmember::Move(const glm::vec3 & dir)

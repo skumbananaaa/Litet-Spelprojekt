@@ -34,7 +34,7 @@ Crew::Crew(int cap)
 
 Crew::~Crew()
 {
-	Delete(m_ppMembers);
+	DeleteArr(m_ppMembers);
 }
 
 void Crew::addMember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name)

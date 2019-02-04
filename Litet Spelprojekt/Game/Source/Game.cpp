@@ -263,23 +263,23 @@ void Game::OnResourcesLoaded()
 		y = std::rand() % 3;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		g_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
 		y = std::rand() % 3;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		g_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
 		y = std::rand() % 3;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
+		g_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + 2.0f * y, z));
 	}
 
-	for (int i = 0; i < g_Crew.getCount(); i++)
+	for (int i = 0; i < g_Crew.GetCount(); i++)
 	{
-		m_pScene->AddGameObject(g_Crew.getMember(i));
-		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
-		g_Crew.getMember(i)->SetPath(m_pWorld);
-		g_Crew.getMember(i)->UpdateTransform();
+		m_pScene->AddGameObject(g_Crew.GetMember(i));
+		m_pScene->AddPointLight(g_Crew.GetMember(i)->GetLight());
+		g_Crew.GetMember(i)->SetPath(m_pWorld);
+		g_Crew.GetMember(i)->UpdateTransform();
 	}
 
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level++)
@@ -476,17 +476,17 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->UpdateTransform();
 
 	int level;
-	for (int i = 0; i < g_Crew.getCount(); i++) {
-		if (Input::IsKeyDown(KEY_ENTER) && !g_Crew.getMember(i)->IsMoving())
+	for (int i = 0; i < g_Crew.GetCount(); i++) {
+		if (Input::IsKeyDown(KEY_ENTER) && !g_Crew.GetMember(i)->IsMoving())
 		{
 			level = std::rand() % m_pWorld->GetNumLevels();
 			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(level)->GetSizeX() - 1), level, std::rand() % (m_pWorld->GetLevel(level)->GetSizeZ() - 1));
 			//goalPos = glm::ivec3(18, 1, 1);
 			std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";
-			g_Crew.getMember(i)->FindPath(goalPos);
+			g_Crew.GetMember(i)->FindPath(goalPos);
 		}
-		g_Crew.getMember(i)->FollowPath(dtS);
-		g_Crew.getMember(i)->UpdateTransform();
+		g_Crew.GetMember(i)->FollowPath(dtS);
+		g_Crew.GetMember(i)->UpdateTransform();
 	}
 }
 

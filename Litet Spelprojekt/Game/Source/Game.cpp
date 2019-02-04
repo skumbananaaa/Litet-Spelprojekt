@@ -239,48 +239,10 @@ void Game::OnResourcesLoaded()
 
 
 
-	//m_pWorld = WorldSerializer::Read("world.json");
+	m_pWorld = WorldSerializer::Read("world.json");
 
-	/*g_Crew.addMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, -2.0f));
-	m_pScene->AddGameObject(g_Crew.getMember(0));
-	m_pScene->AddPointLight(g_Crew.getMember(0)->GetLight());*/
-
-	/*g_Grid = new Grid(MATERIAL::WHITE, glm::ivec2(20, 20), glm::vec3(-10.0f, 0.0f, -10.0f));
-
-	for (int i = 0; i < g_Grid->GetSize().x; i++)
+	for (int level = 0; level < m_pWorld->GetNumLevels(); level++) 
 	{
-		for (int j = 0; j < g_Grid->GetSize().y; j++)
-		{
-			g_Grid->GetTile(glm::ivec2(i, j))->SetID(temp_map[i][j]);
-			//g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, temp_map[i][j] / 10.0f, 1.0f));
-			m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
-		}
-	}*/
-
-	/*Material* colours[3] = {
-		m_pRedMaterial,
-		m_pGreenMaterial,
-		m_pBlueMaterial
-	};*/
-
-	/*for (int level = 0; level < m_pWorld->GetNumLevels(); level++) {
-		const uint32* const* map = m_pWorld->GetLevel(level)->GetLevel();
-		glm::ivec2 size(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ());*/
-		/*g_Grid = new Grid(glm::ivec2(m_pWorld->GetLevel(level)->GetSizeX(), m_pWorld->GetLevel(level)->GetSizeZ()), glm::vec3(0.0f, 10.0f + 2.0f * level, 0.0f));
-
-		for (int i = 0; i < g_Grid->GetSize().x; i++)
-		{
-			for (int j = 0; j < g_Grid->GetSize().y; j++)
-			{
-				g_Grid->GetTile(glm::ivec2(i, j))->SetID(map[i][j]);
-				g_Grid->SetColor(glm::ivec2(i, j), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-				m_pScene->AddGameObject(g_Grid->GetTile(glm::ivec2(i, j)));
-			}
-		}*/
-
-		/*Crewmember * CurrentCrewMember = g_Crew.getMember(level);
-		CurrentCrewMember->SetPosition(glm::vec3(1.0f, 10.9f + 2.0f * level, 1.0f));
-		CurrentCrewMember->SetPath(map, size);
 
 		m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
@@ -288,16 +250,16 @@ void Game::OnResourcesLoaded()
 		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++) {
 			wall = m_pWorld->GetLevel(level)->GetWall(i);
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::BLUE);
+			pGameObject->SetMaterial(MATERIAL::WHITE);
 			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetPosition(glm::vec3(wall.x, 11.0f + 2.0f * level, wall.y));
+			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + 2.0f * level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
 			m_pScene->AddGameObject(pGameObject);
 		}
-	}*/
+	}
 
-	/*float x, y, z;
+	float x, y, z;
 	for (int i = 0; i < 5; i++)
 	{
 		y = std::rand() % 3;
@@ -320,7 +282,7 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddPointLight(g_Crew.getMember(i)->GetLight());
 		g_Crew.getMember(i)->SetPath(m_pWorld);
 		g_Crew.getMember(i)->UpdateTransform();
-	}*/
+	}
 }
 
 void Game::OnKeyUp(KEY keycode)

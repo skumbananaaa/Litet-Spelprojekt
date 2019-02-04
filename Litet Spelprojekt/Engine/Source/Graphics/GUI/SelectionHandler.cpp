@@ -22,6 +22,10 @@ void SelectionHandler::AddSelectable(ISelectable* selectable)
 	{
 		m_Selectables.push_back(selectable);
 	}
+	if (m_Selectables.size() == 1 && m_AtLeastOneSelected)
+	{
+		OnSelected(selectable);
+	}
 }
 
 void SelectionHandler::RemoveSelectable(ISelectable* selectable)

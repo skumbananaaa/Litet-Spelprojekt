@@ -15,8 +15,8 @@ Grid * g_Grid;
 
 float g_Rot = 1.0;
 
-Game::Game() noexcept : 
-	Application(false),
+Game::Game() noexcept 
+	: Application(true),
 	m_pFontRenderer(nullptr),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
@@ -306,18 +306,39 @@ Game::Game() noexcept :
 	m_pInstancingTestScene->GetCamera().UpdateFromLookAt();
 
 	//Add gameobjects
-	constexpr uint32 numObject = 20;
+	constexpr uint32 numObject = 50;
 	for (uint32 y = 0; y < numObject; y++)
 	{
 		for (uint32 x = 0; x < numObject; x++)
 		{
 			pGameObject = new GameObject();
-			pGameObject->SetMesh(m_pTestMesh);
-			pGameObject->SetMaterial(m_pRedMaterial);
+			pGameObject->SetMesh(m_pSphereMesh);
+
+			if (x % 3 == 0)
+			{
+				pGameObject->SetMaterial(m_pRedMaterial);
+			}
+			else if (x % 3 == 1)
+			{
+				pGameObject->SetMaterial(m_pBlueMaterial);
+			}
+			else if (x % 3 == 2)
+			{
+				pGameObject->SetMaterial(m_pGreenMaterial);
+			}
+
 			pGameObject->SetPosition(glm::vec3(0.0f + (x * 1.0f), 0.0f, 0.0f + (y * 1.0f)));
-			pGameObject->SetScale(glm::vec3(1.0f));
+			pGameObject->SetScale(glm::vec3(0.25f));
 			pGameObject->UpdateTransform();
+
 			m_pInstancingTestScene->AddGameObject(pGameObject);
+			
+			GameObject* pDecalObject = new GameObject();
+			pDecalObject->SetDecal(m_pDecal);
+			pDecalObject->SetPosition(pGameObject->GetPosition());
+			pDecalObject->UpdateTransform();
+
+			m_pInstancingTestScene->AddGameObject(pDecalObject);
 		}
 	}
 

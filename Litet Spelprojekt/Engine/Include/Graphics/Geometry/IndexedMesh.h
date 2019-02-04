@@ -1,6 +1,5 @@
 #pragma once
 #include <EnginePch.h>
-#include <GLM\glm.hpp>
 
 struct Vertex
 {
@@ -13,6 +12,13 @@ struct Vertex
 	{
 		return (position == rs.position) && (normal == rs.normal) && (tangent == rs.tangent) && (texCoords == rs.texCoords);
 	}
+};
+
+struct InstanceData
+{
+	glm::mat4 Model;
+	glm::mat4 InverseModel;
+	glm::vec3 Direction;
 };
 
 class API IndexedMesh
@@ -28,10 +34,11 @@ public:
 	IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
 	~IndexedMesh();
 
-	void SetInstance(const glm::mat4& transform, uint32 instanceIndex) const noexcept;
+	void SetInstances(const InstanceData* const pInstances, uint32 numInstances) const noexcept;
 
 	uint32 GetIndexCount() const noexcept;
 	uint32 GetVertexCount() const noexcept;
+	uint32 GetInstanceCount() const noexcept;
 
 private:
 	uint32 m_VAO;
@@ -40,7 +47,8 @@ private:
 	uint32 m_InstanceBuffer;
 	uint32 m_VertexCount;
 	uint32 m_IndexCount;
-	uint32 m_NumInstances;
+	mutable uint32 m_NumInstances;
+	mutable uint32 m_NumReservedInstances;
 
 public:
 	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);
@@ -56,4 +64,9 @@ inline uint32 IndexedMesh::GetIndexCount() const noexcept
 inline uint32 IndexedMesh::GetVertexCount() const noexcept
 {
 	return m_VertexCount;
+}
+
+inline uint32 IndexedMesh::GetInstanceCount() const noexcept
+{
+	return m_NumInstances;
 }

@@ -16,8 +16,22 @@ GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.
 	else
 	{
 		std::cout << "OpenGL initialized" << std::endl;
-		std::cout << glGetString(GL_VENDOR) << std::endl;
-		std::cout << glGetString(GL_RENDERER) << std::endl;
+		std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
+		std::cout << "Renderer (Adapter): " << glGetString(GL_RENDERER) << std::endl;
+		std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
+		std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+		GLint param = 0;
+		GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &param));
+		std::cout << "Max Texture units: " << param << std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_SIZE, &param));
+		std::cout << "Max Texture size: " << param << " pixels" << std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &param));
+		std::cout << "Max Uniformbuffer units: " << param << std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &param));
+		std::cout << "Max Uniformbuffer size: " << param << " bytes"<< std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &param));
+		std::cout << "Max Vertex Attributes: " << param << std::endl;
 
 		SetViewport(static_cast<uint32>(width), static_cast<uint32>(height), 0, 0);
 	}
@@ -210,10 +224,10 @@ void GLContext::DrawIndexedMesh(const IndexedMesh& mesh) const noexcept
 	GL_CALL(glBindVertexArray(0));
 }
 
-void GLContext::DrawIndexedMeshInstanced(const IndexedMesh& mesh, uint32 numInstances) const noexcept
+void GLContext::DrawIndexedMeshInstanced(const IndexedMesh& mesh) const noexcept
 {
 	GL_CALL(glBindVertexArray(mesh.m_VAO));
-	GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr, numInstances));
+	GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr, mesh.GetInstanceCount()));
 	GL_CALL(glBindVertexArray(0));
 }
 

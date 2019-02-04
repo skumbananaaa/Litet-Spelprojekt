@@ -45,7 +45,8 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	{
 		m_Drawables.push_back(pGameObject);
 	}
-	else if (pGameObject->HasDecal())
+	
+	if (pGameObject->HasDecal())
 	{
 		m_Decals.push_back(pGameObject);
 	}

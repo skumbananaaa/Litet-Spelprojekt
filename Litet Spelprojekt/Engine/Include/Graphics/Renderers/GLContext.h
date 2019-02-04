@@ -122,7 +122,7 @@ public:
 	void Clear(uint32 flags) const noexcept;
 
 	void DrawIndexedMesh(const IndexedMesh& mesh) const noexcept;
-	void DrawIndexedMeshInstanced(const IndexedMesh& mesh, uint32 numInstances) const noexcept;
+	void DrawIndexedMeshInstanced(const IndexedMesh& mesh) const noexcept;
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
 	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
 

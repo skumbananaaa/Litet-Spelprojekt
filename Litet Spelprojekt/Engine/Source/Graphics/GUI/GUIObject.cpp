@@ -16,6 +16,8 @@ GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_pBackgroundTexture(nullptr),
 	m_pParent(nullptr),
 	m_IsVisible(true),
+	m_pUserData(nullptr),
+	m_IsDirty(false),
 	m_BackgroundColor(1.0, 1.0, 1.0, 1.0)
 {
 	if (width > 0 && height > 0)
@@ -79,9 +81,9 @@ void GUIObject::RequestRepaint()
 		{
 			GetParent()->m_ChildrenDirty.push_back(this);
 			GetParent()->RequestRepaint();
+			m_IsDirty = true;
 		}
 	}
-	m_IsDirty = true;
 }
 
 void GUIObject::AddMouseListener(GUIObject* listener)
@@ -256,23 +258,28 @@ void GUIObject::InternalOnUpdate(float dtS)
 	/*
 	* Remove the children who wants to be removed
 	*/
-	for (GUIObject* objectToRemove : m_ChildrenToRemove)
+	if (!m_ChildrenToRemove.empty())
 	{
-		int32 counter = 0;
-		for (GUIObject* object : m_Children)
+		for (GUIObject* objectToRemove : m_ChildrenToRemove)
 		{
-			if (objectToRemove == object)
+			int32 counter = 0;
+			for (GUIObject* object : m_Children)
 			{
-				m_Children.erase(m_Children.begin() + counter);
-				objectToRemove->OnRemoved(this);
-				objectToRemove->m_pParent = nullptr;
-				std::cout << "GUI Object Removed" << std::endl;
-				return;
+				if (objectToRemove == object)
+				{
+					m_Children.erase(m_Children.begin() + counter);
+					objectToRemove->OnRemoved(this);
+					objectToRemove->m_pParent = nullptr;
+					std::cout << "GUI Object Removed" << std::endl;
+					return;
+				}
+				counter++;
 			}
-			counter++;
 		}
+		m_ChildrenToRemove.clear();
+		RequestRepaint();
 	}
-	m_ChildrenToRemove.clear();
+	
 
 	/*
 	* Add the children who wants to be added
@@ -290,8 +297,8 @@ void GUIObject::InternalOnUpdate(float dtS)
 		for (GUIObject* objectToAdd : newChildren)
 		{
 			m_Children.push_back(objectToAdd);
-			m_ChildrenDirty.push_back(objectToAdd);
 			objectToAdd->m_pParent = this;
+			objectToAdd->RequestRepaint();
 			objectToAdd->OnAdded(this);
 			std::cout << "Added: ";
 			objectToAdd->PrintName();
@@ -428,7 +435,7 @@ void GUIObject::RenderChildrensFrameBuffers(GUIContext* context)
 {
 	for (GUIObject* child : m_Children)
 	{
-		if (child->IsVisible())
+		if (child->m_IsVisible)
 		{
 			context->RenderFrameBuffer(child->m_pFramebuffer, child->GetX(), child->GetY());
 		}
@@ -488,6 +495,16 @@ bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
 {
 	m_DeleteAll = deleteAll;
+}
+
+void GUIObject::SetUserData(void* data)
+{
+	m_pUserData = data;
+}
+
+void* GUIObject::GetUserData() const
+{
+	return m_pUserData;
 }
 
 Texture2D* GUIObject::GetDefaultTexture() const

@@ -54,6 +54,11 @@ void PanelScrollable::SetClientSize(float width, float height)
 	m_pSliderVertical->SetVisible(desc.Height > GetHeight());
 	m_pSliderHorizontal->SetVisible(desc.Width > GetWidth());
 
+
+
+	m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY());
+	m_pSliderVertical->SetSize(SLIDER_SIZE, GetHeight());
+
 	if (m_pSliderVertical->IsVisible() && !m_pSliderHorizontal->IsVisible())
 	{
 		m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY());

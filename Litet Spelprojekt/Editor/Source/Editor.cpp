@@ -641,6 +641,7 @@ void Editor::OnButtonReleased(Button* button)
 
 		GameObject* gameObject = new GameObject();
 		gameObject->SetMaterial(MATERIAL::WHITE);
+		gameObject->SetMesh(id);
 		gameObject->SetPosition(glm::vec3(0, 0, 0));
 		editor->m_pScene->AddGameObject(gameObject);
 	}

@@ -8,6 +8,11 @@ SelectionHandler::SelectionHandler(bool atLeastOne)
 
 SelectionHandler::~SelectionHandler()
 {
+	
+}
+
+void SelectionHandler::Release()
+{
 	for (ISelectable* object : m_Selectables)
 	{
 		object->RemoveSelectionListener(this);

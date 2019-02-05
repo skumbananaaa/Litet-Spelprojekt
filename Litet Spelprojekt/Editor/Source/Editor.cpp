@@ -51,6 +51,9 @@ Editor::Editor() noexcept : Application(false),
 
 Editor::~Editor()
 {
+	m_SelectionHandlerFloor.Release();
+	m_SelectionHandlerRoom.Release();
+
 	Delete(m_pRenderer);
 	Delete(m_pGrid);
 	Delete(m_pScene);

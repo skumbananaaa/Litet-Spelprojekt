@@ -54,7 +54,7 @@ Game::Game() noexcept
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
-	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
 	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
@@ -292,7 +292,7 @@ void Game::OnResourcesLoaded()
 	pGameObject = new GameObject();
 	pGameObject->SetIsReflectable(true);
 	pGameObject->SetMesh(MESH::QUAD);
-	pGameObject->SetScale(glm::vec3(60.0f));
+	pGameObject->SetScale(glm::vec3(200.0f));
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);

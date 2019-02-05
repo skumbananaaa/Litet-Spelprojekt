@@ -28,8 +28,8 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	{
 		//Create one scene for each grid level
 		m_ppScenes[i] = new Scene();
-		m_ppScenes[i]->AddCamera(pCameraPersp);
-		m_ppScenes[i]->AddCamera(pCameraOrth);
+		m_ppScenes[i]->SetCamera(pCameraPersp, 0);
+		m_ppScenes[i]->SetCamera(pCameraOrth, 1);
 
 		//Create one grid for each grid level
 		m_ppGrids[i] = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
@@ -65,6 +65,11 @@ Editor::~Editor()
 
 	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
 	{
+		if (i > 0)
+		{
+			m_ppScenes[i]->SetCamera(nullptr, 0);
+			m_ppScenes[i]->SetCamera(nullptr, 1);
+		}
 		Delete(m_ppScenes[i]);
 		Delete(m_ppGrids[i]);
 	}

@@ -2,15 +2,12 @@
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <World/Grid.h>
-#include "..\Include\Crew.h"
-#include "..\Include\Path.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
 #endif
 
 GameObject* g_pDecalObject = nullptr;
-Crew g_Crew;
 //Grid* g_Grid;
 
 float g_Rot = 1.0;
@@ -264,24 +261,27 @@ void Game::OnResourcesLoaded()
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		m_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		m_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		g_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		m_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
 	}
 
-	for (int i = 0; i < g_Crew.GetCount(); i++)
+	for (int i = 0; i < m_Crew.GetCount(); i++)
 	{
-		m_pScene->AddGameObject(g_Crew.GetMember(i));
-		m_pScene->AddPointLight(g_Crew.GetMember(i)->GetLight());
-		g_Crew.GetMember(i)->SetPath(m_pWorld);
-		g_Crew.GetMember(i)->UpdateTransform();
+		m_pScene->AddGameObject(m_Crew.GetMember(i));
+		m_pScene->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetPath(m_pWorld);
+		m_Crew.GetMember(i)->UpdateTransform();
 	}
+
+	m_CurrentCrewmember = 0;
+	m_Crew.GetMember(0)->GetLight()->SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -311,6 +311,18 @@ void Game::OnKeyDown(KEY keycode)
 void Game::OnMouseMove(const glm::vec2& position)
 {
 	Application::OnMouseMove(position);
+}
+
+void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
+{
+	switch (mousebutton)
+	{
+		case MOUSE_BUTTON_LEFT:
+		{
+			this->PickPosition();
+			break;
+		}
+	}
 }
 
 void Game::OnUpdate(float dtS)
@@ -458,22 +470,17 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->UpdateTransform();
 
 	int level;
-	for (int i = 0; i < g_Crew.GetCount(); i++) {
-		if (Input::IsKeyDown(KEY_ENTER) && !g_Crew.GetMember(i)->IsMoving())
+	for (int i = 0; i < m_Crew.GetCount(); i++) {
+		if (Input::IsKeyDown(KEY_ENTER) && !m_Crew.GetMember(i)->IsMoving())
 		{
 			level = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(level)->GetSizeX() - 1), level, std::rand() % (m_pWorld->GetLevel(level)->GetSizeZ() - 1));
 			//goalPos = glm::ivec3(18, 1, 1);
 			//std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";
-			g_Crew.GetMember(i)->FindPath(goalPos);
+			m_Crew.GetMember(i)->FindPath(goalPos);
 		}
-		g_Crew.GetMember(i)->FollowPath(dtS);
-		g_Crew.GetMember(i)->UpdateTransform();
-	}
-
-	if (Input::IsButtonDown(MOUSE_BUTTON_LEFT))
-	{
-		PickingTest();
+		m_Crew.GetMember(i)->FollowPath(dtS);
+		m_Crew.GetMember(i)->UpdateTransform();
 	}
 }
 
@@ -486,41 +493,20 @@ void Game::OnRender(float dtS)
 #endif
 }
 
-void Game::PickingTest() {
-	glm::vec2 mouse = Input::GetMousePosition();
-
-	uint32 height = this->GetWindow().GetHeight();
-	uint32 width = this->GetWindow().GetWidth();
-
-	float x = (2.0f * mouse.x) / width - 1.0f;
-	float y = 1.0f - (2.0f * mouse.y) / height;
-	float z = -1.0f;
-	glm::vec3 ray_nds = glm::vec3(x, y, z);
-	glm::vec4 ray_clip = glm::vec4(ray_nds, 1.0);
-	glm::vec4 ray_eye = m_pScene->GetCamera().GetInverseProjectionMatrix() * ray_clip;
-	ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
-	glm::vec4 ray_wor4 = m_pScene->GetCamera().GetInverseViewMatrix() * ray_eye;
-	glm::vec3 ray_wor = glm::vec3(ray_wor4.x, ray_wor4.y, ray_wor4.z);
-	glm::vec3 rayDir = glm::normalize(ray_wor);
+void Game::PickPosition() {
+	glm::vec3 rayDir = this->GetRay(Input::GetMousePosition(), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
 	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
+	
+	glm::vec3 normal(0.0f, 1.0f, 0.0f);
 
-	glm::vec3 plane(0.0f, 1.0f, 0.0f);
-	glm::vec3 normal = glm::vec3(plane.x, plane.y, plane.z);
-	float d[] =
-	{
-		0.0f,
-		-2.0f,
-		-4.0f
-	};
-
-	glm::vec3 pointOnSurface;
+	glm::vec3 pointOnSurface = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	float t = -1, lastT = -1;
-	for (int i = 0; i < 3; i++)
+	for (int d = 0; d < m_pWorld->GetNumLevels(); d += 2)
 	{
 		if (glm::dot(normal, rayDir) < -0.01)
 		{
-			t = (-d[i] - glm::dot(normal, rayOrigin)) / glm::dot(normal, rayDir);
+			t = (d - glm::dot(normal, rayOrigin)) / glm::dot(normal, rayDir);
 		}
 
 		if ((t >= 0 && lastT == -1) || (t > 0 && t < lastT))
@@ -529,5 +515,23 @@ void Game::PickingTest() {
 		}
 	}
 
-	std::cout << "(" << std::round(pointOnSurface.x) << ", " << std::round(pointOnSurface.y) << ", " << std::round(pointOnSurface.z) << ")\n";
+	glm::ivec3 goalPos(std::round(pointOnSurface.x), std::round(pointOnSurface.y) / 2, std::round(pointOnSurface.z));
+
+	if (goalPos != glm::ivec3(0, 0, 0))
+	{
+		m_Crew.GetMember(m_CurrentCrewmember)->FindPath(goalPos);
+	}
+}
+
+glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 windowHeight)
+{
+	glm::vec4 rayDir4((2.0f * mousepos.x) / windowWidth - 1.0f, 1.0f - (2.0f * mousepos.y) / windowHeight, -1.0, 1.0);
+	rayDir4 = m_pScene->GetCamera().GetInverseProjectionMatrix() * rayDir4;
+	rayDir4 = glm::vec4(rayDir4.x, rayDir4.y, -1.0, 0.0);
+	rayDir4 = m_pScene->GetCamera().GetInverseViewMatrix() * rayDir4;
+
+	glm::vec3 rayDir = glm::vec3(rayDir4.x, rayDir4.y, rayDir4.z);
+	rayDir = glm::normalize(rayDir);
+
+	return rayDir;
 }

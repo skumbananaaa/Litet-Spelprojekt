@@ -37,6 +37,22 @@ float PanelScrollable::GetClientHeight() const noexcept
 	return m_pFrameBufferClientArea->GetHeight();
 }
 
+void PanelScrollable::SetVisible(bool visible) noexcept
+{
+	Panel::SetVisible(visible);
+	if (visible)
+	{
+		m_pSliderVertical->SetVisible(GetClientHeight() > GetHeight());
+		m_pSliderHorizontal->SetVisible(GetClientWidth() > GetWidth());
+	}
+	else
+	{
+		m_pSliderVertical->SetVisible(false);
+		m_pSliderHorizontal->SetVisible(false);
+	}
+}
+
+
 void PanelScrollable::SetClientSize(float width, float height)
 {
 	if (m_pFrameBufferClientArea)
@@ -57,8 +73,6 @@ void PanelScrollable::SetClientSize(float width, float height)
 	m_pSliderVertical->SetVisible(desc.Height > GetHeight());
 	m_pSliderHorizontal->SetVisible(desc.Width > GetWidth());
 
-
-
 	m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY());
 	m_pSliderVertical->SetSize(SLIDER_SIZE, GetHeight());
 
@@ -76,6 +90,12 @@ void PanelScrollable::SetClientSize(float width, float height)
 		m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY() + SLIDER_SIZE);
 		m_pSliderVertical->SetSize(SLIDER_SIZE, GetHeight() - SLIDER_SIZE);
 		m_pSliderHorizontal->SetSize(GetWidth() - SLIDER_SIZE, SLIDER_SIZE);
+	}
+
+	if (!IsVisible())
+	{
+		m_pSliderVertical->SetVisible(false);
+		m_pSliderHorizontal->SetVisible(false);
 	}
 
 	m_pSliderVertical->SetRatio(m_pSliderVertical->GetHeight() / (float)desc.Height);

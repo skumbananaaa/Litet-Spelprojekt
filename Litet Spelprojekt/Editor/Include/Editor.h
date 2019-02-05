@@ -31,6 +31,8 @@
 #define TILE_NON_WALKABLE_INDEX 1
 #define TILE_SMALLEST_FREE 2
 
+#define ELEMENT_HEIGHT 50
+
 enum EditingMode : uint32
 {
 	NONE,
@@ -66,6 +68,8 @@ public:
 	void OnSelected(const SelectionHandler* handler, ISelectable* selection) override;
 	void OnDeselected(const SelectionHandler* handler, ISelectable* selection) override;
 
+	void CreateMesh(uint32 mesh);
+
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();
 
@@ -91,6 +95,8 @@ private:
 
 	Grid** m_ppGrids;
 
+	std::vector<GameObject*> m_Meshes;
+
 	Button* m_pButtonSave;
 	Button* m_pButtonLoad;
 	Button* m_pButtonRoom;
@@ -115,6 +121,8 @@ private:
 	Button* m_pButtonRemoveStairs;
 	Panel* m_pPanelEditor;
 
+	SelectionHandler m_SelectionHandlerMesh;
+	SelectionHandler m_SelectionHandlerMeshEdit;
 	Panel* m_pPanelMesh;
 	Button* m_pButtonAddMesh;
 	Button* m_pButtonEditMesh;

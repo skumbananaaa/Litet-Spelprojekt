@@ -231,7 +231,10 @@ void GUIObject::SetPosition(float x, float y) noexcept
 	{
 		m_Position.x = x;
 		m_Position.y = y;
-		RequestRepaint();
+		if (HasParent())
+		{
+			GetParent()->RequestRepaint();
+		}
 	}
 }
 

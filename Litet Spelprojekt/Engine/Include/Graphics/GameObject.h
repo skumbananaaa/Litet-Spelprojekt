@@ -7,6 +7,7 @@
 #include <Graphics/Materials/Decal.h>
 #include <IO/ResourceHandler.h>
 
+
 class API GameObject
 {
 public:
@@ -33,6 +34,7 @@ public:
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
 
+	virtual void Update(float deltaTime);
 	virtual void UpdateTransform() noexcept;
 
 private:

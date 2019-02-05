@@ -55,3 +55,9 @@ void GameObject::UpdateTransform() noexcept
 		m_IsDirty = false;
 	}
 }
+
+void GameObject::Update(float deltaTime)
+{
+	UpdateTransform();
+	//////
+}

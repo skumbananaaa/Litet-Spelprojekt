@@ -42,10 +42,15 @@ void Crewmember::RunParallel()
 	}
 }
 
-/*void Crewmember::Update(float deltaTime)
+void Crewmember::Update(float deltaTime)
 {
 
-}*/
+	FollowPath(deltaTime);
+	GameObject::Update(deltaTime);
+	m_pLight->SetPosition(GetPosition());
+}
+
+
 
 void Crewmember::Move(const glm::vec3 & dir)
 {
@@ -119,8 +124,3 @@ void Crewmember::SetPath(const World* world)
 	m_pPathFinder = new Path(world);
 }
 
-void Crewmember::UpdateTransform() noexcept
-{
-	GameObject::UpdateTransform();
-	m_pLight->SetPosition(GetPosition());
-}

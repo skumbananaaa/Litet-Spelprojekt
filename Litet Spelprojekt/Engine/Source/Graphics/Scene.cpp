@@ -86,8 +86,8 @@ void Scene::RemoveGameObject(uint32 index) noexcept
 
 void Scene::OnUpdate(float dtS) noexcept
 {
-	for (uint32 i = 0; i < m_GameObjects.size(); i++)
+	for (GameObject* pGameObject : m_GameObjects)
 	{
-		m_GameObjects[i]->UpdateTransform();
+		pGameObject->Update(dtS);
 	}
 }

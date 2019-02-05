@@ -260,12 +260,12 @@ void Editor::CreateMesh(uint32 mesh)
 	pGameObject->SetMesh(mesh);
 	pGameObject->SetPosition(glm::vec3(0, 0, 0));
 	GetCurrentScene()->AddGameObject(pGameObject);
-	GetCurrentMeshes().push_back(gameObject);
+	GetCurrentMeshes().push_back(pGameObject);
 
 	//Create new object
 	std::string name = ResourceHandler::GetMeshName(mesh);
-	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), m_Meshes.size() * ELEMENT_HEIGHT + 4);
-	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - m_Meshes.size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
+	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), GetCurrentMeshes().size() * ELEMENT_HEIGHT + 4);
+	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - GetCurrentMeshes().size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
 	pButton->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
 	pButton->SetUserData(pGameObject);
 	m_pPanelScrollableEditMesh->Add(pButton);

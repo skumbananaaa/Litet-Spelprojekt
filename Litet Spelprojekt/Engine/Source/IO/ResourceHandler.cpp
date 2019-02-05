@@ -9,7 +9,7 @@ ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[64];
 Texture2D* ResourceHandler::m_pTexture2Ds[64];
 uint32 ResourceHandler::m_NrOfTexture2D = 0;
 
-Material* ResourceHandler::m_pMaterials[64];
+Material* ResourceHandler::m_pMaterials[512];
 uint32 ResourceHandler::m_NrOfMaterials = 0;
 
 Decal* ResourceHandler::m_pDecals[64];

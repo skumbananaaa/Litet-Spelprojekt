@@ -21,7 +21,7 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	pCameraOrth->UpdateFromPitchYaw();
 
-	const int32 gridWidth = 35;
+	const int32 gridWidth = 40;
 	const int32 gridHeight = 10;
 
 	m_ppScenes = new Scene*[NUM_BOAT_LEVELS];
@@ -187,12 +187,20 @@ void Editor::OnResourcesLoaded()
 	}
 
 	float hDelta = 360.0f / (float)MAX_NUM_ROOMS;
+	uint32 sAccumulator = 0;
+	uint32 vAccumulator = 0;
 	float currentH = 0.0f;
+	float currentS = 0.3f;
+	float currentV = 0.3f;
 	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
 	{
-		m_TileColors[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, 1.0f, 1.0f, 1.0f)));
-		m_TileTints[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, 1.0f, 0.5f, 1.0f)));
+		m_TileColors[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, currentS, currentV, 1.0f)));
+		m_TileTints[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, currentS, currentV * 0.5f, 1.0f)));
 		currentH += hDelta;
+		sAccumulator += 1;
+		vAccumulator += 2;
+		currentS = 0.3f + 0.7f * (float)(sAccumulator % 16) / 15.0f;
+		currentV = 0.3f + 0.7f * (float)(vAccumulator % 16) / 15.0f;
 	}
 
 	std::cout << "Resources Loaded!" << std::endl;
@@ -929,13 +937,13 @@ void Editor::OnButtonReleased(Button* button)
 			pWorld->SetStairs(&stairs[0], numStairs);
 		}
 
-		WorldSerializer::Write("test.json", *pWorld);
+		WorldSerializer::Write("../Game/world.json", *pWorld);
 		DeleteArr(ppWorldLevels);
 		Delete(pWorld);
 	}
 	else if (button == editor->m_pButtonLoad)
 	{
-		World* pWorld = WorldSerializer::Read("test.json");
+		World* pWorld = WorldSerializer::Read("../Game/world.json");
 		uint32 numWorldLevels = pWorld->GetNumLevels();
 
 		assert(numWorldLevels == NUM_GRID_LEVELS);

@@ -43,10 +43,10 @@ void main()
 		if (d1 <= d2)
 		{
 			color = 
-				texelFetch(g_Color, sampleCoord, 0) +
+				texelFetch(g_Color, sampleCoord,				0) +
 				texelFetch(g_Color, sampleCoord + ivec2(-1, 0), 0) +
-				texelFetch(g_Color, sampleCoord + ivec2(1, 0), 0) +
-				texelFetch(g_Color, sampleCoord + ivec2(0, 1), 0);
+				texelFetch(g_Color, sampleCoord + ivec2(1, 0),	0) +
+				texelFetch(g_Color, sampleCoord + ivec2(0, 1),	0);
 			color = color / 4.0f;
 		}
 		else

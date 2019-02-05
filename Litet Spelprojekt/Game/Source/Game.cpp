@@ -288,7 +288,7 @@ void Game::OnResourcesLoaded()
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-	//Water??
+	//Water?? YAAAS
 	pGameObject = new GameObject();
 	pGameObject->SetIsReflectable(true);
 	pGameObject->SetMesh(MESH::QUAD);
@@ -301,7 +301,6 @@ void Game::OnResourcesLoaded()
 
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
 	{
-
 		m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
 

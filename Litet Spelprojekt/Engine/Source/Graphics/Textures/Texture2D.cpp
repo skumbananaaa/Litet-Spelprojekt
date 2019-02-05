@@ -104,12 +104,16 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 	void* textureData;
 	if (type == GL_FLOAT)
 	{
-		textureData = stbi_loadf(path, &width, &height, &nrChannels, FormatToNrChannels(format));
+		stbi_set_flip_vertically_on_load(true);
+		
+		int channels = FormatToNrChannels(format);
+		textureData = stbi_loadf(path, &width, &height, &nrChannels, channels);
 	}
 	else
 	{
 		textureData = stbi_load(path, &width, &height, &nrChannels, FormatToNrChannels(format));
 	}
+
 	if (textureData == nullptr)
 	{
 		std::cout << "Error: Could not load texture '" << path << "'" << std::endl;
@@ -144,5 +148,5 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-	delete textureData;
+	stbi_image_free(textureData);
 }

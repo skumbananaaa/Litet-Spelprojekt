@@ -17,8 +17,10 @@ void main()
 {		
     vec2 uv = SampleSphericalMap(normalize(localPos)); // make sure to normalize localPos
     vec3 color = texture(equirectangularMap, uv).rgb;
-    
-    FragColor = vec4(color, 1.0);
+
+	vec3 mapped = color / (color + vec3(1.0f));
+
+    FragColor = vec4(mapped, 1.0f);
 }
 
 // ripped from https://learnopengl.com/PBR/IBL/Diffuse-irradiance

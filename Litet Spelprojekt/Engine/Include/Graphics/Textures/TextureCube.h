@@ -1,5 +1,6 @@
 #pragma once
 #include <Graphics/Textures/Texture.h>
+#include <Graphics/Textures/Texture2D.h>
 
 
 
@@ -13,15 +14,24 @@ public:
 
 	//TextureCube(const void* ppInitalData[6], TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params = TextureParams());
 	TextureCube(const char* const paths[6], TEX_FORMAT format, const TextureParams & params = TextureParams());
+	TextureCube(const Texture2D * tex);
 	~TextureCube();
 
 	uint32 GetWidth() const noexcept;
 	uint32 GetHeight() const noexcept;
 
 private:
-	void Create(const void** ppInitalData, TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params);
+	//void Create(const void** ppInitalData, TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params);
 	void Create(const char* const paths[6], TEX_FORMAT format, const TextureParams & params);
+	void CreateFromPanorama(const Texture2D * tex);
 
+
+	struct PanoramaBuff
+	{
+		glm::mat4 projection;
+		glm::mat4 view;
+	};
+public:
 private:
 	uint32 m_Width;
 	uint32 m_Height;

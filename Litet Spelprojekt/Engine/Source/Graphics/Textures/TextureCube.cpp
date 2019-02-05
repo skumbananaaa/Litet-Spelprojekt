@@ -102,6 +102,9 @@ void TextureCube::Create(const char* const paths[6], TEX_FORMAT format, const Te
 
 void TextureCube::CreateFromPanorama(const Texture2D * tex)
 {
+	m_Width = tex->GetWidth();
+	m_Height = m_Width;
+
 	m_Format = tex->GetFormat();
 
 	Shader vShader;
@@ -118,14 +121,14 @@ void TextureCube::CreateFromPanorama(const Texture2D * tex)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1024, 1024);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_Width, m_Height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
 	GL_CALL(glGenTextures(1, &m_Texture));
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_Texture);
 	for (uint32 i = 0; i < 6; i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 1024, 1024, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_Width, m_Height, 0, GL_RGB, GL_FLOAT, nullptr);
 	}
 
 	TextureParams params;
@@ -155,7 +158,7 @@ void TextureCube::CreateFromPanorama(const Texture2D * tex)
 	UniformBuffer * pBuff = new UniformBuffer(&buff, 1, sizeof(PanoramaBuff));
 	context.SetUniformBuffer(pBuff, 1);
 	context.SetTexture(tex, 0);
-	context.SetViewport(1024, 1024, 0, 0);
+	context.SetViewport(m_Width, m_Height, 0, 0);
 
 	for (uint32 i = 0; i < 6; i++)
 	{

@@ -22,15 +22,18 @@ public:
 
 private:
 	//void Create(const void** ppInitalData, TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params);
-	void Create(const char* const paths[6], TEX_FORMAT format, const TextureParams & params);
-	void CreateFromPanorama(const Texture2D * tex);
 
+	///<summary>Creates a texturecube out of 6 images given y their filepaths</summary>
+	void Create(const char* const paths[6], TEX_FORMAT format, const TextureParams & params);
+	///<summary>Creates a texturecube from a panorama (HDR) image</summary>
+	void CreateFromPanorama(const Texture2D * tex);
 
 	struct PanoramaBuff
 	{
 		glm::mat4 projection;
 		glm::mat4 view;
 	};
+
 public:
 private:
 	uint32 m_Width;

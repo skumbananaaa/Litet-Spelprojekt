@@ -28,5 +28,5 @@ void TEXTURE::RegisterResources()
 	params.MagFilter = TEX_PARAM_LINEAR;
 	params.MinFilter = TEX_PARAM_LINEAR;
 
-	HDR = ResourceHandler::RegisterTexture2D("SkyBoxTextures/sunrise.hdr", TEX_FORMAT_RGB16F, true, params);
+	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, true, params);
 }

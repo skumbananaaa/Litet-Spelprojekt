@@ -66,7 +66,7 @@ Game::Game() noexcept :
 	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -464,11 +464,16 @@ void Game::OnUpdate(float dtS)
 			level = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(level)->GetSizeX() - 1), level, std::rand() % (m_pWorld->GetLevel(level)->GetSizeZ() - 1));
 			//goalPos = glm::ivec3(18, 1, 1);
-			std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";
+			//std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";
 			g_Crew.GetMember(i)->FindPath(goalPos);
 		}
 		g_Crew.GetMember(i)->FollowPath(dtS);
 		g_Crew.GetMember(i)->UpdateTransform();
+	}
+
+	if (Input::IsButtonDown(MOUSE_BUTTON_LEFT))
+	{
+		PickingTest();
 	}
 }
 
@@ -479,4 +484,50 @@ void Game::OnRender(float dtS)
 #if defined(DRAW_DEBUG_BOXES)
 	m_pDebugRenderer->DrawScene(*m_pScene);
 #endif
+}
+
+void Game::PickingTest() {
+	glm::vec2 mouse = Input::GetMousePosition();
+
+	uint32 height = this->GetWindow().GetHeight();
+	uint32 width = this->GetWindow().GetWidth();
+
+	float x = (2.0f * mouse.x) / width - 1.0f;
+	float y = 1.0f - (2.0f * mouse.y) / height;
+	float z = -1.0f;
+	glm::vec3 ray_nds = glm::vec3(x, y, z);
+	glm::vec4 ray_clip = glm::vec4(ray_nds, 1.0);
+	glm::vec4 ray_eye = m_pScene->GetCamera().GetInverseProjectionMatrix() * ray_clip;
+	ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
+	glm::vec4 ray_wor4 = m_pScene->GetCamera().GetInverseViewMatrix() * ray_eye;
+	glm::vec3 ray_wor = glm::vec3(ray_wor4.x, ray_wor4.y, ray_wor4.z);
+	glm::vec3 rayDir = glm::normalize(ray_wor);
+	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
+
+	glm::vec3 plane(0.0f, 1.0f, 0.0f);
+	glm::vec3 normal = glm::vec3(plane.x, plane.y, plane.z);
+	float d[] =
+	{
+		0.0f,
+		-2.0f,
+		-4.0f
+	};
+
+	glm::vec3 pointOnSurface;
+
+	float t = -1, lastT = -1;
+	for (int i = 0; i < 3; i++)
+	{
+		if (glm::dot(normal, rayDir) < -0.01)
+		{
+			t = (-d[i] - glm::dot(normal, rayOrigin)) / glm::dot(normal, rayDir);
+		}
+
+		if ((t >= 0 && lastT == -1) || (t > 0 && t < lastT))
+		{
+			pointOnSurface = rayOrigin + rayDir * t;
+		}
+	}
+
+	std::cout << "(" << std::round(pointOnSurface.x) << ", " << std::round(pointOnSurface.y) << ", " << std::round(pointOnSurface.z) << ")\n";
 }

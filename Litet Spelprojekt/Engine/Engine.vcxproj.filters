@@ -44,7 +44,17 @@
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\World\WorldLevel.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelScrollable.cpp" />
+    <ClCompile Include="Source\World\Grid.cpp" />
+    <ClCompile Include="Source\World\Tile.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\OrthographicRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\DebugRenderer.cpp" />
+    <ClCompile Include="Source\IO\ResourceHandler.cpp" />
+    <ClCompile Include="Source\IO\R_DECAL.cpp" />
+    <ClCompile Include="Source\IO\R_MESH.cpp" />
+    <ClCompile Include="Source\IO\R_MATERIAL.cpp" />
+    <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
+    <ClCompile Include="Source\System\ThreadHandler.cpp" />
+    <ClCompile Include="Source\Graphics\SkyBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -96,7 +106,19 @@
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
+    <ClInclude Include="Include\Graphics\SkyBox.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
+    <ClInclude Include="Include\World\Grid.h" />
+    <ClInclude Include="Include\World\Tile.h" />
+    <ClInclude Include="Include\Graphics\Renderers\OrthographicRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
+    <ClInclude Include="Include\IO\IResourceListener.h" />
+    <ClInclude Include="Include\IO\ResourceHandler.h" />
+    <ClInclude Include="Include\IO\DECAL.h" />
+    <ClInclude Include="Include\IO\MATERIAL.h" />
+    <ClInclude Include="Include\IO\MESH.h" />
+    <ClInclude Include="Include\IO\TEXTURE.h" />
+    <ClInclude Include="Include\System\ThreadHandler.h" />
+    <ClInclude Include="Include\System\IRunnable.h" />
   </ItemGroup>
 </Project>

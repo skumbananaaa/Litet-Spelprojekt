@@ -41,6 +41,8 @@ public:
 
 	virtual bool ContainsPoint(const glm::vec2& position) const noexcept;
 
+	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
+
 protected:
 	GUIObject(float x, float y, float width, float height);
 
@@ -121,6 +123,7 @@ private:
 	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;
 	glm::vec4 m_BackgroundColor;
+	bool m_DeleteAll;
 
 	static std::vector<GUIObject*> s_MouseListeners;
 	static std::vector<GUIObject*> s_RealTimeRenderers;

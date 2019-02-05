@@ -5,6 +5,7 @@
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/Decal.h>
+#include <IO/ResourceHandler.h>
 
 class API GameObject
 {
@@ -13,9 +14,9 @@ public:
 	virtual ~GameObject();
 
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
-	virtual void SetMesh(const IndexedMesh* const pMesh) noexcept;
-	virtual void SetMaterial(const Material* const pMaterial) noexcept;
-	virtual void SetDecal(const Decal* const pDecal) noexcept;
+	virtual void SetMesh(uint32 mesh) noexcept;
+	virtual void SetMaterial(uint32 material) noexcept;
+	virtual void SetDecal(uint32 decal) noexcept;
 	virtual void SetPosition(const glm::vec3& position) noexcept;
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
@@ -52,14 +53,19 @@ inline const glm::vec3& GameObject::GetPosition() const noexcept
 	return m_Position;
 }
 
-inline void GameObject::SetDecal(const Decal* const pDecal) noexcept
+inline void GameObject::SetMesh(uint32 mesh) noexcept
 {
-	m_pDecal = pDecal;
+	m_pMesh = ResourceHandler::GetMesh(mesh);
 }
 
-inline void GameObject::SetMaterial(const Material* const pMaterial) noexcept
+inline void GameObject::SetDecal(uint32 decal) noexcept
 {
-	m_pMaterial = pMaterial;
+	m_pDecal = ResourceHandler::GetDecal(decal);
+}
+
+inline void GameObject::SetMaterial(uint32 material) noexcept
+{
+	m_pMaterial = ResourceHandler::GetMaterial(material);
 }
 
 inline const Decal* GameObject::GetDecal() const noexcept
@@ -89,8 +95,6 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 {
 	return m_InverseTransform;
 }
-
-
 
 inline bool GameObject::IsReflectable() const noexcept
 {

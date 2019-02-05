@@ -30,6 +30,19 @@ GUIObject::~GUIObject()
 	{
 		delete m_pFramebuffer;
 	}
+
+	if (m_DeleteAll)
+	{
+		for (GUIObject* object : m_Children)
+		{
+			object->SetDeleteAllChildrenOnDestruction(true);
+			delete object;
+		}
+	}
+	m_Children.clear();
+	m_ChildrenToAdd.clear();
+	m_ChildrenToRemove.clear();
+	m_ChildrenDirty.clear();
 }
 
 bool GUIObject::HasParent() const noexcept
@@ -470,6 +483,11 @@ bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 		}
 	}
 	return false;
+}
+
+void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
+{
+	m_DeleteAll = deleteAll;
 }
 
 Texture2D* GUIObject::GetDefaultTexture() const

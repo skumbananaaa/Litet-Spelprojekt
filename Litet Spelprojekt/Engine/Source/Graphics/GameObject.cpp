@@ -23,11 +23,6 @@ void GameObject::SetIsReflectable(bool isReflectable) noexcept
 	m_IsReflectable = isReflectable;
 }
 
-void GameObject::SetMesh(const IndexedMesh* const mesh) noexcept
-{
-	m_pMesh = mesh;
-}
-
 void GameObject::SetPosition(const glm::vec3& position) noexcept
 {
 	m_Position = position;

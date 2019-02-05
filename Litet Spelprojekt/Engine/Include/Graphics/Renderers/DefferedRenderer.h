@@ -4,6 +4,7 @@
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
+#include <IO/ResourceHandler.h>
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 8
@@ -95,6 +96,17 @@ struct DecalBatch
 	std::vector<InstanceData> Instances;
 };
 
+struct SkyBoxPassBuffer
+{
+	glm::mat4 CameraCombined;
+	glm::vec4 CameraPosition;
+};
+
+struct SkyBoxPassPerObject
+{
+	glm::mat4 model;
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -121,6 +133,7 @@ private:
 	//DELETE?
 	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
+	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
 
 private:
 	Framebuffer* m_pGBufferCBR;
@@ -143,6 +156,9 @@ private:
 	UniformBuffer* m_pWaterPassPerFrame;
 	UniformBuffer* m_pWaterPassPerObject;
 	
+	UniformBuffer* m_pSkyBoxPassPerFrame;
+	UniformBuffer* m_pSkyBoxPassPerObject;
+	
 	IndexedMesh* m_pDecalMesh;
 	
 	Texture2D* m_pWaterNormalMap;
@@ -159,6 +175,7 @@ private:
 
 	ShaderProgram* m_pCbrStencilProgram;
 	ShaderProgram* m_pLightPassProgram;
+	ShaderProgram* m_pSkyBoxPassProgram;
 	
 	mutable uint64 m_FrameCount;
 	mutable std::vector<DrawableBatch> m_DrawableBatches;

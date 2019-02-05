@@ -27,12 +27,6 @@
     <ClCompile Include="Source\Crew.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Grid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Tile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,12 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Crew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Grid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Path.h">
@@ -74,8 +62,12 @@
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
     <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
+    <None Include="Resources\Shaders\orthoVert.glsl" />
+    <None Include="Resources\Shaders\orthoFrag.glsl" />
     <None Include="Resources\Shaders\debugVert.glsl" />
     <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
+    <None Include="Resources\Shaders\VShaderSkyBox.glsl" />
+    <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -87,10 +79,30 @@
     <Image Include="Resources\Textures\waterNormalMap.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\Textures\skybox\ss_bk.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_dn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_ft.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_lf.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_rt.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\skybox\ss_up.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
-    <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
+    <Text Include="Resources\Shaders\cbrFilterFrag.glsl">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -24,6 +24,8 @@ struct InstanceData
 class API IndexedMesh
 {
 	friend class GLContext;
+	friend class MESH;
+	friend class ResourceHandler;
 
 public:
 	IndexedMesh(IndexedMesh&& other) = delete;
@@ -50,7 +52,7 @@ private:
 	mutable uint32 m_NumInstances;
 	mutable uint32 m_NumReservedInstances;
 
-public:
+private:
 	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);
 	static IndexedMesh* CreateCube();
 	static IndexedMesh* CreateQuad();

@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics\Camera.h>
 
-Camera::Camera(const glm::vec3& pos, float pitch, float yaw) noexcept
+Camera::Camera(const glm::vec3& pos, float pitch, float yaw, const glm::vec3& upVector) noexcept
 {
 	m_InverseIsDirty = true;
 	m_Position = pos;
@@ -11,24 +11,26 @@ Camera::Camera(const glm::vec3& pos, float pitch, float yaw) noexcept
 		cosf(m_Pitch) * cosf(m_Yaw),
 		sinf(m_Pitch),
 		cosf(m_Pitch) * sinf(m_Yaw)));
-	m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
+	m_WorldUp = upVector;
+	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 	m_LookAt = m_Position + m_Front;
-	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
+	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, m_WorldUp);
 
 	CalcInverses();
 	m_IsDirty = false;
 }
 
-Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt) noexcept
+Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& upVector) noexcept
 {
 	m_InverseIsDirty = true; 
 	m_Position = pos;
 	m_LookAt = lookAt;
 	m_Front = glm::normalize(m_LookAt - m_Position);
-	m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
+	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
+	m_WorldUp = upVector;
 	m_Pitch = asinf(m_Front.y);
 	m_Yaw = atan2(m_Front.x, m_Front.z) - glm::half_pi<float>();
-	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
+	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, m_WorldUp);
 
 	CalcInverses();
 	m_IsDirty = false;
@@ -66,6 +68,19 @@ void Camera::UpdateFromLookAtNoInverse() noexcept
 	m_IsDirty = true;
 }*/
 
+void Camera::CreateOrthographic(float windowWidth, float windowHeight, float nearPlane, float farPlane) noexcept
+{
+	float windowWidth_2 = windowWidth / 2.0f;
+	float windowHeight_2 = windowHeight / 2.0f;
+	m_ProjectionMatrix = glm::ortho(-windowWidth_2, windowWidth_2, -windowHeight_2, windowHeight_2, nearPlane, farPlane);
+	m_Near = nearPlane;
+	m_Far = farPlane;
+
+	m_InverseProjectionMatrix = glm::inverse(m_ProjectionMatrix);
+	m_IsDirty = true;
+	m_InverseIsDirty = true;
+}
+
 void Camera::CreatePerspective(float fovRad, float aspectWihe, float nearPlane, float farPlane) noexcept
 {
 	m_ProjectionMatrix = glm::perspective(fovRad, aspectWihe, nearPlane, farPlane);
@@ -93,19 +108,19 @@ void Camera::MoveCartesian(CameraDirCartesian dir, float amount) noexcept
 		break;
 
 	case CameraDirCartesian::Left:
-		m_Position -= glm::normalize(glm::cross(m_Front, UP_VECTOR)) * amount;
+		m_Position -= glm::normalize(glm::cross(m_Front, m_WorldUp)) * amount;
 		break;
 
 	case CameraDirCartesian::Right:
-		m_Position += glm::normalize(glm::cross(m_Front, UP_VECTOR)) * amount;
+		m_Position += glm::normalize(glm::cross(m_Front, m_WorldUp)) * amount;
 		break;
 
 	case CameraDirCartesian::Up:
-		m_Position -= glm::normalize(glm::cross(m_Front, glm::cross(m_Front, UP_VECTOR))) * amount;
+		m_Position -= glm::normalize(glm::cross(m_Front, glm::cross(m_Front, m_WorldUp))) * amount;
 		break;
 
 	case CameraDirCartesian::Down:
-		m_Position += glm::normalize(glm::cross(m_Front, glm::cross(m_Front, UP_VECTOR))) * amount;
+		m_Position += glm::normalize(glm::cross(m_Front, glm::cross(m_Front, m_WorldUp))) * amount;
 		break;
 	}
 }
@@ -206,7 +221,7 @@ void Camera::MoveLookAtAndPosPolar(CameraDirCartesian dir, float amount) noexcep
 
 		case CameraDirCartesian::Left:
 		{
-			glm::vec3 right = glm::normalize(glm::cross(m_Front, UP_VECTOR));
+			glm::vec3 right = glm::normalize(glm::cross(m_Front, m_WorldUp));
 			m_LookAt -= right * amount;
 			m_Position -= right * amount;
 			break;
@@ -214,7 +229,7 @@ void Camera::MoveLookAtAndPosPolar(CameraDirCartesian dir, float amount) noexcep
 
 		case CameraDirCartesian::Right:
 		{
-			glm::vec3 right = glm::normalize(glm::cross(m_Front, UP_VECTOR));
+			glm::vec3 right = glm::normalize(glm::cross(m_Front, m_WorldUp));
 			m_LookAt += right * amount;
 			m_Position += right * amount;
 			break;
@@ -222,15 +237,15 @@ void Camera::MoveLookAtAndPosPolar(CameraDirCartesian dir, float amount) noexcep
 
 		case CameraDirCartesian::Up:
 		{
-			m_LookAt += UP_VECTOR * amount;
-			m_Position += UP_VECTOR * amount;
+			m_LookAt += m_WorldUp * amount;
+			m_Position += m_WorldUp * amount;
 			break;
 		}
 
 		case CameraDirCartesian::Down:
 		{
-			m_LookAt -= UP_VECTOR * amount;
-			m_Position -= UP_VECTOR * amount;
+			m_LookAt -= m_WorldUp * amount;
+			m_Position -= m_WorldUp * amount;
 			break;
 		}
 	}
@@ -303,19 +318,6 @@ void Camera::SetPitch(float pitch) noexcept
 	}
 }
 
-void Camera::CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept
-{
-	const float* pSource = (const float*)glm::value_ptr(m_CombinedMatrix);
-	for (int i = 0; i < 16; i++)
-	{
-		arr[startIndex + i] = pSource[i];
-	}
-
-	arr[startIndex + 16] = m_Position.x;
-	arr[startIndex + 17] = m_Position.y;
-	arr[startIndex + 18] = m_Position.z;
-}
-
 void Camera::CalcInverses()
 {
 	if (m_InverseIsDirty)
@@ -338,9 +340,9 @@ void Camera::UpdateFromPitchYawInternal() noexcept
 			sinf(m_Pitch),
 			cosf(m_Pitch) * sinf(m_Yaw)));
 		m_LookAt = m_Position + m_Front;
-		m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
+		m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 
-		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, UP_VECTOR);
+		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_WorldUp);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 }
@@ -354,9 +356,9 @@ void Camera::UpdateFromLookAtInternal() noexcept
 		m_Front = glm::normalize(m_LookAt - m_Position);
 		//m_Pitch = asinf(m_Front.y);
 		//m_Yaw = atan2(m_Front.x, m_Front.z);
-		m_Up = glm::cross(glm::cross(m_Front, UP_VECTOR), m_Front);
+		m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 
-		m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, UP_VECTOR);
+		m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, m_WorldUp);
 		m_CombinedMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 }

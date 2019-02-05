@@ -34,21 +34,21 @@ Crew::Crew(int cap)
 
 Crew::~Crew()
 {
-	Delete(m_ppMembers);
+	DeleteArr(m_ppMembers);
 }
 
-void Crew::addMember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name)
+void Crew::AddMember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name)
 {
 	expand();
 	m_ppMembers[m_nrOf++] = new Crewmember(lightColor, position, actionCap, name);
 }
 
-Crewmember * Crew::getMember(int index)
+Crewmember * Crew::GetMember(int index)
 {
 	return m_ppMembers[index];
 }
 
-const int Crew::getCount() const
+const int Crew::GetCount() const
 {
 	return m_nrOf;
 }

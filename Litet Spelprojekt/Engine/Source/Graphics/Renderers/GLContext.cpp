@@ -36,10 +36,12 @@ GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.
 		SetViewport(static_cast<uint32>(width), static_cast<uint32>(height), 0, 0);
 	}
 
-	for (uint32 i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		m_CurrentTextures[i] = GL_TEXTURE_2D;
 	}
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 GLContext::~GLContext()

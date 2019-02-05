@@ -4,11 +4,13 @@
 Scene::Scene() noexcept
 {
 	m_pCamera = nullptr;
+	m_pSkyBox = nullptr;
 }
 
 Scene::~Scene()
 {
 	DeleteSafe(m_pCamera);
+	DeleteSafe(m_pSkyBox);
 
 	for (size_t i = 0; i < m_GameObjects.size(); i++)
 	{
@@ -34,6 +36,11 @@ Scene::~Scene()
 void Scene::SetCamera(Camera* pCamera) noexcept
 {
 	m_pCamera = pCamera;
+}
+
+void Scene::SetSkyBox(SkyBox * pSkyBox) noexcept
+{
+	m_pSkyBox = pSkyBox;
 }
 
 void Scene::AddGameObject(GameObject* pGameObject) noexcept

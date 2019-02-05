@@ -19,6 +19,7 @@ public:
 	///<summary>Returns a vec4. The first two values are the position of the wall (x, z), the second two are the dimensions of the wall (x, z)</summary>
 	const glm::vec4& GetWall(uint32 index) const noexcept;
 	uint32 GetNrOfWalls() const noexcept;
+
 	void GenerateWalls();
 
 private:
@@ -26,6 +27,6 @@ private:
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
 
-	uint32 m_nrOfWalls;
+	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
 };

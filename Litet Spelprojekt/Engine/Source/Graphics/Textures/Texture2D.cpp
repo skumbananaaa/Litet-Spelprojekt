@@ -53,7 +53,7 @@ void Texture2D::Create(const void* pInitalData, const TextureDesc& desc, const T
 	}
 	else
 	{
-		std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
+		//std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
 	}
 
 	m_Width = desc.Width;
@@ -61,7 +61,7 @@ void Texture2D::Create(const void* pInitalData, const TextureDesc& desc, const T
 	m_Format = desc.Format;
 	m_Samples = desc.Samples;
 	
-	std::cout << "Created Texture2D" << std::endl;
+	//std::cout << "Created Texture2D" << std::endl;
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -90,7 +90,7 @@ void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
 	m_Format = desc.Format;
 	m_Samples = desc.Samples;
 
-	std::cout << "Created Texture2D with " << desc.Samples << "X MSAA"<< std::endl;
+	//std::cout << "Created Texture2D with " << desc.Samples << "X MSAA"<< std::endl;
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
 }
@@ -125,14 +125,14 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 	}
 	else
 	{
-		std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
+		//std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
 	}
 
 	m_Width = width;
 	m_Height = height;
 	m_Format = format;
 
-	std::cout << "Loaded Texture2D" << std::endl;
+	//std::cout << "Loaded Texture2D" << std::endl;
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 

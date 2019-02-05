@@ -14,6 +14,8 @@ layout (std140, binding = 1) uniform PerFrameBlock
 {
 	mat4 cameraCombined;
 	vec3 cameraPosition;
+	float padding;
+	vec4 clipPlane;
 };
 
 out VS_OUT
@@ -25,6 +27,9 @@ out VS_OUT
 void main()
 {
 	vec4 worldPos = model * vec4(position, 1.0);
+
+	gl_ClipDistance[0] = dot(worldPos, clipPlane);
+
 	vs_out.Position = worldPos.xyz;
 	vs_out.Normal = (model * vec4(normal, 0.0)).xyz;
 	gl_Position = cameraCombined * worldPos;

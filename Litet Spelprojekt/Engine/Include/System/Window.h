@@ -27,6 +27,7 @@ private:
 	GLFWwindow* m_pWindow;
 	int32 m_Width;
 	int32 m_Height;
+	glm::vec2 m_LastMousePosition;
 
 private:
 	static Window* s_pMainWindow;

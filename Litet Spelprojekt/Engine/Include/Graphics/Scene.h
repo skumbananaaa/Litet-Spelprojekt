@@ -6,7 +6,7 @@
 #include <Graphics/Lights/DirectionalLight.h>
 #include <Graphics/Lights/PointLight.h>
 #include <Graphics/Lights/SpotLight.h>
-
+#include <Graphics/SkyBox.h>
 class API Scene
 {
 public:
@@ -16,6 +16,7 @@ public:
 	void OnUpdate(float dtS) noexcept;
 	
 	void SetCamera(Camera* pCamera) noexcept;
+	void SetSkyBox(SkyBox* pSkyBox) noexcept;
 	void AddGameObject(GameObject* pGameObject) noexcept;
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
 	void AddPointLight(PointLight* pLight) noexcept;
@@ -24,6 +25,7 @@ public:
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
+	SkyBox& GetSkyBox() const noexcept;
 
 	const std::vector<GameObject*>& GetGameObjects() const noexcept;
 	const std::vector<GameObject*>& GetDrawables() const noexcept;
@@ -40,8 +42,9 @@ private:
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
 	std::vector<DirectionalLight*> m_DirectionalLights;
-	std::vector<PointLight* > m_PointLights;
-	std::vector<SpotLight* > m_SpotLights;
+	std::vector<PointLight*> m_PointLights;
+	std::vector<SpotLight*> m_SpotLights;
+	SkyBox* m_pSkyBox;
 };
 
 inline Camera& Scene::GetCamera() noexcept
@@ -54,6 +57,11 @@ inline const Camera& Scene::GetCamera() const noexcept
 {
 	assert(m_pCamera != nullptr);
 	return *m_pCamera;
+}
+
+inline SkyBox& Scene::GetSkyBox() const noexcept
+{
+	return *m_pSkyBox;
 }
 
 inline const std::vector<GameObject*>& Scene::GetGameObjects() const noexcept

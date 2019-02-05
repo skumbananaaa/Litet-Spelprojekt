@@ -117,13 +117,13 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor3);
 
 
-	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 160, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
+	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
 	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Room Tool", TextAlignment::CENTER);
-	m_pButtonAddRoom = new Button(10, m_pPanelEditor->GetHeight() - 100, 140, 50, "New Room");
-	m_pButtonEditRoom = new Button(10, m_pPanelEditor->GetHeight() - 160, 140, 50, "Edit Room");
-	m_pButtonRemoveRoom = new Button(10, m_pPanelEditor->GetHeight() - 220, 140, 50, "Delete Room");
-	m_pButtonAddDoor = new Button(10, m_pPanelEditor->GetHeight() - 280, 140, 50, "Add Door");
-	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, 140, 50, "Remove Door");
+	m_pButtonAddRoom = new Button(10, m_pPanelEditor->GetHeight() - 100, m_pPanelEditor->GetWidth() - 20, 50, "New Room");
+	m_pButtonEditRoom = new Button(10, m_pPanelEditor->GetHeight() - 160, m_pPanelEditor->GetWidth() - 20, 50, "Edit Room");
+	m_pButtonRemoveRoom = new Button(10, m_pPanelEditor->GetHeight() - 220, m_pPanelEditor->GetWidth() - 20, 50, "Delete Room");
+	m_pButtonAddDoor = new Button(10, m_pPanelEditor->GetHeight() - 280, m_pPanelEditor->GetWidth() - 20, 50, "Add Door");
+	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, m_pPanelEditor->GetWidth() - 20, 50, "Remove Door");
 	m_pButtonAddRoom->SetUserData(reinterpret_cast<void*>(ADD_ROOM));
 	m_pButtonEditRoom->SetUserData(reinterpret_cast<void*>(EDIT_ROOM));
 	m_pButtonRemoveRoom->SetUserData(reinterpret_cast<void*>(DELETE_ROOM));
@@ -144,11 +144,13 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveDoor);
 
 
-	m_pPanelMesh = new Panel(GetWindow().GetWidth() - 160, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
-	m_pTextViewMesh = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Mesh Tool", TextAlignment::CENTER);
-	m_pPanelScrollableMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pTextViewMesh->GetHeight() - 10, m_pPanelMesh->GetWidth(), m_pPanelMesh->GetHeight() * 2);
-	m_pPanelMesh->Add(m_pTextViewMesh);
-	m_pPanelMesh->Add(m_pPanelScrollableMesh);
+	m_pPanelMesh = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
+	m_pButtonAddMesh = new Button(10, m_pPanelMesh->GetHeight() - 60, 85, 50, "New");
+	m_pButtonEditMesh = new Button(105, m_pPanelMesh->GetHeight() - 60, 85, 50, "Edit");
+	m_pPanelScrollableAddMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth(), m_pPanelMesh->GetHeight() * 2);
+	m_pPanelMesh->Add(m_pButtonAddMesh);
+	m_pPanelMesh->Add(m_pButtonEditMesh);
+	m_pPanelMesh->Add(m_pPanelScrollableAddMesh);
 	m_pPanelMesh->SetVisible(false);
 	m_pPanelMesh->SetDeleteAllChildrenOnDestruction(true);
 
@@ -160,15 +162,15 @@ void Editor::OnResourcesLoaded()
 	std::vector<MESH_DESC> meshDescs;
 	ResourceHandler::QuaryMeshes(meshDescs);
 	float buttonHeight = 50;
-	m_pPanelScrollableMesh->SetClientSize(m_pPanelScrollableMesh->GetWidth(), buttonHeight * meshDescs.size());
+	m_pPanelScrollableAddMesh->SetClientSize(m_pPanelScrollableAddMesh->GetWidth(), buttonHeight * meshDescs.size());
 
 	for (int64 i = 0; i < meshDescs.size(); i++)
 	{
 		MESH_DESC meshDesc = meshDescs[i];
-		Button* button = new Button(0, m_pPanelScrollableMesh->GetClientHeight() - (i + 1) * buttonHeight, m_pPanelScrollableMesh->GetClientWidth(), buttonHeight, meshDesc.name, nullptr, OnButtonReleased);
+		Button* button = new Button(0, m_pPanelScrollableAddMesh->GetClientHeight() - (i + 1) * buttonHeight, m_pPanelScrollableAddMesh->GetClientWidth(), buttonHeight, meshDesc.name, nullptr, OnButtonReleased);
 		button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
 		button->SetUserData(reinterpret_cast<void*>(meshDesc.mesh));
-		m_pPanelScrollableMesh->Add(button);
+		m_pPanelScrollableAddMesh->Add(button);
 	}
 
 	float hDelta = 360.0f / (float)MAX_NUM_ROOMS;

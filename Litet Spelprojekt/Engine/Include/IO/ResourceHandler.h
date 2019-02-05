@@ -60,7 +60,7 @@ private:
 	static Texture2D* m_pTexture2Ds[64];
 	static uint32 m_NrOfTexture2D;
 
-	static Material* m_pMaterials[64];
+	static Material* m_pMaterials[512];
 	static uint32 m_NrOfMaterials;
 
 	static Decal* m_pDecals[64];

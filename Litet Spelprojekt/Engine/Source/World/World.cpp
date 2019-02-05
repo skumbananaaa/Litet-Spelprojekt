@@ -77,7 +77,7 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 	}
 }
 
-glm::ivec3* World::GetStairs() const noexcept
+const glm::ivec3* World::GetStairs() const noexcept
 {
 	return m_pStairs;
 }

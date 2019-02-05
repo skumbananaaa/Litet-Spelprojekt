@@ -17,7 +17,8 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	pCameraPersp->UpdateFromPitchYaw();
 
 	Camera* pCameraOrth = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio(), 30.0f, 0.01f, 100.0f);
+	m_CameraZoom = 1.0f;
+	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	pCameraOrth->UpdateFromPitchYaw();
 
 	const int32 gridWidth = 35;
@@ -135,17 +136,23 @@ void Editor::OnResourcesLoaded()
 	m_pButtonRemoveRoom = new Button(10, m_pPanelEditor->GetHeight() - 220, m_pPanelEditor->GetWidth() - 20, 50, "Delete Room");
 	m_pButtonAddDoor = new Button(10, m_pPanelEditor->GetHeight() - 280, m_pPanelEditor->GetWidth() - 20, 50, "Add Door");
 	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, m_pPanelEditor->GetWidth() - 20, 50, "Remove Door");
+	m_pButtonAddStairs = new Button(10, m_pPanelEditor->GetHeight() - 400, m_pPanelEditor->GetWidth() - 20, 50, "Add Stairs");
+	m_pButtonRemoveStairs = new Button(10, m_pPanelEditor->GetHeight() - 460, m_pPanelEditor->GetWidth() - 20, 50, "Remove Stairs");
 	m_pButtonAddRoom->SetUserData(reinterpret_cast<void*>(ADD_ROOM));
 	m_pButtonEditRoom->SetUserData(reinterpret_cast<void*>(EDIT_ROOM));
 	m_pButtonRemoveRoom->SetUserData(reinterpret_cast<void*>(DELETE_ROOM));
 	m_pButtonAddDoor->SetUserData(reinterpret_cast<void*>(ADD_DOOR));
 	m_pButtonRemoveDoor->SetUserData(reinterpret_cast<void*>(REMOVE_DOOR));
+	m_pButtonAddStairs->SetUserData(reinterpret_cast<void*>(ADD_STAIRS));
+	m_pButtonRemoveStairs->SetUserData(reinterpret_cast<void*>(REMOVE_STAIRS));
 	m_pPanelEditor->Add(m_pTextViewEditor);
 	m_pPanelEditor->Add(m_pButtonAddRoom);
 	m_pPanelEditor->Add(m_pButtonEditRoom);
 	m_pPanelEditor->Add(m_pButtonRemoveRoom);
 	m_pPanelEditor->Add(m_pButtonAddDoor);
 	m_pPanelEditor->Add(m_pButtonRemoveDoor);
+	m_pPanelEditor->Add(m_pButtonAddStairs);
+	m_pPanelEditor->Add(m_pButtonRemoveStairs);
 	m_pPanelEditor->SetDeleteAllChildrenOnDestruction(true);
 	m_SelectionHandlerRoom.AddSelectionListener(this);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddRoom);
@@ -153,6 +160,8 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveRoom);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddDoor);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveDoor);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddStairs);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveStairs);
 
 
 	std::vector<MESH_DESC> meshDescs;
@@ -361,7 +370,11 @@ void Editor::NormalizeTileIndexes() noexcept
 				{
 					uint32 newIndex = tile->GetID() - indexesMissingBefore[index];
 					tile->SetID(newIndex);
-					tile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+
+					if (!tile->HasStairs())
+					{
+						tile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+					}
 				}
 			}
 		}
@@ -372,10 +385,13 @@ glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcep
 {
 	glm::vec2 clipSpacePosition(mousePosition.x / static_cast<float>(GetWindow().GetWidth()), mousePosition.y / static_cast<float>(GetWindow().GetHeight()));
 	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
+	glm::vec3 worldPosition = m_ppScenes[m_CurrentGridIndex]->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
+	float xOffset = static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().x % 2) / 2.0f;
+	float yOffset = static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().y % 2) / 2.0f;
 	glm::vec3 worldPosition = GetCurrentScene()->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
 	glm::ivec2 gridPosition(
-		static_cast<uint32>(glm::round(worldPosition.x)) + m_ppGrids[m_CurrentGridIndex]->GetSize().x / 2,
-		static_cast<uint32>(glm::round(worldPosition.z)) + m_ppGrids[m_CurrentGridIndex]->GetSize().y / 2);
+		static_cast<uint32>(glm::round(worldPosition.x + xOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().x / 2,
+		static_cast<uint32>(glm::round(worldPosition.z + yOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().y / 2);
 	return gridPosition;
 }
 
@@ -529,7 +545,11 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 						Tile* tile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
 
 						tile0->SetID(TILE_DOOR_INDEX);
-						tile0->SetDefaultMaterial(MATERIAL::WHITE);
+
+						if (!tile0->HasStairs())
+						{
+							tile0->SetDefaultMaterial(MATERIAL::WHITE);
+						}
 
 						tile1->SetID(TILE_DOOR_INDEX);
 						tile1->SetDefaultMaterial(MATERIAL::WHITE);
@@ -548,10 +568,57 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 						if (tile0->GetID() == TILE_DOOR_INDEX)
 						{
 							tile0->SetID(TILE_NON_WALKABLE_INDEX);
-							tile0->SetDefaultMaterial(MATERIAL::BLACK);
+
+							if (!tile0->HasStairs())
+							{
+								tile0->SetDefaultMaterial(MATERIAL::BLACK);
+							}
 
 							tile1->SetID(TILE_NON_WALKABLE_INDEX);
 							tile1->SetDefaultMaterial(MATERIAL::BLACK);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == ADD_STAIRS)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+
+						tile->SetDefaultMaterial(MATERIAL::BLUE);
+						tile->SetHasStairs(true);
+					}
+				}
+				else if (m_CurrentEditingMode == REMOVE_STAIRS)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+
+						if (tile->HasStairs())
+						{
+							uint32 tileId = tile->GetID();
+
+							if (tileId >= TILE_SMALLEST_FREE)
+							{
+								tile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							}
+							else if (tileId == TILE_NON_WALKABLE_INDEX)
+							{
+								tile->SetDefaultMaterial(MATERIAL::BLACK);
+							}
+							else
+							{
+								tile->SetDefaultMaterial(MATERIAL::WHITE);
+							}
+
+							tile->SetHasStairs(false);
 						}
 					}
 				}
@@ -602,7 +669,11 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 						if (tile0->GetID() == TILE_NON_WALKABLE_INDEX)
 						{
 							tile0->SetID(m_LargestIndexUsed);
-							tile0->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+
+							if (!tile0->HasStairs())
+							{
+								tile0->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							}
 
 							tile1->SetID(m_LargestIndexUsed);
 							tile1->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
@@ -645,7 +716,11 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 					if (tile0->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
 						tile0->SetID(m_RoomBeingEdited);
-						tile0->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+
+						if (!tile0->HasStairs())
+						{
+							tile0->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						}
 
 						tile1->SetID(m_RoomBeingEdited);
 						tile1->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
@@ -671,7 +746,11 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 					if (tile0->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
 						tile0->SetID(TILE_NON_WALKABLE_INDEX);
-						tile0->SetDefaultMaterial(MATERIAL::BLACK);
+
+						if (!tile0->HasStairs())
+						{
+							tile0->SetDefaultMaterial(MATERIAL::BLACK);
+						}
 
 						tile1->SetID(TILE_NON_WALKABLE_INDEX);
 						tile1->SetDefaultMaterial(MATERIAL::BLACK);
@@ -715,24 +794,38 @@ void Editor::OnButtonReleased(Button* button)
 	Editor* editor = GetEditor();
 	if (button == editor->m_pButtonSave)
 	{
-		/*uint32 level0SizeX = editor->m_pGrid->GetSize().x;
-		uint32 level0SizeY = editor->m_pGrid->GetSize().y;
-		uint32* level0 = new uint32[level0SizeX * level0SizeY];
+		WorldLevel** worldLevels = new WorldLevel*[NUM_GRID_LEVELS];
+		std::vector<glm::ivec3> stairs;
 
-		for (uint32 x = 0; x < level0SizeX; x++)
+		for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
 		{
-			for (uint32 y = 0; y < level0SizeY; y++)
+			uint32 levelSizeX = editor->m_ppGrids[gridId]->GetSize().x + 2;
+			uint32 levelSizeY = editor->m_ppGrids[gridId]->GetSize().y + 2;
+			uint32* level = new uint32[levelSizeX * levelSizeY];
+
+			for (uint32 x = 0; x < levelSizeX; x++)
 			{
-				level0[x * level0SizeY + y] = editor->m_pGrid->GetTile(glm::ivec2(x, y))->GetID();
+				for (uint32 y = 0; y < levelSizeY; y++)
+				{
+					if (x == 0 || x == levelSizeX - 1 || y == 0 || y == levelSizeY - 1)
+					{
+						level[x * levelSizeY + y] = TILE_NON_WALKABLE_INDEX;
+					}
+					else
+					{
+						Tile* pTile = editor->m_ppGrids[gridId]->GetTile(glm::ivec2(x - 1, y - 1));
+						level[x * levelSizeY + y] = pTile->GetID();
+
+						if (pTile->HasStairs())
+						{
+							stairs.push_back(glm::ivec3(x, gridId, y));
+						}
+					}
+				}
 			}
+
+			worldLevels[gridId] = new WorldLevel(level, levelSizeX, levelSizeY);
 		}
-
-		WorldLevel* worldLevel0 = new WorldLevel(level0, level0SizeX, level0SizeY);
-
-		WorldLevel* worldLevels[1] =
-		{
-			worldLevel0
-		};
 
 		WorldObject worldObjects[5] =
 		{
@@ -743,13 +836,119 @@ void Editor::OnButtonReleased(Button* button)
 			{ glm::uvec3(12, 13, 14), 1337, 8 },
 		};
 
-		World* world = new World(worldLevels, 1, worldObjects, 5);
+		World* world = new World(worldLevels, NUM_GRID_LEVELS, worldObjects, 5);
+		uint32 numStairs = stairs.size();
+
+		if (numStairs > 0)
+		{
+			world->SetStairs(&stairs[0], numStairs);
+		}
+
 		WorldSerializer::Write("test.json", *world);
-		Delete(world);*/
+		DeleteArr(worldLevels);
+		Delete(world);
 	}
 	else if (button == editor->m_pButtonLoad)
 	{
+		World* pWorld = WorldSerializer::Read("test.json");
+		uint32 numWorldLevels = pWorld->GetNumLevels();
 
+		assert(numWorldLevels == NUM_GRID_LEVELS);
+
+		//Clean up previous scenes and cameras
+		for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
+		{
+			if (i > 0)
+			{
+				editor->m_ppScenes[i]->SetCamera(nullptr, 0);
+				editor->m_ppScenes[i]->SetCamera(nullptr, 1);
+			}
+
+			Delete(editor->m_ppScenes[i]);
+			Delete(editor->m_ppGrids[i]);
+		}
+		
+		//Set up new scenes, grids and cameras
+		Camera* pCameraPersp = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		pCameraPersp->CreatePerspective(glm::radians<float>(90.0f), editor->GetWindow().GetAspectRatio(), 0.01f, 100.0f);
+		pCameraPersp->UpdateFromPitchYaw();
+
+		Camera* pCameraOrth = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		pCameraOrth->CreateOrthographic(30.0f * editor->GetWindow().GetAspectRatio() * editor->m_CameraZoom, 30.0f * editor->m_CameraZoom, 0.01f, 100.0f);
+		pCameraOrth->UpdateFromPitchYaw();
+
+		editor->m_ppScenes = new Scene*[NUM_GRID_LEVELS];
+		editor->m_ppGrids = new Grid*[NUM_GRID_LEVELS];
+
+		uint32 largestUsedTileId = 0;
+
+		for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
+		{
+			//Create one scene for each grid level
+			editor->m_ppScenes[gridId] = new Scene();
+			editor->m_ppScenes[gridId]->SetCamera(pCameraPersp, 0);
+			editor->m_ppScenes[gridId]->SetCamera(pCameraOrth, 1);
+
+
+			//Create one grid for each grid level
+			const WorldLevel* worldLevel = pWorld->GetLevel(gridId);
+			const uint32* const * ppLevelIndexes = worldLevel->GetLevel();
+			uint32 levelWidth = worldLevel->GetSizeX();
+			uint32 levelHeight = worldLevel->GetSizeZ();
+			int32 gridWidth = worldLevel->GetSizeX() - 2;
+			int32 gridHeight = worldLevel->GetSizeZ() - 2;
+			Grid* pGrid = new Grid(MATERIAL::BLACK, glm::ivec2(gridWidth, gridHeight), glm::vec3(-gridWidth / 2.0f, 0.0f, -gridHeight / 2.0f));
+
+			for (uint32 x = 0; x < gridWidth; x++)
+			{
+				for (uint32 y = 0; y < gridHeight; y++)
+				{
+					Tile* tile = pGrid->GetTile(glm::ivec2(x, y));
+					uint32 tileId = ppLevelIndexes[x + 1][y + 1];
+
+					if (tileId > largestUsedTileId)
+					{
+						largestUsedTileId = tileId;
+					}
+
+					if (tileId >= TILE_SMALLEST_FREE)
+					{
+						tile->SetDefaultMaterial(editor->m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+					}
+					else if (tileId == TILE_NON_WALKABLE_INDEX)
+					{
+						tile->SetDefaultMaterial(MATERIAL::BLACK);
+					}
+					else
+					{
+						tile->SetDefaultMaterial(MATERIAL::WHITE);
+					}
+
+					tile->SetID(tileId);
+					editor->m_ppScenes[gridId]->AddGameObject(tile);
+				}
+			}
+
+			editor->m_ppGrids[gridId] = pGrid;
+		}
+
+		const glm::ivec3* pStairs = pWorld->GetStairs();
+
+		for (uint32 stairId = 0; stairId < pWorld->GetNumStairs(); stairId++)
+		{
+			const glm::ivec3& stairs = pStairs[stairId];
+			Tile* pTile = editor->m_ppGrids[stairs.y]->GetTile(glm::ivec2(stairs.x - 1, stairs.z - 1));
+			pTile->SetHasStairs(true);
+			pTile->SetDefaultMaterial(MATERIAL::BLUE);
+		}
+
+		editor->m_RoomBeingEdited = -1;
+		//
+		editor->m_CurrentGridIndex = 0;
+		editor->m_LargestIndexUsed = largestUsedTileId;
+		editor->m_MouseMaterial = MATERIAL::WHITE;
+
+		Delete(pWorld);
 	}
 	else if (button == editor->m_pButtonRoom)
 	{
@@ -783,7 +982,8 @@ void Editor::OnUpdate(float dtS)
 	tempRotation += 1.0f * dtS;
 
 	static float cameraSpeed = 5.0f;
-	static float angularSpeed = 1.5f;
+	static float cameraAngularSpeed = 1.5f;
+	static float cameraZoomSpeed = 0.2f;
 
 	if (Input::IsKeyDown(KEY_W))
 	{
@@ -805,11 +1005,15 @@ void Editor::OnUpdate(float dtS)
 
 	if (Input::IsKeyDown(KEY_E))
 	{
-		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
+		m_CameraZoom -= cameraZoomSpeed * dtS;
+		Camera& camera = m_ppScenes[m_CurrentGridIndex]->GetCamera();
+		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	}
 	else if (Input::IsKeyDown(KEY_Q))
 	{
-		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
+		m_CameraZoom += cameraZoomSpeed * dtS;
+		Camera& camera = m_ppScenes[m_CurrentGridIndex]->GetCamera();
+		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	}
 
 	GetCurrentScene()->GetCamera().UpdateFromPitchYaw();

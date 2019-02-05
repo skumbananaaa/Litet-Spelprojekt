@@ -44,9 +44,9 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 		{
 			for (uint32 y = 0; y < m_ppGrids[i]->GetSize().y; y++)
 			{
-				Tile* tile = m_ppGrids[i]->GetTile(glm::ivec2(x, y));
-				tile->SetID(TILE_NON_WALKABLE_INDEX);
-				m_ppScenes[i / 2]->AddGameObject(tile);
+				Tile* pTile = m_ppGrids[i]->GetTile(glm::ivec2(x, y));
+				pTile->SetID(TILE_NON_WALKABLE_INDEX);
+				m_ppScenes[i / 2]->AddGameObject(pTile);
 			}
 		}
 	}
@@ -197,12 +197,12 @@ void Editor::OnResourcesLoaded()
 	std::cout << "Resources Loaded!" << std::endl;
 }
 
-void Editor::OnSelected(const SelectionHandler* handler, ISelectable* selection)
+void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelection)
 {
-	if (handler == &m_SelectionHandlerFloor)
+	if (pHandler == &m_SelectionHandlerFloor)
 	{
-		Button* button = (Button*)selection;
-		uint32 floorIndex = reinterpret_cast<uint32>(button->GetUserData());
+		Button* pButton = (Button*)pSelection;
+		uint32 floorIndex = reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "New Floor Index: " << floorIndex << std::endl;
 
 		m_CurrentGridIndex = 2 * floorIndex;
@@ -210,10 +210,10 @@ void Editor::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 		m_RoomBeingEdited = -1;
 		m_MouseMaterial = MATERIAL::WHITE;
 	}
-	else if (handler == &m_SelectionHandlerRoom)
+	else if (pHandler == &m_SelectionHandlerRoom)
 	{
-		Button* button = (Button*)selection;
-		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(button->GetUserData());
+		Button* pButton = (Button*)pSelection;
+		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "New Editing Mode: " << newMode << std::endl;
 
 		m_CurrentEditingMode = newMode;
@@ -221,14 +221,14 @@ void Editor::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 		m_RoomBeingEdited = -1;
 		m_MouseMaterial = MATERIAL::WHITE;
 	}
-	else if (handler == &m_SelectionHandlerMesh)
+	else if (pHandler == &m_SelectionHandlerMesh)
 	{
-		if (selection == m_pButtonAddMesh)
+		if (pSelection == m_pButtonAddMesh)
 		{
 			m_pPanelScrollableAddMesh->SetVisible(true);
 			m_pPanelScrollableEditMesh->SetVisible(false);
 		} 
-		else if (selection == m_pButtonEditMesh)
+		else if (pSelection == m_pButtonEditMesh)
 		{
 			m_pPanelScrollableAddMesh->SetVisible(false);
 			m_pPanelScrollableEditMesh->SetVisible(true);
@@ -236,18 +236,18 @@ void Editor::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 	}
 }
 
-void Editor::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
+void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection)
 {
-	if (handler == &m_SelectionHandlerFloor)
+	if (pHandler == &m_SelectionHandlerFloor)
 	{
-		Button* button = (Button*)selection;
-		uint32 floorIndex = reinterpret_cast<uint32>(button->GetUserData());
+		Button* pButton = (Button*)pSelection;
+		uint32 floorIndex = reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "Last Floor Index: " << floorIndex << std::endl;
 	}
-	else if (handler == &m_SelectionHandlerRoom)
+	else if (pHandler == &m_SelectionHandlerRoom)
 	{
-		Button* button = (Button*)selection;
-		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(button->GetUserData());
+		Button* pButton = (Button*)pSelection;
+		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "Last Editing Mode: " << newMode << std::endl;
 		m_CurrentEditingMode = NONE;
 	}
@@ -255,27 +255,27 @@ void Editor::OnDeselected(const SelectionHandler* handler, ISelectable* selectio
 
 void Editor::CreateMesh(uint32 mesh)
 {
-	GameObject* gameObject = new GameObject();
-	gameObject->SetMaterial(MATERIAL::WHITE);
-	gameObject->SetMesh(mesh);
-	gameObject->SetPosition(glm::vec3(0, 0, 0));
-	GetCurrentScene()->AddGameObject(gameObject);
+	GameObject* pGameObject = new GameObject();
+	pGameObject->SetMaterial(MATERIAL::WHITE);
+	pGameObject->SetMesh(mesh);
+	pGameObject->SetPosition(glm::vec3(0, 0, 0));
+	GetCurrentScene()->AddGameObject(pGameObject);
 	GetCurrentMeshes().push_back(gameObject);
 
 	//Create new object
 	std::string name = ResourceHandler::GetMeshName(mesh);
-	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), GetCurrentMeshes().size() * ELEMENT_HEIGHT + 4);
-	Button* button = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - GetCurrentMeshes().size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
-	button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
-	button->SetUserData(gameObject);
-	m_pPanelScrollableEditMesh->Add(button);
-	m_SelectionHandlerMeshEdit.AddSelectable(button);
+	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), m_Meshes.size() * ELEMENT_HEIGHT + 4);
+	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - m_Meshes.size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
+	pButton->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
+	pButton->SetUserData(pGameObject);
+	m_pPanelScrollableEditMesh->Add(pButton);
+	m_SelectionHandlerMeshEdit.AddSelectable(pButton);
 
 	//Arange objects
 	for (int32 i = 0; i < m_pPanelScrollableEditMesh->GetChildren().size(); i++)
 	{
-		GUIObject* object = m_pPanelScrollableEditMesh->GetChildren()[i];
-		object->SetPosition(object->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
+		GUIObject* pObject = m_pPanelScrollableEditMesh->GetChildren()[i];
+		pObject->SetPosition(pObject->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
 	}
 }
 
@@ -334,8 +334,8 @@ void Editor::NormalizeTileIndexes() noexcept
 		{
 			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
 			{
-				Tile* tile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
-				int32 index = tile->GetID() - TILE_SMALLEST_FREE;
+				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
+				int32 index = pTile->GetID() - TILE_SMALLEST_FREE;
 
 				if (index >= 0)
 				{
@@ -375,17 +375,17 @@ void Editor::NormalizeTileIndexes() noexcept
 		{
 			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
 			{
-				Tile* tile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
-				int32 index = tile->GetID() - TILE_SMALLEST_FREE;
+				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
+				int32 index = pTile->GetID() - TILE_SMALLEST_FREE;
 
 				if (index >= 0)
 				{
-					uint32 newIndex = tile->GetID() - indexesMissingBefore[index];
-					tile->SetID(newIndex);
+					uint32 newIndex = pTile->GetID() - indexesMissingBefore[index];
+					pTile->SetID(newIndex);
 
-					if (!tile->HasStairs())
+					if (!pTile->HasStairs())
 					{
-						tile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						pTile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 					}
 				}
 			}
@@ -446,11 +446,11 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 				{
-					Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+					Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-					if (tile->GetID() == TILE_NON_WALKABLE_INDEX)
+					if (pTile->GetID() == TILE_NON_WALKABLE_INDEX)
 					{
-						tile->SetMaterial(m_TileTints[(m_LargestIndexUsed - TILE_SMALLEST_FREE + 1) % MAX_NUM_ROOMS]);
+						pTile->SetMaterial(m_TileTints[(m_LargestIndexUsed - TILE_SMALLEST_FREE + 1) % MAX_NUM_ROOMS]);
 					}
 				}
 			}
@@ -464,11 +464,11 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 				{
-					Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+					Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-					if (tile->GetID() >= TILE_NON_WALKABLE_INDEX)
+					if (pTile->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
-						tile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						pTile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 					}
 				}
 			}
@@ -482,11 +482,11 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 				{
-					Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+					Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-					if (tile->GetID() >= TILE_NON_WALKABLE_INDEX)
+					if (pTile->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
-						tile->SetMaterial(MATERIAL::BLACK);
+						pTile->SetMaterial(MATERIAL::BLACK);
 					}
 				}
 			}
@@ -497,9 +497,9 @@ void Editor::OnMouseMove(const glm::vec2& position)
 void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 {
 	bool clickedOnGUI = false;
-	for (GUIObject* object : GetGUIManager().GetChildren())
+	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		if (object->ContainsPoint(position))
+		if (pObject->ContainsPoint(position))
 		{
 			clickedOnGUI = true;
 			break;
@@ -552,18 +552,18 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						Tile* tile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-						Tile* tile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+						Tile* pTile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						Tile* pTile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
 
-						tile0->SetID(TILE_DOOR_INDEX);
+						pTile0->SetID(TILE_DOOR_INDEX);
 
-						if (!tile0->HasStairs())
+						if (!pTile0->HasStairs())
 						{
-							tile0->SetDefaultMaterial(MATERIAL::WHITE);
+							pTile0->SetDefaultMaterial(MATERIAL::WHITE);
 						}
 
-						tile1->SetID(TILE_DOOR_INDEX);
-						tile1->SetDefaultMaterial(MATERIAL::WHITE);
+						pTile1->SetID(TILE_DOOR_INDEX);
+						pTile1->SetDefaultMaterial(MATERIAL::WHITE);
 					}
 				}
 				else if (m_CurrentEditingMode == REMOVE_DOOR)
@@ -573,20 +573,20 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						Tile* tile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-						Tile* tile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+						Tile* pTile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						Tile* pTile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
 
-						if (tile0->GetID() == TILE_DOOR_INDEX)
+						if (pTile0->GetID() == TILE_DOOR_INDEX)
 						{
-							tile0->SetID(TILE_NON_WALKABLE_INDEX);
+							pTile0->SetID(TILE_NON_WALKABLE_INDEX);
 
-							if (!tile0->HasStairs())
+							if (!pTile0->HasStairs())
 							{
-								tile0->SetDefaultMaterial(MATERIAL::BLACK);
+								pTile0->SetDefaultMaterial(MATERIAL::BLACK);
 							}
 
-							tile1->SetID(TILE_NON_WALKABLE_INDEX);
-							tile1->SetDefaultMaterial(MATERIAL::BLACK);
+							pTile1->SetID(TILE_NON_WALKABLE_INDEX);
+							pTile1->SetDefaultMaterial(MATERIAL::BLACK);
 						}
 					}
 				}
@@ -597,10 +597,10 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-						tile->SetDefaultMaterial(MATERIAL::BLUE);
-						tile->SetHasStairs(true);
+						pTile->SetDefaultMaterial(MATERIAL::BLUE);
+						pTile->SetHasStairs(true);
 					}
 				}
 				else if (m_CurrentEditingMode == REMOVE_STAIRS)
@@ -610,26 +610,26 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-						if (tile->HasStairs())
+						if (pTile->HasStairs())
 						{
-							uint32 tileId = tile->GetID();
+							uint32 tileId = pTile->GetID();
 
 							if (tileId >= TILE_SMALLEST_FREE)
 							{
-								tile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+								pTile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 							}
 							else if (tileId == TILE_NON_WALKABLE_INDEX)
 							{
-								tile->SetDefaultMaterial(MATERIAL::BLACK);
+								pTile->SetDefaultMaterial(MATERIAL::BLACK);
 							}
 							else
 							{
-								tile->SetDefaultMaterial(MATERIAL::WHITE);
+								pTile->SetDefaultMaterial(MATERIAL::WHITE);
 							}
 
-							tile->SetHasStairs(false);
+							pTile->SetHasStairs(false);
 						}
 					}
 				}
@@ -674,20 +674,20 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						Tile* tile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-						Tile* tile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+						Tile* pTile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						Tile* pTile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
 
-						if (tile0->GetID() == TILE_NON_WALKABLE_INDEX)
+						if (pTile0->GetID() == TILE_NON_WALKABLE_INDEX)
 						{
-							tile0->SetID(m_LargestIndexUsed);
+							pTile0->SetID(m_LargestIndexUsed);
 
-							if (!tile0->HasStairs())
+							if (!pTile0->HasStairs())
 							{
-								tile0->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+								pTile0->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 							}
 
-							tile1->SetID(m_LargestIndexUsed);
-							tile1->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							pTile1->SetID(m_LargestIndexUsed);
+							pTile1->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 
 							addedRoom = true;
 						}
@@ -721,20 +721,20 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 				{
-					Tile* tile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-					Tile* tile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+					Tile* pTile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+					Tile* pTile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
 
-					if (tile0->GetID() >= TILE_NON_WALKABLE_INDEX)
+					if (pTile0->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
-						tile0->SetID(m_RoomBeingEdited);
+						pTile0->SetID(m_RoomBeingEdited);
 
-						if (!tile0->HasStairs())
+						if (!pTile0->HasStairs())
 						{
-							tile0->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							pTile0->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 						}
 
-						tile1->SetID(m_RoomBeingEdited);
-						tile1->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						pTile1->SetID(m_RoomBeingEdited);
+						pTile1->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 					}
 				}
 			}
@@ -751,20 +751,20 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 				{
-					Tile* tile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-					Tile* tile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+					Tile* pTile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+					Tile* pTile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
 
-					if (tile0->GetID() >= TILE_NON_WALKABLE_INDEX)
+					if (pTile0->GetID() >= TILE_NON_WALKABLE_INDEX)
 					{
-						tile0->SetID(TILE_NON_WALKABLE_INDEX);
+						pTile0->SetID(TILE_NON_WALKABLE_INDEX);
 
-						if (!tile0->HasStairs())
+						if (!pTile0->HasStairs())
 						{
-							tile0->SetDefaultMaterial(MATERIAL::BLACK);
+							pTile0->SetDefaultMaterial(MATERIAL::BLACK);
 						}
 
-						tile1->SetID(TILE_NON_WALKABLE_INDEX);
-						tile1->SetDefaultMaterial(MATERIAL::BLACK);
+						pTile1->SetID(TILE_NON_WALKABLE_INDEX);
+						pTile1->SetDefaultMaterial(MATERIAL::BLACK);
 					}
 				}
 			}
@@ -805,14 +805,14 @@ void Editor::OnButtonReleased(Button* button)
 	Editor* editor = GetEditor();
 	if (button == editor->m_pButtonSave)
 	{
-		WorldLevel** worldLevels = new WorldLevel*[NUM_GRID_LEVELS];
+		WorldLevel** ppWorldLevels = new WorldLevel*[NUM_GRID_LEVELS];
 		std::vector<glm::ivec3> stairs;
 
 		for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
 		{
 			uint32 levelSizeX = editor->m_ppGrids[gridId]->GetSize().x + 2;
 			uint32 levelSizeY = editor->m_ppGrids[gridId]->GetSize().y + 2;
-			uint32* level = new uint32[levelSizeX * levelSizeY];
+			uint32* pLevel = new uint32[levelSizeX * levelSizeY];
 
 			for (uint32 x = 0; x < levelSizeX; x++)
 			{
@@ -820,12 +820,12 @@ void Editor::OnButtonReleased(Button* button)
 				{
 					if (x == 0 || x == levelSizeX - 1 || y == 0 || y == levelSizeY - 1)
 					{
-						level[x * levelSizeY + y] = TILE_NON_WALKABLE_INDEX;
+						pLevel[x * levelSizeY + y] = TILE_NON_WALKABLE_INDEX;
 					}
 					else
 					{
 						Tile* pTile = editor->m_ppGrids[gridId]->GetTile(glm::ivec2(x - 1, y - 1));
-						level[x * levelSizeY + y] = pTile->GetID();
+						pLevel[x * levelSizeY + y] = pTile->GetID();
 
 						if (pTile->HasStairs())
 						{
@@ -835,7 +835,7 @@ void Editor::OnButtonReleased(Button* button)
 				}
 			}
 
-			worldLevels[gridId] = new WorldLevel(level, levelSizeX, levelSizeY);
+			ppWorldLevels[gridId] = new WorldLevel(pLevel, levelSizeX, levelSizeY);
 		}
 
 		WorldObject worldObjects[5] =
@@ -847,17 +847,17 @@ void Editor::OnButtonReleased(Button* button)
 			{ glm::uvec3(12, 13, 14), 1337, 8 },
 		};
 
-		World* world = new World(worldLevels, NUM_GRID_LEVELS, worldObjects, 5);
+		World* pWorld = new World(ppWorldLevels, NUM_GRID_LEVELS, worldObjects, 5);
 		uint32 numStairs = stairs.size();
 
 		if (numStairs > 0)
 		{
-			world->SetStairs(&stairs[0], numStairs);
+			pWorld->SetStairs(&stairs[0], numStairs);
 		}
 
-		WorldSerializer::Write("test.json", *world);
-		DeleteArr(worldLevels);
-		Delete(world);
+		WorldSerializer::Write("test.json", *pWorld);
+		DeleteArr(ppWorldLevels);
+		Delete(pWorld);
 	}
 	else if (button == editor->m_pButtonLoad)
 	{
@@ -886,25 +886,27 @@ void Editor::OnButtonReleased(Button* button)
 		for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
 		{
 			//Create one scene for each grid level
-			editor->m_ppScenes[gridId] = new Scene();
-			editor->m_ppScenes[gridId]->SetCamera(pCameraPersp, 0);
-			editor->m_ppScenes[gridId]->SetCamera(pCameraOrth, 1);
-
+			if (gridId % 2 == 0)
+			{
+				editor->m_ppScenes[gridId / 2] = new Scene();
+				editor->m_ppScenes[gridId / 2]->SetCamera(pCameraPersp, 0);
+				editor->m_ppScenes[gridId / 2]->SetCamera(pCameraOrth, 1);
+			}
 
 			//Create one grid for each grid level
-			const WorldLevel* worldLevel = pWorld->GetLevel(gridId);
-			const uint32* const * ppLevelIndexes = worldLevel->GetLevel();
-			uint32 levelWidth = worldLevel->GetSizeX();
-			uint32 levelHeight = worldLevel->GetSizeZ();
-			int32 gridWidth = worldLevel->GetSizeX() - 2;
-			int32 gridHeight = worldLevel->GetSizeZ() - 2;
+			const WorldLevel* pWorldLevel = pWorld->GetLevel(gridId);
+			const uint32* const * ppLevelIndexes = pWorldLevel->GetLevel();
+			uint32 levelWidth = pWorldLevel->GetSizeX();
+			uint32 levelHeight = pWorldLevel->GetSizeZ();
+			int32 gridWidth = pWorldLevel->GetSizeX() - 2;
+			int32 gridHeight = pWorldLevel->GetSizeZ() - 2;
 			Grid* pGrid = new Grid(MATERIAL::BLACK, glm::ivec2(gridWidth, gridHeight), glm::vec3(-gridWidth / 2.0f, 0.0f, -gridHeight / 2.0f));
 
 			for (uint32 x = 0; x < gridWidth; x++)
 			{
 				for (uint32 y = 0; y < gridHeight; y++)
 				{
-					Tile* tile = pGrid->GetTile(glm::ivec2(x, y));
+					Tile* pTile = pGrid->GetTile(glm::ivec2(x, y));
 					uint32 tileId = ppLevelIndexes[x + 1][y + 1];
 
 					if (tileId > largestUsedTileId)
@@ -914,19 +916,19 @@ void Editor::OnButtonReleased(Button* button)
 
 					if (tileId >= TILE_SMALLEST_FREE)
 					{
-						tile->SetDefaultMaterial(editor->m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						pTile->SetDefaultMaterial(editor->m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 					}
 					else if (tileId == TILE_NON_WALKABLE_INDEX)
 					{
-						tile->SetDefaultMaterial(MATERIAL::BLACK);
+						pTile->SetDefaultMaterial(MATERIAL::BLACK);
 					}
 					else
 					{
-						tile->SetDefaultMaterial(MATERIAL::WHITE);
+						pTile->SetDefaultMaterial(MATERIAL::WHITE);
 					}
 
-					tile->SetID(tileId);
-					editor->m_ppScenes[gridId]->AddGameObject(tile);
+					pTile->SetID(tileId);
+					editor->m_ppScenes[gridId / 2]->AddGameObject(pTile);
 				}
 			}
 
@@ -944,8 +946,6 @@ void Editor::OnButtonReleased(Button* button)
 		}
 
 		editor->m_RoomBeingEdited = -1;
-		//
-		editor->m_CurrentGridIndex = 0;
 		editor->m_LargestIndexUsed = largestUsedTileId;
 		editor->m_MouseMaterial = MATERIAL::WHITE;
 

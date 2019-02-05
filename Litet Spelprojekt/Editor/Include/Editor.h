@@ -38,7 +38,9 @@ enum EditingMode : uint32
 	EDIT_ROOM,
 	DELETE_ROOM,
 	ADD_DOOR,
-	REMOVE_DOOR
+	REMOVE_DOOR,
+	ADD_STAIRS,
+	REMOVE_STAIRS
 };
 
 class Editor : public Application, public IResourceListener, public ISelectionListener
@@ -70,6 +72,7 @@ public:
 private:
 	IRenderer* m_pRenderer;
 	Scene** m_ppScenes;
+	float m_CameraZoom;
 
 	EditingMode m_CurrentEditingMode;
 
@@ -108,6 +111,8 @@ private:
 	Button* m_pButtonRemoveRoom;
 	Button* m_pButtonAddDoor;
 	Button* m_pButtonRemoveDoor;
+	Button* m_pButtonAddStairs;
+	Button* m_pButtonRemoveStairs;
 	Panel* m_pPanelEditor;
 
 	TextView* m_pTextViewMesh;

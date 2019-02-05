@@ -15,7 +15,8 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	pCameraPersp->UpdateFromPitchYaw();
 
 	Camera* pCameraOrth = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio(), 30.0f, 0.01f, 100.0f);
+	m_CameraZoom = 1.0f;
+	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	pCameraOrth->UpdateFromPitchYaw();
 
 	const int32 gridWidth = 35;
@@ -119,17 +120,23 @@ void Editor::OnResourcesLoaded()
 	m_pButtonRemoveRoom = new Button(10, m_pPanelEditor->GetHeight() - 220, 140, 50, "Delete Room");
 	m_pButtonAddDoor = new Button(10, m_pPanelEditor->GetHeight() - 280, 140, 50, "Add Door");
 	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, 140, 50, "Remove Door");
+	m_pButtonAddStairs = new Button(10, m_pPanelEditor->GetHeight() - 400, 140, 50, "Add Stairs");
+	m_pButtonRemoveStairs = new Button(10, m_pPanelEditor->GetHeight() - 460, 140, 50, "Remove Stairs");
 	m_pButtonAddRoom->SetUserData(reinterpret_cast<void*>(ADD_ROOM));
 	m_pButtonEditRoom->SetUserData(reinterpret_cast<void*>(EDIT_ROOM));
 	m_pButtonRemoveRoom->SetUserData(reinterpret_cast<void*>(DELETE_ROOM));
 	m_pButtonAddDoor->SetUserData(reinterpret_cast<void*>(ADD_DOOR));
 	m_pButtonRemoveDoor->SetUserData(reinterpret_cast<void*>(REMOVE_DOOR));
+	m_pButtonAddStairs->SetUserData(reinterpret_cast<void*>(ADD_STAIRS));
+	m_pButtonRemoveStairs->SetUserData(reinterpret_cast<void*>(REMOVE_STAIRS));
 	m_pPanelEditor->Add(m_pTextViewEditor);
 	m_pPanelEditor->Add(m_pButtonAddRoom);
 	m_pPanelEditor->Add(m_pButtonEditRoom);
 	m_pPanelEditor->Add(m_pButtonRemoveRoom);
 	m_pPanelEditor->Add(m_pButtonAddDoor);
 	m_pPanelEditor->Add(m_pButtonRemoveDoor);
+	m_pPanelEditor->Add(m_pButtonAddStairs);
+	m_pPanelEditor->Add(m_pButtonRemoveStairs);
 	m_pPanelEditor->SetDeleteAllChildrenOnDestruction(true);
 	m_SelectionHandlerRoom.AddSelectionListener(this);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddRoom);
@@ -137,6 +144,8 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveRoom);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddDoor);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveDoor);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddStairs);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveStairs);
 
 
 	m_pPanelMesh = new Panel(GetWindow().GetWidth() - 160, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
@@ -299,9 +308,11 @@ glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcep
 	glm::vec2 clipSpacePosition(mousePosition.x / static_cast<float>(GetWindow().GetWidth()), mousePosition.y / static_cast<float>(GetWindow().GetHeight()));
 	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
 	glm::vec3 worldPosition = m_ppScenes[m_CurrentGridIndex]->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
+	float xOffset = static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().x % 2) / 2.0f;
+	float yOffset = static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().y % 2) / 2.0f;
 	glm::ivec2 gridPosition(
-		static_cast<uint32>(glm::round(worldPosition.x)) + m_ppGrids[m_CurrentGridIndex]->GetSize().x / 2,
-		static_cast<uint32>(glm::round(worldPosition.z)) + m_ppGrids[m_CurrentGridIndex]->GetSize().y / 2);
+		static_cast<uint32>(glm::round(worldPosition.x + xOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().x / 2,
+		static_cast<uint32>(glm::round(worldPosition.z + yOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().y / 2);
 	return gridPosition;
 }
 
@@ -478,6 +489,37 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 
 							tile1->SetID(TILE_NON_WALKABLE_INDEX);
 							tile1->SetDefaultMaterial(MATERIAL::BLACK);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == ADD_STAIRS)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* tile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+
+						if (tile->GetID() > TILE_DOOR_INDEX)
+						{
+							tile->SetDefaultMaterial(MATERIAL::BLUE);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == REMOVE_STAIRS)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* tile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						Tile* tile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+
+						if (tile0->GetID() == TILE_DOOR_INDEX)
+						{
+							tile->SetDefaultMaterial(MATERIAL::BLUE);
 						}
 					}
 				}
@@ -713,7 +755,8 @@ void Editor::OnUpdate(float dtS)
 	tempRotation += 1.0f * dtS;
 
 	static float cameraSpeed = 5.0f;
-	static float angularSpeed = 1.5f;
+	static float cameraAngularSpeed = 1.5f;
+	static float cameraZoomSpeed = 0.2f;
 
 	if (Input::IsKeyDown(KEY_W))
 	{
@@ -735,11 +778,15 @@ void Editor::OnUpdate(float dtS)
 
 	if (Input::IsKeyDown(KEY_E))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
+		m_CameraZoom -= cameraZoomSpeed * dtS;
+		Camera& camera = m_ppScenes[m_CurrentGridIndex]->GetCamera();
+		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	}
 	else if (Input::IsKeyDown(KEY_Q))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
+		m_CameraZoom += cameraZoomSpeed * dtS;
+		Camera& camera = m_ppScenes[m_CurrentGridIndex]->GetCamera();
+		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	}
 
 	m_ppScenes[m_CurrentGridIndex]->GetCamera().UpdateFromPitchYaw();

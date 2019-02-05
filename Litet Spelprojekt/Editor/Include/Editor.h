@@ -115,7 +115,9 @@ private:
 	Button* m_pButtonRemoveStairs;
 	Panel* m_pPanelEditor;
 
-	TextView* m_pTextViewMesh;
 	Panel* m_pPanelMesh;
-	PanelScrollable* m_pPanelScrollableMesh;
+	Button* m_pButtonAddMesh;
+	Button* m_pButtonEditMesh;
+	PanelScrollable* m_pPanelScrollableAddMesh;
+	PanelScrollable* m_pPanelScrollableEditMesh;
 };

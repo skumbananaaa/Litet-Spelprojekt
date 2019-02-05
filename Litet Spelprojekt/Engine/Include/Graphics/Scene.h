@@ -15,7 +15,7 @@ public:
 
 	void OnUpdate(float dtS) noexcept;
 	
-	void AddCamera(Camera* pCamera) noexcept;
+	void SetCamera(Camera* pCamera, uint32 index = 0) noexcept;
 	void SelectCamera(uint32 index);
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
 	void AddGameObject(GameObject* pGameObject) noexcept;

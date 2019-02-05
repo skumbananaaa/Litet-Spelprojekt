@@ -37,9 +37,21 @@ Scene::~Scene()
 	}
 }
 
-void Scene::AddCamera(Camera* pCamera) noexcept
+void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
 {
-	m_Cameras.push_back(pCamera);
+	if (m_Cameras.size() == index)
+	{
+		m_Cameras.push_back(pCamera);
+	}
+	else if (index > m_Cameras.size())
+	{
+		std::cout << "Failed to set camera!!! Index out of range" << std::endl;
+		return;
+	}
+	else
+	{
+		m_Cameras[index] = pCamera;
+	}
 	m_pCamera = pCamera;
 }
 

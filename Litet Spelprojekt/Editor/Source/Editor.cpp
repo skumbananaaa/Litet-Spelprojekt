@@ -10,15 +10,13 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	m_pRenderer = new OrthographicRenderer();
 	std::cout << "Editor" << std::endl;
 
-	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	pCamera->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.01f, 100.0f);
-	pCamera->UpdateFromPitchYaw();
-	m_pScene->AddCamera(pCamera);
+	Camera* pCameraPersp = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	pCameraPersp->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.01f, 100.0f);
+	pCameraPersp->UpdateFromPitchYaw();
 
-	pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	pCamera->CreateOrthographic(30.0f * GetWindow().GetAspectRatio(), 30.0f, 0.01f, 100.0f);
-	pCamera->UpdateFromPitchYaw();
-	m_pScene->AddCamera(pCamera);
+	Camera* pCameraOrth = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio(), 30.0f, 0.01f, 100.0f);
+	pCameraOrth->UpdateFromPitchYaw();
 
 	const int32 gridWidth = 35;
 	const int32 gridHeight = 10;
@@ -30,7 +28,8 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	{
 		//Create one scene for each grid level
 		m_ppScenes[i] = new Scene();
-		m_ppScenes[i]->SetCamera(pCamera);
+		m_ppScenes[i]->AddCamera(pCameraPersp);
+		m_ppScenes[i]->AddCamera(pCameraOrth);
 
 		//Create one grid for each grid level
 		m_ppGrids[i] = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
@@ -682,13 +681,13 @@ void Editor::OnButtonReleased(Button* button)
 	{
 		editor->m_pPanelEditor->SetVisible(true);
 		editor->m_pPanelMesh->SetVisible(false);
-		editor->m_pScene->SelectCamera(1);
+		editor->m_ppScenes[editor->m_CurrentGridIndex]->SelectCamera(1);
 	}
 	else if (button == editor->m_pButtonMesh)
 	{
 		editor->m_pPanelMesh->SetVisible(true);
 		editor->m_pPanelEditor->SetVisible(false);
-		editor->m_pScene->SelectCamera(0);
+		editor->m_ppScenes[editor->m_CurrentGridIndex]->SelectCamera(0);
 	}
 	else
 	{

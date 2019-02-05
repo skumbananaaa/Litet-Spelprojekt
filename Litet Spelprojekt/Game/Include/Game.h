@@ -40,13 +40,13 @@ public:
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 	void PickPosition();
+	void PickCrew();
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 
 private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	Scene* m_pScene;
-	Scene* m_pInstancingTestScene;
 
 	TextureCube* m_pSkyBoxTex;
 	World* m_pWorld;

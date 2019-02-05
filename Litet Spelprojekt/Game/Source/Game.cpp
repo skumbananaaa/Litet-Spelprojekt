@@ -170,25 +170,27 @@ Game::Game() noexcept
 	m_pInstancingTestScene->GetCamera().UpdateFromLookAt();
 
 	//Add gameobjects
+	GameObject* pGameObject = nullptr;
 	constexpr uint32 numObject = 50;
+
 	for (uint32 y = 0; y < numObject; y++)
 	{
 		for (uint32 x = 0; x < numObject; x++)
 		{
 			pGameObject = new GameObject();
-			pGameObject->SetMesh(m_pSphereMesh);
+			pGameObject->SetMesh(MESH::SPHERE);
 
 			if (x % 3 == 0)
 			{
-				pGameObject->SetMaterial(m_pRedMaterial);
+				pGameObject->SetMaterial(MATERIAL::RED);
 			}
 			else if (x % 3 == 1)
 			{
-				pGameObject->SetMaterial(m_pBlueMaterial);
+				pGameObject->SetMaterial(MATERIAL::GREEN);
 			}
 			else if (x % 3 == 2)
 			{
-				pGameObject->SetMaterial(m_pGreenMaterial);
+				pGameObject->SetMaterial(MATERIAL::BLUE);
 			}
 
 			pGameObject->SetPosition(glm::vec3(0.0f + (x * 1.0f), 0.0f, 0.0f + (y * 1.0f)));
@@ -198,7 +200,7 @@ Game::Game() noexcept
 			m_pInstancingTestScene->AddGameObject(pGameObject);
 			
 			GameObject* pDecalObject = new GameObject();
-			pDecalObject->SetDecal(m_pDecal);
+			pDecalObject->SetDecal(DECAL::BLOOD);
 			pDecalObject->SetPosition(pGameObject->GetPosition());
 			pDecalObject->UpdateTransform();
 

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <EnginePch.h>
 #include <Graphics/GameObject.h>
 #include <Graphics/Camera.h>
@@ -7,6 +6,7 @@
 #include <Graphics/Lights/PointLight.h>
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/SkyBox.h>
+
 class API Scene
 {
 public:

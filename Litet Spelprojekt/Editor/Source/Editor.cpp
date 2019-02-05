@@ -23,15 +23,18 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	const int32 gridWidth = 35;
 	const int32 gridHeight = 10;
 
-	m_ppScenes = new Scene*[NUM_GRID_LEVELS];
+	m_ppScenes = new Scene*[NUM_BOAT_LEVELS];
 	m_ppGrids = new Grid*[NUM_GRID_LEVELS];
 
 	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
 	{
 		//Create one scene for each grid level
-		m_ppScenes[i] = new Scene();
-		m_ppScenes[i]->SetCamera(pCameraPersp, 0);
-		m_ppScenes[i]->SetCamera(pCameraOrth, 1);
+		if (i % 2 == 0)
+		{
+			m_ppScenes[i / 2] = new Scene();
+			m_ppScenes[i / 2]->SetCamera(pCameraPersp, 0);
+			m_ppScenes[i / 2]->SetCamera(pCameraOrth, 1);
+		}
 
 		//Create one grid for each grid level
 		m_ppGrids[i] = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
@@ -42,7 +45,7 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 			{
 				Tile* tile = m_ppGrids[i]->GetTile(glm::ivec2(x, y));
 				tile->SetID(TILE_NON_WALKABLE_INDEX);
-				m_ppScenes[i]->AddGameObject(tile);
+				m_ppScenes[i / 2]->AddGameObject(tile);
 			}
 		}
 	}
@@ -67,7 +70,7 @@ Editor::~Editor()
 
 	Delete(m_pRenderer);
 
-	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
+	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
 	{
 		if (i > 0)
 		{
@@ -75,6 +78,10 @@ Editor::~Editor()
 			m_ppScenes[i]->SetCamera(nullptr, 1);
 		}
 		Delete(m_ppScenes[i]);
+	}
+
+	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
+	{
 		Delete(m_ppGrids[i]);
 	}
 
@@ -256,7 +263,7 @@ void Editor::CreateMesh(uint32 mesh)
 	gameObject->SetMaterial(MATERIAL::WHITE);
 	gameObject->SetMesh(mesh);
 	gameObject->SetPosition(glm::vec3(0, 0, 0));
-	m_ppScenes[m_CurrentGridIndex]->AddGameObject(gameObject);
+	GetCurrentScene()->AddGameObject(gameObject);
 	m_Meshes.push_back(gameObject);
 
 	//Create new object
@@ -276,6 +283,16 @@ void Editor::CreateMesh(uint32 mesh)
 		object->SetPosition(object->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
 		std::cout << object->GetY() << std::endl;
 	}
+}
+
+uint32 Editor::GetCurrentBoatLevel()
+{
+	return m_CurrentGridIndex / 2;
+}
+
+Scene* Editor::GetCurrentScene()
+{
+	return m_ppScenes[GetCurrentBoatLevel()];
 }
 
 void Editor::NormalizeTileIndexes() noexcept
@@ -355,7 +372,7 @@ glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcep
 {
 	glm::vec2 clipSpacePosition(mousePosition.x / static_cast<float>(GetWindow().GetWidth()), mousePosition.y / static_cast<float>(GetWindow().GetHeight()));
 	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
-	glm::vec3 worldPosition = m_ppScenes[m_CurrentGridIndex]->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
+	glm::vec3 worldPosition = GetCurrentScene()->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
 	glm::ivec2 gridPosition(
 		static_cast<uint32>(glm::round(worldPosition.x)) + m_ppGrids[m_CurrentGridIndex]->GetSize().x / 2,
 		static_cast<uint32>(glm::round(worldPosition.z)) + m_ppGrids[m_CurrentGridIndex]->GetSize().y / 2);
@@ -679,7 +696,7 @@ void Editor::OnKeyDown(KEY keycode)
 		case KEY_O:
 		{
 			using namespace std;
-			Camera& camera = m_ppScenes[m_CurrentGridIndex]->GetCamera();
+			Camera& camera = GetCurrentScene()->GetCamera();
 			const glm::mat4& view = camera.GetViewMatrix();
 			const glm::mat4& projection = camera.GetProjectionMatrix();
 			const glm::mat4& combined = camera.GetCombinedMatrix();
@@ -738,13 +755,13 @@ void Editor::OnButtonReleased(Button* button)
 	{
 		editor->m_pPanelEditor->SetVisible(true);
 		editor->m_pPanelMesh->SetVisible(false);
-		editor->m_ppScenes[editor->m_CurrentGridIndex]->SelectCamera(1);
+		editor->GetCurrentScene()->SelectCamera(1);
 	}
 	else if (button == editor->m_pButtonMesh)
 	{
 		editor->m_pPanelMesh->SetVisible(true);
 		editor->m_pPanelEditor->SetVisible(false);
-		editor->m_ppScenes[editor->m_CurrentGridIndex]->SelectCamera(0);
+		editor->GetCurrentScene()->SelectCamera(0);
 	}
 	else
 	{
@@ -770,35 +787,35 @@ void Editor::OnUpdate(float dtS)
 
 	if (Input::IsKeyDown(KEY_W))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
+		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_S))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
+		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_A))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Left, cameraSpeed * dtS);
+		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Left, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_D))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
+		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
 	}
 
 	if (Input::IsKeyDown(KEY_E))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
+		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
 	}
 	else if (Input::IsKeyDown(KEY_Q))
 	{
-		m_ppScenes[m_CurrentGridIndex]->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
+		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
 	}
 
-	m_ppScenes[m_CurrentGridIndex]->GetCamera().UpdateFromPitchYaw();
+	GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
 }
 
 void Editor::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*m_ppScenes[m_CurrentGridIndex], dtS);
+	m_pRenderer->DrawScene(*GetCurrentScene(), dtS);
 }

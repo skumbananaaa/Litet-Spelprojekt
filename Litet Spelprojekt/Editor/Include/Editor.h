@@ -68,6 +68,9 @@ public:
 
 	void CreateMesh(uint32 mesh);
 
+	uint32 GetCurrentBoatLevel();
+	Scene* GetCurrentScene();
+
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();
 

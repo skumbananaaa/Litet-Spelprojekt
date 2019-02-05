@@ -288,10 +288,11 @@ void Game::OnResourcesLoaded()
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-	//Water ??
+	//Water??
 	pGameObject = new GameObject();
-	pGameObject->SetMesh(MESH::CUBE);
-	pGameObject->SetScale(glm::vec3(15.0f));
+	pGameObject->SetIsReflectable(true);
+	pGameObject->SetMesh(MESH::QUAD);
+	pGameObject->SetScale(glm::vec3(60.0f));
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);

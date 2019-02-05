@@ -60,7 +60,7 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 
 	if (pGameObject->IsReflectable())
 	{
-		m_GameObjects.push_back(pGameObject);
+		m_Reflectables.push_back(pGameObject);
 	}
 }
 

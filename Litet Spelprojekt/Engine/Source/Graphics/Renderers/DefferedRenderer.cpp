@@ -866,7 +866,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 		return;
 	}
 
-	GLContext& context = Application::GetInstance().GetGraphicsContext();
+	GLContext& context = GLContext::GetCurrentContext();
 
 	context.SetProgram(m_pForwardPass);
 

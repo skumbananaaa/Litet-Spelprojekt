@@ -3,7 +3,9 @@
 
 Editor::Editor() noexcept : Application(false, 1600, 900),
 	m_SelectionHandlerFloor(true),
-	m_SelectionHandlerRoom(false)
+	m_SelectionHandlerRoom(false),
+	m_SelectionHandlerMesh(true),
+	m_SelectionHandlerMeshEdit(false)
 {
 	ResourceHandler::LoadResources(this);
 
@@ -60,6 +62,8 @@ Editor::~Editor()
 {
 	m_SelectionHandlerFloor.Release();
 	m_SelectionHandlerRoom.Release();
+	m_SelectionHandlerMesh.Release();
+	m_SelectionHandlerMeshEdit.Release();
 
 	Delete(m_pRenderer);
 
@@ -144,30 +148,35 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveDoor);
 
 
+	std::vector<MESH_DESC> meshDescs;
+	ResourceHandler::QuaryMeshes(meshDescs);
 	m_pPanelMesh = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
 	m_pButtonAddMesh = new Button(10, m_pPanelMesh->GetHeight() - 60, 85, 50, "New");
 	m_pButtonEditMesh = new Button(105, m_pPanelMesh->GetHeight() - 60, 85, 50, "Edit");
-	m_pPanelScrollableAddMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth(), m_pPanelMesh->GetHeight() * 2);
+	m_pPanelScrollableAddMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth() - 20, ELEMENT_HEIGHT * meshDescs.size());
+	m_pPanelScrollableEditMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30);
 	m_pPanelMesh->Add(m_pButtonAddMesh);
 	m_pPanelMesh->Add(m_pButtonEditMesh);
 	m_pPanelMesh->Add(m_pPanelScrollableAddMesh);
+	m_pPanelMesh->Add(m_pPanelScrollableEditMesh);
+	m_pPanelScrollableAddMesh->SetVisible(false);
 	m_pPanelMesh->SetVisible(false);
 	m_pPanelMesh->SetDeleteAllChildrenOnDestruction(true);
+	m_SelectionHandlerMesh.AddSelectionListener(this);
+	m_SelectionHandlerMesh.AddSelectable(m_pButtonAddMesh);
+	m_SelectionHandlerMesh.AddSelectable(m_pButtonEditMesh);
+
+	m_SelectionHandlerMeshEdit.AddSelectionListener(this);
 
 	GetGUIManager().Add(m_pPanelTop);
 	GetGUIManager().Add(m_pPanelFloor);
 	GetGUIManager().Add(m_pPanelEditor);
 	GetGUIManager().Add(m_pPanelMesh);
 
-	std::vector<MESH_DESC> meshDescs;
-	ResourceHandler::QuaryMeshes(meshDescs);
-	float buttonHeight = 50;
-	m_pPanelScrollableAddMesh->SetClientSize(m_pPanelScrollableAddMesh->GetWidth(), buttonHeight * meshDescs.size());
-
 	for (int64 i = 0; i < meshDescs.size(); i++)
 	{
 		MESH_DESC meshDesc = meshDescs[i];
-		Button* button = new Button(0, m_pPanelScrollableAddMesh->GetClientHeight() - (i + 1) * buttonHeight, m_pPanelScrollableAddMesh->GetClientWidth(), buttonHeight, meshDesc.name, nullptr, OnButtonReleased);
+		Button* button = new Button(4, m_pPanelScrollableAddMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT, m_pPanelScrollableAddMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, meshDesc.name, nullptr, OnButtonReleased);
 		button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
 		button->SetUserData(reinterpret_cast<void*>(meshDesc.mesh));
 		m_pPanelScrollableAddMesh->Add(button);
@@ -209,6 +218,19 @@ void Editor::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 		m_RoomBeingEdited = -1;
 		m_MouseMaterial = MATERIAL::WHITE;
 	}
+	else if (handler == &m_SelectionHandlerMesh)
+	{
+		if (selection == m_pButtonAddMesh)
+		{
+			m_pPanelScrollableAddMesh->SetVisible(true);
+			m_pPanelScrollableEditMesh->SetVisible(false);
+		} 
+		else if (selection == m_pButtonEditMesh)
+		{
+			m_pPanelScrollableAddMesh->SetVisible(false);
+			m_pPanelScrollableEditMesh->SetVisible(true);
+		}
+	}
 }
 
 void Editor::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
@@ -225,6 +247,34 @@ void Editor::OnDeselected(const SelectionHandler* handler, ISelectable* selectio
 		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(button->GetUserData());
 		std::cout << "Last Editing Mode: " << newMode << std::endl;
 		m_CurrentEditingMode = NONE;
+	}
+}
+
+void Editor::CreateMesh(uint32 mesh)
+{
+	GameObject* gameObject = new GameObject();
+	gameObject->SetMaterial(MATERIAL::WHITE);
+	gameObject->SetMesh(mesh);
+	gameObject->SetPosition(glm::vec3(0, 0, 0));
+	m_ppScenes[m_CurrentGridIndex]->AddGameObject(gameObject);
+	m_Meshes.push_back(gameObject);
+
+	//Create new object
+	std::string name = ResourceHandler::GetMeshName(mesh);
+	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), m_Meshes.size() * ELEMENT_HEIGHT + 4);
+	Button* button = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - m_Meshes.size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
+	button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
+	button->SetUserData(gameObject);
+	m_pPanelScrollableEditMesh->Add(button);
+	m_SelectionHandlerMeshEdit.AddSelectable(button);
+
+	std::cout << std::endl;
+	//Arange objects
+	for (int32 i = 0; i < m_pPanelScrollableEditMesh->GetChildren().size(); i++)
+	{
+		GUIObject* object = m_pPanelScrollableEditMesh->GetChildren()[i];
+		object->SetPosition(object->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
+		std::cout << object->GetY() << std::endl;
 	}
 }
 
@@ -701,11 +751,7 @@ void Editor::OnButtonReleased(Button* button)
 		uint32 id = reinterpret_cast<uint32>(button->GetUserData());
 		std::cout << "Creting Mesh from ID " << id << std::endl;
 
-		GameObject* gameObject = new GameObject();
-		gameObject->SetMaterial(MATERIAL::WHITE);
-		gameObject->SetMesh(id);
-		gameObject->SetPosition(glm::vec3(0, 0, 0));
-		editor->m_ppScenes[editor->m_CurrentGridIndex]->AddGameObject(gameObject);
+		editor->CreateMesh(id);
 	}
 }
 

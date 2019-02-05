@@ -133,6 +133,23 @@ Decal* ResourceHandler::GetDecal(uint32 decal)
 	return m_pDecals[decal];
 }
 
+std::string ResourceHandler::GetMeshName(uint32 mesh)
+{
+	return m_pIndexedMeshFiles[mesh].filename;
+}
+
+std::string ResourceHandler::GetMeshName(const IndexedMesh* mesh)
+{
+	for (uint32 i = 0; i < m_NrOfMeshes; i++)
+	{
+		if (m_pIndexedMeshes[i] == mesh)
+		{
+			return GetMeshName(i);
+		}
+	}
+	return "Error!";
+}
+
 void ResourceHandler::QuaryMeshes(std::vector<MESH_DESC>& list)
 {
 	for (uint32 i = 0; i < m_NrOfMeshes; i++)

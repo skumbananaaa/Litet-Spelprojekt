@@ -27,6 +27,9 @@ public:
 	static Material* GetMaterial(uint32 material);
 	static Decal* GetDecal(uint32 decal);
 
+	static std::string GetMeshName(uint32 mesh);
+	static std::string GetMeshName(const IndexedMesh* mesh);
+
 	static void QuaryMeshes(std::vector<MESH_DESC>& list);
 
 	static void LoadResources(IResourceListener* resourceListener);

@@ -27,8 +27,8 @@ public:
 	virtual void SetSize(float width, float height) noexcept;
 	virtual void SetPosition(float x, float y) noexcept;
 
-	void SetVisible(bool visible) noexcept;
-	bool IsVisible() noexcept;
+	virtual void SetVisible(bool visible) noexcept;
+	virtual bool IsVisible() noexcept;
 
 	bool IsDirty() const noexcept;
 	bool IsMyChild(const GUIObject* child) const noexcept;

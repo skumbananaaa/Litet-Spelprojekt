@@ -17,6 +17,8 @@ public:
 	SelectionHandler(bool atLeastOne = true);
 	~SelectionHandler();
 
+	void Release();
+
 	void AddSelectable(ISelectable* selectable);
 	void RemoveSelectable(ISelectable* selectable);
 	bool AddSelectionListener(ISelectionListener* listener);

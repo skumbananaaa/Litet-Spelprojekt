@@ -15,7 +15,8 @@ public:
 
 	void OnUpdate(float dtS) noexcept;
 	
-	void SetCamera(Camera* pCamera) noexcept;
+	void AddCamera(Camera* pCamera) noexcept;
+	void SelectCamera(uint32 index);
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
 	void AddGameObject(GameObject* pGameObject) noexcept;
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
@@ -31,6 +32,7 @@ public:
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
 private:
 	Camera* m_pCamera;
+	std::vector<Camera*> m_Cameras;
 	std::vector<GameObject*> m_GameObjects;
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;

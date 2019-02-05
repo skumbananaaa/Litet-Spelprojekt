@@ -5,7 +5,7 @@
 constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
-Application::Application(bool fullscreen)
+Application::Application(bool fullscreen, uint32 width, uint32 height)
 	: m_pWindow(nullptr), 
 	m_pGraphicsContext(nullptr),
 	m_pGUIManager(nullptr),
@@ -25,7 +25,7 @@ Application::Application(bool fullscreen)
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1024, 768, fullscreen);
+		m_pWindow = new Window("Small Game Project", width, height, fullscreen);
 
 		float width = static_cast<float>(m_pWindow->GetWidth());
 		float height = static_cast<float>(m_pWindow->GetHeight());

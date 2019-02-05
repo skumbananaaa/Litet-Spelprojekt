@@ -17,7 +17,7 @@ public:
 	Application& operator=(Application&& other) = delete;
 	Application& operator=(const Application& other) = delete;
 
-	Application(bool fullscreen = true);
+	Application(bool fullscreen = true, uint32 width = 1024, uint32 height = 768);
 	virtual ~Application();
 
 	int32_t Run();

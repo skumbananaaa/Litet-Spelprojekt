@@ -97,25 +97,6 @@ void Editor::OnResourcesLoaded()
 	m_pPanelTop->SetDeleteAllChildrenOnDestruction(true);
 
 
-	m_pPanelFloor = new Panel(0, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
-	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Select Floor", TextAlignment::CENTER);
-	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "Floor 1");
-	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "Floor 2");
-	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "Floor 3");
-	m_pButtonFloor1->SetUserData(reinterpret_cast<void*>(0));
-	m_pButtonFloor2->SetUserData(reinterpret_cast<void*>(1));
-	m_pButtonFloor3->SetUserData(reinterpret_cast<void*>(2));
-	m_pPanelFloor->Add(m_pTextViewFloor);
-	m_pPanelFloor->Add(m_pButtonFloor1);
-	m_pPanelFloor->Add(m_pButtonFloor2);
-	m_pPanelFloor->Add(m_pButtonFloor3);
-	m_pPanelFloor->SetDeleteAllChildrenOnDestruction(true);
-	m_SelectionHandlerFloor.AddSelectionListener(this);
-	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor1);
-	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor2);
-	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor3);
-
-
 	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
 	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Room Tool", TextAlignment::CENTER);
 	m_pButtonAddRoom = new Button(10, m_pPanelEditor->GetHeight() - 100, m_pPanelEditor->GetWidth() - 20, 50, "New Room");
@@ -171,6 +152,26 @@ void Editor::OnResourcesLoaded()
 
 	m_SelectionHandlerMeshEdit.AddSelectionListener(this);
 
+
+	m_pPanelFloor = new Panel(0, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
+	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Select Floor", TextAlignment::CENTER);
+	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "Floor 1");
+	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "Floor 2");
+	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "Floor 3");
+	m_pButtonFloor1->SetUserData(reinterpret_cast<void*>(0));
+	m_pButtonFloor2->SetUserData(reinterpret_cast<void*>(1));
+	m_pButtonFloor3->SetUserData(reinterpret_cast<void*>(2));
+	m_pPanelFloor->Add(m_pTextViewFloor);
+	m_pPanelFloor->Add(m_pButtonFloor1);
+	m_pPanelFloor->Add(m_pButtonFloor2);
+	m_pPanelFloor->Add(m_pButtonFloor3);
+	m_pPanelFloor->SetDeleteAllChildrenOnDestruction(true);
+	m_SelectionHandlerFloor.AddSelectionListener(this);
+	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor1);
+	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor2);
+	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor3);
+
+
 	GetGUIManager().Add(m_pPanelTop);
 	GetGUIManager().Add(m_pPanelFloor);
 	GetGUIManager().Add(m_pPanelEditor);
@@ -209,6 +210,21 @@ void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelectio
 		m_Dragging = false;
 		m_RoomBeingEdited = -1;
 		m_MouseMaterial = MATERIAL::WHITE;
+		
+		//Reload All meshes in the panel for the new floor
+		m_SelectionHandlerMeshEdit.Release();
+		m_SelectionHandlerMeshEdit.AddSelectionListener(this);
+		m_pPanelScrollableEditMesh->DeleteChildren();
+		m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), GetCurrentMeshes().size() * ELEMENT_HEIGHT + 4);
+		for (int64 i = 0; i < GetCurrentMeshes().size(); i++)
+		{
+			std::string name = ResourceHandler::GetMeshName(GetCurrentMeshes()[i]->GetMesh());
+			Button* button = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
+			button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
+			button->SetUserData(GetCurrentMeshes()[i]);
+			m_pPanelScrollableEditMesh->Add(button);
+			m_SelectionHandlerMeshEdit.AddSelectable(button);
+		}
 	}
 	else if (pHandler == &m_SelectionHandlerRoom)
 	{
@@ -234,6 +250,10 @@ void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelectio
 			m_pPanelScrollableEditMesh->SetVisible(true);
 		}
 	}
+	else if (pHandler == &m_SelectionHandlerMeshEdit)
+	{
+
+	}
 }
 
 void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection)
@@ -258,7 +278,7 @@ void Editor::CreateMesh(uint32 mesh)
 	GameObject* pGameObject = new GameObject();
 	pGameObject->SetMaterial(MATERIAL::WHITE);
 	pGameObject->SetMesh(mesh);
-	pGameObject->SetPosition(glm::vec3(0, 0, 0));
+	pGameObject->SetPosition(CalculateMeshPosition(glm::vec3(0, 0, 0)));
 	GetCurrentScene()->AddGameObject(pGameObject);
 	GetCurrentMeshes().push_back(pGameObject);
 
@@ -277,10 +297,15 @@ void Editor::CreateMesh(uint32 mesh)
 		GUIObject* pObject = m_pPanelScrollableEditMesh->GetChildren()[i];
 		pObject->SetPosition(pObject->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
 	}
+
+	m_SelectionHandlerMesh.OnSelected(m_pButtonEditMesh);
+	m_SelectionHandlerMeshEdit.OnSelected(pButton);
 }
 
 void Editor::ClearLevels()
 {
+	m_SelectionHandlerMeshEdit.Release();
+	m_SelectionHandlerMeshEdit.AddSelectionListener(this);
 	m_pPanelScrollableEditMesh->DeleteChildren();
 
 	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
@@ -404,6 +429,11 @@ glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcep
 		static_cast<uint32>(glm::round(worldPosition.x + xOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().x / 2,
 		static_cast<uint32>(glm::round(worldPosition.z + yOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().y / 2);
 	return gridPosition;
+}
+
+glm::vec3 Editor::CalculateMeshPosition(const glm::vec3& worldPosition) noexcept
+{
+	return worldPosition + glm::vec3(static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().x % 2) / 2.0f, 0, static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().y % 2) / 2.0f);
 }
 
 glm::ivec2 Editor::CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept
@@ -797,6 +827,50 @@ void Editor::OnKeyDown(KEY keycode)
 
 			break;
 		}
+		case KEY_UP:
+		{
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			if (selectable)
+			{
+				Button* button = (Button*)selectable;
+				GameObject* object = (GameObject*)button->GetUserData();
+				object->SetPosition(object->GetPosition() + glm::vec3(1, 0, 0));
+			}
+			break;
+		}
+		case KEY_DOWN:
+		{
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			if (selectable)
+			{
+				Button* button = (Button*)selectable;
+				GameObject* object = (GameObject*)button->GetUserData();
+				object->SetPosition(object->GetPosition() + glm::vec3(-1, 0, 0));
+			}
+			break;
+		}
+		case KEY_LEFT:
+		{
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			if (selectable)
+			{
+				Button* button = (Button*)selectable;
+				GameObject* object = (GameObject*)button->GetUserData();
+				object->SetPosition(object->GetPosition() + glm::vec3(0, 0, 1));
+			}
+			break;
+		}
+		case KEY_RIGHT:
+		{
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			if (selectable)
+			{
+				Button* button = (Button*)selectable;
+				GameObject* object = (GameObject*)button->GetUserData();
+				object->SetPosition(object->GetPosition() + glm::vec3(0, 0, -1));
+			}
+			break;
+		}
 	}
 }
 
@@ -955,13 +1029,19 @@ void Editor::OnButtonReleased(Button* button)
 	{
 		editor->m_pPanelEditor->SetVisible(true);
 		editor->m_pPanelMesh->SetVisible(false);
-		editor->GetCurrentScene()->SelectCamera(1);
+		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
+		{
+			editor->m_ppScenes[i]->SelectCamera(1);
+		}
 	}
 	else if (button == editor->m_pButtonMesh)
 	{
 		editor->m_pPanelMesh->SetVisible(true);
 		editor->m_pPanelEditor->SetVisible(false);
-		editor->GetCurrentScene()->SelectCamera(0);
+		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
+		{
+			editor->m_ppScenes[i]->SelectCamera(0);
+		}
 	}
 	else
 	{
@@ -986,37 +1066,92 @@ void Editor::OnUpdate(float dtS)
 	static float cameraAngularSpeed = 1.5f;
 	static float cameraZoomSpeed = 0.2f;
 
-	if (Input::IsKeyDown(KEY_W))
+	if (m_pPanelEditor->IsVisible())
 	{
-		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
-	}
-	else if (Input::IsKeyDown(KEY_S))
-	{
-		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
-	}
+		if (Input::IsKeyDown(KEY_W))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_S))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
+		}
 
-	if (Input::IsKeyDown(KEY_A))
-	{
-		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Left, cameraSpeed * dtS);
-	}
-	else if (Input::IsKeyDown(KEY_D))
-	{
-		GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
-	}
+		if (Input::IsKeyDown(KEY_A))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Left, cameraSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_D))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
+		}
 
-	if (Input::IsKeyDown(KEY_E))
-	{
-		m_CameraZoom -= cameraZoomSpeed * dtS;
-		m_CameraZoom = glm::max(m_CameraZoom, 0.01f);
-		Camera& camera = GetCurrentScene()->GetCamera();
-		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+		if (Input::IsKeyDown(KEY_E))
+		{
+			m_CameraZoom -= cameraZoomSpeed * dtS;
+			m_CameraZoom = glm::max(m_CameraZoom, 0.01f);
+			Camera& camera = GetCurrentScene()->GetCamera();
+			camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+		}
+		else if (Input::IsKeyDown(KEY_Q))
+		{
+			m_CameraZoom += cameraZoomSpeed * dtS;
+			Camera& camera = GetCurrentScene()->GetCamera();
+			camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+		}
 	}
-	else if (Input::IsKeyDown(KEY_Q))
+	else if(Input::IsKeyUp(KEY_LEFT_CTRL))
 	{
-		m_CameraZoom += cameraZoomSpeed * dtS;
-		Camera& camera = GetCurrentScene()->GetCamera();
-		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+		static float cartesianCameraSpeed = 5.0f;
+		static float cartesianCameraAngularSpeed = 1.5f;
+
+		if (Input::IsKeyDown(KEY_W))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cartesianCameraSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_S))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cartesianCameraSpeed * dtS);
+		}
+
+		if (Input::IsKeyDown(KEY_A))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Left, cartesianCameraSpeed * dtS);
+
+		}
+		else if (Input::IsKeyDown(KEY_D))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Right, cartesianCameraSpeed * dtS);
+		}
+
+		if (Input::IsKeyDown(KEY_E))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cartesianCameraSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_Q))
+		{
+			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
+		}
+
+		if (Input::IsKeyDown(KEY_UP))
+		{
+			GetCurrentScene()->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_DOWN))
+		{
+			GetCurrentScene()->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
+		}
+
+		if (Input::IsKeyDown(KEY_LEFT))
+		{
+			GetCurrentScene()->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_RIGHT))
+		{
+			GetCurrentScene()->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
+		}
 	}
+	GetCurrentScene()->OnUpdate(dtS);
 
 	GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
 }

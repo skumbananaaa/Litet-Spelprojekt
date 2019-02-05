@@ -20,6 +20,7 @@ Button::Button(float x, float y, float width, float height, const std::string& t
 
 Button::~Button()
 {
+	m_ButtonListeners.clear();
 }
 
 Texture2D* Button::GetOnPressedTexture() const noexcept

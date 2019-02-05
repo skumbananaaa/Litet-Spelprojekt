@@ -24,6 +24,8 @@ public:
 	bool AddSelectionListener(ISelectionListener* listener);
 	void RemoveSelectionListener(ISelectionListener* listener);
 
+	ISelectable* GetSelected();
+
 	virtual void OnSelected(ISelectable* selection) override;
 	virtual void OnDeselected(ISelectable* selection) override {};
 

@@ -50,16 +50,8 @@ void SelectionHandler::RemoveSelectable(ISelectable* selectable)
 
 void SelectionHandler::OnSelected(ISelectable* selection)
 {
-	ISelectable* lastObject = nullptr;
+	ISelectable* lastObject = GetSelected();
 
-	for (ISelectable* object : m_Selectables)
-	{
-		if (object->IsSelected())
-		{
-			lastObject = object;
-			break;
-		}
-	}
 	if (lastObject != selection)
 	{
 		if (lastObject != nullptr)
@@ -103,6 +95,18 @@ void SelectionHandler::RemoveSelectionListener(ISelectionListener* listener)
 		}
 		counter++;
 	}
+}
+
+ISelectable* SelectionHandler::GetSelected()
+{
+	for (ISelectable* object : m_Selectables)
+	{
+		if (object->IsSelected())
+		{
+			return object;
+		}
+	}
+	return nullptr;
 }
 
 void SelectionHandler::TriggerOnSelected(ISelectable* selection) const

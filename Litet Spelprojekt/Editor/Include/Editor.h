@@ -69,8 +69,8 @@ public:
 	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 
 	void CreateMesh(uint32 mesh);
-
 	void ClearLevels();
+	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;
 
 	uint32 GetCurrentBoatLevel();
 	Scene* GetCurrentScene();

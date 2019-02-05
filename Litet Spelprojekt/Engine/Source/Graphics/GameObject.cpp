@@ -18,6 +18,11 @@ GameObject::~GameObject()
 {
 }
 
+void GameObject::SetName(const std::string& name) noexcept
+{
+	m_Name = name;
+}
+
 void GameObject::SetIsReflectable(bool isReflectable) noexcept
 {
 	m_IsReflectable = isReflectable;

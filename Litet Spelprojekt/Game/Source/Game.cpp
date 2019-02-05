@@ -248,12 +248,16 @@ void Game::OnResourcesLoaded()
 	m_pScene->AddGameObject(pGameObject);
 
 	pGameObject = new GameObject();
+	pGameObject->SetName("ship");
 	pGameObject->SetMaterial(MATERIAL::RED);
 	pGameObject->SetMesh(MESH::SHIP);
 	pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
+
+	const GameObject* pBoat = m_pScene->GetGameObject("ship");
+
 
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(MATERIAL::GROUND);

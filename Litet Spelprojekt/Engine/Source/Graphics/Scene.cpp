@@ -43,6 +43,17 @@ void Scene::SetSkyBox(SkyBox * pSkyBox) noexcept
 	m_pSkyBox = pSkyBox;
 }
 
+const GameObject* Scene::GetGameObject(const std::string& name) const noexcept
+{
+	auto item = m_NamedObjects.find(name);
+	if (item == m_NamedObjects.end())
+	{
+		return nullptr;
+	}
+
+	return item->second;
+}
+
 void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
 	assert(pGameObject != nullptr);
@@ -61,6 +72,12 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	if (pGameObject->IsReflectable())
 	{
 		m_Reflectables.push_back(pGameObject);
+	}
+
+	const std::string& name = pGameObject->GetName();
+	if (name != "")
+	{
+		m_NamedObjects[name] = pGameObject;
 	}
 }
 

@@ -374,6 +374,8 @@ void Game::OnMouseMove(const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
+	m_pScene->OnUpdate(dtS);
+
 	if (cartesianCamera)
 	{
 		//Cartesian
@@ -543,11 +545,11 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
-	//m_pRenderer->DrawScene(*m_pScene, dtS);
-	m_pRenderer->DrawScene(*m_pInstancingTestScene, dtS);
+	m_pRenderer->DrawScene(*m_pScene, dtS);
+	//m_pRenderer->DrawScene(*m_pInstancingTestScene, dtS);
 	
 #if defined(DRAW_DEBUG_BOXES)
-	//m_pDebugRenderer->DrawScene(*m_pScene);
-	m_pDebugRenderer->DrawScene(*m_pInstancingTestScene);
+	m_pDebugRenderer->DrawScene(*m_pScene);
+	//m_pDebugRenderer->DrawScene(*m_pInstancingTestScene);
 #endif
 }

@@ -73,6 +73,7 @@ uint32 Texture::TexFormatToGL(TEX_FORMAT format) noexcept
 		GL_RGBA,
 		GL_DEPTH_COMPONENT,
 		GL_DEPTH_STENCIL,
+		GL_RGB,
 	};
 
 	return s_TexFormatTable[format];
@@ -92,6 +93,7 @@ uint32 Texture::TexFormatToGLInternal(TEX_FORMAT format) noexcept
 		GL_RGBA16F,
 		GL_DEPTH_COMPONENT,
 		GL_DEPTH24_STENCIL8,
+		GL_RGB16F,
 	};
 
 	return s_TexFormatTable[format];
@@ -111,6 +113,7 @@ uint32 Texture::TexFormatToGLType(TEX_FORMAT format) noexcept
 		GL_FLOAT,
 		GL_UNSIGNED_INT,
 		GL_UNSIGNED_INT_24_8,
+		GL_FLOAT,
 	};
 
 	return s_TexTypeTable[format];
@@ -134,6 +137,9 @@ uint32 Texture::FormatToNrChannels(TEX_FORMAT format) noexcept
 
 	case TEX_FORMAT::TEX_FORMAT_RGBA16F:
 		return 4;
+
+	case TEX_FORMAT::TEX_FORMAT_RGB16F:
+		return 0;
 
 	default:
 		std::cout << "ERROR: Format could not be converted to nr of channels" << std::endl;

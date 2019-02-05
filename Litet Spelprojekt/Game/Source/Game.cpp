@@ -48,9 +48,9 @@ Game::Game() noexcept :
 	cubeParams.Wrap = TEX_PARAM_EDGECLAMP;
 	cubeParams.MagFilter = TEX_PARAM_LINEAR;
 	cubeParams.MinFilter = TEX_PARAM_LINEAR;
-	m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, cubeParams);
+	//m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, cubeParams);
+	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
-
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());

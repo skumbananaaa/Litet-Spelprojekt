@@ -3,6 +3,7 @@
 
 Tile::Tile(uint32 material, const glm::vec3& pos, uint32 id) : GameObject()
 {
+	m_HasStairs = false;
 	m_DefaultMaterial = material;
 	GameObject::SetMesh(MESH::QUAD);
 	GameObject::SetMaterial(material);
@@ -30,6 +31,11 @@ void Tile::SetDefaultMaterial(uint32 material) noexcept
 void Tile::ResetMaterial() noexcept
 {
 	GameObject::SetMaterial(m_DefaultMaterial);
+}
+
+void Tile::SetHasStairs(bool value) noexcept
+{
+	m_HasStairs = value;
 }
 
 

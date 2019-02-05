@@ -16,7 +16,7 @@ Crew g_Crew;
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(true),
+	: Application(false),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pScene(nullptr),
@@ -154,6 +154,7 @@ Game::Game() noexcept
 	Delete(world);*/
 	//Create instancing test scene
 	m_pInstancingTestScene = new Scene();
+	m_pInstancingTestScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 	
 	//Add lights
 	m_pInstancingTestScene->AddDirectionalLight(new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.5f, 0.0f)));

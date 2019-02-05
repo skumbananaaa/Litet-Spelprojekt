@@ -151,6 +151,7 @@ glm::ivec3* Path::FindPath(const glm::ivec3& start, const glm::ivec3& goal)
 	m_pppTiles[m_CurrentTile.x][m_CurrentTile.y][m_CurrentTile.z].closed = true;
 
 	m_GoalTile = goal;
+	m_GoalTile.y /= 2;
 
 	m_SmallestH = std::abs(m_GoalTile.x - m_StartTile.x) + std::abs(m_GoalTile.y - m_StartTile.y) + std::abs(m_GoalTile.z - m_StartTile.z);
 	m_ClosestTile = m_StartTile;

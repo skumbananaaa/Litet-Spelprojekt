@@ -522,7 +522,7 @@ void Game::PickPosition() {
 		}
 	}
 
-	glm::ivec3 goalPos(std::round(pointOnSurface.x), std::round(pointOnSurface.y) / 2, std::round(pointOnSurface.z));
+	glm::ivec3 goalPos = glm::round(pointOnSurface);
 
 	if (goalPos != glm::ivec3(0, 0, 0))
 	{
@@ -545,7 +545,7 @@ void Game::PickCrew()
 		glm::vec3 normals[]{
 			m_Crew.GetMember(i)->GetDirection(),
 			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::cross(normals[0], normals[1])
+			glm::normalize(glm::cross(normals[0], normals[1]))
 		};
 
 		float h[] = {
@@ -555,14 +555,14 @@ void Game::PickCrew()
 		};
 
 		float d1[] = {
-			centre.x - h[0],
-			centre.y - h[1],
-			centre.z - h[2]
+			glm::dot(centre - normals[0] * h[0], normals[0]),
+			glm::dot(centre - normals[1] * h[1], normals[1]),
+			glm::dot(centre - normals[2] * h[2], normals[2])
 		};
 		float d2[] = {
-			centre.x + h[0],
-			centre.y + h[1],
-			centre.z + h[2]
+			glm::dot(centre + normals[0] * h[0], normals[0]),
+			glm::dot(centre + normals[1] * h[1], normals[1]),
+			glm::dot(centre + normals[2] * h[2], normals[2])
 		};
 
 		float t1[3];

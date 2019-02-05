@@ -34,7 +34,7 @@ public:
 	uint32 GetNumStairs() const noexcept;
 
 private:
-	WorldLevel** m_pLevels;
+	WorldLevel** m_ppLevels;
 	uint32 m_NumLevels;
 	std::vector<WorldObject> m_Objects;
 

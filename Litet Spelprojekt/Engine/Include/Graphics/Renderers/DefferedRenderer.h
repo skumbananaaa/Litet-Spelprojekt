@@ -18,7 +18,6 @@ struct GPassVSPerFrame
 
 struct GeometryPassPerObject
 {
-	glm::mat4 Model;
 	glm::vec4 Color;
 	float HasTexture;
 	float HasNormalMap;
@@ -33,9 +32,8 @@ struct DecalPassPerFrame
 
 struct DecalPassPerObject
 {
-	glm::mat4 Model;
-	glm::mat4 InverseModel;
-	glm::vec4 Direction;
+	float HasTexture;
+	float HasNormalMap;
 };
 
 //Uniformbuffers requires a 16 multiple so we pad 
@@ -85,6 +83,19 @@ struct WaterPassPerObjectVS
 	glm::mat4 Model;
 };
 
+struct DrawableBatch
+{
+	const Material* pMaterial = nullptr;
+	const IndexedMesh* pMesh = nullptr;
+	std::vector<InstanceData> Instances;
+};
+
+struct DecalBatch
+{
+	const Decal* pDecal = nullptr;
+	std::vector<InstanceData> Instances;
+};
+
 struct SkyBoxPassBuffer
 {
 	glm::mat4 CameraCombined;
@@ -111,16 +122,18 @@ public:
 
 private:
 	void Create() noexcept;
-	void DepthPrePass(const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ReconstructionPass() const noexcept;
-	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void WaterReflectionPass(const Scene& sceen) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
+	
+	//DELETE?
+	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
+	void DepthPrePass(const Scene& scene) const noexcept;
 
 private:
 	Framebuffer* m_pGBufferCBR;
@@ -133,7 +146,7 @@ private:
 	
 	FullscreenTri* m_pTriangle;
 	
-	UniformBuffer* m_pGPassVSPerFrame;
+	UniformBuffer* m_pGeoPassPerFrame;
 	UniformBuffer* m_pGeoPassPerObject;
 	UniformBuffer* m_pLightPassBuffer;
 	
@@ -154,14 +167,17 @@ private:
 	ShaderProgram* m_pCbrBlurProgram;
 	ShaderProgram* m_pCbrReconstructionProgram;
 	ShaderProgram* m_pCbrResolveProgram;
-	ShaderProgram* m_pCbrStencilProgram;
-	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pDecalsPassProgram;
-	ShaderProgram* m_pLightPassProgram;
 	ShaderProgram* m_pForwardPass;
 	ShaderProgram* m_pWaterpassProgram;
+	ShaderProgram* m_pDepthPrePassProgram;
+
+	ShaderProgram* m_pCbrStencilProgram;
+	ShaderProgram* m_pLightPassProgram;
 	ShaderProgram* m_pSkyBoxPassProgram;
 	
 	mutable uint64 m_FrameCount;
+	mutable std::vector<DrawableBatch> m_DrawableBatches;
+	mutable std::vector<DecalBatch> m_DecalBatches;
 };

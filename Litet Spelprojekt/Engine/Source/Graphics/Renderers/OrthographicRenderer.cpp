@@ -47,24 +47,24 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 		GameObject& gameobject = *scene.GetGameObjects()[i];
 		if (gameobject.HasMaterial() && gameobject.HasMesh())
 		{
-			const Material& material = gameobject.GetMaterial();
+			const Material* pMaterial = gameobject.GetMaterial();
 			perObject.Model = gameobject.GetTransform();
-			perObject.Color = material.GetColor();
+			perObject.Color = pMaterial->GetColor();
 
-			if (material.HasTexture())
+			if (pMaterial->HasTexture())
 			{
 				perObject.HasTexture = 1.0f;
-				context.SetTexture(material.GetTexture(), 0);
+				context.SetTexture(pMaterial->GetTexture(), 0);
 			}
 			else
 			{
 				perObject.HasTexture = 0.0f;
 			}
 
-			if (material.HasNormalMap())
+			if (pMaterial->HasNormalMap())
 			{
 				perObject.HasNormalMap = 1.0f;
-				context.SetTexture(material.GetNormalMap(), 1);
+				context.SetTexture(pMaterial->GetNormalMap(), 1);
 			}
 			else
 			{
@@ -72,7 +72,7 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 			}
 
 			m_pOrthoPerObject->UpdateData(&perObject);
-			context.DrawIndexedMesh(gameobject.GetMesh());
+			context.DrawIndexedMesh(*gameobject.GetMesh());
 		}
 	}
 }

@@ -8,6 +8,7 @@ uint32 MESH::CLIFF_3_LOW = 0;
 uint32 MESH::CUBE = 0;
 uint32 MESH::CUBE_OBJ = 0;
 uint32 MESH::CHAIR = 0;
+uint32 MESH::SPHERE = 0;
 
 void MESH::RegisterResources()
 {
@@ -17,4 +18,5 @@ void MESH::RegisterResources()
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj", false);
 	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj", false);
 	CHAIR					= ResourceHandler::RegisterMesh("chair.obj");
+	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj");
 }

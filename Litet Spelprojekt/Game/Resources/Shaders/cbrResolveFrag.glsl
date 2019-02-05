@@ -66,6 +66,7 @@ vec3 NormalDecode(vec3 mappedNormal)
 
 vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float intensity)
 {
+	
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 
 	//AMBIENT
@@ -101,7 +102,7 @@ void main()
 	vec3 color = sampleMSAATexture(g_Color, fs_in.TexCoords).rgb;
 	vec3 viewDir = normalize(g_CameraPosition.xyz - position);
 	
-	//Do  lightcalculation
+	//Do lightcalculation
 	vec3 c = vec3(0.0f);
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
@@ -113,6 +114,11 @@ void main()
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
+		if (i > 3)
+		{
+			break;
+		}
+
 		vec3 lightDir = g_PointLights[i].Position.xyz - position;
 		float dist = length(lightDir);
 		lightDir = normalize(lightDir);

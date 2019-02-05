@@ -16,6 +16,7 @@ public:
 	static uint32 CUBE;
 	static uint32 CUBE_OBJ;
 	static uint32 CHAIR;
+	static uint32 SPHERE;
 
 public:
 	static void RegisterResources();

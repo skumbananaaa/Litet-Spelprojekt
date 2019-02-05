@@ -4,11 +4,11 @@
 World::World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects, uint32 numObjects) noexcept
 {
 	m_NumLevels = numLevels;
-	m_pLevels = new WorldLevel*[m_NumLevels];
+	m_ppLevels = new WorldLevel*[m_NumLevels];
 
 	for (uint32 i = 0; i < m_NumLevels; i++)
 	{
-		m_pLevels[i] = worldLevels[i];
+		m_ppLevels[i] = worldLevels[i];
 	}
 
 	for (uint32 i = 0; i < numObjects; i++)
@@ -24,12 +24,12 @@ World::~World()
 {
 	for (uint32 i = 0; i < m_NumLevels; i++)
 	{
-		delete m_pLevels[i];
-		m_pLevels[i] = nullptr;
+		delete m_ppLevels[i];
+		m_ppLevels[i] = nullptr;
 	}
 
-	delete[] m_pLevels;
-	m_pLevels = nullptr;
+	delete[] m_ppLevels;
+	m_ppLevels = nullptr;
 	delete[] m_pStairs;
 	m_pStairs = nullptr;
 }
@@ -42,7 +42,7 @@ void World::AddWorldObject(const WorldObject& object) noexcept
 const WorldLevel* const World::GetLevel(uint32 level) const noexcept
 {
 	assert(level < m_NumLevels);
-	return m_pLevels[level];
+	return m_ppLevels[level];
 }
 
 uint32 World::GetNumLevels() const noexcept
@@ -63,7 +63,7 @@ uint32 World::GetNumWorldObjects() const noexcept
 
 void World::GenerateWalls(uint32 level)
 {
-	m_pLevels[level]->GenerateWalls();
+	m_ppLevels[level]->GenerateWalls();
 }
 
 void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)

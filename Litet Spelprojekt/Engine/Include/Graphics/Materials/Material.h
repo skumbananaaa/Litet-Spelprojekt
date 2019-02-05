@@ -25,7 +25,6 @@ private:
 	const Texture2D* m_pTexture;
 	const Texture2D* m_pNormalMap;
 	glm::vec4 m_Color;
-	glm::mat4 d;
 };
 
 inline bool Material::HasTexture() const

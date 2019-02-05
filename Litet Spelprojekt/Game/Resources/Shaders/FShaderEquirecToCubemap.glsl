@@ -20,7 +20,7 @@ void main()
 
 	vec3 mapped = color / (color + vec3(1.0f));
 
-    FragColor = vec4(mapped, 1.0f);
+    FragColor = vec4(pow(mapped, vec3(1.0f / 2.2f)), 1.0f);
 }
 
 // ripped from https://learnopengl.com/PBR/IBL/Diffuse-irradiance

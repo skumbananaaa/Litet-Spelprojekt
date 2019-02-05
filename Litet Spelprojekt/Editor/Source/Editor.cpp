@@ -385,10 +385,9 @@ glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcep
 {
 	glm::vec2 clipSpacePosition(mousePosition.x / static_cast<float>(GetWindow().GetWidth()), mousePosition.y / static_cast<float>(GetWindow().GetHeight()));
 	clipSpacePosition = (clipSpacePosition - glm::vec2(0.5f)) * 2.0f;
-	glm::vec3 worldPosition = m_ppScenes[m_CurrentGridIndex]->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
+	glm::vec3 worldPosition = GetCurrentScene()->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
 	float xOffset = static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().x % 2) / 2.0f;
 	float yOffset = static_cast<float>(m_ppGrids[m_CurrentGridIndex]->GetSize().y % 2) / 2.0f;
-	glm::vec3 worldPosition = GetCurrentScene()->GetCamera().GetInverseCombinedMatrix() * glm::vec4(clipSpacePosition.x, clipSpacePosition.y, 0.0f, 1.0f);
 	glm::ivec2 gridPosition(
 		static_cast<uint32>(glm::round(worldPosition.x + xOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().x / 2,
 		static_cast<uint32>(glm::round(worldPosition.z + yOffset)) + m_ppGrids[m_CurrentGridIndex]->GetSize().y / 2);
@@ -856,15 +855,18 @@ void Editor::OnButtonReleased(Button* button)
 		assert(numWorldLevels == NUM_GRID_LEVELS);
 
 		//Clean up previous scenes and cameras
-		for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
+		for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
 		{
 			if (i > 0)
 			{
 				editor->m_ppScenes[i]->SetCamera(nullptr, 0);
 				editor->m_ppScenes[i]->SetCamera(nullptr, 1);
 			}
-
 			Delete(editor->m_ppScenes[i]);
+		}
+
+		for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
+		{
 			Delete(editor->m_ppGrids[i]);
 		}
 		
@@ -1006,13 +1008,13 @@ void Editor::OnUpdate(float dtS)
 	if (Input::IsKeyDown(KEY_E))
 	{
 		m_CameraZoom -= cameraZoomSpeed * dtS;
-		Camera& camera = m_ppScenes[m_CurrentGridIndex]->GetCamera();
+		Camera& camera = GetCurrentScene()->GetCamera();
 		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	}
 	else if (Input::IsKeyDown(KEY_Q))
 	{
 		m_CameraZoom += cameraZoomSpeed * dtS;
-		Camera& camera = m_ppScenes[m_CurrentGridIndex]->GetCamera();
+		Camera& camera = GetCurrentScene()->GetCamera();
 		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	}
 

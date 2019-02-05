@@ -65,8 +65,8 @@ public:
 	void OnRender(float dtS) override;
 
 	void OnResourcesLoaded() override;
-	void OnSelected(const SelectionHandler* handler, ISelectable* selection) override;
-	void OnDeselected(const SelectionHandler* handler, ISelectable* selection) override;
+	void OnSelected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
+	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 
 	void CreateMesh(uint32 mesh);
 

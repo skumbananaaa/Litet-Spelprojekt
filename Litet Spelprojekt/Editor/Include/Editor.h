@@ -23,6 +23,9 @@
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
+#define NUM_GRID_LEVELS 6
+#define NUM_BOAT_LEVELS 3
+
 #define MAX_NUM_ROOMS 32
 #define TILE_DOOR_INDEX 0
 #define TILE_NON_WALKABLE_INDEX 1
@@ -66,13 +69,14 @@ public:
 
 private:
 	IRenderer* m_pRenderer;
-	Scene* m_pScene;
+	Scene** m_ppScenes;
 
 	EditingMode m_CurrentEditingMode;
 
 	uint32 m_TileTints[MAX_NUM_ROOMS];
 	uint32 m_TileColors[MAX_NUM_ROOMS];
 	uint32 m_LargestIndexUsed;
+	uint32 m_CurrentGridIndex;
 
 	bool m_Dragging;
 	int32 m_RoomBeingEdited;
@@ -82,8 +86,7 @@ private:
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
 
-	Grid* m_pGrid;
-	UniformBuffer* m_pGridUniform;
+	Grid** m_ppGrids;
 
 	Button* m_pButtonSave;
 	Button* m_pButtonLoad;

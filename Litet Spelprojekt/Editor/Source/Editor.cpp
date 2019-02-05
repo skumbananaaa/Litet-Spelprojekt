@@ -272,7 +272,7 @@ void Editor::CreateMesh(uint32 mesh)
 	pGameObject->SetMaterial(MATERIAL::WHITE);
 	pGameObject->SetMesh(mesh);
 	pGameObject->SetPosition(glm::vec3(0, 0, 0));
-	GetCurrentScene()->AddGameObject(gameObject);
+	GetCurrentScene()->AddGameObject(pGameObject);
 	m_Meshes.push_back(pGameObject);
 
 	//Create new object
@@ -887,10 +887,12 @@ void Editor::OnButtonReleased(Button* button)
 		for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
 		{
 			//Create one scene for each grid level
-			editor->m_ppScenes[gridId] = new Scene();
-			editor->m_ppScenes[gridId]->SetCamera(pCameraPersp, 0);
-			editor->m_ppScenes[gridId]->SetCamera(pCameraOrth, 1);
-
+			if (gridId % 2 == 0)
+			{
+				editor->m_ppScenes[gridId / 2] = new Scene();
+				editor->m_ppScenes[gridId / 2]->SetCamera(pCameraPersp, 0);
+				editor->m_ppScenes[gridId / 2]->SetCamera(pCameraOrth, 1);
+			}
 
 			//Create one grid for each grid level
 			const WorldLevel* pWorldLevel = pWorld->GetLevel(gridId);
@@ -927,7 +929,7 @@ void Editor::OnButtonReleased(Button* button)
 					}
 
 					pTile->SetID(tileId);
-					editor->m_ppScenes[gridId]->AddGameObject(pTile);
+					editor->m_ppScenes[gridId / 2]->AddGameObject(pTile);
 				}
 			}
 
@@ -945,8 +947,6 @@ void Editor::OnButtonReleased(Button* button)
 		}
 
 		editor->m_RoomBeingEdited = -1;
-		//
-		editor->m_CurrentGridIndex = 0;
 		editor->m_LargestIndexUsed = largestUsedTileId;
 		editor->m_MouseMaterial = MATERIAL::WHITE;
 

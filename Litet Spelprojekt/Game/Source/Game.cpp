@@ -467,8 +467,8 @@ void Game::OnUpdate(float dtS)
 			std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";
 			g_Crew.GetMember(i)->FindPath(goalPos);
 		}
-		g_Crew.GetMember(i)->FollowPath(dtS);
-		g_Crew.GetMember(i)->UpdateTransform();
+	
+		g_Crew.GetMember(i)->Update(dtS);
 	}
 }
 

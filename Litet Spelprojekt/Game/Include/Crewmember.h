@@ -31,10 +31,9 @@ public:
 	///<summary>Sets a new position for the object.</summary>
 	void SetPosition(const glm::vec3& position) noexcept;
 	///<summary>Updates matrix of the object.</summary>
-	void UpdateTransform() noexcept;
 
 	virtual void RunParallel() override;
-	//virtual void Update(float deltaTime) override;
+	virtual void Update(float deltaTime) override;
 
 private:
 	float m_ActionCap;

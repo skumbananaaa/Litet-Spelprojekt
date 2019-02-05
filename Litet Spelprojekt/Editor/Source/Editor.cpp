@@ -1007,6 +1007,7 @@ void Editor::OnUpdate(float dtS)
 	if (Input::IsKeyDown(KEY_E))
 	{
 		m_CameraZoom -= cameraZoomSpeed * dtS;
+		m_CameraZoom = glm::max(m_CameraZoom, 0.01f);
 		Camera& camera = GetCurrentScene()->GetCamera();
 		camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	}

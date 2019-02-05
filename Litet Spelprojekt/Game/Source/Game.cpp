@@ -81,74 +81,6 @@ Game::Game() noexcept :
 	m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
-
-	/*const uint32 level0SizeX = 10;
-	const uint32 level0SizeZ = 10;
-	uint32 level0[level0SizeX * level0SizeZ] =
-	{
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-	};
-
-	const uint32 level1SizeX = 10;
-	const uint32 level1SizeZ = 10;
-	uint32 level1[level1SizeX * level1SizeZ] =
-	{
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-		69, 1, 69, 3, 69, 5, 69, 7, 69, 9,
-	};
-
-	const uint32 level2SizeX = 5;
-	const uint32 level2SizeZ = 8;
-	uint32 level2[level2SizeX * level2SizeZ] =
-	{
-		1337, 420, 69, 5, 1337, 420, 69, 5,
-		1337, 420, 69, 5, 1337, 420, 69, 5,
-		1337, 420, 69, 5, 1337, 420, 69, 5,
-		1337, 420, 69, 5, 1337, 420, 69, 5,
-		1337, 420, 69, 5, 1337, 420, 69, 5,
-	};
-
-	WorldLevel* worldLevel0 = new WorldLevel(level0, level0SizeX, level0SizeZ);
-	WorldLevel* worldLevel1 = new WorldLevel(level1, level1SizeX, level1SizeZ);
-	WorldLevel* worldLevel2 = new WorldLevel(level2, level2SizeX, level2SizeZ);
-
-	WorldLevel* worldLevels[3] =
-	{
-		worldLevel0,
-		worldLevel1,
-		worldLevel2,
-	};
-
-	WorldObject worldObjects[5] =
-	{
-		{ glm::uvec3(0, 1, 2), 1337, 69 },
-		{ glm::uvec3(3, 4, 5), 1337, 420 },
-		{ glm::uvec3(6, 7, 8), 1337, 5 },
-		{ glm::uvec3(9, 10, 11), 1337, 15 },
-		{ glm::uvec3(12, 13, 14), 1337, 8 },
-	};
-
-	World* world = new World(worldLevels, 3, worldObjects, 5);
-	WorldSerializer::Write("test.json", *world);
-	
-	Delete(world);*/
 }
 
 Game::~Game()
@@ -279,10 +211,6 @@ void Game::OnResourcesLoaded()
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
-
-	m_CurrentCrewmember = 0;
-	m_Crew.GetMember(0)->GetLight()->SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -476,18 +404,6 @@ void Game::OnUpdate(float dtS)
 	g_pDecalObject->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(-45.0f)));
 	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
 	g_pDecalObject->UpdateTransform();
-
-	int level;
-	for (int i = 0; i < m_Crew.GetCount(); i++) {
-		if (Input::IsKeyDown(KEY_ENTER) && !m_Crew.GetMember(i)->IsMoving())
-		{
-			level = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-			glm::ivec3 goalPos(std::rand() % (m_pWorld->GetLevel(level)->GetSizeX() - 1), level, std::rand() % (m_pWorld->GetLevel(level)->GetSizeZ() - 1));
-			//goalPos = glm::ivec3(18, 1, 1);
-			//std::cout << i << ": (" << goalPos.x << ", " << goalPos.y << ", " << goalPos.z << ")\n";
-			m_Crew.GetMember(i)->FindPath(goalPos);
-		}
-	}
 }
 
 void Game::OnRender(float dtS)
@@ -500,8 +416,6 @@ void Game::OnRender(float dtS)
 }
 
 void Game::PickPosition() {
-	m_Crew.GetMember(m_CurrentCrewmember)->SetDirection(glm::vec3(0.0f, 0.0f, 1.0f));
-
 	glm::vec3 rayDir = this->GetRay(Input::GetMousePosition(), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
 	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
 	glm::vec3 pointOnSurface = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -522,11 +436,15 @@ void Game::PickPosition() {
 		}
 	}
 
-	glm::ivec3 goalPos = glm::round(pointOnSurface);
-
-	if (goalPos != glm::ivec3(0, 0, 0))
+	if (pointOnSurface != glm::vec3(0.0f, 0.0f, 0.0f))
 	{
-		m_Crew.GetMember(m_CurrentCrewmember)->FindPath(goalPos);
+		for (int i = 0; i < m_Crew.GetCount(); i++)
+		{
+			if (m_Crew.GetMember(i)->GetLight()->GetColor() == glm::vec4(0.0f, 1.0f, 0.0f, 1.0f))
+			{
+				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
+			}
+		}
 	}
 }
 
@@ -536,7 +454,7 @@ void Game::PickCrew()
 	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
 
 	float lastT = -1;
-	uint32 id = m_CurrentCrewmember;
+	uint32 id = -1;
 
 	for (int i = 0; i < m_Crew.GetCount(); i++)
 	{
@@ -607,20 +525,27 @@ void Game::PickCrew()
 		}
 	}
 
-	m_Crew.GetMember(m_CurrentCrewmember)->GetLight()->SetColor(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
-	m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	m_CurrentCrewmember = id;
+	if (id != -1)
+	{
+		if (m_Crew.GetMember(id)->GetLight()->GetColor() == glm::vec4(0.0f, 1.0f, 0.0f, 1.0f))
+		{
+			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else
+		{
+			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		}
+	}
 }
 
 glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 windowHeight)
 {
 	glm::vec4 rayDir4((2.0f * mousepos.x) / windowWidth - 1.0f, 1.0f - (2.0f * mousepos.y) / windowHeight, -1.0, 1.0);
 	rayDir4 = m_pScene->GetCamera().GetInverseProjectionMatrix() * rayDir4;
-	rayDir4 = glm::vec4(rayDir4.x, rayDir4.y, -1.0, 0.0);
+	rayDir4 = glm::vec4(glm::vec2(rayDir4), -1.0, 0.0);
 	rayDir4 = m_pScene->GetCamera().GetInverseViewMatrix() * rayDir4;
 
-	glm::vec3 rayDir = glm::vec3(rayDir4.x, rayDir4.y, rayDir4.z);
-	rayDir = glm::normalize(rayDir);
+	glm::vec3 rayDir = glm::normalize(glm::vec3(rayDir4));
 
 	return rayDir;
 }

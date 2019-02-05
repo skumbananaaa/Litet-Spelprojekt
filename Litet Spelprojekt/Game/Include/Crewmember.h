@@ -50,7 +50,6 @@ private:
 	glm::vec3 m_TargetPos;
 	glm::vec3 m_Direction;
 	int m_NrOfPathTiles;
-
 };
 
 #endif

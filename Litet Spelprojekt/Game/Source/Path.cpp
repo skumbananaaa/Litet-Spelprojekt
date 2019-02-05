@@ -56,7 +56,7 @@ bool Path::MoveToNextTile()
 			}
 		}
 
-		m_CurrentTile = glm::ivec3(m_pOpenList[index].x, m_pOpenList[index].y, m_pOpenList[index].z);
+		m_CurrentTile = m_pOpenList[index];
 		m_pppTiles[m_CurrentTile.x][m_CurrentTile.y][m_CurrentTile.z].closed = true;
 		m_pOpenList[index] = m_pOpenList[--m_NrOfTilesOpen];
 

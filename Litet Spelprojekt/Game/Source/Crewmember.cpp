@@ -115,7 +115,7 @@ void Crewmember::FollowPath(float dtS)
 	}
 	if (std::abs(this->GetPosition().x - m_TargetPos.x) > 0.01 || std::abs(this->GetPosition().y - m_TargetPos.y) > 0.01 || std::abs(this->GetPosition().z - m_TargetPos.z) > 0.01)
 	{
-		glm::vec3 move(m_TargetPos.x - this->GetPosition().x, m_TargetPos.y - this->GetPosition().y, m_TargetPos.z - this->GetPosition().z);
+		glm::vec3 move = m_TargetPos - this->GetPosition();
 		move = glm::normalize(move);
 		if (std::abs(move.y) > 0.01)
 		{

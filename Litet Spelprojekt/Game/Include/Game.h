@@ -55,7 +55,6 @@ private:
 	TextView* m_pTextViewUPS;
 	
 	Crew m_Crew;
-	uint32 m_CurrentCrewmember;
 
 	bool cartesianCamera;
 

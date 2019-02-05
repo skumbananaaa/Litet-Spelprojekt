@@ -1,7 +1,7 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Editor.h"
 
-Editor::Editor() noexcept : Application(false),
+Editor::Editor() noexcept : Application(false, 1600, 900),
 	m_SelectionHandlerFloor(true),
 	m_SelectionHandlerRoom(false)
 {
@@ -12,18 +12,17 @@ Editor::Editor() noexcept : Application(false),
 
 	m_pScene = new Scene();
 
-
-	Camera* pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
-	pCamera->CreateOrthographic(30.0f * aspect, 30.0f, 0.01f, 100.0f);
-	pCamera->UpdateFromPitchYaw();
-	m_pScene->SetCamera(pCamera);
-
-	/*Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
 	pCamera->UpdateFromPitchYaw();
-	m_pScene->SetCamera(pCamera);*/
+	m_pScene->AddCamera(pCamera);
+
+	pCamera = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
+	pCamera->CreateOrthographic(30.0f * aspect, 30.0f, 0.01f, 100.0f);
+	pCamera->UpdateFromPitchYaw();
+	m_pScene->AddCamera(pCamera);
 
 	const int32 gridWidth = 40;
 	const int32 gridHeight = 20;
@@ -621,11 +620,13 @@ void Editor::OnButtonReleased(Button* button)
 	{
 		editor->m_pPanelEditor->SetVisible(true);
 		editor->m_pPanelMesh->SetVisible(false);
+		editor->m_pScene->SelectCamera(1);
 	}
 	else if (button == editor->m_pButtonMesh)
 	{
 		editor->m_pPanelMesh->SetVisible(true);
 		editor->m_pPanelEditor->SetVisible(false);
+		editor->m_pScene->SelectCamera(0);
 	}
 	else
 	{

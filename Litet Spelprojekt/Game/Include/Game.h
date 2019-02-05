@@ -18,6 +18,7 @@
 #include <IO/WorldSerializer.h>
 #include <IO/ResourceHandler.h>
 
+
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #include <math.h>
@@ -40,6 +41,7 @@ private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	Scene* m_pScene;
+	Scene* m_pInstancingTestScene;
 
 	TextureCube* m_pSkyBoxTex;
 	World* m_pWorld;

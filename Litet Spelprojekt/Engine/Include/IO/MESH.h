@@ -9,6 +9,7 @@ public:
 	static uint32 CLIFF_3_LOW;
 	static uint32 CUBE;
 	static uint32 CUBE_OBJ;
+	static uint32 SPHERE;
 
 public:
 	static void RegisterResources();

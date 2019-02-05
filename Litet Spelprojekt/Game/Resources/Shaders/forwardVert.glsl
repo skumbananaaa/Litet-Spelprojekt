@@ -4,6 +4,7 @@ layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
 layout(location = 2) in vec3 g_Tangent;
 layout(location = 3) in vec2 g_TexCoords;
+layout(location = 4) in mat4 g_InstanceModel;
 
 out VS_OUT
 {
@@ -22,7 +23,6 @@ layout(std140, binding = 0) uniform VSPerFrame
 
 layout(std140, binding = 1) uniform PerObject
 {
-	mat4 g_Model;
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;
@@ -30,11 +30,11 @@ layout(std140, binding = 1) uniform PerObject
 
 void main()
 {
-	vec4 worldPos = g_Model * vec4(g_Position, 1.0);
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
 	gl_ClipDistance[0] = dot(worldPos, vec4(0.0f, 1.0f, 0.0f, 0.01f));
 
-	vec3 normal = (g_Model * vec4(g_Normal, 0.0f)).xyz;
-	vec3 tangent = (g_Model * vec4(g_Tangent, 0.0f)).xyz;
+	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
+	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
 
 	vs_out.WorldPosition = worldPos.xyz;
 	vs_out.Normal = normal;

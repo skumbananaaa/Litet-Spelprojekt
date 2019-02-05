@@ -25,7 +25,7 @@ Application::Application(bool fullscreen)
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1024, 768, fullscreen);
+		m_pWindow = new Window("Small Game Project", 1600, 900, fullscreen);
 
 		float width = static_cast<float>(m_pWindow->GetWidth());
 		float height = static_cast<float>(m_pWindow->GetHeight());

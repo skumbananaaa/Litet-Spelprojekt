@@ -16,14 +16,15 @@ layout(std140, binding = 0) uniform PerFrame
 
 layout(std140, binding = 1) uniform PerObject
 {
-	mat4 g_Model;
-	mat4 g_InverseModel;
-	vec4 g_Direction;
+	float g_HasNormalMap;
+	float g_HasTexture;
 };
 
 in VS_OUT
 {
 	vec4 PositionClipSpace;
+	mat4 InverseModel;
+	vec3 Direction;
 } fs_in;
 
 vec3 PositionFromDepth(vec2 projCoord, float depth)
@@ -58,7 +59,7 @@ void main()
 	float sampledDepth = SampleDepth(texCoords);
 
 	vec3 worldPosition = PositionFromDepth(projCoord, sampledDepth);
-	vec3 objectPosition = (g_InverseModel * vec4(worldPosition, 1.0f)).xyz;
+	vec3 objectPosition = (fs_in.InverseModel * vec4(worldPosition, 1.0f)).xyz;
 
 	//Reject pixels outside
 	if (0.5f - abs(objectPosition.x) < 0.0f || 0.5f - abs(objectPosition.y) < 0.0f || 0.5f - abs(objectPosition.z) < 0.0f)
@@ -70,6 +71,7 @@ void main()
 	
 	//COLOR
 	vec4 mappedTexture = texture(g_Texture, decalTexCoords);
+	mappedTexture.rgb = mappedTexture.rgb * g_HasTexture;
 	g_OutColor = mappedTexture;
 
 	//NORMAL
@@ -81,7 +83,7 @@ void main()
 	vec3 normal = cross(binormal, tangent);
 
 	//Reject if on a side
-	if (max(dot(normal, normalize(g_Direction.xyz)), 0.0f) < 0.2f)
+	if (max(dot(normal, normalize(fs_in.Direction)), 0.0f) < 0.2f)
 	{
 		discard;
 	}
@@ -90,7 +92,8 @@ void main()
 	
 	mat3 tbn = mat3(tangent, binormal, normal);
 	mappedNormal = tbn * mappedNormal;
-
 	mappedNormal = (normalize(mappedNormal) + vec3(1.0f)) * 0.5f;
+	mappedNormal = (g_HasNormalMap * mappedNormal) + ((1.0 - g_HasNormalMap) * normal);
+
 	g_Normal = vec4(normalize(mappedNormal), mappedTexture.a);
 }

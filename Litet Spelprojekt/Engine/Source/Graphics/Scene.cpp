@@ -45,7 +45,23 @@ void Scene::SetSkyBox(SkyBox * pSkyBox) noexcept
 
 void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
+	assert(pGameObject != nullptr);
+
 	m_GameObjects.push_back(pGameObject);
+	if (pGameObject->HasMaterial() && pGameObject->HasMesh())
+	{
+		m_Drawables.push_back(pGameObject);
+	}
+	
+	if (pGameObject->HasDecal())
+	{
+		m_Decals.push_back(pGameObject);
+	}
+
+	if (pGameObject->IsReflectable())
+	{
+		m_Reflectables.push_back(pGameObject);
+	}
 }
 
 void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
@@ -70,8 +86,8 @@ void Scene::RemoveGameObject(uint32 index) noexcept
 
 void Scene::OnUpdate(float dtS) noexcept
 {
-	for (uint32 i = 0; i < m_GameObjects.size(); i++)
+	for (GameObject* pGameObject : m_GameObjects)
 	{
-		m_GameObjects[i]->UpdateTransform();
+		pGameObject->Update(dtS);
 	}
 }

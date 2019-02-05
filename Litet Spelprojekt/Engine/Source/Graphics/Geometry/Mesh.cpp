@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics/Geometry/Mesh.h>
+#include <Graphics/Renderers/GLContext.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -8,32 +9,41 @@ Mesh::Mesh(const Vertex* const vertices, uint32 numVertices) noexcept
 {
 	m_VertexCount = numVertices;
 
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
+	GL_CALL(glGenVertexArrays(1, &m_VAO));
+	GL_CALL(glGenBuffers(1, &m_VBO));
 
-	glBindVertexArray(m_VAO);
+	GL_CALL(glBindVertexArray(m_VAO));
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, m_VertexCount * sizeof(Vertex), vertices, GL_STATIC_DRAW);
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_VertexCount * sizeof(Vertex), vertices, GL_STATIC_DRAW));
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //Position
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(3 * sizeof(float))); //Normal 
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(6 * sizeof(float))); //Tangent 
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(9 * sizeof(float))); //TexCoords
-	glEnableVertexAttribArray(3);
+	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0)); //Position
+	GL_CALL(glEnableVertexAttribArray(0));
+	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(3 * sizeof(float)))); //Normal 
+	GL_CALL(glEnableVertexAttribArray(1));
+	GL_CALL(glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(6 * sizeof(float)))); //Tangent 
+	GL_CALL(glEnableVertexAttribArray(2));
+	GL_CALL(glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(9 * sizeof(float)))); //TexCoords
+	GL_CALL(glEnableVertexAttribArray(3));
 
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	GL_CALL(glBindVertexArray(0));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 Mesh::~Mesh()
 {
-	glDeleteVertexArrays(1, &m_VAO);
-	glDeleteBuffers(1, &m_VBO);
+	if (glIsVertexArray(m_VAO))
+	{
+		GL_CALL(glDeleteVertexArrays(1, &m_VAO));
+		m_VAO = 0;
+	}
+
+	if (glIsBuffer(m_VBO))
+	{
+		GL_CALL(glDeleteBuffers(1, &m_VBO));
+		m_VBO = 0;
+	}
 }
 
 Mesh* Mesh::CreateMeshFromFile(const char* pFilename)

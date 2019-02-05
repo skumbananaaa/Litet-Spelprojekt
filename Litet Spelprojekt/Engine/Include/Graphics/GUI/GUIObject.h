@@ -41,6 +41,7 @@ public:
 
 	virtual bool ContainsPoint(const glm::vec2& position) const noexcept;
 
+	virtual void DeleteChildren();
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
 
 	void SetUserData(void* data);

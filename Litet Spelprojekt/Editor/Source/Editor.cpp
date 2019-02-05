@@ -71,20 +71,7 @@ Editor::~Editor()
 
 	Delete(m_pRenderer);
 
-	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
-	{
-		if (i > 0)
-		{
-			m_ppScenes[i]->SetCamera(nullptr, 0);
-			m_ppScenes[i]->SetCamera(nullptr, 1);
-		}
-		Delete(m_ppScenes[i]);
-	}
-
-	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
-	{
-		Delete(m_ppGrids[i]);
-	}
+	ClearLevels();
 
 	DeleteArr(m_ppScenes);
 	DeleteArr(m_ppGrids);
@@ -273,24 +260,44 @@ void Editor::CreateMesh(uint32 mesh)
 	gameObject->SetMesh(mesh);
 	gameObject->SetPosition(glm::vec3(0, 0, 0));
 	GetCurrentScene()->AddGameObject(gameObject);
-	m_Meshes.push_back(gameObject);
+	GetCurrentMeshes().push_back(gameObject);
 
 	//Create new object
 	std::string name = ResourceHandler::GetMeshName(mesh);
-	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), m_Meshes.size() * ELEMENT_HEIGHT + 4);
-	Button* button = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - m_Meshes.size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
+	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), GetCurrentMeshes().size() * ELEMENT_HEIGHT + 4);
+	Button* button = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - GetCurrentMeshes().size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
 	button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
 	button->SetUserData(gameObject);
 	m_pPanelScrollableEditMesh->Add(button);
 	m_SelectionHandlerMeshEdit.AddSelectable(button);
 
-	std::cout << std::endl;
 	//Arange objects
 	for (int32 i = 0; i < m_pPanelScrollableEditMesh->GetChildren().size(); i++)
 	{
 		GUIObject* object = m_pPanelScrollableEditMesh->GetChildren()[i];
 		object->SetPosition(object->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
-		std::cout << object->GetY() << std::endl;
+	}
+}
+
+void Editor::ClearLevels()
+{
+	m_pPanelScrollableEditMesh->DeleteChildren();
+
+	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
+	{
+		m_Meshes[i].clear();
+
+		if (i > 0)
+		{
+			m_ppScenes[i]->SetCamera(nullptr, 0);
+			m_ppScenes[i]->SetCamera(nullptr, 1);
+		}
+		Delete(m_ppScenes[i]);
+	}
+
+	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
+	{
+		Delete(m_ppGrids[i]);
 	}
 }
 
@@ -302,6 +309,11 @@ uint32 Editor::GetCurrentBoatLevel()
 Scene* Editor::GetCurrentScene()
 {
 	return m_ppScenes[GetCurrentBoatLevel()];
+}
+
+std::vector<GameObject*>& Editor::GetCurrentMeshes()
+{
+	return m_Meshes[GetCurrentBoatLevel()];
 }
 
 void Editor::NormalizeTileIndexes() noexcept
@@ -855,20 +867,7 @@ void Editor::OnButtonReleased(Button* button)
 		assert(numWorldLevels == NUM_GRID_LEVELS);
 
 		//Clean up previous scenes and cameras
-		for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
-		{
-			if (i > 0)
-			{
-				editor->m_ppScenes[i]->SetCamera(nullptr, 0);
-				editor->m_ppScenes[i]->SetCamera(nullptr, 1);
-			}
-			Delete(editor->m_ppScenes[i]);
-		}
-
-		for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
-		{
-			Delete(editor->m_ppGrids[i]);
-		}
+		editor->ClearLevels();
 		
 		//Set up new scenes, grids and cameras
 		Camera* pCameraPersp = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));

@@ -33,6 +33,9 @@ GUIObject::~GUIObject()
 		delete m_pFramebuffer;
 	}
 
+	RemoveMouseListener(this);
+	RemoveRealTimeRenderer(this);
+
 	if (m_DeleteAll)
 	{
 		for (GUIObject* object : m_Children)
@@ -495,6 +498,16 @@ bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 	return false;
 }
 
+void GUIObject::DeleteChildren()
+{
+	for (GUIObject* object : m_Children)
+	{
+		object->DeleteChildren();
+		delete object;
+	}
+	m_Children.clear();
+}
+
 void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
 {
 	m_DeleteAll = deleteAll;
@@ -532,44 +545,44 @@ Texture2D* GUIObject::GetClearTexture() const
 
 void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMousePressed(position, mousebutton);
+			s_MouseListeners[i]->OnMousePressed(position, mousebutton);
 		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMouseReleased(position, mousebutton);
+			s_MouseListeners[i]->OnMouseReleased(position, mousebutton);
 		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMouseMove(position);
+			s_MouseListeners[i]->OnMouseMove(position);
 		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMouseScroll(position, offset);
+			s_MouseListeners[i]->OnMouseScroll(position, offset);
 		}
 	}
 	InternalRootOnMouseMove(position);

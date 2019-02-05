@@ -70,8 +70,11 @@ public:
 
 	void CreateMesh(uint32 mesh);
 
+	void ClearLevels();
+
 	uint32 GetCurrentBoatLevel();
 	Scene* GetCurrentScene();
+	std::vector<GameObject*>& GetCurrentMeshes();
 
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();
@@ -98,7 +101,7 @@ private:
 
 	Grid** m_ppGrids;
 
-	std::vector<GameObject*> m_Meshes;
+	std::vector<GameObject*> m_Meshes[NUM_BOAT_LEVELS];
 
 	Button* m_pButtonSave;
 	Button* m_pButtonLoad;

@@ -54,7 +54,7 @@ Game::Game() noexcept
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
-	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.01f, 100.0f);
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
 	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
 
@@ -248,12 +248,16 @@ void Game::OnResourcesLoaded()
 	m_pScene->AddGameObject(pGameObject);
 
 	pGameObject = new GameObject();
+	pGameObject->SetName("ship");
 	pGameObject->SetMaterial(MATERIAL::RED);
 	pGameObject->SetMesh(MESH::SHIP);
 	pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
+
+	const GameObject* pBoat = m_pScene->GetGameObject("ship");
+
 
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(MATERIAL::GROUND);
@@ -292,7 +296,7 @@ void Game::OnResourcesLoaded()
 	pGameObject = new GameObject();
 	pGameObject->SetIsReflectable(true);
 	pGameObject->SetMesh(MESH::QUAD);
-	pGameObject->SetScale(glm::vec3(60.0f));
+	pGameObject->SetScale(glm::vec3(200.0f));
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);

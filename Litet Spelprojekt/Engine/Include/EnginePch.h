@@ -19,6 +19,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 static const glm::vec3 UP_VECTOR(0.0f, 1.0f, 0.0f);
 static const glm::vec3 FORWARD_VECTOR(0.0f, 0.0f, 1.0f);

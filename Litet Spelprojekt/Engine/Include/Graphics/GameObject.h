@@ -14,6 +14,7 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
+	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetMesh(uint32 mesh) noexcept;
 	virtual void SetMaterial(uint32 material) noexcept;
@@ -22,6 +23,7 @@ public:
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
 
+	const std::string& GetName() const noexcept;
 	const Decal* GetDecal() const noexcept;
 	const Material* GetMaterial() const noexcept;
 	const IndexedMesh* GetMesh() const noexcept;
@@ -38,6 +40,7 @@ public:
 	virtual void UpdateTransform() noexcept;
 
 private:
+	std::string m_Name;
 	const IndexedMesh* m_pMesh;
 	const Material* m_pMaterial;
 	const Decal* m_pDecal;
@@ -68,6 +71,11 @@ inline void GameObject::SetDecal(uint32 decal) noexcept
 inline void GameObject::SetMaterial(uint32 material) noexcept
 {
 	m_pMaterial = ResourceHandler::GetMaterial(material);
+}
+
+inline const std::string& GameObject::GetName() const noexcept
+{
+	return m_Name;
 }
 
 inline const Decal* GameObject::GetDecal() const noexcept

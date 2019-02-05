@@ -36,6 +36,7 @@ public:
 	void OnMouseMove(const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
+	void PickingTest();
 
 private:
 	IRenderer* m_pRenderer;

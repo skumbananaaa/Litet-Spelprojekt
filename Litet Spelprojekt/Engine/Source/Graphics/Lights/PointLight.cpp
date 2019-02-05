@@ -13,4 +13,8 @@ PointLight::~PointLight()
 {
 }
 
+void PointLight::SetColor(const glm::vec4& color) noexcept
+{
+	m_Color = color;
+}
 

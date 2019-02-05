@@ -960,7 +960,7 @@ void DefferedRenderer::WaterReflectionPass(const Scene& scene) const noexcept
 	if (scene.GetReflectables().size() < 1)
 	{
 #if defined(_DEBUG)
-		std::cout << "No reflectables, skipping reflectionpass" << std::endl;
+		//std::cout << "No reflectables, skipping reflectionpass" << std::endl;
 #endif
 		return;
 	}

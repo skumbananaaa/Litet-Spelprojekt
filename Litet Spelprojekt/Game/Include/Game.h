@@ -17,6 +17,8 @@
 #include <Audio/Music.h>
 #include <IO/WorldSerializer.h>
 #include <IO/ResourceHandler.h>
+#include "..\Include\Crew.h"
+#include "..\Include\Path.h"
 
 
 #include <GLM/glm.hpp>
@@ -34,14 +36,17 @@ public:
 	void OnKeyUp(KEY keycode) override;
 	void OnKeyDown(KEY keycode) override;
 	void OnMouseMove(const glm::vec2& position) override;
+	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
+	void PickPosition();
+	void PickCrew();
+	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 
 private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	Scene* m_pScene;
-	Scene* m_pInstancingTestScene;
 
 	TextureCube* m_pSkyBoxTex;
 	World* m_pWorld;
@@ -49,6 +54,8 @@ private:
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;
 	
+	Crew m_Crew;
+
 	bool cartesianCamera;
 
 	//Sound

@@ -8,6 +8,7 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
 	m_TargetTile = m_PlayerTile;
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	this->SetDirection(glm::vec3(1.0f, 0.0f, 0.0f));
 	this->SetMaterial(MATERIAL::WHITE);
 	this->SetMesh(MESH::CUBE);
 	this->SetPosition(position);
@@ -23,9 +24,12 @@ Crewmember::Crewmember(Crewmember& other): m_pLight(new PointLight(other.GetPosi
 	m_PlayerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y - 0.9) / 2),std::round(other.GetPosition().z));
 	m_TargetTile = m_PlayerTile;
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	m_Direction = glm::vec3(1.0f, 0.0f, 0.0f);
+	this->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::pi<float>() / 2.0f));
 	this->SetMaterial(MATERIAL::WHITE);
 	this->SetMesh(MESH::CUBE);
 	this->SetPosition(other.GetPosition());
+	this->SetScale(glm::vec3(0.2, 1.8, 0.5));
 	this->UpdateTransform();
 }
 
@@ -58,7 +62,7 @@ void Crewmember::Move(const glm::vec3 & dir)
 	this->SetPosition(res);
 }
 
-PointLight * Crewmember::GetLight() const
+PointLight* Crewmember::GetLight() const
 {
 	return m_pLight;
 }
@@ -81,6 +85,18 @@ void Crewmember::SetPosition(const glm::vec3 & position) noexcept
 	GameObject::SetPosition(position);
 }
 
+const glm::vec3& Crewmember::GetDirection() const noexcept
+{
+	return m_Direction;
+}
+
+void Crewmember::SetDirection(const glm::vec3 & direction) noexcept
+{
+	m_Direction = glm::normalize(direction);
+	float angle = std::atan2f(1.0f * m_Direction.z - 0.0f * m_Direction.x, 1.0f * m_Direction.x + 0 * m_Direction.z);
+	this->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, -angle));
+}
+
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
 	m_GoalTile = goalPos;
@@ -99,16 +115,18 @@ void Crewmember::FollowPath(float dtS)
 	}
 	if (std::abs(this->GetPosition().x - m_TargetPos.x) > 0.01 || std::abs(this->GetPosition().y - m_TargetPos.y) > 0.01 || std::abs(this->GetPosition().z - m_TargetPos.z) > 0.01)
 	{
-		glm::vec3 move(m_TargetPos.x - this->GetPosition().x, m_TargetPos.y - this->GetPosition().y, m_TargetPos.z - this->GetPosition().z);
+		glm::vec3 move = m_TargetPos - this->GetPosition();
 		move = glm::normalize(move);
 		if (std::abs(move.y) > 0.01)
 		{
 			move.y /= std::abs(move.y);
+			this->SetDirection(glm::vec3(0, 0, 1));
 			GameObject::SetPosition(this->GetPosition() + glm::vec3(0, move.y * dtS, 0));
 		}
 		else
 		{
-			GameObject::SetPosition(this->GetPosition() + glm::vec3(move.x * dtS, 0, move.z * dtS));
+			this->SetDirection(glm::vec3(move.x, 0, move.z));
+			GameObject::SetPosition(this->GetPosition() + m_Direction * dtS);
 		}
 		m_PlayerTile = glm::ivec3(std::round(this->GetPosition().x), std::round((this->GetPosition().y - 0.9) / 2), std::round(this->GetPosition().z));
 	}

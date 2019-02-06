@@ -1,6 +1,7 @@
 #include "..\Include\Crewmember.h"
 
-Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name) : m_pLight(new PointLight(position, lightColor))
+Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name) 
+	: m_pLight(new PointLight(position, lightColor))
 {
 	m_ActionCap = actionCap;
 	m_Name = name;
@@ -8,14 +9,16 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
 	m_TargetTile = m_PlayerTile;
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
-	this->SetMaterial(MATERIAL::WHITE);
+	
+	this->SetMaterial(MATERIAL::CREW_STANDARD);
 	this->SetMesh(MESH::CUBE);
 	this->SetPosition(position);
 	this->SetScale(glm::vec3(0.2, 1.8, 0.5));
 	this->UpdateTransform();
 }
 
-Crewmember::Crewmember(Crewmember& other): m_pLight(new PointLight(other.GetPosition(), other.m_pLight->GetColor()))
+Crewmember::Crewmember(Crewmember& other)
+	: m_pLight(new PointLight(other.GetPosition(), other.m_pLight->GetColor()))
 {
 	m_ActionCap = other.m_ActionCap;
 	m_Name = other.m_Name;
@@ -123,4 +126,3 @@ void Crewmember::SetPath(const World* world)
 {
 	m_pPathFinder = new Path(world);
 }
-

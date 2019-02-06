@@ -58,6 +58,11 @@ void GLContext::Disable(Cap cap) const noexcept
 	GL_CALL(glDisable(cap));
 }
 
+void GLContext::SetCullMode(CULL_MODE mode) const noexcept
+{
+	GL_CALL(glCullFace(mode));
+}
+
 void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 {
 	if (pProgram == nullptr)

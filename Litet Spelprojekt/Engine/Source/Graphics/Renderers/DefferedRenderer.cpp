@@ -769,12 +769,12 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	GeometryPassPerObject perObject = {};
-	for (uint32 i = 0; i < m_DrawableBatches.size(); i++)
+	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
 		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
 		const Material& material = *m_DrawableBatches[i].pMaterial;
-		perObject.Color = material.GetColor();
 
+		perObject.Color = material.GetColor();
 		if (material.HasTexture())
 		{
 			perObject.HasTexture = 1.0f;
@@ -795,10 +795,28 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 			perObject.HasNormalMap = 0.0f;
 		}
 
+		if (material.ClipPlaneEnabled())
+		{
+			perObject.ClipPlane = material.GetClipPlane();
+			context.Enable(CLIP_DISTANCE0);
+		}
+
+		if (material.GetCullMode() != CULL_MODE_NONE)
+		{
+			context.SetCullMode(material.GetCullMode());
+		}
+		else
+		{
+			context.Disable(CULL_FACE);
+		}
+
 		m_pGeoPassPerObject->UpdateData(&perObject);
-		
+
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
+
+		context.Enable(CULL_FACE);
+		context.Disable(CLIP_DISTANCE0);
 	}
 
 	//Unbind = no bugs
@@ -918,8 +936,8 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 	{
 		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
 		const Material& material = *m_DrawableBatches[i].pMaterial;
+		
 		perObject.Color = material.GetColor();
-
 		if (material.HasTexture())
 		{
 			perObject.HasTexture = 1.0f;
@@ -940,10 +958,18 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 			perObject.HasNormalMap = 0.0f;
 		}
 
+		if (material.ClipPlaneEnabled())
+		{
+			perObject.ClipPlane = material.GetClipPlane();
+			context.Enable(CLIP_DISTANCE0);
+		}
+
 		m_pGeoPassPerObject->UpdateData(&perObject);
-		
+
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
+		
+		context.Disable(CLIP_DISTANCE0);
 	}
 
 	//Unbind = no bugs

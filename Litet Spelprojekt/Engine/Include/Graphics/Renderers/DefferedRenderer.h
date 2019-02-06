@@ -18,6 +18,7 @@ struct GPassVSPerFrame
 
 struct GeometryPassPerObject
 {
+	glm::vec4 ClipPlane;
 	glm::vec4 Color;
 	float HasTexture;
 	float HasNormalMap;

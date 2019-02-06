@@ -9,9 +9,10 @@
 class Crewmember : public GameObject, public IRunnable
 {
 public:
-	Crewmember(const glm::vec4 & lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3 & position = glm::vec3(0.0f, 0.0f, 0.0f), const float & actionCap = 100, const std::string & name = "");
-	Crewmember(Crewmember & other);
+	Crewmember(const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
+	Crewmember(Crewmember& other);
 	~Crewmember();
+	
 	///<summary>Moves the objects position in the given direction, use update to apply.</summary>
 	void Move(const glm::vec3 & dir);
 	///<summary>Finds a path to the goal position.</summary>
@@ -47,7 +48,6 @@ private:
 	glm::ivec3* m_pPath;
 	glm::vec3 m_TargetPos;
 	int m_NrOfPathTiles;
-
 };
 
 #endif

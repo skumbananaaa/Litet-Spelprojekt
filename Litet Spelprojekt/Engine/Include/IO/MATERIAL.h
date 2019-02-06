@@ -10,6 +10,8 @@ public:
 	static uint32 BLUE;
 	static uint32 BOAT;
 	static uint32 GROUND;
+	static uint32 WALL_STANDARD;
+	static uint32 CREW_STANDARD;
 
 public:
 	static void RegisterResources();

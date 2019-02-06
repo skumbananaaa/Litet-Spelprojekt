@@ -159,6 +159,7 @@ public:
 	Input& operator=(Input&& other) = delete;
 	Input& operator=(const Input& other) = delete;
 
+	static bool IsKeyPressed(KEY keycode);
 	static bool IsKeyDown(KEY keycode);
 	static bool IsKeyUp(KEY keycode);
 	static bool IsButtonDown(MouseButton button);

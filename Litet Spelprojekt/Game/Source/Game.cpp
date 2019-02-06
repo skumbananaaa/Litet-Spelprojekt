@@ -27,7 +27,8 @@ Game::Game() noexcept
 	m_pTextViewUPS(nullptr),
 	m_pMusic(nullptr),
 	m_pTestAudioSource(nullptr),
-	cartesianCamera(true)
+	cartesianCamera(true),
+	m_CurrentElevation(2)
 {
 	m_pScene = new Scene();
 	ResourceHandler::LoadResources(this);
@@ -249,14 +250,14 @@ void Game::OnResourcesLoaded()
 
 	pGameObject = new GameObject();
 	pGameObject->SetName("ship");
-	pGameObject->SetMaterial(MATERIAL::RED);
+	pGameObject->SetMaterial(MATERIAL::BOAT);
 	pGameObject->SetMesh(MESH::SHIP);
 	pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-	const GameObject* pBoat = m_pScene->GetGameObject("ship");
+	//const GameObject* pBoat = m_pScene->GetGameObject("ship");
 
 
 	pGameObject = new GameObject();
@@ -303,6 +304,14 @@ void Game::OnResourcesLoaded()
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
+	//Enable clipplane for wallmaterial
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->EnableClipPlane(true);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
+
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true);
+	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->EnableClipPlane(true);
+	SetClipPlanes();
+
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
 	{
 		m_pWorld->GenerateWalls(level);
@@ -312,11 +321,12 @@ void Game::OnResourcesLoaded()
 		{
 			wall = m_pWorld->GetLevel(level)->GetWall(i);
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::WHITE);
+			pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
+			
 			m_pScene->AddGameObject(pGameObject);
 		}
 	}
@@ -328,10 +338,12 @@ void Game::OnResourcesLoaded()
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
 		g_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
 		g_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
@@ -545,6 +557,30 @@ void Game::OnUpdate(float dtS)
 			g_Crew.GetMember(i)->FindPath(goalPos);
 		}
 	}
+
+	if (Input::IsKeyPressed(KEY_NUMPAD_2))
+	{
+		if (m_CurrentElevation > 0)
+		{
+			m_CurrentElevation--;
+		}
+		
+		SetClipPlanes();
+		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
+	}
+
+	if (Input::IsKeyPressed(KEY_NUMPAD_8))
+	{
+		if (m_CurrentElevation < 2)
+		{
+			m_CurrentElevation++;
+		}
+
+		SetClipPlanes(); 
+		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
+	}
+
+
 }
 
 void Game::OnRender(float dtS)
@@ -556,4 +592,11 @@ void Game::OnRender(float dtS)
 	m_pDebugRenderer->DrawScene(*m_pScene);
 	//m_pDebugRenderer->DrawScene(*m_pInstancingTestScene);
 #endif
+}
+
+void Game::SetClipPlanes()
+{
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 1.8f + (m_CurrentElevation * 2.0f));
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
+	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
 }

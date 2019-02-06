@@ -37,6 +37,8 @@ public:
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 
+	void SetClipPlanes();
+
 private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
@@ -50,6 +52,7 @@ private:
 	TextView* m_pTextViewUPS;
 	
 	bool cartesianCamera;
+	int32 m_CurrentElevation;
 
 	//Sound
 	SoundEffect* m_pSoundEffect;

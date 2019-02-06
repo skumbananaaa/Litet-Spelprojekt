@@ -8,6 +8,8 @@ uint32 MATERIAL::GREEN = 0;
 uint32 MATERIAL::BLUE = 0;
 uint32 MATERIAL::BOAT = 0;
 uint32 MATERIAL::GROUND = 0;
+uint32 MATERIAL::WALL_STANDARD = 0;
+uint32 MATERIAL::CREW_STANDARD = 0;
 
 void MATERIAL::RegisterResources()
 {
@@ -15,6 +17,8 @@ void MATERIAL::RegisterResources()
 	RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	GREEN				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	BLUE				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-	BOAT				= ResourceHandler::RegisterMaterial(TEXTURE::SHIP, TEXTURE::SHIP_NORMAL);
+	BOAT				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f));
+	WALL_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 }

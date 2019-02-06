@@ -157,6 +157,27 @@ void Game::OnResourcesLoaded()
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
+	int gameObjects = m_pWorld->GetNumWorldObjects();
+
+	for (int i = 0; i < gameObjects; i++)
+	{
+		WorldObject worldObject = m_pWorld->GetWorldObject(i);
+		int32 width = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeX();
+		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
+		int floorLevel = worldObject.TileId.y / 2;
+		GameObject* pGameObject = new GameObject();
+		glm::vec3 pos = worldObject.TileId;
+		pos.x += 1;
+		pos.z += 1;
+		/*pos.x += static_cast<float>(width % 2) / 2.0f;
+		pos.z += static_cast<float>(height % 2) / 2.0f;*/
+		pGameObject->SetPosition(pos);
+		pGameObject->SetMesh(worldObject.MeshId);
+		pGameObject->SetMaterial(worldObject.MaterialId);
+		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
+		m_pScene->AddGameObject(pGameObject);
+	}
+
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
 	{
 		m_pWorld->GenerateWalls(level);

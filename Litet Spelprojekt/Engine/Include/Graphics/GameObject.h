@@ -30,6 +30,8 @@ public:
 	const glm::mat4& GetTransform() const noexcept;
 	const glm::mat4& GetInverseTransform() const noexcept;
 	const glm::vec3& GetPosition() const noexcept;
+	const glm::vec4& GetRotation() const noexcept;
+	const glm::vec3& GetScale() const noexcept;
 
 	bool IsReflectable() const noexcept;
 	bool HasMaterial() const noexcept;
@@ -56,6 +58,16 @@ private:
 inline const glm::vec3& GameObject::GetPosition() const noexcept
 {
 	return m_Position;
+}
+
+inline const glm::vec4& GameObject::GetRotation() const noexcept
+{
+	return m_Rotation;
+}
+
+inline const glm::vec3& GameObject::GetScale() const noexcept
+{
+	return m_Scale;
 }
 
 inline void GameObject::SetMesh(uint32 mesh) noexcept

@@ -15,7 +15,7 @@ out VS_OUT
 	vec2 TexCoords;
 } vs_out;
 
-layout(std140, binding = 0) uniform VSPerFrame
+layout(std140, binding = 0) uniform PerFrame
 {
 	mat4 g_ViewProjection;
 	vec3 g_CameraPosition;

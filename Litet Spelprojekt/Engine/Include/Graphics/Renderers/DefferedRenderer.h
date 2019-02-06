@@ -166,6 +166,7 @@ private:
 	
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
+	Texture2D* m_pDissolveMap;
 	
 	ShaderProgram* m_pCbrBlurProgram;
 	ShaderProgram* m_pCbrReconstructionProgram;

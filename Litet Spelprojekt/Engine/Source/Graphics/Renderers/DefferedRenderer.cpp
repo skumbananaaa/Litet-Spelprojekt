@@ -560,6 +560,7 @@ void DefferedRenderer::Create() noexcept
 	{
 		m_pWaterDistortionMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_DISTORTION);
 		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
+		m_pDissolveMap = ResourceHandler::GetTexture2D(TEXTURE::DISSOLVE_MAP);
 	}
 }
 
@@ -771,6 +772,8 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	perFrame.CameraLookAt = camera.GetLookAt();
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
+	context.SetTexture(m_pDissolveMap, 2);
+
 	GeometryPassPerObject perObject = {};
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
@@ -828,6 +831,7 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 
 	context.SetTexture(nullptr, 0);
 	context.SetTexture(nullptr, 1);
+	context.SetTexture(nullptr, 2);
 }
 
 void DefferedRenderer::LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept

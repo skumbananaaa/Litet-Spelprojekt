@@ -8,6 +8,7 @@ uint32 TEXTURE::SHIP = 0;
 uint32 TEXTURE::SHIP_NORMAL = 0;
 uint32 TEXTURE::WATER_DISTORTION = 0;
 uint32 TEXTURE::WATER_NORMAL = 0;
+uint32 TEXTURE::DISSOLVE_MAP = 0;
 uint32 TEXTURE::HDR = 0;
 
 void TEXTURE::RegisterResources()
@@ -23,6 +24,7 @@ void TEXTURE::RegisterResources()
 	SHIP_NORMAL			= ResourceHandler::RegisterTexture2D("shipNormalMap.png", TEX_FORMAT_RGBA);
 	WATER_DISTORTION	= ResourceHandler::RegisterTexture2D("waterDUDV.png", TEX_FORMAT_RGBA, true, params);
 	WATER_NORMAL		= ResourceHandler::RegisterTexture2D("waterNormalMap.png", TEX_FORMAT_RGBA, true, params);
+	DISSOLVE_MAP		= ResourceHandler::RegisterTexture2D("dissolveMap.png", TEX_FORMAT_R, true, params);
 
 	params.Wrap = TEX_PARAM_EDGECLAMP;
 	params.MagFilter = TEX_PARAM_LINEAR;

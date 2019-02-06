@@ -33,20 +33,6 @@ Game::Game() noexcept :
 	m_pRenderer = new DefferedRenderer();
 	m_pDebugRenderer = new DebugRenderer();
 
-	//const void * paths[6];
-	const char* paths[6];
-	paths[0] = "Resources/Textures/SkyBoxTextures/ss_ft.png"; //forward
-	paths[1] = "Resources/Textures/SkyBoxTextures/ss_bk.png"; //back
-	paths[2] = "Resources/Textures/SkyBoxTextures/ss_up.png"; //up
-	paths[3] = "Resources/Textures/SkyBoxTextures/ss_dn.png"; //down
-	paths[4] = "Resources/Textures/SkyBoxTextures/ss_rt.png"; //right
-	paths[5] = "Resources/Textures/SkyBoxTextures/ss_lf.png"; //left
-
-	TextureParams cubeParams = {};
-	cubeParams.Wrap = TEX_PARAM_EDGECLAMP;
-	cubeParams.MagFilter = TEX_PARAM_LINEAR;
-	cubeParams.MinFilter = TEX_PARAM_LINEAR;
-	//m_pSkyBoxTex = new TextureCube(paths, TEX_FORMAT_RGBA, cubeParams);
 	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -128,8 +114,6 @@ void Game::OnResourcesLoaded()
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
-
-	const GameObject* pBoat = m_pScene->GetGameObject("ship");
 
 
 	pGameObject = new GameObject();
@@ -251,9 +235,9 @@ void Game::OnKeyDown(KEY keycode)
 	Application::OnKeyDown(keycode);
 }
 
-void Game::OnMouseMove(const glm::vec2& position)
+void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	Application::OnMouseMove(position);
+	
 }
 
 void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)

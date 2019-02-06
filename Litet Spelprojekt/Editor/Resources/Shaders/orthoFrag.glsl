@@ -21,10 +21,25 @@ layout(std140, binding = 1) uniform PerObject
 
 out vec4 g_OutColor;
 
+vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 normal, vec3 color, float intensity)
+{
+	//AMBIENT
+	vec3 ambient = vec3(0.1f);
+
+	//DIFFUSE
+	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
+	return ((ambient + diffuse) * color * lightColor);
+}
+
+
 void main()
 {
 	//COLOR
 	vec3 mappedColor = texture(g_Texture, fs_in.TexCoords).rgb * g_HasTexture;
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasTexture);
-	g_OutColor = vec4(uniformColor + mappedColor, 1.0f);
+	vec3 c = uniformColor + mappedColor;
+
+	vec3 lightDir = normalize(vec3(1.0, 1.0, 0.0));
+	vec3 lightColor = vec3(1.0, 1.0, 1.0);
+	g_OutColor = vec4(CalcLight(lightDir, lightColor, fs_in.Normal, c, 1.0f), 1.0);
 }

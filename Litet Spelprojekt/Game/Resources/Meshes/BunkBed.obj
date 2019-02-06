@@ -1,7 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
 mtllib BunkBed.mtl
-g default
 v 0.351031 0.575646 1.488216
 v 0.436259 0.575646 1.488216
 v 0.351031 1.467589 1.488216
@@ -1301,7 +1300,6 @@ vn -1.000000 0.000000 0.000000
 vn -1.000000 0.000000 0.000000
 vn -1.000000 0.000000 0.000000
 s off
-g pCube10
 usemtl initialShadingGroup
 f 1/1/1 2/2/2 4/4/3 3/3/4
 f 3/3/5 4/4/6 6/6/7 5/5/8

@@ -35,12 +35,6 @@ Game::Game() noexcept :
 
 	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
-	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
-	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
-	pCamera->UpdateFromPitchYaw();
-	m_pScene->SetCamera(pCamera);
 
 	//Lights
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
@@ -93,6 +87,11 @@ Game::~Game()
 
 void Game::OnResourcesLoaded()
 {
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.1f, 1000.0f);
+	pCamera->UpdateFromPitchYaw();
+	m_pScene->SetCamera(pCamera);
+
 	GameObject* pGameObject = nullptr;
 	pGameObject = new GameObject();
 	pGameObject->SetDecal(DECAL::BLOOD);
@@ -144,6 +143,15 @@ void Game::OnResourcesLoaded()
 	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
 	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+
+	pGameObject = new GameObject();
+	pGameObject->SetMaterial(MATERIAL::BLUE);
+	pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
+	pGameObject->SetPosition(pCamera->GetLookAt());
+	pGameObject->SetScale(glm::vec3(0.25f));
+	pGameObject->UpdateTransform();
+	pGameObject->SetName("cameraLookAt");
 	m_pScene->AddGameObject(pGameObject);
 
 	//Water?? YAAAS
@@ -354,6 +362,8 @@ void Game::OnUpdate(float dtS)
 
 		m_pScene->GetCamera().UpdateFromLookAt();
 	}
+
+	m_pScene->GetGameObject("cameraLookAt")->SetPosition(m_pScene->GetCamera().GetLookAt());
 
 	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
 	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));

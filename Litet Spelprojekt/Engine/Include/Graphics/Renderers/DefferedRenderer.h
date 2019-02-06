@@ -14,6 +14,8 @@ struct GPassVSPerFrame
 {
 	glm::mat4 ViewProjection;
 	glm::vec3 CameraPosition;
+	float Padding;
+	glm::vec3 CameraLookAt;
 };
 
 struct GeometryPassPerObject

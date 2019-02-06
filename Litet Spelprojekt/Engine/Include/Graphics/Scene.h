@@ -29,6 +29,7 @@ public:
 	SkyBox& GetSkyBox() const noexcept;
 
 	const GameObject* GetGameObject(const std::string& name) const noexcept;
+	GameObject* GetGameObject(const std::string& name) noexcept;
 	const std::vector<GameObject*>& GetGameObjects() const noexcept;
 	const std::vector<GameObject*>& GetDrawables() const noexcept;
 	const std::vector<GameObject*>& GetDecals() const noexcept;

@@ -33,6 +33,14 @@
 
 #define ELEMENT_HEIGHT 50
 
+enum Direction : uint32
+{
+	FORWARD,
+	RIGHT,
+	BACKWARD,
+	LEFT
+};
+
 enum EditingMode : uint32
 {
 	NONE,
@@ -75,6 +83,8 @@ public:
 	uint32 GetCurrentBoatLevel();
 	Scene* GetCurrentScene();
 	std::vector<GameObject*>& GetCurrentMeshes();
+
+	glm::vec3 GetDirectionBasedOnCamera(Direction direction);
 
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();

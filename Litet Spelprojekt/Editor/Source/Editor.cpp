@@ -349,6 +349,59 @@ std::vector<GameObject*>& Editor::GetCurrentMeshes()
 	return m_Meshes[GetCurrentBoatLevel()];
 }
 
+glm::vec3 Editor::GetDirectionBasedOnCamera(Direction direction)
+{
+	Camera& camera = GetCurrentScene()->GetCamera();
+	float yaw = fmod(camera.GetYaw() + glm::quarter_pi<float>(), glm::two_pi<float>());
+	int dir = yaw / glm::half_pi<float>();
+	
+	switch (dir)
+	{
+		case 0:
+		{
+			switch (direction)
+			{
+				case FORWARD: return glm::vec3(1, 0, 0);
+				case RIGHT: return glm::vec3(0, 0, 1);
+				case BACKWARD: return glm::vec3(-1, 0, 0);
+				case LEFT: return glm::vec3(0, 0, -1);
+			}
+		}
+		case 1:
+		{
+			switch (direction)
+			{
+				case FORWARD: return glm::vec3(0, 0, 1);
+				case RIGHT: return glm::vec3(-1, 0, 0);
+				case BACKWARD: return glm::vec3(0, 0, -1);
+				case LEFT: return glm::vec3(1, 0, 0);
+			}
+		}
+		case 2:
+		{
+			switch (direction)
+			{
+				case FORWARD: return glm::vec3(-1, 0, 0);
+				case RIGHT: return glm::vec3(0, 0, -1);
+				case BACKWARD: return glm::vec3(1, 0, 0);
+				case LEFT: return glm::vec3(0, 0, 1);
+			}
+		}
+		case 3:
+		{
+			switch (direction)
+			{
+				case FORWARD: return glm::vec3(0, 0, -1);
+				case RIGHT: return glm::vec3(1, 0, 0);
+				case BACKWARD: return glm::vec3(0, 0, 1);
+				case LEFT: return glm::vec3(-1, 0, 0);
+			}
+		}
+	}
+	std::cout << "Error! Camera dir = " << dir << " This is not a good thing" << std::endl;
+	return glm::vec3();
+}
+
 void Editor::NormalizeTileIndexes() noexcept
 {
 	std::cout << "Normalizing Tile Indexes" << std::endl;
@@ -833,12 +886,6 @@ void Editor::OnKeyUp(KEY keycode)
 
 void Editor::OnKeyDown(KEY keycode)
 {
-	Camera& camera = GetCurrentScene()->GetCamera();
-	float yaw = fmod(camera.GetYaw() + glm::quarter_pi<float>(), glm::two_pi<float>());
-	int dir = yaw / glm::half_pi<float>();
-
-	ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-
 	switch (keycode)
 	{
 		case KEY_O:
@@ -862,12 +909,12 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_UP:
 		{
-			
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
 			if (selectable)
 			{
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
-				object->SetPosition(object->GetPosition() + glm::vec3(1, 0, 0));
+				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(FORWARD));
 			}
 			break;
 		}
@@ -878,7 +925,7 @@ void Editor::OnKeyDown(KEY keycode)
 			{
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
-				object->SetPosition(object->GetPosition() + glm::vec3(-1, 0, 0));
+				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(BACKWARD));
 			}
 			break;
 		}
@@ -889,7 +936,7 @@ void Editor::OnKeyDown(KEY keycode)
 			{
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
-				object->SetPosition(object->GetPosition() + glm::vec3(0, 0, 1));
+				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(LEFT));
 			}
 			break;
 		}
@@ -900,7 +947,18 @@ void Editor::OnKeyDown(KEY keycode)
 			{
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
-				object->SetPosition(object->GetPosition() + glm::vec3(0, 0, -1));
+				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(RIGHT));
+			}
+			break;
+		}
+		case KEY_SPACE:
+		{
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			if (selectable)
+			{
+				Button* button = (Button*)selectable;
+				GameObject* object = (GameObject*)button->GetUserData();
+				object->SetRotation(glm::vec4(0, 1, 0, object->GetRotation().w + glm::half_pi<float>()));
 			}
 			break;
 		}

@@ -281,6 +281,86 @@ void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelect
 	}
 }
 
+void Editor::CreateWalls()
+{
+	for (int i = 0; i < NUM_BOAT_LEVELS; i++)
+	{
+		for (int j = 0; j < m_Walls[i].size(); j++)
+		{
+			for (int k = 0; k < m_ppScenes[i]->GetGameObjects().size(); k++)
+			{
+				if (m_ppScenes[i]->GetGameObjects()[k] == m_Walls[i][j])
+				{
+					m_ppScenes[i]->GetGameObjects().erase(m_ppScenes[i]->GetGameObjects().begin() + k);
+					break;
+				}
+			}
+			delete m_Walls[i][j];
+		}
+		m_Walls[i].clear();
+	}
+
+	std::vector<glm::ivec3> stairs;
+	WorldLevel** ppWorldLevels = CreateWorldLevels(stairs);
+
+	for (int level = 0; level < NUM_GRID_LEVELS; level += 2)
+	{
+		ppWorldLevels[level]->GenerateWalls();
+		float halfWidth = ppWorldLevels[level]->GetSizeX() / 2;
+		float halfHeight = ppWorldLevels[level]->GetSizeZ() / 2;
+		glm::vec4 wall;
+
+		for (int i = 0; i < ppWorldLevels[level]->GetNrOfWalls(); i++)
+		{
+			wall = ppWorldLevels[level]->GetWall(i);
+			GameObject* pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::WHITE);
+			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetPosition(glm::vec3(wall.x - halfWidth, 1.0f, wall.y - halfHeight));
+			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
+			pGameObject->UpdateTransform();
+			m_ppScenes[level / 2]->AddGameObject(pGameObject);
+			m_Walls[level / 2].push_back(pGameObject);
+		}
+	}
+}
+
+WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs)
+{
+	WorldLevel** ppWorldLevels = new WorldLevel*[NUM_GRID_LEVELS];
+
+	for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
+	{
+		uint32 levelSizeX = m_ppGrids[gridId]->GetSize().x + 2;
+		uint32 levelSizeY = m_ppGrids[gridId]->GetSize().y + 2;
+		uint32* pLevel = new uint32[levelSizeX * levelSizeY];
+
+		for (uint32 x = 0; x < levelSizeX; x++)
+		{
+			for (uint32 y = 0; y < levelSizeY; y++)
+			{
+				if (x == 0 || x == levelSizeX - 1 || y == 0 || y == levelSizeY - 1)
+				{
+					pLevel[x * levelSizeY + y] = TILE_NON_WALKABLE_INDEX;
+				}
+				else
+				{
+					Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x - 1, y - 1));
+					pLevel[x * levelSizeY + y] = pTile->GetID();
+
+					if (pTile->HasStairs())
+					{
+						stairs.push_back(glm::ivec3(x, gridId, y));
+					}
+				}
+			}
+		}
+
+		ppWorldLevels[gridId] = new WorldLevel(pLevel, levelSizeX, levelSizeY);
+	}
+	return ppWorldLevels;
+}
+
 void Editor::CreateMesh(GameObject* pGameObject)
 {
 	//Create new object
@@ -312,6 +392,7 @@ void Editor::ClearLevels()
 	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
 	{
 		m_Meshes[i].clear();
+		m_Walls[i].clear();
 
 		if (i > 0)
 		{
@@ -963,38 +1044,9 @@ void Editor::OnButtonReleased(Button* button)
 	Editor* editor = GetEditor();
 	if (button == editor->m_pButtonSave)
 	{
-		WorldLevel** ppWorldLevels = new WorldLevel*[NUM_GRID_LEVELS];
 		std::vector<glm::ivec3> stairs;
-
-		for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
-		{
-			uint32 levelSizeX = editor->m_ppGrids[gridId]->GetSize().x + 2;
-			uint32 levelSizeY = editor->m_ppGrids[gridId]->GetSize().y + 2;
-			uint32* pLevel = new uint32[levelSizeX * levelSizeY];
-
-			for (uint32 x = 0; x < levelSizeX; x++)
-			{
-				for (uint32 y = 0; y < levelSizeY; y++)
-				{
-					if (x == 0 || x == levelSizeX - 1 || y == 0 || y == levelSizeY - 1)
-					{
-						pLevel[x * levelSizeY + y] = TILE_NON_WALKABLE_INDEX;
-					}
-					else
-					{
-						Tile* pTile = editor->m_ppGrids[gridId]->GetTile(glm::ivec2(x - 1, y - 1));
-						pLevel[x * levelSizeY + y] = pTile->GetID();
-
-						if (pTile->HasStairs())
-						{
-							stairs.push_back(glm::ivec3(x, gridId, y));
-						}
-					}
-				}
-			}
-
-			ppWorldLevels[gridId] = new WorldLevel(pLevel, levelSizeX, levelSizeY);
-		}
+		WorldLevel** ppWorldLevels = editor->CreateWorldLevels(stairs);
+	
 
 		int objects = 0;
 		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
@@ -1165,6 +1217,8 @@ void Editor::OnButtonReleased(Button* button)
 		{
 			editor->m_ppScenes[i]->SelectCamera(0);
 		}
+
+		editor->CreateWalls();
 	}
 	else
 	{

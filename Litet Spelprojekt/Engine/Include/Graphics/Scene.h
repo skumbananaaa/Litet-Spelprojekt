@@ -29,6 +29,8 @@ public:
 	SkyBox& GetSkyBox() const noexcept;
 
 	const GameObject* GetGameObject(const std::string& name) const noexcept;
+
+	std::vector<GameObject*>& GetGameObjects() noexcept;
 	const std::vector<GameObject*>& GetGameObjects() const noexcept;
 	const std::vector<GameObject*>& GetDrawables() const noexcept;
 	const std::vector<GameObject*>& GetDecals() const noexcept;
@@ -66,6 +68,11 @@ inline const Camera& Scene::GetCamera() const noexcept
 inline SkyBox& Scene::GetSkyBox() const noexcept
 {
 	return *m_pSkyBox;
+}
+
+inline std::vector<GameObject*>& Scene::GetGameObjects() noexcept
+{
+	return m_GameObjects;
 }
 
 inline const std::vector<GameObject*>& Scene::GetGameObjects() const noexcept

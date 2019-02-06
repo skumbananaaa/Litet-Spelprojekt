@@ -76,6 +76,8 @@ public:
 	void OnSelected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 
+	void CreateWalls();
+	WorldLevel** CreateWorldLevels(std::vector<glm::ivec3>& stairs);
 	void CreateMesh(GameObject* pGameObject);
 	void ClearLevels();
 	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;
@@ -112,6 +114,7 @@ private:
 	Grid** m_ppGrids;
 
 	std::vector<GameObject*> m_Meshes[NUM_BOAT_LEVELS];
+	std::vector<GameObject*> m_Walls[NUM_BOAT_LEVELS];
 
 	Button* m_pButtonSave;
 	Button* m_pButtonLoad;

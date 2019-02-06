@@ -76,7 +76,7 @@ public:
 	void OnSelected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 
-	void CreateMesh(uint32 mesh);
+	void CreateMesh(GameObject* pGameObject);
 	void ClearLevels();
 	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;
 

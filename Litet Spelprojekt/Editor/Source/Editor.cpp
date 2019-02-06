@@ -281,17 +281,10 @@ void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelect
 	}
 }
 
-void Editor::CreateMesh(uint32 mesh)
+void Editor::CreateMesh(GameObject* pGameObject)
 {
-	GameObject* pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::WHITE);
-	pGameObject->SetMesh(mesh);
-	pGameObject->SetPosition(CalculateMeshPosition(glm::vec3(0, 0, 0)));
-	GetCurrentScene()->AddGameObject(pGameObject);
-	GetCurrentMeshes().push_back(pGameObject);
-
 	//Create new object
-	std::string name = ResourceHandler::GetMeshName(mesh);
+	std::string name = ResourceHandler::GetMeshName(pGameObject->GetMesh());
 	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), GetCurrentMeshes().size() * ELEMENT_HEIGHT + 4);
 	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - GetCurrentMeshes().size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
 	pButton->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
@@ -1003,16 +996,37 @@ void Editor::OnButtonReleased(Button* button)
 			ppWorldLevels[gridId] = new WorldLevel(pLevel, levelSizeX, levelSizeY);
 		}
 
-		WorldObject worldObjects[5] =
+		int objects = 0;
+		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
 		{
-			{ glm::uvec3(0, 1, 2), 1337, 69 },
-			{ glm::uvec3(3, 4, 5), 1337, 420 },
-			{ glm::uvec3(6, 7, 8), 1337, 5 },
-			{ glm::uvec3(9, 10, 11), 1337, 15 },
-			{ glm::uvec3(12, 13, 14), 1337, 8 },
-		};
+			objects += editor->m_Meshes[i].size();
+		}
 
-		World* pWorld = new World(ppWorldLevels, NUM_GRID_LEVELS, worldObjects, 5);
+		std::cout << "Preparing to save: " << objects << " GameObjects" << std::endl;
+
+		WorldObject* worldObjects = new WorldObject[objects];
+		int counter = 0;
+		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
+		{
+			glm::ivec2 gridSize = editor->m_ppGrids[i]->GetSize() / 2;
+			for (int j = 0; j < editor->m_Meshes[i].size(); j++)
+			{
+				GameObject* gameObject = editor->m_Meshes[i][j];
+				glm::uvec3 position = glm::uvec3(gameObject->GetPosition()) + glm::uvec3(gridSize.x, i * 2, gridSize.y);
+				int32 mesh = ResourceHandler::GetMesh(gameObject->GetMesh());
+				int32 material = ResourceHandler::GetMaterial(gameObject->GetMaterial());
+				float rotation = gameObject->GetRotation().w;
+
+				if (mesh == -1 || material == -1)
+				{
+					std::cout << "Skipping GameObject with Mesh: " << mesh << ", Material: " << material << std::endl;
+					continue;
+				}
+				worldObjects[counter++] = { position, static_cast<uint32>(mesh), static_cast<uint32>(material), rotation};
+			}
+		}
+
+		World* pWorld = new World(ppWorldLevels, NUM_GRID_LEVELS, worldObjects, objects);
 		uint32 numStairs = stairs.size();
 
 		if (numStairs > 0)
@@ -1023,6 +1037,7 @@ void Editor::OnButtonReleased(Button* button)
 		WorldSerializer::Write("../Game/world.json", *pWorld);
 		DeleteArr(ppWorldLevels);
 		Delete(pWorld);
+		DeleteArr(worldObjects);
 	}
 	else if (button == editor->m_pButtonLoad)
 	{
@@ -1110,6 +1125,23 @@ void Editor::OnButtonReleased(Button* button)
 			pTile->SetDefaultMaterial(MATERIAL::BLUE);
 		}
 
+		int gameObjects = pWorld->GetNumWorldObjects();
+
+		for (int i = 0; i < gameObjects; i++)
+		{
+			WorldObject worldObject = pWorld->GetWorldObject(i);
+			glm::ivec2 gridSize = editor->m_ppGrids[worldObject.TileId.y]->GetSize() / 2;
+			int floorLevel = worldObject.TileId.y / 2;
+			GameObject* pGameObject = new GameObject();
+			pGameObject->SetPosition(editor->CalculateMeshPosition(glm::ivec3(static_cast<int32>(worldObject.TileId.x) - gridSize.x, worldObject.TileId.y % 2, static_cast<int32>(worldObject.TileId.z) - gridSize.y)));
+			pGameObject->SetMesh(worldObject.MeshId);
+			pGameObject->SetMaterial(worldObject.MaterialId);
+			pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
+			editor->m_ppScenes[floorLevel]->AddGameObject(pGameObject);
+			editor->m_Meshes[floorLevel].push_back(pGameObject);
+			editor->CreateMesh(pGameObject);
+		}
+
 		editor->m_RoomBeingEdited = -1;
 		editor->m_LargestIndexUsed = largestUsedTileId;
 		editor->m_MouseMaterial = MATERIAL::WHITE;
@@ -1139,7 +1171,14 @@ void Editor::OnButtonReleased(Button* button)
 		uint32 id = reinterpret_cast<uint32>(button->GetUserData());
 		std::cout << "Creting Mesh from ID " << id << std::endl;
 
-		editor->CreateMesh(id);
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMesh(id);
+		pGameObject->SetPosition(editor->CalculateMeshPosition(glm::vec3(0, 0, 0)));
+		editor->GetCurrentScene()->AddGameObject(pGameObject);
+		editor->GetCurrentMeshes().push_back(pGameObject);
+
+		editor->CreateMesh(pGameObject);
 	}
 }
 

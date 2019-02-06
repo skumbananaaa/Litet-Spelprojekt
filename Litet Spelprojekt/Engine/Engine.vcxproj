@@ -33,8 +33,10 @@
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
+    <ClInclude Include="Include\Graphics\GUI\ISelectable.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
+    <ClInclude Include="Include\Graphics\GUI\SelectionHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
@@ -60,6 +62,7 @@
     <ClInclude Include="Include\Graphics\Textures\Texture.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture2D.h" />
     <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
+    <ClInclude Include="Include\Graphics\Textures\TextureHelper.h" />
     <ClInclude Include="Include\IO\WorldSerializer.h" />
     <ClInclude Include="Include\STB\stb_image.h" />
     <ClInclude Include="Include\System\Application.h" />
@@ -82,6 +85,7 @@
     <ClInclude Include="Include\IO\MATERIAL.h" />
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
+    <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_MATERIAL.cpp" />
     <ClCompile Include="Source\IO\R_MESH.cpp" />

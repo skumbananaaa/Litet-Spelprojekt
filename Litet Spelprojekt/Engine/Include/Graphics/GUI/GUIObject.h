@@ -14,7 +14,7 @@ public:
 	bool HasParent() const noexcept;
 	GUIObject* GetParent() const noexcept;
 
-	void Add(GUIObject* parent) noexcept;
+	virtual void Add(GUIObject* parent) noexcept;
 	void Remove(GUIObject* parent) noexcept;
 
 	virtual float GetWidth() const noexcept;
@@ -27,8 +27,8 @@ public:
 	virtual void SetSize(float width, float height) noexcept;
 	virtual void SetPosition(float x, float y) noexcept;
 
-	void SetVisible(bool visible) noexcept;
-	bool IsVisible() noexcept;
+	virtual void SetVisible(bool visible) noexcept;
+	virtual bool IsVisible() noexcept;
 
 	bool IsDirty() const noexcept;
 	bool IsMyChild(const GUIObject* child) const noexcept;
@@ -41,7 +41,13 @@ public:
 
 	virtual bool ContainsPoint(const glm::vec2& position) const noexcept;
 
+	virtual void DeleteChildren();
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
+
+	void SetUserData(void* data);
+	void* GetUserData() const;
+
+	const std::vector<GUIObject*>& GetChildren();
 
 protected:
 	GUIObject(float x, float y, float width, float height);
@@ -124,6 +130,7 @@ private:
 	Texture2D* m_pBackgroundTexture;
 	glm::vec4 m_BackgroundColor;
 	bool m_DeleteAll;
+	void* m_pUserData;
 
 	static std::vector<GUIObject*> s_MouseListeners;
 	static std::vector<GUIObject*> s_RealTimeRenderers;

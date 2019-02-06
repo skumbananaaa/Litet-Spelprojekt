@@ -22,7 +22,7 @@ GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.
 		std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 		GLint param = 0;
-		GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &param));
+		GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &param));
 		std::cout << "Max Texture units: " << param << std::endl;
 		GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_SIZE, &param));
 		std::cout << "Max Texture size: " << param << " pixels" << std::endl;

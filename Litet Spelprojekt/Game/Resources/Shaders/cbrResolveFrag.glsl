@@ -114,11 +114,6 @@ void main()
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
-		if (i > 3)
-		{
-			break;
-		}
-
 		vec3 lightDir = g_PointLights[i].Position.xyz - position;
 		float dist = length(lightDir);
 		lightDir = normalize(lightDir);

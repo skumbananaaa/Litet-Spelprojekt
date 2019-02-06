@@ -21,12 +21,14 @@ public:
 	void SetTitle(const char* pTitle) noexcept;
 	int32 GetWidth() const noexcept;
 	int32 GetHeight() const noexcept;
+	float GetAspectRatio() const noexcept;
 	GLFWwindow* GetHandle() const noexcept;
 
 private:
 	GLFWwindow* m_pWindow;
 	int32 m_Width;
 	int32 m_Height;
+	float m_AspectRatio;
 	glm::vec2 m_LastMousePosition;
 
 private:
@@ -55,4 +57,9 @@ inline int32 Window::GetWidth() const noexcept
 inline int32 Window::GetHeight() const noexcept
 {
 	return m_Height;
+}
+
+inline float Window::GetAspectRatio() const noexcept
+{
+	return m_AspectRatio;
 }

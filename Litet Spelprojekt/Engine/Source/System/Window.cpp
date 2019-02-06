@@ -377,8 +377,9 @@ void Window::KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 a
 
 void Window::MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 {
-	s_pMainWindow->m_LastMousePosition = glm::vec2(x, Window::GetCurrentWindow().m_Height - y);
-	Application::GetInstance().InternalOnMouseMove(s_pMainWindow->m_LastMousePosition);
+	glm::vec2 mousePosition = glm::vec2(x, Window::GetCurrentWindow().m_Height - y);
+	Application::GetInstance().InternalOnMouseMove(s_pMainWindow->m_LastMousePosition, mousePosition);
+	s_pMainWindow->m_LastMousePosition = mousePosition;
 }
 
 void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action, int32 mods)
@@ -388,7 +389,7 @@ void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action
 
 void Window::MouseScrollCallback(GLFWwindow* pWindow, double offsetX, double offsetY)
 {
-	Application::GetInstance().InternalOnMouseScroll(glm::vec2(offsetX, offsetY));
+	Application::GetInstance().InternalOnMouseScroll(glm::vec2(offsetX, offsetY), s_pMainWindow->m_LastMousePosition);
 }
 
 void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
@@ -396,6 +397,7 @@ void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
 	Window* pMyWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(pWindow));
 	pMyWindow->m_Height = height;
 	pMyWindow->m_Width = width;
+	pMyWindow->m_AspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
 	Application::GetInstance().InternalOnResize(width, height);
 }
@@ -403,7 +405,8 @@ void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)
 Window::Window(const char* pTitle, int32 width, int32 height, bool fullscreen) noexcept
 	: m_pWindow(nullptr),
 	m_Width(0),
-	m_Height(0)
+	m_Height(0),
+	m_AspectRatio(0)
 {
 	assert(s_pMainWindow == nullptr);
 	s_pMainWindow = this;
@@ -449,6 +452,7 @@ Window::Window(const char* pTitle, int32 width, int32 height, bool fullscreen) n
 	{
 		m_Width = width;
 		m_Height = height;
+		m_AspectRatio = static_cast<float>(width) / static_cast<float>(height);
 	}
 
 	glfwMakeContextCurrent(m_pWindow);

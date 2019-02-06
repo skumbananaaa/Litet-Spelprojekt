@@ -17,7 +17,7 @@ public:
 	Application& operator=(Application&& other) = delete;
 	Application& operator=(const Application& other) = delete;
 
-	Application(bool fullscreen = true);
+	Application(bool fullscreen = true, uint32 width = 1024, uint32 height = 768);
 	virtual ~Application();
 
 	int32_t Run();
@@ -32,7 +32,7 @@ public:
 protected:
 	virtual void OnUpdate(float dtS) {};
 	virtual void OnRender(float dtS) {};
-	virtual void OnMouseMove(const glm::vec2& position) {};
+	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
 	virtual void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnKeyUp(KEY keycode) {};
@@ -50,8 +50,8 @@ private:
 
 	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);
-	void InternalOnMouseMove(glm::vec2& position);
-	void InternalOnMouseScroll(glm::vec2& offset);
+	void InternalOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
+	void InternalOnMouseScroll(const glm::vec2& offset, const glm::vec2& position);
 	void InternalOnMouseButton(MouseButton mousebutton, bool down, const glm::vec2& position);
 	void InternalOnKeyUp(KEY keycode);
 	void InternalOnKeyDown(KEY keycode);
@@ -77,15 +77,15 @@ inline void Application::InternalOnUpdate(float dtS)
 	OnUpdate(dtS);
 }
 
-inline void Application::InternalOnMouseMove(glm::vec2& position)
+inline void Application::InternalOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	OnMouseMove(position);
+	OnMouseMove(lastPosition, position);
 	m_pGUIManager->InternalRootOnMouseMove(position);
 }
 
-inline void Application::InternalOnMouseScroll(glm::vec2& offset)
+inline void Application::InternalOnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
-	m_pGUIManager->InternalRootOnMouseScroll(offset);
+	m_pGUIManager->InternalRootOnMouseScroll(position, offset);
 }
 
 inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool down, const glm::vec2& position)
@@ -95,12 +95,12 @@ inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool dow
 		if (down)
 		{
 			OnMousePressed(mousebutton, position);
-			m_pGUIManager->InternalRootOnMousePressed(mousebutton);
+			m_pGUIManager->InternalRootOnMousePressed(position, mousebutton);
 		}
 		else
 		{
 			OnMouseReleased(mousebutton, position);
-			m_pGUIManager->InternalRootOnMouseReleased(mousebutton);
+			m_pGUIManager->InternalRootOnMouseReleased(position, mousebutton);
 		}
 	}
 }

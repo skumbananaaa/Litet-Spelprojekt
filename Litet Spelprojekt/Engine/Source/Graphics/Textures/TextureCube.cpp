@@ -33,15 +33,6 @@ TextureCube::TextureCube(const Texture2D* tex)
 	CreateFromPanorama(tex);
 }
 
-TextureCube::TextureCube(uint32 texID, TEX_FORMAT & format, TextureParams & parameters, uint32 size)
-{
-	m_Texture = texID;
-	m_Format = format;
-	//SetParameters(parameters);
-	m_Width = size;
-	m_Height = size;
-}
-
 TextureCube::~TextureCube()
 {
 }

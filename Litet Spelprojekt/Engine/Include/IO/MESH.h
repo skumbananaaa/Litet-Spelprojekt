@@ -10,6 +10,8 @@ public:
 	static uint32 CUBE;
 	static uint32 CUBE_OBJ;
 	static uint32 SPHERE;
+	static uint32 BED_SINGLE;
+	Static uint32 BED_BUNK;
 
 public:
 	static void RegisterResources();

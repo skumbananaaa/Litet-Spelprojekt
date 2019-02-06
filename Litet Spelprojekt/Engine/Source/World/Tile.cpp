@@ -3,7 +3,8 @@
 
 Tile::Tile(uint32 material, const glm::vec3& pos, uint32 id) : GameObject()
 {
-	//m_Color = color;
+	m_HasStairs = false;
+	m_DefaultMaterial = material;
 	GameObject::SetMesh(MESH::QUAD);
 	GameObject::SetMaterial(material);
 	GameObject::SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::pi<float>() / 2.0f));
@@ -21,19 +22,20 @@ void Tile::SetID(uint32 id)
 	m_Id = id;
 }
 
-void Tile::SetColor(const glm::vec4& color)
+void Tile::SetDefaultMaterial(uint32 material) noexcept
 {
-	//m_pMaterial->SetColor(color);
-	m_Color = color;
+	m_DefaultMaterial = material;
+	GameObject::SetMaterial(material);
 }
 
-void Tile::SetTint(const glm::vec4& tint)
+void Tile::ResetMaterial() noexcept
 {
-	glm::vec4 finalColor = (m_Color + tint) / 2.0f;
-	//m_pMaterial->SetColor(finalColor);
+	GameObject::SetMaterial(m_DefaultMaterial);
 }
 
-void Tile::ResetColor()
+void Tile::SetHasStairs(bool value) noexcept
 {
-	//m_pMaterial->SetColor(m_Color);
+	m_HasStairs = value;
 }
+
+

@@ -16,6 +16,8 @@ GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_pBackgroundTexture(nullptr),
 	m_pParent(nullptr),
 	m_IsVisible(true),
+	m_pUserData(nullptr),
+	m_IsDirty(false),
 	m_BackgroundColor(1.0, 1.0, 1.0, 1.0)
 {
 	if (width > 0 && height > 0)
@@ -30,6 +32,9 @@ GUIObject::~GUIObject()
 	{
 		delete m_pFramebuffer;
 	}
+
+	RemoveMouseListener(this);
+	RemoveRealTimeRenderer(this);
 
 	if (m_DeleteAll)
 	{
@@ -79,9 +84,9 @@ void GUIObject::RequestRepaint()
 		{
 			GetParent()->m_ChildrenDirty.push_back(this);
 			GetParent()->RequestRepaint();
+			m_IsDirty = true;
 		}
 	}
-	m_IsDirty = true;
 }
 
 void GUIObject::AddMouseListener(GUIObject* listener)
@@ -229,7 +234,10 @@ void GUIObject::SetPosition(float x, float y) noexcept
 	{
 		m_Position.x = x;
 		m_Position.y = y;
-		RequestRepaint();
+		if (HasParent())
+		{
+			GetParent()->RequestRepaint();
+		}
 	}
 }
 
@@ -256,23 +264,28 @@ void GUIObject::InternalOnUpdate(float dtS)
 	/*
 	* Remove the children who wants to be removed
 	*/
-	for (GUIObject* objectToRemove : m_ChildrenToRemove)
+	if (!m_ChildrenToRemove.empty())
 	{
-		int32 counter = 0;
-		for (GUIObject* object : m_Children)
+		for (GUIObject* objectToRemove : m_ChildrenToRemove)
 		{
-			if (objectToRemove == object)
+			int32 counter = 0;
+			for (GUIObject* object : m_Children)
 			{
-				m_Children.erase(m_Children.begin() + counter);
-				objectToRemove->OnRemoved(this);
-				objectToRemove->m_pParent = nullptr;
-				std::cout << "GUI Object Removed" << std::endl;
-				return;
+				if (objectToRemove == object)
+				{
+					m_Children.erase(m_Children.begin() + counter);
+					objectToRemove->OnRemoved(this);
+					objectToRemove->m_pParent = nullptr;
+					std::cout << "GUI Object Removed" << std::endl;
+					return;
+				}
+				counter++;
 			}
-			counter++;
 		}
+		m_ChildrenToRemove.clear();
+		RequestRepaint();
 	}
-	m_ChildrenToRemove.clear();
+	
 
 	/*
 	* Add the children who wants to be added
@@ -290,8 +303,8 @@ void GUIObject::InternalOnUpdate(float dtS)
 		for (GUIObject* objectToAdd : newChildren)
 		{
 			m_Children.push_back(objectToAdd);
-			m_ChildrenDirty.push_back(objectToAdd);
 			objectToAdd->m_pParent = this;
+			objectToAdd->RequestRepaint();
 			objectToAdd->OnAdded(this);
 			std::cout << "Added: ";
 			objectToAdd->PrintName();
@@ -428,7 +441,7 @@ void GUIObject::RenderChildrensFrameBuffers(GUIContext* context)
 {
 	for (GUIObject* child : m_Children)
 	{
-		if (child->IsVisible())
+		if (child->m_IsVisible)
 		{
 			context->RenderFrameBuffer(child->m_pFramebuffer, child->GetX(), child->GetY());
 		}
@@ -485,9 +498,34 @@ bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 	return false;
 }
 
+void GUIObject::DeleteChildren()
+{
+	for (GUIObject* object : m_Children)
+	{
+		object->DeleteChildren();
+		delete object;
+	}
+	m_Children.clear();
+}
+
 void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
 {
 	m_DeleteAll = deleteAll;
+}
+
+void GUIObject::SetUserData(void* data)
+{
+	m_pUserData = data;
+}
+
+void* GUIObject::GetUserData() const
+{
+	return m_pUserData;
+}
+
+const std::vector<GUIObject*>& GUIObject::GetChildren()
+{
+	return m_Children;
 }
 
 Texture2D* GUIObject::GetDefaultTexture() const
@@ -507,44 +545,44 @@ Texture2D* GUIObject::GetClearTexture() const
 
 void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMousePressed(position, mousebutton);
+			s_MouseListeners[i]->OnMousePressed(position, mousebutton);
 		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMouseReleased(position, mousebutton);
+			s_MouseListeners[i]->OnMouseReleased(position, mousebutton);
 		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMouseMove(position);
+			s_MouseListeners[i]->OnMouseMove(position);
 		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
 {
-	for (GUIObject* object : s_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		if (object->IsVisible())
+		if (s_MouseListeners[i]->IsVisible())
 		{
-			object->OnMouseScroll(position, offset);
+			s_MouseListeners[i]->OnMouseScroll(position, offset);
 		}
 	}
 	InternalRootOnMouseMove(position);

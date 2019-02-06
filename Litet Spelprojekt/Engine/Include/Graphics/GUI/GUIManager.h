@@ -16,10 +16,10 @@ public:
 
 	void InternalRootOnRender();
 	void InternalRootOnUpdate(float dtS);
-	void InternalRootOnMousePressed(MouseButton mousebutton);
-	void InternalRootOnMouseReleased(MouseButton mousebutton);
+	void InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton);
+	void InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton);
 	void InternalRootOnMouseMove(const glm::vec2& position);
-	void InternalRootOnMouseScroll(const glm::vec2& offset);
+	void InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset);
 
 	void InternalRootOnKeyUp(KEY keycode);
 	void InternalRootOnKeyDown(KEY keycode);
@@ -29,5 +29,4 @@ protected:
 
 private:
 	GUIContext* context;
-	glm::vec2 m_LastMousePosition;
 };

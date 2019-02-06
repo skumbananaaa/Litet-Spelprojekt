@@ -421,9 +421,6 @@ void Game::OnUpdate(float dtS)
 		SetClipPlanes(); 
 		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
 	}
-
-
-	}
 }
 
 void Game::OnRender(float dtS)

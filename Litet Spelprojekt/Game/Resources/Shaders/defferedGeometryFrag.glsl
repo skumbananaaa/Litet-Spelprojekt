@@ -15,7 +15,7 @@ in VS_OUT
 layout(binding = 0) uniform sampler2D g_Texture;
 layout(binding = 1) uniform sampler2D g_NormalMap;
 
-layout(std140, binding = 0) uniform VSPerFrame
+layout(std140, binding = 0) uniform PerFrame
 {
 	mat4 g_ViewProjection;
 	vec3 g_CameraPosition;

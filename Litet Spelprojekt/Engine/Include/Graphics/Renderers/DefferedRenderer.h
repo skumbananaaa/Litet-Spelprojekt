@@ -146,7 +146,8 @@ private:
 	Framebuffer* m_pReflection;
 	mutable Framebuffer* m_pCurrentResolveTarget;
 	mutable Framebuffer* m_pLastResolveTarget;
-	
+	Texture2D* m_pForwardCBRTexture;
+
 	FullscreenTri* m_pTriangle;
 	
 	UniformBuffer* m_pGeoPassPerFrame;

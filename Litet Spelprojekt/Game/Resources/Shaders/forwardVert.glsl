@@ -15,7 +15,7 @@ out VS_OUT
 	vec2 TexCoords;
 } vs_out;
 
-layout(std140, binding = 0) uniform VSPerFrame
+layout(std140, binding = 0) uniform PerFrame
 {
 	mat4 g_ViewProjection;
 	vec3 g_CameraPosition;
@@ -34,7 +34,7 @@ layout(std140, binding = 1) uniform PerObject
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
+	gl_ClipDistance[0] = dot(worldPos, vec4(0.0f, 1.0f, 0.0f, 0.01f));
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;

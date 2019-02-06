@@ -1,6 +1,8 @@
 #pragma once
 #include "Texture.h"
 
+class Texture2D;
+
 //Maximum amount of rendertargets usally is 8
 struct FramebufferDesc
 {
@@ -19,7 +21,7 @@ class API Framebuffer
 
 public:
 	Framebuffer(const FramebufferDesc& desc);
-	Framebuffer(const Texture* texture);
+	Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil);
 	~Framebuffer();
 
 	Texture* GetColorAttachment(uint32 index) const;
@@ -30,12 +32,12 @@ public:
 
 private:
 	void Create(const FramebufferDesc& desc);
-	void Create(const Texture* texture);
+	void Create(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil);
 	void CreateFramebuffer();
 
 private:
 	Texture* m_ppColor[8];
-	Texture* m_pDepth;
+	Texture* m_pDepthStencil;
 	uint32 m_NumColorAttachments;
 	uint32 m_Framebuffer;
 	uint32 m_Width;
@@ -43,7 +45,6 @@ private:
 	uint32 m_Samples;
 	bool m_IsOwner;
 };
-
 
 inline Texture* Framebuffer::GetColorAttachment(uint32 index) const
 {
@@ -53,7 +54,7 @@ inline Texture* Framebuffer::GetColorAttachment(uint32 index) const
 
 inline Texture* Framebuffer::GetDepthAttachment() const
 {
-	return m_pDepth;
+	return m_pDepthStencil;
 }
 
 inline uint32 Framebuffer::GetColorAttachmentCount() const

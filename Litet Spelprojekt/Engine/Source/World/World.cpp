@@ -15,6 +15,9 @@ World::World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects, 
 	{
 		m_Objects.push_back(objects[i]);
 	}
+
+	m_pStairs = nullptr;
+	m_NumStairs = 0;
 }
 
 World::~World()
@@ -67,13 +70,14 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 {
 	m_NumStairs = nrOfStairs;
 	m_pStairs = new glm::ivec3[m_NumStairs];
-	for (int i = 0; i < m_NumStairs; i++)
+
+	for (int i = 0; i < m_NumStairs; i++) 
 	{
 		m_pStairs[i] = stairs[i];
 	}
 }
 
-glm::ivec3 * World::GetStairs() const noexcept
+const glm::ivec3* World::GetStairs() const noexcept
 {
 	return m_pStairs;
 }

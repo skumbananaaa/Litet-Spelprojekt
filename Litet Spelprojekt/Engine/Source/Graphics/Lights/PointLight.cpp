@@ -15,6 +15,6 @@ PointLight::~PointLight()
 
 void PointLight::SetColor(const glm::vec4& color) noexcept
 {
-	m_Color = glm::vec4(glm::normalize(glm::vec3(color)), color.w);
+	m_Color = color;
 }
 

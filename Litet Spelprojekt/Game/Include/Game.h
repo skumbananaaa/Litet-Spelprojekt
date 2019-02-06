@@ -33,7 +33,7 @@ public:
 
 	void OnKeyUp(KEY keycode) override;
 	void OnKeyDown(KEY keycode) override;
-	void OnMouseMove(const glm::vec2& position) override;
+	void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 

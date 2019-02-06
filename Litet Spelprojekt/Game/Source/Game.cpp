@@ -367,9 +367,9 @@ void Game::OnKeyDown(KEY keycode)
 	Application::OnKeyDown(keycode);
 }
 
-void Game::OnMouseMove(const glm::vec2& position)
+void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	Application::OnMouseMove(position);
+	
 }
 
 void Game::OnUpdate(float dtS)

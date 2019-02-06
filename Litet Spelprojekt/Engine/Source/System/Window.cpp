@@ -377,8 +377,9 @@ void Window::KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 a
 
 void Window::MouseMoveCallback(GLFWwindow* pWindow, double x, double y)
 {
-	s_pMainWindow->m_LastMousePosition = glm::vec2(x, Window::GetCurrentWindow().m_Height - y);
-	Application::GetInstance().InternalOnMouseMove(s_pMainWindow->m_LastMousePosition);
+	glm::vec2 mousePosition = glm::vec2(x, Window::GetCurrentWindow().m_Height - y);
+	Application::GetInstance().InternalOnMouseMove(s_pMainWindow->m_LastMousePosition, mousePosition);
+	s_pMainWindow->m_LastMousePosition = mousePosition;
 }
 
 void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action, int32 mods)
@@ -388,7 +389,7 @@ void Window::MouseButtonCallback(GLFWwindow* pWindow, int32 button, int32 action
 
 void Window::MouseScrollCallback(GLFWwindow* pWindow, double offsetX, double offsetY)
 {
-	Application::GetInstance().InternalOnMouseScroll(glm::vec2(offsetX, offsetY));
+	Application::GetInstance().InternalOnMouseScroll(glm::vec2(offsetX, offsetY), s_pMainWindow->m_LastMousePosition);
 }
 
 void Window::ResizeCallback(GLFWwindow* pWindow, int32 width, int32 height)

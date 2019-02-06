@@ -452,7 +452,7 @@ glm::ivec2 Editor::CalculateLowestCorner(const glm::ivec2& firstCorner, const gl
 	return lowestCorner;
 }
 
-void Editor::OnMouseMove(const glm::vec2& position)
+void Editor::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
 	for (uint32 x = 0; x < m_ppGrids[m_CurrentGridIndex]->GetSize().x; x++)
 	{
@@ -529,6 +529,12 @@ void Editor::OnMouseMove(const glm::vec2& position)
 				}
 			}
 		}
+	}
+
+	if (!Input::IsCurserVisible())
+	{
+		GetCurrentScene()->GetCamera().OffsetPitch((position.y - lastPosition.y) / 1000.0F);
+		GetCurrentScene()->GetCamera().OffsetYaw((position.x - lastPosition.x) / 1000.0F);
 	}
 }
 
@@ -815,10 +821,24 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 
 void Editor::OnKeyUp(KEY keycode)
 {
+	switch (keycode)
+	{
+		case KEY_LEFT_CTRL:
+		{
+			Input::SetCurserVisible(true);
+			break;
+		}
+	}
 }
 
 void Editor::OnKeyDown(KEY keycode)
 {
+	Camera& camera = GetCurrentScene()->GetCamera();
+	float yaw = fmod(camera.GetYaw() + glm::quarter_pi<float>(), glm::two_pi<float>());
+	int dir = yaw / glm::half_pi<float>();
+
+	ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+
 	switch (keycode)
 	{
 		case KEY_O:
@@ -835,9 +855,14 @@ void Editor::OnKeyDown(KEY keycode)
 
 			break;
 		}
+		case KEY_LEFT_CTRL:
+		{
+			Input::SetCurserVisible(false);
+			break;
+		}
 		case KEY_UP:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			
 			if (selectable)
 			{
 				Button* button = (Button*)selectable;
@@ -1108,7 +1133,7 @@ void Editor::OnUpdate(float dtS)
 			camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 		}
 	}
-	else if(Input::IsKeyUp(KEY_LEFT_CTRL))
+	else if(!Input::IsCurserVisible())
 	{
 		static float cartesianCameraSpeed = 5.0f;
 		static float cartesianCameraAngularSpeed = 1.5f;
@@ -1139,24 +1164,6 @@ void Editor::OnUpdate(float dtS)
 		else if (Input::IsKeyDown(KEY_Q))
 		{
 			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_UP))
-		{
-			GetCurrentScene()->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_DOWN))
-		{
-			GetCurrentScene()->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_LEFT))
-		{
-			GetCurrentScene()->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_RIGHT))
-		{
-			GetCurrentScene()->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
 		}
 	}
 	GetCurrentScene()->OnUpdate(dtS);

@@ -7,8 +7,8 @@
 #include <IO/ResourceHandler.h>
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 3
-#define NUM_SPOT_LIGHTS 20
+#define NUM_POINT_LIGHTS 18
+#define NUM_SPOT_LIGHTS 16
 
 struct GPassVSPerFrame
 {

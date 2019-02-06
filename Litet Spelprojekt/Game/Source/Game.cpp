@@ -50,7 +50,8 @@ Game::Game() noexcept :
 	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 3.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 3.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(0.0f, -1.0f, -1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -97,66 +98,73 @@ Game::~Game()
 void Game::OnResourcesLoaded()
 {
 	GameObject* pGameObject = nullptr;
-	pGameObject = new GameObject();
-	pGameObject->SetDecal(DECAL::BLOOD);
-	pGameObject->SetPosition(glm::vec3(-6.0f, 2.0f, 0.0f));
-	pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
-	pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
-	pGameObject->UpdateTransform();
-	g_pDecalObject = pGameObject;
-	m_pScene->AddGameObject(pGameObject);
-
-	pGameObject = new GameObject();
-	pGameObject->SetName("ship");
-	pGameObject->SetMaterial(MATERIAL::RED);
-	pGameObject->SetMesh(MESH::SHIP);
-	pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
-	pGameObject->SetScale(glm::vec3(1.0f));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::GROUND);
-	pGameObject->SetMesh(MESH::CLIFF_3_LOW);
-	pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
-	pGameObject->SetScale(glm::vec3(0.4f));
-	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::RED);
-	pGameObject->SetMesh(MESH::CUBE_OBJ);
-	pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, -10.0f));
-	pGameObject->SetScale(glm::vec3(0.25f));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::GREEN);
-	pGameObject->SetMesh(MESH::CUBE_OBJ);
-	pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, -10.0f));
-	pGameObject->SetScale(glm::vec3(0.25f));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::BLUE);
-	pGameObject->SetMesh(MESH::CUBE_OBJ);
-	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
-	pGameObject->SetScale(glm::vec3(0.25f));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-	//Water?? YAAAS
-	pGameObject = new GameObject();
-	pGameObject->SetIsReflectable(true);
-	pGameObject->SetMesh(MESH::QUAD);
-	pGameObject->SetScale(glm::vec3(200.0f));
-	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetDecal(DECAL::BLOOD);
+		pGameObject->SetPosition(glm::vec3(-6.0f, 2.0f, 0.0f));
+		pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
+		pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+		pGameObject->UpdateTransform();
+		g_pDecalObject = pGameObject;
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetName("ship");
+		pGameObject->SetMaterial(MATERIAL::RED);
+		pGameObject->SetMesh(MESH::SHIP);
+		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
+		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::GROUND);
+		pGameObject->SetMesh(MESH::CLIFF_3_LOW);
+		pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
+		pGameObject->SetScale(glm::vec3(0.4f));
+		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::RED);
+		pGameObject->SetMesh(MESH::CUBE_OBJ);
+		pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, -10.0f));
+		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::GREEN);
+		pGameObject->SetMesh(MESH::CUBE_OBJ);
+		pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, -10.0f));
+		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::BLUE);
+		pGameObject->SetMesh(MESH::CUBE_OBJ);
+		pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
+		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		//Water?? YAAAS
+		pGameObject = new GameObject();
+		pGameObject->SetIsReflectable(true);
+		pGameObject->SetMesh(MESH::QUAD);
+		pGameObject->SetScale(glm::vec3(200.0f));
+		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
@@ -205,7 +213,7 @@ void Game::OnResourcesLoaded()
 		m_Crew.AddMember(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(x, 0.9f + y, z), 100, names[i % NUM_CREW]);
 		m_CrewList[i] = "";
 		m_pScene->AddGameObject(m_Crew.GetMember(i));
-		m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetLight());
+		//m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}

@@ -17,4 +17,6 @@ void MESH::RegisterResources()
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj");
 	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj");
 	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj");
+	BED_BUNK				= ResourceHandler::RegisterMesh("BunkBed.obj");
+	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed.obj");
 }

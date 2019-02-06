@@ -49,6 +49,7 @@ World* WorldSerializer::Read(const char* const path)
 		worldObjects[objectId].TileId.z = objects[objectId]["tileIdZ"].GetUint();
 		worldObjects[objectId].MeshId = objects[objectId]["meshId"].GetUint();
 		worldObjects[objectId].MaterialId = objects[objectId]["materialId"].GetUint();
+		worldObjects[objectId].Rotation = objects[objectId]["rotation"].GetFloat();
 	}
 
 	const Value& stairs = jsonObject["stairs"];
@@ -119,6 +120,8 @@ void WorldSerializer::Write(const char* const path, const World& world)
 		writer.Uint(currentObject.MeshId);
 		writer.String("materialId");
 		writer.Uint(currentObject.MaterialId);
+		writer.String("rotation");
+		writer.Double(currentObject.Rotation);
 		writer.EndObject();
 	}
 

@@ -40,7 +40,6 @@ struct LightBuffer
 
 layout(std140, binding = 1) uniform PerObject
 {
-	mat4 g_Model;
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;

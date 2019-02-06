@@ -10,6 +10,7 @@ public:
 	static uint32 SHIP_NORMAL;
 	static uint32 WATER_DISTORTION;
 	static uint32 WATER_NORMAL;
+	static uint32 HDR;
 
 public:
 	static void RegisterResources();

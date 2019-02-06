@@ -41,6 +41,16 @@ void Input::SetMousePosition(const glm::vec2& position)
 	glfwSetCursorPos(Window::GetCurrentWindow().GetHandle(), position.x, position.y);
 }
 
+bool Input::IsCurserVisible()
+{
+	return glfwGetInputMode(Window::GetCurrentWindow().GetHandle(), GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
+}
+
+void Input::SetCurserVisible(bool visible)
+{
+	glfwSetInputMode(Window::GetCurrentWindow().GetHandle(), GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+}
+
 void Input::Update()
 {
 	memcpy(g_LastKeyState, g_CurrentKeyState, sizeof(g_CurrentKeyState));

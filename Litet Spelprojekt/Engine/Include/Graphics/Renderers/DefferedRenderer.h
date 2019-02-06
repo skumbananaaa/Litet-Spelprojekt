@@ -7,7 +7,7 @@
 #include <IO/ResourceHandler.h>
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 8
+#define NUM_POINT_LIGHTS 18
 #define NUM_SPOT_LIGHTS 8
 
 struct GPassVSPerFrame
@@ -129,11 +129,11 @@ private:
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void WaterReflectionPass(const Scene& sceen) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
+	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
 	
 	//DELETE?
 	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
-	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
 
 private:
 	Framebuffer* m_pGBufferCBR;

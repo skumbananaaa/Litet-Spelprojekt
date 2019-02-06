@@ -68,6 +68,12 @@
     <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
     <None Include="Resources\Shaders\VShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
+    <None Include="Resources\Textures\SkyBoxTextures\VShaderEquirecToCubemap.glsl" />
+    <None Include="Resources\Textures\SkyBoxTextures\ocean.hdr">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
+    <None Include="Resources\Shaders\VShaderEquirecToCubemap.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

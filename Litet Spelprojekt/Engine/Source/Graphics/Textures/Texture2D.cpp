@@ -100,7 +100,20 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 	int width;
 	int height;
 	int nrChannels;
-	uint8* textureData = stbi_load(path, &width, &height, &nrChannels, FormatToNrChannels(format));
+	uint32 type = Texture::TexFormatToGLType(format);
+	void* textureData;
+	if (type == GL_FLOAT)
+	{
+		stbi_set_flip_vertically_on_load(true);
+		
+		int channels = FormatToNrChannels(format);
+		textureData = stbi_loadf(path, &width, &height, &nrChannels, channels);
+	}
+	else
+	{
+		textureData = stbi_load(path, &width, &height, &nrChannels, FormatToNrChannels(format));
+	}
+
 	if (textureData == nullptr)
 	{
 		std::cout << "Error: Could not load texture '" << path << "'" << std::endl;
@@ -116,7 +129,6 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 
 	uint32 glformat = Texture::TexFormatToGL(format);
 	uint32 internalFormat = Texture::TexFormatToGLInternal(format);
-	uint32 type = Texture::TexFormatToGLType(format);
 	GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, glformat, type, textureData));
 
 	if (generateMipmaps)
@@ -136,5 +148,5 @@ void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateM
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-	delete textureData;
+	stbi_image_free(textureData);
 }

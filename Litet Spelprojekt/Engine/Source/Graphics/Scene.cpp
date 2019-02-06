@@ -9,7 +9,11 @@ Scene::Scene() noexcept
 
 Scene::~Scene()
 {
-	DeleteSafe(m_pCamera);
+	for (size_t i = 0; i < m_Cameras.size(); i++)
+	{
+		DeleteSafe(m_Cameras[i]);
+	}
+
 	DeleteSafe(m_pSkyBox);
 
 	for (size_t i = 0; i < m_GameObjects.size(); i++)
@@ -33,14 +37,43 @@ Scene::~Scene()
 	}
 }
 
-void Scene::SetCamera(Camera* pCamera) noexcept
+void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
 {
+	if (m_Cameras.size() == index)
+	{
+		m_Cameras.push_back(pCamera);
+	}
+	else if (index > m_Cameras.size())
+	{
+		std::cout << "Failed to set camera!!! Index out of range" << std::endl;
+		return;
+	}
+	else
+	{
+		m_Cameras[index] = pCamera;
+	}
 	m_pCamera = pCamera;
+}
+
+void Scene::SelectCamera(uint32 index)
+{
+	m_pCamera = m_Cameras[index];
 }
 
 void Scene::SetSkyBox(SkyBox * pSkyBox) noexcept
 {
 	m_pSkyBox = pSkyBox;
+}
+
+const GameObject* Scene::GetGameObject(const std::string& name) const noexcept
+{
+	auto item = m_NamedObjects.find(name);
+	if (item == m_NamedObjects.end())
+	{
+		return nullptr;
+	}
+
+	return item->second;
 }
 
 void Scene::AddGameObject(GameObject* pGameObject) noexcept
@@ -60,7 +93,13 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 
 	if (pGameObject->IsReflectable())
 	{
-		m_GameObjects.push_back(pGameObject);
+		m_Reflectables.push_back(pGameObject);
+	}
+
+	const std::string& name = pGameObject->GetName();
+	if (name != "")
+	{
+		m_NamedObjects[name] = pGameObject;
 	}
 }
 

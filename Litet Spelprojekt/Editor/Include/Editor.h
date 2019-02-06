@@ -33,6 +33,14 @@
 
 #define ELEMENT_HEIGHT 50
 
+enum Direction : uint32
+{
+	FORWARD,
+	RIGHT,
+	BACKWARD,
+	LEFT
+};
+
 enum EditingMode : uint32
 {
 	NONE,
@@ -68,13 +76,15 @@ public:
 	void OnSelected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 
-	void CreateMesh(uint32 mesh);
+	void CreateMesh(GameObject* pGameObject);
 	void ClearLevels();
 	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;
 
 	uint32 GetCurrentBoatLevel();
 	Scene* GetCurrentScene();
 	std::vector<GameObject*>& GetCurrentMeshes();
+
+	glm::vec3 GetDirectionBasedOnCamera(Direction direction);
 
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();

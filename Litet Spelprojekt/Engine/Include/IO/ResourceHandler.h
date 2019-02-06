@@ -23,8 +23,10 @@ public:
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
 
 	static IndexedMesh* GetMesh(uint32 mesh);
+	static int32 GetMesh(const IndexedMesh* mesh);
 	static Texture2D* GetTexture2D(uint32 texture);
 	static Material* GetMaterial(uint32 material);
+	static int32 GetMaterial(const Material* material);
 	static Decal* GetDecal(uint32 decal);
 
 	static std::string GetMeshName(uint32 mesh);

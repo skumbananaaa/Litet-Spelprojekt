@@ -118,6 +118,18 @@ IndexedMesh* ResourceHandler::GetMesh(uint32 mesh)
 	return m_pIndexedMeshes[mesh];
 }
 
+int32 ResourceHandler::GetMesh(const IndexedMesh* mesh)
+{
+	for (uint32 i = 0; i < m_NrOfMeshes; i++)
+	{
+		if (m_pIndexedMeshes[i] == mesh)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 Texture2D* ResourceHandler::GetTexture2D(uint32 texture)
 {
 	return m_pTexture2Ds[texture];
@@ -126,6 +138,18 @@ Texture2D* ResourceHandler::GetTexture2D(uint32 texture)
 Material* ResourceHandler::GetMaterial(uint32 material)
 {
 	return m_pMaterials[material];
+}
+
+int32 ResourceHandler::GetMaterial(const Material* material)
+{
+	for (uint32 i = 0; i < m_NrOfMaterials; i++)
+	{
+		if (m_pMaterials[i] == material)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 
 Decal* ResourceHandler::GetDecal(uint32 decal)
@@ -140,14 +164,12 @@ std::string ResourceHandler::GetMeshName(uint32 mesh)
 
 std::string ResourceHandler::GetMeshName(const IndexedMesh* mesh)
 {
-	for (uint32 i = 0; i < m_NrOfMeshes; i++)
+	int32 id = GetMesh(mesh);
+	if (id == -1)
 	{
-		if (m_pIndexedMeshes[i] == mesh)
-		{
-			return GetMeshName(i);
-		}
+		return "Error!";
 	}
-	return "Error!";
+	return GetMeshName(id);
 }
 
 void ResourceHandler::QuaryMeshes(std::vector<MESH_DESC>& list)

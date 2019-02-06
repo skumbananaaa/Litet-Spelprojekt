@@ -18,7 +18,7 @@ public:
 	static uint32 CHAIR;
 	static uint32 SPHERE;
 	static uint32 BED_SINGLE;
-	Static uint32 BED_BUNK;
+	static uint32 BED_BUNK;
 
 public:
 	static void RegisterResources();

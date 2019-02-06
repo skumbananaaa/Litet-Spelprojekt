@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib chair.mtl
+mtllib Chair.mtl
 v 0.163727 0.576366 0.224859
 v 0.105222 0.576366 0.224859
 v 0.075970 0.576366 0.224859

@@ -9,6 +9,8 @@ uint32 MESH::CUBE = 0;
 uint32 MESH::CUBE_OBJ = 0;
 uint32 MESH::CHAIR = 0;
 uint32 MESH::SPHERE = 0;
+uint32 MESH::BED_BUNK = 0;
+uint32 MESH::BED_SINGLE = 0;
 
 void MESH::RegisterResources()
 {
@@ -17,8 +19,8 @@ void MESH::RegisterResources()
 	SHIP					= ResourceHandler::RegisterMesh("ship.obj", false);
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj", false);
 	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj", false);
-	CHAIR					= ResourceHandler::RegisterMesh("chair.obj");
-	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj");
+	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj", false);
+	CHAIR					= ResourceHandler::RegisterMesh("Chair.obj");
 	BED_BUNK				= ResourceHandler::RegisterMesh("BunkBed.obj");
 	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed.obj");
 }

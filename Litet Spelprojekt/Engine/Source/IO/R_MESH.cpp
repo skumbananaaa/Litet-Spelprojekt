@@ -24,7 +24,7 @@ void MESH::RegisterResources()
 	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj", false);
 	CHAIR					= ResourceHandler::RegisterMesh("Chair.obj");
 	BED_BUNK				= ResourceHandler::RegisterMesh("BunkBed.obj");
-	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed.obj");
+	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed1.obj");
 	INSTRUMENT_1			= ResourceHandler::RegisterMesh("Instrument1.obj");
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
 }

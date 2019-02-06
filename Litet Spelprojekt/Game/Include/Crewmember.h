@@ -31,9 +31,11 @@ public:
 	const bool IsMoving() const;
 	///<summary>Sets a new position for the object.</summary>
 	void SetPosition(const glm::vec3& position) noexcept;
-	///<summary>Updates matrix of the object.</summary>
+	const glm::vec3& GetDirection() const noexcept;
+	void SetDirection(const glm::vec3& direction) noexcept;
 
 	virtual void RunParallel() override;
+	///<summary>Updates matrix of the object.</summary>
 	virtual void Update(float deltaTime) override;
 
 private:
@@ -47,6 +49,7 @@ private:
 	glm::ivec3 m_GoalTile;
 	glm::ivec3* m_pPath;
 	glm::vec3 m_TargetPos;
+	glm::vec3 m_Direction;
 	int m_NrOfPathTiles;
 };
 

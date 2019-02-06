@@ -2,6 +2,7 @@
 #include <IO/MATERIAL.h>
 #include <IO/ResourceHandler.h>
 
+uint32 MATERIAL::BLACK = 0;
 uint32 MATERIAL::WHITE = 0;
 uint32 MATERIAL::RED = 0;
 uint32 MATERIAL::GREEN = 0;
@@ -13,6 +14,7 @@ uint32 MATERIAL::CREW_STANDARD = 0;
 
 void MATERIAL::RegisterResources()
 {
+	BLACK				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0F, 0.0F, 1.0F));
 	WHITE				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0F, 1.0F, 1.0F));
 	RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	GREEN				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));

@@ -15,6 +15,7 @@ public:
 	//TextureCube(const void* ppInitalData[6], TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params = TextureParams());
 	TextureCube(const char* const paths[6], TEX_FORMAT format, const TextureParams & params = TextureParams());
 	TextureCube(const Texture2D * tex);
+	TextureCube(uint32 texID, TEX_FORMAT & format, TextureParams & parameters, uint32 size);
 	~TextureCube();
 
 	uint32 GetWidth() const noexcept;
@@ -22,12 +23,11 @@ public:
 
 private:
 	//void Create(const void** ppInitalData, TEX_FORMAT format, uint32 width, uint32 height, const TextureParams& params);
-
+	TextureCube();
 	///<summary>Creates a texturecube out of 6 images given y their filepaths</summary>
 	void Create(const char* const paths[6], TEX_FORMAT format, const TextureParams & params);
 	///<summary>Creates a texturecube from a panorama (HDR) image</summary>
 	void CreateFromPanorama(const Texture2D * tex);
-
 	struct PanoramaBuff
 	{
 		glm::mat4 projection;
@@ -35,6 +35,7 @@ private:
 	};
 
 public:
+	static TextureCube* CreateTextureFromPanorama(const Texture2D * tex);
 private:
 	uint32 m_Width;
 	uint32 m_Height;

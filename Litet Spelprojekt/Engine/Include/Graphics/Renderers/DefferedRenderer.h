@@ -7,13 +7,15 @@
 #include <IO/ResourceHandler.h>
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 8
+#define NUM_POINT_LIGHTS 18
 #define NUM_SPOT_LIGHTS 8
 
 struct GPassVSPerFrame
 {
 	glm::mat4 ViewProjection;
 	glm::vec3 CameraPosition;
+	float Padding;
+	glm::vec3 CameraLookAt;
 };
 
 struct GeometryPassPerObject

@@ -4,6 +4,7 @@
 class API MATERIAL
 {
 public:
+	static uint32 BLACK;
 	static uint32 WHITE;
 	static uint32 RED;
 	static uint32 GREEN;

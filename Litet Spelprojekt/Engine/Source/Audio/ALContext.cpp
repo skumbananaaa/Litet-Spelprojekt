@@ -1,11 +1,10 @@
 #include <EnginePch.h>
 #include <Audio/ALContext.h>
 
-ALContext::ALContext()
+ALContext::ALContext() :
+	m_pDevice(nullptr),
+	m_pContext(nullptr)
 {
-	m_pDevice = nullptr;
-	m_pContext = nullptr;
-
 	ALboolean enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	if (enumeration == AL_TRUE)
 	{
@@ -22,22 +21,24 @@ ALContext::ALContext()
 	{
 		std::cout << "Could not create OpenAL Device Handle" << std::endl;
 	}
-
-	m_pContext = alcCreateContext(m_pDevice, NULL);
-
-	if (alcMakeContextCurrent(m_pContext) != AL_TRUE)
-	{
-		std::cout << "Could not make OpenAL Context Current" << std::endl;
-	}
 	else
 	{
-		if (ALContext::HasErrors())
+		m_pContext = alcCreateContext(m_pDevice, NULL);
+
+		if (alcMakeContextCurrent(m_pContext) != AL_TRUE)
 		{
-			std::cout << "OpenAL could not be initialized" << std::endl;
+			std::cout << "Could not make OpenAL Context Current" << std::endl;
 		}
 		else
 		{
-			std::cout << "OpenAL initialized" << std::endl;
+			if (ALContext::HasErrors())
+			{
+				std::cout << "OpenAL could not be initialized" << std::endl;
+			}
+			else
+			{
+				std::cout << "OpenAL initialized" << std::endl;
+			}
 		}
 	}
 }

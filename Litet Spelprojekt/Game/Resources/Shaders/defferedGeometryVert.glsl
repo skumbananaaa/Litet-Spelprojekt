@@ -8,6 +8,7 @@ layout(location = 4) in mat4 g_InstanceModel;
 
 out VS_OUT
 {
+	vec4 Position;
 	vec3 Normal;
 	vec3 Tangent;
 	vec3 Binormal;
@@ -18,6 +19,8 @@ layout(std140, binding = 0) uniform PerFrame
 {
 	mat4 g_ViewProjection;
 	vec3 g_CameraPosition;
+	float g_Padding;
+	vec3 g_CameraLookAt;
 };
 
 layout(std140, binding = 1) uniform PerObject
@@ -36,6 +39,7 @@ void main()
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
 	
+	vs_out.Position = worldPos;
 	vs_out.Normal = normal;
 	vs_out.Tangent = tangent;
 	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);

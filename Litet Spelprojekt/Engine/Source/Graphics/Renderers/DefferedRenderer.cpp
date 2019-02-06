@@ -487,6 +487,8 @@ void DefferedRenderer::Create() noexcept
 		GPassVSPerFrame object = {};
 		object.ViewProjection = glm::mat4(1.0f);
 		object.CameraPosition = glm::vec3();
+		object.Padding = 0.0f;
+		object.CameraLookAt = glm::vec3();
 
 		m_pGeoPassPerFrame = new UniformBuffer(&object, 1, sizeof(GPassVSPerFrame));
 	}
@@ -573,6 +575,7 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	GPassVSPerFrame perFrame = {};
 	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
 	perFrame.CameraPosition = scene.GetCamera().GetPosition();
+	perFrame.CameraLookAt = scene.GetCamera().GetLookAt();
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	GeometryPassPerObject perObject = {};
@@ -757,7 +760,6 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	}
 
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
-
 	context.SetProgram(m_pGeometryPassProgram);
 
 	context.SetUniformBuffer(m_pGeoPassPerFrame, 0);
@@ -766,6 +768,7 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	GPassVSPerFrame perFrame = {};
 	perFrame.ViewProjection = camera.GetCombinedMatrix();
 	perFrame.CameraPosition = camera.GetPosition();
+	perFrame.CameraLookAt = camera.GetLookAt();
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	GeometryPassPerObject perObject = {};
@@ -929,6 +932,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 	GPassVSPerFrame perFrame = {};
 	perFrame.ViewProjection = camera.GetCombinedMatrix();
 	perFrame.CameraPosition = camera.GetPosition();
+	perFrame.CameraLookAt = camera.GetLookAt();
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	GeometryPassPerObject perObject = {};
@@ -986,7 +990,7 @@ void DefferedRenderer::WaterReflectionPass(const Scene& scene) const noexcept
 	if (scene.GetReflectables().size() < 1)
 	{
 #if defined(_DEBUG)
-		std::cout << "No reflectables, skipping reflectionpass" << std::endl;
+		//std::cout << "No reflectables, skipping reflectionpass" << std::endl;
 #endif
 		return;
 	}

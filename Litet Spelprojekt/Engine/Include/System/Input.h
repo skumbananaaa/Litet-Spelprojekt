@@ -166,6 +166,8 @@ public:
 	static bool IsButtonUp(MouseButton button);
 	static glm::vec2 GetMousePosition();
 	static void SetMousePosition(const glm::vec2& position);
+	static bool IsCurserVisible();
+	static void SetCurserVisible(bool visible);
 
 private:
 	static void Update();

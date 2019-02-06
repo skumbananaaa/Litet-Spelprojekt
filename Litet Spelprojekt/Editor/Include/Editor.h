@@ -12,26 +12,21 @@
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
-#include <Graphics/GUI/SelectionHandler.h>
 #include <World/Grid.h>
 #include <IO/ResourceHandler.h>
 #include <IO/WorldSerializer.h>
-#include <Graphics/Textures/TextureHelper.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/string_cast.hpp>
 #include <GLM\glm.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
-#define NUM_GRID_LEVELS 6
-#define NUM_BOAT_LEVELS 3
-
-#define MAX_NUM_ROOMS 128
-#define TILE_DOOR_INDEX 0
-#define TILE_NON_WALKABLE_INDEX 1
-#define TILE_SMALLEST_FREE 2
-
-#define ELEMENT_HEIGHT 50
+#define NUM_ROOM_COLORS 6
+#define TILE_UNDEFINED_INDEX 0
+#define TILE_DOOR_INDEX 1
+#define TILE_LADDER_UP 2
+#define TILE_LADDER_DOWN 3
+#define TILE_SMALLEST_FREE 4
 
 enum EditingMode : uint32
 {
@@ -40,22 +35,19 @@ enum EditingMode : uint32
 	EDIT_ROOM,
 	DELETE_ROOM,
 	ADD_DOOR,
-	REMOVE_DOOR,
-	ADD_STAIRS,
-	REMOVE_STAIRS
+	REMOVE_DOOR
 };
 
-class Editor : public Application, public IResourceListener, public ISelectionListener
+class Editor : public Application, public IResourceListener
 {
 public:
 	Editor() noexcept;
 	~Editor();
 
-	void NormalizeTileIndexes() noexcept;
 	glm::ivec2 CalculateGridPosition(const glm::vec2& mousePosition) noexcept;
 	glm::ivec2 CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept;
 
-	void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
+	void OnMouseMove(const glm::vec2& position) override;
 	void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnKeyUp(KEY keycode) override;
@@ -65,43 +57,29 @@ public:
 	void OnRender(float dtS) override;
 
 	void OnResourcesLoaded() override;
-	void OnSelected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
-	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
-
-	void CreateMesh(uint32 mesh);
-	void ClearLevels();
-	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;
-
-	uint32 GetCurrentBoatLevel();
-	Scene* GetCurrentScene();
-	std::vector<GameObject*>& GetCurrentMeshes();
 
 	static void OnButtonReleased(Button* button);
 	static Editor* GetEditor();
 
 private:
 	IRenderer* m_pRenderer;
-	Scene** m_ppScenes;
-	float m_CameraZoom;
+	Scene* m_pScene;
 
 	EditingMode m_CurrentEditingMode;
 
-	uint32 m_TileTints[MAX_NUM_ROOMS];
-	uint32 m_TileColors[MAX_NUM_ROOMS];
+	glm::vec3 m_RoomColors[NUM_ROOM_COLORS];
 	uint32 m_LargestIndexUsed;
-	uint32 m_CurrentGridIndex;
 
 	bool m_Dragging;
 	int32 m_RoomBeingEdited;
 	glm::ivec2 m_FirstCorner;
 
-	uint32 m_MouseMaterial;
+	glm::vec3 m_MouseColor;
 
 	std::vector<UniformBuffer*> m_GameObjectUniforms;
 
-	Grid** m_ppGrids;
-
-	std::vector<GameObject*> m_Meshes[NUM_BOAT_LEVELS];
+	Grid* m_pGrid;
+	UniformBuffer* m_pGridUniform;
 
 	Button* m_pButtonSave;
 	Button* m_pButtonLoad;
@@ -109,29 +87,17 @@ private:
 	Button* m_pButtonMesh;
 	Panel* m_pPanelTop;
 
-	SelectionHandler m_SelectionHandlerFloor;
 	TextView* m_pTextViewFloor;
 	Button* m_pButtonFloor1;
 	Button* m_pButtonFloor2;
 	Button* m_pButtonFloor3;
 	Panel* m_pPanelFloor;
 
-	SelectionHandler m_SelectionHandlerRoom;
 	TextView* m_pTextViewEditor;
-	Button* m_pButtonAddRoom;
-	Button* m_pButtonEditRoom;
-	Button* m_pButtonRemoveRoom;
+	Button* m_pButtonAdd;
+	Button* m_pButtonEdit;
+	Button* m_pButtonRemove;
 	Button* m_pButtonAddDoor;
 	Button* m_pButtonRemoveDoor;
-	Button* m_pButtonAddStairs;
-	Button* m_pButtonRemoveStairs;
 	Panel* m_pPanelEditor;
-
-	SelectionHandler m_SelectionHandlerMesh;
-	SelectionHandler m_SelectionHandlerMeshEdit;
-	Panel* m_pPanelMesh;
-	Button* m_pButtonAddMesh;
-	Button* m_pButtonEditMesh;
-	PanelScrollable* m_pPanelScrollableAddMesh;
-	PanelScrollable* m_pPanelScrollableEditMesh;
 };

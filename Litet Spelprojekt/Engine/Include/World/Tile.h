@@ -10,29 +10,22 @@ public:
 
 	///<summary>Sets the id of the tile.</summary>
 	void SetID(uint32 id);
-	///<summary>Sets the current and default material, this material gets set as current when ResetMaterial is called. </summary>
-	void SetDefaultMaterial(uint32 material) noexcept;
-	///<summary>Sets the current material to the default material. </summary>
-	void ResetMaterial() noexcept;
-	void SetHasStairs(bool value) noexcept;
+	///<summary>Sets the color of the tile.</summary>
+	void SetColor(const glm::vec4& color);
+	///<summary>Sets a tint on top of the color of the tile.</summary>
+	void SetTint(const glm::vec4& tint);
+	///<summary>Resets the color of the tile to the default color.</summary>
+	void ResetColor();
 
 	///<summary>Returns the id of the tile.</summary>
-	uint32 GetID() const;
-	///<summary>Returns the id of the tile.</summary>
-	bool HasStairs() const;
+	const uint32 GetID() const;
 
 private:
 	uint32 m_Id;
-	uint32 m_DefaultMaterial;
-	bool m_HasStairs;
+	glm::vec4 m_Color;
 };
 
-inline uint32 Tile::GetID() const
+inline const uint32 Tile::GetID() const
 {
 	return m_Id;
-}
-
-inline bool Tile::HasStairs() const
-{
-	return m_HasStairs;
 }

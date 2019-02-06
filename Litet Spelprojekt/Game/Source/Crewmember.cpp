@@ -40,10 +40,10 @@ Crewmember::~Crewmember()
 
 void Crewmember::RunParallel()
 {
-	//if (!m_pPathFinder->IsGoalSet() && m_NrOfPathTiles == 0) {
+	if (!m_pPathFinder->IsGoalSet() && m_NrOfPathTiles == 0) {
 		m_pPath = m_pPathFinder->FindPath(m_PlayerTile, m_GoalTile);
 		m_NrOfPathTiles = m_pPathFinder->GetNrOfPathTiles();
-	//}
+	}
 }
 
 void Crewmember::Update(float deltaTime)

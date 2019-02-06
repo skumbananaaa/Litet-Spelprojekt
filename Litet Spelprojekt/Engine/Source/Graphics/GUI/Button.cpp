@@ -7,10 +7,8 @@ Button::Button(float x, float y, float width, float height, const std::string& t
 	m_IsHovered(false),
 	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
 	m_HoverColor(0.6F, 0.6F, 0.6F, 1.0F),
-	m_SelectedColor(0.553F, 0.824F, 0.541F, 1.0F),
 	m_PressedTextColor(0.0F, 0.0F, 0.0F, 1.0F),
 	m_HoverTextColor(1.0F, 1.0F, 1.0F, 1.0F),
-	m_SelectedTextColor(0.0F, 0.0F, 0.0F, 1.0F),
 	m_OnPressedCallback(onPressedCallback),
 	m_OnReleasedCallback(onReleasedCallback)
 {
@@ -20,7 +18,6 @@ Button::Button(float x, float y, float width, float height, const std::string& t
 
 Button::~Button()
 {
-	m_ButtonListeners.clear();
 }
 
 Texture2D* Button::GetOnPressedTexture() const noexcept
@@ -71,23 +68,6 @@ void Button::SetOnHoverColor(const glm::vec4& color)
 	}
 }
 
-const glm::vec4& Button::GetOnSelectedColor() const noexcept
-{
-	return m_SelectedColor;
-}
-
-void Button::SetOnSelectedColor(const glm::vec4& color)
-{
-	if (m_SelectedColor != color)
-	{
-		m_SelectedColor = color;
-		if (IsSelected())
-		{
-			RequestRepaint();
-		}
-	}
-}
-
 const glm::vec4& Button::GetOnPressedTextColor() const noexcept
 {
 	return m_PressedTextColor;
@@ -119,32 +99,6 @@ void Button::SetOnHoverTextColor(const glm::vec4& color)
 		{
 			RequestRepaint();
 		}
-	}
-}
-
-const glm::vec4& Button::GetOnSelectedTextColor() const noexcept
-{
-	return m_SelectedTextColor;
-}
-
-void Button::SetOnSelectedTextColor(const glm::vec4& color)
-{
-	if (m_SelectedTextColor != color)
-	{
-		m_SelectedTextColor = color;
-		if (IsSelected())
-		{
-			RequestRepaint();
-		}
-	}
-}
-
-void Button::SetSelected(bool selected)
-{
-	if (IsSelected() != selected)
-	{
-		ISelectable::SetSelected(selected);
-		RequestRepaint();
 	}
 }
 
@@ -215,10 +169,6 @@ void Button::OnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 		{
 			listener->OnButtonReleased(this);
 		}
-		for (ISelectableListener* listener : GetSelectionListeners())
-		{
-			listener->OnSelected(this);
-		}
 	}
 }
 
@@ -260,10 +210,6 @@ const glm::vec4& Button::GetClearColor() const
 	{
 		return GetOnPressedColor();
 	}
-	else if (IsSelected())
-	{
-		return GetOnSelectedColor();
-	}
 	else if (m_IsHovered)
 	{
 		return GetOnHoverColor();
@@ -285,10 +231,6 @@ const glm::vec4& Button::GetClearTextColor() const
 	if (m_IsPressed)
 	{
 		return GetOnPressedTextColor();
-	}
-	else if (IsSelected())
-	{
-		return GetOnSelectedTextColor();
 	}
 	else if (m_IsHovered)
 	{

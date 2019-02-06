@@ -7,12 +7,9 @@ PanelScrollable::PanelScrollable(float x, float y, float width, float height, fl
 	m_pFrameBufferClientArea(nullptr),
 	m_ClientOffset(0, 0)
 {
-	SetBackgroundColor(glm::vec4(0.08F, 0.08F, 0.08F, 1.0F));
-
 	m_pSliderVertical = new Slider(x + width - SLIDER_SIZE, y + SLIDER_SIZE, SLIDER_SIZE, height - SLIDER_SIZE);
 	m_pSliderHorizontal = new Slider(x, y, width - SLIDER_SIZE, SLIDER_SIZE);
 	SetClientSize(clientWidth, clientHeight);
-
 }
 
 PanelScrollable::~PanelScrollable()
@@ -37,22 +34,6 @@ float PanelScrollable::GetClientHeight() const noexcept
 	return m_pFrameBufferClientArea->GetHeight();
 }
 
-void PanelScrollable::SetVisible(bool visible) noexcept
-{
-	Panel::SetVisible(visible);
-	if (visible)
-	{
-		m_pSliderVertical->SetVisible(GetClientHeight() > GetHeight());
-		m_pSliderHorizontal->SetVisible(GetClientWidth() > GetWidth());
-	}
-	else
-	{
-		m_pSliderVertical->SetVisible(false);
-		m_pSliderHorizontal->SetVisible(false);
-	}
-}
-
-
 void PanelScrollable::SetClientSize(float width, float height)
 {
 	if (m_pFrameBufferClientArea)
@@ -73,9 +54,6 @@ void PanelScrollable::SetClientSize(float width, float height)
 	m_pSliderVertical->SetVisible(desc.Height > GetHeight());
 	m_pSliderHorizontal->SetVisible(desc.Width > GetWidth());
 
-	m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY());
-	m_pSliderVertical->SetSize(SLIDER_SIZE, GetHeight());
-
 	if (m_pSliderVertical->IsVisible() && !m_pSliderHorizontal->IsVisible())
 	{
 		m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY());
@@ -90,12 +68,6 @@ void PanelScrollable::SetClientSize(float width, float height)
 		m_pSliderVertical->SetPosition(GetX() + GetWidth() - SLIDER_SIZE, GetY() + SLIDER_SIZE);
 		m_pSliderVertical->SetSize(SLIDER_SIZE, GetHeight() - SLIDER_SIZE);
 		m_pSliderHorizontal->SetSize(GetWidth() - SLIDER_SIZE, SLIDER_SIZE);
-	}
-
-	if (!IsVisible())
-	{
-		m_pSliderVertical->SetVisible(false);
-		m_pSliderHorizontal->SetVisible(false);
 	}
 
 	m_pSliderVertical->SetRatio(m_pSliderVertical->GetHeight() / (float)desc.Height);

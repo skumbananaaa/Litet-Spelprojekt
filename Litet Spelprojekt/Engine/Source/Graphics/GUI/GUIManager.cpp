@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/GUIManager.h>
 
-GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0)
+GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0), m_LastMousePosition(0, 0)
 {
 	Shader vShader;
 	Shader fShader;
@@ -51,24 +51,25 @@ void GUIManager::InternalRootOnUpdate(float dtS)
 	InternalOnUpdate(dtS);
 }
 
-void GUIManager::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
+void GUIManager::InternalRootOnMousePressed(MouseButton mousebutton)
 {
-	GUIObject::InternalRootOnMousePressed(position, mousebutton);
+	GUIObject::InternalRootOnMousePressed(m_LastMousePosition, mousebutton);
 }
 
-void GUIManager::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
+void GUIManager::InternalRootOnMouseReleased(MouseButton mousebutton)
 {
-	GUIObject::InternalRootOnMouseReleased(position, mousebutton);
+	GUIObject::InternalRootOnMouseReleased(m_LastMousePosition, mousebutton);
 }
 
 void GUIManager::InternalRootOnMouseMove(const glm::vec2& position)
 {
+	m_LastMousePosition = position;
 	GUIObject::InternalRootOnMouseMove(position);
 }
 
-void GUIManager::InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
+void GUIManager::InternalRootOnMouseScroll(const glm::vec2& offset)
 {
-	GUIObject::InternalRootOnMouseScroll(position, offset);
+	GUIObject::InternalRootOnMouseScroll(m_LastMousePosition, offset);
 }
 
 void GUIManager::InternalRootOnKeyUp(KEY keycode)

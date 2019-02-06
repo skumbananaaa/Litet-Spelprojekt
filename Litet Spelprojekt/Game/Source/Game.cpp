@@ -7,9 +7,8 @@
 //#define DRAW_DEBUG_BOXES
 #endif
 
-#define CHOSEN glm::vec4(0.0f, 0.1f, 0.0f, 1.0f)
-
 GameObject* g_pDecalObject = nullptr;
+//Grid* g_Grid;
 
 float g_Rot = 1.0;
 
@@ -101,6 +100,7 @@ Game::~Game()
 	DeleteSafe(m_pMusic);
 	
 	DeleteSafe(m_pTestAudioSource);
+	//DeleteSafe(g_Grid);
 	DeleteSafe(m_pWorld);
 
 	ResourceHandler::ReleaseResources();
@@ -193,12 +193,24 @@ void Game::OnResourcesLoaded()
 	}
 
 	float x, y, z;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		m_Crew.AddMember(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		m_Crew.AddMember(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec3(x, 0.9f + y, z));
+	}
+
+	for (int i = 0; i < m_Crew.GetCount(); i++)
+	{
 		m_pScene->AddGameObject(m_Crew.GetMember(i));
 		m_pScene->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
@@ -230,9 +242,9 @@ void Game::OnKeyDown(KEY keycode)
 	Application::OnKeyDown(keycode);
 }
 
-void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
+void Game::OnMouseMove(const glm::vec2& position)
 {
-	
+	Application::OnMouseMove(position);
 }
 
 void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
@@ -433,7 +445,7 @@ void Game::PickPosition() {
 	{
 		for (int i = 0; i < m_Crew.GetCount(); i++)
 		{
-			if (m_Crew.GetMember(i)->GetLight()->GetColor() == CHOSEN)
+			if (m_Crew.GetMember(i)->GetLight()->GetColor() == glm::vec4(0.0f, 1.0f, 0.0f, 1.0f))
 			{
 				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
 			}
@@ -520,13 +532,13 @@ void Game::PickCrew()
 
 	if (id != -1)
 	{
-		if (m_Crew.GetMember(id)->GetLight()->GetColor() == CHOSEN)
+		if (m_Crew.GetMember(id)->GetLight()->GetColor() == glm::vec4(0.0f, 1.0f, 0.0f, 1.0f))
 		{
-			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		}
 		else
 		{
-			m_Crew.GetMember(id)->GetLight()->SetColor(CHOSEN);
+			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		}
 	}
 }

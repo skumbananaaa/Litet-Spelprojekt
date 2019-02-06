@@ -22,7 +22,7 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
-	context.Enable(DEPTH_TEST);
+	context.Disable(DEPTH_TEST);
 	context.Disable(CULL_FACE);
 	context.Disable(BLEND);
 

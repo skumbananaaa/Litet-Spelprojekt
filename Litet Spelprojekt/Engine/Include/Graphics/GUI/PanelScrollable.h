@@ -9,8 +9,6 @@ public:
 	PanelScrollable(float x, float y, float width, float height, float clientWidth, float clientHeight);
 	virtual ~PanelScrollable();
 
-	virtual void SetVisible(bool visible) noexcept override;
-
 	float GetClientWidth() const noexcept;
 	float GetClientHeight() const noexcept;
 

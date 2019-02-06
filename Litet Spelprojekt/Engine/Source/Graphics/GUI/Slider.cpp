@@ -165,7 +165,7 @@ void Slider::SetPercentage(float percentage)
 
 float Slider::GetPercentage() const noexcept
 {
-	if (m_Ratio == 1)
+	if (m_Ratio == 0)
 	{
 		return 0;
 	}

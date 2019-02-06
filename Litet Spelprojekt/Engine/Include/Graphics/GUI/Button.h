@@ -1,7 +1,6 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
-#include <Graphics/GUI/ISelectable.h>
 
 class Button;
 
@@ -13,7 +12,7 @@ public:
 };
 
 
-class API Button : public TextView, public ISelectable
+class API Button : public TextView
 {
 public:
 	Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*) = nullptr, void(*onReleasedCallback)(Button*) = nullptr, int textSize = 100);
@@ -28,19 +27,11 @@ public:
 	const glm::vec4& GetOnHoverColor() const noexcept;
 	void SetOnHoverColor(const glm::vec4& color);
 
-	const glm::vec4& GetOnSelectedColor() const noexcept;
-	void SetOnSelectedColor(const glm::vec4& color);
-
 	const glm::vec4& GetOnPressedTextColor() const noexcept;
 	void SetOnPressedTextColor(const glm::vec4& color);
 
 	const glm::vec4& GetOnHoverTextColor() const noexcept;
 	void SetOnHoverTextColor(const glm::vec4& color);
-
-	const glm::vec4& GetOnSelectedTextColor() const noexcept;
-	void SetOnSelectedTextColor(const glm::vec4& color);
-
-	virtual void SetSelected(bool selected) override;
 
 	void AddButtonListener(IButtonListener* listener);
 	void RemoveButtonListener(IButtonListener* listener);
@@ -67,10 +58,8 @@ private:
 	bool m_IsHovered;
 	glm::vec4 m_PressedColor;
 	glm::vec4 m_HoverColor;
-	glm::vec4 m_SelectedColor;
 	glm::vec4 m_PressedTextColor;
 	glm::vec4 m_HoverTextColor;
-	glm::vec4 m_SelectedTextColor;
 	std::vector<IButtonListener*> m_ButtonListeners;
 	void (*m_OnPressedCallback)(Button*);
 	void (*m_OnReleasedCallback)(Button*);

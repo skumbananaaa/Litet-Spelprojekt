@@ -7,7 +7,6 @@ struct WorldObject
 	glm::uvec3 TileId = glm::uvec3(0);
 	uint32 MeshId = 0;
 	uint32 MaterialId = 0;
-	float Rotation;
 };
 
 class API World
@@ -30,7 +29,7 @@ public:
 	uint32 GetNumWorldObjects() const noexcept;
 	void GenerateWalls(uint32 level);
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
-	const glm::ivec3* GetStairs() const noexcept;
+	glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
 
 private:

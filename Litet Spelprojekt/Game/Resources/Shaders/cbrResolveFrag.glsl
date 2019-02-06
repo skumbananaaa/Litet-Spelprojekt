@@ -1,8 +1,8 @@
 #version 420
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 8
+#define NUM_POINT_LIGHTS 3
+#define NUM_SPOT_LIGHTS 20
 
 layout(location = 0) out vec4 g_OutColor;
 layout(location = 1) out float g_OutDepth;

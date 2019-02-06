@@ -1,6 +1,7 @@
 #ifndef CREWMEMBER_H
 #define CREWMEMBER_H
 #include <Graphics/Lights/PointLight.h>
+#include <Graphics/Lights/SpotLight.h>
 #include <Graphics/GameObject.h>
 #include <System/ThreadHandler.h>
 #include <string>
@@ -23,7 +24,7 @@ public:
 	///<summary>Sets a grid for the path finding algorithm.</summary>
 	void SetPath(const World* world);
 	///<summary>Returns a reference to the pointLight object.</summary>
-	PointLight * GetLight() const;
+	SpotLight * GetLight() const;
 	///<summary>returns the current action capacity of the crewmember.</summary>
 	const float GetActionCapacity() const;
 	///<summary>Returns true if the object is currently moving. Otherwise returns false.</summary>
@@ -40,8 +41,7 @@ public:
 private:
 	float m_ActionCap;
 	float m_DeltaTime;
-	std::string m_Name;
-	PointLight * m_pLight;
+	SpotLight * m_pLight;
 	Path* m_pPathFinder;
 	glm::ivec3 m_PlayerTile;
 	glm::ivec3 m_TargetTile;

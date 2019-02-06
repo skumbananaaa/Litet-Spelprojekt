@@ -68,9 +68,11 @@ Game::Game() noexcept :
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+	m_pTextViewCrew = new TextView(0, 0, GetWindow().GetWidth(), 50, "Crew: ");
 
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
+	GetGUIManager().Add(m_pTextViewCrew);
 
 	//Audio
 	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");
@@ -95,6 +97,7 @@ Game::~Game()
 	
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
+	DeleteSafe(m_pTextViewCrew);
 	
 	DeleteSafe(m_pSoundEffect);
 	DeleteSafe(m_pMusic);
@@ -191,15 +194,34 @@ void Game::OnResourcesLoaded()
 		}
 	}
 
+	std::string names[] = {
+		"Granfeldt",
+		"Ola",
+		"Sven",
+		"Gunnar",
+		"Fysik-GW",
+		"Robban",
+		"Bengan",
+		"Ragnar",
+		"Klasse",
+		"Gustafsson",
+		"Nisse",
+		"Per-Egon",
+		"Knut",
+		"Britt-Marie",
+		"Bert Karlsson"
+	};
+
 	float x, y, z;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < NUM_CREW; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		m_Crew.AddMember(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		m_Crew.AddMember(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(x, 0.9f + y, z), 100, names[i % NUM_CREW]);
+		m_CrewList[i] = "";
 		m_pScene->AddGameObject(m_Crew.GetMember(i));
-		m_pScene->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
@@ -240,12 +262,12 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 	{
 		case MOUSE_BUTTON_LEFT:
 		{
-			this->PickPosition();
+			PickPosition();
 			break;
 		}
 		case MOUSE_BUTTON_RIGHT:
 		{
-			this->PickCrew();
+			PickCrew();
 			break;
 		}
 	}
@@ -408,7 +430,7 @@ void Game::OnRender(float dtS)
 }
 
 void Game::PickPosition() {
-	glm::vec3 rayDir = this->GetRay(Input::GetMousePosition(), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), GetWindow().GetWidth(), GetWindow().GetHeight());
 	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
 	glm::vec3 pointOnSurface = glm::vec3(0.0f, 0.0f, 0.0f);
 	
@@ -442,7 +464,7 @@ void Game::PickPosition() {
 
 void Game::PickCrew()
 {
-	glm::vec3 rayDir = this->GetRay(Input::GetMousePosition(), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), GetWindow().GetWidth(), GetWindow().GetHeight());
 	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
 
 	float lastT = -1;
@@ -522,11 +544,19 @@ void Game::PickCrew()
 		if (m_Crew.GetMember(id)->GetLight()->GetColor() == CHOSEN)
 		{
 			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			m_CrewList[id] = "";
 		}
 		else
 		{
 			m_Crew.GetMember(id)->GetLight()->SetColor(CHOSEN);
+			m_CrewList[id] = m_Crew.GetMember(id)->GetName() + " | ";
 		}
+		std::string crewList = "";
+		for (int i = 0; i < NUM_CREW; i++)
+		{
+			crewList += m_CrewList[i];
+		}
+		m_pTextViewCrew->SetText("Crew: " + crewList);
 	}
 }
 

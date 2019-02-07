@@ -110,14 +110,14 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddGameObject(pGameObject);
 	}
 	{
-		/*pGameObject = new GameObject();
+		pGameObject = new GameObject();
 		pGameObject->SetName("ship");
 		pGameObject->SetMaterial(MATERIAL::RED);
 		pGameObject->SetMesh(MESH::SHIP);
 		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
-		m_pScene->AddGameObject(pGameObject);*/
+		m_pScene->AddGameObject(pGameObject);
 	}
 	{
 		pGameObject = new GameObject();
@@ -215,6 +215,7 @@ void Game::OnResourcesLoaded()
 		m_CrewList[i] = "";
 		m_pScene->AddGameObject(m_Crew.GetMember(i));
 		//m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetLight());
+		m_pScene->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}

@@ -2,7 +2,7 @@
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 1
+#define NUM_SPOT_LIGHTS 16
 
 layout(location = 0) out vec4 g_OutColor;
 
@@ -14,6 +14,8 @@ in VS_OUT
 layout(binding = 0) uniform sampler2DMS g_Color;
 layout(binding = 1) uniform sampler2DMS g_Normal;
 layout(binding = 2) uniform sampler2DMS g_Depth;
+
+float light_attenuation = 1.0f;
 
 struct DirectionalLight
 {
@@ -63,21 +65,35 @@ vec3 NormalDecode(vec3 mappedNormal)
 	return (mappedNormal * 2.0f) - vec3(1.0f);
 }
 
-vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float intensity)
+vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float intensity, float cosTheta)
 {
-	vec3 halfwayDir = normalize(lightDir + viewDir);
+	//vec3 halfwayDir = normalize(lightDir + viewDir);
+	////AMBIENT
+	//vec3 ambient = vec3(0.1f);
+	////DIFFUSE
+	//vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
+	////SPECULAR
+	//float spec = pow(max(dot(normal, halfwayDir), 0.0), 256.0);
+	//vec3 specular = vec3(spec) * lightColor * intensity;
+	//return ((ambient + diffuse) * color * lightColor) + specular;
 
-	//AMBIENT
-	vec3 ambient = vec3(0.1f);
-
-	//DIFFUSE
-	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
-
-	//SPECULAR
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), 256.0);
-	vec3 specular = vec3(spec) * lightColor * intensity;
-
-	return ((ambient + diffuse) * color * lightColor) + specular;
+	// ambient
+	vec3 finalColor = vec3(0.1f) * color * lightColor;
+	// diffuse
+	if (cosTheta > 0)
+	{
+		finalColor += color * cosTheta * lightColor * intensity;
+	}
+	// specular
+	vec3 eyeDir = viewDir;
+	vec3 reflectRay = reflect(-lightDir, normal);
+	float cosAlpha = clamp(dot(eyeDir, reflectRay), 0, 1);
+	if (cosTheta > 0)
+	{
+		finalColor += lightColor * pow(cosAlpha, 256) * intensity;
+	}
+	clamp(finalColor, 0.0f, 1.0f);
+	return finalColor;
 }
 
 vec4 sampleMSAATexture(sampler2DMS tex, vec2 nTexCoords)
@@ -92,7 +108,7 @@ vec4 sampleMSAATexture(sampler2DMS tex, vec2 nTexCoords)
 void main()
 {
 	float depth = sampleMSAATexture(g_Depth, fs_in.TexCoords).r;
-	vec3 normal = normalize(sampleMSAATexture(g_Normal, fs_in.TexCoords).xyz);
+	vec3 normal = normalize(NormalDecode(sampleMSAATexture(g_Normal, fs_in.TexCoords).xyz));
 	vec3 position = PositionFromDepth(depth);
 
 	vec3 color = sampleMSAATexture(g_Color, fs_in.TexCoords).rgb;
@@ -104,35 +120,49 @@ void main()
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
 		vec3 lightColor = g_DirLights[i].Color.rgb;
+		float cosTheta = dot(normal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, normal, color, 1.0f, cosTheta);
 	}
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
 		vec3 lightDir = g_PointLights[i].Position.xyz - position;
-		float distance = length(lightDir);
-		lightDir = normalize(lightDir);
+		float dist = length(lightDir);
 
-		float attenuation = 1.0f / (distance * distance);
+		float attenuation = 1.0f / (dist * dist);
 		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
+		lightDir = normalize(lightDir);
+		float cosTheta = dot(normal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, normal, color, 1.0f, cosTheta);
 	}
 
 	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
 	{
-		vec3 lightDir = normalize(g_SpotLights[i].Position.xyz - position);
-		vec3 targetDir = g_SpotLights[i].TargetDirection - g_SpotLights[i].Position.xyz;
-		vec3 lightColor = g_SpotLights[i].Color.rgb;
+		vec3 lightDir = g_SpotLights[i].Position.xyz - position;
+		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
+		float dist = length(lightDir);
+		lightDir = normalize(lightDir);
+		float cosTheta = dot(normal, lightDir);
+	
+		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
+		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
+		if (lightToSurfaceAngle > coneAngle)
+		{
+			light_attenuation += lightToSurfaceAngle - coneAngle;
+		}
+		float attenuation = 1.0f / (1.0 + light_attenuation * (dist * dist));
+		
+		vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
 
-		float theta = dot(lightDir, normalize(-targetDir));
+		float theta = dot(lightDir, -targetDir);
 		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
 		float intensity = clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
 
 		if(theta > g_SpotLights[i].OuterAngle)
 		{
-			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, intensity);
+			c += CalcLight(lightDir, lightColor, viewDir, normal, color, intensity, cosTheta);
 		}
 	}
 

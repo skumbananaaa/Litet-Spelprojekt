@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <IO\ResourceHandler.h>
+#include <Graphics/GameObject.h>
 
 ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pIndexedMeshFiles[64];
 IndexedMesh* ResourceHandler::m_pIndexedMeshes[64];
@@ -14,6 +15,9 @@ uint32 ResourceHandler::m_NrOfMaterials = 0;
 
 Decal* ResourceHandler::m_pDecals[64];
 uint32 ResourceHandler::m_NrOfDecals = 0;
+
+ResourceHandler::GAMEOBJECT_DESC_INTERNAL ResourceHandler::m_pGameObjectFiles[64];
+uint32 ResourceHandler::m_NrOfGameObjects;
 
 IResourceListener* ResourceHandler::m_ResourceListener;
 
@@ -48,19 +52,20 @@ void ResourceHandler::RunParallel()
 
 	MATERIAL::RegisterResources();
 	DECAL::RegisterResources();
+	GAMEOBJECT::RegisterResources();
 
 	m_ResourceListener->OnResourcesLoaded();
 }
 
-uint32 ResourceHandler::RegisterMesh(const std::string& filename, bool showInEditor)
+uint32 ResourceHandler::RegisterMesh(const std::string& filename)
 {
-	m_pIndexedMeshFiles[m_NrOfMeshes] = { filename,  showInEditor };
+	m_pIndexedMeshFiles[m_NrOfMeshes] = { filename };
 	return m_NrOfMeshes++;
 }
 
-uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh, bool showInEditor)
+uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh)
 {
-	m_pIndexedMeshFiles[m_NrOfMeshes] = { "",  showInEditor };
+	m_pIndexedMeshFiles[m_NrOfMeshes] = { "" };
 	m_pIndexedMeshes[m_NrOfMeshes] = mesh;
 	return m_NrOfMeshes++;
 }
@@ -71,7 +76,7 @@ uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMA
 	return m_NrOfTexture2D++;
 }
 
-uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap)
+uint32 ResourceHandler::RegisterMaterial(uint32 texture, int32 normalMap)
 {
 	std::cout << "Creating Material" << std::endl;
 	Material* material = new Material();
@@ -113,8 +118,19 @@ uint32 ResourceHandler::RegisterDecal(int32 texture, int32 normalMap)
 	return m_NrOfDecals++;
 }
 
-IndexedMesh* ResourceHandler::GetMesh(uint32 mesh)
+uint32 ResourceHandler::RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal)
 {
+	std::cout << "Creating GameObject" << std::endl;
+	m_pGameObjectFiles[m_NrOfGameObjects] = { name,  mesh,  material, decal };
+	return m_NrOfGameObjects++;
+}
+
+IndexedMesh* ResourceHandler::GetMesh(int32 mesh)
+{
+	if (mesh == -1)
+	{
+		return nullptr;
+	}
 	return m_pIndexedMeshes[mesh];
 }
 
@@ -130,13 +146,21 @@ int32 ResourceHandler::GetMesh(const IndexedMesh* mesh)
 	return -1;
 }
 
-Texture2D* ResourceHandler::GetTexture2D(uint32 texture)
+Texture2D* ResourceHandler::GetTexture2D(int32 texture)
 {
+	if (texture == -1)
+	{
+		return nullptr;
+	}
 	return m_pTexture2Ds[texture];
 }
 
-Material* ResourceHandler::GetMaterial(uint32 material)
+Material* ResourceHandler::GetMaterial(int32 material)
 {
+	if (material == -1)
+	{
+		return nullptr;
+	}
 	return m_pMaterials[material];
 }
 
@@ -152,35 +176,44 @@ int32 ResourceHandler::GetMaterial(const Material* material)
 	return -1;
 }
 
-Decal* ResourceHandler::GetDecal(uint32 decal)
+Decal* ResourceHandler::GetDecal(int32 decal)
 {
+	if (decal == -1)
+	{
+		return nullptr;
+	}
 	return m_pDecals[decal];
 }
 
-std::string ResourceHandler::GetMeshName(uint32 mesh)
+GameObject* ResourceHandler::CreateGameObject(int32 gameObject)
 {
-	return m_pIndexedMeshFiles[mesh].filename;
-}
-
-std::string ResourceHandler::GetMeshName(const IndexedMesh* mesh)
-{
-	int32 id = GetMesh(mesh);
-	if (id == -1)
+	if (gameObject == -1)
 	{
-		return "Error!";
+		return nullptr;
 	}
-	return GetMeshName(id);
+	GAMEOBJECT_DESC_INTERNAL desc = m_pGameObjectFiles[gameObject];
+	GameObject* pGameObject = new GameObject();
+	pGameObject->SetMesh(desc.mesh);
+	pGameObject->SetMaterial(desc.material);
+	pGameObject->SetDecal(desc.decal);
+	pGameObject->SetTypeId(gameObject);
+	return pGameObject;
 }
 
-void ResourceHandler::QuaryMeshes(std::vector<MESH_DESC>& list)
+std::string ResourceHandler::GetGameObjectName(int32 gameObject)
 {
-	for (uint32 i = 0; i < m_NrOfMeshes; i++)
+	if (gameObject == -1)
 	{
-		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
-		if (!desc.filename.empty() && desc.showInEditor)
-		{
-			list.push_back({i, desc.filename});
-		}
+		return "ERROR!";
+	}
+	return m_pGameObjectFiles[gameObject].name;
+}
+
+void ResourceHandler::QuaryGameObjectTypes(std::vector<std::string>& list)
+{
+	for (uint32 i = 0; i < m_NrOfGameObjects; i++)
+	{
+		list.push_back(m_pGameObjectFiles[i].name);
 	}
 }
 

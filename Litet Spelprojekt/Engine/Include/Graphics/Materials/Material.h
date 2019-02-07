@@ -12,13 +12,14 @@ public:
 	~Material();
 
 	void SetCullMode(CULL_MODE mode);
-	void SetClipPlane(const glm::vec3& normal, float distFromOrigin);
 	void EnableClipPlane(bool enable, uint32 index);
+	void SetDissolvePercentage(float percentage);
 
 	const Texture2D* GetNormalMap() const;
 	const Texture2D* GetTexture() const;
 	const glm::vec4& GetColor() const;
 	CULL_MODE GetCullMode() const;
+	float GetDissolvePercentage() const;
 
 	bool HasTexture() const;
 	bool HasNormalMap() const;
@@ -35,6 +36,7 @@ private:
 	glm::vec4 m_Color;
 	CULL_MODE m_CullMode;
 	bool m_ClipPlanesEnabled[NUM_CLIP_DISTANCES];
+	float m_DissolvePercentage;
 };
 
 inline bool Material::HasTexture() const
@@ -74,11 +76,21 @@ inline CULL_MODE Material::GetCullMode() const
 	return m_CullMode;
 }
 
+inline float Material::GetDissolvePercentage() const
+{
+	return m_DissolvePercentage;
+}
+
 inline void Material::EnableClipPlane(bool enable, uint32 index)
 {
 	assert(index < NUM_CLIP_DISTANCES);
 
 	m_ClipPlanesEnabled[index] = enable;
+}
+
+inline void Material::SetDissolvePercentage(float percentage)
+{
+	m_DissolvePercentage = percentage;
 }
 
 inline const Texture2D* Material::GetTexture() const

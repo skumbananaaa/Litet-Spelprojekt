@@ -512,6 +512,7 @@ void DefferedRenderer::Create() noexcept
 		object.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		object.HasNormalMap = 0.0f;
 		object.HasTexture = 0.0f;
+		object.DissolvePercentage = 0.0f;
 
 		m_pGeoPassPerObject = new UniformBuffer(&object, 1, sizeof(GeometryPassPerObject));
 	}
@@ -574,7 +575,6 @@ void DefferedRenderer::Create() noexcept
 	{
 		m_pWaterDistortionMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_DISTORTION);
 		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
-		m_pDissolveMap = ResourceHandler::GetTexture2D(TEXTURE::DISSOLVE_MAP);
 	}
 
 	{
@@ -805,8 +805,6 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
-	context.SetTexture(m_pDissolveMap, 2);
-
 	GeometryPassPerObject perObject = {};
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
@@ -833,6 +831,8 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 		{
 			perObject.HasNormalMap = 0.0f;
 		}
+
+		perObject.DissolvePercentage = material.GetDissolvePercentage();
 
 		for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
 		{
@@ -1013,6 +1013,8 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 		{
 			perObject.HasNormalMap = 0.0f;
 		}
+
+		perObject.DissolvePercentage = material.GetDissolvePercentage();
 
 		for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
 		{

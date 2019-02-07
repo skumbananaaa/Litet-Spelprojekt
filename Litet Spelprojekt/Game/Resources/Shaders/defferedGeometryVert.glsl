@@ -33,18 +33,32 @@ layout(std140, binding = 1) uniform PerObject
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;
+	float g_DissolvePercentage;
 };
+
+#define WALL_STUMP_FROM_CENTER 0.725f
 
 void main()
 {
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+
+	//CLIPPING WALLS
 	vec3 toLookAt = normalize(g_CameraLookAt - g_InstanceModel[3].xyz);
 	vec3 cameraForward = normalize(g_CameraLookAt - g_CameraPosition);
-	float dotToLookAtForward = dot(cameraForward, toLookAt); 
+	float dotToLookAtForward = dot(vec3(cameraForward.x, 0.0f, cameraForward.z), vec3(toLookAt.x, 0.0f, toLookAt.z));
+	float cutWalls = 1.0f;
 
-	gl_ClipDistance[0] = -dotToLookAtForward;
+	if (dotToLookAtForward > 0.0f)
+	{
+		vec4 wallClipPlane = vec4(0.0f, -1.0f, 0.0f, g_InstanceModel[3].y - WALL_STUMP_FROM_CENTER);
+		cutWalls = dot(worldPos, wallClipPlane);
+	}
 
-	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	gl_ClipDistance[0] = cutWalls;
+
+	//CLIPPING DEPENDING ON LEVEL
 	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
+	gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]);
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;

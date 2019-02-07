@@ -25,6 +25,7 @@ struct GeometryPassPerObject
 	glm::vec4 Color;
 	float HasTexture;
 	float HasNormalMap;
+	float DissolvePercentage;
 };
 
 struct DecalPassPerFrame
@@ -169,7 +170,6 @@ private:
 	
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
-	Texture2D* m_pDissolveMap;
 	
 	ShaderProgram* m_pCbrBlurProgram;
 	ShaderProgram* m_pCbrReconstructionProgram;

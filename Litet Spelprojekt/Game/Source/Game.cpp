@@ -168,11 +168,12 @@ void Game::OnResourcesLoaded()
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	//Enable clipplane for wallmaterial
-	ResourceHandler::GetMaterial(MATERIAL::BOAT)->EnableClipPlane(true, 1);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->EnableClipPlane(true, 2);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true, 0);
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true, 1);
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetDissolvePercentage(1.0f);
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
 	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->EnableClipPlane(true, 1);
@@ -577,5 +578,6 @@ void Game::SetClipPlanes()
 	/*ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 1.8f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));*/
-	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 2.0f + (m_CurrentElevation * 2.0f)), 1);
+	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (m_CurrentElevation * 2.0f)), 1);
+	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.80f + (m_CurrentElevation * 2.0f)), 2);
 }

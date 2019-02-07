@@ -32,6 +32,7 @@ layout(std140, binding = 1) uniform PerObject
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;
+	float g_DissolvePercentage;
 };
 
 void main()

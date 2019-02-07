@@ -14,6 +14,7 @@ public:
 	const float GetCutOffAngle() const noexcept;
 	const float GetOuterCutOffAngle() const noexcept;
 	void  SetDirection(glm::vec3 target) noexcept;
+	void SetColor(const glm::vec4& color) noexcept;
 
 
 public:
@@ -50,4 +51,9 @@ inline const float SpotLight::GetOuterCutOffAngle() const noexcept
 inline void SpotLight::SetDirection(glm::vec3 target) noexcept
 {
 	m_Direction = target;
+}
+
+inline void SpotLight::SetColor(const glm::vec4& color) noexcept
+{
+	m_Color = color;
 }

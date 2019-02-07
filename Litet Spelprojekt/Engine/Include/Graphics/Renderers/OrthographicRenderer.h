@@ -30,6 +30,7 @@ public:
 	OrthographicRenderer() noexcept;
 	~OrthographicRenderer();
 
+	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, float dtS) const override final;
 
 private:

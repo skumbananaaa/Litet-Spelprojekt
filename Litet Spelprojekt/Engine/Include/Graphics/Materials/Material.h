@@ -13,17 +13,16 @@ public:
 
 	void SetCullMode(CULL_MODE mode);
 	void SetClipPlane(const glm::vec3& normal, float distFromOrigin);
-	void EnableClipPlane(bool enable);
+	void EnableClipPlane(bool enable, uint32 index);
 
 	const Texture2D* GetNormalMap() const;
 	const Texture2D* GetTexture() const;
 	const glm::vec4& GetColor() const;
-	const glm::vec4& GetClipPlane() const;
 	CULL_MODE GetCullMode() const;
 
 	bool HasTexture() const;
 	bool HasNormalMap() const;
-	bool ClipPlaneEnabled() const;
+	bool ClipPlaneEnabled(uint32 index) const;
 
 private:
 	void SetTexture(const Texture2D* const pTexture);
@@ -34,9 +33,8 @@ private:
 	const Texture2D* m_pTexture;
 	const Texture2D* m_pNormalMap;
 	glm::vec4 m_Color;
-	glm::vec4 m_ClipPlane;
 	CULL_MODE m_CullMode;
-	bool m_ClipPlaneEnabled;
+	bool m_ClipPlanesEnabled[NUM_CLIP_DISTANCES];
 };
 
 inline bool Material::HasTexture() const
@@ -49,9 +47,11 @@ inline bool Material::HasNormalMap() const
 	return m_pNormalMap != nullptr;
 }
 
-inline bool Material::ClipPlaneEnabled() const
+inline bool Material::ClipPlaneEnabled(uint32 index) const
 {
-	return m_ClipPlaneEnabled;
+	assert(index < NUM_CLIP_DISTANCES);
+
+	return m_ClipPlanesEnabled[index];
 }
 
 inline void Material::SetTexture(const Texture2D* const pTexture)
@@ -74,17 +74,11 @@ inline CULL_MODE Material::GetCullMode() const
 	return m_CullMode;
 }
 
-inline void Material::SetClipPlane(const glm::vec3& normal, float distFromOrigin)
+inline void Material::EnableClipPlane(bool enable, uint32 index)
 {
-	m_ClipPlane.x = normal.x;
-	m_ClipPlane.y = normal.y;
-	m_ClipPlane.z = normal.z;
-	m_ClipPlane.w = distFromOrigin;
-}
+	assert(index < NUM_CLIP_DISTANCES);
 
-inline void Material::EnableClipPlane(bool enable)
-{
-	m_ClipPlaneEnabled = enable;
+	m_ClipPlanesEnabled[index] = enable;
 }
 
 inline const Texture2D* Material::GetTexture() const
@@ -105,9 +99,4 @@ inline void Material::SetColor(const glm::vec4& color)
 inline const glm::vec4& Material::GetColor() const
 {
 	return m_Color;
-}
-
-inline const glm::vec4& Material::GetClipPlane() const
-{
-	return m_ClipPlane;
 }

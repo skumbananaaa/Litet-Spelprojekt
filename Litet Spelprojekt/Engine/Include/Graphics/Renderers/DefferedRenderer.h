@@ -16,11 +16,12 @@ struct GPassVSPerFrame
 	glm::vec3 CameraPosition;
 	float Padding;
 	glm::vec3 CameraLookAt;
+	float Padding2;
+	glm::vec4 ClipDistances[NUM_CLIP_DISTANCES];
 };
 
 struct GeometryPassPerObject
 {
-	glm::vec4 ClipPlane;
 	glm::vec4 Color;
 	float HasTexture;
 	float HasNormalMap;
@@ -121,6 +122,7 @@ public:
 	DefferedRenderer();
 	~DefferedRenderer();
 
+	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, float dtS) const override final;
 
 private:
@@ -180,6 +182,8 @@ private:
 	ShaderProgram* m_pCbrStencilProgram;
 	ShaderProgram* m_pLightPassProgram;
 	ShaderProgram* m_pSkyBoxPassProgram;
+
+	glm::vec4 m_ClipDistances[NUM_CLIP_DISTANCES];
 	
 	mutable uint64 m_FrameCount;
 	mutable std::vector<DrawableBatch> m_DrawableBatches;

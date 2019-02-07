@@ -97,6 +97,6 @@ void main()
 
 	FragColor = vec4(mix(reflectionColor, refractionColor, refractionFactor), 1.0);
 	FragColor = mix(FragColor, vec4(0.7, 0.25, 0.33, 1.0), 0.25) + vec4(specular, 0.0);
-	FragColor = mix(vec4(0.392, 0.584, 0.929, 1.0), FragColor, visibility); //Fog
+	//FragColor = mix(vec4(0.392, 0.584, 0.929, 1.0), FragColor, visibility); //Fog
 	FragColor.a = clamp(waterDepth / depthOfFullOpaque, 0.0, 1.0);
 }

@@ -85,6 +85,13 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pSkyBoxPassProgram);
 }
 
+void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
+{
+	assert(index < NUM_CLIP_DISTANCES);
+
+	m_ClipDistances[index] = plane;
+}
+
 void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
@@ -490,6 +497,11 @@ void DefferedRenderer::Create() noexcept
 		object.Padding = 0.0f;
 		object.CameraLookAt = glm::vec3();
 
+		for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
+		{
+			object.ClipDistances[i] = glm::vec4(0.0f);
+		}
+
 		m_pGeoPassPerFrame = new UniformBuffer(&object, 1, sizeof(GPassVSPerFrame));
 	}
 
@@ -562,6 +574,13 @@ void DefferedRenderer::Create() noexcept
 		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
 		m_pDissolveMap = ResourceHandler::GetTexture2D(TEXTURE::DISSOLVE_MAP);
 	}
+
+	{
+		for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
+		{
+			m_ClipDistances[i] = glm::vec4(0.0f);
+		}
+	}
 }
 
 void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
@@ -577,6 +596,12 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
 	perFrame.CameraPosition = scene.GetCamera().GetPosition();
 	perFrame.CameraLookAt = scene.GetCamera().GetLookAt();
+
+	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
+	{
+		perFrame.ClipDistances[i] = m_ClipDistances[i];
+	}
+
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	GeometryPassPerObject perObject = {};
@@ -770,6 +795,12 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	perFrame.ViewProjection = camera.GetCombinedMatrix();
 	perFrame.CameraPosition = camera.GetPosition();
 	perFrame.CameraLookAt = camera.GetLookAt();
+	
+	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
+	{
+		perFrame.ClipDistances[i] = m_ClipDistances[i];
+	}
+
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	context.SetTexture(m_pDissolveMap, 2);
@@ -801,10 +832,15 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 			perObject.HasNormalMap = 0.0f;
 		}
 
-		if (material.ClipPlaneEnabled())
+		for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
 		{
-			perObject.ClipPlane = material.GetClipPlane();
-			context.Enable(CLIP_DISTANCE0);
+			if (material.ClipPlaneEnabled(cP))
+			{
+				context.Enable((Capability)((uint32)CLIP_DISTANCE0 + cP));
+				continue;
+			}
+
+			context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
 		}
 
 		if (material.GetCullMode() != CULL_MODE_NONE)
@@ -822,7 +858,11 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 		context.DrawIndexedMeshInstanced(mesh);
 
 		context.Enable(CULL_FACE);
-		context.Disable(CLIP_DISTANCE0);
+	}
+
+	for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
+	{
+		context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
 	}
 
 	//Unbind = no bugs
@@ -937,6 +977,12 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 	perFrame.ViewProjection = camera.GetCombinedMatrix();
 	perFrame.CameraPosition = camera.GetPosition();
 	perFrame.CameraLookAt = camera.GetLookAt();
+
+	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
+	{
+		perFrame.ClipDistances[i] = m_ClipDistances[i];
+	}
+
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	GeometryPassPerObject perObject = {};
@@ -966,18 +1012,26 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 			perObject.HasNormalMap = 0.0f;
 		}
 
-		if (material.ClipPlaneEnabled())
+		for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
 		{
-			perObject.ClipPlane = material.GetClipPlane();
-			context.Enable(CLIP_DISTANCE0);
+			if (material.ClipPlaneEnabled(cP))
+			{
+				context.Enable((Capability)((uint32)CLIP_DISTANCE0 + cP));
+				continue;
+			}
+
+			context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
 		}
 
 		m_pGeoPassPerObject->UpdateData(&perObject);
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
-		
-		context.Disable(CLIP_DISTANCE0);
+	}
+
+	for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
+	{
+		context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
 	}
 
 	//Unbind = no bugs

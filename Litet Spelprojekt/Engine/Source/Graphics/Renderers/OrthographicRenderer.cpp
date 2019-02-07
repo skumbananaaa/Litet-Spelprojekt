@@ -18,6 +18,10 @@ OrthographicRenderer::~OrthographicRenderer()
 	DeleteSafe(m_pOrthographicProgram);
 }
 
+void OrthographicRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
+{
+}
+
 void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();

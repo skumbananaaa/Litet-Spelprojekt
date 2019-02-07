@@ -1,5 +1,7 @@
 #version 420
 
+#define NUM_CLIP_DISTANCES 8
+
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
 layout(location = 2) in vec3 g_Tangent;
@@ -21,11 +23,12 @@ layout(std140, binding = 0) uniform PerFrame
 	vec3 g_CameraPosition;
 	float g_Padding;
 	vec3 g_CameraLookAt;
+	float g_Padding2;
+	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
 
 layout(std140, binding = 1) uniform PerObject
 {
-	vec4 g_ClipPlane;
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;
@@ -34,7 +37,7 @@ layout(std140, binding = 1) uniform PerObject
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
+	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;

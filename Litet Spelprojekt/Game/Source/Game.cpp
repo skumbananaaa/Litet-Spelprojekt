@@ -31,8 +31,6 @@ Game::Game() noexcept :
 	m_pScene = new Scene();
 	ResourceHandler::LoadResources(this);
 
-	m_pRenderer = new DefferedRenderer();
-	m_pDebugRenderer = new DebugRenderer();
 
 	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
@@ -88,6 +86,9 @@ Game::~Game()
 
 void Game::OnResourcesLoaded()
 {
+	m_pRenderer = new DefferedRenderer();
+	m_pDebugRenderer = new DebugRenderer();
+
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.1f, 1000.0f);
 	pCamera->UpdateFromPitchYaw();
@@ -167,11 +168,14 @@ void Game::OnResourcesLoaded()
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	//Enable clipplane for wallmaterial
-	ResourceHandler::GetMaterial(MATERIAL::BOAT)->EnableClipPlane(true);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->EnableClipPlane(true, 1);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
-	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true);
-	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->EnableClipPlane(true);
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true, 0);
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true, 1);
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
+
+	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->EnableClipPlane(true, 1);
 	SetClipPlanes();
 
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
@@ -570,7 +574,8 @@ glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 wi
 
 void Game::SetClipPlanes()
 {
-	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 1.8f + (m_CurrentElevation * 2.0f));
+	/*ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 1.8f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
-	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
+	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));*/
+	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 2.0f + (m_CurrentElevation * 2.0f)), 1);
 }

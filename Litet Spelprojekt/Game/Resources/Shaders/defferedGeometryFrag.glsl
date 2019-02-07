@@ -1,11 +1,14 @@
 #version 420
 
+#define NUM_CLIP_DISTANCES 8
+
 layout(location = 0) out vec4 g_OutColor;
 layout(location = 1) out vec4 g_Normal;
 
 in VS_OUT
 {
-	vec4 Position;
+	vec3 WorldPosition;
+	vec3 ObjectPosition;
 	vec3 Normal;
 	vec3 Tangent;
 	vec3 Binormal;
@@ -22,11 +25,12 @@ layout(std140, binding = 0) uniform PerFrame
 	vec3 g_CameraPosition;
 	float g_Padding;
 	vec3 g_CameraLookAt;
+	float g_Padding2;
+	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
 
 layout(std140, binding = 1) uniform PerObject
 {
-	vec4 g_ClipPlane;
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;
@@ -126,13 +130,13 @@ float snoise(vec3 v)
   m = m * m;
   return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), 
                                 dot(p2,x2), dot(p3,x3) ) );
-  }
+}
 
 #define EPSILON 0.001f
 
 void main()
 {
-	float minDissolve = 2.0f * ((snoise(fs_in.Position.xyz) / 2.0f) + 0.5f);
+	float minDissolve = 2.0f * ((snoise(fs_in.WorldPosition.xyz) / 2.0f) + 0.5f);
 
 	//vec2 dissolveTexCoords = vec2((fs_in.Position.x + fs_in.Position.z) / 2.0f, fs_in.Position.y);
 	//float minDissolve = texture(g_DissolveMap, dissolveTexCoords).r * 6.0f;
@@ -140,22 +144,18 @@ void main()
 	//vec3 cameraForward = normalize(g_CameraLookAt.xyz - g_CameraPosition.xyz);
 
 	float isNotUp = abs(dot(fs_in.Normal, vec3(0.0f, 1.0f, 0.0f)));
-	float distanceToLookAt = length(g_CameraLookAt.xyz - fs_in.Position.xyz);
+	float distanceToLookAt = length(g_CameraLookAt.xyz - fs_in.ObjectPosition.xyz);
 
-	vec3 toLookAt = normalize(g_CameraLookAt.xyz - fs_in.Position.xyz);
-	float dotToLookAtNormal = dot(fs_in.Normal, toLookAt);
+	//vec3 toLookAt = normalize(g_CameraLookAt.xyz - fs_in.ObjectPosition.xyz);
+	//float dotToLookAtNormal = dot(fs_in.Normal, toLookAt);
 
 	//float dotToLookAtForward = dot(toLookAt, -cameraForward);
 	//float dotForwardNormal = dot(cameraForward, fs_in.Normal);
-
-	if (dotToLookAtNormal < 0.0)
+	
+	if (distanceToLookAt < minDissolve)
 	{
 		discard;
-	}
-	else if (distanceToLookAt * ((dotToLookAtNormal / 2.0f) + 0.5f) < minDissolve && isNotUp < EPSILON)
-	{
-		discard;
-	}
+	} 
 
 	//COLOR
 	vec3 mappedColor = texture(g_Texture, fs_in.TexCoords).rgb * g_HasTexture;

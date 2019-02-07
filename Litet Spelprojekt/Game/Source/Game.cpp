@@ -7,7 +7,8 @@
 //#define DRAW_DEBUG_BOXES
 #endif
 
-#define CHOSEN glm::vec4(0.0f, 0.1f, 0.0f, 1.0f)
+#define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
+#define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
 
 GameObject* g_pDecalObject = nullptr;
 
@@ -35,7 +36,7 @@ Game::Game() noexcept :
 
 	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
-	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	Camera* pCamera = new Camera(glm::vec3(6.0f, 6.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
@@ -43,16 +44,16 @@ Game::Game() noexcept :
 	m_pScene->SetCamera(pCamera);
 
 	//Lights
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
-	m_pScene->AddDirectionalLight(pDirectionalLight);
+	//DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	//m_pScene->AddDirectionalLight(pDirectionalLight);
 
-	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
 	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec4(1.0f, .0f, 0.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 6.0f, 10.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 6.0f, 20.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -112,7 +113,7 @@ void Game::OnResourcesLoaded()
 	{
 		pGameObject = new GameObject();
 		pGameObject->SetName("ship");
-		pGameObject->SetMaterial(MATERIAL::RED);
+		pGameObject->SetMaterial(MATERIAL::GROUND);
 		pGameObject->SetMesh(MESH::SHIP);
 		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 		pGameObject->SetScale(glm::vec3(1.0f));
@@ -181,8 +182,6 @@ void Game::OnResourcesLoaded()
 		glm::vec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;
-		/*pos.x += static_cast<float>(width % 2) / 2.0f;
-		pos.z += static_cast<float>(height % 2) / 2.0f;*/
 		pGameObject->SetPosition(pos);
 		pGameObject->SetMesh(worldObject.MeshId);
 		pGameObject->SetMaterial(worldObject.MaterialId);
@@ -190,6 +189,7 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddGameObject(pGameObject);
 	}
 
+	// Generate walls
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
 	{
 		m_pWorld->GenerateWalls(level);
@@ -199,7 +199,7 @@ void Game::OnResourcesLoaded()
 		{
 			wall = m_pWorld->GetLevel(level)->GetWall(i);
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::WHITE);
+			pGameObject->SetMaterial(MATERIAL::GREEN);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
@@ -232,7 +232,7 @@ void Game::OnResourcesLoaded()
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		m_Crew.AddMember(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(x, 0.9f + y, z), 100, names[i % NUM_CREW]);
+		m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % NUM_CREW]);
 		m_CrewList[i] = "";
 		m_pScene->AddGameObject(m_Crew.GetMember(i));
 		//m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetLight());
@@ -469,7 +469,7 @@ void Game::PickPosition() {
 	{
 		for (int i = 0; i < m_Crew.GetCount(); i++)
 		{
-			if (m_Crew.GetMember(i)->GetLight()->GetColor() == CHOSEN)
+			if (m_Crew.GetMember(i)->GetLight()->GetColor() == CHOSEN_LIGHT)
 			{
 				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
 			}
@@ -556,14 +556,14 @@ void Game::PickCrew()
 
 	if (id != -1)
 	{
-		if (m_Crew.GetMember(id)->GetLight()->GetColor() == CHOSEN)
+		if (m_Crew.GetMember(id)->GetLight()->GetColor() == CHOSEN_LIGHT)
 		{
-			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			m_Crew.GetMember(id)->GetLight()->SetColor(DEFAULT_LIGHT);
 			m_CrewList[id] = "";
 		}
 		else
 		{
-			m_Crew.GetMember(id)->GetLight()->SetColor(CHOSEN);
+			m_Crew.GetMember(id)->GetLight()->SetColor(CHOSEN_LIGHT);
 			m_CrewList[id] = m_Crew.GetMember(id)->GetName() + " | ";
 		}
 		std::string crewList = "";

@@ -9,7 +9,7 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 	m_TargetTile = m_PlayerTile;
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 	SetDirection(glm::vec3(1.0f, 0.0f, 0.0f));
-	//m_pLight = new SpotLight(position, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), m_Direction, lightColor);
+	//m_pLight = new SpotLight(position, glm::cos(glm::radians(180.0f)), glm::cos(glm::radians(50.0f)), glm::vec3(m_Direction.x, -0.5, m_Direction.z), lightColor);
 	SetMaterial(MATERIAL::WHITE);
 	SetMesh(MESH::CUBE);
 	SetPosition(position);
@@ -26,7 +26,7 @@ Crewmember::Crewmember(Crewmember& other) : m_pLight(new PointLight(other.GetPos
 	m_TargetTile = m_PlayerTile;
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 	SetDirection(other.GetDirection());
-	//m_pLight = new SpotLight(other.GetPosition(), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), m_Direction, other.m_pLight->GetColor());
+	//m_pLight = new SpotLight(other.GetPosition(), glm::cos(glm::radians(45.0f)), glm::cos(glm::radians(50.0f)), glm::vec3(m_Direction.x, -0.5, m_Direction.z), other.m_pLight->GetColor());
 	SetMaterial(MATERIAL::WHITE);
 	SetMesh(MESH::CUBE);
 	SetPosition(other.GetPosition());
@@ -53,7 +53,7 @@ void Crewmember::Update(float deltaTime)
 	FollowPath(deltaTime);
 	GameObject::Update(deltaTime);
 	m_pLight->SetPosition(GetPosition());
-	//m_pLight->SetDirection(m_Direction);
+	//m_pLight->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
 }
 
 

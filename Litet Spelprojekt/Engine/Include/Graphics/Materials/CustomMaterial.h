@@ -17,11 +17,17 @@ public:
 	virtual void Unbind() const noexcept = 0;
 
 protected:
+	void SetProgram(ShaderProgram* pProgram) noexcept;
 	const ShaderProgram* GetProgram() const noexcept;
 
 private:
 	ShaderProgram* m_pProgram;
 };
+
+inline void CustomMaterial::SetProgram(ShaderProgram* pProgram) noexcept
+{
+	m_pProgram = pProgram;
+}
 
 inline const ShaderProgram* CustomMaterial::GetProgram() const noexcept
 {

@@ -5,8 +5,6 @@
 
 class API PlanarReflector
 {
-	friend class DefferedRenderer;
-
 public:
 	PlanarReflector(PlanarReflector&& other) = delete;
 	PlanarReflector(const PlanarReflector& other) = delete;
@@ -17,11 +15,12 @@ public:
 	~PlanarReflector();
 
 	void SetPlane(const glm::vec3& normal, float distFromOrigin) noexcept;
+	
+	Framebuffer* GetFramebuffer() const noexcept;
+	Texture2D* GetReflectionTexture() const noexcept;
 
 private:
 	void Create() noexcept;
-	Framebuffer* GetFramebuffer() const noexcept;
-	Texture2D* GetReflectionTexture() const noexcept;
 
 private:
 	Framebuffer* m_pFramebuffer;

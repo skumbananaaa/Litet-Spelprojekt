@@ -89,6 +89,8 @@
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
+    <ClCompile Include="Source\Graphics\Material\CustomMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_MATERIAL.cpp" />

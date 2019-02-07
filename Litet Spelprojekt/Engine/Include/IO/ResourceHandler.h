@@ -12,8 +12,12 @@
 #include <IO/MATERIAL.h>
 #include <IO/DECAL.h>
 #include <IO/GAMEOBJECT.h>
+#include <IO/SOUND.h>
+#include <IO/MUSIC.h>
 
 class GameObject;
+class SoundEffect;
+class Music;
 
 class API ResourceHandler : public IRunnable
 {
@@ -25,6 +29,8 @@ public:
 	static uint32 RegisterMaterial(const glm::vec4& color, int32 normalMap = -1);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
 	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
+	static uint32 RegisterSound(const std::string filename);
+	static uint32 RegisterMusic(const std::string filename);
 
 	static IndexedMesh* GetMesh(int32 mesh);
 	static int32 GetMesh(const IndexedMesh* mesh);
@@ -32,6 +38,8 @@ public:
 	static Material* GetMaterial(int32 material);
 	static int32 GetMaterial(const Material* material);
 	static Decal* GetDecal(int32 decal);
+	static const SoundEffect* GetSound(int32 sound);
+	static const Music* GetMusic(int32 music);
 
 	static GameObject* CreateGameObject(int32 gameObject);
 
@@ -66,6 +74,16 @@ private:
 		int32 decal;
 	};
 
+	struct SOUND_DESC_INTERNAL
+	{
+		std::string filename = "";
+	};
+
+	struct MUSIC_DESC_INTERNAL
+	{
+		std::string filename = "";
+	};
+
 	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];
 	static IndexedMesh* m_pIndexedMeshes[64];
 	static uint32 m_NrOfMeshes;
@@ -82,6 +100,14 @@ private:
 
 	static GAMEOBJECT_DESC_INTERNAL m_pGameObjectFiles[64];
 	static uint32 m_NrOfGameObjects;
+
+	static SOUND_DESC_INTERNAL m_pSoundFiles[64];
+	static SoundEffect* m_pSounds[64];
+	static uint32 m_NrOfSounds;
+
+	static MUSIC_DESC_INTERNAL m_pMusicFiles[64];
+	static Music* m_pMusic[64];
+	static uint32 m_NrOfMusic;
 
 	static IResourceListener* m_ResourceListener;
 	static std::string m_PrePath;

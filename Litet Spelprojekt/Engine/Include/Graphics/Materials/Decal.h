@@ -7,15 +7,15 @@ class API Decal
 	friend class ResourceHandler;
 
 public:
-	Decal();
-	~Decal();
-
 	const Texture2D* GetTexture() const;
 	const Texture2D* GetNormalMap() const;
 	bool HasTexture() const;
 	bool HasNormalMap() const;
 
 private:
+	Decal();
+	~Decal();
+
 	void SetTexture(const Texture2D* const pTexture);
 	void SetNormalMap(const Texture2D* const pNormalMap);
 

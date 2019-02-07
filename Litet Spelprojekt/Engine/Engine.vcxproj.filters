@@ -56,6 +56,7 @@
     <ClCompile Include="Source\System\ThreadHandler.cpp" />
     <ClCompile Include="Source\Graphics\SkyBox.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
+    <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -124,5 +125,6 @@
     <ClInclude Include="Include\Graphics\Textures\TextureHelper.h" />
     <ClInclude Include="Include\Graphics\GUI\SelectionHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\ISelectable.h" />
+    <ClInclude Include="Include\IO\GAMEOBJECT.h" />
   </ItemGroup>
 </Project>

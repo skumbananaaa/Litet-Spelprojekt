@@ -5,8 +5,7 @@
 struct WorldObject
 {
 	glm::uvec3 TileId = glm::uvec3(0);
-	uint32 MeshId = 0;
-	uint32 MaterialId = 0;
+	int32 GameObject = -1;
 	float Rotation;
 };
 

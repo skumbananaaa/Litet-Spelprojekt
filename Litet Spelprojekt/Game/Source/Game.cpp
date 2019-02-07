@@ -50,13 +50,17 @@ Game::Game() noexcept :
 	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 0.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.5f, 0.5f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec4(1.0f, .0f, 0.0f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+	m_pTextViewCrew = new TextView(0, 0, GetWindow().GetWidth(), 50, "Crew: ");
 
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
+	GetGUIManager().Add(m_pTextViewCrew);
 
 	//Audio
 	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");
@@ -65,7 +69,7 @@ Game::Game() noexcept :
 	m_pTestAudioSource = new AudioSource(*m_pMusic);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
-	m_pTestAudioSource->Play();
+	//m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 }
@@ -81,6 +85,7 @@ Game::~Game()
 	
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
+	DeleteSafe(m_pTextViewCrew);
 	
 	DeleteSafe(m_pSoundEffect);
 	DeleteSafe(m_pMusic);
@@ -94,67 +99,91 @@ Game::~Game()
 void Game::OnResourcesLoaded()
 {
 	GameObject* pGameObject = nullptr;
-	pGameObject = new GameObject();
-	pGameObject->SetDecal(DECAL::BLOOD);
-	pGameObject->SetPosition(glm::vec3(-6.0f, 2.0f, 0.0f));
-	pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
-	pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
-	pGameObject->UpdateTransform();
-	g_pDecalObject = pGameObject;
-	m_pScene->AddGameObject(pGameObject);
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetDecal(DECAL::BLOOD);
+		pGameObject->SetPosition(glm::vec3(-6.0f, 2.0f, 0.0f));
+		pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
+		pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+		pGameObject->UpdateTransform();
+		g_pDecalObject = pGameObject;
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetName("ship");
+		pGameObject->SetMaterial(MATERIAL::RED);
+		pGameObject->SetMesh(MESH::SHIP);
+		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
+		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::GROUND);
+		pGameObject->SetMesh(MESH::CLIFF_3_LOW);
+		pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
+		pGameObject->SetScale(glm::vec3(0.4f));
+		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::RED);
+		pGameObject->SetMesh(MESH::CUBE_OBJ);
+		pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, -10.0f));
+		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::GREEN);
+		pGameObject->SetMesh(MESH::CUBE_OBJ);
+		pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, -10.0f));
+		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::BLUE);
+		pGameObject->SetMesh(MESH::CUBE_OBJ);
+		pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
+		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
+	{
+		//Water?? YAAAS
+		pGameObject = new GameObject();
+		pGameObject->SetIsReflectable(true);
+		pGameObject->SetMesh(MESH::QUAD);
+		pGameObject->SetScale(glm::vec3(200.0f));
+		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
+		pGameObject->UpdateTransform();
+		m_pScene->AddGameObject(pGameObject);
+	}
 
+	//test objects
 	pGameObject = new GameObject();
-	pGameObject->SetName("ship");
-	pGameObject->SetMaterial(MATERIAL::RED);
-	pGameObject->SetMesh(MESH::SHIP);
-	pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
+	pGameObject->SetMaterial(MATERIAL::SINGLE_BED);
+	pGameObject->SetMesh(MESH::BED_SINGLE);
+	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-
 	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::GROUND);
-	pGameObject->SetMesh(MESH::CLIFF_3_LOW);
-	pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
-	pGameObject->SetScale(glm::vec3(0.4f));
-	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
+	pGameObject->SetMaterial(MATERIAL::BUNK_BED);
+	pGameObject->SetMesh(MESH::BED_BUNK);
+	pGameObject->SetPosition(glm::vec3(-5.0f, 4.0f, -10.0f));
+	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
-
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::RED);
-	pGameObject->SetMesh(MESH::CUBE_OBJ);
-	pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, -10.0f));
-	pGameObject->SetScale(glm::vec3(0.25f));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::GREEN);
-	pGameObject->SetMesh(MESH::CUBE_OBJ);
-	pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, -10.0f));
-	pGameObject->SetScale(glm::vec3(0.25f));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::BLUE);
-	pGameObject->SetMesh(MESH::CUBE_OBJ);
-	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
-	pGameObject->SetScale(glm::vec3(0.25f));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
-	//Water?? YAAAS
-	pGameObject = new GameObject();
-	pGameObject->SetIsReflectable(true);
-	pGameObject->SetMesh(MESH::QUAD);
-	pGameObject->SetScale(glm::vec3(200.0f));
-	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
-	pGameObject->UpdateTransform();
-	m_pScene->AddGameObject(pGameObject);
-
+	
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -165,15 +194,11 @@ void Game::OnResourcesLoaded()
 		int32 width = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeX();
 		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
-		GameObject* pGameObject = new GameObject();
+		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 		glm::vec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;
-		/*pos.x += static_cast<float>(width % 2) / 2.0f;
-		pos.z += static_cast<float>(height % 2) / 2.0f;*/
 		pGameObject->SetPosition(pos);
-		pGameObject->SetMesh(worldObject.MeshId);
-		pGameObject->SetMaterial(worldObject.MaterialId);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		m_pScene->AddGameObject(pGameObject);
 	}
@@ -196,14 +221,34 @@ void Game::OnResourcesLoaded()
 		}
 	}
 
+	std::string names[] = {
+		"Granfeldt",
+		"Ola",
+		"Sven",
+		"Gunnar",
+		"Fysik-GW",
+		"Robban",
+		"Bengan",
+		"Ragnar",
+		"Klasse",
+		"Gustafsson",
+		"Nisse",
+		"Per-Egon",
+		"Knut",
+		"Britt-Marie",
+		"Bert Karlsson"
+	};
+
 	float x, y, z;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < NUM_CREW; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
-		m_Crew.AddMember(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(x, 0.9f + y, z));
+		m_Crew.AddMember(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(x, 0.9f + y, z), 100, names[i % NUM_CREW]);
+		m_CrewList[i] = "";
 		m_pScene->AddGameObject(m_Crew.GetMember(i));
+		//m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetLight());
 		m_pScene->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
@@ -245,12 +290,12 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 	{
 		case MOUSE_BUTTON_LEFT:
 		{
-			this->PickPosition();
+			PickPosition();
 			break;
 		}
 		case MOUSE_BUTTON_RIGHT:
 		{
-			this->PickCrew();
+			PickCrew();
 			break;
 		}
 	}
@@ -413,7 +458,7 @@ void Game::OnRender(float dtS)
 }
 
 void Game::PickPosition() {
-	glm::vec3 rayDir = this->GetRay(Input::GetMousePosition(), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), GetWindow().GetWidth(), GetWindow().GetHeight());
 	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
 	glm::vec3 pointOnSurface = glm::vec3(0.0f, 0.0f, 0.0f);
 	
@@ -447,7 +492,7 @@ void Game::PickPosition() {
 
 void Game::PickCrew()
 {
-	glm::vec3 rayDir = this->GetRay(Input::GetMousePosition(), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), GetWindow().GetWidth(), GetWindow().GetHeight());
 	glm::vec3 rayOrigin = m_pScene->GetCamera().GetPosition();
 
 	float lastT = -1;
@@ -527,11 +572,19 @@ void Game::PickCrew()
 		if (m_Crew.GetMember(id)->GetLight()->GetColor() == CHOSEN)
 		{
 			m_Crew.GetMember(id)->GetLight()->SetColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+			m_CrewList[id] = "";
 		}
 		else
 		{
 			m_Crew.GetMember(id)->GetLight()->SetColor(CHOSEN);
+			m_CrewList[id] = m_Crew.GetMember(id)->GetName() + " | ";
 		}
+		std::string crewList = "";
+		for (int i = 0; i < NUM_CREW; i++)
+		{
+			crewList += m_CrewList[i];
+		}
+		m_pTextViewCrew->SetText("Crew: " + crewList);
 	}
 }
 

@@ -22,7 +22,7 @@ public:
 	void SetActionCapacity(float actionCap);
 	///<summary>Sets a grid for the path finding algorithm.</summary>
 	void SetPath(const World* world);
-	///<summary>Returns a reference to the pointLight object.</summary>
+	///<summary>Returns a reference to the pointLight object of the crewmember.</summary>
 	PointLight * GetLight() const;
 	///<summary>returns the current action capacity of the crewmember.</summary>
 	const float GetActionCapacity() const;
@@ -30,9 +30,11 @@ public:
 	const bool IsMoving() const;
 	///<summary>Sets a new position for the object.</summary>
 	void SetPosition(const glm::vec3& position) noexcept;
+	///<summary>Gets the current direction that the crewmember is facing.</summary>
 	const glm::vec3& GetDirection() const noexcept;
+	///<summary>Sets the current direction that the crewmember is facing. Use .Update() to apply visual changes.</summary>
 	void SetDirection(const glm::vec3& direction) noexcept;
-
+	///<summary>Used to determine path of crewmember to an already selected target. Function made to run on multiple threads.</summary>
 	virtual void RunParallel() override;
 	///<summary>Updates matrix of the object.</summary>
 	virtual void Update(float deltaTime) override;

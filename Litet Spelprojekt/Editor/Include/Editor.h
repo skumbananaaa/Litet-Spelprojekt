@@ -78,7 +78,7 @@ public:
 
 	void CreateWalls();
 	WorldLevel** CreateWorldLevels(std::vector<glm::ivec3>& stairs);
-	void CreateMesh(GameObject* pGameObject, const std::string& name);
+	void CreateMesh(GameObject* pGameObject, const std::string& name, int32 index = 0, int32 total = 0);
 	void ClearLevels();
 	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;
 

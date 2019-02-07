@@ -25,6 +25,8 @@
 #include <GLM/gtc/type_ptr.hpp>
 #include <math.h>
 
+#define NUM_CREW 15
+
 class Game : public Application, public IResourceListener
 {
 public:
@@ -53,8 +55,11 @@ private:
 
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;
+
+	TextView* m_pTextViewCrew;
 	
 	Crew m_Crew;
+	std::string m_CrewList[NUM_CREW];
 
 	bool cartesianCamera;
 

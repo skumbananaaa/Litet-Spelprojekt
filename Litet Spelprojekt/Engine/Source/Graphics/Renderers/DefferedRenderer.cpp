@@ -901,7 +901,6 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
 			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
 			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
-			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
 			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
 		}
 

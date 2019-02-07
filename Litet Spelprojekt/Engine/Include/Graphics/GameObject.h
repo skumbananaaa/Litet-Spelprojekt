@@ -16,9 +16,9 @@ public:
 
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
-	virtual void SetMesh(uint32 mesh) noexcept;
-	virtual void SetMaterial(uint32 material) noexcept;
-	virtual void SetDecal(uint32 decal) noexcept;
+	virtual void SetMesh(int32 mesh) noexcept;
+	virtual void SetMaterial(int32 material) noexcept;
+	virtual void SetDecal(int32 decal) noexcept;
 	virtual void SetPosition(const glm::vec3& position) noexcept;
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
@@ -38,6 +38,9 @@ public:
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
 
+	void SetTypeId(int32 typeId) noexcept;
+	int32 GetTypeId() const noexcept;
+
 	virtual void Update(float deltaTime);
 	virtual void UpdateTransform() noexcept;
 
@@ -53,6 +56,7 @@ private:
 	glm::mat4 m_InverseTransform;
 	bool m_IsDirty;
 	bool m_IsReflectable;
+	int32 m_TypeId;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -70,17 +74,17 @@ inline const glm::vec3& GameObject::GetScale() const noexcept
 	return m_Scale;
 }
 
-inline void GameObject::SetMesh(uint32 mesh) noexcept
+inline void GameObject::SetMesh(int32 mesh) noexcept
 {
 	m_pMesh = ResourceHandler::GetMesh(mesh);
 }
 
-inline void GameObject::SetDecal(uint32 decal) noexcept
+inline void GameObject::SetDecal(int32 decal) noexcept
 {
 	m_pDecal = ResourceHandler::GetDecal(decal);
 }
 
-inline void GameObject::SetMaterial(uint32 material) noexcept
+inline void GameObject::SetMaterial(int32 material) noexcept
 {
 	m_pMaterial = ResourceHandler::GetMaterial(material);
 }
@@ -136,4 +140,14 @@ inline bool GameObject::HasDecal() const noexcept
 inline bool GameObject::HasMesh() const noexcept
 {
 	return (m_pMesh != nullptr);
+}
+
+inline void GameObject::SetTypeId(int32 typeId) noexcept
+{
+	m_TypeId = typeId;
+}
+
+inline int32 GameObject::GetTypeId() const noexcept
+{
+	return m_TypeId;
 }

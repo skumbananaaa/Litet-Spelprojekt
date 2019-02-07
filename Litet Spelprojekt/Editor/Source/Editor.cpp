@@ -7,11 +7,6 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	m_SelectionHandlerMesh(true),
 	m_SelectionHandlerMeshEdit(false)
 {
-	ResourceHandler::LoadResources(this);
-
-	m_pRenderer = new OrthographicRenderer();
-	std::cout << "Editor" << std::endl;
-
 	Camera* pCameraPersp = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	pCameraPersp->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.01f, 100.0f);
 	pCameraPersp->UpdateFromPitchYaw();
@@ -21,22 +16,36 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 	pCameraOrth->UpdateFromPitchYaw();
 
-	const int32 gridWidth = 40;
-	const int32 gridHeight = 10;
-
 	m_ppScenes = new Scene*[NUM_BOAT_LEVELS];
 	m_ppGrids = new Grid*[NUM_GRID_LEVELS];
 
+	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
+	{
+		m_ppScenes[i] = new Scene();
+		m_ppScenes[i]->SetCamera(pCameraPersp, 0);
+		m_ppScenes[i]->SetCamera(pCameraOrth, 1);
+	}
+
+	m_RoomBeingEdited = -1;
+	m_CurrentGridIndex = 0;
+	m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
+
+	m_Dragging = false;
+	m_CurrentEditingMode = NONE;
+
+	ResourceHandler::LoadResources(this);
+
+	m_MouseMaterial = MATERIAL::WHITE;
+
+	m_pRenderer = new OrthographicRenderer();
+	std::cout << "Editor" << std::endl;
+
+
+	const int32 gridWidth = 40;
+	const int32 gridHeight = 10;
+
 	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
 	{
-		//Create one scene for each grid level
-		if (i % 2 == 0)
-		{
-			m_ppScenes[i / 2] = new Scene();
-			m_ppScenes[i / 2]->SetCamera(pCameraPersp, 0);
-			m_ppScenes[i / 2]->SetCamera(pCameraOrth, 1);
-		}
-
 		//Create one grid for each grid level
 		m_ppGrids[i] = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
 
@@ -50,16 +59,7 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 			}
 		}
 	}
-
-	m_RoomBeingEdited = -1;
-	m_CurrentGridIndex = 0;
-	m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
-	m_MouseMaterial = MATERIAL::WHITE;
-
-	m_Dragging = false;
-	m_CurrentEditingMode = NONE;
 	//GetGraphicsContext().Disable(Cap::CULL_FACE);
-
 }
 
 Editor::~Editor()
@@ -132,12 +132,12 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveStairs);
 
 
-	std::vector<MESH_DESC> meshDescs;
-	ResourceHandler::QuaryMeshes(meshDescs);
+	std::vector<std::string> gameObjects;
+	ResourceHandler::QuaryGameObjectTypes(gameObjects);
 	m_pPanelMesh = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
 	m_pButtonAddMesh = new Button(10, m_pPanelMesh->GetHeight() - 60, 85, 50, "New");
 	m_pButtonEditMesh = new Button(105, m_pPanelMesh->GetHeight() - 60, 85, 50, "Edit");
-	m_pPanelScrollableAddMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth() - 20, ELEMENT_HEIGHT * meshDescs.size());
+	m_pPanelScrollableAddMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth() - 20, ELEMENT_HEIGHT * gameObjects.size());
 	m_pPanelScrollableEditMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30);
 	m_pPanelMesh->Add(m_pButtonAddMesh);
 	m_pPanelMesh->Add(m_pButtonEditMesh);
@@ -177,12 +177,11 @@ void Editor::OnResourcesLoaded()
 	GetGUIManager().Add(m_pPanelEditor);
 	GetGUIManager().Add(m_pPanelMesh);
 
-	for (int64 i = 0; i < meshDescs.size(); i++)
+	for (int32 i = 0; i < gameObjects.size(); i++)
 	{
-		MESH_DESC meshDesc = meshDescs[i];
-		Button* button = new Button(4, m_pPanelScrollableAddMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT, m_pPanelScrollableAddMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, meshDesc.name, nullptr, OnButtonReleased);
+		Button* button = new Button(4, m_pPanelScrollableAddMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT, m_pPanelScrollableAddMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, gameObjects[i], nullptr, OnButtonReleased);
 		button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
-		button->SetUserData(reinterpret_cast<void*>(meshDesc.mesh));
+		button->SetUserData(reinterpret_cast<void*>(i));
 		m_pPanelScrollableAddMesh->Add(button);
 	}
 
@@ -220,16 +219,18 @@ void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelectio
 		m_MouseMaterial = MATERIAL::WHITE;
 		
 		//Reload All meshes in the panel for the new floor
+		std::vector<GameObject*> gameObjects;
+		GetGameObjects(gameObjects);
 		m_SelectionHandlerMeshEdit.Release();
 		m_SelectionHandlerMeshEdit.AddSelectionListener(this);
 		m_pPanelScrollableEditMesh->DeleteChildren();
-		m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), GetCurrentMeshes().size() * ELEMENT_HEIGHT + 4);
-		for (int64 i = 0; i < GetCurrentMeshes().size(); i++)
+		m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), gameObjects.size() * ELEMENT_HEIGHT + 4);
+		for (int64 i = 0; i < gameObjects.size(); i++)
 		{
-			std::string name = ResourceHandler::GetMeshName(GetCurrentMeshes()[i]->GetMesh());
+			std::string name = ResourceHandler::GetGameObjectName(gameObjects[i]->GetTypeId());
 			Button* button = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
 			button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
-			button->SetUserData(GetCurrentMeshes()[i]);
+			button->SetUserData(gameObjects[i]);
 			m_pPanelScrollableEditMesh->Add(button);
 			m_SelectionHandlerMeshEdit.AddSelectable(button);
 		}
@@ -361,12 +362,13 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs)
 	return ppWorldLevels;
 }
 
-void Editor::CreateMesh(GameObject* pGameObject)
+void Editor::CreateMesh(GameObject* pGameObject, const std::string& name)
 {
 	//Create new object
-	std::string name = ResourceHandler::GetMeshName(pGameObject->GetMesh());
-	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), GetCurrentMeshes().size() * ELEMENT_HEIGHT + 4);
-	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - GetCurrentMeshes().size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
+	std::vector<GameObject*> gameObjects;
+	GetGameObjects(gameObjects);
+	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), gameObjects.size() * ELEMENT_HEIGHT + 4);
+	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - gameObjects.size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
 	pButton->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
 	pButton->SetUserData(pGameObject);
 	m_pPanelScrollableEditMesh->Add(pButton);
@@ -391,7 +393,6 @@ void Editor::ClearLevels()
 
 	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
 	{
-		m_Meshes[i].clear();
 		m_Walls[i].clear();
 
 		if (i > 0)
@@ -418,9 +419,24 @@ Scene* Editor::GetCurrentScene()
 	return m_ppScenes[GetCurrentBoatLevel()];
 }
 
-std::vector<GameObject*>& Editor::GetCurrentMeshes()
+void Editor::GetGameObjects(std::vector<GameObject*>& list, int32 level)
 {
-	return m_Meshes[GetCurrentBoatLevel()];
+	Scene* scene = nullptr;
+	if (level == -1)
+	{
+		scene = GetCurrentScene();
+	}
+	else
+	{
+		scene = m_ppScenes[level];
+	}
+	for (GameObject* gameObject : scene->GetGameObjects())
+	{
+		if (gameObject->GetTypeId() != -1)
+		{
+			list.push_back(gameObject);
+		}
+	}
 }
 
 glm::vec3 Editor::GetDirectionBasedOnCamera(Direction direction)
@@ -1051,7 +1067,9 @@ void Editor::OnButtonReleased(Button* button)
 		int objects = 0;
 		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
 		{
-			objects += editor->m_Meshes[i].size();
+			std::vector<GameObject*> gameObjects;
+			editor->GetGameObjects(gameObjects, i);
+			objects += gameObjects.size();
 		}
 
 		std::cout << "Preparing to save: " << objects << " GameObjects" << std::endl;
@@ -1060,21 +1078,22 @@ void Editor::OnButtonReleased(Button* button)
 		int counter = 0;
 		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
 		{
+			std::vector<GameObject*> gameObjects;
+			editor->GetGameObjects(gameObjects, i);
 			glm::ivec2 gridSize = editor->m_ppGrids[i]->GetSize() / 2;
-			for (int j = 0; j < editor->m_Meshes[i].size(); j++)
+			for (int j = 0; j < gameObjects.size(); j++)
 			{
-				GameObject* gameObject = editor->m_Meshes[i][j];
-				glm::uvec3 position = glm::uvec3(gameObject->GetPosition()) + glm::uvec3(gridSize.x, i * 2, gridSize.y);
-				int32 mesh = ResourceHandler::GetMesh(gameObject->GetMesh());
-				int32 material = ResourceHandler::GetMaterial(gameObject->GetMaterial());
-				float rotation = gameObject->GetRotation().w;
+				GameObject* pGameObject = gameObjects[j];
+				glm::uvec3 position = glm::uvec3(pGameObject->GetPosition()) + glm::uvec3(gridSize.x, i * 2, gridSize.y);
+				int32 gameObject = pGameObject->GetTypeId();
+				float rotation = pGameObject->GetRotation().w;
 
-				if (mesh == -1 || material == -1)
+				if (gameObject == -1)
 				{
-					std::cout << "Skipping GameObject with Mesh: " << mesh << ", Material: " << material << std::endl;
+					std::cout << "Skipping GameObject: " << gameObject << std::endl;
 					continue;
 				}
-				worldObjects[counter++] = { position, static_cast<uint32>(mesh), static_cast<uint32>(material), rotation};
+				worldObjects[counter++] = { position, static_cast<int32>(gameObject), rotation};
 			}
 		}
 
@@ -1184,14 +1203,11 @@ void Editor::OnButtonReleased(Button* button)
 			WorldObject worldObject = pWorld->GetWorldObject(i);
 			glm::ivec2 gridSize = editor->m_ppGrids[worldObject.TileId.y]->GetSize() / 2;
 			int floorLevel = worldObject.TileId.y / 2;
-			GameObject* pGameObject = new GameObject();
+			GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 			pGameObject->SetPosition(editor->CalculateMeshPosition(glm::ivec3(static_cast<int32>(worldObject.TileId.x) - gridSize.x, worldObject.TileId.y % 2, static_cast<int32>(worldObject.TileId.z) - gridSize.y)));
-			pGameObject->SetMesh(worldObject.MeshId);
-			pGameObject->SetMaterial(worldObject.MaterialId);
 			pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 			editor->m_ppScenes[floorLevel]->AddGameObject(pGameObject);
-			editor->m_Meshes[floorLevel].push_back(pGameObject);
-			editor->CreateMesh(pGameObject);
+			editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(worldObject.GameObject));
 		}
 
 		editor->m_RoomBeingEdited = -1;
@@ -1223,16 +1239,13 @@ void Editor::OnButtonReleased(Button* button)
 	else
 	{
 		uint32 id = reinterpret_cast<uint32>(button->GetUserData());
-		std::cout << "Creting Mesh from ID " << id << std::endl;
+		std::cout << "Creting GameObject from ID " << id << std::endl;
 
-		GameObject* pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::WHITE);
-		pGameObject->SetMesh(id);
+		GameObject* pGameObject = ResourceHandler::CreateGameObject(id);
 		pGameObject->SetPosition(editor->CalculateMeshPosition(glm::vec3(0, 0, 0)));
 		editor->GetCurrentScene()->AddGameObject(pGameObject);
-		editor->GetCurrentMeshes().push_back(pGameObject);
 
-		editor->CreateMesh(pGameObject);
+		editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(id));
 	}
 }
 

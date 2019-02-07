@@ -11,28 +11,33 @@
 #include <IO/TEXTURE.h>
 #include <IO/MATERIAL.h>
 #include <IO/DECAL.h>
+#include <IO/GAMEOBJECT.h>
+
+class GameObject;
 
 class API ResourceHandler : public IRunnable
 {
 public:
-	static uint32 RegisterMesh(const std::string& filename, bool showInEditor = true);
-	static uint32 RegisterMesh(IndexedMesh* mesh, bool showInEditor = true);
+	static uint32 RegisterMesh(const std::string& filename);
+	static uint32 RegisterMesh(IndexedMesh* mesh);
 	static uint32 RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
-	static uint32 RegisterMaterial(int32 texture, int32 normalMap = -1);
+	static uint32 RegisterMaterial(uint32 texture, int32 normalMap = -1);
 	static uint32 RegisterMaterial(const glm::vec4& color, int32 normalMap = -1);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
+	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
 
-	static IndexedMesh* GetMesh(uint32 mesh);
+	static IndexedMesh* GetMesh(int32 mesh);
 	static int32 GetMesh(const IndexedMesh* mesh);
-	static Texture2D* GetTexture2D(uint32 texture);
-	static Material* GetMaterial(uint32 material);
+	static Texture2D* GetTexture2D(int32 texture);
+	static Material* GetMaterial(int32 material);
 	static int32 GetMaterial(const Material* material);
-	static Decal* GetDecal(uint32 decal);
+	static Decal* GetDecal(int32 decal);
 
-	static std::string GetMeshName(uint32 mesh);
-	static std::string GetMeshName(const IndexedMesh* mesh);
+	static GameObject* CreateGameObject(int32 gameObject);
 
-	static void QuaryMeshes(std::vector<MESH_DESC>& list);
+	static std::string GetGameObjectName(int32 gameObject);
+
+	static void QuaryGameObjectTypes(std::vector<std::string>& list);
 
 	static void LoadResources(IResourceListener* resourceListener);
 	static void ReleaseResources();
@@ -51,7 +56,14 @@ private:
 	struct MESH_DESC_INTERNAL
 	{
 		std::string filename = "";
-		bool showInEditor = false;
+	};
+
+	struct GAMEOBJECT_DESC_INTERNAL
+	{
+		std::string name = "";
+		uint32 mesh;
+		uint32 material;
+		int32 decal;
 	};
 
 	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];
@@ -67,6 +79,9 @@ private:
 
 	static Decal* m_pDecals[64];
 	static uint32 m_NrOfDecals;
+
+	static GAMEOBJECT_DESC_INTERNAL m_pGameObjectFiles[64];
+	static uint32 m_NrOfGameObjects;
 
 	static IResourceListener* m_ResourceListener;
 

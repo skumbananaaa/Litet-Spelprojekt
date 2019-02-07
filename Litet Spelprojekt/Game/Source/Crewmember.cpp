@@ -49,7 +49,6 @@ void Crewmember::RunParallel()
 
 void Crewmember::Update(float deltaTime)
 {
-
 	FollowPath(deltaTime);
 	GameObject::Update(deltaTime);
 	m_pLight->SetPosition(GetPosition());

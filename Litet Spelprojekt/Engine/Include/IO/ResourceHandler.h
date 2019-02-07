@@ -39,7 +39,7 @@ public:
 
 	static void QuaryGameObjectTypes(std::vector<std::string>& list);
 
-	static void LoadResources(IResourceListener* resourceListener);
+	static void LoadResources(IResourceListener* resourceListener, std::string prePath = "");
 	static void ReleaseResources();
 
 	virtual void RunParallel();
@@ -84,6 +84,7 @@ private:
 	static uint32 m_NrOfGameObjects;
 
 	static IResourceListener* m_ResourceListener;
+	static std::string m_PrePath;
 
 	ResourceHandler();
 	static ResourceHandler* instance;

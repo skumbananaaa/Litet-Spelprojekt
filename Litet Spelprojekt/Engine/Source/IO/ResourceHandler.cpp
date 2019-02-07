@@ -20,6 +20,7 @@ ResourceHandler::GAMEOBJECT_DESC_INTERNAL ResourceHandler::m_pGameObjectFiles[64
 uint32 ResourceHandler::m_NrOfGameObjects;
 
 IResourceListener* ResourceHandler::m_ResourceListener;
+std::string ResourceHandler::m_PrePath;
 
 ResourceHandler* ResourceHandler::instance = nullptr;
 
@@ -39,7 +40,7 @@ void ResourceHandler::RunParallel()
 		if (!desc.filename.empty())
 		{
 			std::cout << "Loading Mesh: " << desc.filename << std::endl;
-			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile(("Resources/Meshes/" + desc.filename).c_str());
+			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
 		}
 	}
 
@@ -47,7 +48,7 @@ void ResourceHandler::RunParallel()
 	{
 		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
 		std::cout << "Loading Texture: " << desc.filename << std::endl;
-		m_pTexture2Ds[i] = new Texture2D(("Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
+		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
 	}
 
 	MATERIAL::RegisterResources();
@@ -217,11 +218,12 @@ void ResourceHandler::QuaryGameObjectTypes(std::vector<std::string>& list)
 	}
 }
 
-void ResourceHandler::LoadResources(IResourceListener* resourceListener)
+void ResourceHandler::LoadResources(IResourceListener* resourceListener, std::string prePath)
 {
 	if (!instance)
 	{
 		m_ResourceListener = resourceListener;
+		m_PrePath = prePath;
 		instance = new ResourceHandler();
 
 		instance->RunParallel();

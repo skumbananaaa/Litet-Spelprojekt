@@ -32,9 +32,11 @@ public:
 	const bool IsMoving() const;
 	///<summary>Sets a new position for the object.</summary>
 	void SetPosition(const glm::vec3& position) noexcept;
+	///<summary>Gets the current direction that the crewmember is facing.</summary>
 	const glm::vec3& GetDirection() const noexcept;
+	///<summary>Sets the current direction that the crewmember is facing. Use .Update() to apply visual changes.</summary>
 	void SetDirection(const glm::vec3& direction) noexcept;
-
+	///<summary>Used to determine path of crewmember to an already selected target. Function made to run on multiple threads.</summary>
 	virtual void RunParallel() override;
 	///<summary>Updates matrix of the object.</summary>
 	virtual void Update(float deltaTime) override;

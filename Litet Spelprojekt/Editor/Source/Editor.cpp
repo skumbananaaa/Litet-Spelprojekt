@@ -33,7 +33,7 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	m_Dragging = false;
 	m_CurrentEditingMode = NONE;
 
-	ResourceHandler::LoadResources(this);
+	ResourceHandler::LoadResources(this, "../Game/");
 
 	m_MouseMaterial = MATERIAL::WHITE;
 

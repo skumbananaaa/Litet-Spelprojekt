@@ -131,5 +131,6 @@
     <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\CustomMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
   </ItemGroup>
 </Project>

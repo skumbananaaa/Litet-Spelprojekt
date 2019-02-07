@@ -19,4 +19,5 @@ private:
 	PlanarReflector* m_pReflector;
 	Texture2D* m_pDistortion;
 	Texture2D* m_pNormalMap;
+	Texture2D* m_pDepthMap;
 };

@@ -168,17 +168,13 @@ void Game::OnResourcesLoaded()
 	}
 
 	//test objects
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::SINGLE_BED);
-	pGameObject->SetMesh(MESH::BED_SINGLE);
+	pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_SINGLE);
 	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
-	pGameObject = new GameObject();
-	pGameObject->SetMaterial(MATERIAL::BUNK_BED);
-	pGameObject->SetMesh(MESH::BED_BUNK);
+	pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_BUNK);
 	pGameObject->SetPosition(glm::vec3(-5.0f, 4.0f, -10.0f));
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();

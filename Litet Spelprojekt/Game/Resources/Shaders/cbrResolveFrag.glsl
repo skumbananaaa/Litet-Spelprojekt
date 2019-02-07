@@ -149,17 +149,17 @@ void main()
 		lightDir = normalize(lightDir);
 		float cosTheta = dot(normal, lightDir);
 	
-		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, normalize(targetDir))));
+		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
 		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
 		if (lightToSurfaceAngle > coneAngle)
 		{
 			light_attenuation += lightToSurfaceAngle - coneAngle;
 		}
-		float attenuation = 1.0f / (light_attenuation * (dist * dist));
+		float attenuation = 1.0f / (1.0 + light_attenuation * (dist * dist));
 		
 		vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
 
-		float theta = dot(lightDir, normalize(-targetDir));
+		float theta = dot(lightDir, -targetDir);
 		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
 		float intensity = clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
 

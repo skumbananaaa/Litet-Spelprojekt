@@ -50,8 +50,9 @@ Game::Game() noexcept :
 	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 3.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(1.0f, 3.0f, 3.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(0.0f, -1.0f, -1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec4(1.0f, .0f, 0.0f, 1.0f)));
 
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
@@ -68,7 +69,7 @@ Game::Game() noexcept :
 	m_pTestAudioSource = new AudioSource(*m_pMusic);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
-	m_pTestAudioSource->Play();
+	//m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 }
@@ -109,14 +110,14 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddGameObject(pGameObject);
 	}
 	{
-		pGameObject = new GameObject();
+		/*pGameObject = new GameObject();
 		pGameObject->SetName("ship");
 		pGameObject->SetMaterial(MATERIAL::RED);
 		pGameObject->SetMesh(MESH::SHIP);
 		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
-		m_pScene->AddGameObject(pGameObject);
+		m_pScene->AddGameObject(pGameObject);*/
 	}
 	{
 		pGameObject = new GameObject();

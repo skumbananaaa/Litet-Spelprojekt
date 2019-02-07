@@ -95,7 +95,7 @@ const glm::vec3& Crewmember::GetDirection() const noexcept
 void Crewmember::SetDirection(const glm::vec3 & direction) noexcept
 {
 	m_Direction = glm::normalize(direction);
-	float angle = std::atan2f(1.0f * m_Direction.z - 0.0f * m_Direction.x, 1.0f * m_Direction.x + 0 * m_Direction.z);
+	float angle = std::atan2f(1.0f * m_Direction.z - 0.0f * m_Direction.x, 1.0f * m_Direction.x + 0.0f * m_Direction.z);
 	SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, -angle));
 }
 

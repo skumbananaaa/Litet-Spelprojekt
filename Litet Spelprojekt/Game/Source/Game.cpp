@@ -167,7 +167,7 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddGameObject(pGameObject);
 	}
 
-	/*
+	//test objects
 	pGameObject = new GameObject();
 	pGameObject->SetMaterial(MATERIAL::SINGLE_BED);
 	pGameObject->SetMesh(MESH::BED_SINGLE);
@@ -183,7 +183,7 @@ void Game::OnResourcesLoaded()
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
-	*/
+	
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();

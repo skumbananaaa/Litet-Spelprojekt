@@ -13,6 +13,7 @@ uint32 MESH::BED_BUNK = 0;
 uint32 MESH::BED_SINGLE = 0;
 uint32 MESH::INSTRUMENT_1 = 0;
 uint32 MESH::INSTRUMENT_2 = 0;
+uint32 MESH::LAMP = 0;
 
 void MESH::RegisterResources()
 {
@@ -27,4 +28,5 @@ void MESH::RegisterResources()
 	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed1.obj");
 	INSTRUMENT_1			= ResourceHandler::RegisterMesh("Instrument1.obj");
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
+	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
 }

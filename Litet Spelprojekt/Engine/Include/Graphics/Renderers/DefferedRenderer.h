@@ -70,6 +70,11 @@ struct LightPassBuffer
 	glm::mat4 InverseProjection;
 	glm::vec3 CameraPosition;
 	float pad1;
+
+};
+
+struct LightBuffer
+{
 	DirectionalLightBuffer DirectionalLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLightBuffer PointLights[NUM_POINT_LIGHTS];
 	SpotLightBuffer SpotLights[NUM_SPOT_LIGHTS];
@@ -127,17 +132,17 @@ public:
 
 private:
 	void Create() noexcept;
+	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ReconstructionPass() const noexcept;
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
-	void WaterReflectionPass(const Scene& sceen) const noexcept;
+	void ReflectionPass(const Scene& sceen) const noexcept;
 	void WaterPass(const Scene& sceen, float dtS) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
 	
 	//DELETE?
-	void LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void DepthPrePass(const Scene& scene) const noexcept;
 
 private:
@@ -155,6 +160,7 @@ private:
 	UniformBuffer* m_pGeoPassPerFrame;
 	UniformBuffer* m_pGeoPassPerObject;
 	UniformBuffer* m_pLightPassBuffer;
+	UniformBuffer* m_pLightBuffer;
 	
 	UniformBuffer* m_pDecalPassPerFrame;
 	UniformBuffer* m_pDecalPassPerObject;
@@ -179,9 +185,6 @@ private:
 	ShaderProgram* m_pForwardPass;
 	ShaderProgram* m_pWaterpassProgram;
 	ShaderProgram* m_pDepthPrePassProgram;
-
-	ShaderProgram* m_pCbrStencilProgram;
-	ShaderProgram* m_pLightPassProgram;
 	ShaderProgram* m_pSkyBoxPassProgram;
 
 	glm::vec4 m_ClipDistances[NUM_CLIP_DISTANCES];

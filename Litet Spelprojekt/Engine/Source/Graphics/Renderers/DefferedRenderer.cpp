@@ -15,6 +15,7 @@ DefferedRenderer::DefferedRenderer()
 	m_pLastResolveTarget(nullptr),
 	m_pCurrentResolveTarget(nullptr),
 	m_pGeoPassPerFrame(nullptr),
+	m_pLightBuffer(nullptr),
 	m_pGeoPassPerObject(nullptr),
 	m_pDecalPassPerFrame(nullptr),
 	m_pDecalPassPerObject(nullptr),
@@ -27,11 +28,9 @@ DefferedRenderer::DefferedRenderer()
 	m_pCbrBlurProgram(nullptr),
 	m_pCbrReconstructionProgram(nullptr),
 	m_pCbrResolveProgram(nullptr),
-	m_pCbrStencilProgram(nullptr),
 	m_pDepthPrePassProgram(nullptr),
 	m_pGeometryPassProgram(nullptr),
 	m_pDecalsPassProgram(nullptr),
-	m_pLightPassProgram(nullptr),
 	m_pWaterpassProgram(nullptr),
 	m_pSkyBoxPassProgram(nullptr),
 	m_pResolveTargets(),
@@ -58,6 +57,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pGeoPassPerFrame);
 	DeleteSafe(m_pGeoPassPerObject);
 	DeleteSafe(m_pLightPassBuffer);
+	DeleteSafe(m_pLightBuffer);
 
 	DeleteSafe(m_pDecalPassPerFrame);
 	DeleteSafe(m_pDecalPassPerObject);
@@ -71,11 +71,9 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pCbrBlurProgram);
 	DeleteSafe(m_pCbrReconstructionProgram);
 	DeleteSafe(m_pCbrResolveProgram);
-	DeleteSafe(m_pCbrStencilProgram);
 	DeleteSafe(m_pDepthPrePassProgram);
 	DeleteSafe(m_pGeometryPassProgram);
 	DeleteSafe(m_pDecalsPassProgram);
-	DeleteSafe(m_pLightPassProgram);
 	DeleteSafe(m_pForwardPass);
 	DeleteSafe(m_pWaterpassProgram);
 	DeleteSafe(m_pForwardPass);
@@ -92,7 +90,7 @@ void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
-	
+
 	//Clear last frame's batches
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
@@ -105,8 +103,8 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	}
 
 	//Create batches for drawables
-	//Dahlsson �r detta verkligen det mest optimierade du kan g�ra?
-	//-Nej men f�r duga tills vidare
+	//Dahlsson är detta verkligen det mest optimierade du kan göra?
+	//-Nej men får duga tills vidare
 	{
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
@@ -176,6 +174,15 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 		}
 	}
 
+	//Render reflections to their rendertargets
+	//Render skybox
+	//Render deffered
+	//Render decals
+	//Render forward
+
+	//Update Lightbuffer
+	UpdateLightBuffer(scene);
+
 	//Setup for start rendering
 	context.Enable(DEPTH_TEST);
 	context.Enable(CULL_FACE);
@@ -184,12 +191,12 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
 
-	//Render reflection for water
+	//Render reflections
 	context.SetViewport(m_pReflection->GetWidth(), m_pReflection->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pReflection);
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
-	WaterReflectionPass(scene);
+	ReflectionPass(scene);
 
 	//Render geometry to MSAA targets for checkerboard rendering
 	context.Enable(MULTISAMPLE);
@@ -391,18 +398,6 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/defferedLightningFrag.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created Lightpass Fragment shader" << std::endl;
-		}
-
-		m_pLightPassProgram = new ShaderProgram(fullscreenTri, *pFrag);
-
-		delete pFrag;
-	}
-
-	{
 		Shader* pVert = new Shader();
 		if (pVert->CompileFromFile("Resources/Shaders/defferedDepthPreVert.glsl", VERTEX_SHADER))
 		{
@@ -557,6 +552,32 @@ void DefferedRenderer::Create() noexcept
 
 		m_pLightPassBuffer = new UniformBuffer(&buff, 1, sizeof(LightPassBuffer));
 	}
+	
+	{
+		LightBuffer buff = {};
+		for (uint32 i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
+		{
+			buff.DirectionalLights[i].Color = glm::vec4(0.0f);
+			buff.DirectionalLights[i].Direction = glm::vec3(0.0f);
+		}
+
+		for (uint32 i = 0; i < NUM_POINT_LIGHTS; i++)
+		{
+			buff.PointLights[i].Color = glm::vec4(0.0f);
+			buff.PointLights[i].Position = glm::vec3(0.0f);
+		}
+
+		for (uint32 i = 0; i < NUM_SPOT_LIGHTS; i++)
+		{
+			buff.SpotLights[i].Color = glm::vec4(0.0f);
+			buff.SpotLights[i].Position = glm::vec3(0.0f);
+			buff.SpotLights[i].Direction = glm::vec3(0.0f);
+			buff.SpotLights[i].CutOffAngle = 0.0f;
+			buff.SpotLights[i].OuterCutOffAngle = 0.0f;
+		}
+
+		m_pLightBuffer = new UniformBuffer(&buff, 1, sizeof(LightBuffer));
+	}
 
 	{
 		SkyBoxPassBuffer buff= {};
@@ -582,6 +603,39 @@ void DefferedRenderer::Create() noexcept
 		{
 			m_ClipDistances[i] = glm::vec4(0.0f);
 		}
+	}
+}
+
+void DefferedRenderer::UpdateLightBuffer(const Scene& scene) const noexcept
+{
+	{
+		LightBuffer buff = {};
+
+		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
+		for (size_t i = 0; i < directionalLights.size(); i++)
+		{
+			buff.DirectionalLights[i].Color = directionalLights[i]->GetColor();
+			buff.DirectionalLights[i].Direction = directionalLights[i]->GetDirection();
+		}
+
+		const std::vector<PointLight*>& pointLights = scene.GetPointLights();
+		for (size_t i = 0; i < pointLights.size(); i++)
+		{
+			buff.PointLights[i].Color = pointLights[i]->GetColor();
+			buff.PointLights[i].Position = pointLights[i]->GetPosition();
+		}
+
+		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
+		for (size_t i = 0; i < spotLights.size(); i++)
+		{
+			buff.SpotLights[i].Color = spotLights[i]->GetColor();
+			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
+			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
+			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
+			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
+		}
+
+		m_pLightBuffer->UpdateData(&buff);
 	}
 }
 
@@ -706,30 +760,6 @@ void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& sce
 		buff.InverseView = camera.GetInverseViewMatrix();
 		buff.InverseProjection = camera.GetInverseProjectionMatrix();
 		buff.CameraPosition = camera.GetPosition();
-
-		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
-		for (size_t i = 0; i < directionalLights.size(); i++)
-		{
-			buff.DirectionalLights[i].Color = directionalLights[i]->GetColor();
-			buff.DirectionalLights[i].Direction = directionalLights[i]->GetDirection();
-		}
-
-		const std::vector<PointLight*>& pointLights = scene.GetPointLights();
-		for (size_t i = 0; i < pointLights.size(); i++)
-		{
-			buff.PointLights[i].Color = pointLights[i]->GetColor();
-			buff.PointLights[i].Position = pointLights[i]->GetPosition();
-		}
-
-		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
-		for (size_t i = 0; i < spotLights.size(); i++)
-		{
-			buff.SpotLights[i].Color = spotLights[i]->GetColor();
-			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
-			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
-			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
-			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
-		}
 
 		m_pLightPassBuffer->UpdateData(&buff);
 	}
@@ -876,60 +906,13 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	context.SetTexture(nullptr, 2);
 }
 
-void DefferedRenderer::LightPass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept
-{
-	GLContext& context = Application::GetInstance().GetGraphicsContext();
-
-	context.Disable(DEPTH_TEST);
-
-	context.SetProgram(m_pLightPassProgram);
-	context.SetUniformBuffer(m_pLightPassBuffer, 0);
-
-	{
-		LightPassBuffer buff = {};
-		buff.InverseView = camera.GetInverseViewMatrix();
-		buff.InverseProjection = camera.GetInverseProjectionMatrix();
-		buff.CameraPosition = camera.GetPosition();
-
-		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
-		for (size_t i = 0; i < directionalLights.size(); i++)
-		{
-			buff.DirectionalLights[i].Color = directionalLights[i]->GetColor();
-			buff.DirectionalLights[i].Direction = directionalLights[i]->GetDirection();
-		}
-
-		const std::vector<PointLight*>& pointLights = scene.GetPointLights();
-		for (size_t i = 0; i < pointLights.size(); i++)
-		{
-			buff.PointLights[i].Color = pointLights[i]->GetColor();
-			buff.PointLights[i].Position = pointLights[i]->GetPosition();
-		}
-
-		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
-		for (size_t i = 0; i < spotLights.size(); i++)
-		{
-			buff.SpotLights[i].Color = spotLights[i]->GetColor();
-			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
-			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
-			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
-			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
-		}
-
-		m_pLightPassBuffer->UpdateData(&buff);
-	}
-
-	context.SetTexture(pGBuffer->GetColorAttachment(0), 0); //color buffer
-	context.SetTexture(pGBuffer->GetColorAttachment(1), 1); //normal buffer
-	context.SetTexture(pGBuffer->GetDepthAttachment(), 2);  //depth buffer
-
-	context.DrawFullscreenTriangle(*m_pTriangle);
-}
-
 void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) const noexcept
 {
 	if (m_DrawableBatches.size() < 1)
 	{
+#if defined(_DEBUG)
 		std::cout << "No drawables, skipping forwardpass" << std::endl;
+#endif
 		return;
 	}
 
@@ -946,31 +929,6 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 		buff.InverseView = camera.GetInverseViewMatrix();
 		buff.InverseProjection = camera.GetInverseProjectionMatrix();
 		buff.CameraPosition = camera.GetPosition();
-
-		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
-		for (size_t i = 0; i < directionalLights.size(); i++)
-		{
-			buff.DirectionalLights[i].Color = directionalLights[i]->GetColor();
-			buff.DirectionalLights[i].Direction = directionalLights[i]->GetDirection();
-		}
-
-		const std::vector<PointLight*>& pointLights = scene.GetPointLights();
-		for (size_t i = 0; i < pointLights.size(); i++)
-		{
-			buff.PointLights[i].Color = pointLights[i]->GetColor();
-			buff.PointLights[i].Position = pointLights[i]->GetPosition();
-		}
-
-		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
-		for (size_t i = 0; i < spotLights.size(); i++)
-		{
-			buff.SpotLights[i].Color = spotLights[i]->GetColor();
-			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
-			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
-			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
-			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
-			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
-		}
 
 		m_pLightPassBuffer->UpdateData(&buff);
 	}
@@ -1045,7 +1003,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 	context.SetTexture(nullptr, 1);
 }
 
-void DefferedRenderer::WaterReflectionPass(const Scene& scene) const noexcept
+void DefferedRenderer::ReflectionPass(const Scene& scene) const noexcept
 {
 	if (scene.GetReflectables().size() < 1)
 	{
@@ -1063,9 +1021,7 @@ void DefferedRenderer::WaterReflectionPass(const Scene& scene) const noexcept
 	reflectionCam.InvertPitch();
 	reflectionCam.UpdateFromPitchYawNoInverse();
 
-	context.Enable(CLIP_DISTANCE0);
 	ForwardPass(reflectionCam, scene);
-	context.Disable(CLIP_DISTANCE0);
 }
 
 void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept

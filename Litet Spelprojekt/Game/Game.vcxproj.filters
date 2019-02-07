@@ -50,7 +50,6 @@
     <None Include="Resources\Shaders\FShader.glsl" />
     <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
-    <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
     <None Include="Resources\Shaders\FShaderWater.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />
     <None Include="Resources\Shaders\FShaderGUI.glsl" />

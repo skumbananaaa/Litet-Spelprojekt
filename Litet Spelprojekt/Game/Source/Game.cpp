@@ -156,6 +156,8 @@ void Game::OnResourcesLoaded()
 	pGameObject->SetName("cameraLookAt");
 	m_pScene->AddGameObject(pGameObject);
 
+	m_pScene->AddPlanarReflector(new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f));
+
 	//Water?? YAAAS
 	pGameObject = new GameObject();
 	pGameObject->SetIsReflectable(true);

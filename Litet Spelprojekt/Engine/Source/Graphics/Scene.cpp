@@ -35,6 +35,11 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_SpotLights[i]);
 	}
+
+	for (size_t i = 0; i < m_PlanarReflectors.size(); i++)
+	{
+		DeleteSafe(m_PlanarReflectors[i]);
+	}
 }
 
 void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
@@ -87,6 +92,11 @@ GameObject* Scene::GetGameObject(const std::string& name) noexcept
 	return item->second;
 }
 
+const std::vector<PlanarReflector*>& Scene::GetPlanarReflectors() const noexcept
+{
+	return m_PlanarReflectors;
+}
+
 void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
 	assert(pGameObject != nullptr);
@@ -127,6 +137,11 @@ void Scene::AddPointLight(PointLight* pLight) noexcept
 void Scene::AddSpotLight(SpotLight* pLight) noexcept
 {
 	m_SpotLights.push_back(pLight);
+}
+
+void Scene::AddPlanarReflector(PlanarReflector* pReflector) noexcept
+{
+	m_PlanarReflectors.push_back(pReflector);
 }
 
 void Scene::RemoveGameObject(uint32 index) noexcept

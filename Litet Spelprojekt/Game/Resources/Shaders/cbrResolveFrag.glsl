@@ -42,6 +42,10 @@ layout(binding = 0) uniform LightPassBuffer
 	mat4 g_InverseView;
 	mat4 g_InverseProjection;
 	vec4 g_CameraPosition;
+};
+
+layout(binding = 1) uniform LightBuffer
+{
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
@@ -66,7 +70,6 @@ vec3 NormalDecode(vec3 mappedNormal)
 
 vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float intensity)
 {
-	
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 
 	//AMBIENT

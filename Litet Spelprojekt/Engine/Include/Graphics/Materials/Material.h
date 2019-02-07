@@ -12,7 +12,6 @@ public:
 	~Material();
 
 	void SetCullMode(CULL_MODE mode);
-	void SetClipPlane(const glm::vec3& normal, float distFromOrigin);
 	void EnableClipPlane(bool enable, uint32 index);
 
 	const Texture2D* GetNormalMap() const;

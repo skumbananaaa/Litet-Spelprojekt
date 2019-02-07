@@ -20,6 +20,11 @@ class API Framebuffer
 	friend class GLContext;
 
 public:
+	Framebuffer(Framebuffer&& other) = delete;
+	Framebuffer(const Framebuffer& other) = delete;
+	Framebuffer& operator=(Framebuffer&& other) = delete;
+	Framebuffer& operator=(const Framebuffer& other) = delete;
+
 	Framebuffer(const FramebufferDesc& desc);
 	Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil);
 	~Framebuffer();

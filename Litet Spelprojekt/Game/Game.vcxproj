@@ -166,7 +166,6 @@
     <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
-    <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />

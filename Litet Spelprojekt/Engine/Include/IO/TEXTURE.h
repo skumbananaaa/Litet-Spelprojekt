@@ -11,6 +11,9 @@ public:
 	static uint32 WATER_DISTORTION;
 	static uint32 WATER_NORMAL;
 	static uint32 HDR;
+	static uint32 SINGLE_BED;
+	static uint32 BUNK_BED;
+
 
 public:
 	static void RegisterResources();

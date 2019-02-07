@@ -1,7 +1,6 @@
 #pragma once
 #include <Graphics/Textures/Texture.h>
 
-
 class API Texture2D : public Texture
 {
 	friend class TEXTURE;
@@ -25,13 +24,17 @@ private:
 
 private:
 	void Create(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
+	void Create(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
 	void CreateMS(const TextureDesc& desc, const TextureParams& params);
-	void Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
 
 private:
 	uint32 m_Width;
 	uint32 m_Height;
 	uint32 m_Samples;
+
+public:
+	static Texture2D* CreateTextureFromFile(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
+	static Texture2D* CreateTextureFromMemory(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
 };
 
 inline uint32 Texture2D::GetWidth() const noexcept

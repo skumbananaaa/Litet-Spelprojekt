@@ -46,6 +46,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pReflection);
 	DeleteSafe(m_pBlur);
 	DeleteSafe(m_pForwardCBR);
+	DeleteSafe(m_pForwardCBRTexture);
 
 	for (uint32 i = 0; i < 2; i++)
 	{
@@ -53,7 +54,6 @@ DefferedRenderer::~DefferedRenderer()
 	}
 
 	DeleteSafe(m_pTriangle);
-	//DeleteSafe(m_pDecalMesh);
 	
 	DeleteSafe(m_pGeoPassPerFrame);
 	DeleteSafe(m_pGeoPassPerObject);
@@ -64,9 +64,6 @@ DefferedRenderer::~DefferedRenderer()
 
 	DeleteSafe(m_pWaterPassPerFrame);
 	DeleteSafe(m_pWaterPassPerObject);
-	
-	//DeleteSafe(m_pWaterNormalMap);
-	//DeleteSafe(m_pWaterDistortionMap);
 
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
@@ -108,8 +105,8 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	}
 
 	//Create batches for drawables
-	//Dahlsson är detta verkligen det mest optimierade du kan göra?
-	//-Nej men får duga tills vidare
+	//Dahlsson ï¿½r detta verkligen det mest optimierade du kan gï¿½ra?
+	//-Nej men fï¿½r duga tills vidare
 	{
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
@@ -250,7 +247,7 @@ void DefferedRenderer::Create() noexcept
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.ColorAttchmentFormats[1] = TEX_FORMAT_RGBA;
 		desc.NumColorAttachments = 2;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
+		desc.DepthStencilFormat = TEX_FORMAT_DEPTH_STENCIL;
 		desc.Width = Window::GetCurrentWindow().GetWidth() / 2;
 		desc.Height = Window::GetCurrentWindow().GetHeight() / 2;
 		desc.SamplingParams = params;
@@ -258,10 +255,15 @@ void DefferedRenderer::Create() noexcept
 
 		m_pGBufferCBR = new Framebuffer(desc);
 
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.NumColorAttachments = 1;
+		TextureDesc desc2 = {};
+		desc2.Format = TEX_FORMAT_RGBA;
+		desc2.Width = desc.Width;
+		desc2.Height = desc.Height;
+		desc2.Samples = desc.Samples;
+		desc2.GenerateMips = false;
 
-		m_pForwardCBR = new Framebuffer(desc);
+		m_pForwardCBRTexture = new Texture2D(nullptr, desc2, params);
+		m_pForwardCBR = new Framebuffer(&m_pForwardCBRTexture, 1, (Texture2D*)m_pGBufferCBR->GetDepthAttachment());
 	}
 
 	{

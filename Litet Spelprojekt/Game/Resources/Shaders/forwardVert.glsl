@@ -37,7 +37,7 @@ layout(std140, binding = 1) uniform PerObject
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
+	gl_ClipDistance[1] = dot(worldPos, vec4(0.0f, 1.0f, 0.0f, 0.01f));
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;

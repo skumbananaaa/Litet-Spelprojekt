@@ -4,25 +4,13 @@
 #include <GLM\gtc\matrix_transform.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
-enum CameraDirCartesian : uint8
+enum PosRelativeLookAt : uint8
 {
-	Forward,
-	Backwards,
-	Left,
-	Right,
-	Up,
-	Down
+	Zoom,
+	RotateX,
+	RotateY
 };
 
-enum CameraPosPolar : uint8
-{
-	ZoomIn,
-	ZoomOut,
-	RotateLeft,
-	RotateRight,
-	RotateUp,
-	RotateDown
-};
 class API Camera
 {
 public:
@@ -40,9 +28,11 @@ public:
 	void CreateOrthographic(float windowWidth, float windowHeight, float nearPlane, float farPlane) noexcept;
 	void CreatePerspective(float fovRad, float aspectWihe, float nearPlane, float farPlane) noexcept;
 
-	void MoveCartesian(CameraDirCartesian dir, float amount) noexcept;
-	void MovePosPolar(CameraPosPolar dir, float amount) noexcept;
-	void MoveLookAtAndPosPolar(CameraDirCartesian dir, float amount) noexcept;
+	void MoveWorldCoords(const glm::vec3& worldCoords, bool moveLookAt = false) noexcept;
+	void MoveLocalCoords(const glm::vec3& localCoords, bool moveLookAt = false) noexcept;
+	
+	void MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept;
+
 	void OffsetYaw(float amount) noexcept;
 	void OffsetPitch(float amount) noexcept;
 	void InvertPitch() noexcept;

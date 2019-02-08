@@ -20,9 +20,10 @@
 #include "..\Include\Crew.h"
 #include "..\Include\Path.h"
 
-
+#define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
+#include <GLM/gtx/string_cast.hpp>
 #include <math.h>
 
 class Game : public Application, public IResourceListener
@@ -37,6 +38,7 @@ public:
 	void OnKeyDown(KEY keycode) override;
 	void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
 	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
+	void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 	void PickPosition();

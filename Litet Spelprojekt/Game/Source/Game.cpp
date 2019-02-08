@@ -14,7 +14,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(false),
+	Application(false, 1920, 1080),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pScene(nullptr),
@@ -25,7 +25,7 @@ Game::Game() noexcept :
 	m_pTextViewUPS(nullptr),
 	m_pMusic(nullptr),
 	m_pTestAudioSource(nullptr),
-	cartesianCamera(true),
+	cartesianCamera(false),
 	m_CurrentElevation(2)
 {
 	m_pScene = new Scene();
@@ -89,9 +89,9 @@ void Game::OnResourcesLoaded()
 	m_pRenderer = new DefferedRenderer();
 	m_pDebugRenderer = new DebugRenderer();
 
-	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	Camera* pCamera = new Camera(glm::vec3(5.5f, 6.0f, 18.0f), glm::vec3(5.5f, 0.5f, 12.5f));
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.1f, 1000.0f);
-	pCamera->UpdateFromPitchYaw();
+	pCamera->UpdateFromLookAt();
 	m_pScene->SetCamera(pCamera);
 
 	GameObject* pGameObject = nullptr;
@@ -238,7 +238,29 @@ void Game::OnKeyDown(KEY keycode)
 
 void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	
+	if (/*Input::IsKeyDown(KEY_LEFT_ALT) &&*/ !cartesianCamera)
+	{
+		if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
+		{
+			const float cameraRotationSensitivity = 0.005f;
+			glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
+			std::cout << glm::to_string(m_pScene->GetCamera().GetPosition()) << std::endl;
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
+		}
+		
+		if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
+		{
+			const float cameraMoveSensitivityX = 0.5f;
+			const float cameraMoveSensitivityY = 0.025f;
+			glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
+			glm::vec3 forward(0.0f);
+			forward.x = m_pScene->GetCamera().GetFront().x;
+			forward.z = m_pScene->GetCamera().GetFront().z;
+			m_pScene->GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
+			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
+		}
+	}
 }
 
 void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
@@ -258,6 +280,30 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 	}
 }
 
+void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
+{
+	if (!cartesianCamera)
+	{
+		if (Input::IsKeyDown(KEY_LEFT_ALT))
+		{
+			if (offset.y > 0.0f)
+			{
+				m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
+			}
+			else
+			{
+				m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
+			}
+
+			SetClipPlanes();
+		}
+		{
+			const float cameraZoomSensitivity = 0.1f;
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+		}
+	}
+}
+
 void Game::OnUpdate(float dtS)
 {
 	m_pScene->OnUpdate(dtS);
@@ -268,32 +314,36 @@ void Game::OnUpdate(float dtS)
 		static float cartesianCameraSpeed = 5.0f;
 		static float cartesianCameraAngularSpeed = 1.5f;
 
+		glm::vec3 localMove(0.0f);
+
 		if (Input::IsKeyDown(KEY_W))
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cartesianCameraSpeed * dtS);
+			localMove.z = cartesianCameraSpeed * dtS;
 		}
 		else if (Input::IsKeyDown(KEY_S))
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cartesianCameraSpeed * dtS);
+			localMove.z = -cartesianCameraSpeed * dtS;
 		}
 
 		if (Input::IsKeyDown(KEY_A))
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Left, cartesianCameraSpeed * dtS);
+			localMove.x = cartesianCameraSpeed * dtS;
 		}
 		else if (Input::IsKeyDown(KEY_D))
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cartesianCameraSpeed * dtS);
+			localMove.x = -cartesianCameraSpeed * dtS;
 		}
 
 		if (Input::IsKeyDown(KEY_E))
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Up, cartesianCameraSpeed * dtS);
+			localMove.y = cartesianCameraSpeed * dtS;
 		}
 		else if (Input::IsKeyDown(KEY_Q))
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
+			localMove.y = -cartesianCameraSpeed * dtS;
 		}
+
+		m_pScene->GetCamera().MoveLocalCoords(localMove);
 
 		if (Input::IsKeyDown(KEY_UP))
 		{
@@ -318,25 +368,67 @@ void Game::OnUpdate(float dtS)
 	else
 	{
 		//Polar
-		static float polarCameraSpeed = 5.0f;
+		/*static float polarCameraSpeed = 5.0f;
 		static float polarCameraAngularSpeed = 0.8f;
 
 		if (Input::IsKeyDown(KEY_W))
 		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Forward, polarCameraSpeed * dtS);
+			glm::vec3 forward(0.0f);
+			forward.x = m_pScene->GetCamera().GetFront().x;
+			forward.z = m_pScene->GetCamera().GetFront().z;
+			m_pScene->GetCamera().MoveWorldCoords(forward * polarCameraSpeed * dtS, true);
 		}
 		else if (Input::IsKeyDown(KEY_S))
 		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Backwards, polarCameraSpeed * dtS);
+			glm::vec3 forward(0.0f);
+			forward.x = m_pScene->GetCamera().GetFront().x;
+			forward.z = m_pScene->GetCamera().GetFront().z;
+			m_pScene->GetCamera().MoveWorldCoords(-forward * polarCameraSpeed * dtS, true);
 		}
 
 		if (Input::IsKeyDown(KEY_A))
 		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Left, polarCameraSpeed * dtS);
+			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(polarCameraSpeed * dtS, 0.0f, 0.0f), true);
 		}
 		else if (Input::IsKeyDown(KEY_D))
 		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Right, polarCameraSpeed * dtS);
+			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(-polarCameraSpeed * dtS, 0.0f, 0.0f), true);
+		}
+
+		if (Input::IsKeyDown(KEY_E))
+		{
+			m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, polarCameraSpeed * dtS, 0.0f), true);
+		}
+		else if (Input::IsKeyDown(KEY_Q))
+		{
+			m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, -polarCameraSpeed * dtS, 0.0f), true);
+		}
+
+		if (Input::IsKeyDown(KEY_UP))
+		{
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, polarCameraAngularSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_DOWN))
+		{
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -polarCameraAngularSpeed * dtS);
+		}
+
+		if (Input::IsKeyDown(KEY_LEFT))
+		{
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, polarCameraAngularSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_RIGHT))
+		{
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, -polarCameraAngularSpeed * dtS);
+		}
+
+		if (Input::IsKeyDown(KEY_X))
+		{
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, polarCameraSpeed * dtS);
+		}
+		else if (Input::IsKeyDown(KEY_Z))
+		{
+			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, -polarCameraSpeed * dtS);
 		}
 
 		if (Input::IsKeyDown(KEY_E))
@@ -346,34 +438,7 @@ void Game::OnUpdate(float dtS)
 		else if (Input::IsKeyDown(KEY_Q))
 		{
 			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Down, polarCameraSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_UP))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateUp, polarCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_DOWN))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateDown, polarCameraAngularSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_LEFT))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateLeft, polarCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_RIGHT))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateRight, polarCameraAngularSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_X))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomIn, polarCameraSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_Z))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomOut, polarCameraSpeed * dtS);
-		}
+		}*/
 
 		m_pScene->GetCamera().UpdateFromLookAt();
 	}
@@ -578,6 +643,7 @@ void Game::SetClipPlanes()
 	/*ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 1.8f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));*/
-	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (m_CurrentElevation * 2.0f)), 1);
-	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.80f + (m_CurrentElevation * 2.0f)), 2);
+	float elevation = glm::clamp((glm::floor(m_pScene->GetCamera().GetLookAt().y / 2.0f)), 0.0f, 2.0f);
+	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
+	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.80f + (elevation * 2.0f)), 2);
 }

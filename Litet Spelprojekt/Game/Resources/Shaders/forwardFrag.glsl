@@ -1,4 +1,6 @@
 #version 420
+
+#define NUM_CLIP_DISTANCES 8
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 18
 #define NUM_SPOT_LIGHTS 8
@@ -44,6 +46,8 @@ layout(std140, binding = 0) uniform PerFrame
 	vec3 g_CameraPosition;
 	float g_Padding;
 	vec3 g_CameraLookAt;
+	float g_Padding2;
+	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
 
 layout(std140, binding = 1) uniform PerObject
@@ -52,6 +56,21 @@ layout(std140, binding = 1) uniform PerObject
 	float g_HasTexture;
 	float g_HasNormalMap;
 };
+
+//layout(std140, binding = 0) uniform PerFrame
+//{
+//	mat4 g_ViewProjection;
+//	vec3 g_CameraPosition;
+//	float g_Padding;
+//	vec3 g_CameraLookAt;
+//};
+//
+//layout(std140, binding = 1) uniform PerObject
+//{
+//	vec4 g_Color;
+//	float g_HasTexture;
+//	float g_HasNormalMap;
+//};
 
 layout(binding = 2) uniform LightBuffer
 {

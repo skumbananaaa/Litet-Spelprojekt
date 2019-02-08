@@ -55,10 +55,10 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 			perObject.Model = gameobject.GetTransform();
 			perObject.Color = pMaterial->GetColor();
 
-			if (pMaterial->HasTexture())
+			if (pMaterial->HasDiffuseMap())
 			{
 				perObject.HasTexture = 1.0f;
-				context.SetTexture(pMaterial->GetTexture(), 0);
+				context.SetTexture(pMaterial->GetDiffuseMap(), 0);
 			}
 			else
 			{

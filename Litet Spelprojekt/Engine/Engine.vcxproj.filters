@@ -58,7 +58,6 @@
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
-    <ClCompile Include="Source\Graphics\Material\CustomMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -130,7 +129,6 @@
     <ClInclude Include="Include\Graphics\GUI\ISelectable.h" />
     <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
-    <ClInclude Include="Include\Graphics\Materials\CustomMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
   </ItemGroup>
 </Project>

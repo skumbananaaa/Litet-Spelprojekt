@@ -15,25 +15,45 @@ in VS_OUT
 	vec2 TexCoords;
 } fs_in;
 
-layout(binding = 0) uniform sampler2D g_Texture;
+layout(binding = 0) uniform sampler2D g_DiffuseMap;
 layout(binding = 1) uniform sampler2D g_NormalMap;
-layout(binding = 2) uniform sampler2D g_DissolveMap;
+layout(binding = 2) uniform sampler2D g_SpecularMap;
+//layout(binding = 2) uniform sampler2D g_DissolveMap;
 
-layout(std140, binding = 0) uniform PerFrame
+//layout(std140, binding = 0) uniform PerFrame
+//{
+//	mat4 g_ViewProjection;
+//	vec3 g_CameraPosition;
+//	float g_Padding;
+//	vec3 g_CameraLookAt;
+//	float g_Padding2;
+//	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
+//};
+//
+//layout(std140, binding = 1) uniform PerObject
+//{
+//	vec4 g_Color;
+//	float g_HasTexture;
+//	float g_HasNormalMap;
+//};
+
+layout(std140, binding = 0) uniform CameraBuffer
 {
-	mat4 g_ViewProjection;
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
 	vec3 g_CameraPosition;
-	float g_Padding;
-	vec3 g_CameraLookAt;
-	float g_Padding2;
-	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
 
-layout(std140, binding = 1) uniform PerObject
+layout(std140, binding = 2) uniform DefferedMaterialBuffer
 {
 	vec4 g_Color;
-	float g_HasTexture;
+	float g_Specular;
+	float g_HasDiffuseMap;
 	float g_HasNormalMap;
+	float g_HasSpecularMap;
 };
 
 vec3 mod289(vec3 x) {
@@ -53,7 +73,8 @@ vec4 taylorInvSqrt(vec4 r)
   return 1.79284291400159 - 0.85373472095314 * r;
 }
 
-vec3 fade(vec3 t) {
+vec3 fade(vec3 t) 
+{
   return t*t*t*(t*(t*6.0-15.0)+10.0);
 }
 
@@ -134,17 +155,27 @@ float snoise(vec3 v)
 
 #define EPSILON 0.001f
 
+vec3 EncodeNormals(vec3 normal)
+{
+	return (normalize(normal) + vec3(1.0f)) * 0.5f;
+}
+
+float EncodeSpecular(float specular)
+{
+	return specular / 256.0f;
+}
+
 void main()
 {
-	float minDissolve = 2.0f * ((snoise(fs_in.WorldPosition.xyz) / 2.0f) + 0.5f);
+	//float minDissolve = 2.0f * ((snoise(fs_in.WorldPosition.xyz) / 2.0f) + 0.5f);
 
 	//vec2 dissolveTexCoords = vec2((fs_in.Position.x + fs_in.Position.z) / 2.0f, fs_in.Position.y);
 	//float minDissolve = texture(g_DissolveMap, dissolveTexCoords).r * 6.0f;
 
 	//vec3 cameraForward = normalize(g_CameraLookAt.xyz - g_CameraPosition.xyz);
 
-	float isNotUp = abs(dot(fs_in.Normal, vec3(0.0f, 1.0f, 0.0f)));
-	float distanceToLookAt = length(g_CameraLookAt.xyz - fs_in.ObjectPosition.xyz);
+	//float isNotUp = abs(dot(fs_in.Normal, vec3(0.0f, 1.0f, 0.0f)));
+	//float distanceToLookAt = length(g_CameraLookAt.xyz - fs_in.ObjectPosition.xyz);
 
 	//vec3 toLookAt = normalize(g_CameraLookAt.xyz - fs_in.ObjectPosition.xyz);
 	//float dotToLookAtNormal = dot(fs_in.Normal, toLookAt);
@@ -152,15 +183,18 @@ void main()
 	//float dotToLookAtForward = dot(toLookAt, -cameraForward);
 	//float dotForwardNormal = dot(cameraForward, fs_in.Normal);
 	
-	if (distanceToLookAt < minDissolve)
-	{
-		discard;
-	} 
+//	if (distanceToLookAt < minDissolve)
+//	{
+//		discard;
+//	} 
+
+	//SPECULAR
+	float specular = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + (EncodeSpecular(g_Specular) * (1.0f - g_HasSpecularMap));
 
 	//COLOR
-	vec3 mappedColor = texture(g_Texture, fs_in.TexCoords).rgb * g_HasTexture;
-	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasTexture);
-	g_OutColor = vec4(uniformColor + mappedColor, 1.0f);
+	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
+	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
+	g_OutColor = vec4(uniformColor + mappedColor, specular);
 	
 	//NORMAL
 	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
@@ -169,7 +203,7 @@ void main()
 	mappedNormal = tbn * mappedNormal;
 
 	vec3 normal = (fs_in.Normal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
-	normal = (normalize(normal) + vec3(1.0f)) * 0.5f;
+	normal = EncodeNormals(normal);
 
 	g_Normal = vec4(normal, 1.0f);
 }

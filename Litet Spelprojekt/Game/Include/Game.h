@@ -49,6 +49,8 @@ private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	Scene* m_pScene;
+	Scene* m_pScene2;
+	Scene* m_pCurrentScene;
 
 	TextureCube* m_pSkyBoxTex;
 	World* m_pWorld;

@@ -71,11 +71,11 @@ uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMA
 	return m_NrOfTexture2D++;
 }
 
-uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap)
+uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap, ShaderProgram* pProgram)
 {
 	std::cout << "Creating Material" << std::endl;
-	Material* material = new Material();
-	material->SetTexture(GetTexture2D(texture));
+	Material* material = new Material(pProgram);
+	material->SetDiffuseMap(GetTexture2D(texture));
 	if (normalMap >= 0)
 	{
 		material->SetNormalMap(GetTexture2D(normalMap));
@@ -84,15 +84,27 @@ uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap)
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, int32 normalMap)
+uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap, ShaderProgram* pProgram)
 {
 	std::cout << "Creating Material" << std::endl;
-	Material* material = new Material();
+	Material* material = new Material(pProgram);
 	material->SetColor(color);
+	material->SetSpecular(specular);
 	if (normalMap >= 0)
 	{
 		material->SetNormalMap(GetTexture2D(normalMap));
 	}
+	m_pMaterials[m_NrOfMaterials] = material;
+	return m_NrOfMaterials++;
+}
+
+uint32 ResourceHandler::RegisterWaterMaterial(int32 distorionMap, int32 normalMap)
+{
+	std::cout << "Creating Water Material" << std::endl;
+	WaterMaterial* material = new WaterMaterial();
+	material->SetDistortionTexture(GetTexture2D(distorionMap));
+	material->SetNormalMap(GetTexture2D(normalMap));
+
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;
 }
@@ -103,7 +115,7 @@ uint32 ResourceHandler::RegisterDecal(int32 texture, int32 normalMap)
 	Decal* decal = new Decal();
 	if (texture >= 0)
 	{
-		decal->SetTexture(GetTexture2D(texture));
+		decal->SetDiffuseMap(GetTexture2D(texture));
 	}
 	if (normalMap >= 0)
 	{

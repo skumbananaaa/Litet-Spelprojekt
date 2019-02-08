@@ -89,6 +89,7 @@ public:
 private:
 	void Create() noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
+	void UpdateCameraBuffer(const Camera& camera) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
@@ -116,7 +117,10 @@ private:
 	UniformBuffer* m_pGeoPassPerFrame;
 	UniformBuffer* m_pGeoPassPerObject;
 	UniformBuffer* m_pLightPassBuffer;
+	
 	UniformBuffer* m_pLightBuffer;
+	UniformBuffer* m_pCameraBuffer;
+	UniformBuffer* m_pMaterialBuffer;
 	
 	UniformBuffer* m_pDecalPassPerFrame;
 	UniformBuffer* m_pDecalPassPerObject;

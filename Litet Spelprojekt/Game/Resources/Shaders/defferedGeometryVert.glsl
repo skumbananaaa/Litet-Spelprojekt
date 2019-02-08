@@ -18,33 +18,43 @@ out VS_OUT
 	vec2 TexCoords;
 } vs_out;
 
-layout(std140, binding = 0) uniform PerFrame
-{
-	mat4 g_ViewProjection;
-	vec3 g_CameraPosition;
-	float g_Padding;
-	vec3 g_CameraLookAt;
-	float g_Padding2;
-	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
-};
+//layout(std140, binding = 0) uniform PerFrame
+//{
+//	mat4 g_ViewProjection;
+//	vec3 g_CameraPosition;
+//	float g_Padding;
+//	vec3 g_CameraLookAt;
+//	float g_Padding2;
+//	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
+//};
+//
+//layout(std140, binding = 1) uniform PerObject
+//{
+//	vec4 g_Color;
+//	float g_HasTexture;
+//	float g_HasNormalMap;
+//};
 
-layout(std140, binding = 1) uniform PerObject
+layout(std140, binding = 0) uniform CameraBuffer
 {
-	vec4 g_Color;
-	float g_HasTexture;
-	float g_HasNormalMap;
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
+	vec3 g_CameraPosition;
 };
 
 void main()
 {
-	vec3 toLookAt = normalize(g_CameraLookAt - g_InstanceModel[3].xyz);
-	vec3 cameraForward = normalize(g_CameraLookAt - g_CameraPosition);
-	float dotToLookAtForward = dot(cameraForward, toLookAt); 
+	//vec3 toLookAt = normalize(g_CameraLookAt - g_InstanceModel[3].xyz);
+	//vec3 cameraForward = normalize(g_CameraLookAt - g_CameraPosition);
+	//float dotToLookAtForward = dot(cameraForward, toLookAt); 
 
-	gl_ClipDistance[0] = -dotToLookAtForward;
+	//gl_ClipDistance[0] = -dotToLookAtForward;
 
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
+	//gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
@@ -56,5 +66,5 @@ void main()
 	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
 	vs_out.TexCoords = g_TexCoords;
 
-	gl_Position = g_ViewProjection * worldPos;
+	gl_Position = g_ProjectionView * worldPos;
 }

@@ -182,6 +182,7 @@
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />
+    <None Include="Resources\Shaders\waterVert.glsl" />
     <None Include="Resources\Textures\SkyBoxTextures\ocean.hdr" />
     <None Include="Resources\Textures\SkyBoxTextures\VShaderEquirecToCubemap.glsl" />
   </ItemGroup>
@@ -205,6 +206,7 @@
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
     <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
+    <Text Include="Resources\Shaders\waterFrag.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

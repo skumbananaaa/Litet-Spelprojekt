@@ -47,7 +47,8 @@ struct LightBuffer
 struct DefferedMaterialBuffer
 {
 	glm::vec4 Color;
-	float HasDiffuseTexture;
-	float HasNormalTexture;
-	float HasSpecularTexture;
+	float Specular;
+	float HasDiffuseMap;
+	float HasNormalMap;
+	float HasSpecularMap;
 };

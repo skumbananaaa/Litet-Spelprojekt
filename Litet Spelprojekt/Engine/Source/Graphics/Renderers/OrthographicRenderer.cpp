@@ -39,6 +39,7 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 	OrthoPerFrame perFrame = {};
 	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
 	perFrame.CameraPosition = scene.GetCamera().GetPosition();
+	perFrame.CameraFront = scene.GetCamera().GetFront();
 	m_pOrthoPerFrame->UpdateData(&perFrame);
 
 	OrthoPerObject perObject = {};

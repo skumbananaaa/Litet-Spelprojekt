@@ -20,10 +20,8 @@ Game::Game() noexcept :
 	m_pScene(nullptr),
 	m_pSkyBoxTex(nullptr),
 	m_pWorld(nullptr),
-	m_pSoundEffect(nullptr),
 	m_pTextViewFPS(nullptr),
 	m_pTextViewUPS(nullptr),
-	m_pMusic(nullptr),
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(true)
 {
@@ -63,13 +61,10 @@ Game::Game() noexcept :
 	GetGUIManager().Add(m_pTextViewCrew);
 
 	//Audio
-	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");
-	m_pSoundEffect = new SoundEffect("Resources/Audio/Mono/fart.wav");
-	m_pMusic = new Music("Resources/Audio/Music/WavesAndSeagulls.ogg");
-	m_pTestAudioSource = new AudioSource(*m_pMusic);
+	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
-	//m_pTestAudioSource->Play();
+	m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 }
@@ -86,9 +81,6 @@ Game::~Game()
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
 	DeleteSafe(m_pTextViewCrew);
-	
-	DeleteSafe(m_pSoundEffect);
-	DeleteSafe(m_pMusic);
 	
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);

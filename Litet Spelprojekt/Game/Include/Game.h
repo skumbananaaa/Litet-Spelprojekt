@@ -64,7 +64,5 @@ private:
 	bool cartesianCamera;
 
 	//Sound
-	SoundEffect* m_pSoundEffect;
-	Music* m_pMusic;
 	AudioSource* m_pTestAudioSource;
 };

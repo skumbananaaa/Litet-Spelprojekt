@@ -362,27 +362,40 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs)
 	return ppWorldLevels;
 }
 
-void Editor::CreateMesh(GameObject* pGameObject, const std::string& name)
+void Editor::CreateMesh(GameObject* pGameObject, const std::string& name, int32 index, int32 total)
 {
 	//Create new object
 	std::vector<GameObject*> gameObjects;
 	GetGameObjects(gameObjects);
-	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), gameObjects.size() * ELEMENT_HEIGHT + 4);
-	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - gameObjects.size() * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
+	int32 size = gameObjects.size();
+	int32 pos = gameObjects.size();
+	if (total != 0)
+	{
+		size = total;
+		pos = index + 1;
+	}
+	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), size * ELEMENT_HEIGHT + 4);
+	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - pos * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
 	pButton->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
 	pButton->SetUserData(pGameObject);
 	m_pPanelScrollableEditMesh->Add(pButton);
 	m_SelectionHandlerMeshEdit.AddSelectable(pButton);
 
 	//Arange objects
-	for (int32 i = 0; i < m_pPanelScrollableEditMesh->GetChildren().size(); i++)
+	if (total == 0)
 	{
-		GUIObject* pObject = m_pPanelScrollableEditMesh->GetChildren()[i];
-		pObject->SetPosition(pObject->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
+		for (int32 i = 0; i < m_pPanelScrollableEditMesh->GetChildren().size(); i++)
+		{
+			GUIObject* pObject = m_pPanelScrollableEditMesh->GetChildren()[i];
+			pObject->SetPosition(pObject->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT);
+		}
 	}
-
-	m_SelectionHandlerMesh.OnSelected(m_pButtonEditMesh);
-	m_SelectionHandlerMeshEdit.OnSelected(pButton);
+	
+	if (pos == total || total == 0)
+	{
+		m_SelectionHandlerMesh.OnSelected(m_pButtonEditMesh);
+		m_SelectionHandlerMeshEdit.OnSelected(pButton);
+	}
 }
 
 void Editor::ClearLevels()
@@ -442,7 +455,7 @@ void Editor::GetGameObjects(std::vector<GameObject*>& list, int32 level)
 glm::vec3 Editor::GetDirectionBasedOnCamera(Direction direction)
 {
 	Camera& camera = GetCurrentScene()->GetCamera();
-	float yaw = fmod(camera.GetYaw() + glm::quarter_pi<float>(), glm::two_pi<float>());
+	float yaw = fmod(glm::abs(camera.GetYaw()) + glm::quarter_pi<float>(), glm::two_pi<float>());
 	int dir = yaw / glm::half_pi<float>();
 	
 	switch (dir)
@@ -1052,6 +1065,64 @@ void Editor::OnKeyDown(KEY keycode)
 			}
 			break;
 		}
+		case KEY_DELETE:
+		{
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			if (selectable)
+			{
+				Button* button = (Button*)selectable;
+				if (button->GetUserData())
+				{
+					GameObject* object = (GameObject*)button->GetUserData();
+					button->SetUserData(nullptr);
+					std::vector<GameObject*>& objects = GetCurrentScene()->GetGameObjects();
+					int32 index = 0;
+					for (int i = 0; i < objects.size(); i++)
+					{
+						if (objects[i] == object)
+						{
+							index = i;
+							objects.erase(objects.begin() + i);
+							break;
+						}
+					}
+
+					//Arange objects
+					int counter = 0;
+					for (int32 i = 0; i < m_pPanelScrollableEditMesh->GetChildren().size(); i++)
+					{
+						GUIObject* pObject = m_pPanelScrollableEditMesh->GetChildren()[i];
+						if (object == pObject->GetUserData())
+						{
+							continue;
+						}
+						counter++;
+						pObject->SetPosition(pObject->GetX(), m_pPanelScrollableEditMesh->GetClientHeight() - counter * ELEMENT_HEIGHT);
+					}
+
+					Delete(object);
+					m_pPanelScrollableEditMesh->Remove(button);
+				}	
+			}
+			break;
+		}
+		case KEY_ENTER:
+		{
+			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
+			if (selectable)
+			{
+				Button* button = (Button*)selectable;
+				GameObject* original = (GameObject*)button->GetUserData();
+				int32 id = original->GetTypeId();
+				GameObject* pGameObject = ResourceHandler::CreateGameObject(id);
+				pGameObject->SetPosition(original->GetPosition());
+				pGameObject->SetRotation(original->GetRotation());
+				GetCurrentScene()->AddGameObject(pGameObject);
+
+				CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(id));
+			}
+			break;
+		}
 	}
 }
 
@@ -1207,7 +1278,7 @@ void Editor::OnButtonReleased(Button* button)
 			pGameObject->SetPosition(editor->CalculateMeshPosition(glm::ivec3(static_cast<int32>(worldObject.TileId.x) - gridSize.x, worldObject.TileId.y % 2, static_cast<int32>(worldObject.TileId.z) - gridSize.y)));
 			pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 			editor->m_ppScenes[floorLevel]->AddGameObject(pGameObject);
-			editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(worldObject.GameObject));
+			editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(worldObject.GameObject), i, gameObjects);
 		}
 
 		editor->m_RoomBeingEdited = -1;

@@ -17,6 +17,8 @@ struct OrthoPerFrame
 {
 	glm::mat4 ViewProjection;
 	glm::vec3 CameraPosition;
+	float vafan;
+	glm::vec3 CameraFront;
 };
 
 class API OrthographicRenderer final : public IRenderer

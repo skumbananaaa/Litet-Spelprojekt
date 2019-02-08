@@ -7,12 +7,12 @@ struct AnimatedVertex
 	glm::vec3 normal;
 	glm::vec3 tangent;
 	glm::vec2 texCoords;
-	glm::vec4 boneInfo1;
-	glm::vec4 boneInfo2;
+	glm::vec3 boneWeight;
+	glm::ivec3 jointID;
 
 	inline bool operator==(const AnimatedVertex& rs) const
 	{
-		return (position == rs.position) && (normal == rs.normal) && (tangent == rs.tangent) && (texCoords == rs.texCoords) && (boneInfo1 == rs.boneInfo1) && (boneInfo2 == rs.boneInfo2);
+		return (position == rs.position) && (normal == rs.normal) && (tangent == rs.tangent) && (texCoords == rs.texCoords) && (jointID == rs.jointID) && (boneWeight == rs.boneWeight);
 	}
 };
 
@@ -20,6 +20,7 @@ struct AnimatedInstanceData
 {
 	glm::mat4 Model;
 	glm::mat4 InverseModel;
+	glm::mat4 JointTransformation;
 	glm::vec3 Direction;
 };
 
@@ -38,7 +39,7 @@ public:
 	AnimatedMesh(const AnimatedVertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
 	~AnimatedMesh();
 
-	void SetInstances(const AnimatedInstanceData* const pInstances, uint32 numInstances) const noexcept;
+	void SetAnimatedInstances(const AnimatedInstanceData* const pInstances, uint32 numInstances) const noexcept;
 
 	uint32 GetIndexCount() const noexcept;
 	uint32 GetVertexCount() const noexcept;

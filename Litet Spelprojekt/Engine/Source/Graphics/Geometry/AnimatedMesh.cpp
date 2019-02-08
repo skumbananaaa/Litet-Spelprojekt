@@ -44,41 +44,48 @@ AnimatedMesh::AnimatedMesh(const AnimatedVertex* const vertices, const uint32* c
 	//TexCoords
 	GL_CALL(glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (void*)(9 * sizeof(float))));
 	GL_CALL(glEnableVertexAttribArray(3));
+	//BoneWeight
+	GL_CALL(glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (void*)(1 * sizeof(float))));
+	GL_CALL(glEnableVertexAttribArray(4));
+	//JointID
+	GL_CALL(glVertexAttribIPointer(5, 3, GL_INT, sizeof(AnimatedVertex), (void*)(14 * sizeof(float))));
+	GL_CALL(glEnableVertexAttribArray(5));
+
 
 	m_NumReservedInstances = 10;
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_InstanceBuffer));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_NumReservedInstances * sizeof(InstanceData), nullptr, GL_STATIC_DRAW));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_NumReservedInstances * sizeof(AnimatedInstanceData), nullptr, GL_STATIC_DRAW));
 
 	//Instance model matrix
-	GL_CALL(glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)0));
+	GL_CALL(glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)0));
 	GL_CALL(glEnableVertexAttribArray(4));
 	GL_CALL(glVertexAttribDivisor(4, 1));
-	GL_CALL(glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(5));
 	GL_CALL(glVertexAttribDivisor(5, 1));
-	GL_CALL(glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(2 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(2 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(6));
 	GL_CALL(glVertexAttribDivisor(6, 1));
-	GL_CALL(glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(3 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(3 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(7));
 	GL_CALL(glVertexAttribDivisor(7, 1));
 
 	//Instance inversemodel matrix
-	GL_CALL(glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(4 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(4 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(8));
 	GL_CALL(glVertexAttribDivisor(8, 1));
-	GL_CALL(glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(5 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(5 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(9));
 	GL_CALL(glVertexAttribDivisor(9, 1));
-	GL_CALL(glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(6 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(6 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(10));
 	GL_CALL(glVertexAttribDivisor(10, 1));
-	GL_CALL(glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(7 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(7 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(11));
 	GL_CALL(glVertexAttribDivisor(11, 1));
 
 	//Instance direction matrix
-	GL_CALL(glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(8 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(8 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(12));
 	GL_CALL(glVertexAttribDivisor(12, 1));
 
@@ -114,7 +121,7 @@ AnimatedMesh::~AnimatedMesh()
 	}
 }
 
-void AnimatedMesh::SetInstances(const AnimatedInstanceData* const pInstances, uint32 numInstances) const noexcept
+void AnimatedMesh::SetAnimatedInstances(const AnimatedInstanceData* const pInstances, uint32 numInstances) const noexcept
 {
 	GL_CALL(glBindVertexArray(0));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_InstanceBuffer));
@@ -157,8 +164,8 @@ AnimatedMesh* AnimatedMesh::CreateAnimatedMeshFromFile(const char* pFilename)
 		vertices[i].normal = (pMesh->HasNormals()) ? glm::vec3(pMesh->mNormals[i].x, pMesh->mNormals[i].y, pMesh->mNormals[i].z) : glm::vec3();
 		vertices[i].tangent = (pMesh->HasTangentsAndBitangents()) ? glm::vec3(pMesh->mTangents[i].x, pMesh->mTangents[i].y, pMesh->mTangents[i].z) : glm::vec3();
 		vertices[i].texCoords = (pMesh->HasTextureCoords(0)) ? glm::vec2(pMesh->mTextureCoords[0][i].x, pMesh->mTextureCoords[0][i].y) : glm::vec2();
-		vertices[i].boneInfo1 = glm::vec4();
-		vertices[i].boneInfo2 = glm::vec4();
+		vertices[i].boneWeight = glm::vec3();
+		vertices[i].jointID = glm::ivec3();
 	}
 
 	std::vector<uint32> indices;

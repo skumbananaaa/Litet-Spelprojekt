@@ -11,7 +11,7 @@ public:
 	void SetRotation(const glm::vec4& rotationVec);
 	void SetPosition(const glm::vec3& dir);
 
-	void UpdateTransform();
+	void UpdateTransform(const glm::mat4 & transMat = glm::mat4(1.0f));
 private:
 	Joint ** m_ppChildren;
 	uint32 m_NrOfChildren;

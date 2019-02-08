@@ -20,7 +20,7 @@ public:
 	Material(ShaderProgram* pProgram);
 	~Material();
 
-	virtual void Bind() const noexcept;
+	virtual void Bind(const Framebuffer* pGBuffer) const noexcept;
 	virtual void Unbind() const noexcept;
 
 	void SetLightBuffer(const UniformBuffer* pLightBuffer) const noexcept;

@@ -3,8 +3,7 @@
 
 PlanarReflector::PlanarReflector(const glm::vec3& normal, float distFromOrigin) noexcept
 	: m_pFramebuffer(nullptr),
-	m_Normal(normal),
-	m_Distance(distFromOrigin)
+	m_ClipPlane()
 {
 	Create();
 }
@@ -16,8 +15,7 @@ PlanarReflector::~PlanarReflector()
 
 void PlanarReflector::SetPlane(const glm::vec3& normal, float distFromOrigin) noexcept
 {
-	m_Normal = normal;
-	m_Distance = distFromOrigin;
+	m_ClipPlane = glm::vec4(normal, distFromOrigin);
 }
 
 void PlanarReflector::Create() noexcept
@@ -43,4 +41,9 @@ Framebuffer* PlanarReflector::GetFramebuffer() const noexcept
 Texture2D* PlanarReflector::GetReflectionTexture() const noexcept
 {
 	return (Texture2D*)m_pFramebuffer->GetColorAttachment(0);
+}
+
+const glm::vec4& PlanarReflector::GetClipPlane() const noexcept
+{
+	return m_ClipPlane;
 }

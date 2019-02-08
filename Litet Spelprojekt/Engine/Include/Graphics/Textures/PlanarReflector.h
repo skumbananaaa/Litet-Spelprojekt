@@ -18,12 +18,12 @@ public:
 	
 	Framebuffer* GetFramebuffer() const noexcept;
 	Texture2D* GetReflectionTexture() const noexcept;
+	const glm::vec4& GetClipPlane() const noexcept;
 
 private:
 	void Create() noexcept;
 
 private:
 	Framebuffer* m_pFramebuffer;
-	glm::vec3 m_Normal;
-	float m_Distance;
+	glm::vec4 m_ClipPlane;
 };

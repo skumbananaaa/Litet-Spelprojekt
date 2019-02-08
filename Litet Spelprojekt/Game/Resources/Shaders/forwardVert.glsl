@@ -17,27 +17,26 @@ out VS_OUT
 	vec2 TexCoords;
 } vs_out;
 
-layout(std140, binding = 0) uniform PerFrame
+layout(std140, binding = 0) uniform CameraBuffer
 {
-	mat4 g_ViewProjection;
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
 	vec3 g_CameraPosition;
-	float g_Padding;
-	vec3 g_CameraLookAt;
-	float g_Padding2;
-	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
 
-layout(std140, binding = 1) uniform PerObject
+layout(std140, binding = 3) uniform PlaneBuffer
 {
-	vec4 g_Color;
-	float g_HasTexture;
-	float g_HasNormalMap;
+	vec4 g_ClipPlane;
 };
+
 
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	gl_ClipDistance[1] = dot(worldPos, vec4(0.0f, 1.0f, 0.0f, 0.01f));
+	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
@@ -48,5 +47,5 @@ void main()
 	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
 	vs_out.TexCoords = g_TexCoords;
 
-	gl_Position = g_ViewProjection * worldPos;
+	gl_Position = g_ProjectionView * worldPos;
 }

@@ -5,7 +5,6 @@
 #define NUM_POINT_LIGHTS 18
 #define NUM_SPOT_LIGHTS 8
 
-//Uniformbuffers requires a 16 multiple so we pad the struct in case we want to add more lights
 __declspec(align(16)) struct DirectionalLightBuffer
 {
 	glm::vec4 Color = glm::vec4(0.0f);
@@ -44,7 +43,7 @@ struct LightBuffer
 	SpotLightBuffer SpotLights[NUM_SPOT_LIGHTS];
 };
 
-struct DefferedMaterialBuffer
+struct MaterialBuffer
 {
 	glm::vec4 Color;
 	float Specular;

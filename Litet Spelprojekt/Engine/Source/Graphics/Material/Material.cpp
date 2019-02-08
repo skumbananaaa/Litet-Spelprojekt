@@ -27,7 +27,7 @@ Material::~Material()
 {
 }
 
-void Material::Bind() const noexcept
+void Material::Bind(const Framebuffer* pGBuffer) const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 

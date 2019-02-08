@@ -27,33 +27,29 @@ WaterMaterial::~WaterMaterial()
 	DeleteSafe(m_pWaterBuffer);
 }
 
-void WaterMaterial::Bind() const noexcept
+void WaterMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	//context.SetProgram(GetProgram());
+	context.SetUniformBuffer(m_pWaterBuffer, 3);
 
+	context.SetTexture(m_pDistortion, 3);
 	if (m_pReflector)
 	{
 		context.SetTexture(m_pReflector->GetReflectionTexture(), 4);
 	}
+	context.SetTexture(pGBuffer->GetDepthAttachment(), 5);
 
-	context.SetTexture(m_pDistortion, 3);
-	//context.SetTexture(m_pDepthMap, 3);
-
-	context.SetUniformBuffer(m_pWaterBuffer, 3);
-
-	Material::Bind();
+	Material::Bind(pGBuffer);
 }
 
 void WaterMaterial::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.SetTexture(nullptr, 0);
-	context.SetTexture(nullptr, 1);
-	context.SetTexture(nullptr, 2);
 	context.SetTexture(nullptr, 3);
+	context.SetTexture(nullptr, 4);
+	context.SetTexture(nullptr, 5);
 
 	Material::Unbind();
 }

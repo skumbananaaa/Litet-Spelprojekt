@@ -18,6 +18,7 @@ in VS_OUT
 
 layout(binding = 0) uniform sampler2D g_Diffuse;
 layout(binding = 1) uniform sampler2D g_NormalMap;
+layout(binding = 2) uniform sampler2D g_SpecularMap;
 
 struct DirectionalLight
 {
@@ -40,43 +41,30 @@ struct SpotLight
 	float OuterAngle;
 };
 
-layout(std140, binding = 0) uniform PerFrame
+layout(std140, binding = 0) uniform CameraBuffer
 {
-	mat4 g_ViewProjection;
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
 	vec3 g_CameraPosition;
-	float g_Padding;
-	vec3 g_CameraLookAt;
-	float g_Padding2;
-	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
-
-layout(std140, binding = 1) uniform PerObject
-{
-	vec4 g_Color;
-	float g_HasTexture;
-	float g_HasNormalMap;
-};
-
-//layout(std140, binding = 0) uniform PerFrame
-//{
-//	mat4 g_ViewProjection;
-//	vec3 g_CameraPosition;
-//	float g_Padding;
-//	vec3 g_CameraLookAt;
-//};
-//
-//layout(std140, binding = 1) uniform PerObject
-//{
-//	vec4 g_Color;
-//	float g_HasTexture;
-//	float g_HasNormalMap;
-//};
 
 layout(binding = 2) uniform LightBuffer
 {
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+layout(std140, binding = 2) uniform MaterialBuffer
+{
+	vec4 g_Color;
+	float g_Specular;
+	float g_HasDiffuseMap;
+	float g_HasNormalMap;
+	float g_HasSpecularMap;
 };
 
 vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float intensity)
@@ -111,7 +99,7 @@ vec3 SampleDiffuseMap()
 	vec3 mappedDiffuse = texture(g_Diffuse, fs_in.TexCoords).rgb;
 	vec3 color = g_Color.rgb;
 
-	return (mappedDiffuse * g_HasTexture) + (color * (1.0f - g_HasTexture));
+	return (mappedDiffuse * g_HasDiffuseMap) + (color * (1.0f - g_HasDiffuseMap));
 }
 
 void main()

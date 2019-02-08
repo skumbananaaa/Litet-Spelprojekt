@@ -72,6 +72,11 @@ struct SkyBoxPassPerObject
 	glm::mat4 model;
 };
 
+struct PlaneBuffer
+{
+	glm::vec4 ClipPlane;
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -121,7 +126,8 @@ private:
 	UniformBuffer* m_pLightBuffer;
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;
-	
+	UniformBuffer* m_pPlaneBuffer;
+
 	UniformBuffer* m_pDecalPassPerFrame;
 	UniformBuffer* m_pDecalPassPerObject;
 

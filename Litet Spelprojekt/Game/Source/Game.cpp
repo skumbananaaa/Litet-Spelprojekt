@@ -272,15 +272,16 @@ void Game::OnResourcesLoaded()
 
 	pGameObject = new GameObject();
 	pGameObject->SetMesh(MESH::QUAD);
+	pGameObject->SetIsReflectable(true);
 	pGameObject->SetMaterial(MATERIAL::WATER);
-	pGameObject->SetPosition(glm::vec3(0.0f, -2.0f, 0.0f));
+	pGameObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::radians<float>(90.0f)));
 	pGameObject->SetScale(glm::vec3(30.0f));
 	pGameObject->UpdateTransform();
 	m_pScene2->AddGameObject(pGameObject);
 
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
-	m_pScene->AddPlanarReflector(pReflector);
+	m_pScene2->AddPlanarReflector(pReflector);
 
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
 

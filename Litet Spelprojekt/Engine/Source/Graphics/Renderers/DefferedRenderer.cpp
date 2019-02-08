@@ -192,7 +192,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetClearDepth(1.0f);
 
 	//Render reflections
-	//ReflectionPass(scene);
+	ReflectionPass(scene);
 	
 	//Update camera buffer from scene
 	UpdateCameraBuffer(scene.GetCamera());
@@ -550,10 +550,17 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
-		DefferedMaterialBuffer buff = {};
+		MaterialBuffer buff = {};
 		buff.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		m_pMaterialBuffer = new UniformBuffer(&buff, 1, sizeof(DefferedMaterialBuffer));
+		m_pMaterialBuffer = new UniformBuffer(&buff, 1, sizeof(MaterialBuffer));
+	}
+
+	{
+		PlaneBuffer buff = {};
+		buff.ClipPlane = glm::vec4(0.0f);
+
+		m_pPlaneBuffer = new UniformBuffer(&buff, 1, sizeof(PlaneBuffer));
 	}
 	
 	{
@@ -839,7 +846,7 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 
 	//context.SetTexture(m_pDissolveMap, 2);
 
-	DefferedMaterialBuffer perBatch = {};
+	MaterialBuffer perBatch = {};
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
 		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
@@ -855,7 +862,7 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 		material.SetCameraBuffer(m_pCameraBuffer);
 		material.SetLightBuffer(m_pLightBuffer);
 		material.SetMaterialBuffer(m_pMaterialBuffer);
-		material.Bind();
+		material.Bind(m_pGBufferCBR);
 
 		/*for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
 		{
@@ -903,99 +910,77 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 
 	GLContext& context = GLContext::GetCurrentContext();
 
+	context.Disable(CLIP_DISTANCE0);
+
 	context.SetProgram(m_pForwardPass);
 
-	context.SetUniformBuffer(m_pGeoPassPerFrame, 0);
-	context.SetUniformBuffer(m_pGeoPassPerObject, 1);
-	context.SetUniformBuffer(m_pLightPassBuffer, 2);
+	context.SetUniformBuffer(m_pCameraBuffer, 0);
+	context.SetUniformBuffer(m_pLightBuffer, 1);
+	context.SetUniformBuffer(m_pMaterialBuffer, 2);
+	context.SetUniformBuffer(m_pPlaneBuffer, 3);
 
-	//{
-	//	LightPassBuffer buff = {};
-	//	buff.InverseView = camera.GetInverseViewMatrix();
-	//	buff.InverseProjection = camera.GetInverseProjectionMatrix();
-	//	buff.CameraPosition = camera.GetPosition();
-
-	//	m_pLightPassBuffer->UpdateData(&buff);
-	//}
-
-	GPassVSPerFrame perFrame = {};
-	perFrame.ViewProjection = camera.GetCombinedMatrix();
-	perFrame.CameraPosition = camera.GetPosition();
-	perFrame.CameraLookAt = camera.GetLookAt();
-
-	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
-	{
-		perFrame.ClipDistances[i] = m_ClipDistances[i];
-	}
-
-	m_pGeoPassPerFrame->UpdateData(&perFrame);
-
-	GeometryPassPerObject perObject = {};
-	/*for (size_t i = 0; i < m_DrawableBatches.size(); i++)
+	MaterialBuffer matBuffer = {};
+	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
 		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
 		const Material& material = *m_DrawableBatches[i].pMaterial;
 		
-		perObject.Color = material.GetColor();
-		if (material.HasTexture())
+		matBuffer.Color = material.GetColor();
+		matBuffer.Specular = material.GetSpecular();
+		if (material.HasDiffuseMap())
 		{
-			perObject.HasTexture = 1.0f;
-			context.SetTexture(material.GetTexture(), 0);
+			context.SetTexture(material.GetDiffuseMap(), 0);
+			matBuffer.HasDiffuseMap = 1.0f;
 		}
 		else
 		{
-			perObject.HasTexture = 0.0f;
+			matBuffer.HasDiffuseMap = 0.0f;
 		}
-
 		if (material.HasNormalMap())
 		{
-			perObject.HasNormalMap = 1.0f;
 			context.SetTexture(material.GetNormalMap(), 1);
+			matBuffer.HasNormalMap = 1.0f;
 		}
 		else
 		{
-			perObject.HasNormalMap = 0.0f;
+			matBuffer.HasNormalMap = 0.0f;
 		}
-
-		for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
+		if (material.HasSpecularMap())
 		{
-			if (material.ClipPlaneEnabled(cP))
-			{
-				context.Enable((Capability)((uint32)CLIP_DISTANCE0 + cP));
-				continue;
-			}
-
-			context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
+			context.SetTexture(material.GetSpecularMap(), 2);
+			matBuffer.HasSpecularMap = 1.0f;
 		}
-
-		m_pGeoPassPerObject->UpdateData(&perObject);
+		else
+		{
+			matBuffer.HasSpecularMap = 0.0f;
+		}
+		m_pMaterialBuffer->UpdateData(&matBuffer);
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
-	}*/
-
-	for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
-	{
-		context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
 	}
 
+	context.Disable(CLIP_DISTANCE0);
+	
 	//Unbind = no bugs
 	context.SetUniformBuffer(nullptr, 0);
 	context.SetUniformBuffer(nullptr, 1);
 	context.SetUniformBuffer(nullptr, 2);
+	context.SetUniformBuffer(nullptr, 3);
 
 	context.SetTexture(nullptr, 0);
 	context.SetTexture(nullptr, 1);
+	context.SetTexture(nullptr, 2);
 }
 
 void DefferedRenderer::ReflectionPass(const Scene& scene) const noexcept
 {
-	if (scene.GetReflectables().size() < 1)
+	if (scene.GetReflectables().size() < 1 || scene.GetPlanarReflectors().size() < 1)
 	{
 #if defined(_DEBUG)
-		//std::cout << "No reflectables, skipping reflectionpass" << std::endl;
+		std::cout << "No reflectables or reflectors, skipping reflectionpass" << std::endl;
 #endif
-		//return;
+		return;
 	}
 
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
@@ -1006,11 +991,20 @@ void DefferedRenderer::ReflectionPass(const Scene& scene) const noexcept
 	reflectionCam.InvertPitch();
 	reflectionCam.UpdateFromPitchYawNoInverse();
 
+	PlaneBuffer planeBuffer = {};
+
+	UpdateCameraBuffer(reflectionCam);
+
 	const std::vector<PlanarReflector*>& reflectors = scene.GetPlanarReflectors();
 	for (size_t i = 0; i < reflectors.size(); i++)
 	{
-		context.SetViewport(m_pReflection->GetWidth(), m_pReflection->GetHeight(), 0, 0);
-		context.SetFramebuffer(m_pReflection);
+		const Framebuffer* pFramebuffer = reflectors[i]->GetFramebuffer();
+	
+		planeBuffer.ClipPlane = reflectors[i]->GetClipPlane();
+		m_pPlaneBuffer->UpdateData(&planeBuffer);
+
+		context.SetViewport(pFramebuffer->GetWidth(), pFramebuffer->GetHeight(), 0, 0);
+		context.SetFramebuffer(pFramebuffer);
 		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 		ForwardPass(reflectionCam, scene);

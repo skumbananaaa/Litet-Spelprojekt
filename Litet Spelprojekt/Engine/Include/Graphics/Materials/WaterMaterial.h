@@ -14,7 +14,7 @@ public:
 	WaterMaterial();
 	~WaterMaterial();
 
-	void Bind() const noexcept override;
+	void Bind(const Framebuffer* pGBuffer) const noexcept override;
 	void Unbind() const noexcept override;
 
 	void SetDistortionTexture(Texture2D* pDistortion);

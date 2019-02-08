@@ -18,7 +18,23 @@ Joint::~Joint()
 	DeleteArrSafe(m_ppChildren);
 }
 
-void Joint::Rotate(const glm::vec3& rotationVec, float rot)
+void Joint::SetRotation(const glm::vec4& rotationVec)
 {
-	m_Transform = glm::rotate(m_Transform, rot, rotationVec);
+	m_LocalRot = rotationVec;
+}
+
+void Joint::SetPosition(const glm::vec3 & dir)
+{
+	m_LocalPos = dir;
+}
+
+void Joint::UpdateTransform()
+{
+	if (m_isDirty)
+	{
+		glm::mat4 transform(1.0f);
+		transform = glm::translate(transform, m_LocalPos);
+		transform = glm::rotate(transform, m_LocalRot.w, glm::vec3(m_LocalRot));
+		m_Transform = transform;
+	}
 }

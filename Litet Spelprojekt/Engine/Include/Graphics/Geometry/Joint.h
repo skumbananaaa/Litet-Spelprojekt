@@ -8,12 +8,18 @@ private:
 public:
 	Joint(glm::mat4 bindLocalTransform, uint32 nrOfChildren = 0);
 	~Joint();
-	void Rotate(const glm::vec3& rotationVec, float rot);
+	void SetRotation(const glm::vec4& rotationVec);
+	void SetPosition(const glm::vec3& dir);
+
+	void UpdateTransform();
 private:
 	Joint ** m_ppChildren;
 	uint32 m_NrOfChildren;
 
 	glm::mat4 m_Transform;
 	glm::mat4 m_LocalBindTransform;
-	glm::mat4 m_InverseBindTransform;
+
+	glm::vec4 m_LocalRot;
+	glm::vec3 m_LocalPos;
+	bool m_isDirty;
 };

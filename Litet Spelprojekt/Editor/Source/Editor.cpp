@@ -455,7 +455,7 @@ void Editor::GetGameObjects(std::vector<GameObject*>& list, int32 level)
 glm::vec3 Editor::GetDirectionBasedOnCamera(Direction direction)
 {
 	Camera& camera = GetCurrentScene()->GetCamera();
-	float yaw = fmod(camera.GetYaw() + glm::quarter_pi<float>(), glm::two_pi<float>());
+	float yaw = fmod(glm::abs(camera.GetYaw()) + glm::quarter_pi<float>(), glm::two_pi<float>());
 	int dir = yaw / glm::half_pi<float>();
 	
 	switch (dir)

@@ -30,6 +30,8 @@
     <ClInclude Include="Include\GLAD\khrplatform.h" />
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Camera.h" />
+    <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
+    <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
@@ -88,6 +90,8 @@
     <ClInclude Include="Include\IO\MATERIAL.h" />
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
+    <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />

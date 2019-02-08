@@ -109,17 +109,17 @@ void main()
 {
 	SpotLight spot1[2];
 	
-	spot1[0].Color = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	spot1[0].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	spot1[0].Position = vec4(6.0f, 6.0f, 10.0f, 0.0f);
 	spot1[0].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
-	spot1[0].Angle = 0.5f;
-	spot1[0].OuterAngle = 0.25f;
+	spot1[0].Angle = cos(radians(60.0f));
+	spot1[0].OuterAngle = cos(radians(60.0f));
 
-	spot1[1].Color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	spot1[1].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	spot1[1].Position = vec4(6.0f, 6.0f, 20.0f, 0.0f);
 	spot1[1].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
-	spot1[1].Angle = 0.5f;
-	spot1[1].OuterAngle = 0.25f;
+	spot1[1].Angle = cos(radians(60.0f));
+	spot1[1].OuterAngle = cos(radians(75.0f));
 
 	float depth = sampleMSAATexture(g_Depth, fs_in.TexCoords).r;
 	g_OutDepth = depth;
@@ -154,35 +154,40 @@ void main()
 		c += CalcLight(lightDir, lightColor, viewDir, normal, color, 1.0f, cosTheta);
 	}
 
-	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
-	{
-		float light_attenuation = 1.0f;
-		vec3 lightDir = g_SpotLights[i].Position.xyz - position;
-		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
-		float dist = length(lightDir);
-		lightDir = normalize(lightDir);
-		float cosTheta = dot(normal, lightDir);
-	
+	// for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
+	// {
+	// 	float light_attenuation = 1.0f;
+	// 	vec3 lightDir = g_SpotLights[i].Position.xyz - position;
+	// 	vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
+	// 	float dist = length(lightDir);
+	// 	lightDir = normalize(lightDir);
+	// 	float cosTheta = dot(normal, lightDir);
 
-		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
-		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
-		if (lightToSurfaceAngle > coneAngle)
-		{
-			light_attenuation += lightToSurfaceAngle - coneAngle;
-		}
-		float attenuation = 1.0f / (1.0 + light_attenuation * (dist));
+	// 	float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
+	// 	float coneAngle = degrees(acos(g_SpotLights[i].Angle));
+	// 	if (lightToSurfaceAngle > coneAngle)
+	// 	{
+	// 		light_attenuation += lightToSurfaceAngle - coneAngle;
+	// 	}
+	// 	float attenuation = 1.0f / (1.0 + light_attenuation * (dist));
 		
-		vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
+	// 	vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
 
-		float theta = dot(lightDir, -targetDir);
-		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
-		float intensity = clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
+	// 	float theta = dot(lightDir, -targetDir);
+	// 	float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
+	// 	float intensity = clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
 
-		if(theta > g_SpotLights[i].OuterAngle)
-		{
-			c += CalcLight(lightDir, lightColor, viewDir, normal, color, intensity, cosTheta);
-		}
-	}
+	// 	if(theta > g_SpotLights[i].OuterAngle)
+	// 	{
+	// 		c += CalcLight(lightDir, lightColor, viewDir, normal, color, intensity, cosTheta);
+	// 	}
+	// 	if (i == 1)
+	// 	{
+	// 		//c = vec3(g_SpotLights[0].Angle, g_SpotLights[0].OuterAngle, 0.0f);
+	// 		c = vec3(attenuation, attenuation, attenuation);
+	// 		break;
+	// 	}
+	// }
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -211,6 +216,12 @@ void main()
 		{
 			c += CalcLight(lightDir, lightColor, viewDir, normal, color, intensity, cosTheta);
 		}
+		// if (i == 1)
+		// {
+		// 	//c = vec3(g_SpotLights[0].Angle, g_SpotLights[0].OuterAngle, 0.0f);
+		// 	c = vec3(attenuation, attenuation, attenuation);
+		// 	break;
+		// }
 	}
 
 	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);

@@ -110,7 +110,7 @@ void Game::OnResourcesLoaded()
 		g_pDecalObject = pGameObject;
 		m_pScene->AddGameObject(pGameObject);
 	}
-	{
+	/*{
 		pGameObject = new GameObject();
 		pGameObject->SetName("ship");
 		pGameObject->SetMaterial(MATERIAL::GROUND);
@@ -119,7 +119,7 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
-	}
+	}*/
 	{
 		pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::GROUND);
@@ -134,8 +134,8 @@ void Game::OnResourcesLoaded()
 		pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::RED);
 		pGameObject->SetMesh(MESH::CUBE_OBJ);
-		pGameObject->SetPosition(glm::vec3(5.0f, 2.0f, -10.0f));
-		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
+		pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
 	}
@@ -143,8 +143,8 @@ void Game::OnResourcesLoaded()
 		pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::GREEN);
 		pGameObject->SetMesh(MESH::CUBE_OBJ);
-		pGameObject->SetPosition(glm::vec3(2.0f, 2.0f, -10.0f));
-		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
+		pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
 	}
@@ -152,8 +152,8 @@ void Game::OnResourcesLoaded()
 		pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::BLUE);
 		pGameObject->SetMesh(MESH::CUBE_OBJ);
-		pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
-		pGameObject->SetScale(glm::vec3(0.25f));
+		pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
+		pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
 	}
@@ -244,6 +244,15 @@ void Game::OnResourcesLoaded()
 
 void Game::OnKeyUp(KEY keycode)
 {
+	switch (keycode)
+	{
+		case KEY_SPACE:
+		{
+			m_pScene->ExtendScene(false);
+			break;
+		}
+	}
+
 	Application::OnKeyUp(keycode);
 }
 
@@ -259,6 +268,11 @@ void Game::OnKeyDown(KEY keycode)
 		case KEY_P:
 		{
 			m_pTestAudioSource->TogglePause();
+			break;
+		}
+		case KEY_SPACE:
+		{
+			m_pScene->ExtendScene(true);
 			break;
 		}
 	}
@@ -464,6 +478,8 @@ void Game::PickPosition() {
 			pointOnSurface = rayOrigin + rayDir * t;
 		}
 	}
+
+	
 
 	if (pointOnSurface != glm::vec3(0.0f, 0.0f, 0.0f))
 	{

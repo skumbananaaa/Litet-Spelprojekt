@@ -107,19 +107,43 @@ vec4 sampleMSAATexture(sampler2DMS tex, vec2 nTexCoords)
 
 void main()
 {
-	SpotLight spot1[2];
+	SpotLight spot1[6];
 	
 	spot1[0].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	spot1[0].Position = vec4(6.0f, 6.0f, 10.0f, 0.0f);
+	spot1[0].Position = vec4(6.0f, 5.9f, 10.0f, 0.0f);
 	spot1[0].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
 	spot1[0].Angle = cos(radians(60.0f));
-	spot1[0].OuterAngle = cos(radians(60.0f));
+	spot1[0].OuterAngle = cos(radians(75.0f));
 
 	spot1[1].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	spot1[1].Position = vec4(6.0f, 6.0f, 20.0f, 0.0f);
+	spot1[1].Position = vec4(6.0f, 5.9f, 25.0f, 0.0f);
 	spot1[1].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
 	spot1[1].Angle = cos(radians(60.0f));
 	spot1[1].OuterAngle = cos(radians(75.0f));
+	
+	spot1[2].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	spot1[2].Position = vec4(16.0f, 5.9f, 10.0f, 0.0f);
+	spot1[2].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
+	spot1[2].Angle = cos(radians(60.0f));
+	spot1[2].OuterAngle = cos(radians(75.0f));
+	
+	spot1[3].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	spot1[3].Position = vec4(16.0f, 5.9f, 25.0f, 0.0f);
+	spot1[3].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
+	spot1[3].Angle = cos(radians(60.0f));
+	spot1[3].OuterAngle = cos(radians(75.0f));
+	
+	spot1[4].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	spot1[4].Position = vec4(26.0f, 5.9f, 10.0f, 0.0f);
+	spot1[4].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
+	spot1[4].Angle = cos(radians(60.0f));
+	spot1[4].OuterAngle = cos(radians(75.0f));
+	
+	spot1[5].Color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	spot1[5].Position = vec4(26.0f, 5.9f, 25.0f, 0.0f);
+	spot1[5].TargetDirection = vec3(0.0f, -1.0f, 0.0f);
+	spot1[5].Angle = cos(radians(60.0f));
+	spot1[5].OuterAngle = cos(radians(75.0f));
 
 	float depth = sampleMSAATexture(g_Depth, fs_in.TexCoords).r;
 	g_OutDepth = depth;
@@ -146,7 +170,7 @@ void main()
 		vec3 lightDir = g_PointLights[i].Position.xyz - position;
 		float dist = length(lightDir);
 
-		float attenuation = 1.0f / (dist);
+		float attenuation = 1.0f / (dist * dist);
 		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
 		lightDir = normalize(lightDir);
 		float cosTheta = dot(normal, lightDir);
@@ -189,7 +213,7 @@ void main()
 	// 	}
 	// }
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		float light_attenuation = 1.0f;
 		vec3 lightDir = spot1[i].Position.xyz - position;
@@ -204,24 +228,18 @@ void main()
 		{
 			light_attenuation += lightToSurfaceAngle - coneAngle;
 		}
-		float attenuation = 1.0f / (1.0 + light_attenuation * (dist));
+		float attenuation = 1.0f / ((dist * dist));
 		
 		vec3 lightColor = spot1[i].Color.rgb * attenuation;
 
 		float theta = dot(lightDir, -targetDir);
 		float epsilon = spot1[i].Angle - spot1[i].OuterAngle;
-		float intensity = clamp((theta - spot1[i].OuterAngle) / epsilon, 0.0, 1.0);
+		float intensity = 10 * clamp((theta - spot1[i].OuterAngle) / epsilon, 0.0, 1.0);
 
 		if(theta > spot1[i].OuterAngle)
 		{
 			c += CalcLight(lightDir, lightColor, viewDir, normal, color, intensity, cosTheta);
 		}
-		// if (i == 1)
-		// {
-		// 	//c = vec3(g_SpotLights[0].Angle, g_SpotLights[0].OuterAngle, 0.0f);
-		// 	c = vec3(attenuation, attenuation, attenuation);
-		// 	break;
-		// }
 	}
 
 	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);

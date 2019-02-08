@@ -46,6 +46,45 @@ void GameObject::SetScale(const glm::vec3& scale) noexcept
 	m_IsDirty = true;
 }
 
+void GameObject::SetExtend(bool extend) noexcept
+{
+	if (!m_Extending && extend)
+	{
+		m_OriginalPos = m_Position;
+		m_ExtendPosX = m_OriginalPos.x + 5 * floor(m_Position.y / 2.0f) * 2.0f;
+		m_Extending = true;
+	}
+	else if (!extend)
+	{
+		m_ExtendPosX = m_OriginalPos.x;
+		m_Extending = true;
+	}
+	else if (extend)
+	{
+		m_ExtendPosX = m_OriginalPos.x + 5 * floor(m_Position.y / 2.0f) * 2.0f;
+		m_Extending = true;
+	}
+}
+
+void GameObject::Extend(float dtS) noexcept
+{
+	if (m_Extending)
+	{
+		if (std::abs(m_Position.x - m_ExtendPosX) > 0.01)
+		{
+			float move = m_ExtendPosX - m_Position.x;
+			move /= std::abs(move);
+			move *= floor(m_Position.y / 2.0f) * 40.0f;
+			SetPosition(glm::vec3(m_Position.x + move * dtS, m_Position.y, m_Position.z));
+		}
+		else
+		{
+			m_Extending = false;
+			m_Extended = !m_Extended;
+		}
+	}
+}
+
 void GameObject::UpdateTransform() noexcept
 {
 	if (m_IsDirty)
@@ -63,6 +102,7 @@ void GameObject::UpdateTransform() noexcept
 
 void GameObject::Update(float deltaTime)
 {
+	Extend(deltaTime);
 	UpdateTransform();
 	//////
 }

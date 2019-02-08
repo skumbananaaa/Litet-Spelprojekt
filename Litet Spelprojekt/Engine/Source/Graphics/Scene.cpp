@@ -123,6 +123,15 @@ void Scene::RemoveGameObject(uint32 index) noexcept
 	m_GameObjects.erase(m_GameObjects.begin() + index);
 }
 
+void Scene::ExtendScene(bool extend) noexcept
+{
+	for (GameObject* pGameObject : m_GameObjects)
+	{
+		pGameObject->SetExtend(extend);
+		m_Extended = !m_Extended;
+	}
+}
+
 void Scene::OnUpdate(float dtS) noexcept
 {
 	for (GameObject* pGameObject : m_GameObjects)

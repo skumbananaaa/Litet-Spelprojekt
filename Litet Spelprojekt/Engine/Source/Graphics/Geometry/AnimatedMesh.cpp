@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-AnimatedMesh::AnimatedMesh(const AnimatedVertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept
+AnimatedMesh::AnimatedMesh(const AnimatedVertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices, const Joint& rootJoint, uint32 jointCount) noexcept
 	: m_VAO(0),
 	m_VBO(0),
 	m_IBO(0),
@@ -13,10 +13,15 @@ AnimatedMesh::AnimatedMesh(const AnimatedVertex* const vertices, const uint32* c
 	m_VertexCount(0),
 	m_IndexCount(0),
 	m_NumInstances(0),
-	m_NumReservedInstances(0)
+	m_NumReservedInstances(0),
+	m_JointCount(0),
+	m_pRootJoint(nullptr)
 {
 	m_VertexCount = numVertices;
 	m_IndexCount = numIndices;
+	m_JointCount = jointCount;
+
+	rootJoint.calcInverseBindTransform(glm::mat4(1.0f));
 
 	GL_CALL(glGenVertexArrays(1, &m_VAO));
 	GL_CALL(glGenBuffers(1, &m_VBO));
@@ -57,37 +62,37 @@ AnimatedMesh::AnimatedMesh(const AnimatedVertex* const vertices, const uint32* c
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_NumReservedInstances * sizeof(AnimatedInstanceData), nullptr, GL_STATIC_DRAW));
 
 	//Instance model matrix
-	GL_CALL(glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)0));
-	GL_CALL(glEnableVertexAttribArray(4));
-	GL_CALL(glVertexAttribDivisor(4, 1));
-	GL_CALL(glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(sizeof(glm::vec4))));
-	GL_CALL(glEnableVertexAttribArray(5));
-	GL_CALL(glVertexAttribDivisor(5, 1));
-	GL_CALL(glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(2 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)0));
 	GL_CALL(glEnableVertexAttribArray(6));
 	GL_CALL(glVertexAttribDivisor(6, 1));
-	GL_CALL(glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(3 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(7));
 	GL_CALL(glVertexAttribDivisor(7, 1));
-
-	//Instance inversemodel matrix
-	GL_CALL(glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(4 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(2 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(8));
 	GL_CALL(glVertexAttribDivisor(8, 1));
-	GL_CALL(glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(5 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(3 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(9));
 	GL_CALL(glVertexAttribDivisor(9, 1));
-	GL_CALL(glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(6 * sizeof(glm::vec4))));
+
+	//Instance inversemodel matrix
+	GL_CALL(glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(4 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(10));
 	GL_CALL(glVertexAttribDivisor(10, 1));
-	GL_CALL(glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(7 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(5 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(11));
 	GL_CALL(glVertexAttribDivisor(11, 1));
-
-	//Instance direction matrix
-	GL_CALL(glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(8 * sizeof(glm::vec4))));
+	GL_CALL(glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(6 * sizeof(glm::vec4))));
 	GL_CALL(glEnableVertexAttribArray(12));
 	GL_CALL(glVertexAttribDivisor(12, 1));
+	GL_CALL(glVertexAttribPointer(13, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(7 * sizeof(glm::vec4))));
+	GL_CALL(glEnableVertexAttribArray(13));
+	GL_CALL(glVertexAttribDivisor(13, 1));
+
+	//Instance direction matrix
+	GL_CALL(glVertexAttribPointer(114, 4, GL_FLOAT, GL_FALSE, sizeof(AnimatedInstanceData), (void*)(8 * sizeof(glm::vec4))));
+	GL_CALL(glEnableVertexAttribArray(12));
+	GL_CALL(glVertexAttribDivisor(14, 1));
 
 	GL_CALL(glBindVertexArray(0));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
@@ -157,6 +162,11 @@ AnimatedMesh* AnimatedMesh::CreateAnimatedMeshFromFile(const char* pFilename)
 	}
 
 	const aiMesh* pMesh = pScene->mMeshes[0];
+	const aiAnimation* pAnimation = pScene->mAnimations[0];
+	const aiBone* pBone = pMesh->mBones[0];
+	const aiVertexWeight* pVWeight = pBone->mWeights;
+
+
 	std::vector<AnimatedVertex> vertices(pMesh->mNumVertices);
 	for (uint32 i = 0; i < pMesh->mNumVertices; i++)
 	{

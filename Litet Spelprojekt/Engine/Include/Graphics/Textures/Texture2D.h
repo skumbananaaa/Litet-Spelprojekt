@@ -1,8 +1,8 @@
 #pragma once
 #include <Graphics/Textures/Texture.h>
+#include <IO/IResource.h>
 
-
-class API Texture2D : public Texture
+class API Texture2D : public Texture, public IResource
 {
 	friend class TEXTURE;
 	friend class ResourceHandler;
@@ -27,11 +27,15 @@ private:
 	void Create(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
 	void CreateMS(const TextureDesc& desc, const TextureParams& params);
 	void Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
+	virtual void Construct() override;
 
 private:
-	uint32 m_Width;
-	uint32 m_Height;
+	int32 m_Width;
+	int32 m_Height;
 	uint32 m_Samples;
+	TextureParams m_Params;
+	bool m_GenerateMipmaps;
+	void* m_pTextureData;
 };
 
 inline uint32 Texture2D::GetWidth() const noexcept

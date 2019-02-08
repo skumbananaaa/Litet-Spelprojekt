@@ -6,8 +6,9 @@
 #include <Graphics/Renderers/DebugRenderer.h>
 #include "Input.h"
 #include <System/ThreadHandler.h>
+#include <IO/ResourceHandler.h>
 
-class API Application
+class API Application : public IResourceListener
 {
 	friend class Window;
 
@@ -20,6 +21,9 @@ public:
 	Application(bool fullscreen = true, uint32 width = 1024, uint32 height = 768);
 	virtual ~Application();
 
+	virtual void OnResourceLoaded(std::string file, float percentage) override;
+	virtual void OnResourceLoadingFinished() override;
+
 	int32_t Run();
 
 	Window& GetWindow();
@@ -30,8 +34,11 @@ public:
 	int32 GetUPS() const noexcept;
 
 protected:
+	virtual void OnResourcesLoaded() {};
 	virtual void OnUpdate(float dtS) {};
+	virtual void OnUpdateLoading(float dtS) {};
 	virtual void OnRender(float dtS) {};
+	virtual void OnRenderLoading(float dtS) {};
 	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
 	virtual void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) {};
@@ -40,6 +47,13 @@ protected:
 	virtual void OnResize(uint32 width, uint32 height) {};
 
 private:
+	enum RESOURCE_MODE
+	{
+		LOAD,
+		CONSTRUCT,
+		DONE
+	};
+
 	Window* m_pWindow;
 	GLContext* m_pGraphicsContext;
 	GUIManager* m_pGUIManager;
@@ -47,6 +61,7 @@ private:
 	int32 m_fps;
 	int32 m_ups;
 	bool m_ShouldRun;
+	RESOURCE_MODE m_ResourceMode;
 
 	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);

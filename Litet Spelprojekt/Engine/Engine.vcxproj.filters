@@ -130,5 +130,6 @@
     <ClInclude Include="Include\IO\GAMEOBJECT.h" />
     <ClInclude Include="Include\IO\MUSIC.h" />
     <ClInclude Include="Include\IO\SOUND.h" />
+    <ClInclude Include="Include\IO\IResource.h" />
   </ItemGroup>
 </Project>

@@ -27,13 +27,15 @@
 
 #define NUM_CREW 15
 
-class Game : public Application, public IResourceListener
+class Game : public Application
 {
 public:
 	Game() noexcept;
 	~Game();
 
 	void OnResourcesLoaded() override;
+	void OnUpdateLoading(float dtS) override;
+	void OnRenderLoading(float dtS) override;
 
 	void OnKeyUp(KEY keycode) override;
 	void OnKeyDown(KEY keycode) override;

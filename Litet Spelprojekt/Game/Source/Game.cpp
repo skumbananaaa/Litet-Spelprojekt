@@ -3,6 +3,13 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <World/Grid.h>
 
+
+#include <Graphics/GUI/TextView.h>
+#include <Graphics/GUI/Button.h>
+#include <Graphics/GUI/Panel.h>
+#include <Graphics/GUI/Slider.h>
+#include <Graphics/GUI/PanelScrollable.h>
+
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
 #endif
@@ -25,33 +32,6 @@ Game::Game() noexcept :
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(true)
 {
-	m_pScene = new Scene();
-	ResourceHandler::LoadResources(this);
-
-	m_pRenderer = new DefferedRenderer();
-	m_pDebugRenderer = new DebugRenderer();
-
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
-	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
-	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
-	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
-	pCamera->UpdateFromPitchYaw();
-	m_pScene->SetCamera(pCamera);
-
-	//Lights
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
-	m_pScene->AddDirectionalLight(pDirectionalLight);
-
-	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
-
-	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec4(1.0f, .0f, 0.0f, 1.0f)));
-
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
 	m_pTextViewCrew = new TextView(0, 0, GetWindow().GetWidth(), 50, "Crew: ");
@@ -59,14 +39,6 @@ Game::Game() noexcept :
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pTextViewCrew);
-
-	//Audio
-	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
-	m_pTestAudioSource->SetPitch(1.0f);
-	m_pTestAudioSource->SetLooping(true);
-	m_pTestAudioSource->Play();
-
-	AudioListener::SetPosition(glm::vec3(0.0f));
 }
 
 Game::~Game()
@@ -84,12 +56,21 @@ Game::~Game()
 	
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
-
-	ResourceHandler::ReleaseResources();
 }
 
 void Game::OnResourcesLoaded()
 {
+	m_pScene = new Scene();
+
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
+	pCamera->UpdateFromPitchYaw();
+	m_pScene->SetCamera(pCamera);
+
+
+	AudioListener::SetPosition(glm::vec3(0.0f));
+
 	GameObject* pGameObject = nullptr;
 	{
 		pGameObject = new GameObject();
@@ -179,7 +160,7 @@ void Game::OnResourcesLoaded()
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();
-
+	
 	for (int i = 0; i < gameObjects; i++)
 	{
 		WorldObject worldObject = m_pWorld->GetWorldObject(i);
@@ -245,6 +226,41 @@ void Game::OnResourcesLoaded()
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
+
+
+	m_pRenderer = new DefferedRenderer();
+	//m_pRenderer = new OrthographicRenderer();
+	//m_pDebugRenderer = new DebugRenderer();
+
+	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
+	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
+
+	//Lights
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	m_pScene->AddDirectionalLight(pDirectionalLight);
+
+	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	//m_pScene->AddSpotLight(new SpotLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec4(1.0f, .0f, 0.0f, 1.0f)));
+	
+
+		//Audio
+	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
+	m_pTestAudioSource->SetPitch(1.0f);
+	m_pTestAudioSource->SetLooping(true);
+	m_pTestAudioSource->Play();
+}
+
+void Game::OnUpdateLoading(float dtS)
+{
+}
+
+void Game::OnRenderLoading(float dtS)
+{
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -295,154 +311,161 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 
 void Game::OnUpdate(float dtS)
 {
-	m_pScene->OnUpdate(dtS);
-
-	if (cartesianCamera)
+	if (m_pScene)
 	{
-		//Cartesian
-		static float cartesianCameraSpeed = 5.0f;
-		static float cartesianCameraAngularSpeed = 1.5f;
 
-		if (Input::IsKeyDown(KEY_W))
+		m_pScene->OnUpdate(dtS);
+
+		if (cartesianCamera)
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cartesianCameraSpeed * dtS);
+			//Cartesian
+			static float cartesianCameraSpeed = 5.0f;
+			static float cartesianCameraAngularSpeed = 1.5f;
+
+			if (Input::IsKeyDown(KEY_W))
+			{
+				m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cartesianCameraSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_S))
+			{
+				m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cartesianCameraSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_A))
+			{
+				m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Left, cartesianCameraSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_D))
+			{
+				m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cartesianCameraSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_E))
+			{
+				m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Up, cartesianCameraSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_Q))
+			{
+				m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_UP))
+			{
+				m_pScene->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_DOWN))
+			{
+				m_pScene->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_LEFT))
+			{
+				m_pScene->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_RIGHT))
+			{
+				m_pScene->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
+			}
+
+			m_pScene->GetCamera().UpdateFromPitchYaw();
 		}
-		else if (Input::IsKeyDown(KEY_S))
+		else
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cartesianCameraSpeed * dtS);
+			//Polar
+			static float polarCameraSpeed = 5.0f;
+			static float polarCameraAngularSpeed = 0.8f;
+
+			if (Input::IsKeyDown(KEY_W))
+			{
+				m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Forward, polarCameraSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_S))
+			{
+				m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Backwards, polarCameraSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_A))
+			{
+				m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Left, polarCameraSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_D))
+			{
+				m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Right, polarCameraSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_E))
+			{
+				m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Up, polarCameraSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_Q))
+			{
+				m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Down, polarCameraSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_UP))
+			{
+				m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateUp, polarCameraAngularSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_DOWN))
+			{
+				m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateDown, polarCameraAngularSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_LEFT))
+			{
+				m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateLeft, polarCameraAngularSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_RIGHT))
+			{
+				m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateRight, polarCameraAngularSpeed * dtS);
+			}
+
+			if (Input::IsKeyDown(KEY_X))
+			{
+				m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomIn, polarCameraSpeed * dtS);
+			}
+			else if (Input::IsKeyDown(KEY_Z))
+			{
+				m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomOut, polarCameraSpeed * dtS);
+			}
+
+			m_pScene->GetCamera().UpdateFromLookAt();
 		}
 
-		if (Input::IsKeyDown(KEY_A))
+		AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
+		AudioListener::SetOrientation(m_pScene->GetCamera().GetFront(), m_pScene->GetCamera().GetUp());
+
+		static float decalRot = 0.0f;
+		static float decalX = g_pDecalObject->GetPosition().x;
+		static float decalXSpeed = -1.0f;
+
+		if (decalX > 6.5f)
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Left, cartesianCameraSpeed * dtS);
+			decalXSpeed = -1.0f;
 		}
-		else if (Input::IsKeyDown(KEY_D))
+		else if (decalX < -6.5f)
 		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Right, cartesianCameraSpeed * dtS);
+			decalXSpeed = 1.0f;
 		}
 
-		if (Input::IsKeyDown(KEY_E))
-		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Up, cartesianCameraSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_Q))
-		{
-			m_pScene->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
-		}
+		decalX += decalXSpeed * dtS;
+		//decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
 
-		if (Input::IsKeyDown(KEY_UP))
-		{
-			m_pScene->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_DOWN))
-		{
-			m_pScene->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_LEFT))
-		{
-			m_pScene->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_RIGHT))
-		{
-			m_pScene->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
-		}
-
-		m_pScene->GetCamera().UpdateFromPitchYaw();
-	}
-	else
-	{
-		//Polar
-		static float polarCameraSpeed = 5.0f;
-		static float polarCameraAngularSpeed = 0.8f;
-
-		if (Input::IsKeyDown(KEY_W))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Forward, polarCameraSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_S))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Backwards, polarCameraSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_A))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Left, polarCameraSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_D))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Right, polarCameraSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_E))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Up, polarCameraSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_Q))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Down, polarCameraSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_UP))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateUp, polarCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_DOWN))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateDown, polarCameraAngularSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_LEFT))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateLeft, polarCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_RIGHT))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::RotateRight, polarCameraAngularSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_X))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomIn, polarCameraSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_Z))
-		{
-			m_pScene->GetCamera().MovePosPolar(CameraPosPolar::ZoomOut, polarCameraSpeed * dtS);
-		}
-
-		m_pScene->GetCamera().UpdateFromLookAt();
+		g_pDecalObject->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(-45.0f)));
+		g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
+		g_pDecalObject->UpdateTransform();
 	}
 
 	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
 	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
-
-	AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
-	AudioListener::SetOrientation(m_pScene->GetCamera().GetFront(), m_pScene->GetCamera().GetUp());
-
-	static float decalRot = 0.0f;
-	static float decalX = g_pDecalObject->GetPosition().x;
-	static float decalXSpeed = -1.0f;
-	
-	if (decalX > 6.5f)
-	{
-		decalXSpeed = -1.0f;
-	}
-	else if (decalX < -6.5f)
-	{
-		decalXSpeed = 1.0f;
-	}
-
-	decalX += decalXSpeed * dtS;
-	//decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
-
-	g_pDecalObject->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(-45.0f)));
-	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
-	g_pDecalObject->UpdateTransform();
 }
 
 void Game::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*m_pScene, dtS);
+	if (m_pScene)
+	{
+		m_pRenderer->DrawScene(*m_pScene, dtS);
+	}
 	
 #if defined(DRAW_DEBUG_BOXES)
 	m_pDebugRenderer->DrawScene(*m_pScene);

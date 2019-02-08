@@ -60,7 +60,7 @@ public:
 	Texture& operator=(const Texture& other) = delete;
 
 	Texture() noexcept;
-	~Texture();
+	virtual ~Texture();
 
 	void SetParameters(const TextureParams& params) noexcept;
 	TEX_FORMAT GetFormat() const noexcept;

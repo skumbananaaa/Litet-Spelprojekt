@@ -9,7 +9,8 @@ Texture2D::Texture2D(const void* pInitalData, const TextureDesc& desc, const Tex
 	: Texture(),
 	m_Width(0),
 	m_Height(0),
-	m_Samples(0)
+	m_Samples(0),
+	m_pTextureData(nullptr)
 {
 	if (desc.Samples > 1)
 	{
@@ -25,7 +26,8 @@ Texture2D::Texture2D(const char* const path, TEX_FORMAT format, bool generateMip
 	: Texture(),
 	m_Width(0),
 	m_Height(0),
-	m_Samples(0)
+	m_Samples(0),
+	m_pTextureData(nullptr)
 {
 	Create(path, format, generateMipmaps, params);
 }
@@ -97,56 +99,58 @@ void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
 
 void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
 {
-	int width;
-	int height;
 	int nrChannels;
-	uint32 type = Texture::TexFormatToGLType(format);
-	void* textureData;
-	if (type == GL_FLOAT)
+	m_Format = format;
+	m_Params = params;
+	m_GenerateMipmaps = generateMipmaps;
+
+	if (Texture::TexFormatToGLType(format) == GL_FLOAT)
 	{
 		stbi_set_flip_vertically_on_load(true);
 		
 		int channels = FormatToNrChannels(format);
-		textureData = stbi_loadf(path, &width, &height, &nrChannels, channels);
+		m_pTextureData = stbi_loadf(path, &m_Width, &m_Height, &nrChannels, channels);
 	}
 	else
 	{
-		textureData = stbi_load(path, &width, &height, &nrChannels, FormatToNrChannels(format));
+		m_pTextureData = stbi_load(path, &m_Width, &m_Height, &nrChannels, FormatToNrChannels(format));
 	}
 
-	if (textureData == nullptr)
+	if (m_pTextureData == nullptr)
 	{
 		std::cout << "Error: Could not load texture '" << path << "'" << std::endl;
 		return;
 	}
+}
 
-	GL_CALL(glGenTextures(1, &m_Texture));
-	m_Type = GL_TEXTURE_2D;
-
-	SetParameters(params);
-
-	GL_CALL(glBindTexture(GL_TEXTURE_2D, m_Texture));
-
-	uint32 glformat = Texture::TexFormatToGL(format);
-	uint32 internalFormat = Texture::TexFormatToGLInternal(format);
-	GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, glformat, type, textureData));
-
-	if (generateMipmaps)
+void Texture2D::Construct()
+{
+	if (m_pTextureData)
 	{
-		GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
+		GL_CALL(glGenTextures(1, &m_Texture));
+		m_Type = GL_TEXTURE_2D;
+
+		SetParameters(m_Params);
+
+		GL_CALL(glBindTexture(GL_TEXTURE_2D, m_Texture));
+
+		uint32 glformat = Texture::TexFormatToGL(m_Format);
+		uint32 internalFormat = Texture::TexFormatToGLInternal(m_Format);
+		GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, glformat, Texture::TexFormatToGLType(m_Format), m_pTextureData));
+
+		if (m_GenerateMipmaps)
+		{
+			GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
+		}
+		else
+		{
+			//std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
+		}
+
+		//std::cout << "Loaded Texture2D" << std::endl;
+
+		GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+
+		stbi_image_free(m_pTextureData);
 	}
-	else
-	{
-		//std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
-	}
-
-	m_Width = width;
-	m_Height = height;
-	m_Format = format;
-
-	//std::cout << "Loaded Texture2D" << std::endl;
-
-	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
-
-	stbi_image_free(textureData);
 }

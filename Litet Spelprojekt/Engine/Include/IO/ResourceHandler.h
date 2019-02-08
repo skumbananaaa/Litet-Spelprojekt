@@ -21,6 +21,8 @@ class Music;
 
 class API ResourceHandler : public IRunnable
 {
+	friend class Application;
+
 public:
 	static uint32 RegisterMesh(const std::string& filename);
 	static uint32 RegisterMesh(IndexedMesh* mesh);
@@ -47,12 +49,13 @@ public:
 
 	static void QuaryGameObjectTypes(std::vector<std::string>& list);
 
-	static void LoadResources(IResourceListener* resourceListener, std::string prePath = "");
-	static void ReleaseResources();
-
 	virtual void RunParallel();
 
 private:
+	static void LoadResources(IResourceListener* resourceListener, std::string prePath = "");
+	static void ConstructResources();
+	static void ReleaseResources();
+
 	struct TEXTURE2D_DESC_INTERNAL
 	{
 		std::string filename = "";

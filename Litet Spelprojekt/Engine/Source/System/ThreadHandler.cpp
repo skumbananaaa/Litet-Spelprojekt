@@ -47,6 +47,10 @@ void ThreadHandler::Run() noexcept
 		{
 			runnable->RunParallel();
 		}
+		else
+		{
+			std::cout << "Vafan Bengan" << std::endl;
+		}
 	}
 	std::cout << "Thread Terminated! ID: " << thread.get_id() << std::endl;
 }

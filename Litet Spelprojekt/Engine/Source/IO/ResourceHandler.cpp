@@ -78,11 +78,7 @@ void ResourceHandler::RunParallel()
 		m_pMusic[i] = new Music((m_PrePath + "Resources/Audio/Music/" + desc.filename).c_str());
 	}
 
-	MATERIAL::RegisterResources();
-	DECAL::RegisterResources();
-	GAMEOBJECT::RegisterResources();
-
-	m_ResourceListener->OnResourcesLoaded();
+	m_ResourceListener->OnResourceLoadingFinished();
 }
 
 uint32 ResourceHandler::RegisterMesh(const std::string& filename)
@@ -286,6 +282,23 @@ void ResourceHandler::LoadResources(IResourceListener* resourceListener, std::st
 		instance->RunParallel();
 		//ThreadHandler::RequestExecution(instance);
 	}
+}
+
+void ResourceHandler::ConstructResources()
+{
+	for (int i = 0; i < m_NrOfMeshes; i++)
+	{
+		m_pIndexedMeshes[i]->Construct();
+	}
+
+	for (int i = 0; i < m_NrOfTexture2D; i++)
+	{
+		m_pTexture2Ds[i]->Construct();
+	}
+
+	MATERIAL::RegisterResources();
+	DECAL::RegisterResources();
+	GAMEOBJECT::RegisterResources();
 }
 
 void ResourceHandler::ReleaseResources()

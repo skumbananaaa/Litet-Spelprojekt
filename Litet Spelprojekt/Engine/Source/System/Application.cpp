@@ -6,12 +6,13 @@ constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
 Application::Application(bool fullscreen, uint32 width, uint32 height)
-	: m_pWindow(nullptr), 
+	: m_pWindow(nullptr),
 	m_pGraphicsContext(nullptr),
 	m_pGUIManager(nullptr),
-	m_fps(0), 
+	m_fps(0),
 	m_ups(0),
-	m_ShouldRun(true)
+	m_ShouldRun(true),
+	m_ResourceMode(RESOURCE_MODE::LOAD)
 {
 	std::cout << "Application" << std::endl;
 
@@ -52,8 +53,17 @@ Application::~Application()
 	glfwTerminate();
 
 	std::cout << "Application deleted" << std::endl;
+}
 
-	ThreadHandler::Exit();
+void Application::OnResourceLoaded(std::string file, float percentage)
+{
+	
+}
+
+void Application::OnResourceLoadingFinished()
+{
+	m_ResourceMode = RESOURCE_MODE::CONSTRUCT;
+	std::cout << "OnResourceLoadingFinished()" << std::endl;
 }
 
 int32_t Application::Run()
@@ -72,10 +82,17 @@ int32_t Application::Run()
 	int32 ups = 0;
 
 	ThreadHandler::Init();
+	ResourceHandler::LoadResources(this);
 
 	m_pGraphicsContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	while (!m_pWindow->IsClosed() && m_ShouldRun)
 	{
+		if (m_ResourceMode == RESOURCE_MODE::CONSTRUCT)
+		{
+			ResourceHandler::ConstructResources();
+			m_ResourceMode = RESOURCE_MODE::DONE;
+			OnResourcesLoaded();
+		}
 		Input::Update();
 
 		m_pWindow->PollEvents();
@@ -89,6 +106,7 @@ int32_t Application::Run()
 		if (totalTime > 1.0f)
 		{
 			std::string title = "Small Game Project [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
+
 			m_pWindow->SetTitle(title.c_str());
 
 			this->m_fps = fps;
@@ -101,17 +119,32 @@ int32_t Application::Run()
 		accumulator += deltaTime;
 		while (accumulator > timestep)
 		{
-			InternalOnUpdate(timestep);
+			//if (m_ResourceMode == RESOURCE_MODE::DONE)
+			{
+				InternalOnUpdate(timestep);
+			}
+			//else
+			{
+				//OnUpdateLoading(timestep);
+			}
 			accumulator -= timestep;
 
 			ups++;
 		}
 
-		InternalOnRender(deltaTime);
-		fps++;
+		//if (m_ResourceMode == RESOURCE_MODE::DONE)
+		{
+			InternalOnRender(deltaTime);
 
+		}
+		//else
+		{
+			//OnRenderLoading(deltaTime);
+		}
+		fps++;	
 		m_pWindow->SwapBuffers();
 	}
-
+	ThreadHandler::Exit();
+	ResourceHandler::ReleaseResources();
 	return 0;
 }

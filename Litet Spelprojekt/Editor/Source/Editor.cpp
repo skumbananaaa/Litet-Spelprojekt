@@ -7,32 +7,6 @@ Editor::Editor() noexcept : Application(false, 1600, 900),
 	m_SelectionHandlerMesh(true),
 	m_SelectionHandlerMeshEdit(false)
 {
-	Camera* pCameraPersp = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	pCameraPersp->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.01f, 100.0f);
-	pCameraPersp->UpdateFromPitchYaw();
-
-	Camera* pCameraOrth = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	m_CameraZoom = 1.0f;
-	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
-	pCameraOrth->UpdateFromPitchYaw();
-
-	m_ppScenes = new Scene*[NUM_BOAT_LEVELS];
-	m_ppGrids = new Grid*[NUM_GRID_LEVELS];
-
-	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
-	{
-		m_ppScenes[i] = new Scene();
-		m_ppScenes[i]->SetCamera(pCameraPersp, 0);
-		m_ppScenes[i]->SetCamera(pCameraOrth, 1);
-	}
-
-	m_RoomBeingEdited = -1;
-	m_CurrentGridIndex = 0;
-	m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
-
-	m_Dragging = false;
-	m_CurrentEditingMode = NONE;
-
 	ResourceHandler::LoadResources(this, "../Game/");
 
 	m_MouseMaterial = MATERIAL::WHITE;
@@ -85,6 +59,32 @@ Editor::~Editor()
 
 void Editor::OnResourcesLoaded()
 {
+	Camera* pCameraPersp = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	pCameraPersp->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.01f, 100.0f);
+	pCameraPersp->UpdateFromPitchYaw();
+
+	Camera* pCameraOrth = new Camera(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians<float>(-90.0f), 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	m_CameraZoom = 1.0f;
+	pCameraOrth->CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+	pCameraOrth->UpdateFromPitchYaw();
+
+	m_ppScenes = new Scene*[NUM_BOAT_LEVELS];
+	m_ppGrids = new Grid*[NUM_GRID_LEVELS];
+
+	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
+	{
+		m_ppScenes[i] = new Scene();
+		m_ppScenes[i]->SetCamera(pCameraPersp, 0);
+		m_ppScenes[i]->SetCamera(pCameraOrth, 1);
+	}
+
+	m_RoomBeingEdited = -1;
+	m_CurrentGridIndex = 0;
+	m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
+
+	m_Dragging = false;
+	m_CurrentEditingMode = NONE;
+
 	m_pPanelTop = new Panel(0, GetWindow().GetHeight() - 70, GetWindow().GetWidth(), 70);
 	m_pButtonSave = new Button(10, 10, 140, 50, "Save", nullptr, OnButtonReleased);
 	m_pButtonLoad = new Button(160, 10, 140, 50, "Load", nullptr, OnButtonReleased);

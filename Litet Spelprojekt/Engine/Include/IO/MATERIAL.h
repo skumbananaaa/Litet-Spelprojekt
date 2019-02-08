@@ -3,6 +3,8 @@
 
 class API MATERIAL
 {
+	friend class ResourceHandler;
+
 public:
 	static uint32 BLACK;
 	static uint32 WHITE;
@@ -14,6 +16,7 @@ public:
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
 
-public:
+private:
+	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
 };

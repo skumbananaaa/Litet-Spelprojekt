@@ -3,10 +3,12 @@
 
 class API MUSIC
 {
+	friend class ResourceHandler;
 
 public:
 	static uint32 WAVES_AND_SEAGULLS;
 
-public:
+private:
+	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
 };

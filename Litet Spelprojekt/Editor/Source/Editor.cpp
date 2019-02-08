@@ -1,39 +1,21 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Editor.h"
 
-Editor::Editor() noexcept : Application(false, 1600, 900),
+Editor::Editor() noexcept : Application(false, 1600, 900, "../Game/"),
 	m_SelectionHandlerFloor(true),
 	m_SelectionHandlerRoom(false),
 	m_SelectionHandlerMesh(true),
 	m_SelectionHandlerMeshEdit(false)
 {
-	ResourceHandler::LoadResources(this, "../Game/");
-
-	m_MouseMaterial = MATERIAL::WHITE;
-
-	m_pRenderer = new OrthographicRenderer();
 	std::cout << "Editor" << std::endl;
-
-
-	const int32 gridWidth = 40;
-	const int32 gridHeight = 10;
-
-	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
-	{
-		//Create one grid for each grid level
-		m_ppGrids[i] = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
-
-		for (uint32 x = 0; x < m_ppGrids[i]->GetSize().x; x++)
-		{
-			for (uint32 y = 0; y < m_ppGrids[i]->GetSize().y; y++)
-			{
-				Tile* pTile = m_ppGrids[i]->GetTile(glm::ivec2(x, y));
-				pTile->SetID(TILE_NON_WALKABLE_INDEX);
-				m_ppScenes[i / 2]->AddGameObject(pTile);
-			}
-		}
-	}
+	m_MouseMaterial = MATERIAL::WHITE;
 	//GetGraphicsContext().Disable(Cap::CULL_FACE);
+
+	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
+	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
+
+	GetGUIManager().Add(m_pTextViewFile);
+	GetGUIManager().Add(m_pLoadingBar);
 }
 
 Editor::~Editor()
@@ -54,11 +36,21 @@ Editor::~Editor()
 	Delete(m_pPanelFloor);
 	Delete(m_pPanelEditor);
 
-	ResourceHandler::ReleaseResources();
+	Delete(m_pTextViewFile);
+	Delete(m_pLoadingBar);
+}
+
+void Editor::OnResourceLoading(const std::string& file, float percentage)
+{
+	m_pTextViewFile->SetText("Loading: " + file);
+	m_pLoadingBar->SetPercentage(percentage);
 }
 
 void Editor::OnResourcesLoaded()
 {
+	GetGUIManager().Remove(m_pTextViewFile);
+	GetGUIManager().Remove(m_pLoadingBar);
+
 	Camera* pCameraPersp = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	pCameraPersp->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.01f, 100.0f);
 	pCameraPersp->UpdateFromPitchYaw();
@@ -200,6 +192,27 @@ void Editor::OnResourcesLoaded()
 		vAccumulator += 2;
 		currentS = 0.3f + 0.7f * (float)(sAccumulator % 16) / 15.0f;
 		currentV = 0.3f + 0.7f * (float)(vAccumulator % 16) / 15.0f;
+	}
+
+	m_pRenderer = new OrthographicRenderer();
+
+	const int32 gridWidth = 40;
+	const int32 gridHeight = 10;
+
+	for (uint32 i = 0; i < NUM_GRID_LEVELS; i++)
+	{
+		//Create one grid for each grid level
+		m_ppGrids[i] = new Grid(MATERIAL::BLACK, glm::ivec2(gridHeight, gridWidth), glm::vec3(-gridHeight / 2.0f, 0.0f, -gridWidth / 2.0f));
+
+		for (uint32 x = 0; x < m_ppGrids[i]->GetSize().x; x++)
+		{
+			for (uint32 y = 0; y < m_ppGrids[i]->GetSize().y; y++)
+			{
+				Tile* pTile = m_ppGrids[i]->GetTile(glm::ivec2(x, y));
+				pTile->SetID(TILE_NON_WALKABLE_INDEX);
+				m_ppScenes[i / 2]->AddGameObject(pTile);
+			}
+		}
 	}
 
 	std::cout << "Resources Loaded!" << std::endl;

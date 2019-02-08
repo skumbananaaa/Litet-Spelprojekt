@@ -52,9 +52,11 @@ public:
 	virtual void RunParallel();
 
 private:
+	static void Load();
 	static void LoadResources(IResourceListener* resourceListener, std::string prePath = "");
 	static void ConstructResources();
 	static void ReleaseResources();
+	static void TriggerOnLoading(const std::string& file, float percentage);
 
 	struct TEXTURE2D_DESC_INTERNAL
 	{
@@ -90,10 +92,12 @@ private:
 	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];
 	static IndexedMesh* m_pIndexedMeshes[64];
 	static uint32 m_NrOfMeshes;
+	static uint32 m_NrOfMeshesLoaded;
 
 	static TEXTURE2D_DESC_INTERNAL m_pTexture2DFiles[64];
 	static Texture2D* m_pTexture2Ds[64];
 	static uint32 m_NrOfTexture2D;
+	static uint32 m_NrOfTexture2DLoaded;
 
 	static Material* m_pMaterials[512];
 	static uint32 m_NrOfMaterials;
@@ -107,10 +111,12 @@ private:
 	static SOUND_DESC_INTERNAL m_pSoundFiles[64];
 	static SoundEffect* m_pSounds[64];
 	static uint32 m_NrOfSounds;
+	static uint32 m_NrOfSoundsLoaded;
 
 	static MUSIC_DESC_INTERNAL m_pMusicFiles[64];
 	static Music* m_pMusic[64];
 	static uint32 m_NrOfMusic;
+	static uint32 m_NrOfMusicLoaded;
 
 	static IResourceListener* m_ResourceListener;
 	static std::string m_PrePath;

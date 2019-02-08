@@ -3,10 +3,12 @@
 
 class API SOUND
 {
+	friend class ResourceHandler;
 
 public:
 	static uint32 MONO_FART;
 
-public:
+private:
+	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
 };

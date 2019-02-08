@@ -12,6 +12,14 @@ uint32 MATERIAL::GROUND = 0;
 uint32 MATERIAL::SINGLE_BED = 0;
 uint32 MATERIAL::BUNK_BED = 0;
 
+/*
+* Used for preloading resources needed in the loading screen
+*/
+void MATERIAL::RegisterResourcesPreLoading()
+{
+
+}
+
 void MATERIAL::RegisterResources()
 {
 	BLACK				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0F, 0.0F, 1.0F));

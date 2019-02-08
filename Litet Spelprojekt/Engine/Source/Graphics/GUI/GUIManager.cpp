@@ -44,6 +44,7 @@ void GUIManager::InternalRootOnRender()
 	GUIObject::InternalRootOnRender(context);
 
 	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 }
 
 void GUIManager::InternalRootOnUpdate(float dtS)

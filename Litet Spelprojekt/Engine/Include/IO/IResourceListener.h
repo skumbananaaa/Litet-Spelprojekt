@@ -5,6 +5,6 @@ class API IResourceListener
 {
 public:
 	virtual ~IResourceListener() {};
-	virtual void OnResourceLoaded(std::string file, float percentage) = 0;
+	virtual void OnLoading(const std::string&, float percentage) = 0;
 	virtual void OnResourceLoadingFinished() = 0;
 };

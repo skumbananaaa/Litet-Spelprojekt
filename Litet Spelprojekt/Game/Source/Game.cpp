@@ -21,7 +21,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(false),
+	Application(false, 1920, 1080),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pScene(nullptr),
@@ -32,13 +32,18 @@ Game::Game() noexcept :
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(true)
 {
-	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
-	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+	m_pTextViewFPS = new TextView(0, GetWindow().GetHeight() - 60, 200, 50, "FPS");
+	m_pTextViewUPS = new TextView(0, GetWindow().GetHeight() - 80, 200, 50, "UPS");
 	m_pTextViewCrew = new TextView(0, 0, GetWindow().GetWidth(), 50, "Crew: ");
+	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
+	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
+
 
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pTextViewCrew);
+	GetGUIManager().Add(m_pTextViewFile);
+	GetGUIManager().Add(m_pLoadingBar);
 }
 
 Game::~Game()
@@ -53,13 +58,24 @@ Game::~Game()
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
 	DeleteSafe(m_pTextViewCrew);
+	DeleteSafe(m_pTextViewFile);
+	DeleteSafe(m_pLoadingBar);
 	
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
 }
 
+void Game::OnResourceLoading(const std::string& file, float percentage)
+{
+	m_pTextViewFile->SetText("Loading: " + file);
+	m_pLoadingBar->SetPercentage(percentage);
+}
+
 void Game::OnResourcesLoaded()
 {
+	GetGUIManager().Remove(m_pTextViewFile);
+	GetGUIManager().Remove(m_pLoadingBar);
+
 	m_pScene = new Scene();
 
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -230,7 +246,7 @@ void Game::OnResourcesLoaded()
 
 	m_pRenderer = new DefferedRenderer();
 	//m_pRenderer = new OrthographicRenderer();
-	//m_pDebugRenderer = new DebugRenderer();
+	m_pDebugRenderer = new DebugRenderer();
 
 	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
@@ -465,11 +481,11 @@ void Game::OnRender(float dtS)
 	if (m_pScene)
 	{
 		m_pRenderer->DrawScene(*m_pScene, dtS);
-	}
-	
+
 #if defined(DRAW_DEBUG_BOXES)
-	m_pDebugRenderer->DrawScene(*m_pScene);
+		m_pDebugRenderer->DrawScene(*m_pScene);
 #endif
+	}
 }
 
 void Game::PickPosition() {

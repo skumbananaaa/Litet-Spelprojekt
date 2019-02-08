@@ -468,9 +468,20 @@ void Editor::GetGameObjects(std::vector<GameObject*>& list, int32 level)
 glm::vec3 Editor::GetDirectionBasedOnCamera(Direction direction)
 {
 	Camera& camera = GetCurrentScene()->GetCamera();
-	float yaw = fmod(camera.GetYaw() + glm::quarter_pi<float>(), glm::two_pi<float>());
+	float yaw = camera.GetYaw();
+	while (yaw > glm::two_pi<float>())
+	{
+		yaw -= glm::two_pi<float>();
+	}
+	while (yaw < 0)
+	{
+		yaw += glm::two_pi<float>();
+	}
+	yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
 	int dir = yaw / glm::half_pi<float>();
 	
+	std::cout << "dir = " << dir << std::endl;
+
 	switch (dir)
 	{
 		case 0:
@@ -514,7 +525,7 @@ glm::vec3 Editor::GetDirectionBasedOnCamera(Direction direction)
 			}
 		}
 	}
-	std::cout << "Error! Camera dir = " << dir << " This is not a good thing" << std::endl;
+	//std::cout << "Error! Camera dir = " << dir << " This is not a good thing" << std::endl;
 	return glm::vec3();
 }
 

@@ -21,10 +21,16 @@ void PlanarReflector::SetPlane(const glm::vec3& normal, float distFromOrigin) no
 void PlanarReflector::Create() noexcept
 {
 	{
+		TextureParams params = {};
+		params.Wrap = TEX_PARAM_REPEAT;
+		params.MinFilter = TEX_PARAM_LINEAR;
+		params.MagFilter = TEX_PARAM_LINEAR;
+
 		FramebufferDesc desc = {};
 		desc.Height = REFLECTION_SIZE;
 		desc.Width = REFLECTION_SIZE;
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.SamplingParams = params;
 		desc.NumColorAttachments = 1;
 		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
 		desc.Samples = 1;

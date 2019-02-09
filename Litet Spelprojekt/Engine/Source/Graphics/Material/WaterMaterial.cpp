@@ -47,6 +47,8 @@ void WaterMaterial::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
+	context.SetUniformBuffer(nullptr, 3);
+
 	context.SetTexture(nullptr, 3);
 	context.SetTexture(nullptr, 4);
 	context.SetTexture(nullptr, 5);
@@ -56,6 +58,7 @@ void WaterMaterial::Unbind() const noexcept
 
 void WaterMaterial::SetPlanarReflector(PlanarReflector* pReflector) const
 {
+	assert(pReflector != nullptr);
 	m_pReflector = pReflector;
 }
 

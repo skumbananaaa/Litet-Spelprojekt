@@ -34,6 +34,7 @@ public:
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
+	const bool IsExtending() const noexcept;
 	const bool IsExtended() const noexcept;
 
 	bool IsReflectable() const noexcept;
@@ -75,6 +76,11 @@ inline const glm::vec4& GameObject::GetRotation() const noexcept
 inline const glm::vec3& GameObject::GetScale() const noexcept
 {
 	return m_Scale;
+}
+
+inline const bool GameObject::IsExtending() const noexcept
+{
+	return m_Extending;
 }
 
 inline const bool GameObject::IsExtended() const noexcept

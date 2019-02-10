@@ -44,8 +44,8 @@ Game::Game() noexcept :
 	m_pScene->SetCamera(pCamera);
 
 	//Lights
-	//DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
-	//m_pScene->AddDirectionalLight(pDirectionalLight);
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	m_pScene->AddDirectionalLight(pDirectionalLight);
 
 	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
 	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
@@ -466,7 +466,7 @@ void Game::PickPosition() {
 	glm::vec3 normal(0.0f, 1.0f, 0.0f);
 
 	float t = -1, lastT = -1;
-	for (int d = 0; d < m_pWorld->GetNumLevels(); d += 2)
+	for (int d = m_pWorld->GetNumLevels() - 2; d >= 0; d -= 2)
 	{
 		if (glm::dot(normal, rayDir) < -0.01)
 		{
@@ -476,6 +476,15 @@ void Game::PickPosition() {
 		if ((t >= 0 && lastT == -1) || (t > 0 && t < lastT))
 		{
 			pointOnSurface = rayOrigin + rayDir * t;
+			bool extended = m_pScene->IsExtended();
+			if (pointOnSurface.x > 5 * d * extended)
+			{
+				lastT = t;
+			}
+			else
+			{
+				pointOnSurface = glm::vec3(0.0f, 0.0f, 0.0f);
+			}
 		}
 	}
 

@@ -31,6 +31,11 @@ void GameObject::SetIsReflectable(bool isReflectable) noexcept
 void GameObject::SetPosition(const glm::vec3& position) noexcept
 {
 	m_Position = position;
+	if (!m_Extending)
+	{
+		m_OriginalPos = position;
+		m_OriginalPos.x -= 5 * floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f * m_Extended;
+	}
 	m_IsDirty = true;
 }
 
@@ -48,21 +53,17 @@ void GameObject::SetScale(const glm::vec3& scale) noexcept
 
 void GameObject::SetExtend(bool extend) noexcept
 {
-	if (!m_Extending && extend)
+	if (extend)
 	{
-		m_OriginalPos = m_Position;
-		m_ExtendPosX = m_OriginalPos.x + 5 * floor(m_Position.y / 2.0f) * 2.0f;
 		m_Extending = true;
+		m_Extended = true;
+		m_ExtendPosX = m_OriginalPos.x + 5 * floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f;
 	}
 	else if (!extend)
 	{
+		m_Extending = true;
+		m_Extended = false;
 		m_ExtendPosX = m_OriginalPos.x;
-		m_Extending = true;
-	}
-	else if (extend)
-	{
-		m_ExtendPosX = m_OriginalPos.x + 5 * floor(m_Position.y / 2.0f) * 2.0f;
-		m_Extending = true;
 	}
 }
 
@@ -73,14 +74,16 @@ void GameObject::Extend(float dtS) noexcept
 		if (std::abs(m_Position.x - m_ExtendPosX) > 0.01)
 		{
 			float move = m_ExtendPosX - m_Position.x;
+			float extensionSpeed = 20.0f;
 			move /= std::abs(move);
-			move *= floor(m_Position.y / 2.0f) * 40.0f;
+			move *= floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f * extensionSpeed;
 			SetPosition(glm::vec3(m_Position.x + move * dtS, m_Position.y, m_Position.z));
 		}
 		else
 		{
 			m_Extending = false;
-			m_Extended = !m_Extended;
+			m_OriginalPos = m_Position;
+			m_OriginalPos.x -= 5 * floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f * m_Extended;
 		}
 	}
 }

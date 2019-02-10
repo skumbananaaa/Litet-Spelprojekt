@@ -129,6 +129,10 @@ void Scene::ExtendScene(bool extend) noexcept
 	{
 		pGameObject->SetExtend(extend);
 	}
+	for (SpotLight* pSpotLight : m_SpotLights)
+	{
+		pSpotLight->SetExtend(extend);
+	}
 	m_Extended = !m_Extended;
 }
 
@@ -137,5 +141,9 @@ void Scene::OnUpdate(float dtS) noexcept
 	for (GameObject* pGameObject : m_GameObjects)
 	{
 		pGameObject->Update(dtS);
+	}
+	for (SpotLight* pSpotLight : m_SpotLights)
+	{
+		pSpotLight->Update(dtS);
 	}
 }

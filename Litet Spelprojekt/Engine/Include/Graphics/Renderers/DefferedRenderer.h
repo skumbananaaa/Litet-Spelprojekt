@@ -8,7 +8,7 @@
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 2
+#define NUM_SPOT_LIGHTS 17
 
 struct GPassVSPerFrame
 {

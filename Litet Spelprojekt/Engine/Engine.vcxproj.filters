@@ -60,6 +60,7 @@
     <ClCompile Include="Source\IO\R_SOUND.cpp" />
     <ClCompile Include="Source\IO\R_MUSIC.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
+    <ClCompile Include="Source\IO\R_SHADER.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -133,5 +134,6 @@
     <ClInclude Include="Include\IO\SOUND.h" />
     <ClInclude Include="Include\IO\IResource.h" />
     <ClInclude Include="Include\Graphics\GUI\ProgressBar.h" />
+    <ClInclude Include="Include\IO\SHADER.h" />
   </ItemGroup>
 </Project>

@@ -14,10 +14,12 @@
 #include <IO/GAMEOBJECT.h>
 #include <IO/SOUND.h>
 #include <IO/MUSIC.h>
+#include <IO/SHADER.h>
 
 class GameObject;
 class SoundEffect;
 class Music;
+class ShaderProgram;
 
 class API ResourceHandler : public IRunnable
 {
@@ -33,6 +35,7 @@ public:
 	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);
 	static uint32 RegisterMusic(const std::string filename);
+	static uint32 RegisterShader(const std::string vertex, const std::string pixel);
 
 	static IndexedMesh* GetMesh(int32 mesh);
 	static int32 GetMesh(const IndexedMesh* mesh);
@@ -42,6 +45,7 @@ public:
 	static Decal* GetDecal(int32 decal);
 	static const SoundEffect* GetSound(int32 sound);
 	static const Music* GetMusic(int32 music);
+	static const ShaderProgram* GetShader(int32 shader);
 
 	static GameObject* CreateGameObject(int32 gameObject);
 
@@ -53,6 +57,7 @@ public:
 
 private:
 	static void Load();
+	static void Construct();
 	static void LoadResources(IResourceListener* resourceListener, std::string prePath = "");
 	static void ConstructResources();
 	static void ReleaseResources();
@@ -89,6 +94,12 @@ private:
 		std::string filename = "";
 	};
 
+	struct SHADER_DESC_INTERNAL
+	{
+		std::string vertex = "";
+		std::string pixel = "";
+	};
+
 	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];
 	static IndexedMesh* m_pIndexedMeshes[64];
 	static uint32 m_NrOfMeshes;
@@ -117,6 +128,11 @@ private:
 	static Music* m_pMusic[64];
 	static uint32 m_NrOfMusic;
 	static uint32 m_NrOfMusicLoaded;
+
+	static SHADER_DESC_INTERNAL m_ShaderFiles[64];
+	static ShaderProgram* m_pShaders[64];
+	static uint32 m_NrOfShaders;
+	static uint32 m_NrOfShadersLoaded;
 
 	static IResourceListener* m_ResourceListener;
 	static std::string m_PrePath;

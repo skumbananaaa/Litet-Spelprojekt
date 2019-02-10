@@ -35,13 +35,14 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 		float height = static_cast<float>(m_pWindow->GetHeight());
 
 		m_pGraphicsContext = new GLContext(width, height);
+
+		ThreadHandler::Init();
+		ResourceHandler::LoadResources(this, prePath);
 		m_pGUIManager = new GUIManager(m_pGraphicsContext);
 	}
 
 	m_pAudioContext = IAudioContext::CreateContext();
 
-	ThreadHandler::Init();
-	ResourceHandler::LoadResources(this, prePath);
 	
 	std::cout << "Application Initalized" << std::endl;
 }

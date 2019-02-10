@@ -3,15 +3,9 @@
 
 GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0)
 {
-	Shader vShader;
-	Shader fShader;
-
-	vShader.CompileFromFile("Resources/Shaders/VShaderGUI.glsl", VERTEX_SHADER);
-	fShader.CompileFromFile("Resources/Shaders/FShaderGUI.glsl", FRAGMENT_SHADER);
-
 	FontRenderer* fontRenderer = FontRenderer::CreateFontRenderer("Resources/Fonts/arial.ttf", 10, 10);
 
-	context = new GUIContext(glContext, new ShaderProgram(vShader, fShader), fontRenderer);
+	context = new GUIContext(glContext, ResourceHandler::GetShader(SHADER::GUI), fontRenderer);
 
 	CreateDefaultTexture();
 }

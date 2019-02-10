@@ -42,17 +42,16 @@ Game::Game() noexcept :
 	m_pScene->SetCamera(pCamera);
 
 	//Lights
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
-	m_pScene->AddDirectionalLight(pDirectionalLight);
+	//DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	//m_pScene->AddDirectionalLight(pDirectionalLight);
 
 	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
 	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 	//m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 6.0f, 10.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 6.0f, 20.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	
 	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
 	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
 	m_pTextViewCrew = new TextView(0, 0, GetWindow().GetWidth(), 50, "Crew: ");
@@ -244,7 +243,7 @@ void Game::OnResourcesLoaded()
 		m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % NUM_CREW]);
 		m_CrewList[i] = "";
 		m_pScene->AddGameObject(m_Crew.GetMember(i));
-		//m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetLight());
+		m_pScene->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		m_pScene->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
@@ -282,6 +281,14 @@ void Game::OnKeyDown(KEY keycode)
 		case KEY_SPACE:
 		{
 			m_pScene->ExtendScene(true);
+			break;
+		}
+		case KEY_L:
+		{
+			for (int i = 0; i < m_Crew.GetCount(); i++)
+			{
+				m_Crew.GetMember(i)->SwitchLight();
+			}
 			break;
 		}
 	}
@@ -503,7 +510,7 @@ void Game::PickPosition() {
 	{
 		for (int i = 0; i < m_Crew.GetCount(); i++)
 		{
-			if (m_Crew.GetMember(i)->GetLight()->GetColor() == CHOSEN_LIGHT)
+			if (m_Crew.GetMember(i)->GetLight()->GetColor() == CHOSEN_LIGHT || m_Crew.GetMember(i)->GetTorch()->GetColor() == CHOSEN_LIGHT)
 			{
 				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
 			}
@@ -595,9 +602,19 @@ void Game::PickCrew()
 			m_Crew.GetMember(id)->GetLight()->SetColor(DEFAULT_LIGHT);
 			m_CrewList[id] = "";
 		}
-		else
+		else if (m_Crew.GetMember(id)->GetTorch()->GetColor() == CHOSEN_LIGHT)
+		{
+			m_Crew.GetMember(id)->GetTorch()->SetColor(DEFAULT_LIGHT);
+			m_CrewList[id] = "";
+		}
+		else if (m_Crew.GetMember(id)->GetLight()->GetColor() == DEFAULT_LIGHT)
 		{
 			m_Crew.GetMember(id)->GetLight()->SetColor(CHOSEN_LIGHT);
+			m_CrewList[id] = m_Crew.GetMember(id)->GetName() + " | ";
+		}
+		else if (m_Crew.GetMember(id)->GetTorch()->GetColor() == DEFAULT_LIGHT)
+		{
+			m_Crew.GetMember(id)->GetTorch()->SetColor(CHOSEN_LIGHT);
 			m_CrewList[id] = m_Crew.GetMember(id)->GetName() + " | ";
 		}
 		std::string crewList = "";

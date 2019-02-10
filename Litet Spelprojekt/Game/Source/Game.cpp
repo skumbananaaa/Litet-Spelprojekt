@@ -14,7 +14,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(false, 1600, 900),
+	Application(false, 1920, 1080),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pScene(nullptr),

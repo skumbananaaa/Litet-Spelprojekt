@@ -20,15 +20,15 @@ uint32 MATERIAL::CREW_STANDARD = 0;
 void MATERIAL::RegisterResources()
 {
 	Shader defferedVS;
-	if (defferedVS.CompileFromFile("Resources/Shaders/defferedGeometryVert.glsl", VERTEX_SHADER))
+	if (defferedVS.CompileFromFile("Resources/Shaders/deferredMaterial.glsl", VERTEX_SHADER))
 	{
-		std::cout << "Created Geomtrypass Vertex shader" << std::endl;
+		std::cout << "Created Geometrypass Vertex shader" << std::endl;
 	}
 
 	Shader defferedFS;
-	if (defferedFS.CompileFromFile("Resources/Shaders/defferedGeometryFrag.glsl", FRAGMENT_SHADER))
+	if (defferedFS.CompileFromFile("Resources/Shaders/deferredMaterial.glsl", FRAGMENT_SHADER))
 	{
-		std::cout << "Created Geomtrypass Fragment shader" << std::endl;
+		std::cout << "Created Geometrypass Fragment shader" << std::endl;
 	}
 
 	ShaderProgram* pProgram = new ShaderProgram(defferedVS, defferedFS);

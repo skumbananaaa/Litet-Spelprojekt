@@ -2,7 +2,7 @@
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 16
+#define NUM_SPOT_LIGHTS 2
 
 layout(location = 0) out vec4 g_OutColor;
 
@@ -36,6 +36,7 @@ struct SpotLight
 	vec3 TargetDirection;
 	float Angle;
 	float OuterAngle;
+	vec3 padding;
 };
 
 layout(binding = 0) uniform LightPassBuffer
@@ -146,13 +147,14 @@ void main()
 		lightDir = normalize(lightDir);
 		float cosTheta = dot(normal, lightDir);
 	
+
 		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
 		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
 		if (lightToSurfaceAngle > coneAngle)
 		{
 			light_attenuation += lightToSurfaceAngle - coneAngle;
 		}
-		float attenuation = 1.0f / (1.0 + light_attenuation * (dist * dist));
+		float attenuation = 1.0f / (1.0 + light_attenuation * (dist));
 		
 		vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
 

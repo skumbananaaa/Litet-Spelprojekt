@@ -23,6 +23,7 @@ public:
 	void AddPointLight(PointLight* pLight) noexcept;
 	void AddSpotLight(SpotLight* pLight) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
+	void ExtendScene(bool extend) noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
@@ -38,6 +39,7 @@ public:
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
+	const bool IsExtended() const noexcept;
 
 private:
 	Camera* m_pCamera;
@@ -51,6 +53,7 @@ private:
 	std::vector<PointLight*> m_PointLights;
 	std::vector<SpotLight*> m_SpotLights;
 	SkyBox* m_pSkyBox;
+	bool m_Extended = false;
 };
 
 inline Camera& Scene::GetCamera() noexcept
@@ -108,4 +111,9 @@ inline const std::vector<PointLight*>& Scene::GetPointLights() const noexcept
 inline const std::vector<SpotLight*>& Scene::GetSpotLights() const noexcept
 {
 	return m_SpotLights;
+}
+
+inline const bool Scene::IsExtended() const noexcept
+{
+	return m_Extended;
 }

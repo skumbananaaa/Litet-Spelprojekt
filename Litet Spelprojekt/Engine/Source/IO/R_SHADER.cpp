@@ -3,6 +3,8 @@
 #include <IO/ResourceHandler.h>
 
 uint32 SHADER::GUI;
+uint32 SHADER::FONT;
+
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -10,6 +12,7 @@ uint32 SHADER::GUI;
 void SHADER::RegisterResourcesPreLoading()
 {
 	GUI					= ResourceHandler::RegisterShader("VShaderGUI.glsl", "FShaderGUI.glsl");
+	FONT				= ResourceHandler::RegisterShader("VShaderFont.glsl", "FShaderFont.glsl");
 }
 
 void SHADER::RegisterResources()

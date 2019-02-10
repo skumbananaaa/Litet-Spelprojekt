@@ -7,6 +7,7 @@ class API SHADER
 
 public:
 	static uint32 GUI;
+	static uint32 FONT;
 
 private:
 	static void RegisterResourcesPreLoading();

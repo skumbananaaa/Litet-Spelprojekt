@@ -13,7 +13,6 @@ GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0)
 GUIManager::~GUIManager()
 {
 	delete context->GetFontRenderer();
-	delete context->GetShaderProgram();
 	delete context;
 	DeleteDefaultTexture();
 }

@@ -92,7 +92,7 @@ inline const bool GameObject::IsExtended() const noexcept
 	return m_Extended;
 }
 
-inline void GameObject::SetMesh(uint32 mesh) noexcept
+inline void GameObject::SetMesh(int32 mesh) noexcept
 {
 	m_pMesh = ResourceHandler::GetMesh(mesh);
 }

@@ -92,40 +92,35 @@
         "tileIdX": 0,
         "tileIdY": 1,
         "tileIdZ": 2,
-        "meshId": 1337,
-        "materialId": 69,
+        "gameObject": 0,
         "rotation": 0.0
       },
       {
         "tileIdX": 3,
         "tileIdY": 4,
         "tileIdZ": 5,
-        "meshId": 1337,
-        "materialId": 420,
+        "gameObject": 0,
         "rotation": 0.0
       },
       {
         "tileIdX": 6,
         "tileIdY": 7,
         "tileIdZ": 8,
-        "meshId": 1337,
-        "materialId": 5,
+        "gameObject": 0,
         "rotation": 0.0
       },
       {
         "tileIdX": 9,
         "tileIdY": 10,
         "tileIdZ": 11,
-        "meshId": 1337,
-        "materialId": 15,
+        "gameObject": 0,
         "rotation": 0.0
       },
       {
         "tileIdX": 12,
         "tileIdY": 13,
         "tileIdZ": 14,
-        "meshId": 1337,
-        "materialId": 8,
+        "gameObject": 0,
         "rotation": 0.0
       }
     ],

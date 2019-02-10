@@ -3186,128 +3186,112 @@
             "tileIdX": 7,
             "tileIdY": 0,
             "tileIdZ": 15,
-            "meshId": 7,
-            "materialId": 1,
+            "gameObject": 2,
             "rotation": 1.5707963705062867
         },
         {
             "tileIdX": 7,
             "tileIdY": 0,
             "tileIdZ": 17,
-            "meshId": 7,
-            "materialId": 1,
+            "gameObject": 2,
             "rotation": 1.5707963705062867
         },
         {
             "tileIdX": 7,
             "tileIdY": 0,
             "tileIdZ": 19,
-            "meshId": 7,
-            "materialId": 1,
+            "gameObject": 2,
             "rotation": 1.5707963705062867
         },
         {
             "tileIdX": 7,
             "tileIdY": 0,
             "tileIdZ": 21,
-            "meshId": 7,
-            "materialId": 1,
+            "gameObject": 2,
             "rotation": 1.5707963705062867
         },
         {
             "tileIdX": 7,
             "tileIdY": 0,
             "tileIdZ": 23,
-            "meshId": 7,
-            "materialId": 1,
+            "gameObject": 2,
             "rotation": 1.5707963705062867
         },
         {
             "tileIdX": 3,
             "tileIdY": 0,
             "tileIdZ": 15,
-            "meshId": 8,
-            "materialId": 1,
+            "gameObject": 1,
             "rotation": 3.1415927410125734
         },
         {
             "tileIdX": 3,
             "tileIdY": 0,
             "tileIdZ": 24,
-            "meshId": 9,
-            "materialId": 1,
+            "gameObject": 3,
             "rotation": 21.99114990234375
         },
         {
             "tileIdX": 3,
             "tileIdY": 0,
             "tileIdZ": 23,
-            "meshId": 9,
-            "materialId": 1,
+            "gameObject": 3,
             "rotation": 3.1415927410125734
         },
         {
             "tileIdX": 3,
             "tileIdY": 0,
             "tileIdZ": 22,
-            "meshId": 10,
-            "materialId": 1,
+            "gameObject": 4,
             "rotation": 3.1415927410125734
         },
         {
             "tileIdX": 7,
             "tileIdY": 0,
             "tileIdZ": 29,
-            "meshId": 7,
-            "materialId": 1,
+            "gameObject": 2,
             "rotation": 0.0
         },
         {
             "tileIdX": 8,
             "tileIdY": 4,
             "tileIdZ": 17,
-            "meshId": 9,
-            "materialId": 1,
+            "gameObject": 3,
             "rotation": 10.995573997497559
         },
         {
             "tileIdX": 7,
             "tileIdY": 4,
             "tileIdZ": 17,
-            "meshId": 9,
-            "materialId": 1,
+            "gameObject": 3,
             "rotation": 4.71238899230957
         },
         {
             "tileIdX": 6,
             "tileIdY": 4,
             "tileIdZ": 17,
-            "meshId": 10,
-            "materialId": 1,
+            "gameObject": 4,
             "rotation": 4.71238899230957
         },
         {
             "tileIdX": 5,
             "tileIdY": 4,
             "tileIdZ": 17,
-            "meshId": 9,
-            "materialId": 1,
+            "gameObject": 3,
             "rotation": 4.71238899230957
         },
         {
             "tileIdX": 4,
             "tileIdY": 4,
             "tileIdZ": 17,
-            "meshId": 10,
-            "materialId": 1,
+            "gameObject": 4,
             "rotation": 4.71238899230957
         },
         {
             "tileIdX": 7,
             "tileIdY": 4,
             "tileIdZ": 16,
-            "meshId": 7,
-            "materialId": 1,
+            "gameObject": 2,
             "rotation": 0.0
         }
     ],

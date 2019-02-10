@@ -192,6 +192,12 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddGameObject(pGameObject);
 	}
 
+	uint32 wallMaterials[] = {
+		MATERIAL::BLUE,
+		MATERIAL::RED,
+		MATERIAL::GREEN
+	};
+
 	// Generate walls
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
 	{
@@ -202,7 +208,7 @@ void Game::OnResourcesLoaded()
 		{
 			wall = m_pWorld->GetLevel(level)->GetWall(i);
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::GREEN);
+			pGameObject->SetMaterial(wallMaterials[level/2]);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));

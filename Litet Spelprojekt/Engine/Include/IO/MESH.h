@@ -1,12 +1,6 @@
 #pragma once
 #include <EnginePch.h>
 
-struct MESH_DESC
-{
-	uint32 mesh;
-	std::string name;
-};
-
 class API MESH
 {
 public:
@@ -21,6 +15,7 @@ public:
 	static uint32 BED_BUNK;
 	static uint32 INSTRUMENT_1;
 	static uint32 INSTRUMENT_2;
+	static uint32 LAMP;
 
 public:
 	static void RegisterResources();

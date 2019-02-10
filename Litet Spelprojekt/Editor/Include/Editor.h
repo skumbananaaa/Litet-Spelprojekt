@@ -78,13 +78,13 @@ public:
 
 	void CreateWalls();
 	WorldLevel** CreateWorldLevels(std::vector<glm::ivec3>& stairs);
-	void CreateMesh(GameObject* pGameObject);
+	void CreateMesh(GameObject* pGameObject, const std::string& name, int32 index = 0, int32 total = 0);
 	void ClearLevels();
 	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;
 
 	uint32 GetCurrentBoatLevel();
 	Scene* GetCurrentScene();
-	std::vector<GameObject*>& GetCurrentMeshes();
+	void GetGameObjects(std::vector<GameObject*>& list, int32 level = -1);
 
 	glm::vec3 GetDirectionBasedOnCamera(Direction direction);
 
@@ -113,7 +113,6 @@ private:
 
 	Grid** m_ppGrids;
 
-	std::vector<GameObject*> m_Meshes[NUM_BOAT_LEVELS];
 	std::vector<GameObject*> m_Walls[NUM_BOAT_LEVELS];
 
 	Button* m_pButtonSave;

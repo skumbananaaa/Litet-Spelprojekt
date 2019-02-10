@@ -13,18 +13,20 @@ uint32 MESH::BED_BUNK = 0;
 uint32 MESH::BED_SINGLE = 0;
 uint32 MESH::INSTRUMENT_1 = 0;
 uint32 MESH::INSTRUMENT_2 = 0;
+uint32 MESH::LAMP = 0;
 
 void MESH::RegisterResources()
 {
-	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad(), false);
-	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube(), false);
-	SHIP					= ResourceHandler::RegisterMesh("ship1.obj", false);
-	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj", false);
-	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj", false);
-	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj", false);
+	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
+	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
+	SHIP					= ResourceHandler::RegisterMesh("ship1.obj");
+	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj");
+	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj");
+	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj");
 	CHAIR					= ResourceHandler::RegisterMesh("Chair.obj");
 	BED_BUNK				= ResourceHandler::RegisterMesh("BunkBed.obj");
-	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed.obj");
+	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed1.obj");
 	INSTRUMENT_1			= ResourceHandler::RegisterMesh("Instrument1.obj");
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
+	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
 }

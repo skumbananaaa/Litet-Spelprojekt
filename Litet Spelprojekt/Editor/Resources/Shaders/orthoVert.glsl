@@ -17,6 +17,8 @@ layout(std140, binding = 0) uniform VSPerFrame
 {
 	mat4 g_ViewProjection;
 	vec3 g_CameraPosition;
+	float vafan;
+	vec3 g_CameraFront;
 };
 
 layout(std140, binding = 1) uniform PerObject

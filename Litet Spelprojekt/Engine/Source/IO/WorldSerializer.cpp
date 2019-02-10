@@ -47,8 +47,7 @@ World* WorldSerializer::Read(const char* const path)
 		worldObjects[objectId].TileId.x = objects[objectId]["tileIdX"].GetUint();
 		worldObjects[objectId].TileId.y = objects[objectId]["tileIdY"].GetUint();
 		worldObjects[objectId].TileId.z = objects[objectId]["tileIdZ"].GetUint();
-		worldObjects[objectId].MeshId = objects[objectId]["meshId"].GetUint();
-		worldObjects[objectId].MaterialId = objects[objectId]["materialId"].GetUint();
+		worldObjects[objectId].GameObject = objects[objectId]["gameObject"].GetInt();
 		worldObjects[objectId].Rotation = objects[objectId]["rotation"].GetFloat();
 	}
 
@@ -116,10 +115,8 @@ void WorldSerializer::Write(const char* const path, const World& world)
 		writer.Uint(currentObject.TileId.y);
 		writer.String("tileIdZ");
 		writer.Uint(currentObject.TileId.z);
-		writer.String("meshId");
-		writer.Uint(currentObject.MeshId);
-		writer.String("materialId");
-		writer.Uint(currentObject.MaterialId);
+		writer.String("gameObject");
+		writer.Int(currentObject.GameObject);
 		writer.String("rotation");
 		writer.Double(currentObject.Rotation);
 		writer.EndObject();

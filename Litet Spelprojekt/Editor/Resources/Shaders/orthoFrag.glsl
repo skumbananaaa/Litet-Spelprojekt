@@ -11,6 +11,14 @@ in VS_OUT
 layout(binding = 0) uniform sampler2D g_Texture;
 layout(binding = 1) uniform sampler2D g_NormalMap;
 
+layout(std140, binding = 0) uniform VSPerFrame
+{
+	mat4 g_ViewProjection;
+	vec3 g_CameraPosition;
+	float vafan;
+	vec3 g_CameraFront;
+};
+
 layout(std140, binding = 1) uniform PerObject
 {
 	mat4 g_Model;
@@ -39,7 +47,7 @@ void main()
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasTexture);
 	vec3 c = uniformColor + mappedColor;
 
-	vec3 lightDir = normalize(vec3(1.0, 1.0, 0.0));
+	vec3 lightDir = -normalize(g_CameraFront);
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	g_OutColor = vec4(CalcLight(lightDir, lightColor, fs_in.Normal, c, 1.0f), 1.0);
+	g_OutColor = vec4(CalcLight(lightDir, lightColor, fs_in.Normal, c, 1.0f), 0.4);
 }

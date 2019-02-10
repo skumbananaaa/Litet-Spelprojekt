@@ -28,6 +28,13 @@ class API IndexedMesh
 	friend class ResourceHandler;
 
 public:
+	void SetInstances(const InstanceData* const pInstances, uint32 numInstances) const noexcept;
+
+	uint32 GetIndexCount() const noexcept;
+	uint32 GetVertexCount() const noexcept;
+	uint32 GetInstanceCount() const noexcept;
+
+private:
 	IndexedMesh(IndexedMesh&& other) = delete;
 	IndexedMesh(const IndexedMesh& other) = delete;
 	IndexedMesh& operator=(IndexedMesh&& other) = delete;
@@ -36,13 +43,6 @@ public:
 	IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
 	~IndexedMesh();
 
-	void SetInstances(const InstanceData* const pInstances, uint32 numInstances) const noexcept;
-
-	uint32 GetIndexCount() const noexcept;
-	uint32 GetVertexCount() const noexcept;
-	uint32 GetInstanceCount() const noexcept;
-
-private:
 	uint32 m_VAO;
 	uint32 m_VBO;
 	uint32 m_IBO;

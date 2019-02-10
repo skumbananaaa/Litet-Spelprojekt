@@ -9,7 +9,8 @@ GameObject::GameObject() noexcept
 	m_Rotation(1.0f, 0.0f, 0.0f, 0.0f),
 	m_Scale(1.0f),
 	m_IsDirty(true),
-	m_IsReflectable(false)
+	m_IsReflectable(false),
+	m_TypeId(-1)
 {
 	UpdateTransform();
 }

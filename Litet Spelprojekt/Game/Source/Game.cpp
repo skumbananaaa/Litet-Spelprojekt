@@ -21,10 +21,8 @@ Game::Game() noexcept :
 	m_pScene(nullptr),
 	m_pSkyBoxTex(nullptr),
 	m_pWorld(nullptr),
-	m_pSoundEffect(nullptr),
 	m_pTextViewFPS(nullptr),
 	m_pTextViewUPS(nullptr),
-	m_pMusic(nullptr),
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(true)
 {
@@ -64,13 +62,10 @@ Game::Game() noexcept :
 	GetGUIManager().Add(m_pTextViewCrew);
 
 	//Audio
-	//m_pSoundEffect = new SoundEffect("Resources/Audio/Stereo/Seagulls.wav");
-	m_pSoundEffect = new SoundEffect("Resources/Audio/Mono/fart.wav");
-	m_pMusic = new Music("Resources/Audio/Music/WavesAndSeagulls.ogg");
-	m_pTestAudioSource = new AudioSource(*m_pMusic);
+	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
-	//m_pTestAudioSource->Play();
+	m_pTestAudioSource->Play();
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 }
@@ -87,9 +82,6 @@ Game::~Game()
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
 	DeleteSafe(m_pTextViewCrew);
-	
-	DeleteSafe(m_pSoundEffect);
-	DeleteSafe(m_pMusic);
 	
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
@@ -168,6 +160,19 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddGameObject(pGameObject);
 	}
 
+	//test objects
+	pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_SINGLE);
+	pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
+	pGameObject->SetScale(glm::vec3(1.0f));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+
+	pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_BUNK);
+	pGameObject->SetPosition(glm::vec3(-5.0f, 4.0f, -10.0f));
+	pGameObject->SetScale(glm::vec3(1.0f));
+	pGameObject->UpdateTransform();
+	m_pScene->AddGameObject(pGameObject);
+	
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -178,13 +183,11 @@ void Game::OnResourcesLoaded()
 		int32 width = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeX();
 		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
-		GameObject* pGameObject = new GameObject();
+		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 		glm::vec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;
 		pGameObject->SetPosition(pos);
-		pGameObject->SetMesh(worldObject.MeshId);
-		pGameObject->SetMaterial(worldObject.MaterialId);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		m_pScene->AddGameObject(pGameObject);
 	}

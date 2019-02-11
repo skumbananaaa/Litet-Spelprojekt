@@ -20,11 +20,11 @@ void MESH::RegisterResources()
 {
 	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
 	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
+	CUBE_INV_NORMALS		= ResourceHandler::RegisterMesh(IndexedMesh::CreateCubeInvNormals());
 	SHIP					= ResourceHandler::RegisterMesh("ship1.obj");
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj");
 	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj");
 	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj");
-	CUBE_INV_NORMALS		= ResourceHandler::RegisterMesh(IndexedMesh::CreateCubeInvNormals());
 	CHAIR					= ResourceHandler::RegisterMesh("Chair.obj");
 	BED_BUNK				= ResourceHandler::RegisterMesh("BunkBed.obj");
 	BED_SINGLE				= ResourceHandler::RegisterMesh("SingleBed1.obj");

@@ -49,6 +49,6 @@ void MATERIAL::RegisterResources()
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, pProgram);
 	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1);
 	WATER				= ResourceHandler::RegisterWaterMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
-	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED);
-	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED);
+	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, pProgram);
+	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, pProgram);
 }

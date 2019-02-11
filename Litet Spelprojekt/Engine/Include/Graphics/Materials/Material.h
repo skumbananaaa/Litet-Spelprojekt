@@ -16,6 +16,9 @@ class API Material
 	friend class ResourceHandler;
 
 public:
+	Material();
+	Material(ShaderProgram* pProgram);
+	~Material();
 
 	virtual void Bind(const Framebuffer* pGBuffer) const noexcept;
 	virtual void Unbind() const noexcept;
@@ -43,10 +46,6 @@ protected:
 	void SetProgram(ShaderProgram* pProgram) noexcept;
 
 private:
-	Material();
-	Material(ShaderProgram* pProgram);
-	~Material();
-	
 	void SetDiffuseMap(const Texture2D* const pTexture) noexcept;
 	void SetNormalMap(const Texture2D* const pNormalMap) noexcept;
 	void SetSpecularMap(const Texture2D* const pNormalMap) noexcept;

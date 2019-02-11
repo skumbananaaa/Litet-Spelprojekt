@@ -1,6 +1,7 @@
 #include <EnginePch.h>
 #include <IO/MESH.h>
 #include <IO/ResourceHandler.h>
+#include <Graphics/Geometry/IndexedMesh.h>
 
 uint32 MESH::QUAD = 0;
 uint32 MESH::SHIP = 0;

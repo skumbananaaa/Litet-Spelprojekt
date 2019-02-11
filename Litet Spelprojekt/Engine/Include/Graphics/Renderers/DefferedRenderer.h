@@ -144,15 +144,15 @@ private:
 	Texture2D* m_pWaterNormalMap;
 	Texture2D* m_pWaterDistortionMap;
 	
-	ShaderProgram* m_pCbrBlurProgram;
-	ShaderProgram* m_pCbrReconstructionProgram;
-	ShaderProgram* m_pCbrResolveProgram;
+	const ShaderProgram* m_pCbrBlurProgram;
+	const ShaderProgram* m_pCbrReconstructionProgram;
+	const ShaderProgram* m_pCbrResolveProgram;
 	ShaderProgram* m_pGeometryPassProgram;
-	ShaderProgram* m_pDecalsPassProgram;
-	ShaderProgram* m_pForwardPass;
-	ShaderProgram* m_pWaterpassProgram;
-	ShaderProgram* m_pDepthPrePassProgram;
-	ShaderProgram* m_pSkyBoxPassProgram;
+	const ShaderProgram* m_pDecalsPassProgram;
+	const ShaderProgram* m_pForwardPass;
+	const ShaderProgram* m_pWaterpassProgram;
+	const ShaderProgram* m_pDepthPrePassProgram;
+	const ShaderProgram* m_pSkyBoxPassProgram;
 
 	glm::vec4 m_ClipDistances[NUM_CLIP_DISTANCES];
 	

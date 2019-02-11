@@ -11,10 +11,9 @@ _declspec(align(16)) struct DissolveBuffer
 
 class API WallMaterial : public Material
 {
-public:
-	WallMaterial();
-	~WallMaterial();
+	friend class ResourceHandler;
 
+public:
 	virtual void Bind(const Framebuffer* pGBuffer) const noexcept override;
 	virtual void Unbind() const noexcept override;
 
@@ -22,6 +21,9 @@ public:
 	void SetClipPlane(const glm::vec4& plane, uint32 index) const noexcept;
 
 private:
+	WallMaterial();
+	~WallMaterial();
+
 	UniformBuffer* m_pDissolveBuffer;
 	mutable DissolveBuffer m_Buffer;
 };

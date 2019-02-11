@@ -1,13 +1,9 @@
 #pragma once
 #include <EnginePch.h>
-#include <Graphics/Geometry/IndexedMesh.h>
-#include <Graphics/Materials/Material.h>
-#include <Graphics/Materials/WaterMaterial.h>
-#include <Graphics/Materials/WallMaterial.h>
-#include <Graphics/Materials/Decal.h>
 #include <IO/IResourceListener.h>
-
 #include <System/ThreadHandler.h>
+#include <Graphics/Shaders/Shader.h>
+#include <Graphics/Textures/Texture2D.h>
 
 #include <IO/MESH.h>
 #include <IO/TEXTURE.h>
@@ -18,10 +14,17 @@
 #include <IO/MUSIC.h>
 #include <IO/SHADER.h>
 
+
+class Material;
+class WaterMaterial;
+class WallMaterial;
+class Decal;
+class IndexedMesh;
 class GameObject;
 class SoundEffect;
 class Music;
 class ShaderProgram;
+
 
 class API ResourceHandler : public IRunnable
 {
@@ -31,15 +34,15 @@ public:
 	static uint32 RegisterMesh(const std::string& filename);
 	static uint32 RegisterMesh(IndexedMesh* mesh);
 	static uint32 RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
-	static uint32 RegisterMaterial(int32 texture, int32 normalMap = -1, ShaderProgram* pProgram = nullptr);
-	static uint32 RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap = -1, ShaderProgram* pProgram = nullptr);
+	static uint32 RegisterMaterial(int32 texture, int32 normalMap = -1, int32 shader = -1);
+	static uint32 RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap = -1, int32 shader = -1);
 	static uint32 RegisterWaterMaterial(int32 distorionMap, int32 normalMap);
 	static uint32 RegisterWallMaterial(const glm::vec4& color, float specular, int32 normalMap = -1);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
 	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);
 	static uint32 RegisterMusic(const std::string filename);
-	static uint32 RegisterShader(const std::string vertex, const std::string pixel);
+	static uint32 RegisterShader(const std::string vertex, const std::string pixel = "", const ShaderDefines& defines = ShaderDefines());
 
 	static IndexedMesh* GetMesh(int32 mesh);
 	static int32 GetMesh(const IndexedMesh* mesh);
@@ -102,6 +105,7 @@ private:
 	{
 		std::string vertex = "";
 		std::string pixel = "";
+		std::string defines = "";
 	};
 
 	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];

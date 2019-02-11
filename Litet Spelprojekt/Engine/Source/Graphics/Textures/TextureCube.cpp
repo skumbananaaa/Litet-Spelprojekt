@@ -106,20 +106,12 @@ void TextureCube::Create(const char* const paths[6], TEX_FORMAT format, const Te
 	}
 }
 
-void TextureCube::CreateFromPanorama(const Texture2D * tex)
+void TextureCube::CreateFromPanorama(const Texture2D* tex)
 {
 	m_Width = tex->GetWidth();
 	m_Height = m_Width;
 
 	m_Format = tex->GetFormat();
-
-	Shader vShader;
-	Shader fShader;
-
-	vShader.CompileFromFile("Resources/Shaders/VShaderEquirecToCubemap.glsl",ShaderType::VERTEX_SHADER);
-	fShader.CompileFromFile("Resources/Shaders/FShaderEquirecToCubemap.glsl",ShaderType::FRAGMENT_SHADER);
-
-	ShaderProgram program(vShader,fShader);
 
 	uint32 captureFBO, captureRBO;
 	glGenFramebuffers(1, &captureFBO);
@@ -156,7 +148,7 @@ void TextureCube::CreateFromPanorama(const Texture2D * tex)
 
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
-	context.SetProgram(&program);
+	context.SetProgram(ResourceHandler::GetShader(SHADER::EQUIREC_TO_CUBEMAP));
 	PanoramaBuff buff = {};
 	buff.projection = captureProjection;
 	buff.view = captureViews[0];
@@ -189,14 +181,6 @@ TextureCube* TextureCube::CreateTextureFromPanorama(const Texture2D * tex)
 	res->m_Width = tex->GetWidth();
 	res->m_Height = tex->GetHeight();
 	res->m_Format = tex->GetFormat();
-
-	Shader vShader;
-	Shader fShader;
-
-	vShader.CompileFromFile("Resources/Shaders/VShaderEquirecToCubemap.glsl", ShaderType::VERTEX_SHADER);
-	fShader.CompileFromFile("Resources/Shaders/FShaderEquirecToCubemap.glsl", ShaderType::FRAGMENT_SHADER);
-
-	ShaderProgram program(vShader, fShader);
 
 	uint32 captureFBO, captureRBO;
 	GL_CALL(glGenFramebuffers(1, &captureFBO));
@@ -240,7 +224,7 @@ TextureCube* TextureCube::CreateTextureFromPanorama(const Texture2D * tex)
 
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
-	context.SetProgram(&program);
+	context.SetProgram(ResourceHandler::GetShader(SHADER::EQUIREC_TO_CUBEMAP));
 	PanoramaBuff buff = {};
 	buff.projection = captureProjection;
 	buff.view = captureViews[0];

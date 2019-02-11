@@ -8,11 +8,12 @@ Material::Material()
 {
 }
 
-Material::Material(ShaderProgram* pProgram)
-	: m_pProgram(pProgram),
+Material::Material(int32 shader)
+	: m_pProgram(nullptr),
 	m_Data(),
 	m_PipelineState()
 {
+	SetProgram(shader);
 }
 
 Material::~Material()

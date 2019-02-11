@@ -21,6 +21,9 @@
 #include "..\Include\Path.h"
 #include <Graphics/GUI/ProgressBar.h>
 
+#include <Graphics/Materials/WallMaterial.h>
+#include <Graphics/Materials/WaterMaterial.h>
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>

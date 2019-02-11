@@ -23,20 +23,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\FShader.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\VShader.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\FShaderFont.glsl" />
-    <None Include="Resources\Shaders\VShaderFont.glsl" />
-    <None Include="Resources\Shaders\VShaderGUI.glsl" />
-    <None Include="Resources\Shaders\FShaderGUI.glsl" />
-    <None Include="Resources\Shaders\orthoVert.glsl" />
-    <None Include="Resources\Shaders\orthoFrag.glsl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Include\Editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>

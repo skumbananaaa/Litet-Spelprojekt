@@ -10,10 +10,9 @@ _declspec(align(16)) struct WaterBuffer
 
 class API WaterMaterial : public Material
 {
-public:
-	WaterMaterial();
-	~WaterMaterial();
+	friend class ResourceHandler;
 
+public:
 	void Bind(const Framebuffer* pGBuffer) const noexcept override;
 	void Unbind() const noexcept override;
 
@@ -22,6 +21,9 @@ public:
 	void SetDistortionFactor(float distortionFactor) const;
 
 private:
+	WaterMaterial();
+	~WaterMaterial();
+
 	Texture2D* m_pDistortion;
 	Texture2D* m_pDepthMap;
 	mutable UniformBuffer* m_pWaterBuffer;

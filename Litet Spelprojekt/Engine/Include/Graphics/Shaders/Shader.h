@@ -57,7 +57,6 @@ public:
 
 private:
 	Shader(const std::string& shaderCode, ShaderType type) noexcept;
-	Shader() noexcept;
 	~Shader();
 
 	uint32 m_Shader;

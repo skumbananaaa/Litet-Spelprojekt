@@ -1,6 +1,7 @@
 #include <EnginePch.h>
 #include <IO/TEXTURE.h>
 #include <IO/ResourceHandler.h>
+#include <Graphics/Textures/Texture2D.h>
 
 uint32 TEXTURE::BLOOD = 0;
 uint32 TEXTURE::BLOOD_NORMAL = 0;

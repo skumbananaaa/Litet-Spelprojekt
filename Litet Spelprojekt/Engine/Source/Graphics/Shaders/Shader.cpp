@@ -1,12 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics\Shaders\Shader.h>
 
-Shader::Shader() noexcept 
-	: m_Shader(0), m_Type(ShaderType::UNDEFINED)
-{
-
-}
-
 Shader::Shader(const std::string& shaderCode, ShaderType type) noexcept 
 	: m_Shader(0),
 	m_Type(type),

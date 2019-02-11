@@ -15,7 +15,6 @@ OrthographicRenderer::~OrthographicRenderer()
 {
 	DeleteSafe(m_pOrthoPerFrame);
 	DeleteSafe(m_pOrthoPerObject);
-	DeleteSafe(m_pOrthographicProgram);
 }
 
 void OrthographicRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
@@ -104,22 +103,5 @@ void OrthographicRenderer::Create() noexcept
 		m_pOrthoPerObject = new UniformBuffer(&object, 1, sizeof(OrthoPerObject));
 	}
 
-	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/orthoVert.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created Ortho Vertex shader" << std::endl;
-		}
-
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/orthoFrag.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created Ortho Fragment shader" << std::endl;
-		}
-
-		m_pOrthographicProgram = new ShaderProgram(*pVert, *pFrag);
-
-		delete pVert;
-		delete pFrag;
-	}
+	m_pOrthographicProgram = ResourceHandler::GetShader(SHADER::ORTHOGRAPHIC);
 }

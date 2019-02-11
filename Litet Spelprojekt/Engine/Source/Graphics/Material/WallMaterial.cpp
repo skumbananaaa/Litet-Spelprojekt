@@ -1,17 +1,9 @@
 #include <EnginePch.h>
 #include <Graphics/Materials/WallMaterial.h>
 
-WallMaterial::WallMaterial()
-	: m_pDissolveBuffer(nullptr)
+WallMaterial::WallMaterial() : Material(SHADER::DEFERRED_WALL),
+	m_pDissolveBuffer(nullptr)
 {
-	Shader vs;
-	vs.CompileFromFile("Resources/Shaders/deferredWall.glsl", VERTEX_SHADER, defines);
-
-	Shader fs;
-	fs.CompileFromFile("Resources/Shaders/deferredWall.glsl", FRAGMENT_SHADER, defines);
-
-	SetProgram(new ShaderProgram(vs, fs));
-
 	m_Buffer.DissolveFactor = 0.0f;
 	m_pDissolveBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(DissolveBuffer));
 }

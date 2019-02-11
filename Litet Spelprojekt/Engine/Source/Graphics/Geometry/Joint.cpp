@@ -35,9 +35,14 @@ const glm::mat4& Joint::GetTransformMat() const noexcept
 	return m_Transform;
 }
 
-const glm::mat4 * Joint::GetLocalBindTransform() const noexcept
+const glm::mat4& Joint::GetLocalBindTransform() const noexcept
 {
 	return m_LocalBindTransform;
+}
+
+const uint32 & Joint::GetNrOfChildren() const noexcept
+{
+	return m_NrOfChildren;
 }
 
 void Joint::SetRotation(const glm::vec4& rotationVec)

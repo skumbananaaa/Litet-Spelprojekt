@@ -255,10 +255,10 @@ IndexedMesh* IndexedMesh::CreateQuad()
 {
 	Vertex* triangleVertices = new Vertex[4]
 	{
-		Vertex(glm::vec3(-1.0F,  1.0F,  0.0F), glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(0.0F, 1.0F)),
-		Vertex(glm::vec3(1.0F,  1.0F,  0.0F),  glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(1.0F, 1.0F)),
-		Vertex(glm::vec3(1.0F, -1.0F,  0.0F),  glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(1.0F, 0.0F)),
-		Vertex(glm::vec3(-1.0F, -1.0F,  0.0F), glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(0.0F, 0.0F))
+		Vertex(glm::vec3(-0.5F,  0.5F,  0.0F), glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(0.0F, 1.0F)),
+		Vertex(glm::vec3(0.5F,  0.5F,  0.0F),  glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(1.0F, 1.0F)),
+		Vertex(glm::vec3(0.5F, -0.5F,  0.0F),  glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(1.0F, 0.0F)),
+		Vertex(glm::vec3(-0.5F, -0.5F,  0.0F), glm::vec3(0.0F,  0.0F,  1.0F), glm::vec3(1.0F,  0.0F,  0.0F), glm::vec2(0.0F, 0.0F))
 	};
 
 	uint32* triangleIndices = new uint32[6]

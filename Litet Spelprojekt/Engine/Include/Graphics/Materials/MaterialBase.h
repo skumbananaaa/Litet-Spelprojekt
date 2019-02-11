@@ -33,6 +33,8 @@ struct CameraBuffer
 	glm::mat4 Projection;
 	glm::mat4 InverseView;
 	glm::mat4 InverseProjection;
+	glm::vec3 CameraLookAt;
+	float pad1;
 	glm::vec3 CameraPosition;
 };
 
@@ -46,6 +48,7 @@ struct LightBuffer
 struct MaterialBuffer
 {
 	glm::vec4 Color;
+	glm::vec4 ClipPlane;
 	float Specular;
 	float HasDiffuseMap;
 	float HasNormalMap;

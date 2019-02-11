@@ -109,6 +109,20 @@ uint32 ResourceHandler::RegisterWaterMaterial(int32 distorionMap, int32 normalMa
 	return m_NrOfMaterials++;
 }
 
+uint32 ResourceHandler::RegisterWallMaterial(const glm::vec4& color, float specular, int32 normalMap)
+{
+	std::cout << "Creating Wall Material" << std::endl;
+	Material* material = new WallMaterial();
+	material->SetColor(color);
+	material->SetSpecular(specular);
+	if (normalMap >= 0)
+	{
+		material->SetNormalMap(GetTexture2D(normalMap));
+	}
+	m_pMaterials[m_NrOfMaterials] = material;
+	return m_NrOfMaterials++;
+}
+
 uint32 ResourceHandler::RegisterDecal(int32 texture, int32 normalMap)
 {
 	std::cout << "Creating Decal" << std::endl;

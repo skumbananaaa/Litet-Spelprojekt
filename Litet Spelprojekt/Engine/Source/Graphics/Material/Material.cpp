@@ -6,10 +6,6 @@ Material::Material()
 	m_Data(),
 	m_PipelineState()
 {
-	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
-	{
-		m_PipelineState.ClipPlanesEnabled[i] = false;
-	}
 }
 
 Material::Material(ShaderProgram* pProgram)
@@ -17,10 +13,6 @@ Material::Material(ShaderProgram* pProgram)
 	m_Data(),
 	m_PipelineState()
 {
-	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
-	{
-		m_PipelineState.ClipPlanesEnabled[i] = false;
-	}
 }
 
 Material::~Material()
@@ -32,6 +24,8 @@ void Material::Bind(const Framebuffer* pGBuffer) const noexcept
 	GLContext& context = GLContext::GetCurrentContext();
 
 	context.SetProgram(m_pProgram);
+
+	context.Enable(CLIP_DISTANCE0);
 
 	context.SetUniformBuffer(m_Data.pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_Data.pLightBuffer, LIGHT_BUFFER_BINDING_SLOT);
@@ -47,6 +41,8 @@ void Material::Unbind() const noexcept
 	GLContext& context = GLContext::GetCurrentContext();
 
 	context.SetProgram(nullptr);
+
+	context.Disable(CLIP_DISTANCE0);
 
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, LIGHT_BUFFER_BINDING_SLOT);

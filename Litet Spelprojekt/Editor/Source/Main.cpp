@@ -11,6 +11,5 @@ int main(int argc, char* argv[])
 	int res = pApp->Run();
 	delete pApp;
 
-	std::cin.get();
 	return res;
 }

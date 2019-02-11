@@ -75,6 +75,7 @@
     <None Include="Resources\Shaders\VShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\waterVert.glsl" />
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
+    <None Include="Resources\Shaders\deferredWall.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

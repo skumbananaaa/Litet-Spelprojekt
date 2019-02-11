@@ -194,8 +194,8 @@ void Editor::OnResourcesLoaded()
 	float currentV = 0.3f;
 	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
 	{
-		m_TileColors[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, currentS, currentV, 1.0f)));
-		m_TileTints[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, currentS, currentV * 0.5f, 1.0f)));
+		m_TileColors[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, currentS, currentV, 1.0f)), 256.0f);
+		m_TileTints[i] = ResourceHandler::RegisterMaterial(HSVA2RGBA(glm::vec4(currentH, currentS, currentV * 0.5f, 1.0f)), 256.0f);
 		currentH += hDelta;
 		sAccumulator += 1;
 		vAccumulator += 2;

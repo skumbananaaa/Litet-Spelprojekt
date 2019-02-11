@@ -22,27 +22,25 @@ public:
 
 	virtual void Bind(const Framebuffer* pGBuffer) const noexcept;
 	virtual void Unbind() const noexcept;
-	void SetDissolvePercentage(float percentage);
 
 	void SetLightBuffer(const UniformBuffer* pLightBuffer) const noexcept;
 	void SetCameraBuffer(const UniformBuffer* pCameraBuffer) const noexcept;
 	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
-	float GetDissolvePercentage() const;
 
 	void SetCullMode(CULL_MODE mode) noexcept;
-	void EnableClipPlane(bool enable, uint32 index) noexcept;
+	void SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept;
 
 	const Texture2D* GetNormalMap() const noexcept;
 	const Texture2D* GetDiffuseMap() const noexcept;
 	const Texture2D* GetSpecularMap() const noexcept;
 	const glm::vec4& GetColor() const noexcept;
+	const glm::vec4& GetLevelClipPlane() const noexcept;
 	float GetSpecular() const noexcept;
 	CULL_MODE GetCullMode() const noexcept;
 
 	bool HasDiffuseMap() const noexcept;
 	bool HasNormalMap() const noexcept;
 	bool HasSpecularMap() const noexcept;
-	bool ClipPlaneEnabled(uint32 index) const noexcept;
 
 protected:
 	void SetProgram(ShaderProgram* pProgram) noexcept;
@@ -67,13 +65,12 @@ private:
 		const Texture2D* pSpecularMap = nullptr;
 		glm::vec4 Color = glm::vec4(0.0f);
 		float Specular = 256.0f;
-		float DissolvePercentage = 0.0f;
 	} m_Data;
 
-	struct
+	mutable struct
 	{
+		glm::vec4 ClipPlane;
 		CULL_MODE CullMode = CULL_MODE_BACK;
-		bool ClipPlanesEnabled[NUM_CLIP_DISTANCES];
 	} m_PipelineState;
 };
 
@@ -90,12 +87,6 @@ inline bool Material::HasNormalMap() const noexcept
 inline bool Material::HasSpecularMap() const noexcept
 {
 	return m_Data.pSpecularMap != nullptr;
-}
-
-inline bool Material::ClipPlaneEnabled(uint32 index) const noexcept
-{
-	assert(index < NUM_CLIP_DISTANCES);
-	return m_PipelineState.ClipPlanesEnabled[index];
 }
 
 inline void Material::SetProgram(ShaderProgram* pProgram) noexcept
@@ -123,25 +114,14 @@ inline void Material::SetCullMode(CULL_MODE mode) noexcept
 	m_PipelineState.CullMode = mode;
 }
 
-inline float Material::GetDissolvePercentage() const
+inline void Material::SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept
 {
-	return m_Data.DissolvePercentage;
+	m_PipelineState.ClipPlane = clipPlane;
 }
 
 inline CULL_MODE Material::GetCullMode() const noexcept
 {
 	return m_PipelineState.CullMode;
-}
-
-inline void Material::EnableClipPlane(bool enable, uint32 index) noexcept
-{
-	assert(index < NUM_CLIP_DISTANCES);
-	m_PipelineState.ClipPlanesEnabled[index] = enable;
-}
-
-inline void Material::SetDissolvePercentage(float percentage)
-{
-	m_Data.DissolvePercentage = percentage;
 }
 
 inline const Texture2D* Material::GetDiffuseMap() const noexcept
@@ -177,4 +157,9 @@ inline float Material::GetSpecular() const noexcept
 inline const glm::vec4& Material::GetColor() const noexcept
 {
 	return m_Data.Color;
+}
+
+inline const glm::vec4& Material::GetLevelClipPlane() const noexcept
+{
+	return m_PipelineState.ClipPlane;
 }

@@ -49,7 +49,7 @@ Texture2D* PlanarReflector::GetReflectionTexture() const noexcept
 	return (Texture2D*)m_pFramebuffer->GetColorAttachment(0);
 }
 
-const glm::vec4& PlanarReflector::GetClipPlane() const noexcept
+const glm::vec4& PlanarReflector::GetLevelClipPlane() const noexcept
 {
 	return m_ClipPlane;
 }

@@ -44,6 +44,7 @@
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
+    <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
@@ -89,6 +90,7 @@
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />

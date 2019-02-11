@@ -15,14 +15,15 @@ struct GPassVSPerFrame
 	float Padding2;
 	glm::vec4 ClipDistances[NUM_CLIP_DISTANCES];
 };
-
-struct GeometryPassPerObject
-{
-	glm::vec4 Color;
-	float HasTexture;
-	float HasNormalMap;
-	float DissolvePercentage;
-};
+//
+//struct GeometryPassPerObject
+//{
+//	glm::vec4 Color;
+//	
+//	float HasTexture;
+//	float HasNormalMap;
+//	float DissolvePercentage;
+//};
 
 struct DecalPassPerFrame
 {
@@ -37,17 +38,17 @@ struct DecalPassPerObject
 	float HasNormalMap;
 };
 
-struct WaterPassPerFrame
-{
-	glm::mat4 CameraCombined;
-	glm::vec3 CameraPosition;
-	float DistortionMoveFactor;
-};
+//struct WaterPassPerFrame
+//{
+//	glm::mat4 CameraCombined;
+//	glm::vec3 CameraPosition;
+//	float DistortionMoveFactor;
+//};
 
-struct WaterPassPerObjectVS
-{
-	glm::mat4 Model;
-};
+//struct WaterPassPerObjectVS
+//{
+//	glm::mat4 Model;
+//};
 
 struct DrawableBatch
 {

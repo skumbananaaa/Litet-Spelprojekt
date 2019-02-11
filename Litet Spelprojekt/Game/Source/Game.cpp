@@ -161,23 +161,24 @@ void Game::OnResourcesLoaded()
 	pGameObject = new GameObject();
 	pGameObject->SetIsReflectable(true);
 	pGameObject->SetMesh(MESH::QUAD);
+	pGameObject->SetMaterial(MATERIAL::WATER);
 	pGameObject->SetScale(glm::vec3(200.0f));
 	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 	pGameObject->UpdateTransform();
 	m_pScene->AddGameObject(pGameObject);
 
+	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
+	m_pScene->AddPlanarReflector(pReflector);
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
+
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	//Enable clipplane for wallmaterial
-	ResourceHandler::GetMaterial(MATERIAL::BOAT)->EnableClipPlane(true, 2);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
-	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true, 0);
-	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->EnableClipPlane(true, 1);
-	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetDissolvePercentage(1.0f);
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
+	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetDissolveFactor(1.0f);
 
-	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->EnableClipPlane(true, 1);
 	SetClipPlanes();
 
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
@@ -281,12 +282,12 @@ void Game::OnResourcesLoaded()
 	pGameObject->UpdateTransform();
 	m_pScene2->AddGameObject(pGameObject);
 
-	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
+	pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	m_pScene2->AddPlanarReflector(pReflector);
 
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
+	//((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
 
-	m_pCurrentScene = m_pScene2;
+	m_pCurrentScene = m_pScene;
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -321,9 +322,9 @@ void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 		{
 			const float cameraRotationSensitivity = 0.005f;
 			glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
-			std::cout << glm::to_string(m_pScene->GetCamera().GetPosition()) << std::endl;
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
+
+			m_pCurrentScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
+			m_pCurrentScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
 		}
 		
 		if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
@@ -332,10 +333,11 @@ void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 			const float cameraMoveSensitivityY = 0.025f;
 			glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
 			glm::vec3 forward(0.0f);
-			forward.x = m_pScene->GetCamera().GetFront().x;
-			forward.z = m_pScene->GetCamera().GetFront().z;
-			m_pScene->GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
-			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
+			forward.x = m_pCurrentScene->GetCamera().GetFront().x;
+			forward.z = m_pCurrentScene->GetCamera().GetFront().z;
+			m_pCurrentScene->GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
+			m_pCurrentScene->GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
+
 		}
 	}
 }
@@ -365,18 +367,18 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 		{
 			if (offset.y > 0.0f)
 			{
-				m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
+				m_pCurrentScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
 			}
 			else
 			{
-				m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
+				m_pCurrentScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
 			}
 
 			SetClipPlanes();
 		}
 		{
 			const float cameraZoomSensitivity = 0.1f;
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+			m_pCurrentScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
 		}
 	}
 }
@@ -519,9 +521,9 @@ void Game::OnUpdate(float dtS)
 		else if (Input::IsKeyDown(KEY_Q))
 		{
 			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Down, polarCameraSpeed * dtS);
-		}
+		}*/
 
-		m_pScene->GetCamera().UpdateFromLookAt();*/
+		m_pCurrentScene->GetCamera().UpdateFromLookAt();
 	}
 
 	GameObject* pCameraLookAt = m_pCurrentScene->GetGameObject("cameraLookAt");
@@ -728,7 +730,12 @@ void Game::SetClipPlanes()
 	/*ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 1.8f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));*/
+	
 	float elevation = glm::clamp((glm::floor(m_pScene->GetCamera().GetLookAt().y / 2.0f)), 0.0f, 2.0f);
-	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
-	m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.80f + (elevation * 2.0f)), 2);
+	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetLevelClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)));
+	
+	
+	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
+	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 }

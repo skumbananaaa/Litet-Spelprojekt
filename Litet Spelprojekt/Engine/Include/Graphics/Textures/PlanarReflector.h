@@ -18,7 +18,7 @@ public:
 	
 	Framebuffer* GetFramebuffer() const noexcept;
 	Texture2D* GetReflectionTexture() const noexcept;
-	const glm::vec4& GetClipPlane() const noexcept;
+	const glm::vec4& GetLevelClipPlane() const noexcept;
 
 private:
 	void Create() noexcept;

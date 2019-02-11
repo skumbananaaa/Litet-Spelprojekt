@@ -498,15 +498,15 @@ void DefferedRenderer::Create() noexcept
 		m_pGeoPassPerFrame = new UniformBuffer(&object, 1, sizeof(GPassVSPerFrame));
 	}
 
-	{
-		GeometryPassPerObject object = {};
-		object.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-		object.HasNormalMap = 0.0f;
-		object.HasTexture = 0.0f;
-		object.DissolvePercentage = 0.0f;
+	//{
+	//	GeometryPassPerObject object = {};
+	//	object.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	//	object.HasNormalMap = 0.0f;
+	//	object.HasTexture = 0.0f;
+	//	object.DissolvePercentage = 0.0f;
 
-		m_pGeoPassPerObject = new UniformBuffer(&object, 1, sizeof(GeometryPassPerObject));
-	}
+	//	m_pGeoPassPerObject = new UniformBuffer(&object, 1, sizeof(GeometryPassPerObject));
+	//}
 
 	{
 		DecalPassPerFrame object = {};
@@ -525,21 +525,21 @@ void DefferedRenderer::Create() noexcept
 		m_pDecalPassPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassPerObject));
 	}
 
-	{
-		WaterPassPerFrame object = {};
-		object.CameraCombined = glm::mat4(1.0f);
-		object.CameraPosition = glm::vec3();
-		object.DistortionMoveFactor = 0.0f;
+	//{
+	//	WaterPassPerFrame object = {};
+	//	object.CameraCombined = glm::mat4(1.0f);
+	//	object.CameraPosition = glm::vec3();
+	//	object.DistortionMoveFactor = 0.0f;
 
-		m_pWaterPassPerFrame = new UniformBuffer(&object, 1, sizeof(WaterPassPerFrame));
-	}
+	//	m_pWaterPassPerFrame = new UniformBuffer(&object, 1, sizeof(WaterPassPerFrame));
+	//}
 
-	{
-		WaterPassPerObjectVS object = {};
-		object.Model = glm::mat4(1.0f);
+	//{
+	//	WaterPassPerObjectVS object = {};
+	//	object.Model = glm::mat4(1.0f);
 
-		m_pWaterPassPerObject = new UniformBuffer(&object, 1, sizeof(WaterPassPerObjectVS));
-	}
+	//	m_pWaterPassPerObject = new UniformBuffer(&object, 1, sizeof(WaterPassPerObjectVS));
+	//}
 
 	{
 		CameraBuffer buff = {};
@@ -658,6 +658,7 @@ void DefferedRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 		buff.Projection = camera.GetProjectionMatrix();
 		buff.InverseView = camera.GetInverseViewMatrix();
 		buff.InverseProjection = camera.GetInverseProjectionMatrix();
+		buff.CameraLookAt = camera.GetLookAt();
 		buff.CameraPosition = camera.GetPosition();
 
 		m_pCameraBuffer->UpdateData(&buff);
@@ -685,13 +686,13 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 
 	m_pGeoPassPerFrame->UpdateData(&perFrame);
 
-	GeometryPassPerObject perObject = {};
-	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
-	{
-		m_pGeoPassPerObject->UpdateData(&perObject);
+	//GeometryPassPerObject perObject = {};
+	//for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	//{
+	//	m_pGeoPassPerObject->UpdateData(&perObject);
 
-		context.DrawIndexedMesh(*scene.GetGameObjects()[i]->GetMesh());
-	}
+	//	context.DrawIndexedMesh(*scene.GetGameObjects()[i]->GetMesh());
+	//}
 
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
 	context.SetColorMask(1, 1, 1, 1);
@@ -853,18 +854,19 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 		const Material& material = *m_DrawableBatches[i].pMaterial;
 
 		perBatch.Color = material.GetColor();
+		perBatch.ClipPlane = material.GetLevelClipPlane();
 		perBatch.Specular = material.GetSpecular();
 		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
 		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
 		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
-		perBatch.DissolvePercentage = material.GetDissolvePercentage();
+		//perBatch.DissolvePercentage = material.GetDissolvePercentage();
 		m_pMaterialBuffer->UpdateData(&perBatch);
 
 		material.SetCameraBuffer(m_pCameraBuffer);
 		material.SetLightBuffer(m_pLightBuffer);
 		material.SetMaterialBuffer(m_pMaterialBuffer);
 		material.Bind(m_pGBufferCBR);
-
+		
 		/*for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
 		{
 			if (material.ClipPlaneEnabled(cP))
@@ -958,7 +960,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 			matBuffer.HasSpecularMap = 0.0f;
 		}
 		
-		for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
+		/*for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
 		{
 			if (material.ClipPlaneEnabled(cP))
 			{
@@ -967,7 +969,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 			}
 
 			context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
-		}
+		}*/
 		
 		m_pMaterialBuffer->UpdateData(&matBuffer);
 
@@ -1015,7 +1017,7 @@ void DefferedRenderer::ReflectionPass(const Scene& scene) const noexcept
 	{
 		const Framebuffer* pFramebuffer = reflectors[i]->GetFramebuffer();
 	
-		planeBuffer.ClipPlane = reflectors[i]->GetClipPlane();
+		planeBuffer.ClipPlane = reflectors[i]->GetLevelClipPlane();
 		m_pPlaneBuffer->UpdateData(&planeBuffer);
 
 		context.SetViewport(pFramebuffer->GetWidth(), pFramebuffer->GetHeight(), 0, 0);
@@ -1040,30 +1042,30 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	context.SetTexture(m_pWaterNormalMap, 2);
 	context.SetTexture(m_pGBufferCBR->GetDepthAttachment(), 3);
 
-	WaterPassPerFrame perFrame = {};
-	perFrame.CameraCombined = scene.GetCamera().GetCombinedMatrix();
-	perFrame.CameraPosition = scene.GetCamera().GetPosition();
-	
-	dist += 0.02f * dtS;
-	perFrame.DistortionMoveFactor = dist;
+	//WaterPassPerFrame perFrame = {};
+	//perFrame.CameraCombined = scene.GetCamera().GetCombinedMatrix();
+	//perFrame.CameraPosition = scene.GetCamera().GetPosition();
+	//
+	//dist += 0.02f * dtS;
+	//perFrame.DistortionMoveFactor = dist;
 
-	m_pWaterPassPerFrame->UpdateData(&perFrame);
+	//m_pWaterPassPerFrame->UpdateData(&perFrame);
 
-	context.SetUniformBuffer(m_pWaterPassPerObject, 0);
-	context.SetUniformBuffer(m_pWaterPassPerFrame, 1);
+	//context.SetUniformBuffer(m_pWaterPassPerObject, 0);
+	//context.SetUniformBuffer(m_pWaterPassPerFrame, 1);
 
-	WaterPassPerObjectVS perObject= {};
-	for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
-	{
-		GameObject& gameobject = *scene.GetGameObjects()[i];
-		if (!gameobject.HasMaterial() && gameobject.HasMesh())
-		{
-			perObject.Model = gameobject.GetTransform();
-			m_pWaterPassPerObject->UpdateData(&perObject);
+	//WaterPassPerObjectVS perObject= {};
+	//for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
+	//{
+	//	GameObject& gameobject = *scene.GetGameObjects()[i];
+	//	if (!gameobject.HasMaterial() && gameobject.HasMesh())
+	//	{
+	//		perObject.Model = gameobject.GetTransform();
+	//		m_pWaterPassPerObject->UpdateData(&perObject);
 
-			context.DrawIndexedMesh(*(gameobject.GetMesh()));
-		}
-	}
+	//		context.DrawIndexedMesh(*(gameobject.GetMesh()));
+	//	}
+	//}
 
 	//Unbind = no bugs
 	context.SetTexture(nullptr, 0);

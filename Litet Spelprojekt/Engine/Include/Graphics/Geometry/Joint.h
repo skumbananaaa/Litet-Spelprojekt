@@ -17,6 +17,8 @@ public:
 	const Joint * GetChild(uint32 index) const;
 
 
+	const uint32& GetNrOfChildren() const noexcept;
+
 	void SetRotation(const glm::vec4& rotationVec);
 	void SetPosition(const glm::vec3& dir);
 	void SetChild(uint32 index, const Joint * child) noexcept;
@@ -24,8 +26,8 @@ public:
 
 	static Joint* CreateFromJoint(const Joint * joint) noexcept;
 private:
-	Joint ** m_ppChildren;
 	uint32 m_NrOfChildren;
+	Joint ** m_ppChildren;
 
 	glm::mat4 m_Transform;
 	glm::mat4 m_LocalBindTransform;

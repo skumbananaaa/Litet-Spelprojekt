@@ -21,7 +21,7 @@ AnimatedMesh::AnimatedMesh(const AnimatedVertex* const vertices, const uint32* c
 	m_IndexCount = numIndices;
 	m_JointCount = jointCount;
 
-	rootJoint.calcInverseBindTransform(glm::mat4(1.0f));
+	//rootJoint.calcInverseBindTransform(glm::mat4(1.0f));
 
 	GL_CALL(glGenVertexArrays(1, &m_VAO));
 	GL_CALL(glGenBuffers(1, &m_VBO));
@@ -189,5 +189,6 @@ AnimatedMesh* AnimatedMesh::CreateAnimatedMeshFromFile(const char* pFilename)
 		indices.push_back(face.mIndices[2]);
 	}
 
-	return new AnimatedMesh(vertices.data(), indices.data(), static_cast<uint32>(vertices.size()), static_cast<uint32>(indices.size()));
+	return nullptr;
+	//return new AnimatedMesh(vertices.data(), indices.data(), static_cast<uint32>(vertices.size()), static_cast<uint32>(indices.size()));
 }

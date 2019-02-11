@@ -57,7 +57,7 @@ private:
 	uint32 m_JointCount;
 
 	Joint* m_pRootJoint;
-	Animator* m_pAnimator;
+	//Animator* m_pAnimator;
 
 
 

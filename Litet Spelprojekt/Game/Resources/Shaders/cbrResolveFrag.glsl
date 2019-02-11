@@ -31,13 +31,13 @@ struct PointLight
 struct SpotLight
 {
 	vec4 Color;
-	vec4 Position;
-	vec3 TargetDirection;
+	vec3 Position;
 	float Angle;
+	vec3 TargetDirection;
 	float OuterAngle;
 };
 
-layout(binding = 0) uniform LightPassBuffer
+layout(std140, binding = 0) uniform LightPassBuffer
 {
 	mat4 g_InverseView;
 	mat4 g_InverseProjection;

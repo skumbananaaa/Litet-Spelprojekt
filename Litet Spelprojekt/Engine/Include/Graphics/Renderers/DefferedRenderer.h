@@ -54,9 +54,8 @@ __declspec(align(16)) struct SpotLightBuffer
 {
 	glm::vec4 Color = glm::vec4(0.0f);
 	glm::vec3 Position = glm::vec3(0.0f);
-	float pad1;
-	glm::vec3 Direction = glm::vec3(0.0f);
 	float CutOffAngle = 1.0f;
+	glm::vec3 Direction = glm::vec3(0.0f);
 	float OuterCutOffAngle = 1.0f;
 };
 

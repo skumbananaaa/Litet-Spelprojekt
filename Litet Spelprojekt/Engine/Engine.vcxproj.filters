@@ -59,6 +59,9 @@
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />
     <ClCompile Include="Source\IO\R_SOUND.cpp" />
     <ClCompile Include="Source\IO\R_MUSIC.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\ImportAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -130,5 +133,8 @@
     <ClInclude Include="Include\IO\GAMEOBJECT.h" />
     <ClInclude Include="Include\IO\MUSIC.h" />
     <ClInclude Include="Include\IO\SOUND.h" />
+    <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
+    <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
+    <ClInclude Include="Include\Graphics\Geometry\ImportAnimation.h" />
   </ItemGroup>
 </Project>

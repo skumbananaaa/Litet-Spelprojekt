@@ -169,9 +169,9 @@ uint32 ResourceHandler::RegisterMusic(const std::string filename)
 	return m_NrOfMusic++;
 }
 
-uint32 ResourceHandler::RegisterShader(const std::string vertex, const std::string pixel)
+uint32 ResourceHandler::RegisterShader(const std::string vertex, const std::string pixel, const ShaderDefines& defines)
 {
-	m_ShaderFiles[m_NrOfShaders] = { vertex, pixel };
+	m_ShaderFiles[m_NrOfShaders] = { vertex, pixel, ParseDefines(defines) };
 	return m_NrOfShaders++;
 }
 
@@ -356,8 +356,8 @@ void ResourceHandler::Load()
 		std::cout << "Loading Shader: " << desc.pixel << std::endl;
 		TriggerOnLoading(desc.vertex, currentFile++ / (float)nrOfFiles);
 
-		Shader* vertexShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.vertex).c_str(), VERTEX_SHADER);
-		Shader* pixelShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.pixel).c_str(), FRAGMENT_SHADER);
+		Shader* vertexShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.vertex).c_str(), VERTEX_SHADER, desc.defines);
+		Shader* pixelShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.pixel).c_str(), FRAGMENT_SHADER, desc.defines);
 
 		m_pShaders[i] = ShaderProgram::Create(vertexShader, pixelShader);
 	}

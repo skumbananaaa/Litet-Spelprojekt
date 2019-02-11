@@ -34,7 +34,7 @@ private:
 	void DrawDecals(const Scene& scene) const noexcept;
 
 private:
-	ShaderProgram* m_pDecalProgram;
+	const ShaderProgram* m_pDecalProgram;
 	
 	UniformBuffer* m_pPerFrame;
 	UniformBuffer* m_pPerObject;

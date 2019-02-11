@@ -8,6 +8,8 @@ class API SHADER
 public:
 	static uint32 GUI;
 	static uint32 FONT;
+	static uint32 DEBUG_DECALS;
+	static uint32 DEFERRED_WALL;
 
 private:
 	static void RegisterResourcesPreLoading();

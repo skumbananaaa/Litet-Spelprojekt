@@ -39,7 +39,7 @@ public:
 	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);
 	static uint32 RegisterMusic(const std::string filename);
-	static uint32 RegisterShader(const std::string vertex, const std::string pixel);
+	static uint32 RegisterShader(const std::string vertex, const std::string pixel, const ShaderDefines& defines = ShaderDefines());
 
 	static IndexedMesh* GetMesh(int32 mesh);
 	static int32 GetMesh(const IndexedMesh* mesh);
@@ -102,6 +102,7 @@ private:
 	{
 		std::string vertex = "";
 		std::string pixel = "";
+		std::string defines = "";
 	};
 
 	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];

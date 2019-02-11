@@ -32,6 +32,11 @@ void GameObject::SetIsReflectable(bool isReflectable) noexcept
 void GameObject::SetPosition(const glm::vec3& position) noexcept
 {
 	m_Position = position;
+	if (!m_Extending)
+	{
+		m_OriginalPos = position;
+		m_OriginalPos.x -= 5 * floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f * m_Extended;
+	}
 	m_IsDirty = true;
 }
 
@@ -45,6 +50,43 @@ void GameObject::SetScale(const glm::vec3& scale) noexcept
 {
 	m_Scale = scale;
 	m_IsDirty = true;
+}
+
+void GameObject::SetExtend(bool extend) noexcept
+{
+	if (extend)
+	{
+		m_Extending = true;
+		m_Extended = true;
+		m_ExtendPosX = m_OriginalPos.x + 5 * floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f;
+	}
+	else if (!extend)
+	{
+		m_Extending = true;
+		m_Extended = false;
+		m_ExtendPosX = m_OriginalPos.x;
+	}
+}
+
+void GameObject::Extend(float dtS) noexcept
+{
+	if (m_Extending)
+	{
+		if (std::abs(m_Position.x - m_ExtendPosX) > 0.01)
+		{
+			float move = m_ExtendPosX - m_Position.x;
+			float extensionSpeed = 20.0f;
+			move /= std::abs(move);
+			move *= floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f * extensionSpeed;
+			SetPosition(glm::vec3(m_Position.x + move * dtS, m_Position.y, m_Position.z));
+		}
+		else
+		{
+			m_Extending = false;
+			m_OriginalPos = m_Position;
+			m_OriginalPos.x -= 5 * floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f * m_Extended;
+		}
+	}
 }
 
 void GameObject::UpdateTransform() noexcept
@@ -64,6 +106,7 @@ void GameObject::UpdateTransform() noexcept
 
 void GameObject::Update(float deltaTime)
 {
+	Extend(deltaTime);
 	UpdateTransform();
 	//////
 }

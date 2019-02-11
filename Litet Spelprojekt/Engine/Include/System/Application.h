@@ -18,7 +18,7 @@ public:
 	Application& operator=(Application&& other) = delete;
 	Application& operator=(const Application& other) = delete;
 
-	Application(bool fullscreen = true, uint32 width = 1024, uint32 height = 768, const std::string& prePath = "");
+	Application(bool fullscreen = true, uint32 width = 1024, uint32 height = 768, const std::string& prePath = "", bool useMultiThreading = true);
 	virtual ~Application();
 
 	virtual void OnLoading(const std::string&, float percentage) override;
@@ -41,6 +41,7 @@ protected:
 	virtual void OnRender(float dtS) {};
 	virtual void OnRenderLoading(float dtS) {};
 	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
+	virtual void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) {};
 	virtual void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnKeyUp(KEY keycode) {};
@@ -123,6 +124,7 @@ inline void Application::InternalOnMouseScroll(const glm::vec2& offset, const gl
 {
 	if (m_ResourceMode == RESOURCE_MODE::DONE)
 	{
+	    OnMouseScroll(offset, position);
 		m_pGUIManager->InternalRootOnMouseScroll(position, offset);
 	}
 }

@@ -36,7 +36,14 @@ enum Capability : uint32
 	CLIP_DISTANCE7 = 0x3007,
 };
 
-enum PrimitiveTopology : unsigned int
+enum CULL_MODE : uint32
+{
+	CULL_MODE_NONE = 0,
+	CULL_MODE_FRONT = 0x0404,
+	CULL_MODE_BACK = 0x0405,
+};
+
+enum PrimitiveTopology : uint32
 {
 	PT_POINTS = 0x0000,
 	PT_LINES = 0x0001,
@@ -73,19 +80,17 @@ enum Func : uint32
 
 enum StencilOp : uint32
 {
-	KEEP = 0x1E00,
-	ZERO = 0,
-	REPLACE = 0x1E01,
-	INCR = 0x1E02,
-	INCR_WRAP = 0x8507,
-	DECR = 0x1E03,
-	DECR_WRAP = 0x8508,
-	INVERT = 0x150A,
+	STENCIL_OP_KEEP = 0x1E00,
+	STENCIL_OP_ZERO = 0,
+	STENCIL_OP_REPLACE = 0x1E01,
+	STENCIL_OP_INCR = 0x1E02,
+	STENCIL_OP_INCR_WRAP = 0x8507,
+	STENCIL_OP_DECR = 0x1E03,
+	STENCIL_OP_DECR_WRAP = 0x8508,
+	STENCIL_OP_INVERT = 0x150A,
 };
 
 typedef Capability Cap;
-
-
 class API GLContext
 {
 public:
@@ -100,6 +105,8 @@ public:
 	void Enable(Cap cap) const noexcept;
 	void Disable(Cap cap) const noexcept;
 	
+	void SetCullMode(CULL_MODE mode) const noexcept;
+
 	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept;
 	void SetViewport(const glm::vec4& viewport) noexcept;
 	const glm::vec4 GetViewPort() const noexcept;

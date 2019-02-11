@@ -6,6 +6,7 @@
 #include <Graphics/Lights/PointLight.h>
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/SkyBox.h>
+#include <Graphics/Textures/PlanarReflector.h>
 
 class API Scene
 {
@@ -22,14 +23,17 @@ public:
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
 	void AddPointLight(PointLight* pLight) noexcept;
 	void AddSpotLight(SpotLight* pLight) noexcept;
+	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
+	void ExtendScene(bool extend) noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
 	SkyBox& GetSkyBox() const noexcept;
 
 	const GameObject* GetGameObject(const std::string& name) const noexcept;
-
+	GameObject* GetGameObject(const std::string& name) noexcept;
+	const std::vector<PlanarReflector*>& GetPlanarReflectors() const noexcept;
 	std::vector<GameObject*>& GetGameObjects() noexcept;
 	const std::vector<GameObject*>& GetGameObjects() const noexcept;
 	const std::vector<GameObject*>& GetDrawables() const noexcept;
@@ -38,6 +42,7 @@ public:
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
+	const bool IsExtended() const noexcept;
 
 private:
 	Camera* m_pCamera;
@@ -47,10 +52,12 @@ private:
 	std::vector<GameObject*> m_Drawables;
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
+	std::vector<PlanarReflector*> m_PlanarReflectors;
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;
 	std::vector<SpotLight*> m_SpotLights;
 	SkyBox* m_pSkyBox;
+	bool m_Extended = false;
 };
 
 inline Camera& Scene::GetCamera() noexcept
@@ -108,4 +115,9 @@ inline const std::vector<PointLight*>& Scene::GetPointLights() const noexcept
 inline const std::vector<SpotLight*>& Scene::GetSpotLights() const noexcept
 {
 	return m_SpotLights;
+}
+
+inline const bool Scene::IsExtended() const noexcept
+{
+	return m_Extended;
 }

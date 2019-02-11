@@ -70,6 +70,7 @@ private:
 private:
 	static IndexedMesh* CreateIndexedMeshFromFile(const char* pFilename);
 	static IndexedMesh* CreateCube();
+	static IndexedMesh* CreateCubeInvNormals();
 	static IndexedMesh* CreateQuad();
 };
 

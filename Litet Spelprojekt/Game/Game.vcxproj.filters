@@ -50,7 +50,6 @@
     <None Include="Resources\Shaders\FShader.glsl" />
     <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
     <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
-    <None Include="Resources\Shaders\defferedLightningFrag.glsl" />
     <None Include="Resources\Shaders\FShaderWater.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />
     <None Include="Resources\Shaders\FShaderGUI.glsl" />
@@ -74,6 +73,9 @@
     </None>
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\VShaderEquirecToCubemap.glsl" />
+    <None Include="Resources\Shaders\waterVert.glsl" />
+    <None Include="Resources\Shaders\deferredMaterial.glsl" />
+    <None Include="Resources\Shaders\deferredWall.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -110,5 +112,6 @@
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="Resources\Shaders\waterFrag.glsl" />
   </ItemGroup>
 </Project>

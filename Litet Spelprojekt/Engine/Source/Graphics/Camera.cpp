@@ -29,7 +29,7 @@ Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& u
 	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 	m_WorldUp = upVector;
 	m_Pitch = asinf(m_Front.y);
-	m_Yaw = atan2(m_Front.x, m_Front.z) - glm::half_pi<float>();
+	m_Yaw = atan2(m_Front.x, m_Front.z) - 3.0f * glm::half_pi<float>();
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, m_WorldUp);
 
 	CalcInverses();
@@ -92,63 +92,60 @@ void Camera::CreatePerspective(float fovRad, float aspectWihe, float nearPlane, 
 	m_InverseIsDirty = true;
 }
 
-void Camera::MoveCartesian(CameraDirCartesian dir, float amount) noexcept
+void Camera::MoveWorldCoords(const glm::vec3& worldCoords, bool moveLookAt) noexcept
 {
 	m_IsDirty = true;
 	m_InverseIsDirty = true;
 
-	switch (dir)
+	m_Position += worldCoords;
+	
+	if (moveLookAt)
 	{
-	case CameraDirCartesian::Forward:
-		m_Position += m_Front * amount;
-		break;
-
-	case CameraDirCartesian::Backwards:
-		m_Position -= m_Front * amount;
-		break;
-
-	case CameraDirCartesian::Left:
-		m_Position -= glm::normalize(glm::cross(m_Front, m_WorldUp)) * amount;
-		break;
-
-	case CameraDirCartesian::Right:
-		m_Position += glm::normalize(glm::cross(m_Front, m_WorldUp)) * amount;
-		break;
-
-	case CameraDirCartesian::Up:
-		m_Position -= glm::normalize(glm::cross(m_Front, glm::cross(m_Front, m_WorldUp))) * amount;
-		break;
-
-	case CameraDirCartesian::Down:
-		m_Position += glm::normalize(glm::cross(m_Front, glm::cross(m_Front, m_WorldUp))) * amount;
-		break;
+		m_LookAt += worldCoords;
 	}
 }
 
-void Camera::MovePosPolar(CameraPosPolar dir, float amount) noexcept
+void Camera::MoveLocalCoords(const glm::vec3& localCoords, bool moveLookAt) noexcept
+{
+	m_IsDirty = true;
+	m_InverseIsDirty = true;
+
+	glm::vec3 worldCoords(0.0f);
+	glm::vec3 right = glm::normalize(glm::cross(m_Front, m_WorldUp));
+	glm::vec3 up = glm::normalize(glm::cross(m_Front, right));
+
+	worldCoords -= right * localCoords.x;
+	worldCoords -= up * localCoords.y;
+	worldCoords += m_Front * localCoords.z;
+
+	m_Position += worldCoords;
+
+	if (moveLookAt)
+	{
+		m_LookAt += worldCoords;
+	}
+}
+
+void Camera::MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept
 {
 	m_IsDirty = true;
 	m_InverseIsDirty = true;
 
 	switch (dir)
 	{
-		case CameraPosPolar::ZoomIn:
+		case PosRelativeLookAt::Zoom:
 		{
-			float distanceToLookAt = glm::length(m_LookAt - m_Position);
-			if (distanceToLookAt > 0.1f)
+			glm::vec3 newPos = m_Position + m_Front * amount;
+			float distanceToLookAtAfterMove = glm::length(m_LookAt - newPos);
+
+			if (distanceToLookAtAfterMove > 0.1f)
 			{
-				m_Position += m_Front * amount;
+				m_Position = newPos;
 			}
 			break;
 		}
 
-		case CameraPosPolar::ZoomOut:
-		{
-			m_Position -= m_Front * amount;
-			break;
-		}
-
-		case CameraPosPolar::RotateLeft:
+		case PosRelativeLookAt::RotateX:
 		{
 			float distanceToLookAt = glm::length(glm::vec3(m_LookAt.x - m_Position.x, 0.0f, m_LookAt.z - m_Position.z));
 			m_Yaw += amount;
@@ -157,16 +154,7 @@ void Camera::MovePosPolar(CameraPosPolar dir, float amount) noexcept
 			break;
 		}
 
-		case CameraPosPolar::RotateRight:
-		{
-			float distanceToLookAt = glm::length(glm::vec3(m_LookAt.x - m_Position.x, 0.0f, m_LookAt.z - m_Position.z));
-			m_Yaw -= amount;
-			m_Position.x = m_LookAt.x - cosf(m_Yaw) * distanceToLookAt;
-			m_Position.z = m_LookAt.z - sinf(m_Yaw) * distanceToLookAt;
-			break;
-		}
-
-		case CameraPosPolar::RotateUp:
+		case PosRelativeLookAt::RotateY:
 		{
 			float distanceToLookAt = glm::length(m_LookAt - m_Position);
 			m_Pitch -= amount;
@@ -177,75 +165,6 @@ void Camera::MovePosPolar(CameraPosPolar dir, float amount) noexcept
 				sinf(m_Pitch),
 				cosf(m_Pitch) * sinf(m_Yaw)))
 				* distanceToLookAt;
-			break;
-		}
-
-		case CameraPosPolar::RotateDown:
-		{
-			float distanceToLookAt = glm::length(m_LookAt - m_Position);
-			m_Pitch += amount;
-			m_Pitch = glm::clamp(m_Pitch, -1.55334303f, 1.55334303f);
-			m_Position = m_LookAt - 
-				glm::normalize(glm::vec3(
-				cosf(m_Pitch) * cosf(m_Yaw),
-				sinf(m_Pitch),
-				cosf(m_Pitch) * sinf(m_Yaw)))
-				* distanceToLookAt;
-			break;
-		}
-	}
-}
-
-void Camera::MoveLookAtAndPosPolar(CameraDirCartesian dir, float amount) noexcept
-{
-	m_IsDirty = true;
-	m_InverseIsDirty = true;
-
-	switch (dir)
-	{
-		case CameraDirCartesian::Forward:
-		{
-			glm::vec3 forward = glm::vec3(m_Front.x, 0.0f, m_Front.z);
-			m_LookAt += forward * amount;
-			m_Position += forward * amount;
-			break;
-		}
-
-		case CameraDirCartesian::Backwards:
-		{
-			glm::vec3 forward = glm::vec3(m_Front.x, 0.0f, m_Front.z);
-			m_LookAt -= forward * amount;
-			m_Position -= forward * amount;
-			break;
-		}
-
-		case CameraDirCartesian::Left:
-		{
-			glm::vec3 right = glm::normalize(glm::cross(m_Front, m_WorldUp));
-			m_LookAt -= right * amount;
-			m_Position -= right * amount;
-			break;
-		}
-
-		case CameraDirCartesian::Right:
-		{
-			glm::vec3 right = glm::normalize(glm::cross(m_Front, m_WorldUp));
-			m_LookAt += right * amount;
-			m_Position += right * amount;
-			break;
-		}
-
-		case CameraDirCartesian::Up:
-		{
-			m_LookAt += m_WorldUp * amount;
-			m_Position += m_WorldUp * amount;
-			break;
-		}
-
-		case CameraDirCartesian::Down:
-		{
-			m_LookAt -= m_WorldUp * amount;
-			m_Position -= m_WorldUp * amount;
 			break;
 		}
 	}

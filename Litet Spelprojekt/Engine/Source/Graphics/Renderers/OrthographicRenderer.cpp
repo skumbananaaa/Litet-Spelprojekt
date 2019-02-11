@@ -18,6 +18,10 @@ OrthographicRenderer::~OrthographicRenderer()
 	DeleteSafe(m_pOrthographicProgram);
 }
 
+void OrthographicRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
+{
+}
+
 void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
@@ -52,10 +56,10 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 			perObject.Model = gameobject.GetTransform();
 			perObject.Color = pMaterial->GetColor();
 
-			if (pMaterial->HasTexture())
+			if (pMaterial->HasDiffuseMap())
 			{
 				perObject.HasTexture = 1.0f;
-				context.SetTexture(pMaterial->GetTexture(), 0);
+				context.SetTexture(pMaterial->GetDiffuseMap(), 0);
 			}
 			else
 			{

@@ -10,6 +10,7 @@ public:
 	static uint32 SHIP;
 	static uint32 CLIFF_3_LOW;
 	static uint32 CUBE;
+	static uint32 CUBE_INV_NORMALS;
 	static uint32 CUBE_OBJ;
 	static uint32 CHAIR;
 	static uint32 SPHERE;

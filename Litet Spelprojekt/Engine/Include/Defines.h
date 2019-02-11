@@ -5,6 +5,7 @@
 #define API __declspec(dllimport)
 #endif
 
+#define NUM_CLIP_DISTANCES 8
 
 #if !defined(Delete)
 #define Delete(x) delete x; x = nullptr

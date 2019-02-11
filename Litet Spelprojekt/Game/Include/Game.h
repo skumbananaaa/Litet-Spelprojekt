@@ -21,9 +21,10 @@
 #include "..\Include\Path.h"
 #include <Graphics/GUI/ProgressBar.h>
 
-
+#define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
+#include <GLM/gtx/string_cast.hpp>
 #include <math.h>
 
 #define NUM_CREW 15
@@ -43,16 +44,21 @@ public:
 	void OnKeyDown(KEY keycode) override;
 	void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
 	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
+	void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 	void PickPosition();
 	void PickCrew();
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 
+	void SetClipPlanes();
+
 private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	Scene* m_pScene;
+	Scene* m_pScene2;
+	Scene* m_pCurrentScene;
 
 	TextureCube* m_pSkyBoxTex;
 	World* m_pWorld;
@@ -67,6 +73,7 @@ private:
 	std::string m_CrewList[NUM_CREW];
 
 	bool cartesianCamera;
+	int32 m_CurrentElevation;
 
 	//Sound
 	AudioSource* m_pTestAudioSource;

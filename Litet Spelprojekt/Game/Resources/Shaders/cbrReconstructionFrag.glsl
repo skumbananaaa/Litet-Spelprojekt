@@ -29,30 +29,30 @@ void main()
 	vec4 color = vec4(0.0f);
 	if (modFrameCoord.x == modFrameCoord.y)
 	{
-		if (d1 <= d2)
-		{
-			color = texelFetch(g_Color, sampleCoord, 0);
-		}
-		else
-		{
-			color = texelFetch(g_ForColor, forSampleCoord, subsample);
-		}
+		color = texelFetch(g_Color, sampleCoord, 0);
+//		if (d1 <= d2)
+//		{
+//		}
+//		else
+//		{
+//			color = texelFetch(g_ForColor, forSampleCoord, subsample);
+//		}
 	}
 	else
 	{
-		if (d1 <= d2)
-		{
 			color = 
 				texelFetch(g_Color, sampleCoord,				0) +
 				texelFetch(g_Color, sampleCoord + ivec2(-1, 0), 0) +
 				texelFetch(g_Color, sampleCoord + ivec2(1, 0),	0) +
 				texelFetch(g_Color, sampleCoord + ivec2(0, 1),	0);
 			color = color / 4.0f;
-		}
-		else
-		{
-			color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		}
+//		if (d1 <= d2)
+//		{
+//		}
+//		else
+//		{
+//			color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+//		}
 	}
 
 	g_OutColor = color;

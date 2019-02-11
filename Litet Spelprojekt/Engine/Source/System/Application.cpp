@@ -7,7 +7,7 @@ Application* Application::s_Instance = nullptr;
 
 Framebuffer* temp;
 
-Application::Application(bool fullscreen, uint32 width, uint32 height, const std::string& prePath)
+Application::Application(bool fullscreen, uint32 width, uint32 height, const std::string& prePath, bool useMultiThreading)
 	: m_pWindow(nullptr),
 	m_pGraphicsContext(nullptr),
 	m_pGUIManager(nullptr),
@@ -49,7 +49,7 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 		temp = new Framebuffer(desc);
 
 		ThreadHandler::Init();
-		ResourceHandler::LoadResources(this, prePath);
+		ResourceHandler::LoadResources(this, prePath, useMultiThreading);
 		m_pGUIManager = new GUIManager(m_pGraphicsContext);
 	}
 

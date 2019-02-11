@@ -30,6 +30,8 @@
     <ClInclude Include="Include\GLAD\khrplatform.h" />
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Camera.h" />
+    <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
+    <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
@@ -44,6 +46,9 @@
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
+    <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
+    <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
@@ -60,6 +65,7 @@
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
     <ClInclude Include="Include\Graphics\SkyBox.h" />
     <ClInclude Include="Include\Graphics\Textures\Framebuffer.h" />
+    <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture2D.h" />
     <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
@@ -92,7 +98,12 @@
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />
     <ClCompile Include="Source\IO\R_MATERIAL.cpp" />

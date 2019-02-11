@@ -22,6 +22,8 @@ public:
 	virtual void SetPosition(const glm::vec3& position) noexcept;
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
+	void SetExtend(bool extend) noexcept;
+	void Extend(float dtS) noexcept;
 
 	const std::string& GetName() const noexcept;
 	const Decal* GetDecal() const noexcept;
@@ -32,6 +34,8 @@ public:
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
+	const bool IsExtending() const noexcept;
+	const bool IsExtended() const noexcept;
 
 	bool IsReflectable() const noexcept;
 	bool HasMaterial() const noexcept;
@@ -52,11 +56,15 @@ private:
 	glm::vec3 m_Position;
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
+	glm::vec3 m_OriginalPos;
+	float m_ExtendPosX;
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
 	bool m_IsDirty;
 	bool m_IsReflectable;
 	int32 m_TypeId;
+	bool m_Extending = false;
+	bool m_Extended = false;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -72,6 +80,16 @@ inline const glm::vec4& GameObject::GetRotation() const noexcept
 inline const glm::vec3& GameObject::GetScale() const noexcept
 {
 	return m_Scale;
+}
+
+inline const bool GameObject::IsExtending() const noexcept
+{
+	return m_Extending;
+}
+
+inline const bool GameObject::IsExtended() const noexcept
+{
+	return m_Extended;
 }
 
 inline void GameObject::SetMesh(int32 mesh) noexcept

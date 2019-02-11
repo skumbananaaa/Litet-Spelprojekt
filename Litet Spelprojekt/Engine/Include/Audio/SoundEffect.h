@@ -5,8 +5,9 @@
 class API SoundEffect
 {
 	friend class AudioSource;
+	friend class ResourceHandler;
 
-public:
+private:
 	SoundEffect(SoundEffect&& other) = delete;
 	SoundEffect(const SoundEffect& other) = delete;
 	SoundEffect& operator=(SoundEffect&& other) = delete;

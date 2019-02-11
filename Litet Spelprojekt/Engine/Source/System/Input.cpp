@@ -7,6 +7,11 @@ bool g_LastKeyState[KEY_COUNT];
 
 bool g_CurrentButtonState[3];
 
+bool Input::IsKeyPressed(KEY keycode)
+{
+	return g_CurrentKeyState[keycode] && !g_LastKeyState[keycode];
+}
+
 bool Input::IsKeyDown(KEY keycode)
 {
 	return g_CurrentKeyState[keycode];
@@ -41,6 +46,16 @@ void Input::SetMousePosition(const glm::vec2& position)
 	glfwSetCursorPos(Window::GetCurrentWindow().GetHandle(), position.x, position.y);
 }
 
+bool Input::IsCurserVisible()
+{
+	return glfwGetInputMode(Window::GetCurrentWindow().GetHandle(), GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
+}
+
+void Input::SetCurserVisible(bool visible)
+{
+	glfwSetInputMode(Window::GetCurrentWindow().GetHandle(), GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+}
+
 void Input::Update()
 {
 	memcpy(g_LastKeyState, g_CurrentKeyState, sizeof(g_CurrentKeyState));
@@ -61,5 +76,6 @@ bool Input::ButtonState(MouseButton button, bool state)
 		g_CurrentButtonState[button] = state;
 		return true;
 	}
+
 	return false;
 }

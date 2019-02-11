@@ -9,7 +9,7 @@
 #include <Graphics/Geometry/FullscreenTri.h>
 
 #if defined(_DEBUG)
-//#define GL_DEBUG_ASSERT
+#define GL_DEBUG_ASSERT
 #endif
 
 #if defined(GL_DEBUG_ASSERT)
@@ -25,6 +25,7 @@ enum Capability : uint32
 	STENCIL_TEST = 0x0B90,
 	CULL_FACE = 0x0B44,
 	BLEND = 0x0BE2,
+	SCISSOR_TEST = 0x0C11,
 	CLIP_DISTANCE0 = 0x3000,
 	CLIP_DISTANCE1 = 0x3001,
 	CLIP_DISTANCE2 = 0x3002,
@@ -35,7 +36,14 @@ enum Capability : uint32
 	CLIP_DISTANCE7 = 0x3007,
 };
 
-enum PrimitiveTopology : unsigned int
+enum CULL_MODE : uint32
+{
+	CULL_MODE_NONE = 0,
+	CULL_MODE_FRONT = 0x0404,
+	CULL_MODE_BACK = 0x0405,
+};
+
+enum PrimitiveTopology : uint32
 {
 	PT_POINTS = 0x0000,
 	PT_LINES = 0x0001,
@@ -72,19 +80,17 @@ enum Func : uint32
 
 enum StencilOp : uint32
 {
-	KEEP = 0x1E00,
-	ZERO = 0,
-	REPLACE = 0x1E01,
-	INCR = 0x1E02,
-	INCR_WRAP = 0x8507,
-	DECR = 0x1E03,
-	DECR_WRAP = 0x8508,
-	INVERT = 0x150A,
+	STENCIL_OP_KEEP = 0x1E00,
+	STENCIL_OP_ZERO = 0,
+	STENCIL_OP_REPLACE = 0x1E01,
+	STENCIL_OP_INCR = 0x1E02,
+	STENCIL_OP_INCR_WRAP = 0x8507,
+	STENCIL_OP_DECR = 0x1E03,
+	STENCIL_OP_DECR_WRAP = 0x8508,
+	STENCIL_OP_INVERT = 0x150A,
 };
 
 typedef Capability Cap;
-
-
 class API GLContext
 {
 public:
@@ -99,10 +105,13 @@ public:
 	void Enable(Cap cap) const noexcept;
 	void Disable(Cap cap) const noexcept;
 	
+	void SetCullMode(CULL_MODE mode) const noexcept;
+
 	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept;
 	void SetViewport(const glm::vec4& viewport) noexcept;
 	const glm::vec4 GetViewPort() const noexcept;
 
+	void ResetClearColor() const noexcept;
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
 	void SetClearDepth(float depth) const noexcept;
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
@@ -121,6 +130,7 @@ public:
 	void Clear(uint32 flags) const noexcept;
 
 	void DrawIndexedMesh(const IndexedMesh& mesh) const noexcept;
+	void DrawIndexedMeshInstanced(const IndexedMesh& mesh) const noexcept;
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
 	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
 
@@ -129,6 +139,7 @@ public:
 
 private:
 	glm::vec4 m_ViewPort;
+	glm::vec4 m_DefaultClearColor;
 	mutable uint32 m_CurrentTextures[16];
 
 public:

@@ -5,7 +5,7 @@
 
 Framebuffer::Framebuffer(const FramebufferDesc& desc)
 	: m_ppColor(),
-	m_pDepth(nullptr),
+	m_pDepthStencil(nullptr),
 	m_NumColorAttachments(0),
 	m_Framebuffer(0),
 	m_IsOwner(true),
@@ -13,12 +13,17 @@ Framebuffer::Framebuffer(const FramebufferDesc& desc)
 	m_Height(0),
 	m_Samples(0)
 {
+	for (uint32 i = 0; i < 8; i++)
+	{
+		m_ppColor[i] = nullptr;
+	}
+
 	Create(desc);
 }
 
-Framebuffer::Framebuffer(const Texture* texture)
+Framebuffer::Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil)
 	: m_ppColor(),
-	m_pDepth(nullptr),
+	m_pDepthStencil(nullptr),
 	m_NumColorAttachments(0),
 	m_Framebuffer(0),
 	m_IsOwner(false),
@@ -26,7 +31,12 @@ Framebuffer::Framebuffer(const Texture* texture)
 	m_Height(0),
 	m_Samples(0)
 {
-	Create(texture);
+	for (uint32 i = 0; i < 8; i++)
+	{
+		m_ppColor[i] = nullptr;
+	}
+
+	Create(ppColor, numTextures, pDepthStencil);
 }
 
 Framebuffer::~Framebuffer()
@@ -35,18 +45,10 @@ Framebuffer::~Framebuffer()
 	{
 		for (uint32 i = 0; i < m_NumColorAttachments; i++)
 		{
-			if (m_ppColor[i] != nullptr)
-			{
-				delete m_ppColor[i];
-				m_ppColor[i] = nullptr;
-			}
+			DeleteSafe(m_ppColor[i]);
 		}
 
-		if (m_pDepth != nullptr)
-		{
-			delete m_pDepth;
-			m_pDepth = nullptr;
-		}
+		DeleteSafe(m_pDepthStencil);
 	}
 
 	if (glIsFramebuffer(m_Framebuffer))
@@ -77,7 +79,7 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 	if (desc.DepthStencilFormat != TEX_FORMAT_UNKNOWN)
 	{
 		textureDesc.Format = desc.DepthStencilFormat;
-		m_pDepth = new Texture2D(nullptr, textureDesc, desc.SamplingParams);
+		m_pDepthStencil = new Texture2D(nullptr, textureDesc, desc.SamplingParams);
 	}
 
 	m_Width = desc.Width;
@@ -87,9 +89,44 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 	CreateFramebuffer();
 }
 
-void Framebuffer::Create(const Texture* texture)
+void Framebuffer::Create(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil)
 {
-	//TODO: Fix this
+	if (numTextures > 8)
+	{
+		std::cout << "Error cannot have more than 8 textures in a framebuffer" << std::endl;
+		return;
+	}
+
+	if (pDepthStencil != nullptr)
+	{
+		m_Width = pDepthStencil->GetWidth();
+		m_Height = pDepthStencil->GetHeight();
+		m_Samples = pDepthStencil->GetSamples();
+
+		m_pDepthStencil = pDepthStencil;
+	}
+	else if (ppColor[0] != nullptr)
+	{
+		m_Width = ppColor[0]->GetWidth();
+		m_Height = ppColor[0]->GetHeight();
+		m_Samples = ppColor[0]->GetSamples();
+	}
+	else
+	{
+		return;
+	}
+
+	for (uint32 i = 0; i < numTextures; i++)
+	{
+		m_ppColor[i] = ppColor[i];
+		if (ppColor[i]->GetWidth() != m_Width || ppColor[i]->GetHeight() != m_Height || m_Samples != ppColor[i]->GetSamples())
+		{
+			std::cout << "Error: All textures in a framebuffer needs to have the same size and samples" << std::endl;
+			return;
+		}
+	}
+
+	m_NumColorAttachments = numTextures;
 	CreateFramebuffer();
 }
 
@@ -113,15 +150,15 @@ void Framebuffer::CreateFramebuffer()
 
 	GL_CALL(glDrawBuffers(buf, drawBuffers));
 
-	if (m_pDepth != nullptr)
+	if (m_pDepthStencil != nullptr)
 	{
-		if (m_pDepth->GetFormat() == TEX_FORMAT_DEPTH)
+		if (m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH)
 		{
-			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_pDepth->GetType(), m_pDepth->m_Texture, 0));
+			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_pDepthStencil->GetType(), m_pDepthStencil->m_Texture, 0));
 		}
-		else if (m_pDepth->GetFormat() == TEX_FORMAT_DEPTH_STENCIL)
+		else if (m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH_STENCIL)
 		{
-			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, m_pDepth->GetType(), m_pDepth->m_Texture, 0));
+			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, m_pDepthStencil->GetType(), m_pDepthStencil->m_Texture, 0));
 		}
 		else
 		{

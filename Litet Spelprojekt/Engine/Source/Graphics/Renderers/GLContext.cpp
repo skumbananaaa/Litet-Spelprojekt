@@ -4,7 +4,7 @@
 
 GLContext* GLContext::s_CurrentContext = nullptr;
 
-GLContext::GLContext(float width, float height)
+GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.584f, 0.929f, 1.0f)
 {
 	assert(s_CurrentContext == nullptr);
 	s_CurrentContext = this;
@@ -16,11 +16,32 @@ GLContext::GLContext(float width, float height)
 	else
 	{
 		std::cout << "OpenGL initialized" << std::endl;
-		std::cout << glGetString(GL_VENDOR) << std::endl;
-		std::cout << glGetString(GL_RENDERER) << std::endl;
+		std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
+		std::cout << "Renderer (Adapter): " << glGetString(GL_RENDERER) << std::endl;
+		std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
+		std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+		GLint param = 0;
+		GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &param));
+		std::cout << "Max Texture units: " << param << std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_SIZE, &param));
+		std::cout << "Max Texture size: " << param << " pixels" << std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &param));
+		std::cout << "Max Uniformbuffer units: " << param << std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &param));
+		std::cout << "Max Uniformbuffer size: " << param << " bytes"<< std::endl;
+		GL_CALL(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &param));
+		std::cout << "Max Vertex Attributes: " << param << std::endl;
 
 		SetViewport(static_cast<uint32>(width), static_cast<uint32>(height), 0, 0);
 	}
+
+	for (int i = 0; i < 16; i++)
+	{
+		m_CurrentTextures[i] = GL_TEXTURE_2D;
+	}
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 GLContext::~GLContext()
@@ -35,6 +56,11 @@ void GLContext::Enable(Cap cap) const noexcept
 void GLContext::Disable(Cap cap) const noexcept
 {
 	GL_CALL(glDisable(cap));
+}
+
+void GLContext::SetCullMode(CULL_MODE mode) const noexcept
+{
+	GL_CALL(glCullFace(mode));
 }
 
 void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
@@ -148,6 +174,11 @@ const glm::vec4 GLContext::GetViewPort() const noexcept
 	return m_ViewPort;
 }
 
+void GLContext::ResetClearColor() const noexcept
+{
+	GL_CALL(glClearColor(m_DefaultClearColor.r, m_DefaultClearColor.g, m_DefaultClearColor.b, m_DefaultClearColor.a));
+}
+
 void GLContext::SetClearColor(float r, float g, float b, float a) const noexcept
 {
 	GL_CALL(glClearColor(r, g, b, a));
@@ -197,6 +228,13 @@ void GLContext::DrawIndexedMesh(const IndexedMesh& mesh) const noexcept
 {
 	GL_CALL(glBindVertexArray(mesh.m_VAO));
 	GL_CALL(glDrawElements(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr));
+	GL_CALL(glBindVertexArray(0));
+}
+
+void GLContext::DrawIndexedMeshInstanced(const IndexedMesh& mesh) const noexcept
+{
+	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr, mesh.GetInstanceCount()));
 	GL_CALL(glBindVertexArray(0));
 }
 

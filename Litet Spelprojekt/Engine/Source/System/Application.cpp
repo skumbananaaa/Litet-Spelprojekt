@@ -5,13 +5,19 @@
 constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
-Application::Application()
-	: m_pWindow(nullptr), 
+//Framebuffer* temp;
+
+Application::Application(bool fullscreen, uint32 width, uint32 height, const std::string& prePath, bool useMultiThreading)
+	: m_pWindow(nullptr),
 	m_pGraphicsContext(nullptr),
 	m_pGUIManager(nullptr),
-	m_fps(0), 
+	m_fps(0),
 	m_ups(0),
-	m_ShouldRun(true)
+	m_ShouldRun(true),
+	m_ResourceMode(RESOURCE_MODE::LOAD),
+	m_Resource(""),
+	m_Progress(0),
+	m_LastProgress(0)
 {
 	std::cout << "Application" << std::endl;
 
@@ -25,16 +31,30 @@ Application::Application()
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", 1024, 768, true);
+		m_pWindow = new Window("Small Game Project", width, height, fullscreen);
 
 		float width = static_cast<float>(m_pWindow->GetWidth());
 		float height = static_cast<float>(m_pWindow->GetHeight());
 
 		m_pGraphicsContext = new GLContext(width, height);
+
+
+		/*FramebufferDesc desc;
+		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
+		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.SamplingParams = TextureParams();
+		desc.NumColorAttachments = 1;
+		desc.Width = static_cast<uint32>(500);
+		desc.Height = static_cast<uint32>(500);
+		temp = new Framebuffer(desc);*/
+
+		ThreadHandler::Init();
+		ResourceHandler::LoadResources(this, prePath, useMultiThreading);
 		m_pGUIManager = new GUIManager(m_pGraphicsContext);
 	}
 
 	m_pAudioContext = IAudioContext::CreateContext();
+
 	
 	std::cout << "Application Initalized" << std::endl;
 }
@@ -49,9 +69,23 @@ Application::~Application()
 	DeleteSafe(m_pGUIManager);
 	DeleteSafe(m_pAudioContext);
 
+	//DeleteSafe(temp);
+
 	glfwTerminate();
 
 	std::cout << "Application deleted" << std::endl;
+}
+
+void Application::OnLoading(const std::string& file, float percentage)
+{
+	m_Resource = file;
+	m_Progress = percentage;
+}
+
+void Application::OnResourceLoadingFinished()
+{
+	m_ResourceMode = RESOURCE_MODE::CONSTRUCT;
+	std::cout << "OnResourceLoadingFinished()" << std::endl;
 }
 
 int32_t Application::Run()
@@ -72,6 +106,17 @@ int32_t Application::Run()
 	m_pGraphicsContext->SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	while (!m_pWindow->IsClosed() && m_ShouldRun)
 	{
+		if (m_ResourceMode == RESOURCE_MODE::CONSTRUCT)
+		{
+			ResourceHandler::ConstructResources();
+			m_ResourceMode = RESOURCE_MODE::DONE;
+			OnResourcesLoaded();
+		}
+		if (m_LastProgress != m_Progress)
+		{
+			m_LastProgress = m_Progress;
+			OnResourceLoading(m_Resource, m_Progress);
+		}
 		Input::Update();
 
 		m_pWindow->PollEvents();
@@ -85,6 +130,7 @@ int32_t Application::Run()
 		if (totalTime > 1.0f)
 		{
 			std::string title = "Small Game Project [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
+
 			m_pWindow->SetTitle(title.c_str());
 
 			this->m_fps = fps;
@@ -103,11 +149,15 @@ int32_t Application::Run()
 			ups++;
 		}
 
-		InternalOnRender(deltaTime);
-		fps++;
+		/*m_pGraphicsContext->SetFramebuffer(temp);
+		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR);
+		m_pGraphicsContext->SetFramebuffer(nullptr);*/
 
+		InternalOnRender(deltaTime);
+		fps++;	
 		m_pWindow->SwapBuffers();
 	}
-
+	ThreadHandler::Exit();
+	ResourceHandler::ReleaseResources();
 	return 0;
 }

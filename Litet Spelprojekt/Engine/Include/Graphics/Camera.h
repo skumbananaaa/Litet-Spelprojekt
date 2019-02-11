@@ -4,31 +4,18 @@
 #include <GLM\gtc\matrix_transform.hpp>
 #include <GLM\gtc\type_ptr.hpp>
 
-enum CameraDirCartesian : uint8
+enum PosRelativeLookAt : uint8
 {
-	Forward,
-	Backwards,
-	Left,
-	Right,
-	Up,
-	Down
-};
-
-enum CameraPosPolar : uint8
-{
-	ZoomIn,
-	ZoomOut,
-	RotateLeft,
-	RotateRight,
-	RotateUp,
-	RotateDown
+	Zoom,
+	RotateX,
+	RotateY
 };
 
 class API Camera
 {
 public:
-	Camera(const glm::vec3& pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = 0.0f) noexcept;
-	Camera(const glm::vec3& pos, const glm::vec3& lookAt) noexcept;
+	Camera(const glm::vec3& pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = 0.0f, const glm::vec3& upVector = UP_VECTOR) noexcept;
+	Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& upVector = UP_VECTOR) noexcept;
 	~Camera();
 
 	void UpdateFromPitchYaw() noexcept;
@@ -38,11 +25,14 @@ public:
 
 	//void SetProjectionMatrix(const glm::mat4& matrix) noexcept;
 
+	void CreateOrthographic(float windowWidth, float windowHeight, float nearPlane, float farPlane) noexcept;
 	void CreatePerspective(float fovRad, float aspectWihe, float nearPlane, float farPlane) noexcept;
 
-	void MoveCartesian(CameraDirCartesian dir, float amount) noexcept;
-	void MovePosPolar(CameraPosPolar dir, float amount) noexcept;
-	void MoveLookAtAndPosPolar(CameraDirCartesian dir, float amount) noexcept;
+	void MoveWorldCoords(const glm::vec3& worldCoords, bool moveLookAt = false) noexcept;
+	void MoveLocalCoords(const glm::vec3& localCoords, bool moveLookAt = false) noexcept;
+	
+	void MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept;
+
 	void OffsetYaw(float amount) noexcept;
 	void OffsetPitch(float amount) noexcept;
 	void InvertPitch() noexcept;
@@ -70,8 +60,6 @@ public:
 	float GetFarPlane() const noexcept;
 	float GetNearPlane() const noexcept;
 
-	void CopyShaderDataToArray(float* const arr, uint32 startIndex) const noexcept;
-
 private:
 	void CalcInverses();
 	void UpdateFromPitchYawInternal() noexcept;
@@ -89,6 +77,7 @@ private:
 	glm::vec3 m_LookAt;
 	glm::vec3 m_Front;
 	glm::vec3 m_Up;
+	glm::vec3 m_WorldUp;
 
 	float m_Yaw;
 	float m_Pitch;

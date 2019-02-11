@@ -1,12 +1,13 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
 
-TextView::TextView(float x, float y, float width, float height, const std::string& text, int textSize) : GUIObject(x, y, width, height),
+TextView::TextView(float x, float y, float width, float height, const std::string& text, TextAlignment textAlignment, int textSize) : GUIObject(x, y, width, height),
 	m_Text(text), 
 	m_TextSize(textSize),
-	m_TextAlignment(CENTER_VERTICAL)
+	m_TextAlignment(textAlignment),
+	m_TextColor(1.0F, 1.0F, 1.0F, 1.0F)
 {
-
+	SetBackgroundColor(glm::vec4(1.0F, 1.0F, 1.0F, 0.0F));
 }
 
 TextView::~TextView()
@@ -56,6 +57,20 @@ TextAlignment TextView::GetTextAlignment()
 	return m_TextAlignment;
 }
 
+const glm::vec4& TextView::GetTextColor() const noexcept
+{
+	return m_TextColor;
+}
+
+void TextView::SetTextColor(const glm::vec4& color)
+{
+	if (m_TextColor != color)
+	{
+		m_TextColor = color;
+		RequestRepaint();
+	}
+}
+
 void TextView::OnRender(GUIContext* context)
 {
 	GUIObject::OnRender(context);
@@ -66,7 +81,7 @@ void TextView::RenderText(GUIContext* context)
 {
 	if (!m_Text.empty())
 	{
-		context->GetFontRenderer()->UpdateRenderTargetSize(GetWidth(), GetHeight());
+		context->GetFontRenderer()->UpdateBuffer(GetWidth(), GetHeight(), GetClearTextColor());
 
 		float scale = m_TextSize / 100.0f;
 		glm::vec2 size = context->CalculateTextSize(m_Text, scale);
@@ -91,4 +106,14 @@ void TextView::RenderText(GUIContext* context)
 
 		context->RenderText(m_Text, x, y, scale);
 	}
+}
+
+void TextView::PrintName() const
+{
+	std::cout << "TextView";
+}
+
+const glm::vec4& TextView::GetClearTextColor() const
+{
+	return GetTextColor();
 }

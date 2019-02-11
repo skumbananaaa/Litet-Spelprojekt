@@ -1,8 +1,12 @@
 #pragma once
 #include <Graphics/Textures/Texture.h>
+#include <IO/IResource.h>
 
-class API Texture2D : public Texture
+class API Texture2D : public Texture, public IResource
 {
+	friend class TEXTURE;
+	friend class ResourceHandler;
+
 public:
 	Texture2D(Texture2D&& other) = delete;
 	Texture2D(const Texture2D& other) = delete;
@@ -10,7 +14,6 @@ public:
 	Texture2D& operator=(const Texture2D& other) = delete;
 
 	Texture2D(const void* pInitalData, const TextureDesc& desc, const TextureParams& params = TextureParams());
-	Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
 	~Texture2D();
 
 	uint32 GetWidth() const noexcept;
@@ -18,14 +21,25 @@ public:
 	uint32 GetSamples() const noexcept;
 
 private:
-	void Create(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
-	void CreateMS(const TextureDesc& desc, const TextureParams& params);
-	void Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
+	Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
 
 private:
-	uint32 m_Width;
-	uint32 m_Height;
+	void Create(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
+	void Create(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
+	void CreateMS(const TextureDesc& desc, const TextureParams& params);
+	virtual void Construct() override;
+
+private:
+	int32 m_Width;
+	int32 m_Height;
 	uint32 m_Samples;
+	TextureParams m_Params;
+	bool m_GenerateMipmaps;
+	void* m_pTextureData;
+
+public:
+	static Texture2D* CreateTextureFromFile(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
+	static Texture2D* CreateTextureFromMemory(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
 };
 
 inline uint32 Texture2D::GetWidth() const noexcept

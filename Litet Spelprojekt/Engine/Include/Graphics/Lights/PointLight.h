@@ -10,6 +10,7 @@ public:
 	~PointLight();
 
 	const glm::vec4& GetColor() const noexcept;
+	void SetColor(const glm::vec4& color) noexcept;
 
 public:
 

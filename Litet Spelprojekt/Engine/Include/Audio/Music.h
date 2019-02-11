@@ -4,8 +4,9 @@
 class API Music
 {
 	friend class AudioSource;
+	friend class ResourceHandler;
 
-public:
+private:
 	Music(Music&& other) = delete;
 	Music(const Music& other) = delete;
 	Music& operator=(Music&& other) = delete;

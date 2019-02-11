@@ -1,7 +1,7 @@
 #pragma once
 #include "IAudioContext.h"
 
-enum DistanceModel : uint8
+enum DistanceModel : uint32
 {
 	INVERSE_DISTANCE = 0xD001,
 	INVERSE_DISTANCE_CLAMPED = 0xD001,

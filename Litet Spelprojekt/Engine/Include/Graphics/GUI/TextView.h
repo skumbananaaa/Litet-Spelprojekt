@@ -12,7 +12,7 @@ enum TextAlignment
 class API TextView : public GUIObject
 {
 public:
-	TextView(float x, float y, float width, float height, const std::string& text, int size = 50);
+	TextView(float x, float y, float width, float height, const std::string& text, TextAlignment textAlignment = CENTER_VERTICAL, int size = 100);
 	virtual ~TextView();
 
 	void SetText(const std::string& text);
@@ -24,12 +24,18 @@ public:
 	void SetTextAlignment(TextAlignment textAlignment);
 	TextAlignment GetTextAlignment();
 
+	const glm::vec4& GetTextColor() const noexcept;
+	void SetTextColor(const glm::vec4& color);
+
 protected:
 	virtual void OnRender(GUIContext* context) override;
 	virtual void RenderText(GUIContext* context);
+	virtual void PrintName() const override;
+	virtual const glm::vec4& GetClearTextColor() const;
 
 private:
 	std::string m_Text;
 	int m_TextSize;
 	TextAlignment m_TextAlignment;
+	glm::vec4 m_TextColor;
 };

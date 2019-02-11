@@ -5,6 +5,8 @@
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/Decal.h>
+#include <IO/ResourceHandler.h>
+
 
 class API GameObject
 {
@@ -12,71 +14,120 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
-	virtual void SetMesh(const IndexedMesh* const pMesh) noexcept;
-	virtual void SetMaterial(const Material* const pMaterial) noexcept;
-	virtual void SetDecal(const Decal* const pDecal) noexcept;
+	virtual void SetName(const std::string& name) noexcept;
+	virtual void SetIsReflectable(bool isReflectable) noexcept;
+	virtual void SetMesh(int32 mesh) noexcept;
+	virtual void SetMaterial(int32 material) noexcept;
+	virtual void SetDecal(int32 decal) noexcept;
 	virtual void SetPosition(const glm::vec3& position) noexcept;
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
+	void SetExtend(bool extend) noexcept;
+	void Extend(float dtS) noexcept;
 
-	const Decal& GetDecal() const noexcept;
-	const Material& GetMaterial() const noexcept;
-	const IndexedMesh& GetMesh() const noexcept;
+	const std::string& GetName() const noexcept;
+	const Decal* GetDecal() const noexcept;
+	const Material* GetMaterial() const noexcept;
+	const IndexedMesh* GetMesh() const noexcept;
 	const glm::mat4& GetTransform() const noexcept;
 	const glm::mat4& GetInverseTransform() const noexcept;
+	const glm::vec3& GetPosition() const noexcept;
+	const glm::vec4& GetRotation() const noexcept;
+	const glm::vec3& GetScale() const noexcept;
+	const bool IsExtending() const noexcept;
+	const bool IsExtended() const noexcept;
 
-
+	bool IsReflectable() const noexcept;
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
 
-	virtual const glm::vec3& GetPosition() const noexcept;
+	void SetTypeId(int32 typeId) noexcept;
+	int32 GetTypeId() const noexcept;
 
+	virtual void Update(float deltaTime);
 	virtual void UpdateTransform() noexcept;
 
 private:
+	std::string m_Name;
 	const IndexedMesh* m_pMesh;
 	const Material* m_pMaterial;
 	const Decal* m_pDecal;
-	glm::vec3 m_position;
-	glm::vec4 m_rotation;
-	glm::vec3 m_scale;
+	glm::vec3 m_Position;
+	glm::vec4 m_Rotation;
+	glm::vec3 m_Scale;
+	glm::vec3 m_OriginalPos;
+	float m_ExtendPosX;
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
 	bool m_IsDirty;
+	bool m_IsReflectable;
+	int32 m_TypeId;
+	bool m_Extending = false;
+	bool m_Extended = false;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
 {
-	return m_position;
+	return m_Position;
 }
 
-inline void GameObject::SetDecal(const Decal* const pDecal) noexcept
+inline const glm::vec4& GameObject::GetRotation() const noexcept
 {
-	m_pDecal = pDecal;
+	return m_Rotation;
 }
 
-inline void GameObject::SetMaterial(const Material* const pMaterial) noexcept
+inline const glm::vec3& GameObject::GetScale() const noexcept
 {
-	m_pMaterial = pMaterial;
+	return m_Scale;
 }
 
-inline const Decal& GameObject::GetDecal() const noexcept
+inline const bool GameObject::IsExtending() const noexcept
+{
+	return m_Extending;
+}
+
+inline const bool GameObject::IsExtended() const noexcept
+{
+	return m_Extended;
+}
+
+inline void GameObject::SetMesh(int32 mesh) noexcept
+{
+	m_pMesh = ResourceHandler::GetMesh(mesh);
+}
+
+inline void GameObject::SetDecal(int32 decal) noexcept
+{
+	m_pDecal = ResourceHandler::GetDecal(decal);
+}
+
+inline void GameObject::SetMaterial(int32 material) noexcept
+{
+	m_pMaterial = ResourceHandler::GetMaterial(material);
+}
+
+inline const std::string& GameObject::GetName() const noexcept
+{
+	return m_Name;
+}
+
+inline const Decal* GameObject::GetDecal() const noexcept
 {
 	assert(m_pDecal != nullptr);
-	return *m_pDecal;
+	return m_pDecal;
 }
 
-inline const Material& GameObject::GetMaterial() const noexcept
+inline const Material* GameObject::GetMaterial() const noexcept
 {
 	assert(m_pMaterial != nullptr);
-	return *m_pMaterial;
+	return m_pMaterial;
 }
 
-inline const IndexedMesh& GameObject::GetMesh() const noexcept
+inline const IndexedMesh* GameObject::GetMesh() const noexcept
 {
 	assert(m_pMesh != nullptr);
-	return *m_pMesh;
+	return m_pMesh;
 }
 
 inline const glm::mat4& GameObject::GetTransform() const noexcept
@@ -89,7 +140,10 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 	return m_InverseTransform;
 }
 
-
+inline bool GameObject::IsReflectable() const noexcept
+{
+	return m_IsReflectable;
+}
 
 inline bool GameObject::HasMaterial() const noexcept
 {
@@ -104,4 +158,14 @@ inline bool GameObject::HasDecal() const noexcept
 inline bool GameObject::HasMesh() const noexcept
 {
 	return (m_pMesh != nullptr);
+}
+
+inline void GameObject::SetTypeId(int32 typeId) noexcept
+{
+	m_TypeId = typeId;
+}
+
+inline int32 GameObject::GetTypeId() const noexcept
+{
+	return m_TypeId;
 }

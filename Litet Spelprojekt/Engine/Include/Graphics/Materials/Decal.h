@@ -4,16 +4,20 @@
 
 class API Decal
 {
-public:
-	Decal();
-	~Decal();
+	friend class ResourceHandler;
 
-	void SetTexture(const Texture2D* const pTexture);
-	void SetNormalMap(const Texture2D* const pNormalMap);
+public:
 	const Texture2D* GetTexture() const;
 	const Texture2D* GetNormalMap() const;
 	bool HasTexture() const;
 	bool HasNormalMap() const;
+
+private:
+	Decal();
+	~Decal();
+
+	void SetDiffuseMap(const Texture2D* const pTexture);
+	void SetNormalMap(const Texture2D* const pNormalMap);
 
 private:
 	const Texture2D* m_pTexture;
@@ -30,7 +34,7 @@ inline bool Decal::HasNormalMap() const
 	return m_pNormalMap != nullptr;
 }
 
-inline void Decal::SetTexture(const Texture2D* const pTexture)
+inline void Decal::SetDiffuseMap(const Texture2D* const pTexture)
 {
 	m_pTexture = pTexture;
 }

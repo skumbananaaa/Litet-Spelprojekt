@@ -37,6 +37,17 @@ void AudioSource::Pause() const noexcept
 	alSourcePause(m_SourceId);
 }
 
+void AudioSource::TogglePause() noexcept
+{
+	if (m_Paused) {
+		alSourcePlay(m_SourceId);
+	}
+	else {
+		alSourcePause(m_SourceId);
+	}
+	m_Paused = !m_Paused;
+}
+
 void AudioSource::Stop() const noexcept
 {
 	alSourceStop(m_SourceId);
@@ -78,3 +89,24 @@ void AudioSource::SetMaxDistance(float value) const noexcept
 {
 	alSourcef(m_SourceId, AL_MAX_DISTANCE, value);
 }
+
+AudioSource* AudioSource::CreateSoundSource(int32 sound, const glm::vec3& pos, const glm::vec3& vel)
+{
+	const SoundEffect* pSound = ResourceHandler::GetSound(sound);
+	if (pSound)
+	{
+		return new AudioSource(*pSound, pos, vel);
+	}
+	return nullptr;
+}
+
+AudioSource* AudioSource::CreateMusicSource(int32 music)
+{
+	const Music* pMusic = ResourceHandler::GetMusic(music);
+	if (pMusic)
+	{
+		return new AudioSource(*pMusic);
+	}
+	return nullptr;
+}
+

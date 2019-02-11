@@ -16,17 +16,20 @@ enum TEX_PARAM : uint32
 	TEX_PARAM_COUNT = 10,
 };
 
-enum TEX_FORMAT: uint32
+enum TEX_FORMAT : uint32
 {
 	TEX_FORMAT_UNKNOWN = 0,
 	TEX_FORMAT_R = 1,
-	TEX_FORMAT_RG = 2,
-	TEX_FORMAT_RGB = 3,
-	TEX_FORMAT_RGBA = 4,
-	TEX_FORMAT_RGBA16F = 5,
-	TEX_FORMAT_DEPTH = 6,
-	TEX_FORMAT_DEPTH_STENCIL = 7,
-	TEX_FORMAT_COUNT = 8,
+	TEX_FORMAT_R16F = 2,
+	TEX_FORMAT_R32F = 3,
+	TEX_FORMAT_RG = 4,
+	TEX_FORMAT_RGB = 5,
+	TEX_FORMAT_RGBA = 6,
+	TEX_FORMAT_RGBA16F = 7,
+	TEX_FORMAT_DEPTH = 8,
+	TEX_FORMAT_DEPTH_STENCIL = 9,
+	TEX_FORMAT_RGB16F = 10,
+	TEX_FORMAT_COUNT = 11,
 };
 
 struct TextureParams
@@ -57,7 +60,7 @@ public:
 	Texture& operator=(const Texture& other) = delete;
 
 	Texture() noexcept;
-	~Texture();
+	virtual ~Texture();
 
 	void SetParameters(const TextureParams& params) noexcept;
 	TEX_FORMAT GetFormat() const noexcept;

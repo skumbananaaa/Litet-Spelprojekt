@@ -1,65 +1,165 @@
 #pragma once
-#include <EnginePch.h>
 #include <Graphics/Textures/Texture2D.h>
+#include <Graphics/Renderers/GLContext.h>
+#include "MaterialBase.h"
+
+#define DIFFUSE_MAP_BINDING_SLOT 0
+#define NORMAL_MAP_BINDING_SLOT 1
+#define SPECULAR_MAP_BINDING_SLOT 2
+
+#define CAMERA_BUFFER_BINDING_SLOT 0
+#define LIGHT_BUFFER_BINDING_SLOT 1
+#define MATERIAL_BUFFER_BINDING_SLOT 2
 
 class API Material
 {
+	friend class ResourceHandler;
+
 public:
 	Material();
+	Material(ShaderProgram* pProgram);
 	~Material();
 
-	void SetTexture(const Texture2D* const pTexture);
-	void SetNormalMap(const Texture2D* const pNormalMap);
-	void SetColor(const glm::vec4& color);
-	const glm::vec4& GetColor() const;
-	const Texture2D* GetTexture() const;
-	const Texture2D* GetNormalMap() const;
-	bool HasTexture() const;
-	bool HasNormalMap() const;
+	virtual void Bind(const Framebuffer* pGBuffer) const noexcept;
+	virtual void Unbind() const noexcept;
+
+	void SetLightBuffer(const UniformBuffer* pLightBuffer) const noexcept;
+	void SetCameraBuffer(const UniformBuffer* pCameraBuffer) const noexcept;
+	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
+
+	void SetCullMode(CULL_MODE mode) noexcept;
+	void SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept;
+
+	const Texture2D* GetNormalMap() const noexcept;
+	const Texture2D* GetDiffuseMap() const noexcept;
+	const Texture2D* GetSpecularMap() const noexcept;
+	const glm::vec4& GetColor() const noexcept;
+	const glm::vec4& GetLevelClipPlane() const noexcept;
+	float GetSpecular() const noexcept;
+	CULL_MODE GetCullMode() const noexcept;
+
+	bool HasDiffuseMap() const noexcept;
+	bool HasNormalMap() const noexcept;
+	bool HasSpecularMap() const noexcept;
+
+protected:
+	void SetProgram(ShaderProgram* pProgram) noexcept;
 
 private:
-	const Texture2D* m_pTexture;
-	const Texture2D* m_pNormalMap;
-	glm::vec4 m_Color;
-	glm::mat4 d;
+	void SetDiffuseMap(const Texture2D* const pTexture) noexcept;
+	void SetNormalMap(const Texture2D* const pNormalMap) noexcept;
+	void SetSpecularMap(const Texture2D* const pNormalMap) noexcept;
+	void SetColor(const glm::vec4& color) noexcept;
+	void SetSpecular(float specular) noexcept;
+
+private:
+	ShaderProgram* m_pProgram;
+
+	struct
+	{
+		mutable const UniformBuffer* pLightBuffer = nullptr;
+		mutable const UniformBuffer* pCameraBuffer = nullptr;
+		mutable const UniformBuffer* pMaterialBuffer = nullptr;
+		const Texture2D* pDiffuseMap = nullptr;
+		const Texture2D* pNormalMap = nullptr;
+		const Texture2D* pSpecularMap = nullptr;
+		glm::vec4 Color = glm::vec4(0.0f);
+		float Specular = 256.0f;
+	} m_Data;
+
+	mutable struct
+	{
+		glm::vec4 ClipPlane;
+		CULL_MODE CullMode = CULL_MODE_BACK;
+	} m_PipelineState;
 };
 
-inline bool Material::HasTexture() const
+inline bool Material::HasDiffuseMap() const noexcept
 {
-	return m_pTexture != nullptr;
+	return m_Data.pDiffuseMap != nullptr;
 }
 
-inline bool Material::HasNormalMap() const
+inline bool Material::HasNormalMap() const noexcept
 {
-	return m_pNormalMap != nullptr;
+	return m_Data.pNormalMap != nullptr;
 }
 
-inline void Material::SetTexture(const Texture2D* const pTexture)
+inline bool Material::HasSpecularMap() const noexcept
 {
-	m_pTexture = pTexture;
+	return m_Data.pSpecularMap != nullptr;
 }
 
-inline void Material::SetNormalMap(const Texture2D* const pNormalMap)
+inline void Material::SetProgram(ShaderProgram* pProgram) noexcept
 {
-	m_pNormalMap = pNormalMap;
+	m_pProgram = pProgram;
 }
 
-inline const Texture2D* Material::GetTexture() const
+inline void Material::SetDiffuseMap(const Texture2D* const pTexture) noexcept
 {
-	return m_pTexture;
+	m_Data.pDiffuseMap = pTexture;
 }
 
-inline const Texture2D* Material::GetNormalMap() const
+inline void Material::SetNormalMap(const Texture2D* const pNormalMap) noexcept
 {
-	return m_pNormalMap;
+	m_Data.pNormalMap = pNormalMap;
 }
 
-inline void Material::SetColor(const glm::vec4& color)
+inline void Material::SetSpecularMap(const Texture2D* const pSpecularMap) noexcept
 {
-	m_Color = color;
+	m_Data.pSpecularMap = pSpecularMap;
 }
 
-inline const glm::vec4& Material::GetColor() const
+inline void Material::SetCullMode(CULL_MODE mode) noexcept
 {
-	return m_Color;
+	m_PipelineState.CullMode = mode;
+}
+
+inline void Material::SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept
+{
+	m_PipelineState.ClipPlane = clipPlane;
+}
+
+inline CULL_MODE Material::GetCullMode() const noexcept
+{
+	return m_PipelineState.CullMode;
+}
+
+inline const Texture2D* Material::GetDiffuseMap() const noexcept
+{
+	return m_Data.pDiffuseMap;
+}
+
+inline const Texture2D* Material::GetNormalMap() const noexcept
+{
+	return m_Data.pNormalMap;
+}
+
+inline const Texture2D* Material::GetSpecularMap() const noexcept
+{
+	return m_Data.pSpecularMap;
+}
+
+inline void Material::SetColor(const glm::vec4& color) noexcept
+{
+	m_Data.Color = color;
+}
+
+inline void Material::SetSpecular(float specular) noexcept
+{
+	m_Data.Specular = specular;
+}
+
+inline float Material::GetSpecular() const noexcept
+{
+	return m_Data.Specular;
+}
+
+inline const glm::vec4& Material::GetColor() const noexcept
+{
+	return m_Data.Color;
+}
+
+inline const glm::vec4& Material::GetLevelClipPlane() const noexcept
+{
+	return m_PipelineState.ClipPlane;
 }

@@ -3,8 +3,6 @@
 #include <System/Input.h>
 #include <Graphics/GUI/GUIContext.h>
 #include <Graphics/Textures/Texture2D.h>
-#include <Graphics/GUI/IMouseListener.h>
-#include <Graphics/GUI/IRealTimeRendered.h>
 
 class API GUIObject
 {
@@ -13,23 +11,43 @@ class API GUIObject
 public:
 	virtual ~GUIObject();
 
-	bool HasParent() const;
-	GUIObject* GetParent() const;
+	bool HasParent() const noexcept;
+	GUIObject* GetParent() const noexcept;
 
-	void Add(GUIObject* parent);
-	void Remove(GUIObject* parent);
+	virtual void Add(GUIObject* parent) noexcept;
+	void Remove(GUIObject* parent) noexcept;
 
-	float GetWidth() const noexcept;
-	float GetHeight() const noexcept;
+	virtual float GetWidth() const noexcept;
+	virtual float GetHeight() const noexcept;
 	float GetX() const noexcept;
 	float GetY() const noexcept;
-	float GetXInWorld() const noexcept;
-	float GetYInWorld() const noexcept;
+	virtual float GetXInWorld(const GUIObject* child = nullptr) const noexcept;
+	virtual float GetYInWorld(const GUIObject* child = nullptr) const noexcept;
+
+	virtual void SetSize(float width, float height) noexcept;
+	virtual void SetPosition(float x, float y) noexcept;
+
+	virtual void SetVisible(bool visible) noexcept;
+	virtual bool IsVisible() noexcept;
 
 	bool IsDirty() const noexcept;
+	bool IsMyChild(const GUIObject* child) const noexcept;
 
-	Texture2D* GetTexture() const noexcept;
-	void SetTexture(Texture2D* texture);
+	Texture2D* GetBackgroundTexture() const noexcept;
+	void SetBackgroundTexture(Texture2D* texture);
+
+	const glm::vec4& GetBackgroundColor() const noexcept;
+	void SetBackgroundColor(const glm::vec4& color) noexcept;
+
+	virtual bool ContainsPoint(const glm::vec2& position) const noexcept;
+
+	virtual void DeleteChildren();
+	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
+
+	void SetUserData(void* data);
+	void* GetUserData() const;
+
+	const std::vector<GUIObject*>& GetChildren();
 
 protected:
 	GUIObject(float x, float y, float width, float height);
@@ -42,16 +60,26 @@ protected:
 
 	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
 	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
-	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
+	virtual void OnMouseMove(const glm::vec2& position) {};
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) {};
 
 	virtual void OnKeyUp(KEY keycode) {};
 	virtual void OnKeyDown(KEY keycode) {};
 
 	virtual void RenderBackgroundTexture(GUIContext* context);
-	bool ContainsPoint(const glm::vec2& position);
+	virtual void RenderChildrensFrameBuffers(GUIContext* context);
+	virtual void RenderRealTime(GUIContext* context);
+	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child);
+	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child);
+
+	virtual void PrintName() const = 0;
+	Texture2D* GetDefaultTexture() const;
+	virtual const glm::vec4& GetClearColor() const;
+	virtual Texture2D* GetClearTexture() const;
+
 
 	template<class T>
-	static bool Contains(const std::vector<T*>& list, T* object)
+	static bool Contains(const std::vector<T*>& list, const T* object)
 	{
 		for (T* currentObject : list)
 		{
@@ -65,11 +93,13 @@ protected:
 
 	void RequestRepaint();
 
-	static void AddMouseListener(IMouseListener* listener);
-	static void RemoveMouseListener(IMouseListener* listener);
+	static void AddMouseListener(GUIObject* listener);
+	static void RemoveMouseListener(GUIObject* listener);
 
-	static void AddRealTimeRenderer(IRealTimeRendered* listener);
-	static void RemoveRealTimeRenderer(IRealTimeRendered* listener);
+	static void AddRealTimeRenderer(GUIObject* listener);
+	static void RemoveRealTimeRenderer(GUIObject* listener);
+
+	void InternalRootOnMouseMove(const glm::vec2& position);
 
 private:
 	void InternalOnUpdate(float dtS);
@@ -79,10 +109,14 @@ private:
 
 	void InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton);
 	void InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton);
-	void InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position);
+	void InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset);
 
 	void RerenderChildren(GUIContext* context);
-	void RenderChildrensFrameBuffers(GUIContext* context);
+
+	void RecreateFrameBuffer(float width, float height);
+
+	static void CreateDefaultTexture();
+	static void DeleteDefaultTexture();
 
 	GUIObject* m_pParent;
 	std::vector<GUIObject*> m_Children;
@@ -92,8 +126,13 @@ private:
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_Position;
 	bool m_IsDirty;
+	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;
+	glm::vec4 m_BackgroundColor;
+	bool m_DeleteAll;
+	void* m_pUserData;
 
-	static std::vector<IMouseListener*> m_MouseListeners;
-	static std::vector<IRealTimeRendered*> m_RealTimeRenderers;
+	static std::vector<GUIObject*> s_MouseListeners;
+	static std::vector<GUIObject*> s_RealTimeRenderers;
+	static Texture2D* s_pDefaultTexture;
 };

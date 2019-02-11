@@ -1,7 +1,7 @@
 #pragma once
 
 #include <EnginePch.h>
-#include <Graphics\Shaders\ShaderProgram.h>
+#include <IO/ResourceHandler.h>
 #include <Graphics/Renderers/GLContext.h>
 
 #include <map>
@@ -25,10 +25,8 @@ class API FontRenderer
 private:
 	FontRenderer(void* face);
 
-	static ShaderProgram* m_pShaderProgram;
 	static unsigned int m_VAO;
 	static unsigned int m_VBO;
-	//Maybe intref count is enough?
 	static std::vector<FontRenderer*> m_Fontrenderers;
 
 	PerFrameFontRenderer m_PerFrameData;
@@ -39,8 +37,7 @@ public:
 	~FontRenderer();
 
 	void RenderText(GLContext* context, std::string text, float x, float y, float scale);
-	void UpdateRenderTargetSize(int width, int height);
-	void SetColor(const glm::vec3& color);
+	void UpdateBuffer(int width, int height, const glm::vec4& color);
 	glm::vec2 CalculateSize(std::string text, float scale);
 
 	static FontRenderer* CreateFontRenderer(const char* font, int width, int height);

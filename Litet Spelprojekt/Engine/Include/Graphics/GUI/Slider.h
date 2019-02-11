@@ -1,18 +1,22 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/GUI/GUIObject.h>
-#include <Graphics/GUI/IRealTimeRendered.h>
 
-class API Slider : public GUIObject, public IMouseListener, public IRealTimeRendered
+class Slider;
+
+class API ISliderListener
 {
 public:
-	Slider(float x, float y, float width, float height, Texture2D* textureBackground, Texture2D* textureForeground);
+	virtual void OnSliderChange(Slider* slider, float percentage) = 0;
+};
+
+class API Slider : public GUIObject
+{
+public:
+	Slider(float x, float y, float width, float height, void(*onChangedCallback)(Slider*, float) = nullptr);
 	virtual ~Slider();
 
-	bool isVertical() const noexcept;
-	
-	void SetForgroundTexture(Texture2D* texture);
-	Texture2D* GetForegroundTexture() const;
+	bool IsVertical() const noexcept;
 
 	void SetRatio(float ratio);
 	float GetRatio() const noexcept;
@@ -20,19 +24,50 @@ public:
 	void SetPercentage(float percentage);
 	float GetPercentage() const noexcept;
 
+	const glm::vec4& GetSliderColor() const noexcept;
+	void SetSliderColor(const glm::vec4& color);
+
+	const glm::vec4& GetOnPressedColor() const noexcept;
+	void SetOnPressedColor(const glm::vec4& color);
+
+	const glm::vec4& GetOnHoverColor() const noexcept;
+	void SetOnHoverColor(const glm::vec4& color);
+
+	void AddSliderListener(ISliderListener* listener);
+	void RemoveSliderListener(ISliderListener* listener);
+
+	void SetOnSliderChanged(void(*callback)(Slider*, float));
+
+	void MoveSlider(float offset);
+	void AccelerateSlider(float offset);
+
+protected:
+	virtual void PrintName() const override;
+	virtual const glm::vec4& GetSliderClearColor() const;
+
+	virtual void OnUpdate(float dtS) override;
+
 	virtual void OnAdded(GUIObject* parent) override;
 	virtual void OnRemoved(GUIObject* parent) override;
 
-	void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) override;
-	void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) override;
-	void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
+	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) override;
+	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) override;
+	virtual void OnMouseMove(const glm::vec2& position) override;
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) override;
 
 	void RenderRealTime(GUIContext* context) override;
 
 private:
 	Texture2D* m_pTextureForeground;
 	bool m_IsPressed;
-	float m_Offset;
+	bool m_IsHovered;
+	float m_MouseOffset;
+	float m_SliderPos;
+	float m_SliderVel;
 	float m_Ratio;
-	float m_Percentage;
+	glm::vec4 m_SliderColor;
+	glm::vec4 m_PressedColor;
+	glm::vec4 m_HoverColor;
+	std::vector<ISliderListener*> m_SliderListeners;
+	void(*m_OnChangedCallback)(Slider*, float);
 };

@@ -6,25 +6,23 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 
-std::vector<IMouseListener*> GUIObject::m_MouseListeners;
-std::vector<IRealTimeRendered*> GUIObject::m_RealTimeRenderers;
+std::vector<GUIObject*> GUIObject::s_MouseListeners;
+std::vector<GUIObject*> GUIObject::s_RealTimeRenderers;
+Texture2D* GUIObject::s_pDefaultTexture = nullptr;
 
 GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_Position(x, y),
 	m_pFramebuffer(nullptr),
-	m_pBackgroundTexture(nullptr)
+	m_pBackgroundTexture(nullptr),
+	m_pParent(nullptr),
+	m_IsVisible(true),
+	m_pUserData(nullptr),
+	m_IsDirty(false),
+	m_BackgroundColor(1.0, 1.0, 1.0, 1.0)
 {
 	if (width > 0 && height > 0)
 	{
-		FramebufferDesc desc;
-		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.SamplingParams = TextureParams();
-		desc.NumColorAttachments = 1;
-		desc.Width = static_cast<uint32>(width);
-		desc.Height = static_cast<uint32>(height);
-
-		m_pFramebuffer = new Framebuffer(desc);
+		RecreateFrameBuffer(width, height);
 	}
 }
 
@@ -34,19 +32,35 @@ GUIObject::~GUIObject()
 	{
 		delete m_pFramebuffer;
 	}
+
+	RemoveMouseListener(this);
+	RemoveRealTimeRenderer(this);
+
+	if (m_DeleteAll)
+	{
+		for (GUIObject* object : m_Children)
+		{
+			object->SetDeleteAllChildrenOnDestruction(true);
+			delete object;
+		}
+	}
+	m_Children.clear();
+	m_ChildrenToAdd.clear();
+	m_ChildrenToRemove.clear();
+	m_ChildrenDirty.clear();
 }
 
-bool GUIObject::HasParent() const
+bool GUIObject::HasParent() const noexcept
 {
 	return m_pParent != nullptr;
 }
 
-GUIObject* GUIObject::GetParent() const
+GUIObject* GUIObject::GetParent() const noexcept
 {
 	return m_pParent;
 }
 
-void GUIObject::Add(GUIObject* object)
+void GUIObject::Add(GUIObject* object) noexcept
 {
 	if (!Contains<GUIObject>(m_Children, object) && !Contains<GUIObject>(m_ChildrenToAdd, object))
 	{
@@ -54,7 +68,7 @@ void GUIObject::Add(GUIObject* object)
 	}
 }
 
-void GUIObject::Remove(GUIObject* object)
+void GUIObject::Remove(GUIObject* object) noexcept
 {
 	if (Contains<GUIObject>(m_Children, object))
 	{
@@ -70,16 +84,16 @@ void GUIObject::RequestRepaint()
 		{
 			GetParent()->m_ChildrenDirty.push_back(this);
 			GetParent()->RequestRepaint();
+			m_IsDirty = true;
 		}
 	}
-	m_IsDirty = true;
 }
 
-void GUIObject::AddMouseListener(IMouseListener* listener)
+void GUIObject::AddMouseListener(GUIObject* listener)
 {
-	if (!Contains<IMouseListener>(m_MouseListeners, listener))
+	if (!Contains<GUIObject>(s_MouseListeners, listener))
 	{
-		m_MouseListeners.push_back(listener);
+		s_MouseListeners.push_back(listener);
 	}
 	else
 	{
@@ -87,25 +101,25 @@ void GUIObject::AddMouseListener(IMouseListener* listener)
 	}
 }
 
-void GUIObject::RemoveMouseListener(IMouseListener* listener)
+void GUIObject::RemoveMouseListener(GUIObject* listener)
 {
 	int32 counter = 0;
-	for (IMouseListener* object : m_MouseListeners)
+	for (GUIObject* object : s_MouseListeners)
 	{
 		if (object == listener)
 		{
-			m_MouseListeners.erase(m_MouseListeners.begin() + counter);
+			s_MouseListeners.erase(s_MouseListeners.begin() + counter);
 			return;
 		}
 		counter++;
 	}
 }
 
-void GUIObject::AddRealTimeRenderer(IRealTimeRendered* listener)
+void GUIObject::AddRealTimeRenderer(GUIObject* listener)
 {
-	if (!Contains<IRealTimeRendered>(m_RealTimeRenderers, listener))
+	if (!Contains<GUIObject>(s_RealTimeRenderers, listener))
 	{
-		m_RealTimeRenderers.push_back(listener);
+		s_RealTimeRenderers.push_back(listener);
 	}
 	else
 	{
@@ -113,14 +127,14 @@ void GUIObject::AddRealTimeRenderer(IRealTimeRendered* listener)
 	}
 }
 
-void GUIObject::RemoveRealTimeRenderer(IRealTimeRendered* listener)
+void GUIObject::RemoveRealTimeRenderer(GUIObject* listener)
 {
 	int32 counter = 0;
-	for (IRealTimeRendered* object : m_RealTimeRenderers)
+	for (GUIObject* object : s_RealTimeRenderers)
 	{
 		if (object == listener)
 		{
-			m_RealTimeRenderers.erase(m_RealTimeRenderers.begin() + counter);
+			s_RealTimeRenderers.erase(s_RealTimeRenderers.begin() + counter);
 			return;
 		}
 		counter++;
@@ -132,16 +146,35 @@ bool GUIObject::IsDirty() const noexcept
 	return m_IsDirty;
 }
 
-Texture2D* GUIObject::GetTexture() const noexcept
+bool GUIObject::IsMyChild(const GUIObject* child) const noexcept
+{
+	return Contains<GUIObject>(m_Children, child);
+}
+
+Texture2D* GUIObject::GetBackgroundTexture() const noexcept
 {
 	return m_pBackgroundTexture;
 }
 
-void GUIObject::SetTexture(Texture2D* texture)
+void GUIObject::SetBackgroundTexture(Texture2D* texture)
 {
 	if (m_pBackgroundTexture != texture)
 	{
-		m_pBackgroundTexture = texture;
+		m_pBackgroundTexture = GetDefaultTexture();
+		RequestRepaint();
+	}
+}
+
+const glm::vec4& GUIObject::GetBackgroundColor() const noexcept
+{
+	return m_BackgroundColor;
+}
+
+void GUIObject::SetBackgroundColor(const glm::vec4& color) noexcept
+{
+	if (m_BackgroundColor != color)
+	{
+		m_BackgroundColor = color;
 		RequestRepaint();
 	}
 }
@@ -166,24 +199,64 @@ float GUIObject::GetY() const noexcept
 	return m_Position.y;
 }
 
-float GUIObject::GetXInWorld() const noexcept
+float GUIObject::GetXInWorld(const GUIObject* child) const noexcept
 {
 	float value = GetX();
 	if (HasParent())
 	{
-		value += GetParent()->GetXInWorld();
+		value += GetParent()->GetXInWorld(this);
 	}
 	return value;
 }
 
-float GUIObject::GetYInWorld() const noexcept
+float GUIObject::GetYInWorld(const GUIObject* child) const noexcept
 {
 	float value = GetY();
 	if (HasParent())
 	{
-		value += GetParent()->GetYInWorld();
+		value += GetParent()->GetYInWorld(this);
 	}
 	return value;
+}
+
+void GUIObject::SetSize(float width, float height) noexcept
+{
+	if (GetWidth() != width || GetHeight() != height)
+	{
+		RecreateFrameBuffer(width, height);
+		RequestRepaint();
+	}
+}
+
+void GUIObject::SetPosition(float x, float y) noexcept
+{
+	if (m_Position.x != x || m_Position.y != y)
+	{
+		m_Position.x = x;
+		m_Position.y = y;
+		if (HasParent())
+		{
+			GetParent()->RequestRepaint();
+		}
+	}
+}
+
+void GUIObject::SetVisible(bool visible) noexcept
+{
+	if (m_IsVisible != visible)
+	{
+		m_IsVisible = visible;
+		RequestRepaint();
+	}
+}
+
+bool GUIObject::IsVisible() noexcept
+{
+	if (HasParent())
+	{
+		return m_IsVisible && GetParent()->IsVisible();
+	}
+	return m_IsVisible;
 }
 
 void GUIObject::InternalOnUpdate(float dtS)
@@ -191,36 +264,56 @@ void GUIObject::InternalOnUpdate(float dtS)
 	/*
 	* Remove the children who wants to be removed
 	*/
-	for (GUIObject* objectToRemove : m_ChildrenToRemove)
+	if (!m_ChildrenToRemove.empty())
 	{
-		int32 counter = 0;
-		for (GUIObject* object : m_Children)
+		for (GUIObject* objectToRemove : m_ChildrenToRemove)
 		{
-			if (objectToRemove == object)
+			int32 counter = 0;
+			for (GUIObject* object : m_Children)
 			{
-				m_Children.erase(m_Children.begin() + counter);
-				objectToRemove->OnRemoved(this);
-				objectToRemove->m_pParent = nullptr;
-				std::cout << "GUI Object Removed" << std::endl;
-				return;
+				if (objectToRemove == object)
+				{
+					m_Children.erase(m_Children.begin() + counter);
+					objectToRemove->OnRemoved(this);
+					objectToRemove->m_pParent = nullptr;
+					std::cout << "GUI Object Removed" << std::endl;
+					return;
+				}
+				counter++;
 			}
-			counter++;
 		}
+		m_ChildrenToRemove.clear();
+		RequestRepaint();
 	}
+	
 
 	/*
 	* Add the children who wants to be added
 	*/
-	for (GUIObject* objectToAdd : m_ChildrenToAdd)
+	if (!m_ChildrenToAdd.empty())
 	{
-		m_Children.push_back(objectToAdd);
-		m_ChildrenDirty.push_back(objectToAdd);
-		objectToAdd->m_pParent = this;
-		objectToAdd->OnAdded(this);
-		std::cout << "GUI Object Added" << std::endl;
+		static std::vector<GUIObject*> newChildren;
+
+		for (GUIObject* objectToAdd : m_ChildrenToAdd)
+		{
+			newChildren.push_back(objectToAdd);
+		}
+		m_ChildrenToAdd.clear();
+		
+		for (GUIObject* objectToAdd : newChildren)
+		{
+			m_Children.push_back(objectToAdd);
+			objectToAdd->m_pParent = this;
+			objectToAdd->RequestRepaint();
+			objectToAdd->OnAdded(this);
+			std::cout << "Added: ";
+			objectToAdd->PrintName();
+			std::cout << ", Parent: ";
+			PrintName();
+			std::cout << std::endl;
+		}
+		newChildren.clear();
 	}
-	m_ChildrenToRemove.clear();
-	m_ChildrenToAdd.clear();
 
 	/*
 	* Let the children do the same checks as above
@@ -247,7 +340,7 @@ void GUIObject::InternalOnRender(GUIContext* context)
 	/*
 	* Render my self
 	*/
-	context->BeginSelfRendering(m_pFramebuffer);
+	context->BeginSelfRendering(m_pFramebuffer, GetClearColor());
 	this->OnRender(context);
 
 	/*
@@ -274,9 +367,21 @@ void GUIObject::InternalRootOnRender(GUIContext* context)
 	context->BeginRootRendering();
 	RenderChildrensFrameBuffers(context);
 
-	for (IRealTimeRendered* renderer : m_RealTimeRenderers)
+	for (GUIObject* object : s_RealTimeRenderers)
 	{
-		renderer->RenderRealTime(context);
+		if (object->IsVisible())
+		{
+			if (object->HasParent())
+			{
+				object->GetParent()->ControllRealTimeRenderingForChildPre(context, object);
+				object->RenderRealTime(context);
+				object->GetParent()->ControllRealTimeRenderingForChildPost(context, object);
+			}
+			else
+			{
+				object->RenderRealTime(context);
+			}
+		}
 	}
 }
 
@@ -289,12 +394,72 @@ void GUIObject::RerenderChildren(GUIContext* context)
 	m_ChildrenDirty.clear();
 }
 
+void GUIObject::RecreateFrameBuffer(float width, float height)
+{
+	if (m_pFramebuffer)
+	{
+		delete m_pFramebuffer;
+	}
+
+	FramebufferDesc desc;
+	desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
+	desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+	desc.SamplingParams = TextureParams();
+	desc.NumColorAttachments = 1;
+	desc.Width = static_cast<uint32>(width);
+	desc.Height = static_cast<uint32>(height);
+
+	m_pFramebuffer = new Framebuffer(desc);
+}
+
+void GUIObject::CreateDefaultTexture()
+{
+	if (!s_pDefaultTexture)
+	{
+		TextureDesc desc;
+		desc.Format = TEX_FORMAT_RGBA;
+		desc.Width = 1;
+		desc.Height = 1;
+		desc.Samples = 0;
+		desc.GenerateMips = false;
+
+		uint8 pixel[] = { 255, 255, 255, 255 };
+
+		s_pDefaultTexture = new Texture2D(pixel, desc);
+	}
+}
+
+void GUIObject::DeleteDefaultTexture()
+{
+	if (s_pDefaultTexture)
+	{
+		delete s_pDefaultTexture;
+	}
+}
+
 void GUIObject::RenderChildrensFrameBuffers(GUIContext* context)
 {
 	for (GUIObject* child : m_Children)
 	{
-		context->RenderFrameBuffer(child->m_pFramebuffer, child->GetX(), child->GetY());
+		if (child->m_IsVisible)
+		{
+			context->RenderFrameBuffer(child->m_pFramebuffer, child->GetX(), child->GetY());
+		}
 	}
+}
+
+void GUIObject::RenderRealTime(GUIContext* context)
+{
+}
+
+void GUIObject::ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child)
+{
+	
+}
+
+void GUIObject::ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child)
+{
+	
 }
 
 void GUIObject::OnRender(GUIContext* context)
@@ -304,16 +469,17 @@ void GUIObject::OnRender(GUIContext* context)
 
 void GUIObject::RenderBackgroundTexture(GUIContext* context)
 {
-	context->SetVertexQuadData(0, 0, GetWidth(), GetHeight());
-	if (m_pBackgroundTexture)
+	context->SetVertexQuadData(0, 0, GetWidth(), GetHeight(), GUIContext::COLOR_WHITE);
+	Texture2D* texture = GetClearTexture();
+	if (texture)
 	{
-		context->GetGraphicsContext()->SetTexture(m_pBackgroundTexture, 0);
+		context->GetGraphicsContext()->SetTexture(texture, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		context->GetGraphicsContext()->SetTexture(nullptr, 0);
 	}
 }
 
-bool GUIObject::ContainsPoint(const glm::vec2& position)
+bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();
@@ -322,32 +488,102 @@ bool GUIObject::ContainsPoint(const glm::vec2& position)
 	{
 		if (position.y > y && position.y < y + GetHeight())
 		{
+			if (HasParent())
+			{
+				return GetParent()->ContainsPoint(position);
+			}
 			return true;
 		}
 	}
 	return false;
 }
 
+void GUIObject::DeleteChildren()
+{
+	for (GUIObject* object : m_Children)
+	{
+		object->DeleteChildren();
+		delete object;
+	}
+	m_Children.clear();
+}
+
+void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
+{
+	m_DeleteAll = deleteAll;
+}
+
+void GUIObject::SetUserData(void* data)
+{
+	m_pUserData = data;
+}
+
+void* GUIObject::GetUserData() const
+{
+	return m_pUserData;
+}
+
+const std::vector<GUIObject*>& GUIObject::GetChildren()
+{
+	return m_Children;
+}
+
+Texture2D* GUIObject::GetDefaultTexture() const
+{
+	return s_pDefaultTexture;
+}
+
+const glm::vec4& GUIObject::GetClearColor() const
+{
+	return GetBackgroundColor();
+}
+
+Texture2D* GUIObject::GetClearTexture() const
+{
+	return GetBackgroundTexture();
+}
+
 void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (IMouseListener* listener : m_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		listener->OnMousePressed(position, mousebutton);
+		if (s_MouseListeners[i]->IsVisible())
+		{
+			s_MouseListeners[i]->OnMousePressed(position, mousebutton);
+		}
 	}
 }
 
 void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (IMouseListener* listener : m_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		listener->OnMouseReleased(position, mousebutton);
+		if (s_MouseListeners[i]->IsVisible())
+		{
+			s_MouseListeners[i]->OnMouseReleased(position, mousebutton);
+		}
 	}
 }
 
-void GUIObject::InternalRootOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
+void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 {
-	for (IMouseListener* listener : m_MouseListeners)
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
 	{
-		listener->OnMouseMove(lastPosition, position);
+		if (s_MouseListeners[i]->IsVisible())
+		{
+			s_MouseListeners[i]->OnMouseMove(position);
+		}
 	}
+}
+
+void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
+{
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
+	{
+		if (s_MouseListeners[i]->IsVisible())
+		{
+			s_MouseListeners[i]->OnMouseScroll(position, offset);
+		}
+	}
+	InternalRootOnMouseMove(position);
 }

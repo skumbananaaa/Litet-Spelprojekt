@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Main.cpp">
+    <ClCompile Include="Source\Editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Editor.cpp">
+    <ClCompile Include="Source\MainEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -33,6 +33,8 @@
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
     <None Include="Resources\Shaders\FShaderGUI.glsl" />
+    <None Include="Resources\Shaders\orthoVert.glsl" />
+    <None Include="Resources\Shaders\orthoFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Editor.h">

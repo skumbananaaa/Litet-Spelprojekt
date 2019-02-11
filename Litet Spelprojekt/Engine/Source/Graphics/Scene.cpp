@@ -4,11 +4,17 @@
 Scene::Scene() noexcept
 {
 	m_pCamera = nullptr;
+	m_pSkyBox = nullptr;
 }
 
 Scene::~Scene()
 {
-	DeleteSafe(m_pCamera);
+	for (size_t i = 0; i < m_Cameras.size(); i++)
+	{
+		DeleteSafe(m_Cameras[i]);
+	}
+
+	DeleteSafe(m_pSkyBox);
 
 	for (size_t i = 0; i < m_GameObjects.size(); i++)
 	{
@@ -29,16 +35,93 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_SpotLights[i]);
 	}
+
+	for (size_t i = 0; i < m_PlanarReflectors.size(); i++)
+	{
+		DeleteSafe(m_PlanarReflectors[i]);
+	}
 }
 
-void Scene::SetCamera(Camera* pCamera) noexcept
+void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
 {
+	if (m_Cameras.size() == index)
+	{
+		m_Cameras.push_back(pCamera);
+	}
+	else if (index > m_Cameras.size())
+	{
+		std::cout << "Failed to set camera!!! Index out of range" << std::endl;
+		return;
+	}
+	else
+	{
+		m_Cameras[index] = pCamera;
+	}
 	m_pCamera = pCamera;
+}
+
+void Scene::SelectCamera(uint32 index)
+{
+	m_pCamera = m_Cameras[index];
+}
+
+void Scene::SetSkyBox(SkyBox* pSkyBox) noexcept
+{
+	m_pSkyBox = pSkyBox;
+}
+
+const GameObject* Scene::GetGameObject(const std::string& name) const noexcept
+{
+	auto item = m_NamedObjects.find(name);
+	if (item == m_NamedObjects.end())
+	{
+		return nullptr;
+	}
+
+	return item->second;
+}
+
+GameObject* Scene::GetGameObject(const std::string& name) noexcept
+{
+	auto item = m_NamedObjects.find(name);
+	if (item == m_NamedObjects.end())
+	{
+		return nullptr;
+	}
+
+	return item->second;
+}
+
+const std::vector<PlanarReflector*>& Scene::GetPlanarReflectors() const noexcept
+{
+	return m_PlanarReflectors;
 }
 
 void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
+	assert(pGameObject != nullptr);
+
 	m_GameObjects.push_back(pGameObject);
+	if (pGameObject->HasMaterial() && pGameObject->HasMesh())
+	{
+		m_Drawables.push_back(pGameObject);
+	}
+	
+	if (pGameObject->HasDecal())
+	{
+		m_Decals.push_back(pGameObject);
+	}
+
+	if (pGameObject->IsReflectable())
+	{
+		m_Reflectables.push_back(pGameObject);
+	}
+
+	const std::string& name = pGameObject->GetName();
+	if (name != "")
+	{
+		m_NamedObjects[name] = pGameObject;
+	}
 }
 
 void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
@@ -56,15 +139,37 @@ void Scene::AddSpotLight(SpotLight* pLight) noexcept
 	m_SpotLights.push_back(pLight);
 }
 
+void Scene::AddPlanarReflector(PlanarReflector* pReflector) noexcept
+{
+	m_PlanarReflectors.push_back(pReflector);
+}
+
 void Scene::RemoveGameObject(uint32 index) noexcept
 {
 	m_GameObjects.erase(m_GameObjects.begin() + index);
 }
 
+void Scene::ExtendScene(bool extend) noexcept
+{
+	for (GameObject* pGameObject : m_GameObjects)
+	{
+		pGameObject->SetExtend(extend);
+	}
+	for (SpotLight* pSpotLight : m_SpotLights)
+	{
+		pSpotLight->SetExtend(extend);
+	}
+	m_Extended = !m_Extended;
+}
+
 void Scene::OnUpdate(float dtS) noexcept
 {
-	for (uint32 i = 0; i < m_GameObjects.size(); i++)
+	for (GameObject* pGameObject : m_GameObjects)
 	{
-		m_GameObjects[i]->UpdateTransform();
+		pGameObject->Update(dtS);
+	}
+	for (SpotLight* pSpotLight : m_SpotLights)
+	{
+		pSpotLight->Update(dtS);
 	}
 }

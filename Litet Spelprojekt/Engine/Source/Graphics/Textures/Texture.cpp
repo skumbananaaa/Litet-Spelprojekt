@@ -19,13 +19,23 @@ Texture::~Texture()
 
 void Texture::SetParameters(const TextureParams& params) noexcept
 {
-	if (m_Type != GL_TEXTURE_2D_MULTISAMPLE)
+	if (m_Type == GL_TEXTURE_2D)
 	{
 		GL_CALL(glBindTexture(m_Type, m_Texture));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter)));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter)));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap)));
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap)));
+		GL_CALL(glBindTexture(m_Type, 0));
+	}
+	else if (m_Type == GL_TEXTURE_CUBE_MAP)
+	{
+		GL_CALL(glBindTexture(m_Type, m_Texture));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MIN_FILTER, TexParamToGL(params.MinFilter)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_MAG_FILTER, TexParamToGL(params.MagFilter)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_S, TexParamToGL(params.Wrap)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_T, TexParamToGL(params.Wrap)));
+		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_R, TexParamToGL(params.Wrap)));
 		GL_CALL(glBindTexture(m_Type, 0));
 	}
 }
@@ -55,12 +65,15 @@ uint32 Texture::TexFormatToGL(TEX_FORMAT format) noexcept
 	{
 		0,
 		GL_RED,
+		GL_RED,
+		GL_RED,
 		GL_RG,
 		GL_RGB,
 		GL_RGBA,
 		GL_RGBA,
 		GL_DEPTH_COMPONENT,
 		GL_DEPTH_STENCIL,
+		GL_RGB,
 	};
 
 	return s_TexFormatTable[format];
@@ -72,12 +85,15 @@ uint32 Texture::TexFormatToGLInternal(TEX_FORMAT format) noexcept
 	{
 		0,
 		GL_RED,
+		GL_R16F,
+		GL_R32F,
 		GL_RG,
 		GL_RGB,
 		GL_RGBA,
 		GL_RGBA16F,
 		GL_DEPTH_COMPONENT,
 		GL_DEPTH24_STENCIL8,
+		GL_RGB16F,
 	};
 
 	return s_TexFormatTable[format];
@@ -89,12 +105,15 @@ uint32 Texture::TexFormatToGLType(TEX_FORMAT format) noexcept
 	{
 		0,
 		GL_UNSIGNED_BYTE,
+		GL_FLOAT,
+		GL_FLOAT,
 		GL_UNSIGNED_BYTE,
 		GL_UNSIGNED_BYTE,
 		GL_UNSIGNED_BYTE,
 		GL_FLOAT,
 		GL_UNSIGNED_INT,
 		GL_UNSIGNED_INT_24_8,
+		GL_FLOAT,
 	};
 
 	return s_TexTypeTable[format];
@@ -118,6 +137,9 @@ uint32 Texture::FormatToNrChannels(TEX_FORMAT format) noexcept
 
 	case TEX_FORMAT::TEX_FORMAT_RGBA16F:
 		return 4;
+
+	case TEX_FORMAT::TEX_FORMAT_RGB16F:
+		return 0;
 
 	default:
 		std::cout << "ERROR: Format could not be converted to nr of channels" << std::endl;

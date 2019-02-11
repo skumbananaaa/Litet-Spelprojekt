@@ -5,6 +5,6 @@
 class API WorldSerializer
 {
 public:
-	static void Read(const char* const path, World& world);
+	static World* Read(const char* const path);
 	static void Write(const char* const path, const World& world);
 };

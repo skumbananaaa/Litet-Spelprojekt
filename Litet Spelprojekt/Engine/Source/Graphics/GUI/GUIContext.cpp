@@ -4,7 +4,9 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 
-GUIContext::GUIContext(GLContext* context, ShaderProgram* shaderProgram, FontRenderer* fontRenderer) :
+const glm::vec4 GUIContext::COLOR_WHITE(1.0f, 1.0f, 1.0f, 1.0f);
+
+GUIContext::GUIContext(GLContext* context, const ShaderProgram* shaderProgram, FontRenderer* fontRenderer) :
 	m_pContext(context),
 	m_pShaderProgram(shaderProgram),
 	m_pFontRenderer(fontRenderer)
@@ -20,12 +22,12 @@ GUIContext::~GUIContext()
 	delete m_pUniformBuffer;
 }
 
-void GUIContext::BeginSelfRendering(Framebuffer* frameBuffer)
+void GUIContext::BeginSelfRendering(Framebuffer* frameBuffer, const glm::vec4& clearColor)
 {
 	SetTransform(frameBuffer->GetWidth(), frameBuffer->GetHeight());
 
 	m_pContext->SetFramebuffer(frameBuffer);
-	m_pContext->SetClearColor(0.0, 0.0, 0.0, 0.0);
+	m_pContext->SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	m_pContext->Clear(CLEAR_FLAG_COLOR);
 	m_pContext->SetViewport(frameBuffer->GetWidth(), frameBuffer->GetHeight(), 0, 0);
 
@@ -43,6 +45,8 @@ void GUIContext::BeginRootRendering()
 	m_pContext->SetFramebuffer(nullptr);
 	m_pContext->SetViewport(width, height, 0, 0);
 
+	m_pContext->ResetClearColor();
+
 	glBindVertexArray(m_VAO);
 	m_pContext->SetProgram(m_pShaderProgram);
 	m_pContext->SetUniformBuffer(m_pUniformBuffer, 0);
@@ -56,7 +60,7 @@ void GUIContext::SetTransform(float width, float height)
 
 void GUIContext::RenderFrameBuffer(Framebuffer* frameBuffer, float x, float y)
 {
-	SetVertexQuadData(x, y, frameBuffer->GetWidth(), frameBuffer->GetHeight());
+	SetVertexQuadData(x, y, frameBuffer->GetWidth(), frameBuffer->GetHeight(), COLOR_WHITE);
 	m_pContext->SetTexture(frameBuffer->GetColorAttachment(0), 0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
@@ -66,7 +70,7 @@ void GUIContext::RenderText(const std::string& text, int32 x, int32 y, float sca
 	m_pFontRenderer->RenderText(m_pContext, text, x, y, scale);
 }
 
-glm::vec2& GUIContext::CalculateTextSize(const std::string& text, float scale)
+glm::vec2 GUIContext::CalculateTextSize(const std::string& text, float scale)
 {
 	return m_pFontRenderer->CalculateSize(text, scale);
 }
@@ -81,12 +85,12 @@ FontRenderer* GUIContext::GetFontRenderer() const
 	return m_pFontRenderer;
 }
 
-ShaderProgram* GUIContext::GetShaderProgram() const
+const ShaderProgram* GUIContext::GetShaderProgram() const
 {
 	return m_pShaderProgram;
 }
 
-void GUIContext::SetVertexQuadData(float x, float y, float width, float height)
+void GUIContext::SetVertexQuadData(float x, float y, float width, float height, const glm::vec4& color)
 {
 	m_VertexQuad[0].position.x = x;
 	m_VertexQuad[0].position.y = y + height;
@@ -101,6 +105,13 @@ void GUIContext::SetVertexQuadData(float x, float y, float width, float height)
 	m_VertexQuad[4].position.y = y;
 	m_VertexQuad[5].position.x = x + width;
 	m_VertexQuad[5].position.y = y + height;
+
+	m_VertexQuad[0].color = color;
+	m_VertexQuad[1].color = color;
+	m_VertexQuad[2].color = color;
+	m_VertexQuad[3].color = color;
+	m_VertexQuad[4].color = color;
+	m_VertexQuad[5].color = color;
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(VertexGUI) * 6, m_VertexQuad);
@@ -144,6 +155,8 @@ void GUIContext::CreateVertexBuffer()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexGUI), (void*)8); //Tex
 	glEnableVertexAttribArray(1);
 
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(VertexGUI), (void*)16); //Color
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

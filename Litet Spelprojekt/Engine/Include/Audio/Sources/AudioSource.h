@@ -3,16 +3,16 @@
 #include <GLM/glm.hpp>
 #include <Audio/SoundEffect.h>
 #include <Audio/Music.h>
+#include <IO/ResourceHandler.h>
 
 class API AudioSource
 {
 public:
-	AudioSource(const SoundEffect& soundEffect, const glm::vec3& pos = glm::vec3(0.0f), const glm::vec3& vel = glm::vec3(0.0f)) noexcept;
-	AudioSource(const Music& music) noexcept;
 	~AudioSource();
 
 	void Play() const noexcept;
 	void Pause() const noexcept;
+	void TogglePause() noexcept;
 	void Stop() const noexcept;
 
 	void SetPosition(const glm::vec3& pos) const noexcept;
@@ -32,6 +32,13 @@ public:
 	///</summary>
 	void SetMaxDistance(float value) const noexcept;
 
+	static AudioSource* CreateSoundSource(int32 sound, const glm::vec3& pos = glm::vec3(0.0f), const glm::vec3& vel = glm::vec3(0.0f));
+	static AudioSource* CreateMusicSource(int32 music);
+
 private:
+	AudioSource(const SoundEffect& soundEffect, const glm::vec3& pos = glm::vec3(0.0f), const glm::vec3& vel = glm::vec3(0.0f)) noexcept;
+	AudioSource(const Music& music) noexcept;
+
 	uint32 m_SourceId;
+	bool m_Paused = false;
 };

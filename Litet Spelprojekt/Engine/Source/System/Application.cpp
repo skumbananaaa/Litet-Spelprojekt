@@ -5,7 +5,7 @@
 constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
-Framebuffer* temp;
+//Framebuffer* temp;
 
 Application::Application(bool fullscreen, uint32 width, uint32 height, const std::string& prePath, bool useMultiThreading)
 	: m_pWindow(nullptr),
@@ -39,14 +39,14 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 		m_pGraphicsContext = new GLContext(width, height);
 
 
-		FramebufferDesc desc;
+		/*FramebufferDesc desc;
 		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
 		desc.SamplingParams = TextureParams();
 		desc.NumColorAttachments = 1;
 		desc.Width = static_cast<uint32>(500);
 		desc.Height = static_cast<uint32>(500);
-		temp = new Framebuffer(desc);
+		temp = new Framebuffer(desc);*/
 
 		ThreadHandler::Init();
 		ResourceHandler::LoadResources(this, prePath, useMultiThreading);
@@ -69,7 +69,7 @@ Application::~Application()
 	DeleteSafe(m_pGUIManager);
 	DeleteSafe(m_pAudioContext);
 
-	DeleteSafe(temp);
+	//DeleteSafe(temp);
 
 	glfwTerminate();
 
@@ -149,9 +149,9 @@ int32_t Application::Run()
 			ups++;
 		}
 
-		m_pGraphicsContext->SetFramebuffer(temp);
+		/*m_pGraphicsContext->SetFramebuffer(temp);
 		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR);
-		m_pGraphicsContext->SetFramebuffer(nullptr);
+		m_pGraphicsContext->SetFramebuffer(nullptr);*/
 
 		InternalOnRender(deltaTime);
 		fps++;	

@@ -513,6 +513,7 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 			SetClipPlanes();
 		}
+		else
 		{
 			const float cameraZoomSensitivity = 0.1f;
 			m_pCurrentScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);

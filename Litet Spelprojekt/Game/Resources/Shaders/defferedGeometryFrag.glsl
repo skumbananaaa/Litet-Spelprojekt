@@ -1,4 +1,3 @@
-#version 420
 
 #define NUM_CLIP_DISTANCES 8
 #define WALL_STUMP_FROM_CENTER 0.725f

@@ -1,4 +1,3 @@
-#version 420
 
 out VS_OUT
 {

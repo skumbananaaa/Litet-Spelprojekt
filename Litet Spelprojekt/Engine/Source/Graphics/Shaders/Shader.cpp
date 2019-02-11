@@ -37,8 +37,8 @@ bool Shader::CompileFromSource(const char* const pSource, ShaderType type, const
 	{
 		shaderTypeStr = "FRAGMENT_SHADER\n";
 	}
-
-	std::string finalSource = "#define " + shaderTypeStr;
+	std::string finalSource = "#version 420\n";
+	finalSource += "#define " + shaderTypeStr;
 	for (uint32 i = 0; i < defines.NumDefines; i++)
 	{
 		finalSource += "#define " + std::string(defines.ppDefines[i]) + '\n';

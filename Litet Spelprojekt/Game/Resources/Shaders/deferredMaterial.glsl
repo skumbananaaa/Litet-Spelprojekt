@@ -1,4 +1,3 @@
-#version 420
 
 vec3 EncodeNormals(vec3 normal)
 {

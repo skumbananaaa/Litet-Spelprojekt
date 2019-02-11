@@ -4,6 +4,7 @@
 #include <Graphics/Renderers/GLContext.h>
 #include <Graphics/GUI/GUIContext.h>
 #include <Graphics/GUI/GUIObject.h>
+#include <IO/ResourceHandler.h>
 
 class API GUIManager : public GUIObject
 {

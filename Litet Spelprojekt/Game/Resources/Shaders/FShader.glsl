@@ -1,4 +1,3 @@
-#version 420 core
 
 in VS_OUT
 {

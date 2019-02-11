@@ -12,6 +12,15 @@ uint32 TEXTURE::HDR = 0;
 uint32 TEXTURE::SINGLE_BED = 0;
 uint32 TEXTURE::BUNK_BED = 0;
 
+
+/*
+* Used for preloading resources needed in the loading screen
+*/
+void TEXTURE::RegisterResourcesPreLoading()
+{
+	
+}
+
 void TEXTURE::RegisterResources()
 {
 	TextureParams params = {};
@@ -29,8 +38,6 @@ void TEXTURE::RegisterResources()
 	WATER_NORMAL		= ResourceHandler::RegisterTexture2D("waterNormalMap.png", TEX_FORMAT_RGBA, true, params);
 
 	params.Wrap = TEX_PARAM_EDGECLAMP;
-	params.MagFilter = TEX_PARAM_LINEAR;
-	params.MinFilter = TEX_PARAM_LINEAR;
 
 	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, true, params);
 }

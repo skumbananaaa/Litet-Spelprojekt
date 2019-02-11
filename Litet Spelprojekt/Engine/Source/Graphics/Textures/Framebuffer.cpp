@@ -13,6 +13,11 @@ Framebuffer::Framebuffer(const FramebufferDesc& desc)
 	m_Height(0),
 	m_Samples(0)
 {
+	for (uint32 i = 0; i < 8; i++)
+	{
+		m_ppColor[i] = nullptr;
+	}
+
 	Create(desc);
 }
 
@@ -26,6 +31,11 @@ Framebuffer::Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDe
 	m_Height(0),
 	m_Samples(0)
 {
+	for (uint32 i = 0; i < 8; i++)
+	{
+		m_ppColor[i] = nullptr;
+	}
+
 	Create(ppColor, numTextures, pDepthStencil);
 }
 
@@ -35,18 +45,10 @@ Framebuffer::~Framebuffer()
 	{
 		for (uint32 i = 0; i < m_NumColorAttachments; i++)
 		{
-			if (m_ppColor[i] != nullptr)
-			{
-				delete m_ppColor[i];
-				m_ppColor[i] = nullptr;
-			}
+			DeleteSafe(m_ppColor[i]);
 		}
 
-		if (m_pDepthStencil != nullptr)
-		{
-			delete m_pDepthStencil;
-			m_pDepthStencil = nullptr;
-		}
+		DeleteSafe(m_pDepthStencil);
 	}
 
 	if (glIsFramebuffer(m_Framebuffer))

@@ -1,4 +1,3 @@
-#version 420
 
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 18

@@ -16,13 +16,17 @@
 #include <IO/GAMEOBJECT.h>
 #include <IO/SOUND.h>
 #include <IO/MUSIC.h>
+#include <IO/SHADER.h>
 
 class GameObject;
 class SoundEffect;
 class Music;
+class ShaderProgram;
 
 class API ResourceHandler : public IRunnable
 {
+	friend class Application;
+
 public:
 	static uint32 RegisterMesh(const std::string& filename);
 	static uint32 RegisterMesh(IndexedMesh* mesh);
@@ -35,6 +39,7 @@ public:
 	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);
 	static uint32 RegisterMusic(const std::string filename);
+	static uint32 RegisterShader(const std::string vertex, const std::string pixel);
 
 	static IndexedMesh* GetMesh(int32 mesh);
 	static int32 GetMesh(const IndexedMesh* mesh);
@@ -44,6 +49,7 @@ public:
 	static Decal* GetDecal(int32 decal);
 	static const SoundEffect* GetSound(int32 sound);
 	static const Music* GetMusic(int32 music);
+	static const ShaderProgram* GetShader(int32 shader);
 
 	static GameObject* CreateGameObject(int32 gameObject);
 
@@ -51,12 +57,16 @@ public:
 
 	static void QuaryGameObjectTypes(std::vector<std::string>& list);
 
-	static void LoadResources(IResourceListener* resourceListener, std::string prePath = "");
-	static void ReleaseResources();
-
 	virtual void RunParallel();
 
 private:
+	static void Load();
+	static void Construct();
+	static void LoadResources(IResourceListener* resourceListener, std::string prePath, bool multiThreading);
+	static void ConstructResources();
+	static void ReleaseResources();
+	static void TriggerOnLoading(const std::string& file, float percentage);
+
 	struct TEXTURE2D_DESC_INTERNAL
 	{
 		std::string filename = "";
@@ -88,13 +98,21 @@ private:
 		std::string filename = "";
 	};
 
+	struct SHADER_DESC_INTERNAL
+	{
+		std::string vertex = "";
+		std::string pixel = "";
+	};
+
 	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];
 	static IndexedMesh* m_pIndexedMeshes[64];
 	static uint32 m_NrOfMeshes;
+	static uint32 m_NrOfMeshesLoaded;
 
 	static TEXTURE2D_DESC_INTERNAL m_pTexture2DFiles[64];
 	static Texture2D* m_pTexture2Ds[64];
 	static uint32 m_NrOfTexture2D;
+	static uint32 m_NrOfTexture2DLoaded;
 
 	static Material* m_pMaterials[512];
 	static uint32 m_NrOfMaterials;
@@ -108,10 +126,17 @@ private:
 	static SOUND_DESC_INTERNAL m_pSoundFiles[64];
 	static SoundEffect* m_pSounds[64];
 	static uint32 m_NrOfSounds;
+	static uint32 m_NrOfSoundsLoaded;
 
 	static MUSIC_DESC_INTERNAL m_pMusicFiles[64];
 	static Music* m_pMusic[64];
 	static uint32 m_NrOfMusic;
+	static uint32 m_NrOfMusicLoaded;
+
+	static SHADER_DESC_INTERNAL m_ShaderFiles[64];
+	static ShaderProgram* m_pShaders[64];
+	static uint32 m_NrOfShaders;
+	static uint32 m_NrOfShadersLoaded;
 
 	static IResourceListener* m_ResourceListener;
 	static std::string m_PrePath;

@@ -65,7 +65,7 @@ void Scene::SelectCamera(uint32 index)
 	m_pCamera = m_Cameras[index];
 }
 
-void Scene::SetSkyBox(SkyBox * pSkyBox) noexcept
+void Scene::SetSkyBox(SkyBox* pSkyBox) noexcept
 {
 	m_pSkyBox = pSkyBox;
 }

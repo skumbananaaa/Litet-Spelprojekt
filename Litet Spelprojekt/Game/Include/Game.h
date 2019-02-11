@@ -19,6 +19,7 @@
 #include <IO/ResourceHandler.h>
 #include "..\Include\Crew.h"
 #include "..\Include\Path.h"
+#include <Graphics/GUI/ProgressBar.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/glm.hpp>
@@ -28,13 +29,16 @@
 
 #define NUM_CREW 15
 
-class Game : public Application, public IResourceListener
+class Game : public Application
 {
 public:
 	Game() noexcept;
 	~Game();
 
+	void OnResourceLoading(const std::string&, float percentage) override;
 	void OnResourcesLoaded() override;
+	void OnUpdateLoading(float dtS) override;
+	void OnRenderLoading(float dtS) override;
 
 	void OnKeyUp(KEY keycode) override;
 	void OnKeyDown(KEY keycode) override;
@@ -61,8 +65,9 @@ private:
 
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;
-
 	TextView* m_pTextViewCrew;
+	ProgressBar* m_pLoadingBar;
+	TextView* m_pTextViewFile;
 	
 	Crew m_Crew;
 	std::string m_CrewList[NUM_CREW];

@@ -3,14 +3,17 @@
 #include <Graphics/GameObject.h>
 #include <Audio/Music.h>
 #include <Audio/SoundEffect.h>
+#include <Graphics/Shaders/ShaderProgram.h>
 
 ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pIndexedMeshFiles[64];
 IndexedMesh* ResourceHandler::m_pIndexedMeshes[64];
 uint32 ResourceHandler::m_NrOfMeshes = 0;
+uint32 ResourceHandler::m_NrOfMeshesLoaded = 0;
 
 ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[64];
 Texture2D* ResourceHandler::m_pTexture2Ds[64];
 uint32 ResourceHandler::m_NrOfTexture2D = 0;
+uint32 ResourceHandler::m_NrOfTexture2DLoaded = 0;
 
 Material* ResourceHandler::m_pMaterials[512];
 uint32 ResourceHandler::m_NrOfMaterials = 0;
@@ -23,11 +26,18 @@ uint32 ResourceHandler::m_NrOfGameObjects;
 
 ResourceHandler::SOUND_DESC_INTERNAL ResourceHandler::m_pSoundFiles[64];
 SoundEffect* ResourceHandler::m_pSounds[64];
-uint32 ResourceHandler::m_NrOfSounds;
+uint32 ResourceHandler::m_NrOfSounds = 0;
+uint32 ResourceHandler::m_NrOfSoundsLoaded = 0;
 
 ResourceHandler::MUSIC_DESC_INTERNAL ResourceHandler::m_pMusicFiles[64];
 Music* ResourceHandler::m_pMusic[64];
-uint32 ResourceHandler::m_NrOfMusic;
+uint32 ResourceHandler::m_NrOfMusic = 0;
+uint32 ResourceHandler::m_NrOfMusicLoaded = 0;
+
+ResourceHandler::SHADER_DESC_INTERNAL ResourceHandler::m_ShaderFiles[64];
+ShaderProgram* ResourceHandler::m_pShaders[64];
+uint32 ResourceHandler::m_NrOfShaders = 0;
+uint32 ResourceHandler::m_NrOfShadersLoaded = 0;
 
 
 IResourceListener* ResourceHandler::m_ResourceListener;
@@ -46,43 +56,11 @@ void ResourceHandler::RunParallel()
 	TEXTURE::RegisterResources();
 	SOUND::RegisterResources();
 	MUSIC::RegisterResources();
+	SHADER::RegisterResources();
 
-	for (int i = 0; i < m_NrOfMeshes; i++)
-	{
-		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
-		if (!desc.filename.empty())
-		{
-			std::cout << "Loading Mesh: " << desc.filename << std::endl;
-			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
-		}
-	}
+	Load();
 
-	for (int i = 0; i < m_NrOfTexture2D; i++)
-	{
-		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
-		std::cout << "Loading Texture: " << desc.filename << std::endl;
-		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
-	}
-
-	for (int i = 0; i < m_NrOfSounds; i++)
-	{
-		SOUND_DESC_INTERNAL desc = m_pSoundFiles[i];
-		std::cout << "Loading Sound: " << desc.filename << std::endl;
-		m_pSounds[i] = new SoundEffect((m_PrePath + "Resources/Audio/" + desc.filename).c_str());
-	}
-
-	for (int i = 0; i < m_NrOfMusic; i++)
-	{
-		MUSIC_DESC_INTERNAL desc = m_pMusicFiles[i];
-		std::cout << "Loading Music: " << desc.filename << std::endl;
-		m_pMusic[i] = new Music((m_PrePath + "Resources/Audio/Music/" + desc.filename).c_str());
-	}
-
-	MATERIAL::RegisterResources();
-	DECAL::RegisterResources();
-	GAMEOBJECT::RegisterResources();
-
-	m_ResourceListener->OnResourcesLoaded();
+	m_ResourceListener->OnResourceLoadingFinished();
 }
 
 uint32 ResourceHandler::RegisterMesh(const std::string& filename)
@@ -191,6 +169,12 @@ uint32 ResourceHandler::RegisterMusic(const std::string filename)
 	return m_NrOfMusic++;
 }
 
+uint32 ResourceHandler::RegisterShader(const std::string vertex, const std::string pixel)
+{
+	m_ShaderFiles[m_NrOfShaders] = { vertex, pixel };
+	return m_NrOfShaders++;
+}
+
 IndexedMesh* ResourceHandler::GetMesh(int32 mesh)
 {
 	if (mesh == -1)
@@ -269,6 +253,15 @@ const Music* ResourceHandler::GetMusic(int32 music)
 	return m_pMusic[music];
 }
 
+const ShaderProgram* ResourceHandler::GetShader(int32 shader)
+{
+	if (shader == -1)
+	{
+		return nullptr;
+	}
+	return m_pShaders[shader];
+}
+
 GameObject* ResourceHandler::CreateGameObject(int32 gameObject)
 {
 	if (gameObject == -1)
@@ -301,17 +294,137 @@ void ResourceHandler::QuaryGameObjectTypes(std::vector<std::string>& list)
 	}
 }
 
-void ResourceHandler::LoadResources(IResourceListener* resourceListener, std::string prePath)
+void ResourceHandler::Load()
 {
-	if (!instance)
-	{
-		m_ResourceListener = resourceListener;
-		m_PrePath = prePath;
-		instance = new ResourceHandler();
+	int32 nrOfFiles = 
+		(m_NrOfTexture2D - m_NrOfTexture2DLoaded) + 
+		(m_NrOfSounds - m_NrOfSoundsLoaded) + 
+		(m_NrOfMusic - m_NrOfMusicLoaded) +
+		(m_NrOfShaders - m_NrOfShadersLoaded);
 
-		instance->RunParallel();
-		//ThreadHandler::RequestExecution(instance);
+	int32 currentFile = 1;
+
+	//Counting Meshes
+	for (int i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
+		if (!desc.filename.empty())
+		{
+			nrOfFiles++;
+		}
 	}
+
+	for (int i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Loading Mesh: " << desc.filename << std::endl;
+			TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
+			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
+		}
+	}
+
+	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
+	{
+		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
+		std::cout << "Loading Texture: " << desc.filename << std::endl;
+		TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
+		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
+	}
+
+	for (int i = m_NrOfSoundsLoaded; i < m_NrOfSounds; i++)
+	{
+		SOUND_DESC_INTERNAL desc = m_pSoundFiles[i];
+		std::cout << "Loading Sound: " << desc.filename << std::endl;
+		TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
+		m_pSounds[i] = new SoundEffect((m_PrePath + "Resources/Audio/" + desc.filename).c_str());
+	}
+
+	for (int i = m_NrOfMusicLoaded; i < m_NrOfMusic; i++)
+	{
+		MUSIC_DESC_INTERNAL desc = m_pMusicFiles[i];
+		std::cout << "Loading Music: " << desc.filename << std::endl;
+		TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
+		m_pMusic[i] = new Music((m_PrePath + "Resources/Audio/Music/" + desc.filename).c_str());
+	}
+
+	for (int i = m_NrOfShadersLoaded; i < m_NrOfShaders; i++)
+	{
+		SHADER_DESC_INTERNAL desc = m_ShaderFiles[i];
+		std::cout << "Loading Shader: " << desc.vertex << std::endl;
+		std::cout << "Loading Shader: " << desc.pixel << std::endl;
+		TriggerOnLoading(desc.vertex, currentFile++ / (float)nrOfFiles);
+
+		Shader* vertexShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.vertex).c_str(), VERTEX_SHADER);
+		Shader* pixelShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.pixel).c_str(), FRAGMENT_SHADER);
+
+		m_pShaders[i] = ShaderProgram::Create(vertexShader, pixelShader);
+	}
+}
+
+void ResourceHandler::Construct()
+{
+	for (int i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
+	{
+		m_pIndexedMeshes[i]->Construct();
+	}
+
+	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
+	{
+		m_pTexture2Ds[i]->Construct();
+	}
+
+	for (int i = m_NrOfShadersLoaded; i < m_NrOfShaders; i++)
+	{
+		m_pShaders[i]->Construct();
+	}
+}
+
+void ResourceHandler::LoadResources(IResourceListener* resourceListener, std::string prePath, bool multiThreading)
+{
+	m_PrePath = prePath;
+
+	MESH::RegisterResourcesPreLoading();
+	TEXTURE::RegisterResourcesPreLoading();
+	SOUND::RegisterResourcesPreLoading();
+	MUSIC::RegisterResourcesPreLoading();
+	SHADER::RegisterResourcesPreLoading();
+	Load();
+	Construct();
+
+	m_NrOfMeshesLoaded = m_NrOfMeshes;
+	m_NrOfTexture2DLoaded = m_NrOfTexture2D;
+	m_NrOfSoundsLoaded = m_NrOfSounds;
+	m_NrOfMusicLoaded = m_NrOfMusic;
+	m_NrOfShadersLoaded = m_NrOfShaders;
+
+	MATERIAL::RegisterResourcesPreLoading();
+	DECAL::RegisterResourcesPreLoading();
+	GAMEOBJECT::RegisterResourcesPreLoading();
+
+	m_ResourceListener = resourceListener;
+
+
+	instance = new ResourceHandler();
+
+	if (!multiThreading)
+	{
+		instance->RunParallel();
+	}
+	else
+	{
+		ThreadHandler::RequestExecution(instance);
+	}
+}
+
+void ResourceHandler::ConstructResources()
+{
+	Construct();
+
+	MATERIAL::RegisterResources();
+	DECAL::RegisterResources();
+	GAMEOBJECT::RegisterResources();
 }
 
 void ResourceHandler::ReleaseResources()
@@ -333,18 +446,6 @@ void ResourceHandler::ReleaseResources()
 		Delete(m_pTexture2Ds[i]);
 	}
 
-	for (int i = 0; i < m_NrOfMaterials; i++)
-	{
-		std::cout << "Deleting Material" << std::endl;
-		Delete(m_pMaterials[i]);
-	}
-
-	for (int i = 0; i < m_NrOfDecals; i++)
-	{
-		std::cout << "Deleting Decal" << std::endl;
-		Delete(m_pDecals[i]);
-	}
-
 	for (int i = 0; i < m_NrOfSounds; i++)
 	{
 		SOUND_DESC_INTERNAL desc = m_pSoundFiles[i];
@@ -359,5 +460,33 @@ void ResourceHandler::ReleaseResources()
 		Delete(m_pMusic[i]);
 	}
 
+	for (int i = 0; i < m_NrOfShaders; i++)
+	{
+		SHADER_DESC_INTERNAL desc = m_ShaderFiles[i];
+		std::cout << "Releasing Shader: " << desc.vertex << std::endl;
+		std::cout << "Releasing Shader: " << desc.pixel << std::endl;
+		Delete(m_pShaders[i]);
+	}
+
+	for (int i = 0; i < m_NrOfMaterials; i++)
+	{
+		std::cout << "Deleting Material" << std::endl;
+		Delete(m_pMaterials[i]);
+	}
+
+	for (int i = 0; i < m_NrOfDecals; i++)
+	{
+		std::cout << "Deleting Decal" << std::endl;
+		Delete(m_pDecals[i]);
+	}
+
 	Delete(instance);
+}
+
+void ResourceHandler::TriggerOnLoading(const std::string& file, float percentage)
+{
+	if (m_ResourceListener)
+	{
+		m_ResourceListener->OnLoading(file, percentage);
+	}
 }

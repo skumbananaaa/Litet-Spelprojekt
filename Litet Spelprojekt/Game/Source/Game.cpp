@@ -3,6 +3,13 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <World/Grid.h>
 
+
+#include <Graphics/GUI/TextView.h>
+#include <Graphics/GUI/Button.h>
+#include <Graphics/GUI/Panel.h>
+#include <Graphics/GUI/Slider.h>
+#include <Graphics/GUI/PanelScrollable.h>
+
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
 #endif
@@ -15,7 +22,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(false, 1920, 1080),
+	Application(false, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pScene(nullptr),
@@ -27,39 +34,17 @@ Game::Game() noexcept :
 	cartesianCamera(false),
 	m_CurrentElevation(2)
 {
-	m_pScene = new Scene();
-	ResourceHandler::LoadResources(this);
-
-
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
-	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
-
-	//Lights
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
-	m_pScene->AddDirectionalLight(pDirectionalLight);
-
-	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	//m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
-
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(60.0f)), glm::cos(glm::radians(75.0f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	
-	m_pTextViewFPS = new TextView(0, 720, 200, 50, "FPS");
-	m_pTextViewUPS = new TextView(0, 690, 200, 50, "UPS");
+	m_pTextViewFPS = new TextView(0, GetWindow().GetHeight() - 60, 200, 50, "FPS");
+	m_pTextViewUPS = new TextView(0, GetWindow().GetHeight() - 80, 200, 50, "UPS");
 	m_pTextViewCrew = new TextView(0, 0, GetWindow().GetWidth(), 50, "Crew: ");
+	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
+	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
 
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pTextViewCrew);
-
-	//Audio
-	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
-	m_pTestAudioSource->SetPitch(1.0f);
-	m_pTestAudioSource->SetLooping(true);
-	m_pTestAudioSource->Play();
-
-	AudioListener::SetPosition(glm::vec3(0.0f));
+	GetGUIManager().Add(m_pTextViewFile);
+	GetGUIManager().Add(m_pLoadingBar);
 }
 
 Game::~Game()
@@ -75,22 +60,34 @@ Game::~Game()
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
 	DeleteSafe(m_pTextViewCrew);
+	DeleteSafe(m_pTextViewFile);
+	DeleteSafe(m_pLoadingBar);
 	
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
+}
 
-	ResourceHandler::ReleaseResources();
+void Game::OnResourceLoading(const std::string& file, float percentage)
+{
+	m_pTextViewFile->SetText("Loading: " + file);
+	m_pLoadingBar->SetPercentage(percentage);
 }
 
 void Game::OnResourcesLoaded()
 {
-	m_pRenderer = new DefferedRenderer();
-	m_pDebugRenderer = new DebugRenderer();
+	GetGUIManager().Remove(m_pTextViewFile);
+	GetGUIManager().Remove(m_pLoadingBar);
 
-	Camera* pCamera = new Camera(glm::vec3(5.5f, 6.0f, 18.0f), glm::vec3(5.5f, 0.5f, 12.5f));
-	pCamera->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.1f, 1000.0f);
-	pCamera->UpdateFromLookAt();
+	m_pScene = new Scene();
+
+	Camera* pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
+	pCamera->UpdateFromPitchYaw();
 	m_pScene->SetCamera(pCamera);
+
+
+	AudioListener::SetPosition(glm::vec3(0.0f));
 
 	GameObject* pGameObject = nullptr;
 	{
@@ -186,7 +183,7 @@ void Game::OnResourcesLoaded()
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();
-
+	
 	for (int i = 0; i < gameObjects; i++)
 	{
 		WorldObject worldObject = m_pWorld->GetWorldObject(i);
@@ -294,6 +291,33 @@ void Game::OnResourcesLoaded()
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
 
+
+	m_pRenderer = new DefferedRenderer();
+	//m_pRenderer = new OrthographicRenderer();
+	m_pDebugRenderer = new DebugRenderer();
+
+	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
+	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
+
+	//Lights
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	m_pScene->AddDirectionalLight(pDirectionalLight);
+
+	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+	m_pScene->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+
+	//m_pScene->AddPointLight(new PointLight(glm::vec3(2.0f, 3.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	
+
+		//Audio
+	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
+	m_pTestAudioSource->SetPitch(1.0f);
+	m_pTestAudioSource->SetLooping(true);
+	m_pTestAudioSource->Play();
+
 	m_pScene2 = new Scene();
 
 	pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -369,6 +393,16 @@ void Game::OnResourcesLoaded()
 	//((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
 
 	m_pCurrentScene = m_pScene;
+}
+
+void Game::OnUpdateLoading(float dtS)
+{
+	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
+	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
+}
+
+void Game::OnRenderLoading(float dtS)
+{
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -494,11 +528,11 @@ void Game::OnUpdate(float dtS)
 
 	m_pCurrentScene->OnUpdate(dtS);
 
+	float cartesianCameraSpeed = 5.0F;
+	float cartesianCameraAngularSpeed = 1.5F;
+
 	if (cartesianCamera)
 	{
-		//Cartesian
-		static float cartesianCameraSpeed = 5.0f;
-		static float cartesianCameraAngularSpeed = 1.5f;
 
 		glm::vec3 localMove(0.0f);
 
@@ -511,7 +545,7 @@ void Game::OnUpdate(float dtS)
 			localMove.z = -cartesianCameraSpeed * dtS;
 		}
 
-		if (Input::IsKeyDown(KEY_A))
+		if (cartesianCamera)
 		{
 			localMove.x = cartesianCameraSpeed * dtS;
 		}
@@ -576,7 +610,7 @@ void Game::OnUpdate(float dtS)
 		{
 			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(polarCameraSpeed * dtS, 0.0f, 0.0f), true);
 		}
-		else if (Input::IsKeyDown(KEY_D))
+		else
 		{
 			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(-polarCameraSpeed * dtS, 0.0f, 0.0f), true);
 		}
@@ -608,11 +642,18 @@ void Game::OnUpdate(float dtS)
 			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, -polarCameraAngularSpeed * dtS);
 		}
 
-		if (Input::IsKeyDown(KEY_X))
+		AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
+		AudioListener::SetOrientation(m_pScene->GetCamera().GetFront(), m_pScene->GetCamera().GetUp());
+
+		static float decalRot = 0.0f;
+		static float decalX = g_pDecalObject->GetPosition().x;
+		static float decalXSpeed = -1.0f;
+
+		if (decalX > 6.5f)
 		{
 			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, polarCameraSpeed * dtS);
 		}
-		else if (Input::IsKeyDown(KEY_Z))
+		else if (decalX < -6.5f)
 		{
 			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, -polarCameraSpeed * dtS);
 		}
@@ -690,6 +731,7 @@ void Game::OnRender(float dtS)
 #if defined(DRAW_DEBUG_BOXES)
 	m_pDebugRenderer->DrawScene(*m_pCurrentScene);
 #endif
+	
 }
 
 void Game::PickPosition() {

@@ -3,6 +3,8 @@
 
 class API MESH
 {
+	friend class ResourceHandler;
+
 public:
 	static uint32 QUAD;
 	static uint32 SHIP;
@@ -18,6 +20,7 @@ public:
 	static uint32 INSTRUMENT_2;
 	static uint32 LAMP;
 
-public:
+private:
+	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
 };

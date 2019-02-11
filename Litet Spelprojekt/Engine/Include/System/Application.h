@@ -6,8 +6,9 @@
 #include <Graphics/Renderers/DebugRenderer.h>
 #include "Input.h"
 #include <System/ThreadHandler.h>
+#include <IO/ResourceHandler.h>
 
-class API Application
+class API Application : public IResourceListener
 {
 	friend class Window;
 
@@ -17,8 +18,11 @@ public:
 	Application& operator=(Application&& other) = delete;
 	Application& operator=(const Application& other) = delete;
 
-	Application(bool fullscreen = true, uint32 width = 1024, uint32 height = 768);
+	Application(bool fullscreen = true, uint32 width = 1024, uint32 height = 768, const std::string& prePath = "", bool useMultiThreading = true);
 	virtual ~Application();
+
+	virtual void OnLoading(const std::string&, float percentage) override;
+	virtual void OnResourceLoadingFinished() override;
 
 	int32_t Run();
 
@@ -30,8 +34,12 @@ public:
 	int32 GetUPS() const noexcept;
 
 protected:
+	virtual void OnResourceLoading(const std::string& file, float percentage) {};
+	virtual void OnResourcesLoaded() {};
 	virtual void OnUpdate(float dtS) {};
+	virtual void OnUpdateLoading(float dtS) {};
 	virtual void OnRender(float dtS) {};
+	virtual void OnRenderLoading(float dtS) {};
 	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
 	virtual void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) {};
 	virtual void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) {};
@@ -41,6 +49,13 @@ protected:
 	virtual void OnResize(uint32 width, uint32 height) {};
 
 private:
+	enum RESOURCE_MODE
+	{
+		LOAD,
+		CONSTRUCT,
+		DONE
+	};
+
 	Window* m_pWindow;
 	GLContext* m_pGraphicsContext;
 	GUIManager* m_pGUIManager;
@@ -48,6 +63,10 @@ private:
 	int32 m_fps;
 	int32 m_ups;
 	bool m_ShouldRun;
+	RESOURCE_MODE m_ResourceMode;
+	std::string m_Resource;
+	float m_Progress;
+	float m_LastProgress;
 
 	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);
@@ -68,41 +87,64 @@ private:
 
 inline void Application::InternalOnRender(float dtS)
 {
-	OnRender(dtS);
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	{
+		OnRender(dtS);
+	}
+	else
+	{
+		OnRenderLoading(dtS);
+	}
 	m_pGUIManager->InternalRootOnRender();
 }
 
 inline void Application::InternalOnUpdate(float dtS)
 {
-	OnUpdate(dtS);
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	{
+		OnUpdate(dtS);
+	}
+	else
+	{
+		OnUpdateLoading(dtS);
+	}
 	m_pGUIManager->InternalRootOnUpdate(dtS);
 }
 
 inline void Application::InternalOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	OnMouseMove(lastPosition, position);
-	m_pGUIManager->InternalRootOnMouseMove(position);
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	{
+		OnMouseMove(lastPosition, position);
+		m_pGUIManager->InternalRootOnMouseMove(position);
+	}
 }
 
 inline void Application::InternalOnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
-	OnMouseScroll(offset, position);
-	m_pGUIManager->InternalRootOnMouseScroll(position, offset);
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	{
+	    OnMouseScroll(offset, position);
+		m_pGUIManager->InternalRootOnMouseScroll(position, offset);
+	}
 }
 
 inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool down, const glm::vec2& position)
 {
-	if (Input::ButtonState(mousebutton, down))
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
 	{
-		if (down)
+		if (Input::ButtonState(mousebutton, down))
 		{
-			OnMousePressed(mousebutton, position);
-			m_pGUIManager->InternalRootOnMousePressed(position, mousebutton);
-		}
-		else
-		{
-			OnMouseReleased(mousebutton, position);
-			m_pGUIManager->InternalRootOnMouseReleased(position, mousebutton);
+			if (down)
+			{
+				OnMousePressed(mousebutton, position);
+				m_pGUIManager->InternalRootOnMousePressed(position, mousebutton);
+			}
+			else
+			{
+				OnMouseReleased(mousebutton, position);
+				m_pGUIManager->InternalRootOnMouseReleased(position, mousebutton);
+			}
 		}
 	}
 }
@@ -110,7 +152,10 @@ inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool dow
 inline void Application::InternalOnKeyUp(KEY keycode)
 {
 	Input::KeyState(keycode, false);
-	OnKeyUp(keycode);
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	{
+		OnKeyUp(keycode);
+	}
 }
 
 inline void Application::InternalOnKeyDown(KEY keycode)
@@ -119,9 +164,12 @@ inline void Application::InternalOnKeyDown(KEY keycode)
 	{
 		m_ShouldRun = false;
 	}
-
 	Input::KeyState(keycode, true);
-	OnKeyDown(keycode);
+
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	{
+		OnKeyDown(keycode);
+	}
 }
 
 inline void Application::InternalOnResize(uint32 width, uint32 height)

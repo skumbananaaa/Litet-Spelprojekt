@@ -65,6 +65,8 @@
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
+    <ClCompile Include="Source\IO\R_SHADER.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -136,6 +138,9 @@
     <ClInclude Include="Include\IO\GAMEOBJECT.h" />
     <ClInclude Include="Include\IO\MUSIC.h" />
     <ClInclude Include="Include\IO\SOUND.h" />
+    <ClInclude Include="Include\IO\IResource.h" />
+    <ClInclude Include="Include\Graphics\GUI\ProgressBar.h" />
+    <ClInclude Include="Include\IO\SHADER.h" />
     <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
     <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />

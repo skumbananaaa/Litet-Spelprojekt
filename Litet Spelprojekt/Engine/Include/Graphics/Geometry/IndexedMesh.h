@@ -1,5 +1,6 @@
 #pragma once
 #include <EnginePch.h>
+#include <IO/IResource.h>
 
 struct Vertex
 {
@@ -8,10 +9,20 @@ struct Vertex
 	glm::vec3 tangent;
 	glm::vec2 texCoords;
 
+public:
+	Vertex() {};
+	Vertex(const glm::vec3& p, const glm::vec3& n, const glm::vec3& t, const glm::vec2& tc)
+	{
+		position = p;
+		normal = n;
+		tangent = t;
+		texCoords = tc;
+	};
+
 	inline bool operator==(const Vertex& rs) const
 	{
 		return (position == rs.position) && (normal == rs.normal) && (tangent == rs.tangent) && (texCoords == rs.texCoords);
-	}
+	};
 };
 
 struct InstanceData
@@ -21,7 +32,7 @@ struct InstanceData
 	glm::vec3 Direction;
 };
 
-class API IndexedMesh
+class API IndexedMesh : public IResource
 {
 	friend class GLContext;
 	friend class MESH;
@@ -43,12 +54,16 @@ private:
 	IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
 	~IndexedMesh();
 
+	virtual void Construct() override;
+
 	uint32 m_VAO;
 	uint32 m_VBO;
 	uint32 m_IBO;
 	uint32 m_InstanceBuffer;
 	uint32 m_VertexCount;
 	uint32 m_IndexCount;
+	const Vertex* m_Vertices;
+	const uint32* m_Indices;
 	mutable uint32 m_NumInstances;
 	mutable uint32 m_NumReservedInstances;
 

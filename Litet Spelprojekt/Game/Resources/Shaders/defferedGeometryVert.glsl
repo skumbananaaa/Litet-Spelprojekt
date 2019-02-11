@@ -1,4 +1,3 @@
-#version 420
 
 #define NUM_CLIP_DISTANCES 8
 

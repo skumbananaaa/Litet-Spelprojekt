@@ -19,6 +19,14 @@ uint32 MATERIAL::CREW_STANDARD = 0;
 uint32 MATERIAL::SINGLE_BED = 0;
 uint32 MATERIAL::BUNK_BED = 0;
 
+/*
+* Used for preloading resources needed in the loading screen
+*/
+void MATERIAL::RegisterResourcesPreLoading()
+{
+
+}
+
 void MATERIAL::RegisterResources()
 {
 	Shader defferedVS;

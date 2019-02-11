@@ -107,3 +107,8 @@ const Joint * Joint::GetChild(uint32 index) const
 {
 	return m_ppChildren[index];
 }
+
+const Joint * Joint::operator[](int index) const
+{
+	return m_ppChildren[index];
+}

@@ -14,8 +14,8 @@ public:
 
 	const glm::mat4& GetTransformMat() const noexcept;
 	const glm::mat4& GetLocalBindTransform() const noexcept;
-	const Joint * GetChild(uint32 index) const;
-
+	const Joint* GetChild(uint32 index) const;
+	const Joint* operator[](int index) const;
 
 	const uint32& GetNrOfChildren() const noexcept;
 

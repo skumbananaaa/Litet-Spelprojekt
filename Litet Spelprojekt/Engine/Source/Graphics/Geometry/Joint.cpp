@@ -7,6 +7,12 @@ Joint::Joint(glm::mat4 bindLocalTransform, uint32 nrOfChildren)
 	m_Transform = glm::mat4(1.0f);
 	m_NrOfChildren = nrOfChildren;
 	m_ppChildren = new Joint*[m_NrOfChildren];
+
+	for (uint32 i = 0; i < m_NrOfChildren; i++)
+	{
+		m_ppChildren[i] = nullptr;
+	}
+
 	m_LocalPos = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_LocalRot = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
 }
@@ -35,7 +41,7 @@ const glm::mat4& Joint::GetTransformMat() const noexcept
 	return m_Transform;
 }
 
-const glm::mat4 * Joint::GetLocalBindTransform() const noexcept
+const glm::mat4& Joint::GetLocalBindTransform() const noexcept
 {
 	return m_LocalBindTransform;
 }
@@ -50,6 +56,12 @@ void Joint::SetPosition(const glm::vec3 & dir)
 {
 	m_LocalPos = dir;
 	m_isDirty = true;
+}
+
+void Joint::SetChild(uint32 index, const Joint * child) noexcept
+{
+	DeleteSafe(m_ppChildren[index]);
+	m_ppChildren[index] = CreateFromJoint(child);
 }
 
 void Joint::UpdateTransform(const glm::mat4 & parentTransform)
@@ -74,4 +86,19 @@ void Joint::UpdateTransform(const glm::mat4 & parentTransform)
 	{
 		m_ppChildren[i]->UpdateTransform(m_Transform);
 	}
+}
+
+Joint * Joint::CreateFromJoint(const Joint * joint) noexcept
+{
+	Joint * tmp = new Joint(joint->m_LocalBindTransform, joint->m_NrOfChildren);
+	for (uint32 i = 0; i < tmp->m_NrOfChildren; i++)
+	{
+		tmp->m_ppChildren[i] = CreateFromJoint(joint->m_ppChildren[i]);
+	}
+	return tmp;
+}
+
+const Joint * Joint::GetChild(uint32 index) const
+{
+	return m_ppChildren[index];
 }

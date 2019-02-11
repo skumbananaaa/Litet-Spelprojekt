@@ -10,6 +10,12 @@ enum ShaderType : uint8
 	FRAGMENT_SHADER = 3
 };
 
+struct ShaderDefines
+{
+	const char** ppDefines = nullptr;
+	uint32 NumDefines = 0;
+};
+
 class API Shader
 {
 	friend class ShaderProgram;
@@ -18,8 +24,8 @@ public:
 	Shader() noexcept;
 	~Shader();
 
-	bool CompileFromSource(const char* const source, ShaderType type) noexcept;
-	bool CompileFromFile(const char* const path, ShaderType type) noexcept;
+	bool CompileFromSource(const char* const source, ShaderType type, const ShaderDefines& defines = ShaderDefines()) noexcept;
+	bool CompileFromFile(const char* const path, ShaderType type, const ShaderDefines& defines = ShaderDefines()) noexcept;
 
 	uint32 ShaderTypeTable(ShaderType type) const noexcept;
 

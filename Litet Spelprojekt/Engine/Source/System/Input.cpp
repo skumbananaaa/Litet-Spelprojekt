@@ -7,6 +7,11 @@ bool g_LastKeyState[KEY_COUNT];
 
 bool g_CurrentButtonState[3];
 
+bool Input::IsKeyPressed(KEY keycode)
+{
+	return g_CurrentKeyState[keycode] && !g_LastKeyState[keycode];
+}
+
 bool Input::IsKeyDown(KEY keycode)
 {
 	return g_CurrentKeyState[keycode];
@@ -71,5 +76,6 @@ bool Input::ButtonState(MouseButton button, bool state)
 		g_CurrentButtonState[button] = state;
 		return true;
 	}
+
 	return false;
 }

@@ -1,10 +1,103 @@
 #version 420
 
-#define NUM_CLIP_DISTANCES 8
-#define WALL_STUMP_FROM_CENTER 0.725f
+vec3 EncodeNormals(vec3 normal)
+{
+	return (normalize(normal) + vec3(1.0f)) * 0.5f;
+}
 
+float EncodeSpecular(float specular)
+{
+	return specular / 256.0f;
+}
+
+layout(std140, binding = 0) uniform CameraBuffer
+{
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
+	vec3 g_CameraLookAt;
+	float pad1;
+	vec3 g_CameraPosition;
+};
+
+layout(std140, binding = 2) uniform DefferedMaterialBuffer
+{
+	vec4 g_Color;
+	vec4 g_ClipPlane;
+	float g_Specular;
+	float g_HasDiffuseMap;
+	float g_HasNormalMap;
+	float g_HasSpecularMap;
+};
+
+layout(std140, binding = 3) uniform DissolveBuffer
+{
+	vec4 g_ClipDistances[3];
+	float g_DissolvePercentage;
+};
+
+#if defined(VERTEX_SHADER)
+layout(location = 0) in vec3 g_Position;
+layout(location = 1) in vec3 g_Normal;
+layout(location = 2) in vec3 g_Tangent;
+layout(location = 3) in vec2 g_TexCoords;
+layout(location = 4) in mat4 g_InstanceModel;
+
+out VS_OUT
+{
+	vec3 WorldPosition;
+	vec3 ObjectPosition;
+	vec3 Normal;
+	vec3 Tangent;
+	vec3 Binormal;
+	vec2 TexCoords;
+} vs_out;
+
+void main()
+{
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	
+	//CLIPPING WALLS
+	vec3 toLookAt = normalize(g_CameraLookAt - g_InstanceModel[3].xyz);
+	vec3 cameraForward = normalize(g_CameraLookAt - g_CameraPosition);
+	float dotToLookAtForward = dot(vec3(cameraForward.x, 0.0f, cameraForward.z), vec3(toLookAt.x, 0.0f, toLookAt.z));
+	float cutWalls = 1.0f;
+
+	if (dotToLookAtForward > 0.0f)
+	{
+		vec4 wallClipPlane = vec4(0.0f, -1.0f, 0.0f, g_InstanceModel[3].y - WALL_STUMP_FROM_CENTER);
+		cutWalls = dot(worldPos, wallClipPlane);
+	}
+
+	gl_ClipDistance[0] = cutWalls;
+
+	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
+	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
+	
+	//CLIPPING DEPENDING ON LEVEL
+	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
+	gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]);
+
+	vs_out.WorldPosition = worldPos.xyz;
+	vs_out.ObjectPosition = g_InstanceModel[3].xyz;
+	vs_out.Normal = normal;
+	vs_out.Tangent = tangent;
+	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
+	vs_out.TexCoords = g_TexCoords;
+
+	gl_Position = g_ProjectionView * worldPos;
+}
+
+
+#elif defined(FRAGMENT_SHADER)
 layout(location = 0) out vec4 g_OutColor;
 layout(location = 1) out vec4 g_Normal;
+
+layout(binding = 0) uniform sampler2D g_DiffuseMap;
+layout(binding = 1) uniform sampler2D g_NormalMap;
+layout(binding = 2) uniform sampler2D g_SpecularMap;
 
 in VS_OUT
 {
@@ -15,48 +108,6 @@ in VS_OUT
 	vec3 Binormal;
 	vec2 TexCoords;
 } fs_in;
-
-layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform sampler2D g_NormalMap;
-layout(binding = 2) uniform sampler2D g_SpecularMap;
-//layout(binding = 2) uniform sampler2D g_DissolveMap;
-
-//layout(std140, binding = 0) uniform PerFrame
-//{
-//	mat4 g_ViewProjection;
-//	vec3 g_CameraPosition;
-//	float g_Padding;
-//	vec3 g_CameraLookAt;
-//	float g_Padding2;
-//	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
-//};
-//
-//layout(std140, binding = 1) uniform PerObject
-//{
-//	vec4 g_Color;
-//	float g_HasTexture;
-//	float g_HasNormalMap;
-//};
-
-layout(std140, binding = 0) uniform CameraBuffer
-{
-	mat4 g_ProjectionView;
-	mat4 g_View;
-	mat4 g_Projection;
-	mat4 g_InverseView;
-	mat4 g_InverseProjection;
-	vec3 g_CameraPosition;
-};
-
-layout(std140, binding = 2) uniform DefferedMaterialBuffer
-{
-	vec4 g_Color;
-	float g_Specular;
-	float g_HasDiffuseMap;
-	float g_HasNormalMap;
-	float g_HasSpecularMap;
-	float g_DissolvePercentage;
-};
 
 vec3 mod289(vec3 x)
 {
@@ -98,10 +149,6 @@ float snoise(vec3 v)
 	vec3 i1 = min(g.xyz, l.zxy);
 	vec3 i2 = max(g.xyz, l.zxy);
 	
-	//   x0 = x0 - 0.0 + 0.0 * C.xxx;
-	//   x1 = x0 - i1  + 1.0 * C.xxx;
-	//   x2 = x0 - i2  + 2.0 * C.xxx;
-	//   x3 = x0 - 1.0 + 3.0 * C.xxx;
 	vec3 x1 = x0 - i1 + C.xxx;
 	vec3 x2 = x0 - i2 + C.yyy;
 	vec3 x3 = x0 - D.yyy;
@@ -130,8 +177,6 @@ float snoise(vec3 v)
 	vec4 b0 = vec4(x.xy, y.xy);
 	vec4 b1 = vec4(x.zw, y.zw);
 	
-	//vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;
-	//vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;
 	vec4 s0 = floor(b0) * 2.0f + 1.0f;
 	vec4 s1 = floor(b1) * 2.0f + 1.0f;
 	vec4 sh = -step(h, vec4(0.0f));
@@ -159,26 +204,18 @@ float snoise(vec3 v)
 
 #define EPSILON 0.1f
 
-vec3 EncodeNormals(vec3 normal)
-{
-	return (normalize(normal) + vec3(1.0f)) * 0.5f;
-}
-
-float EncodeSpecular(float specular)
-{
-	return specular / 256.0f;
-}
 
 void main()
 {
 	//SPECULAR
 	float specular = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + (EncodeSpecular(g_Specular) * (1.0f - g_HasSpecularMap));
-    
-	//COLOR
-	vec3 mappedColor = texture(g_Texture, fs_in.TexCoords).rgb * g_HasTexture;
-	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasTexture);
-	g_OutColor = vec4(uniformColor + mappedColor, specular);
 
+	//COLOR
+	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
+	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
+	g_OutColor = vec4(uniformColor + mappedColor, specular);
+	
+	//DISSOLVE
 	if (fs_in.ObjectPosition.y - fs_in.WorldPosition.y < WALL_STUMP_FROM_CENTER)
 	{
 		float minDissolve = g_DissolvePercentage * ((snoise(fs_in.WorldPosition.xyz) / 2.0f) + 0.5f);
@@ -199,7 +236,7 @@ void main()
 			g_OutColor.rgb = g_OutColor.rgb * lerpValue;
 		}
 	}
-	
+
 	//NORMAL
 	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
 	
@@ -211,3 +248,4 @@ void main()
 
 	g_Normal = vec4(normal, 1.0f);
 }
+#endif

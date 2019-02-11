@@ -90,9 +90,19 @@ void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
 	m_Format = desc.Format;
 	m_Samples = desc.Samples;
 
-	//std::cout << "Created Texture2D with " << desc.Samples << "X MSAA"<< std::endl;
+	std::cout << "Created Texture2D with " << desc.Samples << "X MSAA"<< std::endl;
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
+}
+
+Texture2D* Texture2D::CreateTextureFromFile(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
+{
+	return new Texture2D(pPath, format, generateMipmaps, params);
+}
+
+Texture2D* Texture2D::CreateTextureFromMemory(const void* pInitalData, const TextureDesc& desc, const TextureParams& params)
+{
+	return new Texture2D(pInitalData, desc, params);
 }
 
 void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)

@@ -61,6 +61,10 @@
     <ClCompile Include="Source\IO\R_MUSIC.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -134,5 +138,9 @@
     <ClInclude Include="Include\IO\SOUND.h" />
     <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
+    <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
+    <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
   </ItemGroup>
 </Project>

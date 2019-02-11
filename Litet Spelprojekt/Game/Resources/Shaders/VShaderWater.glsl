@@ -35,5 +35,6 @@ void main()
 	vs_out.Normal = (model * vec4(normal, 0.0)).xyz;
 	vs_out.TexCoords = texCoords * tiling;
 	vs_out.ClipSpacePosition = cameraCombined * worldPos;
+
 	gl_Position = vs_out.ClipSpacePosition;
 }

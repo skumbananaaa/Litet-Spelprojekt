@@ -1,21 +1,22 @@
 #include "..\Include\Crew.h"
 
-void Crew::expand()
+void Crew::Expand()
 {
-	if (m_nrOf == m_cap)
+	if (m_NrOf == m_Cap)
 	{
-		m_cap *= 2;
+		m_Cap *= 2;
 
-		Crewmember ** tmp = new Crewmember*[m_cap];
-		for (int i = 0; i < m_nrOf; i++)
+		Crewmember ** tmp = new Crewmember*[m_Cap];
+		for (int i = 0; i < m_NrOf; i++)
 		{
 			tmp[i] = m_ppMembers[i];
 		}
 
-		for (int i = m_nrOf; i < m_cap; i++)
+		for (int i = m_NrOf; i < m_Cap; i++)
 		{
 			tmp[i] = nullptr;
 		}
+
 		delete[] m_ppMembers;
 		m_ppMembers = tmp;
 	}
@@ -23,8 +24,8 @@ void Crew::expand()
 
 Crew::Crew(int cap)
 {
-	m_cap = cap;
-	m_nrOf = 0;
+	m_Cap = cap;
+	m_NrOf = 0;
 	m_ppMembers = new Crewmember*[cap];
 	for (int i = 0; i < cap; i++)
 	{
@@ -37,18 +38,18 @@ Crew::~Crew()
 	DeleteArr(m_ppMembers);
 }
 
-void Crew::AddMember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name)
+void Crew::AddMember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 {
-	expand();
-	m_ppMembers[m_nrOf++] = new Crewmember(lightColor, position, actionCap, name);
+	Expand();
+	m_ppMembers[m_NrOf++] = new Crewmember(lightColor, position, actionCap, name);
 }
 
-Crewmember * Crew::GetMember(int index)
+Crewmember* Crew::GetMember(int index)
 {
 	return m_ppMembers[index];
 }
 
 const int Crew::GetCount() const
 {
-	return m_nrOf;
+	return m_NrOf;
 }

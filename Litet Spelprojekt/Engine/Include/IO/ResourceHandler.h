@@ -2,6 +2,8 @@
 #include <EnginePch.h>
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
+#include <Graphics/Materials/WaterMaterial.h>
+#include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/Decal.h>
 #include <IO/IResourceListener.h>
 
@@ -25,8 +27,10 @@ public:
 	static uint32 RegisterMesh(const std::string& filename);
 	static uint32 RegisterMesh(IndexedMesh* mesh);
 	static uint32 RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
-	static uint32 RegisterMaterial(uint32 texture, int32 normalMap = -1);
-	static uint32 RegisterMaterial(const glm::vec4& color, int32 normalMap = -1);
+	static uint32 RegisterMaterial(int32 texture, int32 normalMap = -1, ShaderProgram* pProgram = nullptr);
+	static uint32 RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap = -1, ShaderProgram* pProgram = nullptr);
+	static uint32 RegisterWaterMaterial(int32 distorionMap, int32 normalMap);
+	static uint32 RegisterWallMaterial(const glm::vec4& color, float specular, int32 normalMap = -1);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
 	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);

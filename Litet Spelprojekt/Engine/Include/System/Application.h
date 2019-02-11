@@ -33,6 +33,7 @@ protected:
 	virtual void OnUpdate(float dtS) {};
 	virtual void OnRender(float dtS) {};
 	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
+	virtual void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) {};
 	virtual void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnKeyUp(KEY keycode) {};
@@ -73,8 +74,8 @@ inline void Application::InternalOnRender(float dtS)
 
 inline void Application::InternalOnUpdate(float dtS)
 {
-	m_pGUIManager->InternalRootOnUpdate(dtS);
 	OnUpdate(dtS);
+	m_pGUIManager->InternalRootOnUpdate(dtS);
 }
 
 inline void Application::InternalOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
@@ -85,6 +86,7 @@ inline void Application::InternalOnMouseMove(const glm::vec2& lastPosition, cons
 
 inline void Application::InternalOnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
+	OnMouseScroll(offset, position);
 	m_pGUIManager->InternalRootOnMouseScroll(position, offset);
 }
 

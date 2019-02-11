@@ -16,7 +16,7 @@ private:
 	Decal();
 	~Decal();
 
-	void SetTexture(const Texture2D* const pTexture);
+	void SetDiffuseMap(const Texture2D* const pTexture);
 	void SetNormalMap(const Texture2D* const pNormalMap);
 
 private:
@@ -34,7 +34,7 @@ inline bool Decal::HasNormalMap() const
 	return m_pNormalMap != nullptr;
 }
 
-inline void Decal::SetTexture(const Texture2D* const pTexture)
+inline void Decal::SetDiffuseMap(const Texture2D* const pTexture)
 {
 	m_pTexture = pTexture;
 }

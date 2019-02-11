@@ -1,6 +1,7 @@
 #include "..\Include\Crewmember.h"
 
-Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position, const float & actionCap, const std::string & name) : m_pLight(new PointLight(position, lightColor))
+Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name) 
+	: m_pLight(new PointLight(position, lightColor))
 {
 	m_ActionCap = actionCap;
 	SetName(name);
@@ -10,14 +11,15 @@ Crewmember::Crewmember(const glm::vec4 & lightColor, const glm::vec3 & position,
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 	SetDirection(glm::vec3(1.0f, 0.0f, 0.0f));
 	m_pTorch = new SpotLight(position, glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(25.0f)), glm::vec3(m_Direction.x, 0.0, m_Direction.z), glm::vec4(0.0f));
-	SetMaterial(MATERIAL::WHITE);
+	SetMaterial(MATERIAL::CREW_STANDARD);
 	SetMesh(MESH::CUBE);
 	SetPosition(position);
 	SetScale(glm::vec3(0.2, 1.8, 0.5));
 	UpdateTransform();
 }
 
-Crewmember::Crewmember(Crewmember& other) : m_pLight(new PointLight(other.GetPosition(), other.m_pLight->GetColor()))
+Crewmember::Crewmember(Crewmember& other)
+	: m_pLight(new PointLight(other.GetPosition(), other.m_pLight->GetColor()))
 {
 	m_ActionCap = other.m_ActionCap;
 	SetName(other.GetName());
@@ -27,7 +29,7 @@ Crewmember::Crewmember(Crewmember& other) : m_pLight(new PointLight(other.GetPos
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 	SetDirection(other.GetDirection());
 	m_pTorch = new SpotLight(other.GetPosition(), glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(25.0f)), glm::vec3(m_Direction.x, 0.0, m_Direction.z), other.m_pTorch->GetColor());
-	SetMaterial(MATERIAL::WHITE);
+	SetMaterial(MATERIAL::CREW_STANDARD);
 	SetMesh(MESH::CUBE);
 	SetPosition(other.GetPosition());
 	SetScale(glm::vec3(0.2, 1.8, 0.5));
@@ -176,4 +178,3 @@ void Crewmember::SetPath(const World* world)
 {
 	m_pPathFinder = new Path(world);
 }
-

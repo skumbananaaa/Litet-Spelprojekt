@@ -6,7 +6,7 @@
 
 const glm::vec4 GUIContext::COLOR_WHITE(1.0f, 1.0f, 1.0f, 1.0f);
 
-GUIContext::GUIContext(GLContext* context, ShaderProgram* shaderProgram, FontRenderer* fontRenderer) :
+GUIContext::GUIContext(GLContext* context, const ShaderProgram* shaderProgram, FontRenderer* fontRenderer) :
 	m_pContext(context),
 	m_pShaderProgram(shaderProgram),
 	m_pFontRenderer(fontRenderer)
@@ -85,7 +85,7 @@ FontRenderer* GUIContext::GetFontRenderer() const
 	return m_pFontRenderer;
 }
 
-ShaderProgram* GUIContext::GetShaderProgram() const
+const ShaderProgram* GUIContext::GetShaderProgram() const
 {
 	return m_pShaderProgram;
 }

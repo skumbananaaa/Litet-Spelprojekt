@@ -25,7 +25,7 @@ struct GUIUniformData
 class API GUIContext
 {
 public:
-	GUIContext(GLContext* context, ShaderProgram* shaderProgram, FontRenderer* fontRenderer);
+	GUIContext(GLContext* context, const ShaderProgram* shaderProgram, FontRenderer* fontRenderer);
 	~GUIContext();
 
 	void BeginSelfRendering(Framebuffer* frameBuffer, const glm::vec4& clearColor);
@@ -38,14 +38,14 @@ public:
 
 	GLContext* GetGraphicsContext() const;
 	FontRenderer* GetFontRenderer() const;
-	ShaderProgram* GetShaderProgram() const;
+	const ShaderProgram* GetShaderProgram() const;
 
 	static const glm::vec4 COLOR_WHITE;
 
 private:
 	GUIUniformData m_UniformData;
 	UniformBuffer* m_pUniformBuffer;
-	ShaderProgram* m_pShaderProgram;
+	const ShaderProgram* m_pShaderProgram;
 	FontRenderer* m_pFontRenderer;
 	GLContext* m_pContext;
 	VertexGUI m_VertexQuad[6];

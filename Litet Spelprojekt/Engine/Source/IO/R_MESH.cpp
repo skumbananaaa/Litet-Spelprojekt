@@ -15,6 +15,14 @@ uint32 MESH::INSTRUMENT_1 = 0;
 uint32 MESH::INSTRUMENT_2 = 0;
 uint32 MESH::LAMP = 0;
 
+/*
+* Used for preloading resources needed in the loading screen
+*/
+void MESH::RegisterResourcesPreLoading()
+{
+
+}
+
 void MESH::RegisterResources()
 {
 	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());

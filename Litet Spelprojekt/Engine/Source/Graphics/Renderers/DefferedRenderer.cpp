@@ -1026,7 +1026,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	context.SetUniformBuffer(nullptr, 1);
 }
 
-void DefferedRenderer::SkyBoxPass(const Camera & camera, const Scene & screen) const noexcept
+void DefferedRenderer::SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 	context.SetProgram(m_pSkyBoxPassProgram);

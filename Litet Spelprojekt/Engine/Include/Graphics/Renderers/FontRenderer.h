@@ -1,7 +1,7 @@
 #pragma once
 
 #include <EnginePch.h>
-#include <Graphics\Shaders\ShaderProgram.h>
+#include <IO/ResourceHandler.h>
 #include <Graphics/Renderers/GLContext.h>
 
 #include <map>
@@ -25,7 +25,6 @@ class API FontRenderer
 private:
 	FontRenderer(void* face);
 
-	static ShaderProgram* m_pShaderProgram;
 	static unsigned int m_VAO;
 	static unsigned int m_VBO;
 	static std::vector<FontRenderer*> m_Fontrenderers;

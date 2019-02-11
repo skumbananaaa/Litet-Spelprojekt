@@ -30,7 +30,7 @@ public:
 	/// </summary>
 	///<returns></returns>
 	TextureCube(const Texture2D * tex);
-	~TextureCube();
+	virtual ~TextureCube();
 
 	uint32 GetWidth() const noexcept;
 	uint32 GetHeight() const noexcept;

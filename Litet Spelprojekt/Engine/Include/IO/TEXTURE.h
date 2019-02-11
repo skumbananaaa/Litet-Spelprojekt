@@ -3,6 +3,8 @@
 
 class API TEXTURE
 {
+	friend class ResourceHandler;
+
 public:
 	static uint32 BLOOD;
 	static uint32 BLOOD_NORMAL;
@@ -14,7 +16,7 @@ public:
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
 
-
-public:
+private:
+	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
 };

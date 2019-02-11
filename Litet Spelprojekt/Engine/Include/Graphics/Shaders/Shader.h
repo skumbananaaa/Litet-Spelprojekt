@@ -1,6 +1,6 @@
 #pragma once
-
 #include <EnginePch.h>
+#include <IO/IResource.h>
 
 enum ShaderType : uint8
 {
@@ -10,7 +10,7 @@ enum ShaderType : uint8
 	FRAGMENT_SHADER = 3
 };
 
-class API Shader
+class API Shader : public IResource
 {
 	friend class ShaderProgram;
 
@@ -22,8 +22,14 @@ public:
 	bool CompileFromFile(const char* const path, ShaderType type) noexcept;
 
 	uint32 ShaderTypeTable(ShaderType type) const noexcept;
+	virtual void Construct() override;
+
+	static Shader* Create(const char* const path, ShaderType type) noexcept;
 
 private:
+	Shader(const std::string& shaderCode, ShaderType type) noexcept;
+
 	uint32 m_Shader;
 	ShaderType m_type;
+	std::string m_ShaderCode;
 };

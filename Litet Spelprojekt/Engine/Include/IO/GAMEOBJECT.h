@@ -3,6 +3,7 @@
 
 class API GAMEOBJECT
 {
+	friend class ResourceHandler;
 
 public:
 	static uint32 CHAIR;
@@ -11,6 +12,7 @@ public:
 	static uint32 INSTRUMENT_1;
 	static uint32 INSTRUMENT_2;
 
-public:
+private:
+	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
 };

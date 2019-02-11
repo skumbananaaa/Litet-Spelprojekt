@@ -10,7 +10,6 @@
 
 #define VERTEX_COUNT 6
 
-ShaderProgram* FontRenderer::m_pShaderProgram = nullptr;
 unsigned int FontRenderer::m_VAO;
 unsigned int FontRenderer::m_VBO;
 std::vector<FontRenderer*> FontRenderer::m_Fontrenderers;
@@ -97,11 +96,6 @@ FontRenderer::~FontRenderer()
 		}
 		counter++;
 	}
-
-	if (m_Fontrenderers.size() == 0)
-	{
-		delete m_pShaderProgram;
-	}
 }
 
 void FontRenderer::RenderText(GLContext* context, std::string text, float x, float y, float scale)
@@ -110,7 +104,7 @@ void FontRenderer::RenderText(GLContext* context, std::string text, float x, flo
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	context->SetProgram(m_pShaderProgram);
+	context->SetProgram(ResourceHandler::GetShader(SHADER::FONT));
 
 	context->SetUniformBuffer(m_pPerFrameUniform, 0);
 
@@ -197,17 +191,6 @@ FontRenderer* FontRenderer::CreateFontRenderer(const char* font, int width, int 
 	}
 
 	FT_Set_Pixel_Sizes(face, 0, 18);
-
-	if (m_pShaderProgram == nullptr)
-	{
-		Shader vShader;
-		Shader fShader;
-
-		vShader.CompileFromFile("Resources/Shaders/VShaderFont.glsl", VERTEX_SHADER);
-		fShader.CompileFromFile("Resources/Shaders/FShaderFont.glsl", FRAGMENT_SHADER);
-
-		m_pShaderProgram = new ShaderProgram(vShader, fShader);
-	}
 
 	FontRenderer* fontRenderer = new FontRenderer(&face);
 	fontRenderer->UpdateBuffer(width, height, glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));

@@ -12,6 +12,7 @@
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
+#include <Graphics/GUI/ProgressBar.h>
 #include <Graphics/GUI/SelectionHandler.h>
 #include <World/Grid.h>
 #include <IO/ResourceHandler.h>
@@ -53,7 +54,7 @@ enum EditingMode : uint32
 	REMOVE_STAIRS
 };
 
-class Editor : public Application, public IResourceListener, public ISelectionListener
+class Editor : public Application, public ISelectionListener
 {
 public:
 	Editor() noexcept;
@@ -72,6 +73,7 @@ public:
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 
+	void OnResourceLoading(const std::string&, float percentage) override;
 	void OnResourcesLoaded() override;
 	void OnSelected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
@@ -114,6 +116,9 @@ private:
 	Grid** m_ppGrids;
 
 	std::vector<GameObject*> m_Walls[NUM_BOAT_LEVELS];
+
+	ProgressBar* m_pLoadingBar;
+	TextView* m_pTextViewFile;
 
 	Button* m_pButtonSave;
 	Button* m_pButtonLoad;

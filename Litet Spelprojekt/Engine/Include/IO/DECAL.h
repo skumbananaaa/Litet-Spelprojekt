@@ -3,10 +3,12 @@
 
 class API DECAL
 {
+	friend class ResourceHandler;
 
 public:
 	static uint32 BLOOD;
 
-public:
+private:
+	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
 };

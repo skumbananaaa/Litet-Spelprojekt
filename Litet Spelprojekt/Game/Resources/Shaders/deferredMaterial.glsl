@@ -17,6 +17,8 @@ layout(std140, binding = 0) uniform CameraBuffer
 	mat4 g_Projection;
 	mat4 g_InverseView;
 	mat4 g_InverseProjection;
+	vec3 g_CameraLookAt;
+	float pad1;
 	vec3 g_CameraPosition;
 };
 

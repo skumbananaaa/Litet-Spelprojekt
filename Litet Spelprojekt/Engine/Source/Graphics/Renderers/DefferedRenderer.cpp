@@ -204,7 +204,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 	//First the deffered rendering passes
-	//SkyBoxPass(scene.GetCamera(), scene);
+	SkyBoxPass(scene.GetCamera(), scene);
 	GeometryPass(scene.GetCamera(), scene);
 	//DecalPass(scene.GetCamera(), scene);
 	
@@ -913,7 +913,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.Disable(CLIP_DISTANCE0);
+	context.Enable(CLIP_DISTANCE0);
 
 	context.SetProgram(m_pForwardPass);
 

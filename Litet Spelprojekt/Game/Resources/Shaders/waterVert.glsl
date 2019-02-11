@@ -25,6 +25,8 @@ layout(std140, binding = 0) uniform CameraBuffer
 	vec3 g_CameraPosition;
 };
 
+const float tiling = 4.0f;
+
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
@@ -32,7 +34,7 @@ void main()
 	
 	vs_out.Position = worldPos.xyz;
 	vs_out.Normal = normal;
-	vs_out.TexCoords = g_TexCoords;
+	vs_out.TexCoords = tiling * g_TexCoords;
 	vs_out.ClipSpacePosition = g_ProjectionView * worldPos;
 
 	gl_Position = vs_out.ClipSpacePosition;

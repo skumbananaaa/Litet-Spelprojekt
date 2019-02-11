@@ -3,7 +3,7 @@
 
 PlanarReflector::PlanarReflector(const glm::vec3& normal, float distFromOrigin) noexcept
 	: m_pFramebuffer(nullptr),
-	m_ClipPlane()
+	m_ClipPlane(glm::vec4(normal, distFromOrigin))
 {
 	Create();
 }

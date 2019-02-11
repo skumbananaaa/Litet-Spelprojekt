@@ -35,7 +35,7 @@ Game::Game() noexcept :
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 
 	//Lights
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
 
 	//m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));

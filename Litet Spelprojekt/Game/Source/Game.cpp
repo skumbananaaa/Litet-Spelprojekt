@@ -545,7 +545,7 @@ void Game::OnUpdate(float dtS)
 			localMove.z = -cartesianCameraSpeed * dtS;
 		}
 
-		if (cartesianCamera)
+		if (Input::IsKeyDown(KEY_A))
 		{
 			localMove.x = cartesianCameraSpeed * dtS;
 		}

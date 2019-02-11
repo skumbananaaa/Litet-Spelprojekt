@@ -24,8 +24,8 @@ Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& u
 {
 	m_InverseIsDirty = true; 
 	m_Position = pos;
-	m_LookAt = lookAt;
-	m_Front = glm::normalize(m_LookAt - m_Position);
+	m_LookAt = glm::vec3(lookAt.x, pos.y + pos.y - lookAt.y, lookAt.z);
+	m_Front = glm::normalize(m_Position - m_LookAt);
 	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 	m_WorldUp = upVector;
 	m_Pitch = asinf(m_Front.y);

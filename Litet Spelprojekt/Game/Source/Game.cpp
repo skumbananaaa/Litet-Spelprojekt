@@ -38,7 +38,6 @@ Game::Game() noexcept :
 	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
 	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
 
-
 	GetGUIManager().Add(m_pTextViewFPS);
 	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pTextViewCrew);
@@ -273,6 +272,8 @@ void Game::OnResourcesLoaded()
 
 void Game::OnUpdateLoading(float dtS)
 {
+	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
+	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 }
 
 void Game::OnRenderLoading(float dtS)

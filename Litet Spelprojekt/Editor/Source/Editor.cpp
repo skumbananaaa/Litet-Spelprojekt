@@ -1103,20 +1103,20 @@ void Editor::OnUpdate(float dtS)
 	{
 		if (Input::IsKeyDown(KEY_W))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cameraSpeed * dtS);
+			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(0.0f, cameraSpeed * dtS, 0.0f));
 		}
 		else if (Input::IsKeyDown(KEY_S))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cameraSpeed * dtS);
+			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(0.0f, -cameraSpeed * dtS, 0.0f));
 		}
 
 		if (Input::IsKeyDown(KEY_A))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Left, cameraSpeed * dtS);
+			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(cameraSpeed * dtS, 0.0f, 0.0f));
 		}
 		else if (Input::IsKeyDown(KEY_D))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Right, cameraSpeed * dtS);
+			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(-cameraSpeed * dtS, 0.0f, 0.0f));
 		}
 
 		if (Input::IsKeyDown(KEY_E))
@@ -1138,33 +1138,36 @@ void Editor::OnUpdate(float dtS)
 		static float cartesianCameraSpeed = 5.0f;
 		static float cartesianCameraAngularSpeed = 1.5f;
 
+		glm::vec3 localMove(0.0f);
+
 		if (Input::IsKeyDown(KEY_W))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Forward, cartesianCameraSpeed * dtS);
+			localMove.z = cartesianCameraSpeed * dtS;
 		}
 		else if (Input::IsKeyDown(KEY_S))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Backwards, cartesianCameraSpeed * dtS);
+			localMove.z = -cartesianCameraSpeed * dtS;
 		}
 
 		if (Input::IsKeyDown(KEY_A))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Left, cartesianCameraSpeed * dtS);
-
+			localMove.x = cartesianCameraSpeed * dtS;
 		}
 		else if (Input::IsKeyDown(KEY_D))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Right, cartesianCameraSpeed * dtS);
+			localMove.x = -cartesianCameraSpeed * dtS;
 		}
 
 		if (Input::IsKeyDown(KEY_E))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Up, cartesianCameraSpeed * dtS);
+			localMove.y = cartesianCameraSpeed * dtS;
 		}
 		else if (Input::IsKeyDown(KEY_Q))
 		{
-			GetCurrentScene()->GetCamera().MoveCartesian(CameraDirCartesian::Down, cartesianCameraSpeed * dtS);
+			localMove.y = -cartesianCameraSpeed * dtS;
 		}
+
+		GetCurrentScene()->GetCamera().MoveLocalCoords(localMove);
 	}
 	GetCurrentScene()->OnUpdate(dtS);
 

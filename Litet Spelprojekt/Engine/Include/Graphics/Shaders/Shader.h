@@ -30,12 +30,13 @@ public:
 	uint32 ShaderTypeTable(ShaderType type) const noexcept;
 	virtual void Construct() override;
 
-	static Shader* Create(const char* const path, ShaderType type) noexcept;
+	static Shader* Create(const char* const path, ShaderType type, const ShaderDefines& defines = ShaderDefines()) noexcept;
 
 private:
-	Shader(const std::string& shaderCode, ShaderType type) noexcept;
+	Shader(const std::string& shaderCode, ShaderType type, const ShaderDefines& defines) noexcept;
 
 	uint32 m_Shader;
-	ShaderType m_type;
+	ShaderType m_Type;
 	std::string m_ShaderCode;
+	ShaderDefines m_Defines;
 };

@@ -12,7 +12,7 @@ ShaderProgram::ShaderProgram(const Shader& vShader) noexcept :
 	m_VShader(nullptr),
 	m_FShader(nullptr)
 {
-	assert(vShader.m_type == ShaderType::VERTEX_SHADER);
+	assert(vShader.m_Type == ShaderType::VERTEX_SHADER);
 
 	GLint success;
 	GLchar infoLog[512];
@@ -37,8 +37,8 @@ ShaderProgram::ShaderProgram(const Shader& vShader, const Shader& fShader) noexc
 	m_VShader(nullptr),
 	m_FShader(nullptr)
 {
-	assert(vShader.m_type == ShaderType::VERTEX_SHADER);
-	assert(fShader.m_type == ShaderType::FRAGMENT_SHADER);
+	assert(vShader.m_Type == ShaderType::VERTEX_SHADER);
+	assert(fShader.m_Type == ShaderType::FRAGMENT_SHADER);
 
 	GLint success;
 	GLchar infoLog[512];
@@ -62,9 +62,9 @@ ShaderProgram::ShaderProgram(const Shader& vShader, const Shader& fShader) noexc
 
 ShaderProgram::ShaderProgram(const Shader& vShader, const Shader& gShader, const Shader& fShader) noexcept
 {
-	assert(vShader.m_type == ShaderType::VERTEX_SHADER);
-	assert(gShader.m_type == ShaderType::GEOMETRY_SHADER);
-	assert(fShader.m_type == ShaderType::FRAGMENT_SHADER);
+	assert(vShader.m_Type == ShaderType::VERTEX_SHADER);
+	assert(gShader.m_Type == ShaderType::GEOMETRY_SHADER);
+	assert(fShader.m_Type == ShaderType::FRAGMENT_SHADER);
 
 	GLint success;
 	GLchar infoLog[512];
@@ -127,7 +127,7 @@ void ShaderProgram::Construct()
 
 ShaderProgram* ShaderProgram::Create(Shader* vShader, Shader* fShader)
 {
-	assert(vShader->m_type == ShaderType::VERTEX_SHADER);
-	assert(fShader->m_type == ShaderType::FRAGMENT_SHADER);
+	assert(vShader->m_Type == ShaderType::VERTEX_SHADER);
+	assert(fShader->m_Type == ShaderType::FRAGMENT_SHADER);
 	return new ShaderProgram(vShader, fShader);
 }

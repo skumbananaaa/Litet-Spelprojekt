@@ -112,18 +112,12 @@ private:
 private:
 	Framebuffer* m_pGBufferCBR;
 	Framebuffer* m_pResolveTargets[2];
-	Framebuffer* m_pForwardCBR;
 	Framebuffer* m_pBlur;
-	Framebuffer* m_pReflection;
 	mutable Framebuffer* m_pCurrentResolveTarget;
 	mutable Framebuffer* m_pLastResolveTarget;
 	Texture2D* m_pForwardCBRTexture;
 
 	FullscreenTri* m_pTriangle;
-	
-	UniformBuffer* m_pGeoPassPerFrame;
-	UniformBuffer* m_pGeoPassPerObject;
-	UniformBuffer* m_pLightPassBuffer;
 	
 	UniformBuffer* m_pLightBuffer;
 	UniformBuffer* m_pCameraBuffer;
@@ -132,9 +126,6 @@ private:
 
 	UniformBuffer* m_pDecalPassPerFrame;
 	UniformBuffer* m_pDecalPassPerObject;
-
-	UniformBuffer* m_pWaterPassPerFrame;
-	UniformBuffer* m_pWaterPassPerObject;
 	
 	UniformBuffer* m_pSkyBoxPassPerFrame;
 	UniformBuffer* m_pSkyBoxPassPerObject;

@@ -7,21 +7,14 @@
 
 DefferedRenderer::DefferedRenderer()
 	: m_pGBufferCBR(nullptr),
-	m_pReflection(nullptr),
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
-	m_pForwardCBR(nullptr),
 	m_pBlur(nullptr),
 	m_pLastResolveTarget(nullptr),
 	m_pCurrentResolveTarget(nullptr),
-	m_pGeoPassPerFrame(nullptr),
 	m_pLightBuffer(nullptr),
-	m_pGeoPassPerObject(nullptr),
 	m_pDecalPassPerFrame(nullptr),
 	m_pDecalPassPerObject(nullptr),
-	m_pLightPassBuffer(nullptr),
-	m_pWaterPassPerFrame(nullptr),
-	m_pWaterPassPerObject(nullptr),
 	m_pWaterNormalMap(nullptr),
 	m_pWaterDistortionMap(nullptr),
 	m_pForwardPass(nullptr),
@@ -41,29 +34,22 @@ DefferedRenderer::DefferedRenderer()
 
 DefferedRenderer::~DefferedRenderer()
 {
-	DeleteSafe(m_pGBufferCBR);
-	DeleteSafe(m_pReflection);
-	DeleteSafe(m_pBlur);
-	DeleteSafe(m_pForwardCBR);
-	DeleteSafe(m_pForwardCBRTexture);
-
 	for (uint32 i = 0; i < 2; i++)
 	{
 		DeleteSafe(m_pResolveTargets[i]);
 	}
+	DeleteSafe(m_pGBufferCBR);
+	DeleteSafe(m_pBlur);
+	DeleteSafe(m_pForwardCBRTexture);
 
 	DeleteSafe(m_pTriangle);
 	
-	DeleteSafe(m_pGeoPassPerFrame);
-	DeleteSafe(m_pGeoPassPerObject);
-	DeleteSafe(m_pLightPassBuffer);
 	DeleteSafe(m_pLightBuffer);
+	DeleteSafe(m_pMaterialBuffer);
+	DeleteSafe(m_pCameraBuffer);
 
 	DeleteSafe(m_pDecalPassPerFrame);
 	DeleteSafe(m_pDecalPassPerObject);
-
-	DeleteSafe(m_pWaterPassPerFrame);
-	DeleteSafe(m_pWaterPassPerObject);
 
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
@@ -180,6 +166,10 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	//Render decals
 	//Render forward
 
+	//Set depth and clear color
+	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
+	context.SetClearDepth(1.0f);
+
 	//Update Lightbuffer
 	UpdateLightBuffer(scene);
 
@@ -187,9 +177,6 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.Enable(DEPTH_TEST);
 	context.Enable(CULL_FACE);
 	context.Disable(BLEND);
-
-	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
-	context.SetClearDepth(1.0f);
 
 	//Render reflections
 	ReflectionPass(scene);
@@ -269,7 +256,6 @@ void DefferedRenderer::Create() noexcept
 		desc2.GenerateMips = false;
 
 		m_pForwardCBRTexture = new Texture2D(nullptr, desc2, params);
-		m_pForwardCBR = new Framebuffer(&m_pForwardCBRTexture, 1, (Texture2D*)m_pGBufferCBR->GetDepthAttachment());
 	}
 
 	{
@@ -298,24 +284,7 @@ void DefferedRenderer::Create() noexcept
 
 	{
 		TextureParams params = {};
-		params.Wrap = TEX_PARAM_REPEAT;
-		params.MinFilter = TEX_PARAM_LINEAR;
-		params.MagFilter = TEX_PARAM_LINEAR;
-
-		FramebufferDesc desc = {};
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.NumColorAttachments = 1;
-		desc.SamplingParams = params;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
-		desc.Width = REFLECTIONSIZE;
-		desc.Height = REFLECTIONSIZE;
-
-		m_pReflection = new Framebuffer(desc);
-	}
-
-	{
-		TextureParams params = {};
-		params.Wrap = TEX_PARAM_REPEAT;
+		params.Wrap = TEX_PARAM_EDGECLAMP;
 		params.MinFilter = TEX_PARAM_LINEAR;
 		params.MagFilter = TEX_PARAM_LINEAR;
 
@@ -335,179 +304,118 @@ void DefferedRenderer::Create() noexcept
 		m_pTriangle = new FullscreenTri();
 	}
 
-	Shader fullscreenTri = Shader();
+	Shader fullscreenTri;
 	if (fullscreenTri.CompileFromFile("Resources/Shaders/fullscreenTriVert.glsl", VERTEX_SHADER))
 	{
 		std::cout << "Created fullscreen Vertex shader" << std::endl;
 	}
 
 	{
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/cbrResolveFrag.glsl", FRAGMENT_SHADER))
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/cbrResolveFrag.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created CBR Resolve Fragment shader" << std::endl;
 		}
 
-		m_pCbrResolveProgram = new ShaderProgram(fullscreenTri, *pFrag);
-		
-		delete pFrag;
+		m_pCbrResolveProgram = new ShaderProgram(fullscreenTri, frag);
 	}
 
 	{
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/cbrReconstructionFrag.glsl", FRAGMENT_SHADER))
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/cbrReconstructionFrag.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created CBR Reconstruction Fragment shader" << std::endl;
 		}
 
-		m_pCbrReconstructionProgram = new ShaderProgram(fullscreenTri, *pFrag);
-
-		delete pFrag;
+		m_pCbrReconstructionProgram = new ShaderProgram(fullscreenTri, frag);
 	}
 
 	{
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/cbrFilterFrag.glsl", FRAGMENT_SHADER))
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/cbrFilterFrag.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created CBR Blur Fragment shader" << std::endl;
 		}
 
-		m_pCbrBlurProgram = new ShaderProgram(fullscreenTri, *pFrag);
-
-		delete pFrag;
+		m_pCbrBlurProgram = new ShaderProgram(fullscreenTri, frag);
 	}
 
-	//{
-	//	Shader vs;
-	//	if (vs.CompileFromFile("Resources/Shaders/defferedGeometryVert.glsl", VERTEX_SHADER))
-	//	{
-	//		std::cout << "Created Geomtrypass Vertex shader" << std::endl;
-	//	}
-
-	//	Shader fs;
-	//	if(fs.CompileFromFile("Resources/Shaders/defferedGeometryFrag.glsl", FRAGMENT_SHADER))
-	//	{
-	//		std::cout << "Created Geomtrypass Fragment shader" << std::endl;
-	//	}
-
-	//	m_pGeometryPassProgram = new ShaderProgram(vs, fs);
-	//}
-
 	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/defferedDepthPreVert.glsl", VERTEX_SHADER))
+		Shader vert;
+		if (vert.CompileFromFile("Resources/Shaders/defferedDepthPreVert.glsl", VERTEX_SHADER))
 		{
 			std::cout << "Created DepthPrePass Vertex shader" << std::endl;
 		}
 
-		m_pDepthPrePassProgram = new ShaderProgram(*pVert);
-
-		delete pVert;
+		m_pDepthPrePassProgram = new ShaderProgram(vert);
 	}
 
 	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/VShaderWater.glsl", VERTEX_SHADER))
+		Shader vert;
+		if (vert.CompileFromFile("Resources/Shaders/VShaderWater.glsl", VERTEX_SHADER))
 		{
 			std::cout << "Created Water Vertex shader" << std::endl;
 		}
 
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/FShaderWater.glsl", FRAGMENT_SHADER))
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/FShaderWater.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created Water Fragment shader" << std::endl;
 		}
 
-		m_pWaterpassProgram = new ShaderProgram(*pVert, *pFrag);
-
-		delete pVert;
-		delete pFrag;
+		m_pWaterpassProgram = new ShaderProgram(vert, frag);
 	}
 
 	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/defferedDecalsVert.glsl", VERTEX_SHADER))
+		Shader vert;
+		if (vert.CompileFromFile("Resources/Shaders/defferedDecalsVert.glsl", VERTEX_SHADER))
 		{
 			std::cout << "Created Decal Vertex shader" << std::endl;
 		}
 
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/defferedDecalsFrag.glsl", FRAGMENT_SHADER))
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/defferedDecalsFrag.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created Decal Fragment shader" << std::endl;
 		}
 
-		m_pDecalsPassProgram = new ShaderProgram(*pVert, *pFrag);
-
-		delete pVert;
-		delete pFrag;
+		m_pDecalsPassProgram = new ShaderProgram(vert, frag);
 	}
 
 
 	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/forwardVert.glsl", VERTEX_SHADER))
+		Shader vert;
+		if (vert.CompileFromFile("Resources/Shaders/forwardVert.glsl", VERTEX_SHADER))
 		{
 			std::cout << "Created Forward-Pass Vertex shader" << std::endl;
 		}
 
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/forwardFrag.glsl", FRAGMENT_SHADER))
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/forwardFrag.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created Forward-Pass Fragment shader" << std::endl;
 		}
 
-		m_pForwardPass = new ShaderProgram(*pVert, *pFrag);
-
-		delete pVert;
-		delete pFrag;
+		m_pForwardPass = new ShaderProgram(vert, frag);
 	}
 
 	{
-		Shader* pVert = new Shader();
-		if (pVert->CompileFromFile("Resources/Shaders/VShaderSkyBox.glsl", VERTEX_SHADER))
+		Shader vert;
+		if (vert.CompileFromFile("Resources/Shaders/VShaderSkyBox.glsl", VERTEX_SHADER))
 		{
 			std::cout << "Created SkyBox pass Vertex shader" << std::endl;
 		}
 
-		Shader* pFrag = new Shader();
-		if (pFrag->CompileFromFile("Resources/Shaders/FShaderSkyBox.glsl", FRAGMENT_SHADER))
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/FShaderSkyBox.glsl", FRAGMENT_SHADER))
 		{
 			std::cout << "Created SkyBox pass Fragment shader" << std::endl;
 		}
 
-		m_pSkyBoxPassProgram = new ShaderProgram(*pVert, *pFrag);
-
-		delete pVert;
-		delete pFrag;
+		m_pSkyBoxPassProgram = new ShaderProgram(vert, frag);
 	}
 
 	//We can destroy object when uniformbuffer is created
-	{
-		GPassVSPerFrame object = {};
-		object.ViewProjection = glm::mat4(1.0f);
-		object.CameraPosition = glm::vec3();
-		object.Padding = 0.0f;
-		object.CameraLookAt = glm::vec3();
-
-		for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
-		{
-			object.ClipDistances[i] = glm::vec4(0.0f);
-		}
-
-		m_pGeoPassPerFrame = new UniformBuffer(&object, 1, sizeof(GPassVSPerFrame));
-	}
-
-	//{
-	//	GeometryPassPerObject object = {};
-	//	object.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//	object.HasNormalMap = 0.0f;
-	//	object.HasTexture = 0.0f;
-	//	object.DissolvePercentage = 0.0f;
-
-	//	m_pGeoPassPerObject = new UniformBuffer(&object, 1, sizeof(GeometryPassPerObject));
-	//}
-
 	{
 		DecalPassPerFrame object = {};
 		object.ViewProj = glm::mat4(1.0f);
@@ -524,22 +432,6 @@ void DefferedRenderer::Create() noexcept
 
 		m_pDecalPassPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassPerObject));
 	}
-
-	//{
-	//	WaterPassPerFrame object = {};
-	//	object.CameraCombined = glm::mat4(1.0f);
-	//	object.CameraPosition = glm::vec3();
-	//	object.DistortionMoveFactor = 0.0f;
-
-	//	m_pWaterPassPerFrame = new UniformBuffer(&object, 1, sizeof(WaterPassPerFrame));
-	//}
-
-	//{
-	//	WaterPassPerObjectVS object = {};
-	//	object.Model = glm::mat4(1.0f);
-
-	//	m_pWaterPassPerObject = new UniformBuffer(&object, 1, sizeof(WaterPassPerObjectVS));
-	//}
 
 	{
 		CameraBuffer buff = {};
@@ -601,11 +493,6 @@ void DefferedRenderer::Create() noexcept
 		object.model = glm::mat4(1.0f);
 
 		m_pSkyBoxPassPerObject = new UniformBuffer(&object, 1, sizeof(SkyBoxPassPerObject));
-	}
-
-	{
-		m_pWaterDistortionMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_DISTORTION);
-		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
 	}
 
 	{
@@ -684,7 +571,7 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 		perFrame.ClipDistances[i] = m_ClipDistances[i];
 	}
 
-	m_pGeoPassPerFrame->UpdateData(&perFrame);
+	//m_pGeoPassPerFrame->UpdateData(&perFrame);
 
 	//GeometryPassPerObject perObject = {};
 	//for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
@@ -806,25 +693,23 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 
 	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(0), 0);	//Color
 	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(1), 1);	//Depth
-	context.SetTexture(m_pForwardCBR->GetColorAttachment(0), 2); //Forward color
-	context.SetTexture(m_pForwardCBR->GetDepthAttachment(), 3); //Forward depth
+	//context.SetTexture(m_pForwardCBR->GetColorAttachment(0), 2); //Forward color
+	//context.SetTexture(m_pForwardCBR->GetDepthAttachment(), 3); //Forward depth
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 
 	context.SetProgram(m_pCbrBlurProgram);
 
-	context.SetTexture(m_pBlur->GetColorAttachment(0), 0);
 	context.SetFramebuffer(nullptr);
+	context.SetTexture(m_pBlur->GetColorAttachment(0), 0);
 	
 	context.DrawFullscreenTriangle(*m_pTriangle);
 
 	//Unbind = no bugs
-	context.SetTexture(nullptr, 1);
-	context.SetTexture(nullptr, 2);
-	context.SetTexture(nullptr, 3);
-
-	//Unbind = no bugs
 	context.SetTexture(nullptr, 0);
+	context.SetTexture(nullptr, 1);
+	//context.SetTexture(nullptr, 2);
+	//context.SetTexture(nullptr, 3);
 }
 
 void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) const noexcept
@@ -1037,7 +922,7 @@ void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
 	//Start water with forward rendering
 	context.SetProgram(m_pWaterpassProgram);
 
-	context.SetTexture(m_pReflection->GetColorAttachment(0), 0);
+	//context.SetTexture(m_pReflection->GetColorAttachment(0), 0);
 	context.SetTexture(m_pWaterDistortionMap, 1);
 	context.SetTexture(m_pWaterNormalMap, 2);
 	context.SetTexture(m_pGBufferCBR->GetDepthAttachment(), 3);

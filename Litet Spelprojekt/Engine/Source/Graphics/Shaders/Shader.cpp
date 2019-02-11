@@ -10,30 +10,53 @@ Shader::~Shader()
 	glDeleteShader(m_Shader);
 }
 
-bool Shader::CompileFromSource(const char* const source, ShaderType type) noexcept
+bool Shader::CompileFromSource(const char* const pSource, ShaderType type, const ShaderDefines& defines) noexcept
 {
 	assert(type != ShaderType::UNDEFINED);
 	m_type = type;
+
+	std::string shaderTypeStr;
+	if (type == VERTEX_SHADER)
+	{
+		shaderTypeStr = "VERTEX_SHADER\n";
+	}
+	else if (type == GEOMETRY_SHADER)
+	{
+		shaderTypeStr = "GEOMETRY_SHADER\n";
+	}
+	else if (type == FRAGMENT_SHADER)
+	{
+		shaderTypeStr = "FRAGMENT_SHADER\n";
+	}
+
+	std::string finalSource = "#define " + shaderTypeStr;
+	for (uint32 i = 0; i < defines.NumDefines; i++)
+	{
+		finalSource += "#define " + std::string(defines.ppDefines[i]) + '\n';
+	}
+	finalSource += pSource;
 
 	GLint success;
 	GLchar infoLog[512];
 
 	m_Shader = glCreateShader(ShaderTypeTable(type));
-	glShaderSource(m_Shader, 1, &source, NULL);
+
+	const char* pFinalSource = finalSource.c_str();
+	glShaderSource(m_Shader, 1, &pFinalSource, NULL);
 	glCompileShader(m_Shader);
 
 	glGetShaderiv(m_Shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
 		glGetShaderInfoLog(m_Shader, 512, NULL, infoLog);
-		std::cout << "ERROR COMPILING SHADER OF TYPE " << type << "\n" << infoLog << std::endl;
+		std::cout << "ERROR COMPILING SHADER OF TYPE " << shaderTypeStr << infoLog << std::endl;
 		return false;
 	};
 
 	return true;
 }
 
-bool Shader::CompileFromFile(const char* const path, ShaderType type) noexcept
+bool Shader::CompileFromFile(const char* const path, ShaderType type, const ShaderDefines& defines) noexcept
 {
 	assert(type != ShaderType::UNDEFINED);
 	m_type = type;
@@ -59,24 +82,7 @@ bool Shader::CompileFromFile(const char* const path, ShaderType type) noexcept
 		return false;
 	}
 
-	const GLchar* shaderCode = shaderCodeString.c_str();
-	
-	m_Shader = glCreateShader(ShaderTypeTable(m_type));
-	glShaderSource(m_Shader, 1, &shaderCode, NULL);
-	glCompileShader(m_Shader);
-
-	GLint success;
-	GLchar infoLog[512];
-
-	glGetShaderiv(m_Shader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(m_Shader, 512, NULL, infoLog);
-		std::cout << "ERROR COMPILING SHADER OF TYPE " << type << "\n" << infoLog << std::endl;
-		return false;
-	}
-
-	return true;
+	return CompileFromSource(shaderCodeString.c_str(), type, defines);
 }
 
 uint32 Shader::ShaderTypeTable(ShaderType type) const noexcept

@@ -16,24 +16,45 @@ in VS_OUT
 	vec2 TexCoords;
 } fs_in;
 
-layout(binding = 0) uniform sampler2D g_Texture;
+layout(binding = 0) uniform sampler2D g_DiffuseMap;
 layout(binding = 1) uniform sampler2D g_NormalMap;
+layout(binding = 2) uniform sampler2D g_SpecularMap;
+//layout(binding = 2) uniform sampler2D g_DissolveMap;
 
-layout(std140, binding = 0) uniform PerFrame
+//layout(std140, binding = 0) uniform PerFrame
+//{
+//	mat4 g_ViewProjection;
+//	vec3 g_CameraPosition;
+//	float g_Padding;
+//	vec3 g_CameraLookAt;
+//	float g_Padding2;
+//	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
+//};
+//
+//layout(std140, binding = 1) uniform PerObject
+//{
+//	vec4 g_Color;
+//	float g_HasTexture;
+//	float g_HasNormalMap;
+//};
+
+layout(std140, binding = 0) uniform CameraBuffer
 {
-	mat4 g_ViewProjection;
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
 	vec3 g_CameraPosition;
-	float g_Padding;
-	vec3 g_CameraLookAt;
-	float g_Padding2;
-	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
 
-layout(std140, binding = 1) uniform PerObject
+layout(std140, binding = 2) uniform DefferedMaterialBuffer
 {
 	vec4 g_Color;
-	float g_HasTexture;
+	float g_Specular;
+	float g_HasDiffuseMap;
 	float g_HasNormalMap;
+	float g_HasSpecularMap;
 	float g_DissolvePercentage;
 };
 
@@ -138,12 +159,25 @@ float snoise(vec3 v)
 
 #define EPSILON 0.1f
 
+vec3 EncodeNormals(vec3 normal)
+{
+	return (normalize(normal) + vec3(1.0f)) * 0.5f;
+}
+
+float EncodeSpecular(float specular)
+{
+	return specular / 256.0f;
+}
+
 void main()
 {
+	//SPECULAR
+	float specular = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + (EncodeSpecular(g_Specular) * (1.0f - g_HasSpecularMap));
+    
 	//COLOR
 	vec3 mappedColor = texture(g_Texture, fs_in.TexCoords).rgb * g_HasTexture;
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasTexture);
-	g_OutColor = vec4(uniformColor + mappedColor, 1.0f);
+	g_OutColor = vec4(uniformColor + mappedColor, specular);
 
 	if (fs_in.ObjectPosition.y - fs_in.WorldPosition.y < WALL_STUMP_FROM_CENTER)
 	{
@@ -162,7 +196,7 @@ void main()
 			}
 
 			float lerpValue = 0.5f + (((distanceToLookAt + EPSILON) - minDissolve) / EPSILON) / 2.0f;
-			g_OutColor = g_OutColor * lerpValue;
+			g_OutColor.rgb = g_OutColor.rgb * lerpValue;
 		}
 	}
 	
@@ -173,7 +207,7 @@ void main()
 	mappedNormal = tbn * mappedNormal;
 
 	vec3 normal = (fs_in.Normal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
-	normal = (normalize(normal) + vec3(1.0f)) * 0.5f;
+	normal = EncodeNormals(normal);
 
 	g_Normal = vec4(normal, 1.0f);
 }

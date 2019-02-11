@@ -18,14 +18,31 @@ out VS_OUT
 	vec2 TexCoords;
 } vs_out;
 
-layout(std140, binding = 0) uniform PerFrame
+//layout(std140, binding = 0) uniform PerFrame
+//{
+//	mat4 g_ViewProjection;
+//	vec3 g_CameraPosition;
+//	float g_Padding;
+//	vec3 g_CameraLookAt;
+//	float g_Padding2;
+//	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
+//};
+//
+//layout(std140, binding = 1) uniform PerObject
+//{
+//	vec4 g_Color;
+//	float g_HasTexture;
+//	float g_HasNormalMap;
+//};
+
+layout(std140, binding = 0) uniform CameraBuffer
 {
-	mat4 g_ViewProjection;
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
 	vec3 g_CameraPosition;
-	float g_Padding;
-	vec3 g_CameraLookAt;
-	float g_Padding2;
-	vec4 g_ClipDistances[NUM_CLIP_DISTANCES];
 };
 
 layout(std140, binding = 1) uniform PerObject
@@ -33,6 +50,7 @@ layout(std140, binding = 1) uniform PerObject
 	vec4 g_Color;
 	float g_HasTexture;
 	float g_HasNormalMap;
+	float g_HasSpecularMap;
 	float g_DissolvePercentage;
 };
 
@@ -70,5 +88,5 @@ void main()
 	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
 	vs_out.TexCoords = g_TexCoords;
 
-	gl_Position = g_ViewProjection * worldPos;
+	gl_Position = g_ProjectionView * worldPos;
 }

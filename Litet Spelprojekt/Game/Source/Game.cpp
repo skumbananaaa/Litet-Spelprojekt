@@ -71,7 +71,8 @@ Game::~Game()
 	DeleteSafe(m_pSkyBoxTex);
 
 	DeleteSafe(m_pScene);
-	
+	DeleteSafe(m_pScene2);
+
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
 	
@@ -210,6 +211,82 @@ void Game::OnResourcesLoaded()
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
+
+	m_pScene2 = new Scene();
+
+	pCamera = new Camera(glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	pCamera->CreatePerspective(glm::radians<float>(90.0f), GetWindow().GetAspectRatio(), 0.1f, 1000.0f);
+	pCamera->UpdateFromPitchYaw();
+	m_pScene2->SetCamera(pCamera);
+
+	m_pScene2->AddDirectionalLight(new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	
+	for (uint32 i = 0; i < 5; i++)
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMesh(MESH::SPHERE);
+		pGameObject->SetMaterial(MATERIAL::RED);
+		pGameObject->SetPosition(glm::vec3(0.0f, 0.0f, i * 2.0f));
+		pGameObject->UpdateTransform();
+		m_pScene2->AddGameObject(pGameObject);
+	}
+
+	for (uint32 i = 0; i < 5; i++)
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMesh(MESH::SPHERE);
+		pGameObject->SetMaterial(MATERIAL::RED_1);
+		pGameObject->SetPosition(glm::vec3(2.0f, 0.0f, i * 2.0f));
+		pGameObject->UpdateTransform();
+		m_pScene2->AddGameObject(pGameObject);
+	}
+
+	for (uint32 i = 0; i < 5; i++)
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMesh(MESH::SPHERE);
+		pGameObject->SetMaterial(MATERIAL::RED_2);
+		pGameObject->SetPosition(glm::vec3(4.0f, 0.0f, i * 2.0f));
+		pGameObject->UpdateTransform();
+		m_pScene2->AddGameObject(pGameObject);
+	}
+
+	for (uint32 i = 0; i < 5; i++)
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMesh(MESH::SPHERE);
+		pGameObject->SetMaterial(MATERIAL::RED_3);
+		pGameObject->SetPosition(glm::vec3(6.0f, 0.0f, i * 2.0f));
+		pGameObject->UpdateTransform();
+		m_pScene2->AddGameObject(pGameObject);
+	}
+
+	for (uint32 i = 0; i < 5; i++)
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMesh(MESH::SPHERE);
+		pGameObject->SetMaterial(MATERIAL::RED_4);
+		pGameObject->SetPosition(glm::vec3(8.0f, 0.0f, i * 2.0f));
+		pGameObject->UpdateTransform();
+		m_pScene2->AddGameObject(pGameObject);
+	}
+
+	pGameObject = new GameObject();
+	pGameObject->SetMesh(MESH::QUAD);
+	pGameObject->SetIsReflectable(true);
+	pGameObject->SetMaterial(MATERIAL::WATER);
+	pGameObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::radians<float>(90.0f)));
+	pGameObject->SetScale(glm::vec3(30.0f));
+	pGameObject->UpdateTransform();
+	m_pScene2->AddGameObject(pGameObject);
+
+	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
+	m_pScene2->AddPlanarReflector(pReflector);
+
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
+
+	m_pCurrentScene = m_pScene2;
 }
 
 void Game::OnKeyUp(KEY keycode)
@@ -306,7 +383,11 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
-	m_pScene->OnUpdate(dtS);
+	static float dist = 0.0f;
+	dist += 0.02f * dtS;
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);
+
+	m_pCurrentScene->OnUpdate(dtS);
 
 	if (cartesianCamera)
 	{
@@ -347,23 +428,23 @@ void Game::OnUpdate(float dtS)
 
 		if (Input::IsKeyDown(KEY_UP))
 		{
-			m_pScene->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
+			m_pCurrentScene->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
 		}
 		else if (Input::IsKeyDown(KEY_DOWN))
 		{
-			m_pScene->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
+			m_pCurrentScene->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
 		}
 
 		if (Input::IsKeyDown(KEY_LEFT))
 		{
-			m_pScene->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
+			m_pCurrentScene->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
 		}
 		else if (Input::IsKeyDown(KEY_RIGHT))
 		{
-			m_pScene->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
+			m_pCurrentScene->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
 		}
 
-		m_pScene->GetCamera().UpdateFromPitchYaw();
+		m_pCurrentScene->GetCamera().UpdateFromPitchYaw();
 	}
 	else
 	{
@@ -438,12 +519,16 @@ void Game::OnUpdate(float dtS)
 		else if (Input::IsKeyDown(KEY_Q))
 		{
 			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Down, polarCameraSpeed * dtS);
-		}*/
+		}
 
-		m_pScene->GetCamera().UpdateFromLookAt();
+		m_pScene->GetCamera().UpdateFromLookAt();*/
 	}
 
-	m_pScene->GetGameObject("cameraLookAt")->SetPosition(m_pScene->GetCamera().GetLookAt());
+	GameObject* pCameraLookAt = m_pCurrentScene->GetGameObject("cameraLookAt");
+	if (pCameraLookAt)
+	{
+		pCameraLookAt->SetPosition(m_pCurrentScene->GetCamera().GetLookAt());
+	}
 
 	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
 	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
@@ -495,10 +580,10 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*m_pScene, dtS);
-	
+	m_pRenderer->DrawScene(*m_pCurrentScene, dtS);
+
 #if defined(DRAW_DEBUG_BOXES)
-	m_pDebugRenderer->DrawScene(*m_pScene);
+	m_pDebugRenderer->DrawScene(*m_pCurrentScene);
 #endif
 }
 

@@ -56,6 +56,9 @@
     <ClCompile Include="Source\System\ThreadHandler.cpp" />
     <ClCompile Include="Source\Graphics\SkyBox.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -124,5 +127,8 @@
     <ClInclude Include="Include\Graphics\Textures\TextureHelper.h" />
     <ClInclude Include="Include\Graphics\GUI\SelectionHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\ISelectable.h" />
+    <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
   </ItemGroup>
 </Project>

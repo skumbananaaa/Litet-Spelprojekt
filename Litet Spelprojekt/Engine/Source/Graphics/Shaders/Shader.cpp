@@ -1,15 +1,16 @@
 #include <EnginePch.h>
 #include <Graphics\Shaders\Shader.h>
 
-Shader::Shader() noexcept : m_Shader(0), m_type(ShaderType::UNDEFINED)
+Shader::Shader() noexcept : m_Shader(0), m_Type(ShaderType::UNDEFINED)
 {
 
 }
 
-Shader::Shader(const std::string& shaderCode, ShaderType type) noexcept :
+Shader::Shader(const std::string& shaderCode, ShaderType type, const ShaderDefines& defines) noexcept :
 	m_Shader(0),
-	m_type(type),
-	m_ShaderCode(shaderCode)
+	m_Type(type),
+	m_ShaderCode(shaderCode),
+	m_Defines(defines)
 {
 	
 }
@@ -22,7 +23,7 @@ Shader::~Shader()
 bool Shader::CompileFromSource(const char* const pSource, ShaderType type, const ShaderDefines& defines) noexcept
 {
 	assert(type != ShaderType::UNDEFINED);
-	m_type = type;
+	m_Type = type;
 
 	std::string shaderTypeStr;
 	if (type == VERTEX_SHADER)
@@ -68,7 +69,7 @@ bool Shader::CompileFromSource(const char* const pSource, ShaderType type, const
 bool Shader::CompileFromFile(const char* const path, ShaderType type, const ShaderDefines& defines) noexcept
 {
 	assert(type != ShaderType::UNDEFINED);
-	m_type = type;
+	m_Type = type;
 
 	std::string shaderCodeString;
 	std::ifstream shaderFile;
@@ -110,24 +111,10 @@ uint32 Shader::ShaderTypeTable(ShaderType type) const noexcept
 void Shader::Construct()
 {
 	const GLchar* shaderCode = m_ShaderCode.c_str();
-
-	m_Shader = glCreateShader(ShaderTypeTable(m_type));
-	glShaderSource(m_Shader, 1, &shaderCode, NULL);
-	glCompileShader(m_Shader);
-
-	GLint success;
-	GLchar infoLog[512];
-
-	glGetShaderiv(m_Shader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(m_Shader, 512, NULL, infoLog);
-		std::cout << "ERROR COMPILING SHADER OF TYPE " << m_type << "\n" << infoLog << std::endl;
-	}
-	m_ShaderCode = "";
+	CompileFromSource(shaderCode, m_Type, m_Defines);
 }
 
-Shader* Shader::Create(const char* const path, ShaderType type) noexcept
+Shader* Shader::Create(const char* const path, ShaderType type, const ShaderDefines& defines) noexcept
 {
 	assert(type != ShaderType::UNDEFINED);
 
@@ -152,5 +139,5 @@ Shader* Shader::Create(const char* const path, ShaderType type) noexcept
 		return nullptr;
 	}
 
-	return new Shader(shaderCodeString, type);
+	return new Shader(shaderCodeString, type, defines);
 }

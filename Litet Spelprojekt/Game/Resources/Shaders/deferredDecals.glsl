@@ -37,6 +37,8 @@ void main()
 
 
 #elif defined(FRAGMENT_SHADER)
+layout(early_fragment_tests) in;
+
 layout(location = 0) out vec4 g_OutColor;
 layout(location = 1) out vec4 g_Normal;
 

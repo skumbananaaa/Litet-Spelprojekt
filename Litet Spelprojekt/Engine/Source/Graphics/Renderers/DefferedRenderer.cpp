@@ -53,7 +53,6 @@ DefferedRenderer::~DefferedRenderer()
 void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 {
 	assert(index < NUM_CLIP_DISTANCES);
-
 	m_ClipDistances[index] = plane;
 }
 
@@ -378,6 +377,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	//Set depth and clear color
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
+	context.SetClearStencil(0xff);
 
 	//Update Lightbuffer
 	UpdateLightBuffer(scene);
@@ -397,9 +397,10 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.Enable(MULTISAMPLE);
 	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pGBufferCBR);
-	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
+	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
 
 	//First the deffered rendering passes
+	//DepthPrePass(scene);
 	SkyBoxPass(scene.GetCamera(), scene);
 	GeometryPass(scene.GetCamera(), scene);
 	DecalPass(scene.GetCamera(), scene);
@@ -410,6 +411,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetFramebuffer(m_pResolveTarget);
 	context.SetViewport(m_pResolveTarget->GetWidth(), m_pResolveTarget->GetHeight(), 0, 0);
 	context.Disable(DEPTH_TEST);
+	
 	GBufferResolvePass(scene.GetCamera(), scene, m_pGBufferCBR);
 
 	//Render to the window, now we want to put everything together
@@ -480,28 +482,23 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	context.SetProgram(m_pDepthPrePassProgram);
 
 	context.SetColorMask(0, 0, 0, 0);
+	context.SetDepthMask(true);
 	context.SetDepthFunc(FUNC_LESS);
 
-	GPassVSPerFrame perFrame = {};
-	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
-	perFrame.CameraPosition = scene.GetCamera().GetPosition();
-	perFrame.CameraLookAt = scene.GetCamera().GetLookAt();
-
-	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
+	MaterialBuffer perBatch = {};
+	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
-		perFrame.ClipDistances[i] = m_ClipDistances[i];
+		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
+		
+		context.Enable(CULL_FACE);
+		
+		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+		context.DrawIndexedMeshInstanced(mesh);
+
+		context.Disable(CULL_FACE);
 	}
-
-	//m_pGeoPassPerFrame->UpdateData(&perFrame);
-
-	//GeometryPassPerObject perObject = {};
-	//for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
-	//{
-	//	m_pGeoPassPerObject->UpdateData(&perObject);
-
-	//	context.DrawIndexedMesh(*scene.GetGameObjects()[i]->GetMesh());
-	//}
-
+	
+	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
 	context.SetColorMask(1, 1, 1, 1);
 

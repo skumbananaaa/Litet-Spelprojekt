@@ -1,5 +1,6 @@
 #pragma once
 
+#define GLM_FORCE_SSE2
 #include <GLM/glm.hpp>
 #if defined(ENGINE_EXPORT)
 #include <GLAD/glad.h>

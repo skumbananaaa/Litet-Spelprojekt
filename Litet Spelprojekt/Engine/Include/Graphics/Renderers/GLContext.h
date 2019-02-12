@@ -91,6 +91,7 @@ enum StencilOp : uint32
 };
 
 typedef Capability Cap;
+
 class API GLContext
 {
 public:
@@ -114,6 +115,7 @@ public:
 	void ResetClearColor() const noexcept;
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
 	void SetClearDepth(float depth) const noexcept;
+	void SetClearStencil(uint8 stencil) const noexcept;
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
 	void SetDepthMask(bool writeDepth) const noexcept;
 	void SetStencilMask(uint8 mask) const noexcept;

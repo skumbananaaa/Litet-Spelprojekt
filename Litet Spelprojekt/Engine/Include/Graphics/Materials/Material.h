@@ -27,7 +27,9 @@ public:
 	void SetCameraBuffer(const UniformBuffer* pCameraBuffer) const noexcept;
 	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
 
-	void SetCullMode(CULL_MODE mode) noexcept;
+	void SetStencilTest(bool enable, Func func = FUNC_ALWAYS, StencilOp sFail = STENCIL_OP_KEEP, StencilOp dFail = STENCIL_OP_KEEP,
+		StencilOp dPass = STENCIL_OP_REPLACE, uint8 mask = 0xff, uint8 ref = 1, uint8 value = 0xff) const noexcept;
+	void SetCullMode(CULL_MODE mode) const noexcept;
 	void SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept;
 
 	const Texture2D* GetNormalMap() const noexcept;
@@ -69,7 +71,15 @@ private:
 
 	mutable struct
 	{
-		glm::vec4 ClipPlane;
+		bool StencilTest = false;
+		Func StencilFunc = FUNC_ALWAYS;
+		StencilOp StencilFail = STENCIL_OP_KEEP;
+		StencilOp DepthFail = STENCIL_OP_KEEP;
+		StencilOp DepthPass = STENCIL_OP_REPLACE;
+		uint8 StencilMask = 0;
+		uint8 StencilRef = 1;
+		uint8 StencilValue = 0xff;
+		glm::vec4 ClipPlane = glm::vec4(0.0f);
 		CULL_MODE CullMode = CULL_MODE_BACK;
 	} m_PipelineState;
 };
@@ -109,7 +119,19 @@ inline void Material::SetSpecularMap(const Texture2D* const pSpecularMap) noexce
 	m_Data.pSpecularMap = pSpecularMap;
 }
 
-inline void Material::SetCullMode(CULL_MODE mode) noexcept
+inline void Material::SetStencilTest(bool enable, Func func, StencilOp sFail, StencilOp dFail, StencilOp dPass, uint8 mask, uint8 ref, uint8 value) const noexcept
+{
+	m_PipelineState.StencilTest = enable;
+	m_PipelineState.StencilFunc = func;
+	m_PipelineState.StencilFail = sFail;
+	m_PipelineState.DepthFail = dFail;
+	m_PipelineState.DepthPass = dPass;
+	m_PipelineState.StencilMask = mask;
+	m_PipelineState.StencilRef = ref;
+	m_PipelineState.StencilValue = value;
+}
+
+inline void Material::SetCullMode(CULL_MODE mode) const noexcept
 {
 	m_PipelineState.CullMode = mode;
 }

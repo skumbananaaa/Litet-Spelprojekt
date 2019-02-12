@@ -25,6 +25,28 @@ void Material::Bind(const Framebuffer* pGBuffer) const noexcept
 
 	context.SetProgram(m_pProgram);
 
+	if (m_PipelineState.StencilTest)
+	{
+		context.Enable(STENCIL_TEST);
+		context.SetStencilOp(m_PipelineState.StencilFail, m_PipelineState.DepthFail, m_PipelineState.DepthPass);
+		context.SetStencilFunc(m_PipelineState.StencilFunc, m_PipelineState.StencilRef, m_PipelineState.StencilValue);
+		context.SetStencilMask(m_PipelineState.StencilMask);
+	}
+	else
+	{
+		context.Disable(STENCIL_TEST);
+	}
+
+	if (m_PipelineState.CullMode != CULL_MODE_NONE)
+	{
+		context.Enable(CULL_FACE);
+		context.SetCullMode(m_PipelineState.CullMode);
+	}
+	else
+	{
+		context.Disable(CULL_FACE);
+	}
+
 	context.Enable(CLIP_DISTANCE0);
 
 	context.SetUniformBuffer(m_Data.pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);

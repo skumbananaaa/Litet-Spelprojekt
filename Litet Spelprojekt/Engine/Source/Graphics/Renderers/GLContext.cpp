@@ -224,6 +224,11 @@ void GLContext::SetClearDepth(float depth) const noexcept
 	GL_CALL(glClearDepthf(depth));
 }
 
+void GLContext::SetClearStencil(uint8 stencil) const noexcept
+{
+	GL_CALL(glClearStencil(stencil));
+}
+
 void GLContext::SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept
 {
 	GL_CALL(glColorMask(r, g, b, a));

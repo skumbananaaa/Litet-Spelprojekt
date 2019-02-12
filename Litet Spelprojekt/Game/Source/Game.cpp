@@ -147,21 +147,14 @@ void Game::OnResourcesLoaded()
 		pGameObject->UpdateTransform();
 		m_pScene->AddGameObject(pGameObject);
 	}
-	{
-		//Water?? YAAAS
-		pGameObject = new GameObject();
-		pGameObject->SetIsReflectable(true);
-		pGameObject->SetMesh(MESH::QUAD);
-		pGameObject->SetScale(glm::vec3(200.0f));
-		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
-		pGameObject->UpdateTransform();
-		m_pScene->AddGameObject(pGameObject);
-	}
+
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_REPLACE, 0xff, 1, 0xff);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
 	pGameObject = new GameObject();
 	pGameObject->SetName("ship");
-	pGameObject->SetMaterial(MATERIAL::BOAT);
 	pGameObject->SetMesh(MESH::SHIP);
+	pGameObject->SetMaterial(MATERIAL::BOAT);
 	pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 	pGameObject->SetScale(glm::vec3(1.0f));
 	pGameObject->UpdateTransform();
@@ -206,12 +199,12 @@ void Game::OnResourcesLoaded()
 	};
 
 	pGameObject = new GameObject();
+	pGameObject->SetName("cameraLookAt");
 	pGameObject->SetMaterial(MATERIAL::BLUE);
 	pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
 	pGameObject->SetPosition(pCamera->GetLookAt());
 	pGameObject->SetScale(glm::vec3(0.25f));
 	pGameObject->UpdateTransform();
-	pGameObject->SetName("cameraLookAt");
 	m_pScene->AddGameObject(pGameObject);
 
 	//Water?? YAAAS
@@ -226,13 +219,14 @@ void Game::OnResourcesLoaded()
 
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	m_pScene->AddPlanarReflector(pReflector);
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP, 0x00, 1, 0xff);
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	//Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
+	//Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetDissolveFactor(1.0f);
 
@@ -300,7 +294,7 @@ void Game::OnResourcesLoaded()
 	m_pScene->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 
 	//Lights
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 	m_pScene->AddDirectionalLight(pDirectionalLight);
 
 	m_pScene->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
@@ -311,8 +305,7 @@ void Game::OnResourcesLoaded()
 	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 	m_pScene->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 	
-
-		//Audio
+	//Audio
 	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);

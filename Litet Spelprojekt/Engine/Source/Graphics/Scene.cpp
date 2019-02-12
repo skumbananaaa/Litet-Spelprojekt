@@ -117,6 +117,12 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 		m_Reflectables.push_back(pGameObject);
 	}
 
+	ParticleSystem* pParticleSystem = dynamic_cast<ParticleSystem*>(pGameObject);
+	if (pParticleSystem)
+	{
+		m_ParticleSystems.push_back(pParticleSystem);
+	}
+
 	const std::string& name = pGameObject->GetName();
 	if (name != "")
 	{

@@ -3,7 +3,6 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <World/Grid.h>
 
-
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
 #include <Graphics/GUI/Panel.h>
@@ -156,6 +155,9 @@ void Game::OnResourcesLoaded()
 	m_pScene->AddGameObject(pGameObject);
 	
 	m_pWorld = WorldSerializer::Read("world.json");
+
+	ParticleSystem* pParticleSystem = new ParticleSystem();
+	m_pScene->AddGameObject(pParticleSystem);
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();
 	

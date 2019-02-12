@@ -7,6 +7,7 @@
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/SkyBox.h>
 #include <Graphics/Textures/PlanarReflector.h>
+#include "ParticleSystem.h"
 
 class API Scene
 {
@@ -39,6 +40,7 @@ public:
 	const std::vector<GameObject*>& GetDrawables() const noexcept;
 	const std::vector<GameObject*>& GetDecals() const noexcept;
 	const std::vector<GameObject*>& GetReflectables() const noexcept;
+	const std::vector<ParticleSystem*>& GetParticleSystem() const noexcept;
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
@@ -52,6 +54,7 @@ private:
 	std::vector<GameObject*> m_Drawables;
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
+	std::vector<ParticleSystem*> m_ParticleSystems;
 	std::vector<PlanarReflector*> m_PlanarReflectors;
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;
@@ -100,6 +103,11 @@ inline const std::vector<GameObject*>& Scene::GetDecals() const noexcept
 inline const std::vector<GameObject*>& Scene::GetReflectables() const noexcept
 {
 	return m_Reflectables;
+}
+
+inline const std::vector<ParticleSystem*>& Scene::GetParticleSystem() const noexcept
+{
+	return m_ParticleSystems;
 }
 
 inline const std::vector<DirectionalLight*>& Scene::GetDirectionalLights() const noexcept

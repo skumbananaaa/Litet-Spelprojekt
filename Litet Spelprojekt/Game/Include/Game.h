@@ -20,6 +20,7 @@
 #include "..\Include\Crew.h"
 #include "..\Include\Path.h"
 #include <Graphics/GUI/ProgressBar.h>
+#include "GUI/UICrewMember.h"
 
 #include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/WaterMaterial.h>
@@ -55,6 +56,11 @@ public:
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 
 	void SetClipPlanes();
+
+	static Scene* GetScene();
+	static Game* GetGame();
+
+	UICrewMember* m_pUICrewMember;
 
 private:
 	IRenderer* m_pRenderer;

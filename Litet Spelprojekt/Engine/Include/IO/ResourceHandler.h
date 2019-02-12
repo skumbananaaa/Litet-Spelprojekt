@@ -33,7 +33,7 @@ class API ResourceHandler : public IRunnable
 public:
 	static uint32 RegisterMesh(const std::string& filename);
 	static uint32 RegisterMesh(IndexedMesh* mesh);
-	static uint32 RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
+	static uint32 RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps = true, bool flipVertically = false, const TextureParams& params = TextureParams());
 	static uint32 RegisterMaterial(int32 texture, int32 normalMap = -1, int32 shader = -1);
 	static uint32 RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap = -1, int32 shader = -1);
 	static uint32 RegisterWaterMaterial(int32 distorionMap, int32 normalMap);
@@ -75,6 +75,7 @@ private:
 		std::string filename = "";
 		TEX_FORMAT format;
 		bool generateMipmaps;
+		bool flipVertically;
 		TextureParams params;
 	};
 

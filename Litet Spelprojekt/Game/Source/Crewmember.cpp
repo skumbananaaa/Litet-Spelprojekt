@@ -1,4 +1,5 @@
 #include "..\Include\Crewmember.h"
+#include "..\Include\Game.h"
 
 Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name) 
 	: m_pLight(new PointLight(position, lightColor))
@@ -58,7 +59,27 @@ void Crewmember::Update(float deltaTime)
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
 }
 
+void Crewmember::OnPicked()
+{
+	Game::GetGame()->m_pUICrewMember->SetCrewMember(this);
 
+	if (m_pLight->GetColor() == CHOSEN_LIGHT)
+	{
+		m_pLight->SetColor(DEFAULT_LIGHT);
+	}
+	else if (m_pTorch->GetColor() == CHOSEN_LIGHT)
+	{
+		m_pTorch->SetColor(DEFAULT_LIGHT);
+	}
+	else if (m_pLight->GetColor() == DEFAULT_LIGHT)
+	{
+		m_pLight->SetColor(CHOSEN_LIGHT);
+	}
+	else if (m_pTorch->GetColor() == DEFAULT_LIGHT)
+	{
+		m_pTorch->SetColor(CHOSEN_LIGHT);
+	}
+}
 
 void Crewmember::Move(const glm::vec3 & dir)
 {

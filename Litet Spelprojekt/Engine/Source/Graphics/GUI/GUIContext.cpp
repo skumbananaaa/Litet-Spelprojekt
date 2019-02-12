@@ -70,6 +70,13 @@ void GUIContext::RenderText(const std::string& text, int32 x, int32 y, float sca
 	m_pFontRenderer->RenderText(m_pContext, text, x, y, scale);
 }
 
+void GUIContext::RenderTexture(const Texture2D* texture, float x, float y, float width, float height, const glm::vec4& color)
+{
+	SetVertexQuadData(x, y, width, height, color);
+	m_pContext->SetTexture(texture, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
 glm::vec2 GUIContext::CalculateTextSize(const std::string& text, float scale)
 {
 	return m_pFontRenderer->CalculateSize(text, scale);

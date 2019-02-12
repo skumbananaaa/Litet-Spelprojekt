@@ -14,8 +14,6 @@
 //#define DRAW_DEBUG_BOXES
 #endif
 
-#define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
-#define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
 
 GameObject* g_pDecalObject = nullptr;
 
@@ -45,6 +43,9 @@ Game::Game() noexcept :
 	GetGUIManager().Add(m_pTextViewCrew);
 	GetGUIManager().Add(m_pTextViewFile);
 	GetGUIManager().Add(m_pLoadingBar);
+
+	m_pUICrewMember = new UICrewMember(200, 200, 300, 170);
+	GetGUIManager().Add(m_pUICrewMember);
 }
 
 Game::~Game()
@@ -856,32 +857,7 @@ void Game::PickCrew()
 
 	if (id != -1)
 	{
-		if (m_Crew.GetMember(id)->GetLight()->GetColor() == CHOSEN_LIGHT)
-		{
-			m_Crew.GetMember(id)->GetLight()->SetColor(DEFAULT_LIGHT);
-			m_CrewList[id] = "";
-		}
-		else if (m_Crew.GetMember(id)->GetTorch()->GetColor() == CHOSEN_LIGHT)
-		{
-			m_Crew.GetMember(id)->GetTorch()->SetColor(DEFAULT_LIGHT);
-			m_CrewList[id] = "";
-		}
-		else if (m_Crew.GetMember(id)->GetLight()->GetColor() == DEFAULT_LIGHT)
-		{
-			m_Crew.GetMember(id)->GetLight()->SetColor(CHOSEN_LIGHT);
-			m_CrewList[id] = m_Crew.GetMember(id)->GetName() + " | ";
-		}
-		else if (m_Crew.GetMember(id)->GetTorch()->GetColor() == DEFAULT_LIGHT)
-		{
-			m_Crew.GetMember(id)->GetTorch()->SetColor(CHOSEN_LIGHT);
-			m_CrewList[id] = m_Crew.GetMember(id)->GetName() + " | ";
-		}
-		std::string crewList = "";
-		for (int i = 0; i < NUM_CREW; i++)
-		{
-			crewList += m_CrewList[i];
-		}
-		m_pTextViewCrew->SetText("Crew: " + crewList);
+		m_Crew.GetMember(id)->OnPicked();
 	}
 }
 
@@ -911,4 +887,14 @@ void Game::SetClipPlanes()
 	
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
+}
+
+Scene* Game::GetScene()
+{
+	return GetGame()->m_pScene;
+}
+
+Game* Game::GetGame()
+{
+	return (Game*)(&Application::GetInstance());
 }

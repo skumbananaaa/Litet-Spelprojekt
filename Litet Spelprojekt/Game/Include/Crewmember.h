@@ -7,6 +7,9 @@
 #include <string>
 #include "..\Include\Path.h"
 
+#define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
+#define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
+
 class Crewmember : public GameObject, public IRunnable
 {
 public:
@@ -44,6 +47,8 @@ public:
 	virtual void RunParallel() override;
 	///<summary>Updates matrix of the object.</summary>
 	virtual void Update(float deltaTime) override;
+
+	virtual void OnPicked();
 
 private:
 	float m_ActionCap;

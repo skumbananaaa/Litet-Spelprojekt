@@ -15,6 +15,12 @@ public:
 	static uint32 HDR;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
+	static uint32 ICON_INJURY_BONE;
+	static uint32 ICON_INJURY_BURN;
+	static uint32 ICON_INJURY_SMOKE;
+	static uint32 ICON_SKILL_FIRE;
+	static uint32 ICON_SKILL_MEDIC;
+	static uint32 ICON_SKILL_STRENGTH;
 
 private:
 	static void RegisterResourcesPreLoading();

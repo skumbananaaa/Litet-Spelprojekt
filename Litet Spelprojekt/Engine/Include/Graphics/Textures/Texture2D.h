@@ -21,11 +21,13 @@ public:
 	uint32 GetSamples() const noexcept;
 
 private:
-	Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps = true, const TextureParams& params = TextureParams());
+	Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps = true, bool flipVertically = false, const TextureParams& params = TextureParams());
 
 private:
+	static Texture2D* CreateTextureFromFile(const char* pPath, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params);
+
 	void Create(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
-	void Create(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
+	void Create(const char* pPath, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params);
 	void CreateMS(const TextureDesc& desc, const TextureParams& params);
 	virtual void Construct() override;
 
@@ -38,7 +40,6 @@ private:
 	void* m_pTextureData;
 
 public:
-	static Texture2D* CreateTextureFromFile(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params);
 	static Texture2D* CreateTextureFromMemory(const void* pInitalData, const TextureDesc& desc, const TextureParams& params);
 };
 

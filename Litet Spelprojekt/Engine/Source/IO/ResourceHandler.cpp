@@ -81,9 +81,9 @@ uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh)
 	return m_NrOfMeshes++;
 }
 
-uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
+uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
 {
-	m_pTexture2DFiles[m_NrOfTexture2D] = { filename, format, generateMipmaps, params};
+	m_pTexture2DFiles[m_NrOfTexture2D] = { filename, format, generateMipmaps, flipVertically, params};
 	return m_NrOfTexture2D++;
 }
 
@@ -335,7 +335,7 @@ void ResourceHandler::Load()
 		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
 		std::cout << "Loading Texture: " << desc.filename << std::endl;
 		TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
-		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
+		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.flipVertically, desc.params);
 	}
 
 	for (int i = m_NrOfSoundsLoaded; i < m_NrOfSounds; i++)

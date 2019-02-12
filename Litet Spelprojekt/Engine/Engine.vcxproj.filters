@@ -147,5 +147,6 @@
     <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
+    <ClInclude Include="Include\Graphics\ParticleSystem.h" />
   </ItemGroup>
 </Project>

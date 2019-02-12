@@ -27,13 +27,12 @@ public:
 	uint32 GetNrOfWalls() const noexcept;
 
 	void GenerateWalls();
-
+	void UpdateFire(float dt);
 private:
-	//TileData ** m_ppLevel;
+	TileData ** m_ppLevelData;
 	uint32** m_ppLevel;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
-
 	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
 };

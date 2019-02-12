@@ -5,26 +5,17 @@ WorldLevel::WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 si
 {
 	m_SizeX = sizeX;
 	m_SizeZ = sizeZ;
-	/*m_ppLevel = new TileData*[sizeX];
-	for (uint32 x = 0; x < m_SizeX; x++)
-	{
-		m_ppLevel[x] = new TileData[sizeZ];
-
-		for (uint32 z = 0; z < m_SizeZ; z++)
-		{
-			m_ppLevel[x][z].Id = levelIndexes[x * m_SizeZ + z];
-			m_ppLevel[x][z].BurnsAt = 100;
-			m_ppLevel[x][z].Temp = 30;
-		}
-	}*/
+	m_ppLevelData = new TileData*[sizeX];
 	m_ppLevel = new uint32*[sizeX];
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
 		m_ppLevel[x] = new uint32[sizeZ];
-
+		m_ppLevelData[x] = new TileData[sizeZ];
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
 			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
+			m_ppLevelData[x][z].BurnsAt = 100;
+			m_ppLevelData[x][z].Temp = 30;
 		}
 	}
 }
@@ -33,10 +24,11 @@ WorldLevel::~WorldLevel()
 {
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
+		DeleteArr(m_ppLevelData[x]);
 		delete[] m_ppLevel[x];
 		m_ppLevel[x] = nullptr;
 	}
-
+	Delete(m_ppLevelData);
 	delete[] m_ppLevel;
 	m_ppLevel = nullptr;
 }
@@ -100,6 +92,48 @@ void WorldLevel::GenerateWalls()
 			if (wallV && startWallV == glm::vec2(0, 0) && (m_ppLevel[j][i] != 0 || m_ppLevel[j][i + 1] == 1) && (m_ppLevel[j][i + 1] != 0 || m_ppLevel[j][i] == 1))
 			{
 				startWallV = glm::vec2(j - 0.5, i + 0.5);
+			}
+		}
+	}
+}
+
+void WorldLevel::UpdateFire(float dt)
+{
+
+	for (uint32 x = 0; x < m_SizeX; x++)
+	{
+		for (uint32 z = 0; z < m_SizeZ; z++)
+		{
+			if (x + 1 < m_SizeX)
+			{
+				if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x + 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+
+			if (x > 0)
+			{
+				if (m_ppLevel[x - 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x - 1][z] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x - 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+
+			if (z + 1 < m_SizeZ)
+			{
+				if (m_ppLevel[x][z + 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x][z + 1] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x][z + 1].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+
+			if (z > 0)
+			{
+				if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x][z - 1].Temp- m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
 			}
 		}
 	}

@@ -59,10 +59,10 @@ Game::~Game()
 
 	DeleteSafe(m_pTextViewFPS);
 	DeleteSafe(m_pTextViewUPS);
-	DeleteSafe(m_pTextViewCrew);
 	DeleteSafe(m_pTextViewScene);
 	DeleteSafe(m_pTextViewFile);
 	DeleteSafe(m_pLoadingBar);
+	DeleteSafe(m_pUICrewMember);
 	
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
@@ -82,10 +82,8 @@ void Game::OnResourcesLoaded()
 
 	//Set game TextViews
 	{
-		m_pTextViewCrew = new TextView(0, 0, GetWindow().GetWidth(), 50, "Crew: ");
 		m_pTextViewScene = new TextView(GetWindow().GetWidth() - 100, GetWindow().GetHeight() - 60, 100, 50, "Scene " + std::to_string(m_SceneId));
 
-		GetGUIManager().Add(m_pTextViewCrew);
 		GetGUIManager().Add(m_pTextViewScene);
 	}
 

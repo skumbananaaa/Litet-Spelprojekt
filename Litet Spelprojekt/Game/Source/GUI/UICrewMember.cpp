@@ -27,7 +27,8 @@ void UICrewMember::SetCrewMember(const Crewmember* crewmember)
 		m_TextViewName->SetText(crewmember->GetName());
 		Camera& camera = Game::GetScene()->GetCamera();
 		glm::vec4 pos = camera.GetCombinedMatrix() * glm::vec4(crewmember->GetPosition(), 1);
-		SetPosition(pos.x, pos.z);
+		pos = pos / pos.w;
+		SetPosition(pos.x * 1920 /2 + 1920 / 2, pos.y * 1080/2 + 1080 / 2);
 	}
 }
 

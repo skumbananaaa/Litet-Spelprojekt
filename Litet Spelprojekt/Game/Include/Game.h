@@ -73,7 +73,6 @@ private:
 
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;
-	TextView* m_pTextViewCrew;
 	TextView* m_pTextViewScene;
 	TextView* m_pTextViewFile;
 	ProgressBar* m_pLoadingBar;

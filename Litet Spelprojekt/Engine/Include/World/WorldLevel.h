@@ -19,6 +19,7 @@ public:
 	~WorldLevel();
 
 	const uint32* const* const GetLevel() const noexcept;
+	const TileData* const* const GetLevelData() const noexcept;
 	uint32 GetSizeX() const noexcept;
 	uint32 GetSizeZ() const noexcept;
 

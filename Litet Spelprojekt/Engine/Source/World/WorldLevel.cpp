@@ -38,6 +38,11 @@ const uint32* const* const WorldLevel::GetLevel() const noexcept
 	return m_ppLevel;
 }
 
+const TileData * const * const WorldLevel::GetLevelData() const noexcept
+{
+	return m_ppLevelData;
+}
+
 uint32 WorldLevel::GetSizeX() const noexcept
 {
 	return m_SizeX;

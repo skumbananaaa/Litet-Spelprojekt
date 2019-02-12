@@ -1,6 +1,12 @@
 #pragma once
 #include <EnginePch.h>
 
+struct TileData {
+	uint32 Id;
+	float Temp;
+	float BurnsAt;
+};
+
 class API WorldLevel
 {
 public:
@@ -23,6 +29,7 @@ public:
 	void GenerateWalls();
 
 private:
+	//TileData ** m_ppLevel;
 	uint32** m_ppLevel;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;

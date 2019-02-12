@@ -5,6 +5,18 @@ WorldLevel::WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 si
 {
 	m_SizeX = sizeX;
 	m_SizeZ = sizeZ;
+	/*m_ppLevel = new TileData*[sizeX];
+	for (uint32 x = 0; x < m_SizeX; x++)
+	{
+		m_ppLevel[x] = new TileData[sizeZ];
+
+		for (uint32 z = 0; z < m_SizeZ; z++)
+		{
+			m_ppLevel[x][z].Id = levelIndexes[x * m_SizeZ + z];
+			m_ppLevel[x][z].BurnsAt = 100;
+			m_ppLevel[x][z].Temp = 30;
+		}
+	}*/
 	m_ppLevel = new uint32*[sizeX];
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{

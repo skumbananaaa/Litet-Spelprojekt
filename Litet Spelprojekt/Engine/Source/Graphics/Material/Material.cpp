@@ -63,6 +63,7 @@ void Material::Unbind() const noexcept
 	GLContext& context = GLContext::GetCurrentContext();
 
 	context.Disable(CLIP_DISTANCE0);
+	context.Disable(STENCIL_TEST);
 
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, LIGHT_BUFFER_BINDING_SLOT);

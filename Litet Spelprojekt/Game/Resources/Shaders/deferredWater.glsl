@@ -140,7 +140,7 @@ void main()
 	vec3 viewDir = g_CameraPosition - fs_in.Position;
 	float distFromCamera = length(viewDir);
 	viewDir = normalize(viewDir); 
-	float refractionFactor = pow(dot(viewDir, normal), refractionExp);
+	float refractionFactor = pow(max(dot(viewDir, normal), 0.0f), refractionExp);
 
 	//Specular
 	//vec3 halfwayDir = normalize(lightDir + viewDir);

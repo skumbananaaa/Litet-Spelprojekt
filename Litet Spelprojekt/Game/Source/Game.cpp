@@ -100,26 +100,6 @@ void Game::OnResourcesLoaded()
 		g_pDecalObject = pGameObject;
 		m_pScene->AddGameObject(pGameObject);
 	}
-	/*{
-		pGameObject = new GameObject();
-		pGameObject->SetName("ship");
-		pGameObject->SetMaterial(MATERIAL::GROUND);
-		pGameObject->SetMesh(MESH::SHIP);
-		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
-		pGameObject->SetScale(glm::vec3(1.0f));
-		pGameObject->UpdateTransform();
-		m_pScene->AddGameObject(pGameObject);
-	}*/
-	{
-		pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::GROUND);
-		pGameObject->SetMesh(MESH::CLIFF_3_LOW);
-		pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
-		pGameObject->SetScale(glm::vec3(0.4f));
-		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
-		pGameObject->UpdateTransform();
-		m_pScene->AddGameObject(pGameObject);
-	}
 	{
 		pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::RED);
@@ -219,7 +199,7 @@ void Game::OnResourcesLoaded()
 
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	m_pScene->AddPlanarReflector(pReflector);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP, 0x00, 1, 0xff);
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_REPLACE, 0x00, 1, 0xff);
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
 
 	m_pWorld = WorldSerializer::Read("world.json");

@@ -377,7 +377,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	//Set depth and clear color
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 	context.SetClearDepth(1.0f);
-	context.SetClearStencil(0xff);
+	context.SetClearStencil(0x00);
 
 	//Update Lightbuffer
 	UpdateLightBuffer(scene);
@@ -397,6 +397,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.Enable(MULTISAMPLE);
 	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pGBufferCBR);
+	context.SetStencilMask(~0); //Active write to stencil or clear stencil does not work
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
 
 	//First the deffered rendering passes

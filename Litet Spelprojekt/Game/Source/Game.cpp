@@ -930,7 +930,8 @@ void Game::SetClipPlanes(uint32 scene)
 
 Scene* Game::GetScene()
 {
-	return GetGame()->m_pScene;
+	Game* game = GetGame();
+	return game->m_Scenes[game->m_SceneId];
 }
 
 Game* Game::GetGame()

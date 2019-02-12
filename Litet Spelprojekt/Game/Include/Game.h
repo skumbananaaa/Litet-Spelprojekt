@@ -54,14 +54,13 @@ public:
 	void PickCrew();
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 
-	void SetClipPlanes();
+	void SetClipPlanes(uint32 scene);
 
 private:
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
-	Scene* m_pScene;
-	Scene* m_pScene2;
-	Scene* m_pCurrentScene;
+	std::vector<Scene*> m_Scenes;
+	uint32 m_SceneId = 0;
 
 	TextureCube* m_pSkyBoxTex;
 	World* m_pWorld;
@@ -69,8 +68,9 @@ private:
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;
 	TextView* m_pTextViewCrew;
-	ProgressBar* m_pLoadingBar;
+	TextView* m_pTextViewScene;
 	TextView* m_pTextViewFile;
+	ProgressBar* m_pLoadingBar;
 	
 	Crew m_Crew;
 	std::string m_CrewList[NUM_CREW];

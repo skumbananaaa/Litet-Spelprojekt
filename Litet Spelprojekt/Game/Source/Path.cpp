@@ -115,16 +115,16 @@ Path::~Path()
 	{
 		for (int j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
 		{
-			DeleteArr(m_pppTiles[i][j]);
+			DeleteArrSafe(m_pppTiles[i][j]);
 		}
-		DeleteArr(m_pppTiles[i]);
+		DeleteArrSafe(m_pppTiles[i]);
 	}
 
-	DeleteArr(m_pppTiles);
-	Delete(m_pPath);
-	Delete(m_pOpenList);
-	Delete(m_pppMap);
-	Delete(m_pSize);
+	DeleteArrSafe(m_pppTiles);
+	DeleteSafe(m_pPath);
+	DeleteSafe(m_pOpenList);
+	DeleteSafe(m_pppMap);
+	DeleteSafe(m_pSize);
 }
 
 glm::ivec3* Path::FindPath(const glm::ivec3& start, const glm::ivec3& goal)

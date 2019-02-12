@@ -39,7 +39,7 @@ Crewmember::Crewmember(Crewmember& other)
 
 Crewmember::~Crewmember()
 {
-	Delete(m_pPathFinder);
+	DeleteSafe(m_pPathFinder);
 }
 
 void Crewmember::RunParallel()

@@ -1,21 +1,57 @@
+layout(std140, binding = 0) uniform CameraBuffer
+{
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
+	vec3 g_CameraLookAt;
+	float pad1;
+	vec3 g_CameraPosition;
+};
+
+#if defined(VERTEX_SHADER)
+layout(location = 0) in vec3 g_Position;
+layout(location = 1) in vec3 g_Normal;
+layout(location = 2) in vec3 g_Tangent;
+layout(location = 3) in vec2 g_TexCoords;
+layout(location = 4) in mat4 g_InstanceModel;
+layout(location = 8) in mat4 g_InstanceInverseModel;
+layout(location = 12) in vec3 g_InstanceDirection;
+
+out VS_OUT
+{
+	vec4 PositionClipSpace;
+	mat4 InverseModel;
+	vec3 Direction;
+} vs_out;
+
+void main()
+{
+	vs_out.Direction = g_InstanceDirection;
+	vs_out.InverseModel = g_InstanceInverseModel;
+	vs_out.PositionClipSpace = g_ProjectionView * g_InstanceModel * vec4(g_Position, 1.0f);
+
+	gl_Position = vs_out.PositionClipSpace;
+}
+
+
+#elif defined(FRAGMENT_SHADER)
 layout(location = 0) out vec4 g_OutColor;
 layout(location = 1) out vec4 g_Normal;
 
 layout(binding = 0) uniform sampler2D g_Texture;
 layout(binding = 1) uniform sampler2D g_NormalMap;
-layout(binding = 2) uniform sampler2DMS g_Depth;
+layout(binding = 3) uniform sampler2DMS g_Depth;
 
-layout(std140, binding = 0) uniform PerFrame
+layout(std140, binding = 2) uniform DefferedMaterialBuffer
 {
-	mat4 g_ViewProjection;
-	mat4 g_InverseView;
-	mat4 g_InverseProjection;
-};
-
-layout(std140, binding = 1) uniform PerObject
-{
+	vec4 g_Color;
+	vec4 g_ClipPlane;
+	float g_Specular;
+	float g_HasDiffuseMap;
 	float g_HasNormalMap;
-	float g_HasTexture;
+	float g_HasSpecularMap;
 };
 
 in VS_OUT
@@ -69,7 +105,7 @@ void main()
 	
 	//COLOR
 	vec4 mappedTexture = texture(g_Texture, decalTexCoords);
-	mappedTexture.rgb = mappedTexture.rgb * g_HasTexture;
+	mappedTexture.rgb = mappedTexture.rgb * g_HasDiffuseMap;
 	g_OutColor = mappedTexture;
 
 	//NORMAL
@@ -95,3 +131,4 @@ void main()
 
 	g_Normal = vec4(normalize(mappedNormal), mappedTexture.a);
 }
+#endif

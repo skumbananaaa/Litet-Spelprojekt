@@ -15,40 +15,6 @@ struct GPassVSPerFrame
 	float Padding2;
 	glm::vec4 ClipDistances[NUM_CLIP_DISTANCES];
 };
-//
-//struct GeometryPassPerObject
-//{
-//	glm::vec4 Color;
-//	
-//	float HasTexture;
-//	float HasNormalMap;
-//	float DissolvePercentage;
-//};
-
-struct DecalPassPerFrame
-{
-	glm::mat4 ViewProj;
-	glm::mat4 InverseView;
-	glm::mat4 InverseProjection;
-};
-
-struct DecalPassPerObject
-{
-	float HasTexture;
-	float HasNormalMap;
-};
-
-//struct WaterPassPerFrame
-//{
-//	glm::mat4 CameraCombined;
-//	glm::vec3 CameraPosition;
-//	float DistortionMoveFactor;
-//};
-
-//struct WaterPassPerObjectVS
-//{
-//	glm::mat4 Model;
-//};
 
 struct DrawableBatch
 {
@@ -97,13 +63,12 @@ private:
 	void Create() noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
-	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
-	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ReconstructionPass() const noexcept;
-	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void ReflectionPass(const Scene& sceen) const noexcept;
-	void WaterPass(const Scene& sceen, float dtS) const noexcept;
+	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
+	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
+	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
 	
 	//DELETE?
@@ -111,11 +76,8 @@ private:
 
 private:
 	Framebuffer* m_pGBufferCBR;
-	Framebuffer* m_pResolveTargets[2];
+	Framebuffer* m_pResolveTarget;
 	Framebuffer* m_pBlur;
-	mutable Framebuffer* m_pCurrentResolveTarget;
-	mutable Framebuffer* m_pLastResolveTarget;
-	Texture2D* m_pForwardCBRTexture;
 
 	FullscreenTri* m_pTriangle;
 	
@@ -123,17 +85,11 @@ private:
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;
 	UniformBuffer* m_pPlaneBuffer;
-
-	UniformBuffer* m_pDecalPassPerFrame;
-	UniformBuffer* m_pDecalPassPerObject;
 	
 	UniformBuffer* m_pSkyBoxPassPerFrame;
 	UniformBuffer* m_pSkyBoxPassPerObject;
 	
 	IndexedMesh* m_pDecalMesh;
-	
-	Texture2D* m_pWaterNormalMap;
-	Texture2D* m_pWaterDistortionMap;
 	
 	ShaderProgram* m_pCbrBlurProgram;
 	ShaderProgram* m_pCbrReconstructionProgram;
@@ -141,13 +97,11 @@ private:
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pDecalsPassProgram;
 	ShaderProgram* m_pForwardPass;
-	ShaderProgram* m_pWaterpassProgram;
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pSkyBoxPassProgram;
 
 	glm::vec4 m_ClipDistances[NUM_CLIP_DISTANCES];
 	
-	mutable uint64 m_FrameCount;
 	mutable std::vector<DrawableBatch> m_DrawableBatches;
 	mutable std::vector<DecalBatch> m_DecalBatches;
 };

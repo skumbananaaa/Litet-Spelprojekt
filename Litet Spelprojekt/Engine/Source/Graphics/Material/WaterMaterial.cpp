@@ -11,10 +11,10 @@ WaterMaterial::WaterMaterial()
 	m_Buffer()
 {
 	Shader vs;
-	vs.CompileFromFile("Resources/Shaders/waterVert.glsl", VERTEX_SHADER);
+	vs.CompileFromFile("Resources/Shaders/deferredWater.glsl", VERTEX_SHADER);
 
 	Shader fs;
-	fs.CompileFromFile("Resources/Shaders/waterFrag.glsl", FRAGMENT_SHADER);
+	fs.CompileFromFile("Resources/Shaders/deferredWater.glsl", FRAGMENT_SHADER);
 
 	SetProgram(new ShaderProgram(vs, fs));
 
@@ -38,7 +38,7 @@ void WaterMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 	{
 		context.SetTexture(m_pReflector->GetReflectionTexture(), 4);
 	}
-	context.SetTexture(pGBuffer->GetDepthAttachment(), 5);
+	//context.SetTexture(pGBuffer->GetDepthAttachment(), 5);
 
 	Material::Bind(pGBuffer);
 }

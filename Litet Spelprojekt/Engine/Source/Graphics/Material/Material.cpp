@@ -40,8 +40,6 @@ void Material::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.SetProgram(nullptr);
-
 	context.Disable(CLIP_DISTANCE0);
 
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);

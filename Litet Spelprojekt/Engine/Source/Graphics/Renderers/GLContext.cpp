@@ -4,7 +4,11 @@
 
 GLContext* GLContext::s_CurrentContext = nullptr;
 
-GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.584f, 0.929f, 1.0f)
+GLContext::GLContext(float width, float height) 
+	: m_pCurrentProgram(nullptr),
+	m_DefaultClearColor(0.392f, 0.584f, 0.929f, 1.0f),
+	m_ViewPort(),
+	m_CurrentTextures()
 {
 	assert(s_CurrentContext == nullptr);
 	s_CurrentContext = this;
@@ -41,6 +45,16 @@ GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.
 		m_CurrentTextures[i] = GL_TEXTURE_2D;
 	}
 
+	for (int i = 0; i < 16; i++)
+	{
+		m_pCurrentTextures[i] = nullptr;
+	}
+
+	for (int i = 0; i < 16; i++)
+	{
+		m_pCurrentUniforms[i] = nullptr;
+	}
+
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
@@ -65,6 +79,11 @@ void GLContext::SetCullMode(CULL_MODE mode) const noexcept
 
 void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 {
+	if (pProgram == m_pCurrentProgram)
+	{
+		return;
+	}
+
 	if (pProgram == nullptr)
 	{
 		GL_CALL(glUseProgram(0));
@@ -73,10 +92,17 @@ void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 	{
 		GL_CALL(glUseProgram(pProgram->m_Program));
 	}
+
+	m_pCurrentProgram = pProgram;
 }
 
 void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 {
+	if (m_pCurrentTextures[slot] == pTexture)
+	{
+		return;
+	}
+
 	GL_CALL(glActiveTexture(GL_TEXTURE0 + slot));
 
 	if (pTexture == nullptr)
@@ -88,10 +114,17 @@ void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 		m_CurrentTextures[slot] = pTexture->GetType();
 		GL_CALL(glBindTexture(m_CurrentTextures[slot], pTexture->m_Texture));
 	}
+
+	m_pCurrentTextures[slot] = pTexture;
 }
 
 void GLContext::SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) const noexcept
 {
+	if (m_pCurrentUniforms[slot] == pBuffer)
+	{
+		return;
+	}
+
 	if (pBuffer == nullptr)
 	{
 		GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, slot, 0));
@@ -100,6 +133,8 @@ void GLContext::SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) cons
 	{
 		GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, slot, pBuffer->m_Buffer));
 	}
+
+	m_pCurrentUniforms[slot] = pBuffer;
 }
 
 void GLContext::SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept

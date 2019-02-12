@@ -56,7 +56,6 @@
     <None Include="Resources\Shaders\FShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
-    <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
     <None Include="Resources\Shaders\forwardFrag.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
@@ -73,9 +72,9 @@
     </None>
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\VShaderEquirecToCubemap.glsl" />
-    <None Include="Resources\Shaders\waterVert.glsl" />
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
     <None Include="Resources\Shaders\deferredWall.glsl" />
+    <None Include="Resources\Shaders\deferredWater.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -107,11 +106,10 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl">
       <Filter>Source Files</Filter>
     </Text>
-    <Text Include="Resources\Shaders\waterFrag.glsl" />
+    <Text Include="Resources\Shaders\deferredDecals.glsl" />
   </ItemGroup>
 </Project>

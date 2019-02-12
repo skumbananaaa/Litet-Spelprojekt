@@ -254,9 +254,14 @@ void GLContext::SetStencilFunc(Func func, uint8 ref, uint8 mask) const noexcept
 	GL_CALL(glStencilFunc(func, ref, mask));
 }
 
-void GLContext::SetStencilOp(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
+void GLContext::SetStencilOpFrontFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
 {
-	GL_CALL(glStencilOp(sFail, dpFail, dpPass));
+	GL_CALL(glStencilOpSeparate(GL_FRONT, sFail, dpFail, dpPass));
+}
+
+void GLContext::SetStencilOpBackFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
+{
+	GL_CALL(glStencilOpSeparate(GL_BACK, sFail, dpFail, dpPass));
 }
 
 void GLContext::Clear(uint32 flags) const noexcept

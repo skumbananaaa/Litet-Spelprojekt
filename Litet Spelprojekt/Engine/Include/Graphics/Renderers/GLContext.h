@@ -119,7 +119,8 @@ public:
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
 	void SetDepthMask(bool writeDepth) const noexcept;
 	void SetStencilMask(uint8 mask) const noexcept;
-	void SetStencilOp(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept;
+	void SetStencilOpFrontFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept;
+	void SetStencilOpBackFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept;
 	void SetDepthFunc(Func func) const noexcept;
 	void SetStencilFunc(Func func, uint8 ref, uint8 mask) const noexcept;
 	void SetProgram(const ShaderProgram* pProgram) const noexcept;

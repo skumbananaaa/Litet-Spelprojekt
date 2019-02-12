@@ -82,7 +82,7 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 
 	//AMBIENT
-	vec3 ambient = vec3(0.1f);
+	vec3 ambient = vec3(0.2f);
 
 	//DIFFUSE
 	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;

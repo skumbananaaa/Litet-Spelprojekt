@@ -128,7 +128,9 @@ void Game::OnResourcesLoaded()
 		m_pScene->AddGameObject(pGameObject);
 	}
 
-	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_REPLACE, 0xff, 1, 0xff);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetFrontFaceStencilOp(STENCIL_OP_KEEP, STENCIL_OP_ZERO, STENCIL_OP_ZERO);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetBackFaceStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_REPLACE);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
 	pGameObject = new GameObject();
@@ -199,7 +201,8 @@ void Game::OnResourcesLoaded()
 
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	m_pScene->AddPlanarReflector(pReflector);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_REPLACE, 0x00, 1, 0xff);
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
 
 	m_pWorld = WorldSerializer::Read("world.json");

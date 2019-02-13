@@ -33,9 +33,6 @@
     <ClCompile Include="Source\GUI\UICrewMember.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\FireAlarm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game.h">
@@ -51,9 +48,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GUI\UICrewMember.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\FireAlarm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

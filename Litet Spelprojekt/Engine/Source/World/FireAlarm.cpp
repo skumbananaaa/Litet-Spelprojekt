@@ -1,4 +1,5 @@
-#include "../Include/FireAlarm.h"
+#include <EnginePch.h>
+#include <World/FireAlarm.h>
 
 FireAlarm::FireAlarm(int32 source) : GameObject(), AudioSource(*AudioSource::CreateSoundSource(source)), m_FireDetected(false)
 {

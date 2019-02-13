@@ -1,14 +1,17 @@
 #include <EnginePch.h>
 #include <World/FireAlarm.h>
 
-FireAlarm::FireAlarm(int32 source) : GameObject(), AudioSource(*AudioSource::CreateSoundSource(source)), m_FireDetected(false)
+FireAlarm::FireAlarm(int32 source) : GameObject(), 
+	m_FireDetected(false)
 {
+	GameObject::SetMesh(MESH::LAMP);
+	m_Src = AudioSource::CreateSoundSource(source);
 }
 
 void FireAlarm::SetPosition(const glm::vec3 & position) noexcept
 {
 	GameObject::SetPosition(position);
-	AudioSource::SetPosition(position);
+	m_Src->SetPosition(position);
 }
 
 void FireAlarm::SetDetection(bool fireDetected)
@@ -17,11 +20,11 @@ void FireAlarm::SetDetection(bool fireDetected)
 
 	if (m_FireDetected)
 	{
-		AudioSource::Play();
+		m_Src->Play();
 	}
 	else
 	{
-		AudioSource::Stop();
+		m_Src->Stop();
 	}
 }
 

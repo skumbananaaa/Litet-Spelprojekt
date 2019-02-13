@@ -3,7 +3,7 @@
 #include <Audio/Sources/AudioSource.h>
 #include <Graphics/GameObject.h>
 
-class FireAlarm : public GameObject, public AudioSource
+class API FireAlarm : public GameObject
 {
 public:
 	FireAlarm(int32 source);
@@ -12,4 +12,5 @@ public:
 	void Update(float dt);
 private:
 	bool m_FireDetected;
+	AudioSource* m_Src;
 };

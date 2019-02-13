@@ -67,6 +67,8 @@
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
+    <ClCompile Include="Source\Graphics\ParticleSystem.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -77,8 +79,6 @@
     <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Mesh.h" />
-    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
-    <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
     <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
@@ -148,5 +148,8 @@
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\Graphics\ParticleSystem.h" />
+    <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
+    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
   </ItemGroup>
 </Project>

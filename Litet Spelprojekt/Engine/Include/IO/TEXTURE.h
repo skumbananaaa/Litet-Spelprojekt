@@ -15,6 +15,7 @@ public:
 	static uint32 HDR;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
+	static uint32 SMOKE;
 
 private:
 	static void RegisterResourcesPreLoading();

@@ -157,6 +157,9 @@ void Game::OnResourcesLoaded()
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	ParticleSystem* pParticleSystem = new ParticleSystem();
+	pParticleSystem->SetTexture(TEXTURE::SMOKE);
+	pParticleSystem->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	pParticleSystem->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	m_pScene->AddGameObject(pParticleSystem);
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();

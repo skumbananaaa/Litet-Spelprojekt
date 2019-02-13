@@ -75,6 +75,7 @@
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
     <None Include="Resources\Shaders\deferredWall.glsl" />
     <None Include="Resources\Shaders\deferredWater.glsl" />
+    <None Include="Resources\Shaders\deferredParticles.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

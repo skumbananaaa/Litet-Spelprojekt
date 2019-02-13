@@ -45,6 +45,11 @@ struct PlaneBuffer
 	glm::vec4 ClipPlane;
 };
 
+struct ParticleBuffer
+{
+	glm::vec4 Color;
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -68,6 +73,7 @@ private:
 	void ReflectionPass(const Scene& sceen) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
+	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
 	
@@ -79,8 +85,6 @@ private:
 	Framebuffer* m_pResolveTarget;
 	Framebuffer* m_pBlur;
 
-	FullscreenTri* m_pTriangle;
-	
 	UniformBuffer* m_pLightBuffer;
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;
@@ -89,6 +93,8 @@ private:
 	UniformBuffer* m_pSkyBoxPassPerFrame;
 	UniformBuffer* m_pSkyBoxPassPerObject;
 	
+	Particle* m_pParticle;
+	FullscreenTri* m_pTriangle;
 	IndexedMesh* m_pDecalMesh;
 	
 	ShaderProgram* m_pCbrBlurProgram;
@@ -97,6 +103,7 @@ private:
 	ShaderProgram* m_pGeometryPassProgram;
 	ShaderProgram* m_pDecalsPassProgram;
 	ShaderProgram* m_pForwardPass;
+	ShaderProgram* m_pParticleProgram;
 	ShaderProgram* m_pDepthPrePassProgram;
 	ShaderProgram* m_pSkyBoxPassProgram;
 

@@ -11,7 +11,7 @@ uint32 TEXTURE::WATER_NORMAL = 0;
 uint32 TEXTURE::HDR = 0;
 uint32 TEXTURE::SINGLE_BED = 0;
 uint32 TEXTURE::BUNK_BED = 0;
-
+uint32 TEXTURE::SMOKE = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -36,6 +36,7 @@ void TEXTURE::RegisterResources()
 	BUNK_BED			= ResourceHandler::RegisterTexture2D("uv_bunk_Bed_Texture.jpg", TEX_FORMAT_RGBA);
 	WATER_DISTORTION	= ResourceHandler::RegisterTexture2D("waterDUDV.png", TEX_FORMAT_RGBA, true, params);
 	WATER_NORMAL		= ResourceHandler::RegisterTexture2D("waterNormalMap.png", TEX_FORMAT_RGBA, true, params);
+	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, params);
 
 	params.Wrap = TEX_PARAM_EDGECLAMP;
 

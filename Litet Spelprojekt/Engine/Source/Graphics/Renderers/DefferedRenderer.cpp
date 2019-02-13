@@ -2,15 +2,20 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <System/Window.h>
 #include <System/Application.h>
+#include "..\..\..\Include\Graphics\Renderers\DefferedRenderer.h"
 
 #define REFLECTIONSIZE 384
 
 DefferedRenderer::DefferedRenderer()
 	: m_pGBufferCBR(nullptr),
+	m_pParticle(nullptr),
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
 	m_pBlur(nullptr),
+	m_pCameraBuffer(nullptr),
+	m_pMaterialBuffer(nullptr),
 	m_pLightBuffer(nullptr),
+	m_pPlaneBuffer(nullptr),
 	m_pForwardPass(nullptr),
 	m_pCbrBlurProgram(nullptr),
 	m_pCbrReconstructionProgram(nullptr),
@@ -31,6 +36,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pBlur);
 
 	DeleteSafe(m_pTriangle);
+	DeleteSafe(m_pParticle);
 	
 	DeleteSafe(m_pLightBuffer);
 	DeleteSafe(m_pMaterialBuffer);
@@ -119,20 +125,21 @@ void DefferedRenderer::Create() noexcept
 	{
 		m_pDecalMesh = ResourceHandler::GetMesh(MESH::CUBE);
 		m_pTriangle = new FullscreenTri();
+		m_pParticle = new Particle();
 	}
 
 	//CREATE SHADERPROGRAMS
 	Shader fullscreenTri;
 	if (fullscreenTri.CompileFromFile("Resources/Shaders/fullscreenTriVert.glsl", VERTEX_SHADER))
 	{
-		std::cout << "Created fullscreen Vertex shader" << std::endl;
+		std::cout << "Created fullscreen Vertexshader" << std::endl;
 	}
 
 	{
 		Shader frag;
 		if (frag.CompileFromFile("Resources/Shaders/cbrResolveFrag.glsl", FRAGMENT_SHADER))
 		{
-			std::cout << "Created CBR Resolve Fragment shader" << std::endl;
+			std::cout << "Created CBR Resolve Fragmentshader" << std::endl;
 		}
 
 		m_pCbrResolveProgram = new ShaderProgram(fullscreenTri, frag);
@@ -142,7 +149,7 @@ void DefferedRenderer::Create() noexcept
 		Shader frag;
 		if (frag.CompileFromFile("Resources/Shaders/cbrReconstructionFrag.glsl", FRAGMENT_SHADER))
 		{
-			std::cout << "Created CBR Reconstruction Fragment shader" << std::endl;
+			std::cout << "Created CBR Reconstruction Fragmentshader" << std::endl;
 		}
 
 		m_pCbrReconstructionProgram = new ShaderProgram(fullscreenTri, frag);
@@ -152,7 +159,7 @@ void DefferedRenderer::Create() noexcept
 		Shader frag;
 		if (frag.CompileFromFile("Resources/Shaders/cbrFilterFrag.glsl", FRAGMENT_SHADER))
 		{
-			std::cout << "Created CBR Blur Fragment shader" << std::endl;
+			std::cout << "Created CBR Blur Fragmentshader" << std::endl;
 		}
 
 		m_pCbrBlurProgram = new ShaderProgram(fullscreenTri, frag);
@@ -162,7 +169,7 @@ void DefferedRenderer::Create() noexcept
 		Shader vert;
 		if (vert.CompileFromFile("Resources/Shaders/defferedDepthPreVert.glsl", VERTEX_SHADER))
 		{
-			std::cout << "Created DepthPrePass Vertex shader" << std::endl;
+			std::cout << "Created DepthPrePass Vertexshader" << std::endl;
 		}
 
 		m_pDepthPrePassProgram = new ShaderProgram(vert);
@@ -172,13 +179,13 @@ void DefferedRenderer::Create() noexcept
 		Shader vert;
 		if (vert.CompileFromFile("Resources/Shaders/deferredDecals.glsl", VERTEX_SHADER))
 		{
-			std::cout << "Created Decal Vertex shader" << std::endl;
+			std::cout << "Created DecalPass Vertexshader" << std::endl;
 		}
 
 		Shader frag;
 		if (frag.CompileFromFile("Resources/Shaders/deferredDecals.glsl", FRAGMENT_SHADER))
 		{
-			std::cout << "Created Decal Fragment shader" << std::endl;
+			std::cout << "Created DecalPass Fragmentshader" << std::endl;
 		}
 
 		m_pDecalsPassProgram = new ShaderProgram(vert, frag);
@@ -188,13 +195,13 @@ void DefferedRenderer::Create() noexcept
 		Shader vert;
 		if (vert.CompileFromFile("Resources/Shaders/forwardVert.glsl", VERTEX_SHADER))
 		{
-			std::cout << "Created Forward-Pass Vertex shader" << std::endl;
+			std::cout << "Created Forwardpass Vertexshader" << std::endl;
 		}
 
 		Shader frag;
 		if (frag.CompileFromFile("Resources/Shaders/forwardFrag.glsl", FRAGMENT_SHADER))
 		{
-			std::cout << "Created Forward-Pass Fragment shader" << std::endl;
+			std::cout << "Created Forwardpass Fragmentshader" << std::endl;
 		}
 
 		m_pForwardPass = new ShaderProgram(vert, frag);
@@ -204,16 +211,32 @@ void DefferedRenderer::Create() noexcept
 		Shader vert;
 		if (vert.CompileFromFile("Resources/Shaders/VShaderSkyBox.glsl", VERTEX_SHADER))
 		{
-			std::cout << "Created SkyBox pass Vertex shader" << std::endl;
+			std::cout << "Created SkyBox pass Vertexshader" << std::endl;
 		}
 
 		Shader frag;
 		if (frag.CompileFromFile("Resources/Shaders/FShaderSkyBox.glsl", FRAGMENT_SHADER))
 		{
-			std::cout << "Created SkyBox pass Fragment shader" << std::endl;
+			std::cout << "Created SkyBox pass Fragmentshader" << std::endl;
 		}
 
 		m_pSkyBoxPassProgram = new ShaderProgram(vert, frag);
+	}
+
+	{
+		Shader vert;
+		if (vert.CompileFromFile("Resources/Shaders/deferredParticles.glsl", VERTEX_SHADER))
+		{
+			std::cout << "Created Particlepass Vertexshader" << std::endl;
+		}
+
+		Shader frag;
+		if (frag.CompileFromFile("Resources/Shaders/deferredParticles.glsl", FRAGMENT_SHADER))
+		{
+			std::cout << "Created Particlepass Fragmentshader" << std::endl;
+		}
+
+		m_pParticleProgram = new ShaderProgram(vert, frag);
 	}
 
 	//CREATE UNIFORMBUFFERS
@@ -405,6 +428,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	SkyBoxPass(scene.GetCamera(), scene);
 	GeometryPass(scene.GetCamera(), scene);
 	DecalPass(scene.GetCamera(), scene);
+	ParticlePass(scene.GetCamera(), scene);
 	
 	context.Disable(MULTISAMPLE);
 
@@ -572,6 +596,30 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	context.Disable(BLEND);
 	context.Enable(CULL_FACE);
 	context.Enable(DEPTH_TEST);
+}
+
+void DefferedRenderer::ParticlePass(const Camera& camera, const Scene& scene) const noexcept
+{
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	context.Disable(CULL_FACE);
+	context.Enable(BLEND);
+
+	context.SetProgram(m_pParticleProgram);
+
+	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+
+	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	for (size_t i = 0; i < particleSystems.size(); i++)
+	{
+		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
+		
+		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
+		context.DrawParticle(*m_pParticle);
+	}
+
+	context.Enable(CULL_FACE);
+	context.Disable(BLEND);
 }
 
 void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer)  const noexcept

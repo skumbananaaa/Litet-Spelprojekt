@@ -108,5 +108,4 @@ void GameObject::Update(float deltaTime)
 {
 	Extend(deltaTime);
 	UpdateTransform();
-	//////
 }

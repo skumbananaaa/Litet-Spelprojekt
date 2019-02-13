@@ -50,7 +50,7 @@ out VS_OUT
 
 void main()
 {
-	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
 	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
 	
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;

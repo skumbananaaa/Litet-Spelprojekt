@@ -297,6 +297,14 @@ void GLContext::DrawFullscreenTriangle(const FullscreenTri & triangle) const noe
 	GL_CALL(glBindVertexArray(0));
 }
 
+void GLContext::DrawParticle(const Particle& mesh) const noexcept
+{
+	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	uint32 instanceCount = mesh.GetInstanceCount();
+	GL_CALL(glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instanceCount));
+	GL_CALL(glBindVertexArray(0));
+}
+
 bool GLContext::HasErrors() const noexcept
 {
 	int32 lastError = GL_NO_ERROR;

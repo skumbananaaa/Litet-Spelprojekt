@@ -7,6 +7,7 @@
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
+#include <Graphics/Geometry/Particle.h>
 
 #if defined(_DEBUG)
 #define GL_DEBUG_ASSERT
@@ -136,6 +137,7 @@ public:
 	void DrawIndexedMeshInstanced(const IndexedMesh& mesh) const noexcept;
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
 	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
+	void DrawParticle(const Particle& mesh) const noexcept;
 
 	bool HasErrors() const noexcept;
 	void ClearErrors() const noexcept;

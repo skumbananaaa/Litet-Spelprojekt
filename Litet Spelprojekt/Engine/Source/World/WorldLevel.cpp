@@ -105,7 +105,7 @@ void WorldLevel::GenerateWalls()
 //alla tiles i hela vår grid. 
 void WorldLevel::UpdateFire(float dt)
 {
-	for (uint32 x = 0; x < m_SizeX; x++)
+	/*for (uint32 x = 0; x < m_SizeX; x++)
 	{
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
@@ -114,7 +114,6 @@ void WorldLevel::UpdateFire(float dt)
 				if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
 				{
 					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x + 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
-					std::cout << "temperature level at : " << m_ppLevelData[x][z].Temp << std::endl;
 				}
 			}
 
@@ -139,6 +138,78 @@ void WorldLevel::UpdateFire(float dt)
 				if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
 				{
 					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x][z - 1].Temp- m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+		}
+	}*/
+
+	for (uint32 i = 0; i < m_burningIDs.size(); i++)
+	{
+		uint32 x = m_burningIDs[i].x;
+		uint32 z = m_burningIDs[i].y;
+		bool alreadyBurning = false;
+		if (x + 1 < m_SizeX)
+		{
+			if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
+			{
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+
+				m_ppLevelData[x + 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x + 1][z].Temp)*dt, 0.0f);
+
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x + 1, z));
+				}
+			}
+		}
+
+		if (x > 0)
+		{
+			if (m_ppLevel[x - 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x - 1][z] == 0)
+			{
+				if (m_ppLevelData[x - 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+				m_ppLevelData[x - 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x - 1][z].Temp)*dt, 0.0f);
+				if (m_ppLevelData[x - 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x - 1, z));
+				}
+			}
+		}
+
+		if (z + 1 < m_SizeZ)
+		{
+			if (m_ppLevel[x][z + 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x][z + 1] == 0)
+			{
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+				m_ppLevelData[x][z + 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z + 1].Temp)*dt, 0.0f);
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x + 1, z));
+				}
+			}
+		}
+
+		if (z > 0)
+		{
+			if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
+			{
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+				m_ppLevelData[x][z - 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z - 1].Temp)*dt, 0.0f);
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x + 1, z));
 				}
 			}
 		}

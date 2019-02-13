@@ -32,8 +32,9 @@ public:
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 private:
-	TileData ** m_ppLevelData;
+	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
+	std::vector<glm::ivec2> m_burningIDs;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
 	uint32 m_NrOfWalls;

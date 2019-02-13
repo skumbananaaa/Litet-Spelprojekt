@@ -20,6 +20,7 @@
 #include "..\Include\Crew.h"
 #include "..\Include\Path.h"
 #include <Graphics/GUI/ProgressBar.h>
+#include "GUI/UICrew.h"
 #include "GUI/UICrewMember.h"
 
 #include <Graphics/Materials/WallMaterial.h>

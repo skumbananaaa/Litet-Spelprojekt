@@ -25,7 +25,7 @@ FontRenderer::FontRenderer(void* face)
 	FT_Face ft_face = *(FT_Face*)face;
 
 	// Load first 128 characters of ASCII set
-	for (unsigned char c = 0; c < 128; c++)
+	for (int32 c = 0; c < 256; c++)
 	{
 		// Load character glyph 
 		if (FT_Load_Char(ft_face, c, FT_LOAD_RENDER))

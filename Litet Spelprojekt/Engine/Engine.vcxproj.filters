@@ -68,6 +68,7 @@
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\System\Random.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -149,5 +150,6 @@
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\System\Random.h" />
+    <ClInclude Include="Include\Graphics\GUI\PanelExpandable.h" />
   </ItemGroup>
 </Project>

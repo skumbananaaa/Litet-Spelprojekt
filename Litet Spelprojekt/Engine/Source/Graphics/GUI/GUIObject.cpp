@@ -476,7 +476,7 @@ void GUIObject::RenderBackgroundTexture(GUIContext* context)
 	}
 }
 
-bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
+bool GUIObject::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();
@@ -487,12 +487,17 @@ bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 		{
 			if (HasParent())
 			{
-				return GetParent()->ContainsPoint(position);
+				return GetParent()->ContainsPoint(position, caller);
 			}
 			return true;
 		}
 	}
 	return false;
+}
+
+bool GUIObject::ContainsPoint(const glm::vec2 & position) const noexcept
+{
+	return ContainsPoint(position, this);
 }
 
 void GUIObject::DeleteChildren()

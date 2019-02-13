@@ -183,20 +183,41 @@ void Button::RemoveButtonListener(IButtonListener* listener)
 	}
 }
 
+void Button::OnPressed(const glm::vec2 & position, MouseButton mousebutton) noexcept
+{
+	if (m_OnPressedCallback)
+	{
+		m_OnPressedCallback(this);
+	}
+	for (IButtonListener* listener : m_ButtonListeners)
+	{
+		listener->OnButtonPressed(this);
+	}
+}
+
+void Button::OnReleased(const glm::vec2 & position, MouseButton mousebutton) noexcept
+{
+	if (m_OnReleasedCallback)
+	{
+		m_OnReleasedCallback(this);
+	}
+	for (IButtonListener* listener : m_ButtonListeners)
+	{
+		listener->OnButtonReleased(this);
+	}
+	for (ISelectableListener* listener : GetSelectionListeners())
+	{
+		listener->OnSelected(this);
+	}
+}
+
 void Button::OnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
 	if (ContainsPoint(position))
 	{
 		m_IsPressed = true;
 		RequestRepaint();
-		if (m_OnPressedCallback)
-		{
-			m_OnPressedCallback(this);
-		}
-		for (IButtonListener* listener : m_ButtonListeners)
-		{
-			listener->OnButtonPressed(this);
-		}
+		OnPressed(position, mousebutton);
 	}
 }
 
@@ -206,18 +227,7 @@ void Button::OnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 	{
 		m_IsPressed = false;
 		RequestRepaint();
-		if (m_OnReleasedCallback)
-		{
-			m_OnReleasedCallback(this);
-		}
-		for (IButtonListener* listener : m_ButtonListeners)
-		{
-			listener->OnButtonReleased(this);
-		}
-		for (ISelectableListener* listener : GetSelectionListeners())
-		{
-			listener->OnSelected(this);
-		}
+		OnReleased(position, mousebutton);
 	}
 }
 

@@ -8,7 +8,6 @@
 #include <Graphics/GUI/Button.h>
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
-#include <Graphics/GUI/PanelScrollable.h>
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -20,7 +19,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(false, 1920, 1080, "", true),
+	Application(false, 1600, 900, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -329,6 +328,14 @@ void Game::OnResourcesLoaded()
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
+
+	std::vector<Crewmember*> members;
+	for (int i = 0; i < m_Crew.GetCount(); i++)
+	{
+		members.push_back(m_Crew.GetMember(i));
+	}
+
+	new UICrew(0, 0, 200, 500, members);
 
 	/*_______________________________________________________________________________________________________________*/
 	//SCENE2

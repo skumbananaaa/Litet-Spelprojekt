@@ -23,7 +23,7 @@ public:
 	virtual void OnRemoved(GUIObject* parent) override;
 
 	void OnSliderChange(Slider* slider, float percentage) override;
-	virtual bool ContainsPoint(const glm::vec2& position) const noexcept override;
+	virtual bool ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept override;
 
 	void RenderChildrensFrameBuffers(GUIContext* context) override;
 	void RenderRealTime(GUIContext* context) override;

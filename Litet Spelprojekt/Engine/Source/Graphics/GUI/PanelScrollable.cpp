@@ -12,7 +12,6 @@ PanelScrollable::PanelScrollable(float x, float y, float width, float height, fl
 	m_pSliderVertical = new Slider(x + width - SLIDER_SIZE, y + SLIDER_SIZE, SLIDER_SIZE, height - SLIDER_SIZE);
 	m_pSliderHorizontal = new Slider(x, y, width - SLIDER_SIZE, SLIDER_SIZE);
 	SetClientSize(clientWidth, clientHeight);
-
 }
 
 PanelScrollable::~PanelScrollable()
@@ -179,7 +178,7 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 	InternalRootOnMouseMove(m_LastMousePos);
 }
 
-bool PanelScrollable::ContainsPoint(const glm::vec2& position) const noexcept
+bool PanelScrollable::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();
@@ -236,7 +235,7 @@ void PanelScrollable::ControllRealTimeRenderingForChildPost(GUIContext* context,
 
 void PanelScrollable::OnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
 {
-	if (ContainsPoint(position))
+	if (ContainsPoint(position, this))
 	{
 		if (m_pSliderVertical->IsVisible())
 		{

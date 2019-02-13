@@ -116,8 +116,8 @@ inline void Application::InternalOnMouseMove(const glm::vec2& lastPosition, cons
 	if (m_ResourceMode == RESOURCE_MODE::DONE)
 	{
 		OnMouseMove(lastPosition, position);
-		m_pGUIManager->InternalRootOnMouseMove(position);
 	}
+	m_pGUIManager->InternalRootOnMouseMove(position);
 }
 
 inline void Application::InternalOnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
@@ -125,26 +125,29 @@ inline void Application::InternalOnMouseScroll(const glm::vec2& offset, const gl
 	if (m_ResourceMode == RESOURCE_MODE::DONE)
 	{
 	    OnMouseScroll(offset, position);
-		m_pGUIManager->InternalRootOnMouseScroll(position, offset);
 	}
+	m_pGUIManager->InternalRootOnMouseScroll(position, offset);
 }
 
 inline void Application::InternalOnMouseButton(MouseButton mousebutton, bool down, const glm::vec2& position)
 {
-	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	if (Input::ButtonState(mousebutton, down))
 	{
-		if (Input::ButtonState(mousebutton, down))
+		if (down)
 		{
-			if (down)
+			if (m_ResourceMode == RESOURCE_MODE::DONE)
 			{
 				OnMousePressed(mousebutton, position);
-				m_pGUIManager->InternalRootOnMousePressed(position, mousebutton);
 			}
-			else
+			m_pGUIManager->InternalRootOnMousePressed(position, mousebutton);
+		}
+		else
+		{
+			if (m_ResourceMode == RESOURCE_MODE::DONE)
 			{
 				OnMouseReleased(mousebutton, position);
-				m_pGUIManager->InternalRootOnMouseReleased(position, mousebutton);
 			}
+			m_pGUIManager->InternalRootOnMouseReleased(position, mousebutton);
 		}
 	}
 }

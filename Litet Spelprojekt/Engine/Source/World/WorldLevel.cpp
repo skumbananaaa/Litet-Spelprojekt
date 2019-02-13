@@ -101,7 +101,8 @@ void WorldLevel::GenerateWalls()
 		}
 	}
 }
-
+//en optimering hade varit att enbart kolla angränsade tiles till de tiles som brinner istället för att kolla 
+//alla tiles i hela vår grid. 
 void WorldLevel::UpdateFire(float dt)
 {
 	for (uint32 x = 0; x < m_SizeX; x++)
@@ -113,6 +114,7 @@ void WorldLevel::UpdateFire(float dt)
 				if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
 				{
 					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x + 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
+					std::cout << "temperature level at : " << m_ppLevelData[x][z].Temp << std::endl;
 				}
 			}
 

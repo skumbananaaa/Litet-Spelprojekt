@@ -112,27 +112,26 @@ void Slider::RenderRealTime(GUIContext* context)
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();
+	float width = 0;
+	float height = 0;
 
 	if (IsVertical())
 	{
 		float indent = GetWidth() * 0.2;
-		float width = GetWidth() - indent * 2;
-		float height = GetHeight() * m_Ratio - indent * 2;
-
-		context->SetVertexQuadData(x + indent, y + m_SliderPos + indent, width, height, GetSliderClearColor());
+		width = GetWidth() - indent * 2;
+		height = GetHeight() * m_Ratio - indent * 2;
+		x += indent;
+		y += m_SliderPos + indent;
 	}
 	else
 	{
 		float indent = GetHeight() * 0.2;
-		float width = GetWidth() * m_Ratio - indent * 2;
-		float height = GetHeight() - indent * 2;
-			
-		context->SetVertexQuadData(x + m_SliderPos + indent, y + indent, width, height, GetSliderClearColor());
+		width = GetWidth() * m_Ratio - indent * 2;
+		height = GetHeight() - indent * 2;
+		x += m_SliderPos + indent;
+		y += indent;
 	}
-
-	context->GetGraphicsContext()->SetTexture(GetDefaultTexture(), 0);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	context->GetGraphicsContext()->SetTexture(nullptr, 0);
+	context->RenderTexture(GetDefaultTexture(), x, y, width, height, GetSliderClearColor());
 }
 
 void Slider::PrintName() const

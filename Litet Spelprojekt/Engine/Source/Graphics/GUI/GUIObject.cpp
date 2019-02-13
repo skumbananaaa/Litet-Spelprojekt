@@ -404,7 +404,7 @@ void GUIObject::RecreateFrameBuffer(float width, float height)
 	FramebufferDesc desc;
 	desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
 	desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-	desc.SamplingParams = TextureParams();
+	desc.SamplingParams = { TEX_PARAM_EDGECLAMP, TEX_PARAM_LINEAR, TEX_PARAM_LINEAR };
 	desc.NumColorAttachments = 1;
 	desc.Width = static_cast<uint32>(width);
 	desc.Height = static_cast<uint32>(height);
@@ -469,13 +469,10 @@ void GUIObject::OnRender(GUIContext* context)
 
 void GUIObject::RenderBackgroundTexture(GUIContext* context)
 {
-	context->SetVertexQuadData(0, 0, GetWidth(), GetHeight(), GUIContext::COLOR_WHITE);
 	Texture2D* texture = GetClearTexture();
 	if (texture)
 	{
-		context->GetGraphicsContext()->SetTexture(texture, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		context->GetGraphicsContext()->SetTexture(nullptr, 0);
+		context->RenderTexture(texture, 0, 0, GetWidth(), GetHeight(), GUIContext::COLOR_WHITE);
 	}
 }
 

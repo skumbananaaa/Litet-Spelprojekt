@@ -49,6 +49,18 @@ public:
 	virtual void Update(float deltaTime) override;
 
 	virtual void OnPicked();
+	virtual void OnHovered();
+	virtual void OnNotHovered();
+	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept;
+
+	bool IsHovered() const noexcept;
+
+	int8 GetSkillFire() const noexcept;
+	int8 GetSkillMedic() const noexcept;
+	int8 GetSkillStrength() const noexcept;
+	bool HasInjuryBoneBroken() const noexcept;
+	bool HasInjuryBurned() const noexcept;
+	bool HasInjurySmoke() const noexcept;
 
 private:
 	float m_ActionCap;
@@ -63,6 +75,14 @@ private:
 	glm::vec3 m_TargetPos;
 	glm::vec3 m_Direction;
 	int m_NrOfPathTiles;
+	bool m_IsHovered;
+
+	int8 m_SkillFire;
+	int8 m_SkillMedic;
+	int8 m_SkillStrength;
+	bool m_HasInjuryBoneBroken;
+	bool m_HasInjuryBurned;
+	bool m_HasInjurySmoke;
 };
 
 #endif

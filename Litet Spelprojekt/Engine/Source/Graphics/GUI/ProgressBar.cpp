@@ -45,11 +45,7 @@ void ProgressBar::SetProgressColor(const glm::vec4& color)
 void ProgressBar::OnRender(GUIContext* context)
 {
 	GUIObject::OnRender(context);
-
-	context->SetVertexQuadData(0, 0, GetWidth() * m_Percentage, GetHeight(), GetProgressColor());
-	context->GetGraphicsContext()->SetTexture(GetDefaultTexture(), 0);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	context->GetGraphicsContext()->SetTexture(nullptr, 0);
+	context->RenderTexture(GetDefaultTexture(), 0, 0, GetWidth() * m_Percentage, GetHeight(), GetProgressColor());
 }
 
 void ProgressBar::PrintName() const

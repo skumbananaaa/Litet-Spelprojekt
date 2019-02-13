@@ -1,10 +1,10 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
 
-TextView::TextView(float x, float y, float width, float height, const std::string& text, TextAlignment textAlignment, int textSize) : GUIObject(x, y, width, height),
+TextView::TextView(float x, float y, float width, float height, const std::string& text, bool center, int textSize) : GUIObject(x, y, width, height),
 	m_Text(text), 
 	m_TextSize(textSize),
-	m_TextAlignment(textAlignment),
+	m_TextCentered(center),
 	m_TextColor(1.0F, 1.0F, 1.0F, 1.0F)
 {
 	SetBackgroundColor(glm::vec4(1.0F, 1.0F, 1.0F, 0.0F));
@@ -43,18 +43,18 @@ int TextView::GetTextSize() const
 	return m_TextSize;
 }
 
-void TextView::SetTextAlignment(TextAlignment textAlignment)
+void TextView::SetTextCentered(bool centered)
 {
-	if (m_TextAlignment != textAlignment)
+	if (m_TextCentered != centered)
 	{
-		m_TextAlignment = textAlignment;
+		m_TextCentered = centered;
 		RequestRepaint();
 	}
 }
 
-TextAlignment TextView::GetTextAlignment()
+bool TextView::IsTextCentered()
 {
-	return m_TextAlignment;
+	return m_TextCentered;
 }
 
 const glm::vec4& TextView::GetTextColor() const noexcept
@@ -81,30 +81,16 @@ void TextView::RenderText(GUIContext* context)
 {
 	if (!m_Text.empty())
 	{
-		context->GetFontRenderer()->UpdateBuffer(GetWidth(), GetHeight(), GetClearTextColor());
-
 		float scale = m_TextSize / 100.0f;
-		glm::vec2 size = context->CalculateTextSize(m_Text, scale);
-		float x = 0;
-		float y = 0;
 
-		switch (m_TextAlignment)
+		if (m_TextCentered)
 		{
-		case CENTER:
-			x = (GetWidth() - size.x) / 2;
-			y = (GetHeight() - size.y) / 2;
-			break;
-		case CENTER_VERTICAL:
-			y = (GetHeight() - size.y) / 2;
-			break;
-		case CENTER_HORIZONTAL:
-			x = (GetWidth() - size.x) / 2;
-			break;
-		default:
-			break;
+			context->RenderText(m_Text, GetWidth() / 2, GetHeight() / 2, GetWidth(), GetHeight(), scale, GetClearTextColor(), CENTER);
 		}
-
-		context->RenderText(m_Text, x, y, scale);
+		else
+		{
+			context->RenderText(m_Text, 0, GetHeight() / 2, GetWidth(), GetHeight(), scale, GetClearTextColor(), CENTER_VERTICAL);
+		}
 	}
 }
 

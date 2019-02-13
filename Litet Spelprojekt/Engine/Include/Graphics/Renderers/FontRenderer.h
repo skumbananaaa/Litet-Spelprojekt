@@ -36,7 +36,7 @@ private:
 public:
 	~FontRenderer();
 
-	void RenderText(GLContext* context, std::string text, float x, float y, float scale);
+	void RenderText(GLContext* context, std::string text, int32 x, int32 y, float scale);
 	void UpdateBuffer(int width, int height, const glm::vec4& color);
 	glm::vec2 CalculateSize(std::string text, float scale);
 

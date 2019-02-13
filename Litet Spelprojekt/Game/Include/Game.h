@@ -52,12 +52,14 @@ public:
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 	void PickPosition();
-	void PickCrew();
+	void PickCrew(bool hover);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
+
+	Crewmember* RayTestCrewmembers();
 
 	void SetClipPlanes(uint32 scene);
 
-	static Scene* GetScene();
+	Scene* GetScene();
 	static Game* GetGame();
 
 	UICrewMember* m_pUICrewMember;

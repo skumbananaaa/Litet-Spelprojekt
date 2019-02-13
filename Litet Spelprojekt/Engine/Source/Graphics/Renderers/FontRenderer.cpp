@@ -98,7 +98,7 @@ FontRenderer::~FontRenderer()
 	}
 }
 
-void FontRenderer::RenderText(GLContext* context, std::string text, float x, float y, float scale)
+void FontRenderer::RenderText(GLContext* context, std::string text, int32 x, int32 y, float scale)
 {	
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
@@ -146,6 +146,7 @@ void FontRenderer::RenderText(GLContext* context, std::string text, float x, flo
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_CULL_FACE);
 }
 
 void FontRenderer::UpdateBuffer(int width, int height, const glm::vec4& color)

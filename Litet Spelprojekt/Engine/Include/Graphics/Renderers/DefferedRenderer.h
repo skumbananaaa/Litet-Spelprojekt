@@ -6,6 +6,10 @@
 #include <Graphics/Geometry/FullscreenTri.h>
 #include <IO/ResourceHandler.h>
 
+#define LEVEL_SIZE_X 12
+#define LEVEL_SIZE_Y 6
+#define LEVEL_SIZE_Z 42
+
 struct GPassVSPerFrame
 {
 	glm::mat4 ViewProjection;
@@ -79,6 +83,11 @@ struct PlaneBuffer
 	glm::vec4 ClipPlane;
 };
 
+struct WorldBuffer
+{
+	uint32 map[LEVEL_SIZE_X][LEVEL_SIZE_Y][LEVEL_SIZE_Z];
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -92,6 +101,7 @@ public:
 
 	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, float dtS) const override final;
+	void SetWorldBuffer(const Scene& scene) const override final;
 
 private:
 	void Create() noexcept;
@@ -129,6 +139,8 @@ private:
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;
 	UniformBuffer* m_pPlaneBuffer;
+
+	UniformBuffer* m_pWorldBuffer;
 
 	UniformBuffer* m_pDecalPassPerFrame;
 	UniformBuffer* m_pDecalPassPerObject;

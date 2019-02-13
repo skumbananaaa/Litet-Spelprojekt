@@ -31,7 +31,7 @@
 #include <GLM/gtx/string_cast.hpp>
 #include <math.h>
 
-#define NUM_CREW 15
+#define NUM_CREW 115
 
 class Game : public Application
 {
@@ -69,7 +69,6 @@ private:
 	uint32 m_SceneId = 0;
 
 	TextureCube* m_pSkyBoxTex;
-	World* m_pWorld;
 
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;

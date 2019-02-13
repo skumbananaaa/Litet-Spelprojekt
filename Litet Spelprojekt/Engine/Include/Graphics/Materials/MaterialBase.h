@@ -2,8 +2,8 @@
 #include <EnginePch.h>
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 17
+#define NUM_POINT_LIGHTS 3
+#define NUM_SPOT_LIGHTS 2
 
 __declspec(align(16)) struct DirectionalLightBuffer
 {

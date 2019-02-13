@@ -1,7 +1,8 @@
 #include <EnginePch.h>
 #include <Graphics\Scene.h>
 
-Scene::Scene() noexcept
+Scene::Scene() noexcept :
+	m_pWorld(nullptr)
 {
 	m_pCamera = nullptr;
 	m_pSkyBox = nullptr;
@@ -40,6 +41,8 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_PlanarReflectors[i]);
 	}
+
+	DeleteSafe(m_pWorld);
 }
 
 void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
@@ -68,6 +71,11 @@ void Scene::SelectCamera(uint32 index)
 void Scene::SetSkyBox(SkyBox* pSkyBox) noexcept
 {
 	m_pSkyBox = pSkyBox;
+}
+
+void Scene::SetWorld(World * pWorld) noexcept
+{
+	m_pWorld = pWorld;
 }
 
 const GameObject* Scene::GetGameObject(const std::string& name) const noexcept

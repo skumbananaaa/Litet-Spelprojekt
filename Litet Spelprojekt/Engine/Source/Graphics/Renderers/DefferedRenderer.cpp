@@ -58,6 +58,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pGeoPassPerObject);
 	DeleteSafe(m_pLightPassBuffer);
 	DeleteSafe(m_pLightBuffer);
+	DeleteSafe(m_pWorldBuffer);
 
 	DeleteSafe(m_pDecalPassPerFrame);
 	DeleteSafe(m_pDecalPassPerObject);
@@ -225,6 +226,26 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	m_FrameCount++;
 	m_pLastResolveTarget = m_pCurrentResolveTarget;
 	m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
+}
+
+void DefferedRenderer::SetWorldBuffer(const Scene& scene) const
+{
+	{
+		WorldBuffer buff = {};
+
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					buff.map[x][y][z] = scene.GetWorld()->GetLevel(y)->GetLevel()[x][z];
+				}
+			}
+		}
+
+		m_pWorldBuffer->UpdateData(&buff);
+	}
 }
 
 void DefferedRenderer::Create() noexcept
@@ -459,6 +480,21 @@ void DefferedRenderer::Create() noexcept
 	}
 
 	{
+		WorldBuffer buff = {};
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					buff.map[x][y][z] = 1;
+				}
+			}
+		}
+		m_pWorldBuffer = new UniformBuffer(&buff, 1, sizeof(WorldBuffer));
+	}
+
+	{
 		SkyBoxPassBuffer buff= {};
 		buff.CameraCombined = glm::mat4(1.0f);
 		buff.CameraPosition = glm::vec4();
@@ -650,6 +686,7 @@ void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& sce
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pLightBuffer, LIGHT_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pWorldBuffer, WORLD_BUFFER_BINDING_SLOT);
 
 	context.SetTexture(pGBuffer->GetColorAttachment(0), 0); //color buffer
 	context.SetTexture(pGBuffer->GetColorAttachment(1), 1); //normal buffer
@@ -660,6 +697,7 @@ void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& sce
 	//Unbind resources = no bugs
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, LIGHT_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(nullptr, WORLD_BUFFER_BINDING_SLOT);
 
 	context.SetTexture(nullptr, 0);
 	context.SetTexture(nullptr, 1);

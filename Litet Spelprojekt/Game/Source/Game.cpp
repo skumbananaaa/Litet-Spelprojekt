@@ -24,7 +24,6 @@ Game::Game() noexcept :
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
-	m_pWorld(nullptr),
 	m_pTextViewFPS(nullptr),
 	m_pTextViewUPS(nullptr),
 	m_pTestAudioSource(nullptr),
@@ -65,7 +64,6 @@ Game::~Game()
 	DeleteSafe(m_pUICrewMember);
 	
 	DeleteSafe(m_pTestAudioSource);
-	DeleteSafe(m_pWorld);
 
 }
 
@@ -126,8 +124,8 @@ void Game::OnResourcesLoaded()
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 	}
 
 	//Create GameObjects
@@ -199,7 +197,7 @@ void Game::OnResourcesLoaded()
 			pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
+			//m_Scenes[0]->AddGameObject(pGameObject);
 		}
 
 		//test objects
@@ -219,16 +217,16 @@ void Game::OnResourcesLoaded()
 	}
 
 	//Create world
-	m_pWorld = WorldSerializer::Read("world.json");
+	m_Scenes[0]->SetWorld(WorldSerializer::Read("world.json"));
 
-	int gameObjects = m_pWorld->GetNumWorldObjects();
+	int gameObjects = m_Scenes[0]->GetWorld()->GetNumWorldObjects();
 	
 	//Place objects in scene
 	for (int i = 0; i < gameObjects; i++)
 	{
-		WorldObject worldObject = m_pWorld->GetWorldObject(i);
-		int32 width = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeX();
-		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
+		WorldObject worldObject = m_Scenes[0]->GetWorld()->GetWorldObject(i);
+		int32 width = m_Scenes[0]->GetWorld()->GetLevel(worldObject.TileId.y)->GetSizeX();
+		int32 height = m_Scenes[0]->GetWorld()->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 		glm::vec3 pos = worldObject.TileId;
@@ -278,14 +276,14 @@ void Game::OnResourcesLoaded()
 	SetClipPlanes(0);
 
 	// Generate walls
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
+	for (int level = 0; level < m_Scenes[0]->GetWorld()->GetNumLevels(); level += 2)
 	{
-		m_pWorld->GenerateWalls(level);
+		m_Scenes[0]->GetWorld()->GenerateWalls(level);
 		glm::vec4 wall;
 
-		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++)
+		for (int i = 0; i < m_Scenes[0]->GetWorld()->GetLevel(level)->GetNrOfWalls(); i++)
 		{
-			wall = m_pWorld->GetLevel(level)->GetWall(i);
+			wall = m_Scenes[0]->GetWorld()->GetLevel(level)->GetWall(i);
 			pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
 			pGameObject->SetMesh(MESH::CUBE);
@@ -318,17 +316,19 @@ void Game::OnResourcesLoaded()
 	float x, y, z;
 	for (int i = 0; i < NUM_CREW; i++)
 	{
-		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		y = (std::rand() % (m_Scenes[0]->GetWorld()->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_Scenes[0]->GetWorld()->GetLevel(y)->GetSizeX() - 2) + 1;
+		z = std::rand() % (m_Scenes[0]->GetWorld()->GetLevel(y)->GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
 		m_CrewList[i] = "";
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
-		m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
-		m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
-		m_Crew.GetMember(i)->SetPath(m_pWorld);
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetPath(m_Scenes[0]->GetWorld());
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
+
+	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId]);
 
 	/*_______________________________________________________________________________________________________________*/
 	//SCENE2
@@ -517,7 +517,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 	{
 		case MOUSE_BUTTON_LEFT:
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT))
+			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_Scenes[m_SceneId]->GetWorld() != nullptr)
 			{
 				PickPosition();
 			}
@@ -525,7 +525,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 		}
 		case MOUSE_BUTTON_RIGHT:
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT))
+			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_Scenes[m_SceneId]->GetWorld() != nullptr)
 			{
 				PickCrew();
 			}
@@ -781,7 +781,7 @@ void Game::PickPosition() {
 	glm::vec3 normal(0.0f, 1.0f, 0.0f);
 
 	float t = -1, lastT = -1;
-	for (int d = m_pWorld->GetNumLevels() - 2; d >= 0; d -= 2)
+	for (int d = m_Scenes[m_SceneId]->GetWorld()->GetNumLevels() - 2; d >= 0; d -= 2)
 	{
 		if (glm::dot(normal, rayDir) < -0.01)
 		{

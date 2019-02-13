@@ -1,7 +1,12 @@
+#extension GL_ARB_arrays_of_arrays : enable
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 17
+#define NUM_POINT_LIGHTS 3
+#define NUM_SPOT_LIGHTS 2
+
+#define LEVEL_SIZE_X 12
+#define LEVEL_SIZE_Y 6
+#define LEVEL_SIZE_Z 42
 
 layout(location = 0) out vec4 g_OutColor;
 layout(location = 1) out float g_OutDepth;
@@ -53,6 +58,11 @@ layout(binding = 1) uniform LightBuffer
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+layout(binding = 2) uniform WorldBuffer
+{
+	uint map[LEVEL_SIZE_X][LEVEL_SIZE_Y][LEVEL_SIZE_Z];
 };
 
 vec3 PositionFromDepth(float depth)
@@ -118,6 +128,17 @@ void main()
 	vec3 color = mappedColor.rgb;
 	float specular = mappedColor.a;
 	
+	ivec3 mapPos = ivec3(position);
+	//mapPos.x = clamp(mapPos.x, 0, 11);
+	//mapPos.y = clamp(mapPos.y, 0, 5);
+	//mapPos.z = clamp(mapPos.z, 0, 41);
+
+	// if (map[mapPos.x][mapPos.y][mapPos.z] == 2)
+	// {
+	// 	color = vec3(1.0f, 1.0f, 0.0f);
+	// }
+
+
 	//Do lightcalculation
 	vec3 c = vec3(0.0f);
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
@@ -169,6 +190,11 @@ void main()
 		{
 			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, specular, intensity);
 		}
+	}
+
+	if (mapPos.z >= 0 && mapPos.z < 5)
+	{
+		c = vec3(map[1][0][1], map[1][0][2], map[1][0][21]) / 10.0f;
 	}
 
 	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);

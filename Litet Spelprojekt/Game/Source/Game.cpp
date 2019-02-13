@@ -20,7 +20,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(false, 1920, 1080, "", true),
+	Application(true, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -117,15 +117,15 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
-		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 	}
 
 	//Create GameObjects
@@ -190,14 +190,14 @@ void Game::OnResourcesLoaded()
 
 		//Ship
 		{
-			pGameObject = new GameObject();
+			/*pGameObject = new GameObject();
 			pGameObject->SetName("ship");
 			pGameObject->SetMaterial(MATERIAL::BOAT);
 			pGameObject->SetMesh(MESH::SHIP);
 			pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->UpdateTransform();
-			//m_Scenes[0]->AddGameObject(pGameObject);
+			m_Scenes[0]->AddGameObject(pGameObject);*/
 		}
 
 		//test objects
@@ -239,14 +239,14 @@ void Game::OnResourcesLoaded()
 
 	//LookAt Cube
 	{
-		pGameObject = new GameObject();
+		/*pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::BLUE);
 		pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
 		pGameObject->SetPosition(pCamera->GetLookAt());
 		pGameObject->SetScale(glm::vec3(0.25f));
 		pGameObject->UpdateTransform();
 		pGameObject->SetName("cameraLookAt");
-		m_Scenes[0]->AddGameObject(pGameObject);
+		m_Scenes[0]->AddGameObject(pGameObject);*/
 	}
 
 	//Water?? YAAAS
@@ -271,9 +271,9 @@ void Game::OnResourcesLoaded()
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
-	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetDissolveFactor(1.0f);
+	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetDissolveFactor(0.0f);
 
-	SetClipPlanes(0);
+	//SetClipPlanes(0);
 
 	// Generate walls
 	for (int level = 0; level < m_Scenes[0]->GetWorld()->GetNumLevels(); level += 2)
@@ -917,10 +917,10 @@ void Game::SetClipPlanes(uint32 scene)
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));*/
 	
-	float elevation = glm::clamp((glm::floor(m_Scenes[scene]->GetCamera().GetLookAt().y / 2.0f)), 0.0f, 2.0f);
+	/*float elevation = glm::clamp((glm::floor(m_Scenes[scene]->GetCamera().GetLookAt().y / 2.0f)), 0.0f, 2.0f);
 	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetLevelClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)));
-	
+	*/
 	
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);

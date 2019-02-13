@@ -143,6 +143,7 @@ void WorldLevel::UpdateFire(float dt)
 	}
 }
 
+// 1 liter vatten i hundra grader ger 1800 volymsexpansion. Ta med detta i kalkylationer?
 void WorldLevel::UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel)
 {
 	for (uint32 x = 0; x < m_SizeX; x++)
@@ -159,7 +160,6 @@ void WorldLevel::UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLe
 				float spread = (m_ppLevelData[x][z].SmokeAmount - m_ppLevelData[x][z].SmokeLimit) / 4;
 
 				// assuming that the value of 1 is walls...
-				// 1 liter vatten i hundra grader ger 1800 volymsexpansion.
 				if (aboveLevel->m_ppLevel[x][z] != 1)
 				{
 					aboveLevel->m_ppLevelData[x][z].Temp += spread * dt;

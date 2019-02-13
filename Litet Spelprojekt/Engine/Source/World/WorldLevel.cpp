@@ -104,7 +104,6 @@ void WorldLevel::GenerateWalls()
 
 void WorldLevel::UpdateFire(float dt)
 {
-
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
 		for (uint32 z = 0; z < m_SizeZ; z++)
@@ -143,3 +142,65 @@ void WorldLevel::UpdateFire(float dt)
 		}
 	}
 }
+
+void WorldLevel::UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel)
+{
+	for (uint32 x = 0; x < m_SizeX; x++)
+	{
+		for (uint32 z = 0; z < m_SizeZ; z++)
+		{
+			if (fireLevel[x][z].Temp >= fireLevel[x][z].BurnsAt)
+			{
+				m_ppLevelData[x][z].SmokeAmount += (fireLevel[x][z].Temp - fireLevel[x][z].BurnsAt)*dt;
+			}
+
+			if (m_ppLevelData[x][z].SmokeAmount > m_ppLevelData[x][z].SmokeLimit)
+			{
+				float spread = (m_ppLevelData[x][z].SmokeAmount - m_ppLevelData[x][z].SmokeLimit) / 4;
+
+				// assuming that the value of 1 is walls...
+				// 1 liter vatten i hundra grader ger 1800 volymsexpansion.
+				if (aboveLevel->m_ppLevel[x][z] != 1)
+				{
+					aboveLevel->m_ppLevelData[x][z].Temp += spread * dt;
+				}
+
+				// Smoke leaves the air right?
+				m_ppLevelData[x][z].SmokeAmount -= spread;
+
+				if (x + 1 < m_SizeX)
+				{
+					if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
+					{
+						m_ppLevelData[x + 1][z].SmokeAmount += spread;
+					}
+				}
+
+				if (x > 0)
+				{
+					if (m_ppLevel[x - 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x - 1][z] == 0)
+					{
+						m_ppLevelData[x - 1][z].SmokeAmount += spread;
+					}
+				}
+
+				if (z + 1 < m_SizeZ)
+				{
+					if (m_ppLevel[x][z + 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x][z + 1] == 0)
+					{
+						m_ppLevelData[x][z + 1].SmokeAmount += spread;
+					}
+				}
+
+				if (z > 0)
+				{
+					if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
+					{
+						m_ppLevelData[x][z - 1].SmokeAmount += spread;
+					}
+				}
+			}
+		}
+	}
+}
+

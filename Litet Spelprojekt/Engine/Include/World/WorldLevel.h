@@ -2,9 +2,10 @@
 #include <EnginePch.h>
 
 struct TileData {
-	uint32 Id;
 	float Temp;
 	float BurnsAt;
+	float SmokeAmount;
+	float SmokeLimit;
 };
 
 class API WorldLevel
@@ -29,6 +30,7 @@ public:
 
 	void GenerateWalls();
 	void UpdateFire(float dt);
+	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 private:
 	TileData ** m_ppLevelData;
 	uint32** m_ppLevel;

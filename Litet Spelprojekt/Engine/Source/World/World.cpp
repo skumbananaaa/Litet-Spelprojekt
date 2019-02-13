@@ -87,3 +87,7 @@ uint32 World::GetNumStairs() const noexcept
 	return m_NumStairs;
 }
 
+void World::Update(float dt)
+{
+	m_ppLevels[2]->UpdateFire(dt);
+}

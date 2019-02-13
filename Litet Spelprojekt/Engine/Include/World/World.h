@@ -31,7 +31,7 @@ public:
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
-
+	void Update(float dt);
 private:
 	WorldLevel** m_ppLevels;
 	uint32 m_NumLevels;

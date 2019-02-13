@@ -1,6 +1,13 @@
 #pragma once
 #include <EnginePch.h>
 
+struct TileData {
+	float Temp;
+	float BurnsAt;
+	float SmokeAmount;
+	float SmokeLimit;
+};
+
 class API WorldLevel
 {
 public:
@@ -13,6 +20,7 @@ public:
 	~WorldLevel();
 
 	const uint32* const* const GetLevel() const noexcept;
+	const TileData* const* const GetLevelData() const noexcept;
 	uint32 GetSizeX() const noexcept;
 	uint32 GetSizeZ() const noexcept;
 
@@ -21,12 +29,14 @@ public:
 	uint32 GetNrOfWalls() const noexcept;
 
 	void GenerateWalls();
-
+	void UpdateFire(float dt);
+	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 private:
+	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
+	std::vector<glm::ivec2> m_burningIDs;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
-
 	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
 };

@@ -173,6 +173,9 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	//Update Lightbuffer
 	UpdateLightBuffer(scene);
 
+	//Update WorldBuffer
+	UpdateWorldBuffer(scene);
+
 	//Setup for start rendering
 	context.Enable(DEPTH_TEST);
 	context.Enable(CULL_FACE);
@@ -230,22 +233,24 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 void DefferedRenderer::SetWorldBuffer(const Scene& scene) const
 {
+	if (scene.GetWorld() != nullptr)
 	{
-		WorldBuffer buff = {};
-
 		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
 		{
 			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					buff.map[x][y][z] = scene.GetWorld()->GetLevel(y)->GetLevel()[x][z];
+					m_LocalWorldBuff.map[x][y][z] = scene.GetWorld()->GetLevel(y)->GetLevel()[x][z];
 				}
 			}
 		}
-
-		m_pWorldBuffer->UpdateData(&buff);
 	}
+
+	m_LocalWorldBuff.concealed = scene.IsConcealed();
+	m_LocalWorldBuff.roomId = 2;
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void DefferedRenderer::Create() noexcept
@@ -430,6 +435,7 @@ void DefferedRenderer::Create() noexcept
 	//	m_pWaterPassPerObject = new UniformBuffer(&object, 1, sizeof(WaterPassPerObjectVS));
 	//}
 
+	//Camera
 	{
 		CameraBuffer buff = {};
 		buff.InverseView = glm::mat4(1.0f);
@@ -438,21 +444,21 @@ void DefferedRenderer::Create() noexcept
 
 		m_pCameraBuffer = new UniformBuffer(&buff, 1, sizeof(CameraBuffer));
 	}
-
+	//Material
 	{
 		MaterialBuffer buff = {};
 		buff.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		m_pMaterialBuffer = new UniformBuffer(&buff, 1, sizeof(MaterialBuffer));
 	}
-
+	//Plane
 	{
 		PlaneBuffer buff = {};
 		buff.ClipPlane = glm::vec4(0.0f);
 
 		m_pPlaneBuffer = new UniformBuffer(&buff, 1, sizeof(PlaneBuffer));
 	}
-	
+	//Light
 	{
 		LightBuffer buff = {};
 		for (uint32 i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
@@ -478,22 +484,23 @@ void DefferedRenderer::Create() noexcept
 
 		m_pLightBuffer = new UniformBuffer(&buff, 1, sizeof(LightBuffer));
 	}
-
+	//World
 	{
-		WorldBuffer buff = {};
 		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
 		{
 			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					buff.map[x][y][z] = 1;
+					m_LocalWorldBuff.map[x][y][z] = 1;
 				}
 			}
 		}
-		m_pWorldBuffer = new UniformBuffer(&buff, 1, sizeof(WorldBuffer));
+		m_LocalWorldBuff.concealed = false;
+		m_LocalWorldBuff.roomId = 1;
+		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
 	}
-
+	//Skybox
 	{
 		SkyBoxPassBuffer buff= {};
 		buff.CameraCombined = glm::mat4(1.0f);
@@ -506,12 +513,12 @@ void DefferedRenderer::Create() noexcept
 
 		m_pSkyBoxPassPerObject = new UniformBuffer(&object, 1, sizeof(SkyBoxPassPerObject));
 	}
-
+	//Water
 	{
 		m_pWaterDistortionMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_DISTORTION);
 		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
 	}
-
+	//Clip distances
 	{
 		for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
 		{
@@ -567,6 +574,14 @@ void DefferedRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 
 		m_pCameraBuffer->UpdateData(&buff);
 	}
+}
+
+void DefferedRenderer::UpdateWorldBuffer(const Scene & scene) const noexcept
+{
+	m_LocalWorldBuff.concealed = scene.IsConcealed();
+	m_LocalWorldBuff.roomId = scene.GetVisibleRoom();
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept

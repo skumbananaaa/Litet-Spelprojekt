@@ -8,7 +8,6 @@
 #include <Graphics/GUI/Button.h>
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
-#include <Graphics/GUI/PanelScrollable.h>
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -20,7 +19,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(true, 1920, 1080, "", true),
+	Application(false, 1600, 900, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -39,9 +38,6 @@ Game::Game() noexcept :
 	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pTextViewFile);
 	GetGUIManager().Add(m_pLoadingBar);
-
-	m_pUICrewMember = new UICrewMember(200, 200, 300, 170);
-	GetGUIManager().Add(m_pUICrewMember);
 }
 
 Game::~Game()
@@ -77,6 +73,9 @@ void Game::OnResourcesLoaded()
 {
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
+
+	m_pUICrewMember = new UICrewMember(200, 200, 300, 170);
+	GetGUIManager().Add(m_pUICrewMember);
 
 	//Set game TextViews
 	{
@@ -117,10 +116,10 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 6.0f, 3.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
@@ -328,6 +327,16 @@ void Game::OnResourcesLoaded()
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
 
+	std::vector<Crewmember*> members;
+	for (int i = 0; i < m_Crew.GetCount(); i++)
+	{
+		members.push_back(m_Crew.GetMember(i));
+	}
+
+	new UICrew(0, 0, 200, 500, members);
+
+	m_Scenes[0]->SetConceal(true);
+
 	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId]);
 
 	/*_______________________________________________________________________________________________________________*/
@@ -476,7 +485,14 @@ void Game::OnKeyDown(KEY keycode)
 			m_SceneId = (m_SceneId + 1) % m_Scenes.size();
 			m_pTextViewScene->SetText("Scene " + std::to_string(m_SceneId));
 			((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(m_Scenes[m_SceneId]->GetPlanarReflectors()[0]);
+			m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId]);
 			break;
+		}
+		case KEY_R:
+		{
+			glm::ivec3 tile = m_Crew.GetMember(0)->GetTile();
+			uint32 room = m_Scenes[m_SceneId]->GetWorld()->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+			m_Scenes[m_SceneId]->SetVisibleRoom(room);
 		}
 	}
 
@@ -485,33 +501,43 @@ void Game::OnKeyDown(KEY keycode)
 
 void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	if (Input::IsKeyDown(KEY_LEFT_ALT) && !cartesianCamera)
+	if (Input::IsKeyDown(KEY_LEFT_ALT))
 	{
-		if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
+		if (!cartesianCamera)
 		{
-			const float cameraRotationSensitivity = 0.005f;
-			glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
+			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
+			{
+				const float cameraRotationSensitivity = 0.005f;
+				glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
 
-			m_Scenes[m_SceneId]->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
-			m_Scenes[m_SceneId]->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
-		}
-		
-		if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
-		{
-			const float cameraMoveSensitivityX = 0.5f;
-			const float cameraMoveSensitivityY = 0.025f;
-			glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
-			glm::vec3 forward(0.0f);
-			forward.x = m_Scenes[m_SceneId]->GetCamera().GetFront().x;
-			forward.z = m_Scenes[m_SceneId]->GetCamera().GetFront().z;
-			m_Scenes[m_SceneId]->GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
-			m_Scenes[m_SceneId]->GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
+				m_Scenes[m_SceneId]->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
+				m_Scenes[m_SceneId]->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
 
+				m_pUICrewMember->SetCrewMember(nullptr);
+			}
+
+			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
+			{
+				const float cameraMoveSensitivityX = 0.5f;
+				const float cameraMoveSensitivityY = 0.025f;
+				glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
+				glm::vec3 forward(0.0f);
+				forward.x = m_Scenes[m_SceneId]->GetCamera().GetFront().x;
+				forward.z = m_Scenes[m_SceneId]->GetCamera().GetFront().z;
+				m_Scenes[m_SceneId]->GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
+				m_Scenes[m_SceneId]->GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
+
+				m_pUICrewMember->SetCrewMember(nullptr);
+			}
 		}
+	}
+	else
+	{
+		PickCrew(true);
 	}
 }
 
-void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
+void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
 	switch (mousebutton)
 	{
@@ -527,7 +553,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 		{
 			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_Scenes[m_SceneId]->GetWorld() != nullptr)
 			{
-				PickCrew();
+				PickCrew(false);
 			}
 			break;
 		}
@@ -572,25 +598,28 @@ void Game::OnUpdate(float dtS)
 
 	if (cartesianCamera)
 	{
-
 		glm::vec3 localMove(0.0f);
 
 		if (Input::IsKeyDown(KEY_W))
 		{
 			localMove.z = cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 		else if (Input::IsKeyDown(KEY_S))
 		{
 			localMove.z = -cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 
 		if (Input::IsKeyDown(KEY_A))
 		{
 			localMove.x = cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 		else if (Input::IsKeyDown(KEY_D))
 		{
 			localMove.x = -cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 
 		if (Input::IsKeyDown(KEY_E))
@@ -606,20 +635,24 @@ void Game::OnUpdate(float dtS)
 
 		if (Input::IsKeyDown(KEY_UP))
 		{
+			m_pUICrewMember->SetCrewMember(nullptr);
 			m_Scenes[m_SceneId]->GetCamera().OffsetPitch(cartesianCameraAngularSpeed * dtS);
 		}
 		else if (Input::IsKeyDown(KEY_DOWN))
 		{
 			m_Scenes[m_SceneId]->GetCamera().OffsetPitch(-cartesianCameraAngularSpeed * dtS);
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 
 		if (Input::IsKeyDown(KEY_LEFT))
 		{
 			m_Scenes[m_SceneId]->GetCamera().OffsetYaw(-cartesianCameraAngularSpeed * dtS);
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 		else if (Input::IsKeyDown(KEY_RIGHT))
 		{
 			m_Scenes[m_SceneId]->GetCamera().OffsetYaw(cartesianCameraAngularSpeed * dtS);
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 
 		m_Scenes[m_SceneId]->GetCamera().UpdateFromPitchYaw();
@@ -815,86 +848,33 @@ void Game::PickPosition() {
 	}
 }
 
-void Game::PickCrew()
+void Game::PickCrew(bool hover)
 {
-	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), GetWindow().GetWidth(), GetWindow().GetHeight());
-	glm::vec3 rayOrigin = m_Scenes[m_SceneId]->GetCamera().GetPosition();
+	Crewmember* crewmember = RayTestCrewmembers();
 
-	float lastT = -1;
-	uint32 id = -1;
-
-	for (int i = 0; i < m_Crew.GetCount(); i++)
+	if (crewmember)
 	{
-		glm::vec3 centre = m_Crew.GetMember(i)->GetPosition();
-
-		glm::vec3 normals[]{
-			m_Crew.GetMember(i)->GetDirection(),
-			glm::vec3(0.0f, 1.0f, 0.0f),
-			glm::normalize(glm::cross(normals[0], normals[1]))
-		};
-
-		float h[] = {
-			0.1,
-			0.9,
-			0.25
-		};
-
-		float d1[] = {
-			glm::dot(centre - normals[0] * h[0], normals[0]),
-			glm::dot(centre - normals[1] * h[1], normals[1]),
-			glm::dot(centre - normals[2] * h[2], normals[2])
-		};
-		float d2[] = {
-			glm::dot(centre + normals[0] * h[0], normals[0]),
-			glm::dot(centre + normals[1] * h[1], normals[1]),
-			glm::dot(centre + normals[2] * h[2], normals[2])
-		};
-
-		float t1[3];
-		float t2[3];
-		float t_min[3];
-		float t_max[3];
-
-		float t = -1;
-		float min_t, max_t;
-
-		for (int j = 0; j < 3; j++)
+		if (hover)
 		{
-			if (std::abs(glm::dot(normals[j], rayDir)) > 0.01)
+			if (!crewmember->IsHovered())
 			{
-				t1[j] = (d1[j] - glm::dot(normals[j], rayOrigin)) / glm::dot(normals[j], rayDir);
-				t2[j] = (d2[j] - glm::dot(normals[j], rayOrigin)) / glm::dot(normals[j], rayDir);
-
-				t_min[j] = std::min(t1[j], t2[j]);
-				t_max[j] = std::max(t1[j], t2[j]);
+				crewmember->OnHovered();
 			}
-			else if (-glm::dot(normals[0], centre - rayOrigin) - h[j] > 0 || -glm::dot(normals[0], centre - rayOrigin) + h[j] < 0)
-				return;
 		}
-
-		min_t = std::max(t_min[0], t_min[1]);
-		min_t = std::max(min_t, t_min[2]);
-		max_t = std::min(t_max[0], t_max[1]);
-		max_t = std::min(max_t, t_max[2]);
-
-		if (min_t <= max_t && max_t >= 0)
+		else
 		{
-			if (t_min > 0)
-				t = min_t;
-			else
-				t = max_t;
-		}
-
-		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
-		{
-			lastT = t;
-			id = i;
+			crewmember->OnPicked();
 		}
 	}
-
-	if (id != -1)
+	else if (hover)
 	{
-		m_Crew.GetMember(id)->OnPicked();
+		for (int i = 0; i < m_Crew.GetCount(); i++)
+		{
+			if (m_Crew.GetMember(i)->IsHovered())
+			{
+				m_Crew.GetMember(i)->OnNotHovered();
+			}
+		}
 	}
 }
 
@@ -908,6 +888,32 @@ glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 wi
 	glm::vec3 rayDir = glm::normalize(glm::vec3(rayDir4));
 
 	return rayDir;
+}
+
+Crewmember* Game::RayTestCrewmembers()
+{
+	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), GetWindow().GetWidth(), GetWindow().GetHeight());
+	glm::vec3 rayOrigin = m_Scenes[m_SceneId]->GetCamera().GetPosition();
+
+	float lastT = -1;
+	uint32 id = -1;
+
+	for (int i = 0; i < m_Crew.GetCount(); i++)
+	{
+		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin);
+
+		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
+		{
+			lastT = t;
+			id = i;
+		}
+	}
+
+	if (id != -1)
+	{
+		return m_Crew.GetMember(id);
+	}
+	return nullptr;
 }
 
 
@@ -928,8 +934,7 @@ void Game::SetClipPlanes(uint32 scene)
 
 Scene* Game::GetScene()
 {
-	Game* game = GetGame();
-	return game->m_Scenes[game->m_SceneId];
+	return m_Scenes[m_SceneId];
 }
 
 Game* Game::GetGame()

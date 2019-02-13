@@ -28,6 +28,8 @@ public:
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
 	void ExtendScene(bool extend) noexcept;
+	void SetConceal(bool conceal) noexcept;
+	void SetVisibleRoom(uint32 room) noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
@@ -47,6 +49,8 @@ public:
 	const World* GetWorld() const noexcept;
 	World* GetWorld() noexcept;
 	const bool IsExtended() const noexcept;
+	const bool IsConcealed() const noexcept;
+	const uint32 GetVisibleRoom() const noexcept;
 
 private:
 	Camera* m_pCamera;
@@ -62,6 +66,8 @@ private:
 	std::vector<SpotLight*> m_SpotLights;
 	SkyBox* m_pSkyBox;
 	World* m_pWorld;
+	uint32 m_VisibleRoom = 1;
+	bool m_Concealed = false;
 	bool m_Extended = false;
 };
 
@@ -135,4 +141,14 @@ inline World * Scene::GetWorld() noexcept
 inline const bool Scene::IsExtended() const noexcept
 {
 	return m_Extended;
+}
+
+inline const bool Scene::IsConcealed() const noexcept
+{
+	return m_Concealed;
+}
+
+inline const uint32 Scene::GetVisibleRoom() const noexcept
+{
+	return m_VisibleRoom;
 }

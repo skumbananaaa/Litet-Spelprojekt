@@ -36,6 +36,7 @@
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
     <ClInclude Include="Include\Graphics\GUI\ISelectable.h" />
+    <ClInclude Include="Include\Graphics\GUI\PanelExpandable.h" />
     <ClInclude Include="Include\Graphics\GUI\ProgressBar.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
@@ -81,6 +82,7 @@
     <ClInclude Include="Include\Defines.h" />
     <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\IRunnable.h" />
+    <ClInclude Include="Include\System\Random.h" />
     <ClInclude Include="Include\System\ThreadHandler.h" />
     <ClInclude Include="Include\System\Window.h" />
     <ClInclude Include="Include\Types.h" />
@@ -97,6 +99,7 @@
     <ClInclude Include="Include\IO\MATERIAL.h" />
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
+    <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
@@ -170,6 +173,7 @@
     <ClCompile Include="Source\Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="Source\Graphics\Textures\TextureCube.cpp" />
     <ClCompile Include="Source\System\Application.cpp" />
+    <ClCompile Include="Source\System\Random.cpp" />
     <ClCompile Include="Source\System\ThreadHandler.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
     <ClCompile Include="Source\IO\ResourceHandler.cpp" />

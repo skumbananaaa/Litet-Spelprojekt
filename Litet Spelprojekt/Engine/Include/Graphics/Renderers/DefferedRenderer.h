@@ -86,6 +86,8 @@ struct PlaneBuffer
 struct WorldBuffer
 {
 	uint32 map[LEVEL_SIZE_X][LEVEL_SIZE_Y][LEVEL_SIZE_Z];
+	bool concealed;
+	uint32 roomId;
 };
 
 class API DefferedRenderer final : public IRenderer
@@ -107,6 +109,7 @@ private:
 	void Create() noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
+	void UpdateWorldBuffer(const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
@@ -140,6 +143,7 @@ private:
 	UniformBuffer* m_pMaterialBuffer;
 	UniformBuffer* m_pPlaneBuffer;
 
+	mutable WorldBuffer m_LocalWorldBuff = {};
 	UniformBuffer* m_pWorldBuffer;
 
 	UniformBuffer* m_pDecalPassPerFrame;

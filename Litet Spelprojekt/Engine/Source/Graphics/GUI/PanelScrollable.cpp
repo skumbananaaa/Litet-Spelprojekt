@@ -12,7 +12,6 @@ PanelScrollable::PanelScrollable(float x, float y, float width, float height, fl
 	m_pSliderVertical = new Slider(x + width - SLIDER_SIZE, y + SLIDER_SIZE, SLIDER_SIZE, height - SLIDER_SIZE);
 	m_pSliderHorizontal = new Slider(x, y, width - SLIDER_SIZE, SLIDER_SIZE);
 	SetClientSize(clientWidth, clientHeight);
-
 }
 
 PanelScrollable::~PanelScrollable()
@@ -179,7 +178,7 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 	InternalRootOnMouseMove(m_LastMousePos);
 }
 
-bool PanelScrollable::ContainsPoint(const glm::vec2& position) const noexcept
+bool PanelScrollable::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
 {
 	float x = GetXInWorld();
 	float y = GetYInWorld();
@@ -208,17 +207,13 @@ void PanelScrollable::RenderChildrensFrameBuffers(GUIContext* context)
 
 void PanelScrollable::RenderRealTime(GUIContext* context)
 {
-	context->SetVertexQuadData(GetXInWorld() - m_ClientOffset.x, GetYInWorld() + m_ClientOffset.y, GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
-	context->GetGraphicsContext()->SetTexture(m_pFrameBufferClientArea->GetColorAttachment(0), 0);
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
 	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
 	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
 	glScissor(GetXInWorld(), GetYInWorld() + heightIndent, GetWidth() - widthIndent, GetHeight() - heightIndent);
 	glEnable(GL_SCISSOR_TEST);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	context->RenderTexture((Texture2D*)m_pFrameBufferClientArea->GetColorAttachment(0), GetXInWorld() - m_ClientOffset.x, GetYInWorld() + m_ClientOffset.y, GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
 	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
-	glDisable(GL_SCISSOR_TEST);
-	context->GetGraphicsContext()->SetTexture(nullptr, 0);
 }
 
 void PanelScrollable::ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child)
@@ -240,7 +235,7 @@ void PanelScrollable::ControllRealTimeRenderingForChildPost(GUIContext* context,
 
 void PanelScrollable::OnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
 {
-	if (ContainsPoint(position))
+	if (ContainsPoint(position, this))
 	{
 		if (m_pSliderVertical->IsVisible())
 		{

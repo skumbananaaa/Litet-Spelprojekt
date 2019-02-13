@@ -63,6 +63,8 @@ layout(binding = 1) uniform LightBuffer
 layout(binding = 2) uniform WorldBuffer
 {
 	uint map[LEVEL_SIZE_X][LEVEL_SIZE_Y][LEVEL_SIZE_Z];
+	bool concealed;
+	uint roomId;
 };
 
 vec3 PositionFromDepth(float depth)
@@ -137,29 +139,35 @@ void main()
 	vec3 c = vec3(0.0f);
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
-		float intensity = 0.0f;
-		if (map[mapPos.x][mapPos.y][mapPos.z] == 2 || position.y >= 5.9f)
+		if (!concealed || map[mapPos.x][mapPos.y][mapPos.z] == roomId || position.y >= 5.9f || position.x > 10.5f || position.x < 0.5f || position.z > 40.5f || position.z < 0.5f)
 		{
-			intensity = 10.0f;
-		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
-		vec3 lightColor = g_DirLights[i].Color.rgb;
-		float cosTheta = dot(normal, lightDir);
+			vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
+			vec3 lightColor = g_DirLights[i].Color.rgb;
+			float cosTheta = dot(normal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, intensity);
+			c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
 		}
 	}
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
-		vec3 lightDir = g_PointLights[i].Position.xyz - position;
-		float dist = length(lightDir);
+		ivec3 lightMapPos = ivec3(round(g_PointLights[i].Position.x), g_PointLights[i].Position.y, round(g_PointLights[i].Position.z));
+		lightMapPos.x = clamp(lightMapPos.x, 0, 11);
+		lightMapPos.y = clamp(lightMapPos.y, 0, 5);
+		lightMapPos.z = clamp(lightMapPos.z, 0, 41);
 
-		float attenuation = 1.0f / (dist * dist);
-		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
-		lightDir = normalize(lightDir);
-		float cosTheta = dot(normal, lightDir);
-
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		if (map[lightMapPos.x][lightMapPos.y][lightMapPos.z] == map[mapPos.x][mapPos.y][mapPos.z] || (map[lightMapPos.x][lightMapPos.y][lightMapPos.z] == 0 || map[mapPos.x][mapPos.y][mapPos.z] == 0) && lightMapPos.y / 2 == mapPos.y / 2)
+		{
+			vec3 lightDir = g_PointLights[i].Position.xyz - position;
+			float dist = length(lightDir);
+	
+			float attenuation = 1.0f / (dist);
+			vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
+			lightDir = normalize(lightDir);
+			float cosTheta = dot(normal, lightDir);
+	
+			c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		}
 	}
 
 	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 

@@ -20,6 +20,7 @@
 #include "..\Include\Crew.h"
 #include "..\Include\Path.h"
 #include <Graphics/GUI/ProgressBar.h>
+#include "GUI/UICrew.h"
 #include "GUI/UICrewMember.h"
 
 #include <Graphics/Materials/WallMaterial.h>
@@ -31,7 +32,7 @@
 #include <GLM/gtx/string_cast.hpp>
 #include <math.h>
 
-#define NUM_CREW 115
+#define NUM_CREW 15
 
 class Game : public Application
 {
@@ -52,12 +53,14 @@ public:
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 	void PickPosition();
-	void PickCrew();
+	void PickCrew(bool hover);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
+
+	Crewmember* RayTestCrewmembers();
 
 	void SetClipPlanes(uint32 scene);
 
-	static Scene* GetScene();
+	Scene* GetScene();
 	static Game* GetGame();
 
 	UICrewMember* m_pUICrewMember;

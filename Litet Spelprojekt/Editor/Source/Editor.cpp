@@ -77,6 +77,7 @@ void Editor::OnResourcesLoaded()
 	m_Dragging = false;
 	m_CurrentEditingMode = NONE;
 
+
 	m_pPanelTop = new Panel(0, GetWindow().GetHeight() - 70, GetWindow().GetWidth(), 70);
 	m_pButtonSave = new Button(10, 10, 140, 50, "Save", nullptr, OnButtonReleased);
 	m_pButtonLoad = new Button(160, 10, 140, 50, "Load", nullptr, OnButtonReleased);

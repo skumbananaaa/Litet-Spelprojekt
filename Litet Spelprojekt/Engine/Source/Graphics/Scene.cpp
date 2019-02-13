@@ -170,6 +170,16 @@ void Scene::ExtendScene(bool extend) noexcept
 	m_Extended = !m_Extended;
 }
 
+void Scene::SetConceal(bool conceal) noexcept
+{
+	m_Concealed = conceal;
+}
+
+void Scene::SetVisibleRoom(uint32 room) noexcept
+{
+	m_VisibleRoom = room;
+}
+
 void Scene::OnUpdate(float dtS) noexcept
 {
 	for (GameObject* pGameObject : m_GameObjects)

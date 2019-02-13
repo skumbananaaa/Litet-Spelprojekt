@@ -6,6 +6,14 @@ class API ParticleSystem : public GameObject
 {
 	friend class DefferedRenderer;
 
+private:
+	struct ParticleInternal
+	{
+		glm::vec3 Position;
+		glm::vec3 Speed;
+		float LifeTime;
+	};
+
 public:
 	ParticleSystem(ParticleSystem&& other) = delete;
 	ParticleSystem(const ParticleSystem& other) = delete;
@@ -28,6 +36,7 @@ private:
 
 private:
 	const Texture2D* m_pTexture;
+	ParticleInternal* m_pParticles;
 	ParticleInstance* m_pParticleInstances;
 	glm::vec4 m_Color;
 	uint32 m_NumParticles;

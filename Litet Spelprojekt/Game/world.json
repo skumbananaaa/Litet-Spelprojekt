@@ -3195,6 +3195,146 @@
             "tileIdZ": 8,
             "gameObject": 3,
             "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 0,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 1,
+            "rotation": 0.0
         }
     ],
     "stairs": []

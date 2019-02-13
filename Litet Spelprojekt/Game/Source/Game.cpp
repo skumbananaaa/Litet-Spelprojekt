@@ -62,7 +62,6 @@ Game::~Game()
 	
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
-
 }
 
 void Game::OnResourceLoading(const std::string& file, float percentage)

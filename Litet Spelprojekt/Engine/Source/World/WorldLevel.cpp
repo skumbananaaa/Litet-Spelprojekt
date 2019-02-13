@@ -5,14 +5,17 @@ WorldLevel::WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 si
 {
 	m_SizeX = sizeX;
 	m_SizeZ = sizeZ;
+	m_ppLevelData = new TileData*[sizeX];
 	m_ppLevel = new uint32*[sizeX];
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
 		m_ppLevel[x] = new uint32[sizeZ];
-
+		m_ppLevelData[x] = new TileData[sizeZ];
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
 			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
+			m_ppLevelData[x][z].BurnsAt = 100;
+			m_ppLevelData[x][z].Temp = 30;
 		}
 	}
 }
@@ -21,10 +24,11 @@ WorldLevel::~WorldLevel()
 {
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
+		DeleteArr(m_ppLevelData[x]);
 		delete[] m_ppLevel[x];
 		m_ppLevel[x] = nullptr;
 	}
-
+	Delete(m_ppLevelData);
 	delete[] m_ppLevel;
 	m_ppLevel = nullptr;
 }
@@ -32,6 +36,11 @@ WorldLevel::~WorldLevel()
 const uint32* const* const WorldLevel::GetLevel() const noexcept
 {
 	return m_ppLevel;
+}
+
+const TileData * const * const WorldLevel::GetLevelData() const noexcept
+{
+	return m_ppLevelData;
 }
 
 uint32 WorldLevel::GetSizeX() const noexcept
@@ -92,3 +101,187 @@ void WorldLevel::GenerateWalls()
 		}
 	}
 }
+//en optimering hade varit att enbart kolla angränsade tiles till de tiles som brinner istället för att kolla 
+//alla tiles i hela vår grid. 
+void WorldLevel::UpdateFire(float dt)
+{
+	// Ej optimerad.
+	/*for (uint32 x = 0; x < m_SizeX; x++)
+	{
+		for (uint32 z = 0; z < m_SizeZ; z++)
+		{
+			if (x + 1 < m_SizeX)
+			{
+				if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x + 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+
+			if (x > 0)
+			{
+				if (m_ppLevel[x - 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x - 1][z] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x - 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+
+			if (z + 1 < m_SizeZ)
+			{
+				if (m_ppLevel[x][z + 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x][z + 1] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x][z + 1].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+
+			if (z > 0)
+			{
+				if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
+				{
+					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x][z - 1].Temp- m_ppLevelData[x][z].Temp)*dt, 0.0f);
+				}
+			}
+		}
+	}*/
+
+	// optimerad version.
+	for (uint32 i = 0; i < m_burningIDs.size(); i++)
+	{
+		uint32 x = m_burningIDs[i].x;
+		uint32 z = m_burningIDs[i].y;
+		bool alreadyBurning = false;
+		if (x + 1 < m_SizeX)
+		{
+			if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
+			{
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+
+				m_ppLevelData[x + 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x + 1][z].Temp)*dt, 0.0f);
+
+				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x + 1, z));
+				}
+			}
+		}
+
+		if (x > 0)
+		{
+			if (m_ppLevel[x - 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x - 1][z] == 0)
+			{
+				if (m_ppLevelData[x - 1][z].Temp >= m_ppLevelData[x - 1][z].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+
+				m_ppLevelData[x - 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x - 1][z].Temp)*dt, 0.0f);
+
+				if (m_ppLevelData[x - 1][z].Temp >= m_ppLevelData[x - 1][z].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x - 1, z));
+				}
+			}
+		}
+
+		if (z + 1 < m_SizeZ)
+		{
+			if (m_ppLevel[x][z + 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x][z + 1] == 0)
+			{
+				if (m_ppLevelData[x][z + 1].Temp >= m_ppLevelData[x][z + 1].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+
+				m_ppLevelData[x][z + 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z + 1].Temp)*dt, 0.0f);
+
+				if (m_ppLevelData[x][z + 1].Temp >= m_ppLevelData[x][z + 1].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x, z - 1));
+				}
+			}
+		}
+
+		if (z > 0)
+		{
+			if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
+			{
+				if (m_ppLevelData[x][z - 1].Temp >= m_ppLevelData[x][z - 1].BurnsAt)
+				{
+					alreadyBurning = true;
+				}
+
+				m_ppLevelData[x][z - 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z - 1].Temp)*dt, 0.0f);
+
+				if (m_ppLevelData[x][z - 1].Temp >= m_ppLevelData[x][z - 1].BurnsAt && !alreadyBurning)
+				{
+					m_burningIDs.push_back(glm::ivec2(x, z - 1));
+				}
+			}
+		}
+	}
+}
+
+// 1 liter vatten i hundra grader ger 1800 volymsexpansion. Ta med detta i kalkylationer?
+void WorldLevel::UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel)
+{
+	for (uint32 x = 0; x < m_SizeX; x++)
+	{
+		for (uint32 z = 0; z < m_SizeZ; z++)
+		{
+			if (fireLevel[x][z].Temp >= fireLevel[x][z].BurnsAt)
+			{
+				m_ppLevelData[x][z].SmokeAmount += (fireLevel[x][z].Temp - fireLevel[x][z].BurnsAt)*dt;
+			}
+
+			if (m_ppLevelData[x][z].SmokeAmount > m_ppLevelData[x][z].SmokeLimit)
+			{
+				float spread = (m_ppLevelData[x][z].SmokeAmount - m_ppLevelData[x][z].SmokeLimit) / 4;
+
+				// assuming that the value of 1 is walls...
+				if (aboveLevel->m_ppLevel[x][z] != 1)
+				{
+					aboveLevel->m_ppLevelData[x][z].Temp += spread * dt;
+				}
+
+				// Smoke leaves the air right?
+				m_ppLevelData[x][z].SmokeAmount -= spread;
+
+				if (x + 1 < m_SizeX)
+				{
+					if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
+					{
+						m_ppLevelData[x + 1][z].SmokeAmount += spread;
+					}
+				}
+
+				if (x > 0)
+				{
+					if (m_ppLevel[x - 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x - 1][z] == 0)
+					{
+						m_ppLevelData[x - 1][z].SmokeAmount += spread;
+					}
+				}
+
+				if (z + 1 < m_SizeZ)
+				{
+					if (m_ppLevel[x][z + 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x][z + 1] == 0)
+					{
+						m_ppLevelData[x][z + 1].SmokeAmount += spread;
+					}
+				}
+
+				if (z > 0)
+				{
+					if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
+					{
+						m_ppLevelData[x][z - 1].SmokeAmount += spread;
+					}
+				}
+			}
+		}
+	}
+}
+

@@ -7,6 +7,7 @@ class API SOUND
 
 public:
 	static uint32 MONO_FART;
+	static uint32 MONO_FIREALARM;
 
 private:
 	static void RegisterResourcesPreLoading();

@@ -8,7 +8,10 @@ class API VisualAudioSource : public GameObject
 public:
 
 	static VisualAudioSource* CreateObject(int32 sound, int32 mesh, int32 mat, float volume = 1.0f, float attenuation = 1.0f);
+	static VisualAudioSource* CreateResource(int32 sound);
+	~VisualAudioSource();
 private:
 	AudioSource* m_pAudio;
 	VisualAudioSource(int32 audioSrc, int32 mesh, int32 material);
+	VisualAudioSource();
 };

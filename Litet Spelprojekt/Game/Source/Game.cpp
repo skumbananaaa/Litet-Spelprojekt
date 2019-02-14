@@ -61,7 +61,6 @@ Game::~Game()
 	DeleteSafe(m_pUICrew);
 
 	DeleteSafe(m_pTestAudioSource);
-	DeleteSafe(m_pWorld);
 }
 
 void Game::OnResourceLoading(const std::string& file, float percentage)
@@ -122,7 +121,6 @@ void Game::OnResourcesLoaded()
 
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 5.9f, 3.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(6.0f, 3.9f, 6.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
 		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
@@ -275,10 +273,10 @@ void Game::OnResourcesLoaded()
 
 	//SetClipPlanes(0);
 
-	// Generate walls
+	// Generate rooms
+	m_Scenes[0]->GetWorld()->GenerateRooms();
 	for (int level = 0; level < m_Scenes[0]->GetWorld()->GetNumLevels(); level += 2)
 	{
-		m_Scenes[0]->GetWorld()->GenerateWalls(level);
 		glm::vec4 wall;
 
 		for (int i = 0; i < m_Scenes[0]->GetWorld()->GetLevel(level)->GetNrOfWalls(); i++)
@@ -294,6 +292,8 @@ void Game::OnResourcesLoaded()
 			m_Scenes[0]->AddGameObject(pGameObject);
 		}
 	}
+
+	m_Scenes[0]->AddPointLight(new PointLight(m_Scenes[0]->GetWorld()->GetRoomCenter(3), glm::vec4(2.0f, 2.0f, 2.0f, 2.0f)));
 
 	//Crew
 	std::string names[] = {

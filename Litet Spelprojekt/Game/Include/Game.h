@@ -23,8 +23,6 @@
 #include "GUI/UICrew.h"
 #include "GUI/UICrewMember.h"
 
-#include <World/Room.h>
-
 #include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/WaterMaterial.h>
 
@@ -35,7 +33,6 @@
 #include <math.h>
 
 #define NUM_CREW 15
-#define NUM_ROOMS 24
 
 class Game : public Application
 {
@@ -76,7 +73,6 @@ private:
 	uint32 m_SceneId = 0;
 
 	TextureCube* m_pSkyBoxTex;
-	World* m_pWorld;
 	UICrew* m_pUICrew;
 
 	TextView* m_pTextViewFPS;
@@ -87,8 +83,6 @@ private:
 	
 	Crew m_Crew;
 	std::string m_CrewList[NUM_CREW];
-
-	Room m_Rooms[NUM_ROOMS];
 
 	bool cartesianCamera;
 	int32 m_CurrentElevation;

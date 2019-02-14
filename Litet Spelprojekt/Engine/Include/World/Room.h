@@ -4,10 +4,12 @@
 class API Room
 {
 public:
-	Room() noexcept;
+	Room(glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f)) noexcept;
 	~Room();
 
+	const glm::vec3& GetCenter() const noexcept;
+
 private:
-	glm::ivec3 m_CenterTile;
+	glm::vec3 m_Center;
 
 };

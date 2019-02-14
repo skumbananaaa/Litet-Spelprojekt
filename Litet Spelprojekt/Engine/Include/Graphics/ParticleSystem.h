@@ -9,9 +9,11 @@ class API ParticleSystem : public GameObject
 private:
 	struct ParticleInternal
 	{
+	public:
 		glm::vec3 Position;
-		glm::vec3 Speed;
-		float LifeTime;
+		glm::vec3 Direction;
+		float Speed;
+		float TimeLived;
 	};
 
 public:
@@ -25,11 +27,13 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	void SetTimeToLive(float timeToLive);
 	void SetTexture(uint32 textureID) noexcept;
 	void SetColor(const glm::vec4& color) noexcept;
 	uint32 GetNumParticles() const noexcept;
 
 private:
+	void SpawnParticle() noexcept;
 	const Texture2D* GetTexture() const noexcept;
 	const ParticleInstance* GetParticleInstances() const noexcept;
 	const glm::vec4& GetColor() const noexcept;
@@ -39,5 +43,6 @@ private:
 	ParticleInternal* m_pParticles;
 	ParticleInstance* m_pParticleInstances;
 	glm::vec4 m_Color;
+	float m_TimeToLive;
 	uint32 m_NumParticles;
 };

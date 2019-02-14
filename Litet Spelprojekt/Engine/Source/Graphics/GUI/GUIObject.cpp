@@ -342,6 +342,10 @@ void GUIObject::InternalOnRender(GUIContext* context)
 	*/
 	context->BeginSelfRendering(m_pFramebuffer, GetClearColor());
 	this->OnRender(context);
+	for (IExternalUIRenderer* object : m_ExternalRenderers)
+	{
+		object->OnRenderGUIObject(context, this);
+	}
 
 	/*
 	* Render all childrens Framebuffers
@@ -513,6 +517,32 @@ void GUIObject::DeleteChildren()
 void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
 {
 	m_DeleteAll = deleteAll;
+}
+
+void GUIObject::AddExternalRenderer(IExternalUIRenderer* renderer)
+{
+	if (!Contains<IExternalUIRenderer>(m_ExternalRenderers, renderer))
+	{
+		m_ExternalRenderers.push_back(renderer);
+	}
+	else
+	{
+		std::cout << "IExternalUIRenderer already added" << std::endl;
+	}
+}
+
+void GUIObject::RemoveExternalRenderer(IExternalUIRenderer* renderer)
+{
+	int32 counter = 0;
+	for (IExternalUIRenderer* object : m_ExternalRenderers)
+	{
+		if (object == renderer)
+		{
+			m_ExternalRenderers.erase(m_ExternalRenderers.begin() + counter);
+			return;
+		}
+		counter++;
+	}
 }
 
 void GUIObject::SetUserData(void* data)

@@ -41,7 +41,9 @@ Crew::~Crew()
 void Crew::AddMember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 {
 	Expand();
-	m_ppMembers[m_NrOf++] = new Crewmember(lightColor, position, actionCap, name);
+	Crewmember* member = new Crewmember(lightColor, position, actionCap, name);
+	member->SetShipNumber(m_NrOf);
+	m_ppMembers[m_NrOf++] = member;
 }
 
 Crewmember* Crew::GetMember(int index)

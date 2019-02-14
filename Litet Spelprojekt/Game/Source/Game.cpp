@@ -59,7 +59,8 @@ Game::~Game()
 	DeleteSafe(m_pTextViewFile);
 	DeleteSafe(m_pLoadingBar);
 	DeleteSafe(m_pUICrewMember);
-	
+	DeleteSafe(m_pUICrew);
+
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
 }
@@ -75,7 +76,7 @@ void Game::OnResourcesLoaded()
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
 
-	m_pUICrewMember = new UICrewMember(200, 200, 300, 170);
+	m_pUICrewMember = new UICrewMember(200, 200, 330, 170);
 	GetGUIManager().Add(m_pUICrewMember);
 
 	//Set game TextViews
@@ -334,7 +335,7 @@ void Game::OnResourcesLoaded()
 		members.push_back(m_Crew.GetMember(i));
 	}
 
-	new UICrew(0, 0, 200, 500, members);
+	m_pUICrew = new UICrew(0, 0, 200, 500, members);
 
 	/*_______________________________________________________________________________________________________________*/
 	//SCENE2
@@ -920,6 +921,11 @@ void Game::SetClipPlanes(uint32 scene)
 	
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
+}
+
+Crewmember* Game::GetCrewmember(uint32 shipNumber)
+{
+	return m_Crew.GetMember(shipNumber);
 }
 
 Scene* Game::GetScene()

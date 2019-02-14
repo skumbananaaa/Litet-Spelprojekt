@@ -4,6 +4,14 @@
 #include <Graphics/GUI/GUIContext.h>
 #include <Graphics/Textures/Texture2D.h>
 
+class GUIObject;
+
+class API IExternalUIRenderer
+{
+public:
+	virtual void OnRenderGUIObject(GUIContext* context, GUIObject* object) = 0;
+};
+
 class API GUIObject
 {
 	friend class GUIManager;
@@ -44,6 +52,9 @@ public:
 
 	virtual void DeleteChildren();
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
+
+	void AddExternalRenderer(IExternalUIRenderer* renderer);
+	void RemoveExternalRenderer(IExternalUIRenderer* renderer);
 
 	void SetUserData(void* data);
 	void* GetUserData() const;
@@ -124,6 +135,7 @@ private:
 	std::vector<GUIObject*> m_ChildrenToRemove;
 	std::vector<GUIObject*> m_ChildrenToAdd;
 	std::vector<GUIObject*> m_ChildrenDirty;
+	std::vector<IExternalUIRenderer*> m_ExternalRenderers;
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_Position;
 	bool m_IsDirty;

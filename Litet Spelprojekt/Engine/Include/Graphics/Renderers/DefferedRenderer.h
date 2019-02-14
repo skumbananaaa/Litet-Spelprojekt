@@ -87,6 +87,7 @@ struct WorldBuffer
 {
 	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
 	int concealed;
+	int extended;
 	uint32 roomId;
 };
 

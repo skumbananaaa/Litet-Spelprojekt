@@ -248,7 +248,8 @@ void DefferedRenderer::SetWorldBuffer(const Scene& scene) const
 	}
 
 	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
-	m_LocalWorldBuff.roomId = 2;
+	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
+	m_LocalWorldBuff.roomId = 1;
 
 	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
@@ -497,6 +498,7 @@ void DefferedRenderer::Create() noexcept
 			}
 		}
 		m_LocalWorldBuff.concealed = false;
+		m_LocalWorldBuff.extended = false;
 		m_LocalWorldBuff.roomId = 1;
 		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
 	}
@@ -578,7 +580,8 @@ void DefferedRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 
 void DefferedRenderer::UpdateWorldBuffer(const Scene & scene) const noexcept
 {
-	m_LocalWorldBuff.concealed = scene.IsConcealed();
+	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
+	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
 	m_LocalWorldBuff.roomId = scene.GetVisibleRoom();
 
 	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);

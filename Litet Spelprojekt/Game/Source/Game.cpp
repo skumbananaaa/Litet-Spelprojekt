@@ -119,8 +119,8 @@ void Game::OnResourcesLoaded()
 		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 6.0f, 3.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
+		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 5.9f, 3.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
+		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(6.0f, 3.9f, 6.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
 
 		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));

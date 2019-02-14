@@ -241,13 +241,13 @@ void DefferedRenderer::SetWorldBuffer(const Scene& scene) const
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					m_LocalWorldBuff.map[x][y][z] = scene.GetWorld()->GetLevel(y)->GetLevel()[x][z];
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z].x = (float)(scene.GetWorld()->GetLevel(y)->GetLevel()[x][z]);
 				}
 			}
 		}
 	}
 
-	m_LocalWorldBuff.concealed = scene.IsConcealed();
+	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
 	m_LocalWorldBuff.roomId = 2;
 
 	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
@@ -492,7 +492,7 @@ void DefferedRenderer::Create() noexcept
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					m_LocalWorldBuff.map[x][y][z] = 1;
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = glm::ivec4(1, 1, 1, 1);
 				}
 			}
 		}

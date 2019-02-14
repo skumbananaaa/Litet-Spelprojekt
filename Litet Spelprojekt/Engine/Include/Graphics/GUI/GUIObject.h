@@ -39,7 +39,8 @@ public:
 	const glm::vec4& GetBackgroundColor() const noexcept;
 	void SetBackgroundColor(const glm::vec4& color) noexcept;
 
-	virtual bool ContainsPoint(const glm::vec2& position) const noexcept;
+	virtual bool ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept;
+	bool ContainsPoint(const glm::vec2& position) const noexcept;
 
 	virtual void DeleteChildren();
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);

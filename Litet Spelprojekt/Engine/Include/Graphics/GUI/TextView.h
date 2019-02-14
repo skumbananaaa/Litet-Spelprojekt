@@ -2,17 +2,10 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/GUIObject.h>
 
-enum TextAlignment
-{
-	CENTER = 0,
-	CENTER_VERTICAL,
-	CENTER_HORIZONTAL,
-};
-
 class API TextView : public GUIObject
 {
 public:
-	TextView(float x, float y, float width, float height, const std::string& text, TextAlignment textAlignment = CENTER_VERTICAL, int size = 100);
+	TextView(float x, float y, float width, float height, const std::string& text, bool center = false, int size = 100);
 	virtual ~TextView();
 
 	void SetText(const std::string& text);
@@ -21,8 +14,8 @@ public:
 	void SetTextSize(int size);
 	int GetTextSize() const;
 
-	void SetTextAlignment(TextAlignment textAlignment);
-	TextAlignment GetTextAlignment();
+	void SetTextCentered(bool center);
+	bool IsTextCentered();
 
 	const glm::vec4& GetTextColor() const noexcept;
 	void SetTextColor(const glm::vec4& color);
@@ -36,6 +29,6 @@ protected:
 private:
 	std::string m_Text;
 	int m_TextSize;
-	TextAlignment m_TextAlignment;
+	bool m_TextCentered;
 	glm::vec4 m_TextColor;
 };

@@ -22,14 +22,14 @@ Texture2D::Texture2D(const void* pInitalData, const TextureDesc& desc, const Tex
 	}
 }
 
-Texture2D::Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
+Texture2D::Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
 	: Texture(),
 	m_Width(0),
 	m_Height(0),
 	m_Samples(0),
 	m_pTextureData(nullptr)
 {
-	Create(path, format, generateMipmaps, params);
+	Create(path, format, generateMipmaps, flipVertically, params);
 }
 
 Texture2D::~Texture2D()
@@ -97,9 +97,9 @@ void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
 	GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
 }
 
-Texture2D* Texture2D::CreateTextureFromFile(const char* pPath, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
+Texture2D* Texture2D::CreateTextureFromFile(const char* pPath, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
 {
-	return new Texture2D(pPath, format, generateMipmaps, params);
+	return new Texture2D(pPath, format, generateMipmaps, flipVertically, params);
 }
 
 Texture2D* Texture2D::CreateTextureFromMemory(const void* pInitalData, const TextureDesc& desc, const TextureParams& params)
@@ -107,12 +107,14 @@ Texture2D* Texture2D::CreateTextureFromMemory(const void* pInitalData, const Tex
 	return new Texture2D(pInitalData, desc, params);
 }
 
-void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
+void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
 {
 	int nrChannels;
 	m_Format = format;
 	m_Params = params;
 	m_GenerateMipmaps = generateMipmaps;
+
+	stbi_set_flip_vertically_on_load(flipVertically);
 
 	if (Texture::TexFormatToGLType(format) == GL_FLOAT)
 	{

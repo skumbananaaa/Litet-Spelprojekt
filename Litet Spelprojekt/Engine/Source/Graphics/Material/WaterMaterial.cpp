@@ -3,21 +3,13 @@
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/Renderers/GLContext.h>
 
-WaterMaterial::WaterMaterial()
-	: m_pReflector(nullptr),
+WaterMaterial::WaterMaterial() : Material(SHADER::DEFERRED_WATER),
+	m_pReflector(nullptr),
 	m_pDistortion(nullptr),
 	m_pDepthMap(nullptr),
 	m_pWaterBuffer(nullptr),
 	m_Buffer()
 {
-	Shader vs;
-	vs.CompileFromFile("Resources/Shaders/deferredWater.glsl", VERTEX_SHADER);
-
-	Shader fs;
-	fs.CompileFromFile("Resources/Shaders/deferredWater.glsl", FRAGMENT_SHADER);
-
-	SetProgram(new ShaderProgram(vs, fs));
-
 	m_Buffer.DistortionFactor = 0.0f;
 	m_pWaterBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(WaterBuffer));
 }

@@ -22,6 +22,13 @@ struct GUIUniformData
 	glm::mat4 projection;
 };
 
+enum TextAlignment
+{
+	CENTER = 0,
+	CENTER_VERTICAL,
+	CENTER_HORIZONTAL,
+};
+
 class API GUIContext
 {
 public:
@@ -32,15 +39,18 @@ public:
 	void BeginRootRendering();
 
 	void RenderFrameBuffer(Framebuffer* frameBuffer, float x, float y);
-	void RenderText(const std::string& text, int32 x, int32 y, float scale);
+	void RenderText(const std::string& text, float x, float y, float width, float height, float scale, const glm::vec4& color, TextAlignment textAlignment = CENTER_VERTICAL);
+	void RenderTexture(const Texture2D* texture, float x, float y, float width, float height, const glm::vec4& color);
 	glm::vec2 CalculateTextSize(const std::string& text, float scale);
 	void SetVertexQuadData(float x, float y, float width, float height, const glm::vec4& color);
+
 
 	GLContext* GetGraphicsContext() const;
 	FontRenderer* GetFontRenderer() const;
 	const ShaderProgram* GetShaderProgram() const;
 
 	static const glm::vec4 COLOR_WHITE;
+	static const glm::vec4 COLOR_BLACK;
 
 private:
 	GUIUniformData m_UniformData;

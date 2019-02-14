@@ -42,5 +42,5 @@ private:
 	UniformBuffer* m_pOrthoPerObject;
 	UniformBuffer* m_pOrthoPerFrame;
 
-	ShaderProgram* m_pOrthographicProgram;
+	const ShaderProgram* m_pOrthographicProgram;
 };

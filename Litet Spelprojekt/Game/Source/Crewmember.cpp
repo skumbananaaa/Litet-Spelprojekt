@@ -1,4 +1,6 @@
 #include "..\Include\Crewmember.h"
+#include "..\Include\Game.h"
+#include <System/Random.h>
 
 Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name) 
 	: m_pLight(new PointLight(position, lightColor))
@@ -16,6 +18,15 @@ Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, f
 	SetPosition(position);
 	SetScale(glm::vec3(0.2, 1.8, 0.5));
 	UpdateTransform();
+
+
+	//Test
+	m_HasInjuryBoneBroken = Random::GenerateBool();
+	m_HasInjuryBurned = Random::GenerateBool();
+	m_HasInjurySmoke = Random::GenerateBool();
+	m_SkillFire = Random::GenerateInt(1, 3);
+	m_SkillMedic = Random::GenerateInt(1, 3);
+	m_SkillStrength = Random::GenerateInt(1, 3);
 }
 
 Crewmember::Crewmember(Crewmember& other)
@@ -38,7 +49,7 @@ Crewmember::Crewmember(Crewmember& other)
 
 Crewmember::~Crewmember()
 {
-	Delete(m_pPathFinder);
+	DeleteSafe(m_pPathFinder);
 }
 
 void Crewmember::RunParallel()
@@ -58,7 +69,137 @@ void Crewmember::Update(float deltaTime)
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
 }
 
+void Crewmember::OnPicked()
+{
+	if (m_pLight->GetColor() == CHOSEN_LIGHT)
+	{
+		m_pLight->SetColor(DEFAULT_LIGHT);
+	}
+	else if (m_pTorch->GetColor() == CHOSEN_LIGHT)
+	{
+		m_pTorch->SetColor(DEFAULT_LIGHT);
+	}
+	else if (m_pLight->GetColor() == DEFAULT_LIGHT)
+	{
+		m_pLight->SetColor(CHOSEN_LIGHT);
+	}
+	else if (m_pTorch->GetColor() == DEFAULT_LIGHT)
+	{
+		m_pTorch->SetColor(CHOSEN_LIGHT);
+	}
+}
 
+void Crewmember::OnHovered()
+{
+	m_IsHovered = true;
+	Game::GetGame()->m_pUICrewMember->SetCrewMember(this);
+}
+
+void Crewmember::OnNotHovered()
+{
+	m_IsHovered = false;
+	Game::GetGame()->m_pUICrewMember->SetCrewMember(nullptr);
+}
+
+int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept
+{
+	glm::vec3 centre = GetPosition();
+
+	glm::vec3 normals[]{
+		m_Direction,
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::normalize(glm::cross(normals[0], normals[1]))
+	};
+
+	float h[] = {
+		0.1,
+		0.9,
+		0.25
+	};
+
+	float d1[] = {
+		glm::dot(centre - normals[0] * h[0], normals[0]),
+		glm::dot(centre - normals[1] * h[1], normals[1]),
+		glm::dot(centre - normals[2] * h[2], normals[2])
+	};
+	float d2[] = {
+		glm::dot(centre + normals[0] * h[0], normals[0]),
+		glm::dot(centre + normals[1] * h[1], normals[1]),
+		glm::dot(centre + normals[2] * h[2], normals[2])
+	};
+
+	float t1[3];
+	float t2[3];
+	float t_min[3];
+	float t_max[3];
+
+	float t = -1;
+	float min_t, max_t;
+
+	for (int j = 0; j < 3; j++)
+	{
+		if (std::abs(glm::dot(normals[j], ray)) > 0.01)
+		{
+			t1[j] = (d1[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
+			t2[j] = (d2[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
+
+			t_min[j] = std::min(t1[j], t2[j]);
+			t_max[j] = std::max(t1[j], t2[j]);
+		}
+		else if (-glm::dot(normals[0], centre - origin) - h[j] > 0 || -glm::dot(normals[0], centre - origin) + h[j] < 0)
+			return -1;
+	}
+
+	min_t = std::max(t_min[0], t_min[1]);
+	min_t = std::max(min_t, t_min[2]);
+	max_t = std::min(t_max[0], t_max[1]);
+	max_t = std::min(max_t, t_max[2]);
+
+	if (min_t <= max_t && max_t >= 0)
+	{
+		if (t_min > 0)
+			t = min_t;
+		else
+			t = max_t;
+	}
+
+	return t;
+}
+
+bool Crewmember::IsHovered() const noexcept
+{
+	return m_IsHovered;
+}
+
+int8 Crewmember::GetSkillFire() const noexcept
+{
+	return m_SkillFire;
+}
+
+int8 Crewmember::GetSkillMedic() const noexcept
+{
+	return m_SkillMedic;
+}
+
+int8 Crewmember::GetSkillStrength() const noexcept
+{
+	return m_SkillStrength;
+}
+
+bool Crewmember::HasInjuryBoneBroken() const noexcept
+{
+	return m_HasInjuryBoneBroken;
+}
+
+bool Crewmember::HasInjuryBurned() const noexcept
+{
+	return m_HasInjuryBurned;
+}
+
+bool Crewmember::HasInjurySmoke() const noexcept
+{
+	return m_HasInjurySmoke;
+}
 
 void Crewmember::Move(const glm::vec3 & dir)
 {

@@ -16,27 +16,50 @@ struct ShaderDefines
 	uint32 NumDefines = 0;
 };
 
+inline std::string ParseDefines(const ShaderDefines& defines)
+{
+	std::string result;
+	for (uint32 i = 0; i < defines.NumDefines; i++)
+	{
+		result += "#define " + std::string(defines.ppDefines[i]) + '\n';
+	}
+
+	return result;
+}
+
+inline std::string GetShaderTypeAsString(ShaderType type)
+{
+	if (type == VERTEX_SHADER)
+	{
+		return "VERTEX_SHADER\n";
+	}
+	else if (type == GEOMETRY_SHADER)
+	{
+		return "GEOMETRY_SHADER\n";
+	}
+	else if (type == FRAGMENT_SHADER)
+	{
+		return "FRAGMENT_SHADER\n";
+	}
+
+	return "UNKNOWN\n";
+}
+
 class API Shader : public IResource
 {
 	friend class ShaderProgram;
 
 public:
-	Shader() noexcept;
-	~Shader();
-
-	bool CompileFromSource(const char* const source, ShaderType type, const ShaderDefines& defines = ShaderDefines()) noexcept;
-	bool CompileFromFile(const char* const path, ShaderType type, const ShaderDefines& defines = ShaderDefines()) noexcept;
-
 	uint32 ShaderTypeTable(ShaderType type) const noexcept;
 	virtual void Construct() override;
 
-	static Shader* Create(const char* const path, ShaderType type, const ShaderDefines& defines = ShaderDefines()) noexcept;
+	static Shader* Create(const char* const path, ShaderType type, const std::string& = "") noexcept;
 
 private:
-	Shader(const std::string& shaderCode, ShaderType type, const ShaderDefines& defines) noexcept;
+	Shader(const std::string& shaderCode, ShaderType type) noexcept;
+	~Shader();
 
 	uint32 m_Shader;
 	ShaderType m_Type;
 	std::string m_ShaderCode;
-	ShaderDefines m_Defines;
 };

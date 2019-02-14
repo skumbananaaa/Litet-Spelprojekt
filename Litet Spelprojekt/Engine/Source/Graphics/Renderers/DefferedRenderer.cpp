@@ -44,16 +44,6 @@ DefferedRenderer::~DefferedRenderer()
 
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
-	
-	DeleteSafe(m_pCbrBlurProgram);
-	DeleteSafe(m_pCbrReconstructionProgram);
-	DeleteSafe(m_pCbrResolveProgram);
-	DeleteSafe(m_pDepthPrePassProgram);
-	DeleteSafe(m_pGeometryPassProgram);
-	DeleteSafe(m_pDecalsPassProgram);
-	DeleteSafe(m_pForwardPass);
-	DeleteSafe(m_pForwardPass);
-	DeleteSafe(m_pSkyBoxPassProgram);
 }
 
 void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
@@ -128,118 +118,33 @@ void DefferedRenderer::Create() noexcept
 		m_pParticle = new Particle();
 	}
 
-	//CREATE SHADERPROGRAMS
-	Shader fullscreenTri;
-	if (fullscreenTri.CompileFromFile("Resources/Shaders/fullscreenTriVert.glsl", VERTEX_SHADER))
-	{
-		std::cout << "Created fullscreen Vertexshader" << std::endl;
-	}
+	m_pCbrResolveProgram = ResourceHandler::GetShader(SHADER::CBR_RESOLVE);
+	m_pCbrReconstructionProgram = ResourceHandler::GetShader(SHADER::CBR_RECONSTRUCTION);
+	m_pCbrBlurProgram = ResourceHandler::GetShader(SHADER::CBR_BLUR);
+	m_pDepthPrePassProgram = ResourceHandler::GetShader(SHADER::DEPTH_PRE_PASS);
+	m_pWaterpassProgram = ResourceHandler::GetShader(SHADER::WATER_PASS);
+	m_pDecalsPassProgram = ResourceHandler::GetShader(SHADER::DECAL_PASS);
+	m_pForwardPass = ResourceHandler::GetShader(SHADER::FORWARD_PASS);
+	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
 
-	{
-		Shader frag;
-		if (frag.CompileFromFile("Resources/Shaders/cbrResolveFrag.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created CBR Resolve Fragmentshader" << std::endl;
-		}
+	//{
+	//	Shader vs;
+	//	if (vs.CompileFromFile("Resources/Shaders/defferedGeometryVert.glsl", VERTEX_SHADER))
+	//	{
+	//		std::cout << "Created Geomtrypass Vertex shader" << std::endl;
+	//	}
 
-		m_pCbrResolveProgram = new ShaderProgram(fullscreenTri, frag);
-	}
+	//	Shader fs;
+	//	if(fs.CompileFromFile("Resources/Shaders/defferedGeometryFrag.glsl", FRAGMENT_SHADER))
+	//	{
+	//		std::cout << "Created Geomtrypass Fragment shader" << std::endl;
+	//	}
 
-	{
-		Shader frag;
-		if (frag.CompileFromFile("Resources/Shaders/cbrReconstructionFrag.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created CBR Reconstruction Fragmentshader" << std::endl;
-		}
+	//	m_pGeometryPassProgram = new ShaderProgram(vs, fs);
+	//}
 
-		m_pCbrReconstructionProgram = new ShaderProgram(fullscreenTri, frag);
-	}
 
-	{
-		Shader frag;
-		if (frag.CompileFromFile("Resources/Shaders/cbrFilterFrag.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created CBR Blur Fragmentshader" << std::endl;
-		}
-
-		m_pCbrBlurProgram = new ShaderProgram(fullscreenTri, frag);
-	}
-
-	{
-		Shader vert;
-		if (vert.CompileFromFile("Resources/Shaders/defferedDepthPreVert.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created DepthPrePass Vertexshader" << std::endl;
-		}
-
-		m_pDepthPrePassProgram = new ShaderProgram(vert);
-	}
-
-	{
-		Shader vert;
-		if (vert.CompileFromFile("Resources/Shaders/deferredDecals.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created DecalPass Vertexshader" << std::endl;
-		}
-
-		Shader frag;
-		if (frag.CompileFromFile("Resources/Shaders/deferredDecals.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created DecalPass Fragmentshader" << std::endl;
-		}
-
-		m_pDecalsPassProgram = new ShaderProgram(vert, frag);
-	}
-
-	{
-		Shader vert;
-		if (vert.CompileFromFile("Resources/Shaders/forwardVert.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created Forwardpass Vertexshader" << std::endl;
-		}
-
-		Shader frag;
-		if (frag.CompileFromFile("Resources/Shaders/forwardFrag.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created Forwardpass Fragmentshader" << std::endl;
-		}
-
-		m_pForwardPass = new ShaderProgram(vert, frag);
-	}
-
-	{
-		Shader vert;
-		if (vert.CompileFromFile("Resources/Shaders/VShaderSkyBox.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created SkyBox pass Vertexshader" << std::endl;
-		}
-
-		Shader frag;
-		if (frag.CompileFromFile("Resources/Shaders/FShaderSkyBox.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created SkyBox pass Fragmentshader" << std::endl;
-		}
-
-		m_pSkyBoxPassProgram = new ShaderProgram(vert, frag);
-	}
-
-	{
-		Shader vert;
-		if (vert.CompileFromFile("Resources/Shaders/deferredParticles.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Created Particlepass Vertexshader" << std::endl;
-		}
-
-		Shader frag;
-		if (frag.CompileFromFile("Resources/Shaders/deferredParticles.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Created Particlepass Fragmentshader" << std::endl;
-		}
-
-		m_pParticleProgram = new ShaderProgram(vert, frag);
-	}
-
-	//CREATE UNIFORMBUFFERS
+	//We can destroy object when uniformbuffer is created
 	{
 		CameraBuffer buff = {};
 		buff.InverseView = glm::mat4(1.0f);

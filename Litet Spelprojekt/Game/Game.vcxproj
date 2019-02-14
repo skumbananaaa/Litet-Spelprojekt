@@ -149,6 +149,8 @@
     <ClCompile Include="Source\Crew.cpp" />
     <ClCompile Include="Source\Crewmember.cpp" />
     <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\GUI\UICrew.cpp" />
+    <ClCompile Include="Source\GUI\UICrewMember.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Path.cpp" />
   </ItemGroup>
@@ -156,6 +158,8 @@
     <ClInclude Include="Include\Crew.h" />
     <ClInclude Include="Include\Crewmember.h" />
     <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\GUI\UICrew.h" />
+    <ClInclude Include="Include\GUI\UICrewMember.h" />
     <ClInclude Include="Include\Path.h" />
   </ItemGroup>
   <ItemGroup>

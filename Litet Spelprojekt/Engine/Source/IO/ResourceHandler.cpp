@@ -4,6 +4,11 @@
 #include <Audio/Music.h>
 #include <Audio/SoundEffect.h>
 #include <Graphics/Shaders/ShaderProgram.h>
+#include <Graphics/Geometry/IndexedMesh.h>
+#include <Graphics/Materials/Material.h>
+#include <Graphics/Materials/WaterMaterial.h>
+#include <Graphics/Materials/WallMaterial.h>
+#include <Graphics/Materials/Decal.h>
 
 ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pIndexedMeshFiles[64];
 IndexedMesh* ResourceHandler::m_pIndexedMeshes[64];
@@ -76,16 +81,16 @@ uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh)
 	return m_NrOfMeshes++;
 }
 
-uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps, const TextureParams& params)
+uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
 {
-	m_pTexture2DFiles[m_NrOfTexture2D] = { filename, format, generateMipmaps, params};
+	m_pTexture2DFiles[m_NrOfTexture2D] = { filename, format, generateMipmaps, flipVertically, params};
 	return m_NrOfTexture2D++;
 }
 
-uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap, ShaderProgram* pProgram)
+uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap, int32 shader)
 {
 	std::cout << "Creating Material" << std::endl;
-	Material* material = new Material(pProgram);
+	Material* material = new Material(shader);
 	material->SetDiffuseMap(GetTexture2D(texture));
 	if (normalMap >= 0)
 	{
@@ -95,10 +100,10 @@ uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap, ShaderP
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap, ShaderProgram* pProgram)
+uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap, int32 shader)
 {
 	std::cout << "Creating Material" << std::endl;
-	Material* material = new Material(pProgram);
+	Material* material = new Material(shader);
 	material->SetColor(color);
 	material->SetSpecular(specular);
 	if (normalMap >= 0)
@@ -169,9 +174,9 @@ uint32 ResourceHandler::RegisterMusic(const std::string filename)
 	return m_NrOfMusic++;
 }
 
-uint32 ResourceHandler::RegisterShader(const std::string vertex, const std::string pixel)
+uint32 ResourceHandler::RegisterShader(const std::string vertex, const std::string pixel, const ShaderDefines& defines)
 {
-	m_ShaderFiles[m_NrOfShaders] = { vertex, pixel };
+	m_ShaderFiles[m_NrOfShaders] = { vertex, pixel, ParseDefines(defines) };
 	return m_NrOfShaders++;
 }
 
@@ -269,7 +274,7 @@ GameObject* ResourceHandler::CreateGameObject(int32 gameObject)
 		return nullptr;
 	}
 	GAMEOBJECT_DESC_INTERNAL desc = m_pGameObjectFiles[gameObject];
-	GameObject* pGameObject = new GameObject();
+	GameObject* pGameObject = GAMEOBJECT::CreateGameObject(gameObject);
 	pGameObject->SetMesh(desc.mesh);
 	pGameObject->SetMaterial(desc.material);
 	pGameObject->SetDecal(desc.decal);
@@ -330,7 +335,7 @@ void ResourceHandler::Load()
 		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
 		std::cout << "Loading Texture: " << desc.filename << std::endl;
 		TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
-		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.params);
+		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.flipVertically, desc.params);
 	}
 
 	for (int i = m_NrOfSoundsLoaded; i < m_NrOfSounds; i++)
@@ -353,11 +358,14 @@ void ResourceHandler::Load()
 	{
 		SHADER_DESC_INTERNAL desc = m_ShaderFiles[i];
 		std::cout << "Loading Shader: " << desc.vertex << std::endl;
-		std::cout << "Loading Shader: " << desc.pixel << std::endl;
 		TriggerOnLoading(desc.vertex, currentFile++ / (float)nrOfFiles);
-
-		Shader* vertexShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.vertex).c_str(), VERTEX_SHADER);
-		Shader* pixelShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.pixel).c_str(), FRAGMENT_SHADER);
+		Shader* vertexShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.vertex).c_str(), VERTEX_SHADER, desc.defines);
+		Shader* pixelShader = nullptr;
+		if (!desc.pixel.empty())
+		{
+			std::cout << "Loading Shader: " << desc.pixel << std::endl;
+			pixelShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.pixel).c_str(), FRAGMENT_SHADER, desc.defines);
+		}
 
 		m_pShaders[i] = ShaderProgram::Create(vertexShader, pixelShader);
 	}

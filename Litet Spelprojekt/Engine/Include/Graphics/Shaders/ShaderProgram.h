@@ -6,21 +6,18 @@
 class API ShaderProgram : IResource
 {
 	friend class GLContext;
+	friend class ResourceHandler;
 
 public:
-	ShaderProgram(const Shader& vShader) noexcept;
-	ShaderProgram(const Shader& vShader, const Shader& fShader) noexcept;
-	ShaderProgram(const Shader& vShader, const Shader& gShader, const Shader& fShader) noexcept;
-	~ShaderProgram();
-
 	int32 GetUniformLocation(const char* name) noexcept;
 
 	virtual void Construct() override;
 
-	static ShaderProgram* Create(Shader* vShader, Shader* fShader);
-
 private:
 	ShaderProgram(Shader* vShader, Shader* fShader) noexcept;
+	~ShaderProgram();
+
+	static ShaderProgram* Create(Shader* vShader, Shader* fShader);
 
 	uint32 m_Program;
 	Shader* m_VShader;

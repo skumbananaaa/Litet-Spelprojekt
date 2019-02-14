@@ -11,7 +11,6 @@ DebugRenderer::DebugRenderer()
 
 DebugRenderer::~DebugRenderer()
 {
-	DeleteSafe(m_pDecalProgram);
 	DeleteSafe(m_pPerFrame);
 	DeleteSafe(m_pPerObject);
 }
@@ -23,21 +22,7 @@ void DebugRenderer::DrawScene(const Scene& scene) const noexcept
 
 void DebugRenderer::Create() noexcept
 {
-	{
-		Shader vert = Shader();
-		if (vert.CompileFromFile("Resources/Shaders/debugVert.glsl", VERTEX_SHADER))
-		{
-			std::cout << "Compiled debug vertex shader" << std::endl;
-		}
-
-		Shader frag = Shader();
-		if (frag.CompileFromFile("Resources/Shaders/debugDecalsFrag.glsl", FRAGMENT_SHADER))
-		{
-			std::cout << "Compiled debug decal fragment shader" << std::endl;
-		}
-
-		m_pDecalProgram = new ShaderProgram(vert, frag);
-	}
+	m_pDecalProgram = ResourceHandler::GetShader(SHADER::DEBUG_DECALS);
 
 	DebugPerFrame perFrame = {};
 	perFrame.ProjectionView = glm::mat4(1.0f);

@@ -2,6 +2,7 @@
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/Renderers/GLContext.h>
 #include "MaterialBase.h"
+#include <IO/ResourceHandler.h>
 
 #define DIFFUSE_MAP_BINDING_SLOT 0
 #define NORMAL_MAP_BINDING_SLOT 1
@@ -24,10 +25,6 @@ private:
 	friend class ResourceHandler;
 
 public:
-	Material();
-	Material(ShaderProgram* pProgram);
-	~Material();
-
 	virtual void Bind(const Framebuffer* pGBuffer) const noexcept;
 	virtual void Unbind() const noexcept;
 
@@ -55,7 +52,11 @@ public:
 	bool HasSpecularMap() const noexcept;
 
 protected:
-	void SetProgram(ShaderProgram* pProgram) noexcept;
+	Material();
+	Material(int32 shader);
+	~Material();
+
+	void SetProgram(int32 shader) noexcept;
 
 private:
 	void SetDiffuseMap(const Texture2D* const pTexture) noexcept;
@@ -65,7 +66,7 @@ private:
 	void SetSpecular(float specular) noexcept;
 
 private:
-	ShaderProgram* m_pProgram;
+	const ShaderProgram* m_pProgram;
 
 	struct
 	{
@@ -108,9 +109,9 @@ inline bool Material::HasSpecularMap() const noexcept
 	return m_Data.pSpecularMap != nullptr;
 }
 
-inline void Material::SetProgram(ShaderProgram* pProgram) noexcept
+inline void Material::SetProgram(int32 shader) noexcept
 {
-	m_pProgram = pProgram;
+	m_pProgram = ResourceHandler::GetShader(shader);
 }
 
 inline void Material::SetDiffuseMap(const Texture2D* const pTexture) noexcept

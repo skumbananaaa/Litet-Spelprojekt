@@ -5,7 +5,12 @@ FireAlarm::FireAlarm(int32 source) : GameObject(),
 	m_FireDetected(false)
 {
 	GameObject::SetMesh(MESH::LAMP);
+	GameObject::SetMaterial(MATERIAL::RED);
 	m_Src = AudioSource::CreateSoundSource(source);
+	m_Src->SetRollOffFactor(10.0f);
+	m_Src->SetReferenceDistance(0.0f);
+	m_Src->SetMaxDistance(500.0f);
+	m_Src->SetLooping(true);
 }
 
 void FireAlarm::SetPosition(const glm::vec3 & position) noexcept

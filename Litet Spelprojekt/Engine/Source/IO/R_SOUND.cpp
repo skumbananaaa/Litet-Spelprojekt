@@ -16,5 +16,5 @@ void SOUND::RegisterResourcesPreLoading()
 void SOUND::RegisterResources()
 {
 	MONO_FART					= ResourceHandler::RegisterSound("Mono/fart.wav");
-	MONO_FIREALARM				= ResourceHandler::RegisterSound("Mono/House Fire Alarm.wav");
+	MONO_FIREALARM				= ResourceHandler::RegisterSound("Mono/Beep.wav");
 }

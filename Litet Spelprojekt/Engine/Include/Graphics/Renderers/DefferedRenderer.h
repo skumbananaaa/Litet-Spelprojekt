@@ -45,11 +45,6 @@ struct PlaneBuffer
 	glm::vec4 ClipPlane;
 };
 
-struct ParticleBuffer
-{
-	glm::vec4 Color;
-};
-
 class API DefferedRenderer final : public IRenderer
 {
 public:

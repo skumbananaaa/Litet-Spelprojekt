@@ -19,7 +19,7 @@ GameObject* g_pDecalObject = nullptr;
 float g_Rot = 1.0;
 
 Game::Game() noexcept : 
-	Application(false, 1600, 900, "", true),
+	Application(false, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -223,12 +223,14 @@ void Game::OnResourcesLoaded()
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	ParticleSystem* pParticleSystem = new ParticleSystem();
-	pParticleSystem->SetTexture(TEXTURE::SMOKE);
-	pParticleSystem->SetTimeToLive(1.2f);
-	pParticleSystem->SetPosition(glm::vec3(-5.0f, 0.5f, 0.0f));
-	pParticleSystem->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	m_Scenes[0]->AddGameObject(pParticleSystem);
+	ParticleSystem* pFire = new ParticleSystem();
+	pFire->SetTexture(TEXTURE::SMOKE);
+	pFire->SetTimeToLive(3.0f);
+	pFire->SetParticlesPerFrame(2);
+	pFire->SetSpeed(0.1f, 0.75f);
+	pFire->SetPosition(glm::vec3(15.0f, 0.5f, 0.0f));
+	pFire->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	m_Scenes[0]->AddGameObject(pFire);
 	int gameObjects = m_pWorld->GetNumWorldObjects();
 	
 	//Place objects in scene

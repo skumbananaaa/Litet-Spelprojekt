@@ -3,8 +3,8 @@
 
 struct ParticleInstance
 {
+	glm::vec3 Position;
 	glm::vec4 Color;
-	glm::mat4 Model;
 };
 
 class API Particle

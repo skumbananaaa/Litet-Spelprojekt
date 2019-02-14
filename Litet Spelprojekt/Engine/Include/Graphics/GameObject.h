@@ -6,7 +6,7 @@
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/Decal.h>
 #include <IO/ResourceHandler.h>
-
+#include "Camera.h"
 
 class API GameObject
 {
@@ -45,7 +45,7 @@ public:
 	void SetTypeId(int32 typeId) noexcept;
 	int32 GetTypeId() const noexcept;
 
-	virtual void Update(float deltaTime);
+	virtual void Update(const Camera& camera, float deltaTime);
 	virtual void UpdateTransform() noexcept;
 
 private:

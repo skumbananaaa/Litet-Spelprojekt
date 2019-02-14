@@ -25,24 +25,33 @@ public:
 	ParticleSystem();
 	~ParticleSystem();
 
-	virtual void Update(float deltaTime) override;
+	virtual void Update(const Camera& camera, float deltaTime) override;
 
-	void SetTimeToLive(float timeToLive);
+	void SetParticlesPerFrame(uint32 particlePerFrame) noexcept;
+	void SetSpeed(float min, float max) noexcept;
+	void SetTimeToLive(float timeToLive) noexcept;
 	void SetTexture(uint32 textureID) noexcept;
 	void SetColor(const glm::vec4& color) noexcept;
 	uint32 GetNumParticles() const noexcept;
 
 private:
-	void SpawnParticle() noexcept;
 	const Texture2D* GetTexture() const noexcept;
 	const ParticleInstance* GetParticleInstances() const noexcept;
 	const glm::vec4& GetColor() const noexcept;
+	ParticleInternal& GetParticle(uint32 index) noexcept;
+	void SpawnParticle() noexcept;
+	void KillParticle(uint32 index);
 
 private:
 	const Texture2D* m_pTexture;
+	uint32* m_pParticleIndices;
 	ParticleInternal* m_pParticles;
 	ParticleInstance* m_pParticleInstances;
 	glm::vec4 m_Color;
 	float m_TimeToLive;
+	float m_MinSpeed;
+	float m_MaxSpeed;
 	uint32 m_NumParticles;
+	uint32 m_MaxParticles;
+	uint32 m_ParticlesPerFrame;
 };

@@ -104,7 +104,7 @@ void GameObject::UpdateTransform() noexcept
 	}
 }
 
-void GameObject::Update(float deltaTime)
+void GameObject::Update(const Camera& camera, float deltaTime)
 {
 	Extend(deltaTime);
 	UpdateTransform();

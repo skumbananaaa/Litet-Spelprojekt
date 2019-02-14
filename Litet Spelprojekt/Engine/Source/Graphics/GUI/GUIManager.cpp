@@ -3,7 +3,7 @@
 
 GUIManager::GUIManager(GLContext* glContext) : GUIObject(0, 0, 0, 0)
 {
-	FontRenderer* fontRenderer = FontRenderer::CreateFontRenderer("Resources/Fonts/arial.ttf", 10, 10);
+	FontRenderer* fontRenderer = FontRenderer::CreateFontRenderer("Resources/Fonts/segoeuib.ttf", 10, 10);
 
 	context = new GUIContext(glContext, ResourceHandler::GetShader(SHADER::GUI), fontRenderer);
 

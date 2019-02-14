@@ -5,6 +5,7 @@
 #include <GLM/gtc/type_ptr.hpp>
 
 const glm::vec4 GUIContext::COLOR_WHITE(1.0f, 1.0f, 1.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_BLACK(0.0f, 0.0f, 0.0f, 1.0f);
 
 GUIContext::GUIContext(GLContext* context, const ShaderProgram* shaderProgram, FontRenderer* fontRenderer) :
 	m_pContext(context),
@@ -30,10 +31,6 @@ void GUIContext::BeginSelfRendering(Framebuffer* frameBuffer, const glm::vec4& c
 	m_pContext->SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	m_pContext->Clear(CLEAR_FLAG_COLOR);
 	m_pContext->SetViewport(frameBuffer->GetWidth(), frameBuffer->GetHeight(), 0, 0);
-
-	glBindVertexArray(m_VAO);
-	m_pContext->SetProgram(m_pShaderProgram);
-	m_pContext->SetUniformBuffer(m_pUniformBuffer, 0);
 }
 
 void GUIContext::BeginRootRendering()
@@ -46,10 +43,6 @@ void GUIContext::BeginRootRendering()
 	m_pContext->SetViewport(width, height, 0, 0);
 
 	m_pContext->ResetClearColor();
-
-	glBindVertexArray(m_VAO);
-	m_pContext->SetProgram(m_pShaderProgram);
-	m_pContext->SetUniformBuffer(m_pUniformBuffer, 0);
 }
 
 void GUIContext::SetTransform(float width, float height)
@@ -60,21 +53,47 @@ void GUIContext::SetTransform(float width, float height)
 
 void GUIContext::RenderFrameBuffer(Framebuffer* frameBuffer, float x, float y)
 {
+	m_pContext->SetProgram(m_pShaderProgram);
+	m_pContext->SetUniformBuffer(m_pUniformBuffer, 0);
 	SetVertexQuadData(x, y, frameBuffer->GetWidth(), frameBuffer->GetHeight(), COLOR_WHITE);
 	m_pContext->SetTexture(frameBuffer->GetColorAttachment(0), 0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	m_pContext->SetTexture(nullptr, 0);
 }
 
-void GUIContext::RenderText(const std::string& text, int32 x, int32 y, float scale)
+void GUIContext::RenderText(const std::string& text, float x, float y, float width, float height, float scale, const glm::vec4& color, TextAlignment textAlignment)
 {
+	m_pFontRenderer->UpdateBuffer(width, height, color);
+
+	glm::vec2 size = m_pFontRenderer->CalculateSize(text, scale);
+
+	switch (textAlignment)
+	{
+	case CENTER:
+		x -= size.x / 2;
+		y -= size.y / 2;
+		break;
+	case CENTER_VERTICAL:
+		y -= size.y / 2;
+		break;
+	case CENTER_HORIZONTAL:
+		x -= size.x / 2;
+		break;
+	default:
+		break;
+	}
+
 	m_pFontRenderer->RenderText(m_pContext, text, x, y, scale);
 }
 
 void GUIContext::RenderTexture(const Texture2D* texture, float x, float y, float width, float height, const glm::vec4& color)
 {
+	m_pContext->SetProgram(m_pShaderProgram);
+	m_pContext->SetUniformBuffer(m_pUniformBuffer, 0);
 	SetVertexQuadData(x, y, width, height, color);
 	m_pContext->SetTexture(texture, 0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	m_pContext->SetTexture(nullptr, 0);
 }
 
 glm::vec2 GUIContext::CalculateTextSize(const std::string& text, float scale)
@@ -120,9 +139,9 @@ void GUIContext::SetVertexQuadData(float x, float y, float width, float height, 
 	m_VertexQuad[4].color = color;
 	m_VertexQuad[5].color = color;
 
+	glBindVertexArray(m_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(VertexGUI) * 6, m_VertexQuad);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GUIContext::InitTextureCoords()

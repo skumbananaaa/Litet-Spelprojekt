@@ -1,6 +1,8 @@
 #pragma once
 #include <EnginePch.h>
 
+class GameObject;
+
 class API GAMEOBJECT
 {
 	friend class ResourceHandler;
@@ -16,4 +18,5 @@ public:
 private:
 	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
+	static GameObject* CreateGameObject(uint32 gameObject) noexcept;
 };

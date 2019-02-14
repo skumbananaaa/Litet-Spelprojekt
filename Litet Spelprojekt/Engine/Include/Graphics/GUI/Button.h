@@ -49,6 +49,9 @@ public:
 	void SetOnButtonCallback(void(*callback)(Button*));
 
 protected:
+	virtual void OnPressed(const glm::vec2& position, MouseButton mousebutton) noexcept;
+	virtual void OnReleased(const glm::vec2& position, MouseButton mousebutton) noexcept;
+
 	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) override;
 	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) override;
 	virtual void OnMouseMove(const glm::vec2& position) override;

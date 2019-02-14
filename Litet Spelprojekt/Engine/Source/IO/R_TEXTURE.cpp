@@ -18,6 +18,7 @@ uint32 TEXTURE::ICON_INJURY_SMOKE = 0;
 uint32 TEXTURE::ICON_SKILL_FIRE = 0;
 uint32 TEXTURE::ICON_SKILL_MEDIC = 0;
 uint32 TEXTURE::ICON_SKILL_STRENGTH = 0;
+uint32 TEXTURE::ICON_CIRCLE = 0;
 
 
 /*
@@ -31,6 +32,7 @@ void TEXTURE::RegisterResourcesPreLoading()
 	ICON_SKILL_FIRE = ResourceHandler::RegisterTexture2D("Icons/SkillFire.png", TEX_FORMAT_RGBA, false, true);
 	ICON_SKILL_MEDIC = ResourceHandler::RegisterTexture2D("Icons/SkillMedic.png", TEX_FORMAT_RGBA, false, true);
 	ICON_SKILL_STRENGTH = ResourceHandler::RegisterTexture2D("Icons/SkillStrength.png", TEX_FORMAT_RGBA, false, true);
+	ICON_CIRCLE = ResourceHandler::RegisterTexture2D("Icons/Circle.png", TEX_FORMAT_RGBA, false, true);
 }
 
 void TEXTURE::RegisterResources()

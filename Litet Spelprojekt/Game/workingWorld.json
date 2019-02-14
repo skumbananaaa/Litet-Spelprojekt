@@ -85,17 +85,77 @@
             [ 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 1]
         ]
     ],
-    "objects": [],
+    "objects": [
+        {
+            "tileIdX": 7,
+            "tileIdY": 0,
+            "tileIdZ": 22,
+            "gameObject": 0,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 4,
+            "tileIdZ": 0,
+            "gameObject": 1,
+            "rotation": 1.5707963705062867
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 4,
+            "tileIdZ": 0,
+            "gameObject": 2,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 4,
+            "tileIdY": 4,
+            "tileIdZ": 0,
+            "gameObject": 0,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 4,
+            "tileIdZ": 0,
+            "gameObject": 0,
+            "rotation": 1.5707963705062867
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 4,
+            "tileIdZ": 5,
+            "gameObject": 3,
+            "rotation": 7.853981971740723
+        },
+        {
+            "tileIdX": 4,
+            "tileIdY": 4,
+            "tileIdZ": 5,
+            "gameObject": 4,
+            "rotation": 7.853981971740723
+        },
+        {
+            "tileIdX": 3,
+            "tileIdY": 4,
+            "tileIdZ": 0,
+            "gameObject": 5,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 6,
+            "tileIdY": 4,
+            "tileIdZ": 0,
+            "gameObject": 5,
+            "rotation": 4.71238899230957
+        }
+    ],
     "stairs": [
         [
-            6,
-            0,
-            40
+            6, 0, 40
         ],
         [
-            5,
-            2,
-            40
+            5, 2, 40
         ]
     ]
 }

@@ -144,11 +144,13 @@ void main()
 	roomIndex[2] = map[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) / 4].z;
 	roomIndex[3] = map[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) / 4].w;
 
+	//if (roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == roomId)
+
 	//Do lightcalculation
 	vec3 c = vec3(0.0f);
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
-		if (concealed == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == roomId || position.y >= 5.9f || position.x > 10.5f || position.x < 0.5f || position.z > 40.5f || position.z < 0.5f)
+		if (concealed == 0 ||  position.y >= 5.9f || position.x > 10.5f || position.x < 0.5f || position.z > 40.5f || position.z < 0.5f)
 		{
 			vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
 			vec3 lightColor = g_DirLights[i].Color.rgb;

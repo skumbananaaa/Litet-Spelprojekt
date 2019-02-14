@@ -89,6 +89,7 @@
     <ClInclude Include="Include\World\FireAlarm.h" />
     <ClInclude Include="Include\World\Grid.h" />
     <ClInclude Include="Include\World\Tile.h" />
+    <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\World.h" />
     <ClInclude Include="Include\World\WorldLevel.h" />
     <ClInclude Include="Libs\Include\GLFW\glfw3.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="Source\World\FireAlarm.cpp" />
     <ClCompile Include="Source\World\Grid.cpp" />
     <ClCompile Include="Source\World\Tile.cpp" />
+    <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\World\WorldLevel.cpp" />
   </ItemGroup>

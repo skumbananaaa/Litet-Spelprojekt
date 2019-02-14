@@ -241,7 +241,7 @@ void DefferedRenderer::SetWorldBuffer(const Scene& scene) const
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					m_LocalWorldBuff.map[x * 252 + y * 42 + z].x = (float)(scene.GetWorld()->GetLevel(y)->GetLevel()[x][z]);
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(scene.GetWorld()->GetLevel(y)->GetLevel()[x][z]);
 				}
 			}
 		}
@@ -492,7 +492,7 @@ void DefferedRenderer::Create() noexcept
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = glm::ivec4(1, 1, 1, 1);
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = 1;
 				}
 			}
 		}

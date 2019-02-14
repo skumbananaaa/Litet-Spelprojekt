@@ -85,7 +85,7 @@ struct PlaneBuffer
 
 struct WorldBuffer
 {
-	glm::ivec4 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
+	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
 	int concealed;
 	uint32 roomId;
 };

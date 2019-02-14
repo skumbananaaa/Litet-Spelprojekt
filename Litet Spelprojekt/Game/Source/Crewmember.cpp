@@ -168,6 +168,11 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) no
 	return t;
 }
 
+int32 Crewmember::GetShipNumber() const noexcept
+{
+	return m_ShipNumber;
+}
+
 bool Crewmember::IsHovered() const noexcept
 {
 	return m_IsHovered;
@@ -201,6 +206,11 @@ bool Crewmember::HasInjuryBurned() const noexcept
 bool Crewmember::HasInjurySmoke() const noexcept
 {
 	return m_HasInjurySmoke;
+}
+
+void Crewmember::SetShipNumber(int32 shipnumber) noexcept
+{
+	m_ShipNumber = shipnumber;
 }
 
 void Crewmember::Move(const glm::vec3 & dir)

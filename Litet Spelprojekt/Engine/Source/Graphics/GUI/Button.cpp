@@ -239,12 +239,20 @@ void Button::OnMouseMove(const glm::vec2& position)
 		{
 			m_IsHovered = true;
 			RequestRepaint();
+			for (IButtonListener* listener : m_ButtonListeners)
+			{
+				listener->OnButtonHovered(this);
+			}
 		}
 	}
 	else if (m_IsHovered)
 	{
 		m_IsHovered = false;
 		RequestRepaint();
+		for (IButtonListener* listener : m_ButtonListeners)
+		{
+			listener->OnButtonNotHovered(this);
+		}
 	}
 }
 

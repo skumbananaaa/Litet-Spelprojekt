@@ -12,6 +12,8 @@
 
 class Crewmember : public GameObject, public IRunnable
 {
+	friend class Crew;
+
 public:
 	Crewmember(const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
 	Crewmember(Crewmember& other);
@@ -54,6 +56,8 @@ public:
 	virtual void OnNotHovered();
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept;
 
+	int32 GetShipNumber() const noexcept;
+
 	bool IsHovered() const noexcept;
 
 	int8 GetSkillFire() const noexcept;
@@ -64,6 +68,8 @@ public:
 	bool HasInjurySmoke() const noexcept;
 
 private:
+	void SetShipNumber(int32 shipnumber) noexcept;
+
 	float m_ActionCap;
 	float m_DeltaTime;
 	SpotLight* m_pTorch;
@@ -77,6 +83,7 @@ private:
 	glm::vec3 m_Direction;
 	int m_NrOfPathTiles;
 	bool m_IsHovered;
+	int32 m_ShipNumber;
 
 	int8 m_SkillFire;
 	int8 m_SkillMedic;

@@ -91,7 +91,7 @@ void Editor::OnResourcesLoaded()
 
 
 	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
-	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Room Tool", TextAlignment::CENTER);
+	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Room Tool", true);
 	m_pButtonAddRoom = new Button(10, m_pPanelEditor->GetHeight() - 100, m_pPanelEditor->GetWidth() - 20, 50, "New Room");
 	m_pButtonEditRoom = new Button(10, m_pPanelEditor->GetHeight() - 160, m_pPanelEditor->GetWidth() - 20, 50, "Edit Room");
 	m_pButtonRemoveRoom = new Button(10, m_pPanelEditor->GetHeight() - 220, m_pPanelEditor->GetWidth() - 20, 50, "Delete Room");
@@ -147,7 +147,7 @@ void Editor::OnResourcesLoaded()
 
 
 	m_pPanelFloor = new Panel(0, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
-	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Select Floor", TextAlignment::CENTER);
+	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Select Floor", true);
 	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "Floor 1");
 	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "Floor 2");
 	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "Floor 3");
@@ -173,7 +173,7 @@ void Editor::OnResourcesLoaded()
 	for (int32 i = 0; i < gameObjects.size(); i++)
 	{
 		Button* button = new Button(4, m_pPanelScrollableAddMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT, m_pPanelScrollableAddMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, gameObjects[i], nullptr, OnButtonReleased);
-		//button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
+		button->SetTextCentered(false);
 		button->SetUserData(reinterpret_cast<void*>(i));
 		m_pPanelScrollableAddMesh->Add(button);
 	}
@@ -243,7 +243,7 @@ void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelectio
 		{
 			std::string name = ResourceHandler::GetGameObjectName(gameObjects[i]->GetTypeId());
 			Button* button = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - (i + 1) * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
-			//button->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
+			button->SetTextCentered(false);
 			button->SetUserData(gameObjects[i]);
 			m_pPanelScrollableEditMesh->Add(button);
 			m_SelectionHandlerMeshEdit.AddSelectable(button);
@@ -390,7 +390,7 @@ void Editor::CreateMesh(GameObject* pGameObject, const std::string& name, int32 
 	}
 	m_pPanelScrollableEditMesh->SetClientSize(m_pPanelScrollableEditMesh->GetClientWidth(), size * ELEMENT_HEIGHT + 4);
 	Button* pButton = new Button(4, m_pPanelScrollableEditMesh->GetClientHeight() - pos * ELEMENT_HEIGHT, m_pPanelScrollableEditMesh->GetClientWidth() - 8, ELEMENT_HEIGHT - 4, name);
-	//pButton->SetTextAlignment(TextAlignment::CENTER_VERTICAL);
+	pButton->SetTextCentered(false);
 	pButton->SetUserData(pGameObject);
 	m_pPanelScrollableEditMesh->Add(pButton);
 	m_SelectionHandlerMeshEdit.AddSelectable(pButton);

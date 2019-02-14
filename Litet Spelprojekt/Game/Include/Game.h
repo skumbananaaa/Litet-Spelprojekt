@@ -63,6 +63,7 @@ public:
 
 	void SetClipPlanes(uint32 scene);
 
+	Crewmember* GetCrewmember(uint32 shipNumber);
 	Scene* GetScene();
 	static Game* GetGame();
 
@@ -75,6 +76,8 @@ private:
 	uint32 m_SceneId = 0;
 
 	TextureCube* m_pSkyBoxTex;
+	World* m_pWorld;
+	UICrew* m_pUICrew;
 
 	TextView* m_pTextViewFPS;
 	TextView* m_pTextViewUPS;

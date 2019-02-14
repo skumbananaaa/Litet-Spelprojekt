@@ -10,6 +10,8 @@ class API IButtonListener
 public:
 	virtual void OnButtonPressed(Button* button) = 0;
 	virtual void OnButtonReleased(Button* button) = 0;
+	virtual void OnButtonHovered(Button* button) = 0;
+	virtual void OnButtonNotHovered(Button* button) = 0;
 };
 
 

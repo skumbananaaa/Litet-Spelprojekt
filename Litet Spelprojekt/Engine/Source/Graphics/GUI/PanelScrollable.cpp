@@ -214,6 +214,7 @@ void PanelScrollable::RenderRealTime(GUIContext* context)
 	glEnable(GL_SCISSOR_TEST);
 	context->RenderTexture((Texture2D*)m_pFrameBufferClientArea->GetColorAttachment(0), GetXInWorld() - m_ClientOffset.x, GetYInWorld() + m_ClientOffset.y, GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
 	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
+	glDisable(GL_SCISSOR_TEST);
 }
 
 void PanelScrollable::ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child)

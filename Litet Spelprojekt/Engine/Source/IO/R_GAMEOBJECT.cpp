@@ -1,6 +1,7 @@
 #include <EnginePch.h>
 #include <IO/GAMEOBJECT.h>
 #include <IO/ResourceHandler.h>
+#include <Graphics/GameObject.h>
 
 uint32 GAMEOBJECT::CHAIR = 0;
 uint32 GAMEOBJECT::BED_BUNK = 0;
@@ -25,4 +26,13 @@ void GAMEOBJECT::RegisterResources()
 	INSTRUMENT_1				= ResourceHandler::RegisterGameObject("Instrument 1", MESH::INSTRUMENT_1, MATERIAL::WHITE);
 	INSTRUMENT_2				= ResourceHandler::RegisterGameObject("Instrument 2", MESH::INSTRUMENT_2, MATERIAL::WHITE);
 	LAMP						= ResourceHandler::RegisterGameObject("Lamp", MESH::LAMP, MATERIAL::WHITE);
+}
+
+GameObject* GAMEOBJECT::CreateGameObject(uint32 gameObject) noexcept
+{
+	switch (gameObject)
+	{
+		
+	}
+	return new GameObject();
 }

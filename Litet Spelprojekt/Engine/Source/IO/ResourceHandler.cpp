@@ -274,7 +274,7 @@ GameObject* ResourceHandler::CreateGameObject(int32 gameObject)
 		return nullptr;
 	}
 	GAMEOBJECT_DESC_INTERNAL desc = m_pGameObjectFiles[gameObject];
-	GameObject* pGameObject = new GameObject();
+	GameObject* pGameObject = GAMEOBJECT::CreateGameObject(gameObject);
 	pGameObject->SetMesh(desc.mesh);
 	pGameObject->SetMaterial(desc.material);
 	pGameObject->SetDecal(desc.decal);

@@ -8,8 +8,8 @@ UICrewMember::UICrewMember(float x, float y, float width, float height) : Panel(
 	m_TextViewName->SetBackgroundColor(glm::vec4(0.08F, 0.08F, 0.08F, 1.0F));
 
 	Add(m_TextViewName);
-	Add(new TextView(5, 85, 100, 40, "Skills"));
-	Add(new TextView(5, 20, 100, 40, "Injuries"));
+	Add(new TextView(5, 85, 100, 40, "Färdigheter"));
+	Add(new TextView(5, 20, 100, 40, "Skador"));
 
 	SetDeleteAllChildrenOnDestruction(true);
 
@@ -62,20 +62,22 @@ void UICrewMember::OnRender(GUIContext* context)
 			injuries.push_back(TEXTURE::ICON_INJURY_SMOKE);
 		}
 
+		static int32 xOffset = 50;
+
 		for (int i = 0; i < injuries.size(); i++)
 		{
-			context->RenderTexture(ResourceHandler::GetTexture2D(injuries[i]), (i + 1) * 75, 20, textureSize, textureSize, GUIContext::COLOR_WHITE);
+			context->RenderTexture(ResourceHandler::GetTexture2D(injuries[i]), (i + 1) * 75 + xOffset, 20, textureSize, textureSize, GUIContext::COLOR_WHITE);
 		}
 
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_FIRE), 75, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_MEDIC), 150, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_STRENGTH), 225, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 65, 75, 20, 20, GUIContext::COLOR_WHITE);
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 140, 75, 20, 20, GUIContext::COLOR_WHITE);
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 215, 75, 20, 20, GUIContext::COLOR_WHITE);
-		context->RenderText(std::to_string(m_Crewmember->GetSkillFire()), 75, 85, GetWidth(), GetHeight(), 0.75F, GUIContext::COLOR_BLACK, CENTER);
-		context->RenderText(std::to_string(m_Crewmember->GetSkillMedic()), 150, 85, GetWidth(), GetHeight(), 0.75F, GUIContext::COLOR_BLACK, CENTER);
-		context->RenderText(std::to_string(m_Crewmember->GetSkillStrength()), 225, 85, GetWidth(), GetHeight(), 0.75F, GUIContext::COLOR_BLACK, CENTER);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_FIRE), 75 + xOffset, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_MEDIC), 150 + xOffset, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_STRENGTH), 225 + xOffset, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 65 + xOffset, 75, 20, 20, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 140 + xOffset, 75, 20, 20, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 215 + xOffset, 75, 20, 20, GUIContext::COLOR_WHITE);
+		context->RenderText(std::to_string(m_Crewmember->GetSkillFire()), 75 + xOffset, 85, GetWidth(), GetHeight(), 0.75F, GUIContext::COLOR_BLACK, CENTER);
+		context->RenderText(std::to_string(m_Crewmember->GetSkillMedic()), 150 + xOffset, 85, GetWidth(), GetHeight(), 0.75F, GUIContext::COLOR_BLACK, CENTER);
+		context->RenderText(std::to_string(m_Crewmember->GetSkillStrength()), 225 + xOffset, 85, GetWidth(), GetHeight(), 0.75F, GUIContext::COLOR_BLACK, CENTER);
 	}
 }
 

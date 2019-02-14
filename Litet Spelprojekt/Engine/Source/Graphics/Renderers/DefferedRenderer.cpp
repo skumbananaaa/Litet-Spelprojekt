@@ -122,27 +122,10 @@ void DefferedRenderer::Create() noexcept
 	m_pCbrReconstructionProgram = ResourceHandler::GetShader(SHADER::CBR_RECONSTRUCTION);
 	m_pCbrBlurProgram = ResourceHandler::GetShader(SHADER::CBR_BLUR);
 	m_pDepthPrePassProgram = ResourceHandler::GetShader(SHADER::DEPTH_PRE_PASS);
-	m_pWaterpassProgram = ResourceHandler::GetShader(SHADER::WATER_PASS);
-	m_pDecalsPassProgram = ResourceHandler::GetShader(SHADER::DECAL_PASS);
+	m_pDecalsPassProgram = ResourceHandler::GetShader(SHADER::DEFERRED_DECALS);
 	m_pForwardPass = ResourceHandler::GetShader(SHADER::FORWARD_PASS);
 	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
-
-	//{
-	//	Shader vs;
-	//	if (vs.CompileFromFile("Resources/Shaders/defferedGeometryVert.glsl", VERTEX_SHADER))
-	//	{
-	//		std::cout << "Created Geomtrypass Vertex shader" << std::endl;
-	//	}
-
-	//	Shader fs;
-	//	if(fs.CompileFromFile("Resources/Shaders/defferedGeometryFrag.glsl", FRAGMENT_SHADER))
-	//	{
-	//		std::cout << "Created Geomtrypass Fragment shader" << std::endl;
-	//	}
-
-	//	m_pGeometryPassProgram = new ShaderProgram(vs, fs);
-	//}
-
+	m_pParticleProgram = ResourceHandler::GetShader(SHADER::DEFERRED_PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
 	{

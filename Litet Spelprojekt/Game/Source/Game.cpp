@@ -2,6 +2,7 @@
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <World/Grid.h>
+#include <System/Random.h>s
 
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
@@ -227,8 +228,7 @@ void Game::OnResourcesLoaded()
 	pParticleSystem->SetTimeToLive(1.2f);
 	pParticleSystem->SetPosition(glm::vec3(-5.0f, 0.5f, 0.0f));
 	pParticleSystem->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	m_pScene->AddGameObject(pParticleSystem);
-
+	m_Scenes[0]->AddGameObject(pParticleSystem);
 	int gameObjects = m_pWorld->GetNumWorldObjects();
 	
 	//Place objects in scene

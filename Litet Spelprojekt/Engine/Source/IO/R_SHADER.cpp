@@ -12,15 +12,15 @@ uint32 SHADER::CBR_RESOLVE = 0;
 uint32 SHADER::CBR_RECONSTRUCTION = 0;
 uint32 SHADER::CBR_BLUR = 0;
 uint32 SHADER::DEPTH_PRE_PASS = 0;
-uint32 SHADER::WATER_PASS = 0;
-uint32 SHADER::DECAL_PASS = 0;
 uint32 SHADER::FORWARD_PASS = 0;
 uint32 SHADER::SKYBOX_PASS = 0;
 uint32 SHADER::ORTHOGRAPHIC = 0;
 uint32 SHADER::DEFERRED_WALL = 0;
 uint32 SHADER::DEFERRED_WATER = 0;
+uint32 SHADER::DEFERRED_DECALS = 0;
 uint32 SHADER::DEFERRED_MATERIAL = 0;
 uint32 SHADER::EQUIREC_TO_CUBEMAP = 0;
+uint32 SHADER::DEFERRED_PARTICLES = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -38,13 +38,13 @@ void SHADER::RegisterResources()
 	CBR_RECONSTRUCTION		= ResourceHandler::RegisterShader("fullscreenTriVert.glsl", "cbrReconstructionFrag.glsl");
 	CBR_BLUR				= ResourceHandler::RegisterShader("fullscreenTriVert.glsl", "cbrFilterFrag.glsl");
 	DEPTH_PRE_PASS			= ResourceHandler::RegisterShader("defferedDepthPreVert.glsl");
-	WATER_PASS				= ResourceHandler::RegisterShader("VShaderWater.glsl", "FShaderWater.glsl");
-	DECAL_PASS				= ResourceHandler::RegisterShader("defferedDecalsVert.glsl", "defferedDecalsFrag.glsl");
 	FORWARD_PASS			= ResourceHandler::RegisterShader("forwardVert.glsl", "forwardFrag.glsl");
 	SKYBOX_PASS				= ResourceHandler::RegisterShader("VShaderSkyBox.glsl", "FShaderSkyBox.glsl");
 	ORTHOGRAPHIC			= ResourceHandler::RegisterShader("orthoVert.glsl", "orthoFrag.glsl");
+	DEFERRED_DECALS			= ResourceHandler::RegisterShader("deferredDecals.glsl", "deferredDecals.glsl");
 	DEFERRED_MATERIAL		= ResourceHandler::RegisterShader("deferredMaterial.glsl", "deferredMaterial.glsl");
-	DEFERRED_WATER			= ResourceHandler::RegisterShader("waterVert.glsl", "waterFrag.glsl");
+	DEFERRED_WATER			= ResourceHandler::RegisterShader("deferredWater.glsl", "deferredWater.glsl");
+	DEFERRED_PARTICLES		= ResourceHandler::RegisterShader("deferredParticles.glsl", "deferredParticles.glsl");
 	EQUIREC_TO_CUBEMAP		= ResourceHandler::RegisterShader("VShaderEquirecToCubemap.glsl", "FShaderEquirecToCubemap.glsl");
 
 	{

@@ -1,6 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <World/WorldLevel.h>
+#include <World/Room.h>
 
 struct WorldObject
 {
@@ -27,11 +28,13 @@ public:
 	uint32 GetNumLevels() const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
-	void GenerateWalls(uint32 level);
+	void GenerateRooms();
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
+	Room* GetRoom(uint32 room) const noexcept;
 	void Update(float dt);
+
 private:
 	WorldLevel** m_ppLevels;
 	uint32 m_NumLevels;
@@ -39,4 +42,6 @@ private:
 
 	glm::ivec3* m_pStairs;
 	uint32 m_NumStairs;
+
+	std::vector<Room*> m_Rooms;
 };

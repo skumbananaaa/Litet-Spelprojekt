@@ -27,8 +27,9 @@ public:
 	///<summary>Returns a vec4. The first two values are the position of the wall (x, z), the second two are the dimensions of the wall (x, z)</summary>
 	const glm::vec4& GetWall(uint32 index) const noexcept;
 	uint32 GetNrOfWalls() const noexcept;
+	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
-	void GenerateWalls();
+	void GenerateRooms();
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 private:
@@ -39,4 +40,6 @@ private:
 	uint32 m_SizeZ;
 	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
+
+	std::vector<glm::uvec4> roomBounds;
 };

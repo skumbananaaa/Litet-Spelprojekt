@@ -64,14 +64,23 @@ uint32 WorldLevel::GetNrOfWalls() const noexcept
 	return m_Walls.size();
 }
 
-void WorldLevel::GenerateWalls()
+const std::vector<glm::uvec4>& WorldLevel::GetRooms() const noexcept
+{
+	return roomBounds;
+}
+
+void WorldLevel::GenerateRooms()
 {
 	bool wallH = false, wallV = false;
 	glm::vec2 startWallH(0, 0), endWallH(0, 0);
 	glm::vec2 startWallV(0, 0), endWallV(0, 0);
 
-	for (int i = 0; i < m_SizeX - 1; i++) {
-		for (int j = 0; j < m_SizeZ; j++) {
+	uint32 maxRoomNum = 0;
+
+	for (uint32 i = 0; i < m_SizeX - 1; i++) {
+		for (uint32 j = 0; j < m_SizeZ; j++) {
+			maxRoomNum = glm::max(maxRoomNum, m_ppLevel[i][j]);
+
 			wallH = (m_ppLevel[i][j] != m_ppLevel[i + 1][j]);
 			if ((!wallH || (m_ppLevel[i][j] == 0 && m_ppLevel[i + 1][j] != 1) || (m_ppLevel[i + 1][j] == 0 && m_ppLevel[i][j] != 1) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0))
 			{
@@ -85,8 +94,20 @@ void WorldLevel::GenerateWalls()
 			}
 		}
 	}
-	for (int i = 0; i < m_SizeZ - 1; i++) {
-		for (int j = 0; j < m_SizeX; j++) {
+
+	for (uint32 i = roomBounds.size(); i <= maxRoomNum; i++)
+	{
+		roomBounds.push_back(glm::uvec4(11, 0, 41, 0));
+	}
+
+	for (uint32 i = 0; i < m_SizeZ - 1; i++) {
+		for (uint32 j = 0; j < m_SizeX; j++) {
+
+			roomBounds[m_ppLevel[j][i]].x = glm::min(roomBounds[m_ppLevel[j][i]].x, j);
+			roomBounds[m_ppLevel[j][i]].y = glm::max(roomBounds[m_ppLevel[j][i]].y, j);
+			roomBounds[m_ppLevel[j][i]].z = glm::min(roomBounds[m_ppLevel[j][i]].z, i);
+			roomBounds[m_ppLevel[j][i]].w = glm::max(roomBounds[m_ppLevel[j][i]].w, i);
+
 			wallV = (m_ppLevel[j][i] != m_ppLevel[j][i + 1]);
 			if ((!wallV || (m_ppLevel[j][i] == 0 && m_ppLevel[j][i + 1] != 1) || (m_ppLevel[j][i + 1] == 0 && m_ppLevel[j][i] != 1) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
 			{

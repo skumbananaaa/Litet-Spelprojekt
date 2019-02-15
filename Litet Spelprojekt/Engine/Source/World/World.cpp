@@ -28,10 +28,13 @@ World::~World()
 		m_ppLevels[i] = nullptr;
 	}
 
-	delete[] m_ppLevels;
-	m_ppLevels = nullptr;
-	delete[] m_pStairs;
-	m_pStairs = nullptr;
+	DeleteArrSafe(m_ppLevels);
+	DeleteArrSafe(m_pStairs);
+
+	for (size_t i = 0; i < m_Rooms.size(); i++)
+	{
+		DeleteSafe(m_Rooms[i]);
+	}
 }
 
 void World::AddWorldObject(const WorldObject& object) noexcept
@@ -61,9 +64,37 @@ uint32 World::GetNumWorldObjects() const noexcept
 	return static_cast<uint32>(m_Objects.size());
 }
 
-void World::GenerateWalls(uint32 level)
+void World::GenerateRooms()
 {
-	m_ppLevels[level]->GenerateWalls();
+	std::vector<glm::uvec4> roomBounds;
+	std::vector<glm::uvec4> temp;
+
+	std::vector<glm::vec3> center;
+
+	for (int level = 0; level < m_NumLevels; level += 2)
+	{
+		m_ppLevels[level]->GenerateRooms();
+		temp = m_ppLevels[level]->GetRooms();
+		for (size_t i = 0; i < temp.size(); i++)
+		{
+			if (i >= roomBounds.size())
+			{
+				roomBounds.push_back(temp[i]);
+				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.9, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
+			}
+			else if (temp[i].x != 11)
+			{
+				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.9, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
+			}
+		}
+	}
+	
+	m_Rooms.push_back(new Room());
+	m_Rooms.push_back(new Room());
+	for (size_t i = 2; i < center.size(); i++)
+	{
+		m_Rooms.push_back(new Room(center[i]));
+	}
 }
 
 void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
@@ -85,6 +116,12 @@ const glm::ivec3* World::GetStairs() const noexcept
 uint32 World::GetNumStairs() const noexcept
 {
 	return m_NumStairs;
+}
+
+Room* World::GetRoom(uint32 room) const noexcept
+{
+	assert(room < m_Rooms.size());
+	return m_Rooms[room];
 }
 
 void World::Update(float dt)

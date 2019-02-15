@@ -1,7 +1,8 @@
 #include <EnginePch.h>
 #include <Graphics\Scene.h>
 
-Scene::Scene() noexcept
+Scene::Scene() noexcept :
+	m_pWorld(nullptr)
 {
 	m_pCamera = nullptr;
 	m_pSkyBox = nullptr;
@@ -40,6 +41,8 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_PlanarReflectors[i]);
 	}
+
+	DeleteSafe(m_pWorld);
 }
 
 void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
@@ -68,6 +71,11 @@ void Scene::SelectCamera(uint32 index)
 void Scene::SetSkyBox(SkyBox* pSkyBox) noexcept
 {
 	m_pSkyBox = pSkyBox;
+}
+
+void Scene::SetWorld(World * pWorld) noexcept
+{
+	m_pWorld = pWorld;
 }
 
 const GameObject* Scene::GetGameObject(const std::string& name) const noexcept
@@ -139,6 +147,14 @@ void Scene::AddSpotLight(SpotLight* pLight) noexcept
 	m_SpotLights.push_back(pLight);
 }
 
+void Scene::AddRoomLight(PointLight * pLight) noexcept
+{
+	m_RoomLights.push_back(pLight);
+	m_LightTimer.push_back(0.0f);
+	m_ActiveRooms.push_back(0);
+	AddPointLight(pLight);
+}
+
 void Scene::AddPlanarReflector(PlanarReflector* pReflector) noexcept
 {
 	m_PlanarReflectors.push_back(pReflector);
@@ -159,7 +175,30 @@ void Scene::ExtendScene(bool extend) noexcept
 	{
 		pSpotLight->SetExtend(extend);
 	}
+	for (PointLight* pPointLight : m_PointLights)
+	{
+		pPointLight->SetExtend(extend);
+	}
 	m_Extended = !m_Extended;
+}
+
+void Scene::SetConceal(bool conceal) noexcept
+{
+	m_Concealed = conceal;
+}
+
+void Scene::ViewRoom(uint32 room) noexcept
+{
+	if (!m_pWorld->GetRoom(room)->IsActive())
+	{
+		glm::vec3 roomCenter = m_pWorld->GetRoom(room)->GetCenter();
+		roomCenter.x += floor(roomCenter.y / 2.0f) * 10.0f * m_Extended;
+		m_RoomLights[m_CurrentLight]->SetPosition(roomCenter);
+		m_LightTimer[m_CurrentLight] = 0.0f;
+		m_ActiveRooms[m_CurrentLight] = room;
+		m_CurrentLight = (m_CurrentLight + 1) % m_RoomLights.size();
+		m_pWorld->GetRoom(room)->SetActive(true);
+	}
 }
 
 void Scene::OnUpdate(float dtS) noexcept
@@ -171,5 +210,22 @@ void Scene::OnUpdate(float dtS) noexcept
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
 		pSpotLight->Update(dtS);
+	}
+	for (PointLight* pPointLight : m_PointLights)
+	{
+		pPointLight->Update(dtS);
+	}
+
+	
+
+	for (uint32 i = 0; i < m_RoomLights.size(); i++)
+	{
+		m_LightTimer[i] += dtS;
+		if (m_LightTimer[i] >= 5.0f)
+		{
+			m_RoomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+			m_LightTimer[i] = 0.0f;
+			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+		}
 	}
 }

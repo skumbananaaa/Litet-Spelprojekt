@@ -1,5 +1,6 @@
 #pragma once
 #include <Graphics/Scene.h>
+#include <World/World.h>
 
 class API IRenderer
 {
@@ -14,5 +15,5 @@ public:
 
 	virtual void SetClipDistance(const glm::vec4& plane, uint32 index) = 0;
 	virtual void DrawScene(const Scene& scene, float dtS) const = 0;
-	virtual void SetWorldBuffer(const Scene& scene) const = 0;
+	virtual void SetWorldBuffer(const Scene& scene, const World* pWorld) const = 0;
 };

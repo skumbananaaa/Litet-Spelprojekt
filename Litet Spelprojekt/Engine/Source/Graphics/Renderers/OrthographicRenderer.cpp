@@ -81,7 +81,7 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 	}
 }
 
-void OrthographicRenderer::SetWorldBuffer(const Scene& scene) const
+void OrthographicRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
 {
 }
 

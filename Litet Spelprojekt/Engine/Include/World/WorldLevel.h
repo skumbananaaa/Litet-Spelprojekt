@@ -1,11 +1,15 @@
 #pragma once
 #include <EnginePch.h>
+#include <Graphics/Scene.h>
 
-struct TileData {
+struct TileData 
+{
 	float Temp;
 	float BurnsAt;
 	float SmokeAmount;
 	float SmokeLimit;
+	float WaterLevel;
+	std::string WaterBlockName;
 };
 
 class API WorldLevel
@@ -16,7 +20,7 @@ public:
 	WorldLevel& operator=(WorldLevel&& other) = delete;
 	WorldLevel& operator=(const WorldLevel& other) = delete;
 
-	WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept;
+	WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept;
 	~WorldLevel();
 
 	const uint32* const* const GetLevel() const noexcept;
@@ -30,6 +34,7 @@ public:
 	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
 	void GenerateRooms();
+	void GenerateWater(Scene* scene, uint32 levelHeight);
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 private:

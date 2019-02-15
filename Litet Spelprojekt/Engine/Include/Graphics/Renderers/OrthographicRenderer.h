@@ -34,7 +34,7 @@ public:
 
 	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, float dtS) const override final;
-	void SetWorldBuffer(const Scene& scene) const override final;
+	void SetWorldBuffer(const Scene& scene, const World* pWorld) const override final;
 
 private:
 	void Create() noexcept;

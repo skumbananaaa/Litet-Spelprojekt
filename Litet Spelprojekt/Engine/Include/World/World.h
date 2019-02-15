@@ -2,6 +2,7 @@
 #include <EnginePch.h>
 #include <World/WorldLevel.h>
 #include <World/Room.h>
+#include <Graphics/Scene.h>
 
 struct WorldObject
 {
@@ -29,6 +30,7 @@ public:
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
 	void GenerateRooms();
+	void GenerateWater(Scene* pScene) noexcept;
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;

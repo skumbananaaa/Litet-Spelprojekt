@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <World/WorldLevel.h>
 
-WorldLevel::WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept
+WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept
 {
 	m_SizeX = sizeX;
 	m_SizeZ = sizeZ;
@@ -16,6 +16,8 @@ WorldLevel::WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 si
 			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
 			m_ppLevelData[x][z].BurnsAt = 100;
 			m_ppLevelData[x][z].Temp = 30;
+			m_ppLevelData[x][z].WaterLevel = 0.0f;
+			m_ppLevelData[x][z].WaterBlockName = "WaterBlock [" + std::to_string(x) + ", " + std::to_string(levelHeight) + ", " + std::to_string(z) + "]";
 		}
 	}
 }
@@ -53,7 +55,7 @@ uint32 WorldLevel::GetSizeZ() const noexcept
 	return m_SizeZ;
 }
 
-const glm::vec4 & WorldLevel::GetWall(uint32 index) const noexcept
+const glm::vec4& WorldLevel::GetWall(uint32 index) const noexcept
 {
 	assert(index < m_Walls.size());
 	return m_Walls[index];
@@ -122,6 +124,27 @@ void WorldLevel::GenerateRooms()
 		}
 	}
 }
+void WorldLevel::GenerateWater(Scene* scene, uint32 levelHeight)
+{
+	GameObject* pGameObject = nullptr;
+
+	for (uint32 x = 0; x < m_SizeX; x++)
+	{
+		for (uint32 z = 0; z < m_SizeZ; z++)
+		{
+			pGameObject = new GameObject();
+			pGameObject->SetIsReflectable(true);
+			pGameObject->SetIsVisible(false);
+			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetMaterial(MATERIAL::WATER);
+			pGameObject->SetPosition(glm::vec3(x + 0.5f, levelHeight + 0.5f, z + 0.5f));
+			pGameObject->UpdateTransform();
+			pGameObject->SetName(m_ppLevelData[x][z].WaterBlockName);
+			scene->AddGameObject(pGameObject);
+		}
+	}
+}
+
 //en optimering hade varit att enbart kolla angränsade tiles till de tiles som brinner istället för att kolla 
 //alla tiles i hela vår grid. 
 void WorldLevel::UpdateFire(float dt)

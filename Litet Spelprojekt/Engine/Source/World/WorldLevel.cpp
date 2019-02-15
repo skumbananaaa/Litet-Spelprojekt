@@ -17,6 +17,8 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 			m_ppLevelData[x][z].BurnsAt = 100;
 			m_ppLevelData[x][z].Temp = 30;
 			m_ppLevelData[x][z].WaterLevel = 0.0f;
+			m_ppLevelData[x][z].AlreadyFlooded = false;
+			m_ppLevelData[x][z].WaterLevelChanged = false;
 			m_ppLevelData[x][z].WaterBlockName = "WaterBlock [" + std::to_string(x) + ", " + std::to_string(levelHeight) + ", " + std::to_string(z) + "]";
 		}
 	}
@@ -43,6 +45,21 @@ const uint32* const* const WorldLevel::GetLevel() const noexcept
 const TileData * const * const WorldLevel::GetLevelData() const noexcept
 {
 	return m_ppLevelData;
+}
+
+TileData * const * const WorldLevel::GetLevelData() noexcept
+{
+	return m_ppLevelData;
+}
+
+std::vector<glm::ivec2>& WorldLevel::GetBurningIDs() noexcept
+{
+	return m_BurningIDs;
+}
+
+std::vector<glm::ivec2>& WorldLevel::GetFloodingIDs() noexcept
+{
+	return m_FloodingIDs;
 }
 
 uint32 WorldLevel::GetSizeX() const noexcept
@@ -136,8 +153,9 @@ void WorldLevel::GenerateWater(Scene* scene, uint32 levelHeight)
 			pGameObject->SetIsReflectable(true);
 			pGameObject->SetIsVisible(false);
 			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetMaterial(MATERIAL::WATER);
-			pGameObject->SetPosition(glm::vec3(x + 0.5f, levelHeight + 0.5f, z + 0.5f));
+			pGameObject->SetMaterial(MATERIAL::BUNK_BED);
+			pGameObject->SetScale(glm::vec3(0.0f));
+			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
 			pGameObject->UpdateTransform();
 			pGameObject->SetName(m_ppLevelData[x][z].WaterBlockName);
 			scene->AddGameObject(pGameObject);
@@ -189,10 +207,10 @@ void WorldLevel::UpdateFire(float dt)
 	}*/
 
 	// optimerad version.
-	for (uint32 i = 0; i < m_burningIDs.size(); i++)
+	for (uint32 i = 0; i < m_BurningIDs.size(); i++)
 	{
-		uint32 x = m_burningIDs[i].x;
-		uint32 z = m_burningIDs[i].y;
+		uint32 x = m_BurningIDs[i].x;
+		uint32 z = m_BurningIDs[i].y;
 		bool alreadyBurning = false;
 		if (x + 1 < m_SizeX)
 		{
@@ -203,11 +221,11 @@ void WorldLevel::UpdateFire(float dt)
 					alreadyBurning = true;
 				}
 
-				m_ppLevelData[x + 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x + 1][z].Temp)*dt, 0.0f);
+				m_ppLevelData[x + 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x + 1][z].Temp) * dt, 0.0f);
 
 				if (m_ppLevelData[x + 1][z].Temp >= m_ppLevelData[x + 1][z].BurnsAt && !alreadyBurning)
 				{
-					m_burningIDs.push_back(glm::ivec2(x + 1, z));
+					m_BurningIDs.push_back(glm::ivec2(x + 1, z));
 				}
 			}
 		}
@@ -221,11 +239,11 @@ void WorldLevel::UpdateFire(float dt)
 					alreadyBurning = true;
 				}
 
-				m_ppLevelData[x - 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x - 1][z].Temp)*dt, 0.0f);
+				m_ppLevelData[x - 1][z].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x - 1][z].Temp) * dt, 0.0f);
 
 				if (m_ppLevelData[x - 1][z].Temp >= m_ppLevelData[x - 1][z].BurnsAt && !alreadyBurning)
 				{
-					m_burningIDs.push_back(glm::ivec2(x - 1, z));
+					m_BurningIDs.push_back(glm::ivec2(x - 1, z));
 				}
 			}
 		}
@@ -239,11 +257,11 @@ void WorldLevel::UpdateFire(float dt)
 					alreadyBurning = true;
 				}
 
-				m_ppLevelData[x][z + 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z + 1].Temp)*dt, 0.0f);
+				m_ppLevelData[x][z + 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z + 1].Temp) * dt, 0.0f);
 
 				if (m_ppLevelData[x][z + 1].Temp >= m_ppLevelData[x][z + 1].BurnsAt && !alreadyBurning)
 				{
-					m_burningIDs.push_back(glm::ivec2(x, z - 1));
+					m_BurningIDs.push_back(glm::ivec2(x, z - 1));
 				}
 			}
 		}
@@ -257,11 +275,11 @@ void WorldLevel::UpdateFire(float dt)
 					alreadyBurning = true;
 				}
 
-				m_ppLevelData[x][z - 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z - 1].Temp)*dt, 0.0f);
+				m_ppLevelData[x][z - 1].Temp += std::fmaxf((m_ppLevelData[x][z].Temp - m_ppLevelData[x][z - 1].Temp) * dt, 0.0f);
 
 				if (m_ppLevelData[x][z - 1].Temp >= m_ppLevelData[x][z - 1].BurnsAt && !alreadyBurning)
 				{
-					m_burningIDs.push_back(glm::ivec2(x, z - 1));
+					m_BurningIDs.push_back(glm::ivec2(x, z - 1));
 				}
 			}
 		}

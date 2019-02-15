@@ -9,6 +9,8 @@ struct TileData
 	float SmokeAmount;
 	float SmokeLimit;
 	float WaterLevel;
+	bool AlreadyFlooded;
+	bool WaterLevelChanged;
 	std::string WaterBlockName;
 };
 
@@ -25,6 +27,9 @@ public:
 
 	const uint32* const* const GetLevel() const noexcept;
 	const TileData* const* const GetLevelData() const noexcept;
+	TileData* const* const GetLevelData() noexcept;
+	std::vector<glm::ivec2>& GetBurningIDs() noexcept;
+	std::vector<glm::ivec2>& GetFloodingIDs() noexcept;
 	uint32 GetSizeX() const noexcept;
 	uint32 GetSizeZ() const noexcept;
 
@@ -40,7 +45,8 @@ public:
 private:
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
-	std::vector<glm::ivec2> m_burningIDs;
+	std::vector<glm::ivec2> m_BurningIDs;
+	std::vector<glm::ivec2> m_FloodingIDs;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
 	uint32 m_NrOfWalls;

@@ -339,7 +339,7 @@ void Game::OnResourcesLoaded()
 
 	m_pUICrew = new UICrew(0, 0, 200, 500, members);
 
-	m_Scenes[0]->SetConceal(true);
+	m_Scenes[0]->SetConceal(false);
 
 	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
 
@@ -623,6 +623,7 @@ void Game::OnUpdate(float dtS)
 		}
 	}
 
+	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
 
 	float cartesianCameraSpeed = 5.0F;
@@ -691,86 +692,6 @@ void Game::OnUpdate(float dtS)
 	}
 	else
 	{
-		//Polar
-		/*static float polarCameraSpeed = 5.0f;
-		static float polarCameraAngularSpeed = 0.8f;
-
-		if (Input::IsKeyDown(KEY_W))
-		{
-			glm::vec3 forward(0.0f);
-			forward.x = m_pScene->GetCamera().GetFront().x;
-			forward.z = m_pScene->GetCamera().GetFront().z;
-			m_pScene->GetCamera().MoveWorldCoords(forward * polarCameraSpeed * dtS, true);
-		}
-		else if (Input::IsKeyDown(KEY_S))
-		{
-			glm::vec3 forward(0.0f);
-			forward.x = m_pScene->GetCamera().GetFront().x;
-			forward.z = m_pScene->GetCamera().GetFront().z;
-			m_pScene->GetCamera().MoveWorldCoords(-forward * polarCameraSpeed * dtS, true);
-		}
-
-		if (Input::IsKeyDown(KEY_A))
-		{
-			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(polarCameraSpeed * dtS, 0.0f, 0.0f), true);
-		}
-		else
-		{
-			m_pScene->GetCamera().MoveLocalCoords(glm::vec3(-polarCameraSpeed * dtS, 0.0f, 0.0f), true);
-		}
-
-		if (Input::IsKeyDown(KEY_E))
-		{
-			m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, polarCameraSpeed * dtS, 0.0f), true);
-		}
-		else if (Input::IsKeyDown(KEY_Q))
-		{
-			m_pScene->GetCamera().MoveWorldCoords(glm::vec3(0.0f, -polarCameraSpeed * dtS, 0.0f), true);
-		}
-
-		if (Input::IsKeyDown(KEY_UP))
-		{
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, polarCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_DOWN))
-		{
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -polarCameraAngularSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_LEFT))
-		{
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, polarCameraAngularSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_RIGHT))
-		{
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, -polarCameraAngularSpeed * dtS);
-		}
-
-		AudioListener::SetPosition(m_pScene->GetCamera().GetPosition());
-		AudioListener::SetOrientation(m_pScene->GetCamera().GetFront(), m_pScene->GetCamera().GetUp());
-
-		static float decalRot = 0.0f;
-		static float decalX = g_pDecalObject->GetPosition().x;
-		static float decalXSpeed = -1.0f;
-
-		if (decalX > 6.5f)
-		{
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, polarCameraSpeed * dtS);
-		}
-		else if (decalX < -6.5f)
-		{
-			m_pScene->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, -polarCameraSpeed * dtS);
-		}
-
-		if (Input::IsKeyDown(KEY_E))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Up, polarCameraSpeed * dtS);
-		}
-		else if (Input::IsKeyDown(KEY_Q))
-		{
-			m_pScene->GetCamera().MoveLookAtAndPosPolar(CameraDirCartesian::Down, polarCameraSpeed * dtS);
-		}*/
-
 		m_Scenes[m_SceneId]->GetCamera().UpdateFromLookAt();
 	}
 

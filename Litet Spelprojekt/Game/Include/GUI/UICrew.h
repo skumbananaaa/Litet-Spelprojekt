@@ -3,8 +3,9 @@
 #include <Graphics/GUI/PanelExpandable.h>
 #include "../Crewmember.h"
 #include <Graphics/GUI/SelectionHandler.h>
+#include <Graphics/GUI/HoveringHandler.h>
 
-class UICrew : public IExpandableListener, public ISelectionListener, public IExternalUIRenderer, public IButtonListener
+class UICrew : public IExpandableListener, public ISelectionListener, public IHoveringListener, public IExternalUIRenderer, public IButtonListener
 {
 public:
 	UICrew(float x, float y, float width, float height, const std::vector<Crewmember*> crewmembers);
@@ -15,6 +16,8 @@ public:
 
 	virtual void OnSelected(const SelectionHandler* handler, ISelectable* selection) override;
 	virtual void OnDeselected(const SelectionHandler* handler, ISelectable* selection) override;
+	virtual void OnHovered(const HoveringHandler* handler, IHoverable* selection) override;
+	virtual void OnDehovered(const HoveringHandler* handler, IHoverable* selection) override;
 
 	virtual void OnRenderGUIObject(GUIContext* context, GUIObject* object) override;
 
@@ -28,4 +31,5 @@ private:
 	PanelExpandable* m_Medics;
 	PanelExpandable* m_Strengths;
 	SelectionHandler m_SelectionHandler;
+	HoveringHandler m_HoveringHandler;
 };

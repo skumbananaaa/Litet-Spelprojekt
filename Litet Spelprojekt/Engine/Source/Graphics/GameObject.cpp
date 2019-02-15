@@ -58,6 +58,11 @@ void GameObject::SetScale(const glm::vec3& scale) noexcept
 	m_IsDirty = true;
 }
 
+void GameObject::SetRoom(uint32 room) noexcept
+{
+	m_Room = room;
+}
+
 void GameObject::SetExtend(bool extend) noexcept
 {
 	if (extend)
@@ -93,6 +98,11 @@ void GameObject::Extend(float dtS) noexcept
 			m_OriginalPos.x -= 5 * floor(glm::clamp(m_Position.y, 0.0f, 4.0f) / 2.0f) * 2.0f * m_Extended;
 		}
 	}
+}
+
+void GameObject::SetIsCrew(bool isCrew) noexcept
+{
+	m_IsCrew = isCrew;
 }
 
 void GameObject::UpdateTransform() noexcept

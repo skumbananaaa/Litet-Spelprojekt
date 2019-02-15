@@ -195,3 +195,8 @@ int Path::GetNrOfPathTiles()
 	return m_NrOfPathTiles;
 }
 
+const World * Path::GetWorld() const noexcept
+{
+	return m_pWorld;
+}
+

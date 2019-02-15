@@ -75,7 +75,6 @@ protected:
 		}
 	};
 
-private:
 	std::vector<ISelectableListener*> m_SelectionListeners;
 	bool m_IsSelected;
 };

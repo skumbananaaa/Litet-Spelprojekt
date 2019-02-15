@@ -23,25 +23,24 @@ Game::Game() noexcept :
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
-	m_pTextViewFPS(nullptr),
-	m_pTextViewUPS(nullptr),
+	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(false),
 	m_CurrentElevation(2)
 {
-	m_pTextViewFPS = new TextView(0, GetWindow().GetHeight() - 60, 200, 50, "FPS");
-	m_pTextViewUPS = new TextView(0, GetWindow().GetHeight() - 80, 200, 50, "UPS");
+	Logger::SetListener(this);
+
 	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
 	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
 
-	GetGUIManager().Add(m_pTextViewFPS);
-	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pTextViewFile);
 	GetGUIManager().Add(m_pLoadingBar);
 }
 
 Game::~Game()
 {
+	Logger::Save();
+
 	DeleteSafe(m_pRenderer);
 	DeleteSafe(m_pDebugRenderer);
 
@@ -52,15 +51,24 @@ Game::~Game()
 		DeleteSafe(m_Scenes[i]);
 	}
 
-	DeleteSafe(m_pTextViewFPS);
-	DeleteSafe(m_pTextViewUPS);
 	DeleteSafe(m_pTextViewScene);
 	DeleteSafe(m_pTextViewFile);
 	DeleteSafe(m_pLoadingBar);
 	DeleteSafe(m_pUICrewMember);
 	DeleteSafe(m_pUICrew);
+	DeleteSafe(m_PanelLog);
 
 	DeleteSafe(m_pTestAudioSource);
+
+	ScenarioManager::Release();
+}
+
+void Game::OnLogged(const std::string& text) noexcept
+{
+	glm::vec4 color = m_ListScrollableLog->GetNrOfChildren() % 2 == 0 ? glm::vec4(0.2F, 0.2F, 0.2F, 1.0F) : glm::vec4(0.3F, 0.3F, 0.3F, 1.0F);
+	TextView* textView = new TextView(0, 0, m_ListScrollableLog->GetClientWidth(), 40, text);
+	textView->SetBackgroundColor(color);
+	m_ListScrollableLog->Add(textView);
 }
 
 void Game::OnResourceLoading(const std::string& file, float percentage)
@@ -74,15 +82,27 @@ void Game::OnResourcesLoaded()
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
 
-	m_pUICrewMember = new UICrewMember(200, 200, 330, 170);
+	m_pUICrewMember = new UICrewMember(330, 170);
+
+	m_PanelLog = new Panel(GetWindow().GetWidth() - 300, GetWindow().GetHeight() - 450, 300, 450);
+	m_pTextViewLog = new TextView(0, m_PanelLog->GetHeight() - 50, m_PanelLog->GetWidth(), 50, "Loggbok", true);
+	m_ListScrollableLog = new ListScrollable(0, 0, m_PanelLog->GetWidth(), m_PanelLog->GetHeight() - m_pTextViewLog->GetHeight());
+	m_ListScrollableLog->SetBackgroundColor(glm::vec4(0.15F, 0.15F, 0.15F, 1.0F));
+	m_PanelLog->SetDeleteAllChildrenOnDestruction(true);
+	m_PanelLog->Add(m_pTextViewLog);
+	m_PanelLog->Add(m_ListScrollableLog);
+
 	GetGUIManager().Add(m_pUICrewMember);
+	GetGUIManager().Add(m_PanelLog);
 
 	//Set game TextViews
 	{
-		m_pTextViewScene = new TextView(GetWindow().GetWidth() - 100, GetWindow().GetHeight() - 60, 100, 50, "Scene " + std::to_string(m_SceneId));
+		m_pTextViewScene = new TextView(0, 0, 100, 50, "Scene " + std::to_string(m_SceneId));
 
 		GetGUIManager().Add(m_pTextViewScene);
 	}
+
+	ScenarioManager::RegisterScenario(new ScenarioFire());
 
 	//Create renderers
 	m_pRenderer = new DefferedRenderer();
@@ -215,11 +235,12 @@ void Game::OnResourcesLoaded()
 		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
-		glm::vec3 pos = worldObject.TileId;
+		glm::uvec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;
 		pGameObject->SetPosition(pos);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
+		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
@@ -285,7 +306,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
@@ -324,11 +345,13 @@ void Game::OnResourcesLoaded()
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
-		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetIsCrew(true);
 		m_Crew.GetMember(i)->UpdateTransform();
+		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}
 
 	std::vector<Crewmember*> members;
@@ -337,7 +360,7 @@ void Game::OnResourcesLoaded()
 		members.push_back(m_Crew.GetMember(i));
 	}
 
-	m_pUICrew = new UICrew(0, 0, 200, 500, members);
+	m_pUICrew = new UICrew(0, GetWindow().GetHeight() - 150, 200, 500, members);
 
 	m_Scenes[0]->SetConceal(false);
 
@@ -435,8 +458,7 @@ void Game::OnResourcesLoaded()
 
 void Game::OnUpdateLoading(float dtS)
 {
-	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
-	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
+	
 }
 
 void Game::OnRenderLoading(float dtS)
@@ -499,7 +521,7 @@ void Game::OnKeyDown(KEY keycode)
 			{
 				uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
 
-				if (!m_pWorld->GetRoom(roomIndex)->IsActive())
+				if (!m_pWorld->GetRoom(roomIndex)->IsActive() && roomIndex != 0)
 				{
 					const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
 					std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
@@ -507,8 +529,11 @@ void Game::OnKeyDown(KEY keycode)
 					roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
 					m_RoomLightsTimers[m_CurrentLight] = 0.0f;
 					m_ActiveRooms[m_CurrentLight] = roomIndex;
-					m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
 					m_pWorld->GetRoom(roomIndex)->SetActive(true);
+					m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
+
+					m_pWorld->GetRoom(0)->SetActive(true);
+					m_DoorLightTimer = 0.0f;
 				}
 			}
 			break;
@@ -606,6 +631,8 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
+	ScenarioManager::Update(dtS);
+
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);
@@ -620,7 +647,15 @@ void Game::OnUpdate(float dtS)
 			roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 			m_RoomLightsTimers[i] = 0.0f;
 			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+			m_ActiveRooms[i] = 1;
 		}
+	}
+
+	m_DoorLightTimer += dtS;
+	if (m_DoorLightTimer >= 5.0f)
+	{
+		m_DoorLightTimer = 0.0f;
+		m_pWorld->GetRoom(0)->SetActive(false);
 	}
 
 	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
@@ -658,10 +693,12 @@ void Game::OnUpdate(float dtS)
 		if (Input::IsKeyDown(KEY_E))
 		{
 			localMove.y = cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 		else if (Input::IsKeyDown(KEY_Q))
 		{
 			localMove.y = -cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 
 		m_Scenes[m_SceneId]->GetCamera().MoveLocalCoords(localMove);
@@ -700,9 +737,6 @@ void Game::OnUpdate(float dtS)
 	{
 		pCameraLookAt->SetPosition(m_Scenes[m_SceneId]->GetCamera().GetLookAt());
 	}
-
-	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
-	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 
 	AudioListener::SetPosition(m_Scenes[m_SceneId]->GetCamera().GetPosition());
 	AudioListener::SetOrientation(m_Scenes[m_SceneId]->GetCamera().GetFront(), m_Scenes[m_SceneId]->GetCamera().GetUp());
@@ -751,7 +785,7 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*m_Scenes[m_SceneId], dtS);
+	m_pRenderer->DrawScene(*m_Scenes[m_SceneId], m_pWorld, dtS);
 
 #if defined(DRAW_DEBUG_BOXES)
 	m_pDebugRenderer->DrawScene(*m_Scenes[m_SceneId]);

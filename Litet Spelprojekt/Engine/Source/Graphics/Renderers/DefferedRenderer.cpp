@@ -77,7 +77,7 @@ void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 	m_ClipDistances[index] = plane;
 }
 
-void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
+void DefferedRenderer::DrawScene(const Scene& scene, const World* pWorld, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -99,7 +99,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
 		{
-			if (drawables[i]->IsVisible())
+			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsCrew()))
 			{
 				bool batchFound = false;
 				const Material* pMaterial = drawables[i]->GetMaterial();

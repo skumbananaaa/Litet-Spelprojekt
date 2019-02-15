@@ -14,6 +14,6 @@ public:
 	virtual ~IRenderer() {};
 
 	virtual void SetClipDistance(const glm::vec4& plane, uint32 index) = 0;
-	virtual void DrawScene(const Scene& scene, float dtS) const = 0;
+	virtual void DrawScene(const Scene& scene, const World* pWorld, float dtS) const = 0;
 	virtual void SetWorldBuffer(const Scene& scene, const World* pWorld) const = 0;
 };

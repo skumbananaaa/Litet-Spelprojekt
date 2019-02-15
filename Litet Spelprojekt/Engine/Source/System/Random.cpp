@@ -12,7 +12,7 @@ Random::Random()
 
 int32 Random::GenerateInt(int32 min, int32 max)
 {
-	if (init)
+	if (!init)
 	{
 		srand(time(NULL));
 		init = true;

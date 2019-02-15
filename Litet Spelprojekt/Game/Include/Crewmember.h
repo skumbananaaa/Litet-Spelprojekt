@@ -45,6 +45,7 @@ public:
 	void SetDirection(const glm::vec3& direction) noexcept;
 	///<summary>>Switches between point light and spotlight for the crewmember.</summary>
 	void SwitchLight() noexcept;
+	glm::ivec3 GetTile() const noexcept;
 	///<summary>Used to determine path of crewmember to an already selected target. Function made to run on multiple threads.</summary>
 	virtual void RunParallel() override;
 	///<summary>Updates matrix of the object.</summary>

@@ -320,7 +320,7 @@ void Editor::CreateWalls()
 
 	for (int level = 0; level < NUM_GRID_LEVELS; level += 2)
 	{
-		ppWorldLevels[level]->GenerateWalls();
+		ppWorldLevels[level]->GenerateRooms();
 		float halfWidth = ppWorldLevels[level]->GetSizeX() / 2;
 		float halfHeight = ppWorldLevels[level]->GetSizeZ() / 2;
 		glm::vec4 wall;

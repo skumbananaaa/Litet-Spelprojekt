@@ -36,6 +36,7 @@
 #include <math.h>
 
 #define NUM_CREW 15
+#define MAX_ROOMS_VISIBLE 3
 
 class Game : public Application, public ILogListener
 {
@@ -76,9 +77,9 @@ private:
 	DebugRenderer* m_pDebugRenderer;
 	std::vector<Scene*> m_Scenes;
 	uint32 m_SceneId = 0;
+	World* m_pWorld;
 
 	TextureCube* m_pSkyBoxTex;
-	World* m_pWorld;
 	UICrew* m_pUICrew;
 
 	TextView* m_pTextViewScene;
@@ -90,10 +91,13 @@ private:
 	Panel* m_PanelLog;
 	
 	Crew m_Crew;
-	std::string m_CrewList[NUM_CREW];
 
 	bool cartesianCamera;
 	int32 m_CurrentElevation;
+
+	std::vector<uint32> m_ActiveRooms;
+	std::vector<float> m_RoomLightsTimers;
+	uint32 m_CurrentLight = 0;
 
 	//Sound
 	AudioSource* m_pTestAudioSource;

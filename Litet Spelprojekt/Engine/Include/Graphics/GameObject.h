@@ -16,6 +16,7 @@ public:
 
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
+	virtual void SetIsVisible(bool isVisible) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
 	virtual void SetMaterial(int32 material) noexcept;
 	virtual void SetDecal(int32 decal) noexcept;
@@ -38,6 +39,7 @@ public:
 	const bool IsExtended() const noexcept;
 
 	bool IsReflectable() const noexcept;
+	bool IsVisible() const noexcept;
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
@@ -62,6 +64,7 @@ private:
 	glm::mat4 m_InverseTransform;
 	bool m_IsDirty;
 	bool m_IsReflectable;
+	bool m_IsVisible;
 	int32 m_TypeId;
 	bool m_Extending = false;
 	bool m_Extended = false;
@@ -143,6 +146,11 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 inline bool GameObject::IsReflectable() const noexcept
 {
 	return m_IsReflectable;
+}
+
+inline bool GameObject::IsVisible() const noexcept
+{
+	return m_IsVisible;
 }
 
 inline bool GameObject::HasMaterial() const noexcept

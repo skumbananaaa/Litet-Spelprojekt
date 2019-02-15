@@ -81,6 +81,10 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 	}
 }
 
+void OrthographicRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
+{
+}
+
 void OrthographicRenderer::Create() noexcept
 {
 	std::cout << "Creating orthographic renderer" << std::endl;

@@ -6,6 +6,10 @@
 #include <Graphics/Geometry/FullscreenTri.h>
 #include <IO/ResourceHandler.h>
 
+#define LEVEL_SIZE_X 12
+#define LEVEL_SIZE_Y 6
+#define LEVEL_SIZE_Z 42
+
 struct GPassVSPerFrame
 {
 	glm::mat4 ViewProjection;
@@ -79,6 +83,13 @@ struct PlaneBuffer
 	glm::vec4 ClipPlane;
 };
 
+struct WorldBuffer
+{
+	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
+	int concealed;
+	int extended;
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -92,11 +103,13 @@ public:
 
 	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, float dtS) const override final;
+	void SetWorldBuffer(const Scene& scene, const World* pWorld) const override final;
 
 private:
 	void Create() noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
+	void UpdateWorldBuffer(const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
@@ -129,6 +142,9 @@ private:
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;
 	UniformBuffer* m_pPlaneBuffer;
+
+	mutable WorldBuffer m_LocalWorldBuff = {};
+	UniformBuffer* m_pWorldBuffer;
 
 	UniformBuffer* m_pDecalPassPerFrame;
 	UniformBuffer* m_pDecalPassPerObject;

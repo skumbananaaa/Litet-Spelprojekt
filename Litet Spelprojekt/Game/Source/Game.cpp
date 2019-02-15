@@ -59,7 +59,6 @@ Game::~Game()
 	DeleteSafe(m_PanelLog);
 
 	DeleteSafe(m_pTestAudioSource);
-	DeleteSafe(m_pWorld);
 }
 
 void Game::OnLogged(const std::string& text) noexcept
@@ -131,19 +130,6 @@ void Game::OnResourcesLoaded()
 		m_Scenes[0]->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 	}
 
-	//Lights
-	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
-		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
-
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(2.0f, 2.0f, -10.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(-5.0f, 2.0f, -10.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
-
-		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-		m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	}
-
 	//Create GameObjects
 	GameObject* pGameObject = nullptr;
 	{
@@ -206,14 +192,14 @@ void Game::OnResourcesLoaded()
 
 		//Ship
 		{
-			pGameObject = new GameObject();
+			/*pGameObject = new GameObject();
 			pGameObject->SetName("ship");
 			pGameObject->SetMaterial(MATERIAL::BOAT);
 			pGameObject->SetMesh(MESH::SHIP);
 			pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
 			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
+			m_Scenes[0]->AddGameObject(pGameObject);*/
 		}
 
 		//test objects
@@ -255,14 +241,14 @@ void Game::OnResourcesLoaded()
 
 	//LookAt Cube
 	{
-		pGameObject = new GameObject();
+		/*pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::BLUE);
 		pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
 		pGameObject->SetPosition(pCamera->GetLookAt());
 		pGameObject->SetScale(glm::vec3(0.25f));
 		pGameObject->UpdateTransform();
 		pGameObject->SetName("cameraLookAt");
-		m_Scenes[0]->AddGameObject(pGameObject);
+		m_Scenes[0]->AddGameObject(pGameObject);*/
 	}
 
 	//Water?? YAAAS
@@ -287,14 +273,13 @@ void Game::OnResourcesLoaded()
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
-	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetDissolveFactor(1.0f);
 
-	SetClipPlanes(0);
+	//SetClipPlanes(0);
 
-	// Generate walls
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2) 
+	// Generate rooms
+	m_pWorld->GenerateRooms();
+	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2)
 	{
-		m_pWorld->GenerateWalls(level);
 		glm::vec4 wall;
 
 		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++)
@@ -309,6 +294,25 @@ void Game::OnResourcesLoaded()
 			
 			m_Scenes[0]->AddGameObject(pGameObject);
 		}
+	}
+
+	//Generate water
+	m_pWorld->GenerateWater(m_Scenes[0]);
+
+	//Lights
+	{
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
+
+		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
+		{
+			m_Scenes[0]->AddRoomLight(new PointLight(m_pWorld->GetRoom(0)->GetCenter(), glm::vec4(2.0f, 2.0f, 2.0f, 2.0f)));
+			m_RoomLightsTimers.push_back(0.0f);
+			m_ActiveRooms.push_back(0);
+		}
+
+		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
 	}
 
 	//Crew
@@ -336,10 +340,9 @@ void Game::OnResourcesLoaded()
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
-		m_CrewList[i] = "";
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
-		m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
-		m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->UpdateTransform();
 	}
@@ -351,6 +354,10 @@ void Game::OnResourcesLoaded()
 	}
 
 	m_pUICrew = new UICrew(0, GetWindow().GetHeight() - 150, 200, 500, members);
+
+	m_Scenes[0]->SetConceal(true);
+
+	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
 
 	/*_______________________________________________________________________________________________________________*/
 	//SCENE2
@@ -498,6 +505,28 @@ void Game::OnKeyDown(KEY keycode)
 			m_SceneId = (m_SceneId + 1) % m_Scenes.size();
 			m_pTextViewScene->SetText("Scene " + std::to_string(m_SceneId));
 			((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(m_Scenes[m_SceneId]->GetPlanarReflectors()[0]);
+			m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
+			break;
+		}
+		case KEY_R:
+		{
+			glm::ivec3 tile = m_Crew.GetMember(0)->GetTile();
+			if (!m_Crew.GetMember(0)->IsExtending())
+			{
+				uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+
+				if (!m_pWorld->GetRoom(roomIndex)->IsActive())
+				{
+					const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
+					std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
+
+					roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
+					m_RoomLightsTimers[m_CurrentLight] = 0.0f;
+					m_ActiveRooms[m_CurrentLight] = roomIndex;
+					m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
+					m_pWorld->GetRoom(roomIndex)->SetActive(true);
+				}
+			}
 			break;
 		}
 	}
@@ -549,7 +578,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 	{
 		case MOUSE_BUTTON_LEFT:
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT))
+			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 			{
 				PickPosition();
 			}
@@ -557,7 +586,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 		}
 		case MOUSE_BUTTON_RIGHT:
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT))
+			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 			{
 				PickCrew(false);
 			}
@@ -596,6 +625,19 @@ void Game::OnUpdate(float dtS)
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);
+
+	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
+
+	for (uint32 i = 0; i < roomLights.size(); i++)
+	{
+		m_RoomLightsTimers[i] += dtS;
+		if (m_RoomLightsTimers[i] >= 5.0f)
+		{
+			roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+			m_RoomLightsTimers[i] = 0.0f;
+			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+		}
+	}
 
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
 
@@ -926,10 +968,10 @@ void Game::SetClipPlanes(uint32 scene)
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));
 	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)->SetClipPlane(glm::vec3(0.0f, -1.0f, 0.0f), 2.0f + (m_CurrentElevation * 2.0f));*/
 	
-	float elevation = glm::clamp((glm::floor(m_Scenes[scene]->GetCamera().GetLookAt().y / 2.0f)), 0.0f, 2.0f);
+	/*float elevation = glm::clamp((glm::floor(m_Scenes[scene]->GetCamera().GetLookAt().y / 2.0f)), 0.0f, 2.0f);
 	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetLevelClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)));
-	
+	*/
 	
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);

@@ -50,6 +50,8 @@ Crewmember::Crewmember(Crewmember& other)
 Crewmember::~Crewmember()
 {
 	DeleteSafe(m_pPathFinder);
+	DeleteSafe(m_pLight);
+	DeleteSafe(m_pTorch);
 }
 
 void Crewmember::RunParallel()
@@ -267,6 +269,11 @@ void Crewmember::SwitchLight() noexcept
 	m_pLight->SetColor(temp);
 }
 
+glm::ivec3 Crewmember::GetTile() const noexcept
+{
+	return m_PlayerTile;
+}
+
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
 	if (!IsExtending())
@@ -286,19 +293,15 @@ void Crewmember::FollowPath(float dtS)
 			{
 				m_TargetTile = m_pPath[--m_NrOfPathTiles];
 				m_TargetPos = glm::vec3(m_TargetTile.x + m_TargetTile.y * 10 * IsExtended(), m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
-				/*if (m_PlayerTile.y != m_TargetTile.y)
-				{
-					GameObject::SetPosition(GetPosition() + glm::vec3((m_TargetTile.y - m_PlayerTile.y) * 10 * IsExtended(), 0, 0));
-				}*/
 			}
 		}
 		if ((std::abs(GetPosition().x - m_TargetPos.x) > 0.01 || std::abs(GetPosition().y - m_TargetPos.y) > 0.01 || std::abs(GetPosition().z - m_TargetPos.z) > 0.01))
 		{
-			if (GetPosition().x > (std::round(GetPosition().y - 0.9) / 2.0f + 1.0f) * 10.0f)
+			if (GetPosition().x > (std::round(GetPosition().y - 0.9) / 2.0f + 1.0f) * 10.0f + 0.5f)
 			{
 				GameObject::SetPosition(GetPosition() - glm::vec3(10.0f, 0.0f, 0.0f));
 			}
-			else if (GetPosition().x <= (std::round(GetPosition().y - 0.9) / 2.0f) * 10 * IsExtended())
+			else if (GetPosition().x <= ((std::round(GetPosition().y - 0.9) / 2.0f) * 10 + 0.5f) * IsExtended())
 			{
 				GameObject::SetPosition(GetPosition() + glm::vec3(10.0f, 0.0f, 0.0f));
 			}

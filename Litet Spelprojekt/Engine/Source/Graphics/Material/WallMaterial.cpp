@@ -4,7 +4,6 @@
 WallMaterial::WallMaterial() : Material(SHADER::DEFERRED_WALL),
 	m_pDissolveBuffer(nullptr)
 {
-	m_Buffer.DissolveFactor = 0.0f;
 	m_pDissolveBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(DissolveBuffer));
 }
 
@@ -39,12 +38,6 @@ void WallMaterial::Unbind() const noexcept
 	context.SetUniformBuffer(nullptr, 3);
 
 	Material::Unbind();
-}
-
-void WallMaterial::SetDissolveFactor(float dissolveFactor) const noexcept
-{
-	m_Buffer.DissolveFactor = dissolveFactor;
-	m_pDissolveBuffer->UpdateData(&m_Buffer);
 }
 
 void WallMaterial::SetClipPlane(const glm::vec4& plane, uint32 index) const noexcept

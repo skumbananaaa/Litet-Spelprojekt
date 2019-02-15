@@ -69,6 +69,7 @@
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\System\Random.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
+    <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ListScrollable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\System\Random.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelExpandable.h" />
+    <ClInclude Include="Include\World\Room.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\Graphics\GUI\ListScrollable.h" />
     <ClInclude Include="Include\Graphics\GUI\HoveringHandler.h" />

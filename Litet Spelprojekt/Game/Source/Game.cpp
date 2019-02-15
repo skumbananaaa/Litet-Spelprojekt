@@ -231,11 +231,12 @@ void Game::OnResourcesLoaded()
 		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
-		glm::vec3 pos = worldObject.TileId;
+		glm::uvec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;
 		pGameObject->SetPosition(pos);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
+		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
@@ -301,7 +302,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
@@ -340,11 +341,13 @@ void Game::OnResourcesLoaded()
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
-		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetIsCrew(true);
 		m_Crew.GetMember(i)->UpdateTransform();
+		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}
 
 	std::vector<Crewmember*> members;
@@ -355,7 +358,7 @@ void Game::OnResourcesLoaded()
 
 	m_pUICrew = new UICrew(0, GetWindow().GetHeight() - 150, 200, 500, members);
 
-	m_Scenes[0]->SetConceal(true);
+	m_Scenes[0]->SetConceal(false);
 
 	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
 
@@ -515,7 +518,7 @@ void Game::OnKeyDown(KEY keycode)
 			{
 				uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
 
-				if (!m_pWorld->GetRoom(roomIndex)->IsActive())
+				if (!m_pWorld->GetRoom(roomIndex)->IsActive() && roomIndex != 0)
 				{
 					const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
 					std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
@@ -523,8 +526,11 @@ void Game::OnKeyDown(KEY keycode)
 					roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
 					m_RoomLightsTimers[m_CurrentLight] = 0.0f;
 					m_ActiveRooms[m_CurrentLight] = roomIndex;
-					m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
 					m_pWorld->GetRoom(roomIndex)->SetActive(true);
+					m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
+
+					m_pWorld->GetRoom(0)->SetActive(true);
+					m_DoorLightTimer = 0.0f;
 				}
 			}
 			break;
@@ -636,7 +642,15 @@ void Game::OnUpdate(float dtS)
 			roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 			m_RoomLightsTimers[i] = 0.0f;
 			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+			m_ActiveRooms[i] = 1;
 		}
+	}
+
+	m_DoorLightTimer += dtS;
+	if (m_DoorLightTimer >= 5.0f)
+	{
+		m_DoorLightTimer = 0.0f;
+		m_pWorld->GetRoom(0)->SetActive(false);
 	}
 
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
@@ -845,7 +859,7 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*m_Scenes[m_SceneId], dtS);
+	m_pRenderer->DrawScene(*m_Scenes[m_SceneId], m_pWorld, dtS);
 
 #if defined(DRAW_DEBUG_BOXES)
 	m_pDebugRenderer->DrawScene(*m_Scenes[m_SceneId]);

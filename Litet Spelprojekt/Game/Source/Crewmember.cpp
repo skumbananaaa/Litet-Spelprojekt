@@ -319,6 +319,7 @@ void Crewmember::FollowPath(float dtS)
 				GameObject::SetPosition(GetPosition() + m_Direction * dtS);
 			}
 			m_PlayerTile = glm::ivec3(std::round(GetPosition().x) - std::round(GetPosition().y - 0.9) * 5 * IsExtended(), std::round((GetPosition().y - 0.9) / 2), std::round(GetPosition().z));
+			SetRoom(m_pPathFinder->GetWorld()->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 		}
 	}
 }

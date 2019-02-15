@@ -64,12 +64,13 @@ private:
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;
 	std::vector<SpotLight*> m_SpotLights;
-	SkyBox* m_pSkyBox;
-	World* m_pWorld;
 	std::vector<PointLight*> m_RoomLights;
-	uint32 m_CurrentLight = 0;
 	std::vector<float> m_LightTimer;
 	std::vector<uint32> m_ActiveRooms;
+	SkyBox* m_pSkyBox;
+	World* m_pWorld;
+
+	uint32 m_CurrentLight = 0;
 	bool m_Concealed = false;
 	bool m_Extended = false;
 	bool m_WasExtended = false;

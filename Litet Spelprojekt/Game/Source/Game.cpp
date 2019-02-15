@@ -320,7 +320,6 @@ void Game::OnResourcesLoaded()
 		x = std::rand() % (m_Scenes[0]->GetWorld()->GetLevel(y)->GetSizeX() - 2) + 1;
 		z = std::rand() % (m_Scenes[0]->GetWorld()->GetLevel(y)->GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
-		m_CrewList[i] = "";
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());

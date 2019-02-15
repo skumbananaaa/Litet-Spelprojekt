@@ -83,7 +83,6 @@ private:
 	ProgressBar* m_pLoadingBar;
 	
 	Crew m_Crew;
-	std::string m_CrewList[NUM_CREW];
 
 	bool cartesianCamera;
 	int32 m_CurrentElevation;

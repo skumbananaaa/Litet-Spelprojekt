@@ -73,6 +73,7 @@
     <ClCompile Include="Source\World\Logger.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ListScrollable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
+    <ClCompile Include="Source\World\ScenarioManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -160,5 +161,7 @@
     <ClInclude Include="Include\Graphics\GUI\ListScrollable.h" />
     <ClInclude Include="Include\Graphics\GUI\HoveringHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\IHoverable.h" />
+    <ClInclude Include="Include\World\ScenarioManager.h" />
+    <ClInclude Include="Include\World\IScenario.h" />
   </ItemGroup>
 </Project>

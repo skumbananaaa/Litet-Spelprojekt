@@ -28,6 +28,8 @@
 #include <Graphics/Materials/WaterMaterial.h>
 
 #include <World/Logger.h>
+#include <World/ScenarioManager.h>
+#include "../Include/ScenarioFire.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/glm.hpp>

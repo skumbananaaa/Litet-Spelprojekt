@@ -107,6 +107,9 @@ protected:
 
 	void RequestRepaint();
 
+	const std::vector<GUIObject*>& GetChildrenToAdd() noexcept;
+	const std::vector<GUIObject*>& GetChildrenToRemove() noexcept;
+
 	static void AddMouseListener(GUIObject* listener);
 	static void RemoveMouseListener(GUIObject* listener);
 

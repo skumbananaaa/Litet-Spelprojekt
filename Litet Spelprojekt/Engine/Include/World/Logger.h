@@ -17,4 +17,5 @@ public:
 private:
 	static std::vector<std::string> s_Logs;
 	static ILogListener* s_Listener;
+	static bool debugUIOverride;
 };

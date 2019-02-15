@@ -3,6 +3,7 @@
 
 std::vector<std::string> Logger::s_Logs;
 ILogListener* Logger::s_Listener = nullptr;
+bool Logger::debugUIOverride = true;
 
 void Logger::LogEvent(const std::string& text, bool showInUI) noexcept
 {
@@ -15,7 +16,7 @@ void Logger::LogEvent(const std::string& text, bool showInUI) noexcept
 	std::string line = buf;
 	line += text;
 	s_Logs.push_back(line);
-	if (showInUI)
+	if (showInUI || debugUIOverride)
 	{
 		if (s_Listener)
 		{

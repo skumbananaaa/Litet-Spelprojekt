@@ -59,6 +59,8 @@ Game::~Game()
 	DeleteSafe(m_PanelLog);
 
 	DeleteSafe(m_pTestAudioSource);
+
+	ScenarioManager::Release();
 }
 
 void Game::OnLogged(const std::string& text) noexcept
@@ -99,6 +101,8 @@ void Game::OnResourcesLoaded()
 
 		GetGUIManager().Add(m_pTextViewScene);
 	}
+
+	ScenarioManager::RegisterScenario(new ScenarioFire());
 
 	//Create renderers
 	m_pRenderer = new DefferedRenderer();
@@ -474,7 +478,6 @@ void Game::OnKeyUp(KEY keycode)
 
 void Game::OnKeyDown(KEY keycode)
 {
-	Logger::LogEvent("KeyDown: " + std::to_string(keycode), true);
 	switch (keycode)
 	{
 		case KEY_O:
@@ -622,6 +625,8 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
+	ScenarioManager::Update(dtS);
+
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);

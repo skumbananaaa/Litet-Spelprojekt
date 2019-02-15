@@ -89,6 +89,16 @@ void GUIObject::RequestRepaint()
 	}
 }
 
+const std::vector<GUIObject*>& GUIObject::GetChildrenToAdd() noexcept
+{
+	return m_ChildrenToAdd;
+}
+
+const std::vector<GUIObject*>& GUIObject::GetChildrenToRemove() noexcept
+{
+	return m_ChildrenToRemove;
+}
+
 void GUIObject::AddMouseListener(GUIObject* listener)
 {
 	if (!Contains<GUIObject>(s_MouseListeners, listener))
@@ -276,7 +286,6 @@ void GUIObject::InternalOnUpdate(float dtS)
 					m_Children.erase(m_Children.begin() + counter);
 					objectToRemove->OnRemoved(this);
 					objectToRemove->m_pParent = nullptr;
-					std::cout << "GUI Object Removed" << std::endl;
 					return;
 				}
 				counter++;
@@ -306,11 +315,6 @@ void GUIObject::InternalOnUpdate(float dtS)
 			objectToAdd->m_pParent = this;
 			objectToAdd->RequestRepaint();
 			objectToAdd->OnAdded(this);
-			std::cout << "Added: ";
-			objectToAdd->PrintName();
-			std::cout << ", Parent: ";
-			PrintName();
-			std::cout << std::endl;
 		}
 		newChildren.clear();
 	}

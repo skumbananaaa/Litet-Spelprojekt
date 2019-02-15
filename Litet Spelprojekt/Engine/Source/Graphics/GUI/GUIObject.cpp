@@ -519,6 +519,11 @@ void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
 	m_DeleteAll = deleteAll;
 }
 
+bool GUIObject::WillDeleteAllChildrenOnDestruction() const noexcept
+{
+	return m_DeleteAll;
+}
+
 void GUIObject::AddExternalRenderer(IExternalUIRenderer* renderer)
 {
 	if (!Contains<IExternalUIRenderer>(m_ExternalRenderers, renderer))

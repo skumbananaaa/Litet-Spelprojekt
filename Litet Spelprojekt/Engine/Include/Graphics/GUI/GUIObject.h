@@ -52,6 +52,7 @@ public:
 
 	virtual void DeleteChildren();
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
+	virtual bool WillDeleteAllChildrenOnDestruction() const noexcept;
 
 	void AddExternalRenderer(IExternalUIRenderer* renderer);
 	void RemoveExternalRenderer(IExternalUIRenderer* renderer);

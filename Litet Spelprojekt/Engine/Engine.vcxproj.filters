@@ -156,4 +156,7 @@
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Include\GLMHelper.inl" />
+  </ItemGroup>
 </Project>

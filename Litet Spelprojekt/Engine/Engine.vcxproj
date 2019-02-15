@@ -186,6 +186,9 @@
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\World\WorldLevel.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Include\GLMHelper.inl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{58070825-549E-4173-8861-4C6341B6E166}</ProjectGuid>
     <RootNamespace>Engine</RootNamespace>

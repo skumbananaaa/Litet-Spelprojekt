@@ -1,26 +1,31 @@
 #include <EnginePch.h>
 #include <Graphics/ParticleSystem.h>
 #include <System/Random.h>
+#include <GLMHelper.inl>
 
 ParticleSystem::ParticleSystem()
 	: m_pTexture(nullptr),
 	m_pParticleInstances(nullptr),
-	m_pParticleIndices(nullptr),
+	m_pLivingParticles(nullptr),
 	m_NumParticles(0)
 {
 	m_MaxParticles = 2000;
 
-	m_pParticleIndices = new uint32[m_MaxParticles];
-	m_pParticles = new ParticleInternal[m_MaxParticles];
+	m_pParticles = new ParticleData[m_MaxParticles];
+	m_pLivingParticles = new uint32[m_MaxParticles];
+	m_pSortedParticles = new uint32[m_MaxParticles];
 	m_pParticleInstances = new ParticleInstance[m_MaxParticles];
+
 	for (uint32 i = 0; i < m_MaxParticles; i++)
 	{
-		m_pParticleIndices[i] = i;
+		m_pLivingParticles[i] = i;
+		m_pSortedParticles[i] = i;
 
 		m_pParticles[i].Position = GetPosition();
 		m_pParticles[i].Direction = UP_VECTOR;
 		m_pParticles[i].TimeLived = 0.0f;
 		m_pParticles[i].Speed = 0.0f;
+		m_pParticles[i].DistToCameraSqrd = 0.0f;
 
 		m_pParticleInstances[i].Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		m_pParticleInstances[i].Position = glm::vec3(0.0f);
@@ -29,24 +34,26 @@ ParticleSystem::ParticleSystem()
 
 ParticleSystem::~ParticleSystem()
 {
+	DeleteArrSafe(m_pLivingParticles);
+	DeleteArrSafe(m_pSortedParticles);
 	DeleteArrSafe(m_pParticles);
 	DeleteArrSafe(m_pParticleInstances);
 }
 
 void ParticleSystem::Update(const Camera& camera, float deltaTime)
 {
+	//Spawn particles
 	for (uint32 i = 0; i < m_ParticlesPerFrame; i++)
 	{
-		if (m_NumParticles < m_MaxParticles)
-		{
-			SpawnParticle();
-		}
+		SpawnParticle();
 	}
 
-	for (int32 i = m_NumParticles - 1; i >= 0; i--)
+	//Update and sort particles
+	m_NumSortedParticles = 0;
+	for (uint32 i = 0; i < GetNumParticles(); i++)
 	{
-		ParticleInternal& particle = GetParticle(i);
-
+		//Update
+		ParticleData& particle = GetLivingParticle(i);
 		particle.TimeLived += deltaTime;
 		if (particle.TimeLived > m_TimeToLive)
 		{
@@ -56,19 +63,28 @@ void ParticleSystem::Update(const Camera& camera, float deltaTime)
 			continue;
 		}
 		
-		float lifePercentage = particle.TimeLived / m_TimeToLive;
 		particle.Position += (particle.Direction * particle.Speed * deltaTime);
+		particle.LifePercentage = particle.TimeLived / m_TimeToLive;
+		particle.DistToCameraSqrd = LengthSqrd(particle.Position - camera.GetPosition());
 
-		glm::vec3 distToCamera = particle.Position - camera.GetPosition();
-		float lenSqrd = (distToCamera.x * distToCamera.x) + (distToCamera.y * distToCamera.y) + (distToCamera.z * distToCamera.z);
+		InsertSortedParticle(m_pLivingParticles[i]);
+	}
 
-		int32 index = m_NumParticles - i;
-		m_pParticleInstances[index].Color = m_Color;
-		m_pParticleInstances[index].Color.a = 1.0f - lifePercentage;
-		m_pParticleInstances[index].Position = particle.Position;
+	//Fill instances
+	for (uint32 i = 0; i < m_NumSortedParticles; i++)
+	{
+		ParticleData& data = GetSortedParticle(i);
+		m_pParticleInstances[i].Color = m_Color;
+		m_pParticleInstances[i].Color.a = 1.0f - data.LifePercentage;
+		m_pParticleInstances[i].Position = data.Position;
 	}
 
 	GameObject::Update(camera, deltaTime);
+}
+
+void ParticleSystem::SetConeAngle(float angleRad) noexcept
+{
+	m_ConeAngle = abs(angleRad);
 }
 
 void ParticleSystem::SetParticlesPerFrame(uint32 particlePerFrame) noexcept
@@ -117,20 +133,58 @@ const glm::vec4& ParticleSystem::GetColor() const noexcept
 	return m_Color;
 }
 
-ParticleSystem::ParticleInternal& ParticleSystem::GetParticle(uint32 index) noexcept
+ParticleSystem::ParticleData& ParticleSystem::GetLivingParticle(uint32 index) noexcept
 {
-	return m_pParticles[m_pParticleIndices[index]];
+	return m_pParticles[m_pLivingParticles[index]];
+}
+
+ParticleSystem::ParticleData& ParticleSystem::GetSortedParticle(uint32 index) noexcept
+{
+	return m_pParticles[m_pSortedParticles[index]];
+}
+
+void ParticleSystem::InsertSortedParticle(uint32 id) noexcept
+{
+	ParticleData& particle = m_pParticles[id];
+
+	int32 index = m_NumSortedParticles;
+	for (uint32 i = 0; i < m_NumSortedParticles; i++)
+	{
+		if (particle > GetSortedParticle(i))
+		{
+			index = i;
+			for (int32 j = m_NumSortedParticles; j > i; j--)
+			{
+				m_pSortedParticles[j] = m_pSortedParticles[j - 1];
+			}
+
+			break;
+		}
+	}
+
+	m_pSortedParticles[index] = id;
+	m_NumSortedParticles++;
 }
 
 void ParticleSystem::SpawnParticle() noexcept
 {
-	ParticleInternal& particle = GetParticle(m_NumParticles);
-	particle.Speed = Random::GenerateFloat(m_MinSpeed, m_MaxSpeed);
-	particle.Position = GetPosition();
-	particle.Position.z += Random::GenerateFloat(0.0f, 0.05f);
-	particle.TimeLived = 0.0f;
-	
-	m_NumParticles++;
+	if (m_NumParticles < m_MaxParticles)
+	{
+		ParticleData& particle = GetLivingParticle(m_NumParticles);
+		particle.Speed = Random::GenerateFloat(m_MinSpeed, m_MaxSpeed);
+		particle.Position = GetPosition();
+
+		glm::vec4 direction = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, m_ConeAngle), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::vec4(UP_VECTOR, 0.0f);
+		direction = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, glm::two_pi<float>()), glm::vec3(0.0f, 1.0f, 0.0f)) * direction;
+		particle.Direction.x = direction.x;
+		particle.Direction.y = direction.y;
+		particle.Direction.z = direction.z;
+
+		particle.TimeLived = 0.0f;
+		particle.DistToCameraSqrd = 0.0f;
+
+		m_NumParticles++;
+	}
 }
 
 void ParticleSystem::KillParticle(uint32 index)
@@ -141,9 +195,9 @@ void ParticleSystem::KillParticle(uint32 index)
 		return;
 	}
 
-	uint32 temp = m_pParticleIndices[index];
-	m_pParticleIndices[index] = m_pParticleIndices[m_NumParticles - 1];
-	m_pParticleIndices[m_NumParticles - 1] = temp;
+	uint32 temp = m_pLivingParticles[index];
+	m_pLivingParticles[index] = m_pLivingParticles[m_NumParticles - 1];
+	m_pLivingParticles[m_NumParticles - 1] = temp;
 
 	m_NumParticles--;
 }

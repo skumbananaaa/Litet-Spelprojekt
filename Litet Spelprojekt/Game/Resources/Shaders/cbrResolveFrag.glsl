@@ -116,7 +116,7 @@ void main()
 	//COLOR and SPECULAR
 	vec4 mappedColor = SampleMSAATexture(g_Color, fs_in.TexCoords);
 	vec3 color = mappedColor.rgb;
-	float specular = mappedColor.a;
+	float specular = 1.0f;//mappedColor.a;
 	
 	//Do lightcalculation
 	vec3 c = vec3(0.0f);

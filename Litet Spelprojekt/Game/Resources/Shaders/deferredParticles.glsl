@@ -59,8 +59,13 @@ layout(binding = 0) uniform sampler2D g_DiffuseMap;
 void main()
 {
 	vec4 tex = texture(g_DiffuseMap, fs_in.TexCoords) * fs_in.Color;
+	if (tex.a < 0.01f)
+	{
+		discard;
+	}
+
 	g_OutColor = tex;
-	g_OutNormal = vec4(EncodeNormals(fs_in.Normal), tex.a);
+	g_OutNormal = vec4(EncodeNormals(normalize(fs_in.Normal)), tex.a);
 }
 
 #endif

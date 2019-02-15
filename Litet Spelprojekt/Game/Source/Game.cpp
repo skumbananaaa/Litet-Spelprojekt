@@ -117,7 +117,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.5f, 0.5f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 2.0f, -10.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
@@ -223,17 +223,24 @@ void Game::OnResourcesLoaded()
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	ParticleSystem* pFire = new ParticleSystem();
-	pFire->SetTexture(TEXTURE::SMOKE);
-	pFire->SetTimeToLive(3.0f);
-	pFire->SetParticlesPerFrame(2);
-	pFire->SetSpeed(0.1f, 0.75f);
-	pFire->SetPosition(glm::vec3(15.0f, 0.5f, 0.0f));
-	pFire->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	m_Scenes[0]->AddGameObject(pFire);
-	int gameObjects = m_pWorld->GetNumWorldObjects();
+	for (uint32 j = 0; j < 15; j++)
+	{
+		for (uint32 i = 0; i < 15; i++)
+		{
+			ParticleSystem* pFire = new ParticleSystem();
+			pFire->SetTexture(TEXTURE::SMOKE);
+			pFire->SetTimeToLive(2.0f);
+			pFire->SetParticlesPerFrame(2);
+			pFire->SetConeAngle(glm::radians<float>(30.0f));
+			pFire->SetSpeed(0.5f, 2.0f);
+			pFire->SetPosition(glm::vec3(j, 8.0f, 0.0f + (3.0f * i)));
+			pFire->SetColor(glm::vec4(1.0f, 0.55f, 0.0f, 1.0f));
+			m_Scenes[0]->AddGameObject(pFire);
+		}
+	}
 	
 	//Place objects in scene
+	int gameObjects = m_pWorld->GetNumWorldObjects();
 	for (int i = 0; i < gameObjects; i++)
 	{
 		WorldObject worldObject = m_pWorld->GetWorldObject(i);
@@ -250,16 +257,16 @@ void Game::OnResourcesLoaded()
 	}
 
 	//LookAt Cube
-	{
-		pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::BLUE);
-		pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
-		pGameObject->SetPosition(pCamera->GetLookAt());
-		pGameObject->SetScale(glm::vec3(0.25f));
-		pGameObject->UpdateTransform();
-		pGameObject->SetName("cameraLookAt");
-		m_Scenes[0]->AddGameObject(pGameObject);
-	}
+	//{
+	//	pGameObject = new GameObject();
+	//	pGameObject->SetMaterial(MATERIAL::BLUE);
+	//	pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
+	//	pGameObject->SetPosition(pCamera->GetLookAt());
+	//	pGameObject->SetScale(glm::vec3(0.25f));
+	//	pGameObject->UpdateTransform();
+	//	pGameObject->SetName("cameraLookAt");
+	//	m_Scenes[0]->AddGameObject(pGameObject);
+	//}
 
 	//Water?? YAAAS
 	{

@@ -7,7 +7,7 @@
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/SkyBox.h>
 #include <Graphics/Textures/PlanarReflector.h>
-#include "ParticleSystem.h"
+#include <Graphics/Particles/ParticleSystem.h>
 
 class API Scene
 {
@@ -21,6 +21,7 @@ public:
 	void SelectCamera(uint32 index);
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
 	void AddGameObject(GameObject* pGameObject) noexcept;
+	void AddParticleSystem(ParticleSystem* pParticleSystem) noexcept;
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
 	void AddPointLight(PointLight* pLight) noexcept;
 	void AddSpotLight(SpotLight* pLight) noexcept;

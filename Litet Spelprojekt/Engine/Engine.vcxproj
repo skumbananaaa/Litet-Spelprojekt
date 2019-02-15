@@ -51,7 +51,8 @@
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
-    <ClInclude Include="Include\Graphics\ParticleSystem.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
@@ -109,7 +110,8 @@
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
-    <ClCompile Include="Source\Graphics\ParticleSystem.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />

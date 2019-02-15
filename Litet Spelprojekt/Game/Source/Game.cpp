@@ -1,8 +1,9 @@
 #include "..\Include\Game.h"
+#include <World/Grid.h>
+#include <System/Random.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
-#include <World/Grid.h>
-#include <System/Random.h>s
+#include <Graphics/Particles/ParticleEmitter.h>
 
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
@@ -223,19 +224,21 @@ void Game::OnResourcesLoaded()
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
+	ParticleSystem* pFire = new ParticleSystem();
+	pFire->SetTexture(TEXTURE::SMOKE);
+	pFire->SetTimeToLive(0.5f);
+	pFire->SetParticlesPerFrame(1);
+	pFire->SetConeAngle(glm::radians<float>(30.0f));
+	pFire->SetSpeed(0.5f, 2.0f);
+	pFire->SetColor(glm::vec4(1.0f, 0.55f, 0.0f, 1.0f));
+	
 	for (uint32 j = 0; j < 15; j++)
 	{
 		for (uint32 i = 0; i < 15; i++)
 		{
-			ParticleSystem* pFire = new ParticleSystem();
-			pFire->SetTexture(TEXTURE::SMOKE);
-			pFire->SetTimeToLive(2.0f);
-			pFire->SetParticlesPerFrame(2);
-			pFire->SetConeAngle(glm::radians<float>(30.0f));
-			pFire->SetSpeed(0.5f, 2.0f);
-			pFire->SetPosition(glm::vec3(j, 8.0f, 0.0f + (3.0f * i)));
-			pFire->SetColor(glm::vec4(1.0f, 0.55f, 0.0f, 1.0f));
-			m_Scenes[0]->AddGameObject(pFire);
+			ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
+			pEmitter->SetPosition(glm::vec3(j, 8.0f, 0.0f + (3.0f * i)));
+			m_Scenes[0]->AddGameObject(pEmitter);
 		}
 	}
 	

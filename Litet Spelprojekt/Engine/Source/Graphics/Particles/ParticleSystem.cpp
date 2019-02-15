@@ -1,6 +1,7 @@
 #include <EnginePch.h>
-#include <Graphics/ParticleSystem.h>
 #include <System/Random.h>
+#include <Graphics/Particles/ParticleSystem.h>
+#include <IO/ResourceHandler.h>
 #include <GLMHelper.inl>
 
 ParticleSystem::ParticleSystem()
@@ -21,7 +22,7 @@ ParticleSystem::ParticleSystem()
 		m_pLivingParticles[i] = i;
 		m_pSortedParticles[i] = i;
 
-		m_pParticles[i].Position = GetPosition();
+		m_pParticles[i].Position = glm::vec3(0.0f);
 		m_pParticles[i].Direction = UP_VECTOR;
 		m_pParticles[i].TimeLived = 0.0f;
 		m_pParticles[i].Speed = 0.0f;
@@ -40,14 +41,8 @@ ParticleSystem::~ParticleSystem()
 	DeleteArrSafe(m_pParticleInstances);
 }
 
-void ParticleSystem::Update(const Camera& camera, float deltaTime)
+void ParticleSystem::Update(float deltaTime) noexcept
 {
-	//Spawn particles
-	for (uint32 i = 0; i < m_ParticlesPerFrame; i++)
-	{
-		SpawnParticle();
-	}
-
 	//Update and sort particles
 	m_NumSortedParticles = 0;
 	for (uint32 i = 0; i < GetNumParticles(); i++)
@@ -62,12 +57,18 @@ void ParticleSystem::Update(const Camera& camera, float deltaTime)
 
 			continue;
 		}
-		
+
 		particle.Position += (particle.Direction * particle.Speed * deltaTime);
 		particle.LifePercentage = particle.TimeLived / m_TimeToLive;
 		particle.DistToCameraSqrd = LengthSqrd(particle.Position - camera.GetPosition());
 
 		InsertSortedParticle(m_pLivingParticles[i]);
+	}
+
+	//Spawn particles
+	for (uint32 i = 0; i < m_ParticlesPerFrame; i++)
+	{
+		SpawnParticle();
 	}
 
 	//Fill instances
@@ -78,8 +79,6 @@ void ParticleSystem::Update(const Camera& camera, float deltaTime)
 		m_pParticleInstances[i].Color.a = 1.0f - data.LifePercentage;
 		m_pParticleInstances[i].Position = data.Position;
 	}
-
-	GameObject::Update(camera, deltaTime);
 }
 
 void ParticleSystem::SetConeAngle(float angleRad) noexcept
@@ -118,6 +117,10 @@ uint32 ParticleSystem::GetNumParticles() const noexcept
 	return m_NumParticles;
 }
 
+void ParticleSystem::SortParticles(const Camera& camera) const noexcept
+{
+}
+
 const Texture2D* ParticleSystem::GetTexture() const noexcept
 {
 	return m_pTexture;
@@ -133,12 +136,12 @@ const glm::vec4& ParticleSystem::GetColor() const noexcept
 	return m_Color;
 }
 
-ParticleSystem::ParticleData& ParticleSystem::GetLivingParticle(uint32 index) noexcept
+ParticleData& ParticleSystem::GetLivingParticle(uint32 index) noexcept
 {
 	return m_pParticles[m_pLivingParticles[index]];
 }
 
-ParticleSystem::ParticleData& ParticleSystem::GetSortedParticle(uint32 index) noexcept
+ParticleData& ParticleSystem::GetSortedParticle(uint32 index) noexcept
 {
 	return m_pParticles[m_pSortedParticles[index]];
 }

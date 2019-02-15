@@ -1,33 +1,12 @@
 #pragma once
-#include "GameObject.h"
-#include "Geometry/Particle.h"
+#include <Graphics/Textures/Texture2D.h>
+#include <Graphics/Geometry/Particle.h>
+#include <Graphics/Camera.h>
+#include "ParticleData.h"
 
-class API ParticleSystem : public GameObject
+class API ParticleSystem
 {
 	friend class DefferedRenderer;
-
-private:
-	struct ParticleData
-	{
-	public:
-		glm::vec3 Position;
-		glm::vec3 Direction;
-		float Speed;
-		float TimeLived;
-		float DistToCameraSqrd;
-		float LifePercentage;
-
-	public:
-		inline bool operator<(const ParticleData& other)
-		{
-			return (this->DistToCameraSqrd < other.DistToCameraSqrd);
-		}
-
-		inline bool operator>(const ParticleData& other)
-		{
-			return (this->DistToCameraSqrd > other.DistToCameraSqrd);
-		}
-	};
 
 public:
 	ParticleSystem(ParticleSystem&& other) = delete;
@@ -38,7 +17,7 @@ public:
 	ParticleSystem();
 	~ParticleSystem();
 
-	virtual void Update(const Camera& camera, float deltaTime) override;
+	void Update(float deltaTime) noexcept;
 
 	void SetConeAngle(float angleRad) noexcept;
 	void SetParticlesPerFrame(uint32 particlePerFrame) noexcept;
@@ -49,6 +28,7 @@ public:
 	uint32 GetNumParticles() const noexcept;
 
 private:
+	void SortParticles(const Camera& camera) const noexcept;
 	const Texture2D* GetTexture() const noexcept;
 	const ParticleInstance* GetParticleInstances() const noexcept;
 	const glm::vec4& GetColor() const noexcept;

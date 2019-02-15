@@ -14,6 +14,8 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
+	virtual void Update(float deltaTime) noexcept;
+	virtual void UpdateTransform() noexcept;
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
@@ -22,6 +24,7 @@ public:
 	virtual void SetPosition(const glm::vec3& position) noexcept;
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
+	
 	void SetExtend(bool extend) noexcept;
 	void Extend(float dtS) noexcept;
 
@@ -44,9 +47,6 @@ public:
 
 	void SetTypeId(int32 typeId) noexcept;
 	int32 GetTypeId() const noexcept;
-
-	virtual void Update(const Camera& camera, float deltaTime);
-	virtual void UpdateTransform() noexcept;
 
 private:
 	std::string m_Name;

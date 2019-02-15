@@ -69,8 +69,9 @@
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\System\Random.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
-    <ClCompile Include="Source\Graphics\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Particle.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -151,10 +152,11 @@
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\System\Random.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelExpandable.h" />
-    <ClInclude Include="Include\Graphics\ParticleSystem.h" />
     <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

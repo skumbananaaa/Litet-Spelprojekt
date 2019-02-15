@@ -114,18 +114,6 @@ void Game::OnResourcesLoaded()
 		m_Scenes[0]->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 	}
 
-	//Lights
-	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
-
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(5.0f, 5.9f, 3.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
-		m_Scenes[0]->AddPointLight(new PointLight(glm::vec3(6.0f, 3.9f, 6.0f), glm::vec4(2.0f, 2.0f, 2.0f, 1.0f)));
-
-		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-	}
-
 	//Create GameObjects
 	GameObject* pGameObject = nullptr;
 	{
@@ -293,7 +281,19 @@ void Game::OnResourcesLoaded()
 		}
 	}
 
-	m_Scenes[0]->AddPointLight(new PointLight(m_Scenes[0]->GetWorld()->GetRoomCenter(3), glm::vec4(2.0f, 2.0f, 2.0f, 2.0f)));
+	//Lights
+	{
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
+
+		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
+		{
+			m_Scenes[0]->AddRoomLight(new PointLight(m_Scenes[0]->GetWorld()->GetRoom(0)->GetCenter(), glm::vec4(2.0f, 2.0f, 2.0f, 2.0f)));
+		}
+
+		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 10.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+		//m_Scenes[0]->AddSpotLight(new SpotLight(glm::vec3(6.0f, 5.9f, 25.0f), glm::cos(glm::radians(45.5f)), glm::cos(glm::radians(60.5f)), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	}
 
 	//Crew
 	std::string names[] = {
@@ -492,8 +492,12 @@ void Game::OnKeyDown(KEY keycode)
 		case KEY_R:
 		{
 			glm::ivec3 tile = m_Crew.GetMember(0)->GetTile();
-			uint32 room = m_Scenes[m_SceneId]->GetWorld()->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
-			m_Scenes[m_SceneId]->SetVisibleRoom(room);
+			if (!m_Crew.GetMember(0)->IsExtending())
+			{
+				uint32 room = m_Scenes[m_SceneId]->GetWorld()->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+				m_Scenes[m_SceneId]->ViewRoom(room);
+			}
+			break;
 		}
 	}
 

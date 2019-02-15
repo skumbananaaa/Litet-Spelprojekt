@@ -28,10 +28,13 @@ World::~World()
 		m_ppLevels[i] = nullptr;
 	}
 
-	delete[] m_ppLevels;
-	m_ppLevels = nullptr;
-	delete[] m_pStairs;
-	m_pStairs = nullptr;
+	DeleteArrSafe(m_ppLevels);
+	DeleteArrSafe(m_pStairs);
+
+	for (size_t i = 0; i < m_Rooms.size(); i++)
+	{
+		DeleteSafe(m_Rooms[i]);
+	}
 }
 
 void World::AddWorldObject(const WorldObject& object) noexcept
@@ -86,9 +89,11 @@ void World::GenerateRooms()
 		}
 	}
 	
-	for (size_t i = 0; i < center.size(); i++)
+	m_Rooms.push_back(new Room());
+	m_Rooms.push_back(new Room());
+	for (size_t i = 2; i < center.size(); i++)
 	{
-		m_Rooms.push_back(Room(center[i]));
+		m_Rooms.push_back(new Room(center[i]));
 	}
 }
 
@@ -113,10 +118,10 @@ uint32 World::GetNumStairs() const noexcept
 	return m_NumStairs;
 }
 
-const glm::vec3 & World::GetRoomCenter(uint32 room) const noexcept
+Room* World::GetRoom(uint32 room) const noexcept
 {
 	assert(room < m_Rooms.size());
-	return m_Rooms[room].GetCenter();
+	return m_Rooms[room];
 }
 
 void World::Update(float dt)

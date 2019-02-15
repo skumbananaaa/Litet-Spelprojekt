@@ -33,6 +33,7 @@
 #include <math.h>
 
 #define NUM_CREW 15
+#define MAX_ROOMS_VISIBLE 3
 
 class Game : public Application
 {

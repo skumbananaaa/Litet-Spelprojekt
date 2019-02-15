@@ -32,7 +32,7 @@ public:
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
-	const glm::vec3& GetRoomCenter(uint32 room) const noexcept;
+	Room* GetRoom(uint32 room) const noexcept;
 	void Update(float dt);
 
 private:
@@ -43,5 +43,5 @@ private:
 	glm::ivec3* m_pStairs;
 	uint32 m_NumStairs;
 
-	std::vector<Room> m_Rooms;
+	std::vector<Room*> m_Rooms;
 };

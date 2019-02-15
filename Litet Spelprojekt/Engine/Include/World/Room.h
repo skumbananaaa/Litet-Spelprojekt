@@ -8,8 +8,12 @@ public:
 	~Room();
 
 	const glm::vec3& GetCenter() const noexcept;
+	const bool IsActive() const noexcept;
+
+	void SetActive(bool active) noexcept;
 
 private:
 	glm::vec3 m_Center;
+	bool m_Active = false;
 
 };

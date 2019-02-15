@@ -20,9 +20,18 @@ PanelScrollable::~PanelScrollable()
 	{
 		GetParent()->Remove(m_pSliderVertical);
 		GetParent()->Remove(m_pSliderHorizontal);
+
+		if (!GetParent()->WillDeleteAllChildrenOnDestruction())
+		{
+			delete m_pSliderVertical;
+			delete m_pSliderHorizontal;
+		}
 	}
-	delete m_pSliderVertical;
-	delete m_pSliderHorizontal;
+	else
+	{
+		delete m_pSliderVertical;
+		delete m_pSliderHorizontal;
+	}
 	delete m_pFrameBufferClientArea;
 }
 

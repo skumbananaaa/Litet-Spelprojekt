@@ -99,32 +99,35 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
 		{
-			bool batchFound = false;
-			const Material* pMaterial = drawables[i]->GetMaterial();
-			const IndexedMesh* pMesh = drawables[i]->GetMesh();
-			
-			InstanceData instance = {};
-			instance.Model = drawables[i]->GetTransform();
-			instance.InverseModel = drawables[i]->GetInverseTransform();
-		
-			for (size_t j = 0; j < m_DrawableBatches.size(); j++)
+			if (drawables[i]->IsVisible())
 			{
-				if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
-				{
-					m_DrawableBatches[j].Instances.push_back(instance);
-					batchFound = true;
-					break;
-				}
-			}
+				bool batchFound = false;
+				const Material* pMaterial = drawables[i]->GetMaterial();
+				const IndexedMesh* pMesh = drawables[i]->GetMesh();
 
-			if (!batchFound)
-			{
-				DrawableBatch batch = {};
-				batch.pMaterial = pMaterial;
-				batch.pMesh = pMesh;
-				batch.Instances.push_back(instance);
-				
-				m_DrawableBatches.push_back(batch);
+				InstanceData instance = {};
+				instance.Model = drawables[i]->GetTransform();
+				instance.InverseModel = drawables[i]->GetInverseTransform();
+
+				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
+				{
+					if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
+					{
+						m_DrawableBatches[j].Instances.push_back(instance);
+						batchFound = true;
+						break;
+					}
+				}
+
+				if (!batchFound)
+				{
+					DrawableBatch batch = {};
+					batch.pMaterial = pMaterial;
+					batch.pMesh = pMesh;
+					batch.Instances.push_back(instance);
+
+					m_DrawableBatches.push_back(batch);
+				}
 			}
 		}
 	}
@@ -231,9 +234,9 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
 }
 
-void DefferedRenderer::SetWorldBuffer(const Scene& scene) const
+void DefferedRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
 {
-	if (scene.GetWorld() != nullptr)
+	if (pWorld != nullptr)
 	{
 		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
 		{
@@ -241,7 +244,7 @@ void DefferedRenderer::SetWorldBuffer(const Scene& scene) const
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(scene.GetWorld()->GetLevel(y)->GetLevel()[x][z]);
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y)->GetLevel()[x][z]);
 				}
 			}
 		}

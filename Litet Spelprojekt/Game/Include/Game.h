@@ -72,6 +72,7 @@ private:
 	DebugRenderer* m_pDebugRenderer;
 	std::vector<Scene*> m_Scenes;
 	uint32 m_SceneId = 0;
+	World* m_pWorld;
 
 	TextureCube* m_pSkyBoxTex;
 	UICrew* m_pUICrew;
@@ -86,6 +87,10 @@ private:
 
 	bool cartesianCamera;
 	int32 m_CurrentElevation;
+
+	std::vector<uint32> m_ActiveRooms;
+	std::vector<float> m_RoomLightsTimers;
+	uint32 m_CurrentLight = 0;
 
 	//Sound
 	AudioSource* m_pTestAudioSource;

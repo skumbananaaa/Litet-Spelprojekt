@@ -7,7 +7,6 @@
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/SkyBox.h>
 #include <Graphics/Textures/PlanarReflector.h>
-#include <World/World.h>
 
 class API Scene
 {
@@ -20,7 +19,6 @@ public:
 	void SetCamera(Camera* pCamera, uint32 index = 0) noexcept;
 	void SelectCamera(uint32 index);
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
-	void SetWorld(World* pWorld) noexcept;
 	void AddGameObject(GameObject* pGameObject) noexcept;
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
 	void AddPointLight(PointLight* pLight) noexcept;
@@ -30,7 +28,6 @@ public:
 	void RemoveGameObject(uint32 index) noexcept;
 	void ExtendScene(bool extend) noexcept;
 	void SetConceal(bool conceal) noexcept;
-	void ViewRoom(uint32 room) noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
@@ -47,8 +44,8 @@ public:
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
-	const World* GetWorld() const noexcept;
-	World* GetWorld() noexcept;
+	const std::vector<PointLight*>& GetRoomLights() const noexcept;
+	std::vector<PointLight*>& GetRoomLights() noexcept;
 	const bool IsExtended() const noexcept;
 	const bool IsConcealed() const noexcept;
 
@@ -65,12 +62,8 @@ private:
 	std::vector<PointLight*> m_PointLights;
 	std::vector<SpotLight*> m_SpotLights;
 	std::vector<PointLight*> m_RoomLights;
-	std::vector<float> m_LightTimer;
-	std::vector<uint32> m_ActiveRooms;
 	SkyBox* m_pSkyBox;
-	World* m_pWorld;
 
-	uint32 m_CurrentLight = 0;
 	bool m_Concealed = false;
 	bool m_Extended = false;
 	bool m_WasExtended = false;
@@ -133,14 +126,14 @@ inline const std::vector<SpotLight*>& Scene::GetSpotLights() const noexcept
 	return m_SpotLights;
 }
 
-inline const World * Scene::GetWorld() const noexcept
+inline const std::vector<PointLight*>& Scene::GetRoomLights() const noexcept
 {
-	return m_pWorld;
+	return m_RoomLights;
 }
 
-inline World * Scene::GetWorld() noexcept
+inline std::vector<PointLight*>& Scene::GetRoomLights() noexcept
 {
-	return m_pWorld;
+	return m_RoomLights;
 }
 
 inline const bool Scene::IsExtended() const noexcept

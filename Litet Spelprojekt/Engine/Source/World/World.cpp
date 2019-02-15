@@ -97,6 +97,14 @@ void World::GenerateRooms()
 	}
 }
 
+void World::GenerateWater(Scene* pScene) noexcept
+{
+	for (int level = 0; level < m_NumLevels; level++)
+	{
+		m_ppLevels[level]->GenerateWater(pScene, level);
+	}
+}
+
 void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 {
 	m_NumStairs = nrOfStairs;

@@ -1,7 +1,7 @@
 #include "..\..\Include\GUI\UICrewMember.h"
 #include "..\..\Include/Game.h"
 
-UICrewMember::UICrewMember(float x, float y, float width, float height) : Panel(x, y, width, height),
+UICrewMember::UICrewMember(float width, float height) : Panel(0, 0, width, height),
 	m_Crewmember(nullptr)
 {
 	m_TextViewName = new TextView(0, height - 25, width, 25, "Name", true);

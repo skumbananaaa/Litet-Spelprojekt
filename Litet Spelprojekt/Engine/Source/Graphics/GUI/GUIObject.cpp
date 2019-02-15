@@ -555,9 +555,14 @@ void* GUIObject::GetUserData() const
 	return m_pUserData;
 }
 
-const std::vector<GUIObject*>& GUIObject::GetChildren()
+const std::vector<GUIObject*>& GUIObject::GetChildren() noexcept
 {
 	return m_Children;
+}
+
+int32 GUIObject::GetNrOfChildren() const noexcept
+{
+	return m_Children.size() + m_ChildrenToAdd.size() - m_ChildrenToRemove.size();
 }
 
 Texture2D* GUIObject::GetDefaultTexture() const

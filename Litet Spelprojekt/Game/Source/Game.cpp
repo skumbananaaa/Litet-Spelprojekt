@@ -24,25 +24,23 @@ Game::Game() noexcept :
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
 	m_pWorld(nullptr),
-	m_pTextViewFPS(nullptr),
-	m_pTextViewUPS(nullptr),
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(false),
 	m_CurrentElevation(2)
 {
-	m_pTextViewFPS = new TextView(0, GetWindow().GetHeight() - 60, 200, 50, "FPS");
-	m_pTextViewUPS = new TextView(0, GetWindow().GetHeight() - 80, 200, 50, "UPS");
+	Logger::SetListener(this);
+
 	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
 	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
 
-	GetGUIManager().Add(m_pTextViewFPS);
-	GetGUIManager().Add(m_pTextViewUPS);
 	GetGUIManager().Add(m_pTextViewFile);
 	GetGUIManager().Add(m_pLoadingBar);
 }
 
 Game::~Game()
 {
+	Logger::Save();
+
 	DeleteSafe(m_pRenderer);
 	DeleteSafe(m_pDebugRenderer);
 
@@ -53,16 +51,23 @@ Game::~Game()
 		DeleteSafe(m_Scenes[i]);
 	}
 
-	DeleteSafe(m_pTextViewFPS);
-	DeleteSafe(m_pTextViewUPS);
 	DeleteSafe(m_pTextViewScene);
 	DeleteSafe(m_pTextViewFile);
 	DeleteSafe(m_pLoadingBar);
 	DeleteSafe(m_pUICrewMember);
 	DeleteSafe(m_pUICrew);
+	DeleteSafe(m_PanelLog);
 
 	DeleteSafe(m_pTestAudioSource);
 	DeleteSafe(m_pWorld);
+}
+
+void Game::OnLogged(const std::string& text) noexcept
+{
+	glm::vec4 color = m_ListScrollableLog->GetNrOfChildren() % 2 == 0 ? glm::vec4(0.2F, 0.2F, 0.2F, 1.0F) : glm::vec4(0.3F, 0.3F, 0.3F, 1.0F);
+	TextView* textView = new TextView(0, 0, m_ListScrollableLog->GetClientWidth(), 40, text);
+	textView->SetBackgroundColor(color);
+	m_ListScrollableLog->Add(textView);
 }
 
 void Game::OnResourceLoading(const std::string& file, float percentage)
@@ -76,12 +81,22 @@ void Game::OnResourcesLoaded()
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
 
-	m_pUICrewMember = new UICrewMember(200, 200, 330, 170);
+	m_pUICrewMember = new UICrewMember(330, 170);
+
+	m_PanelLog = new Panel(GetWindow().GetWidth() - 300, GetWindow().GetHeight() - 450, 300, 450);
+	m_pTextViewLog = new TextView(0, m_PanelLog->GetHeight() - 50, m_PanelLog->GetWidth(), 50, "Loggbok", true);
+	m_ListScrollableLog = new ListScrollable(0, 0, m_PanelLog->GetWidth(), m_PanelLog->GetHeight() - m_pTextViewLog->GetHeight());
+	m_ListScrollableLog->SetBackgroundColor(glm::vec4(0.15F, 0.15F, 0.15F, 1.0F));
+	m_PanelLog->SetDeleteAllChildrenOnDestruction(true);
+	m_PanelLog->Add(m_pTextViewLog);
+	m_PanelLog->Add(m_ListScrollableLog);
+
 	GetGUIManager().Add(m_pUICrewMember);
+	GetGUIManager().Add(m_PanelLog);
 
 	//Set game TextViews
 	{
-		m_pTextViewScene = new TextView(GetWindow().GetWidth() - 100, GetWindow().GetHeight() - 60, 100, 50, "Scene " + std::to_string(m_SceneId));
+		m_pTextViewScene = new TextView(0, 0, 100, 50, "Scene " + std::to_string(m_SceneId));
 
 		GetGUIManager().Add(m_pTextViewScene);
 	}
@@ -335,7 +350,7 @@ void Game::OnResourcesLoaded()
 		members.push_back(m_Crew.GetMember(i));
 	}
 
-	m_pUICrew = new UICrew(0, 0, 200, 500, members);
+	m_pUICrew = new UICrew(0, GetWindow().GetHeight() - 150, 200, 500, members);
 
 	/*_______________________________________________________________________________________________________________*/
 	//SCENE2
@@ -429,8 +444,7 @@ void Game::OnResourcesLoaded()
 
 void Game::OnUpdateLoading(float dtS)
 {
-	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
-	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
+	
 }
 
 void Game::OnRenderLoading(float dtS)
@@ -453,6 +467,7 @@ void Game::OnKeyUp(KEY keycode)
 
 void Game::OnKeyDown(KEY keycode)
 {
+	Logger::LogEvent("KeyDown: " + std::to_string(keycode), true);
 	switch (keycode)
 	{
 		case KEY_O:
@@ -738,9 +753,6 @@ void Game::OnUpdate(float dtS)
 	{
 		pCameraLookAt->SetPosition(m_Scenes[m_SceneId]->GetCamera().GetLookAt());
 	}
-
-	m_pTextViewFPS->SetText("FPS " + std::to_string(GetFPS()));
-	m_pTextViewUPS->SetText("UPS " + std::to_string(GetUPS()));
 
 	AudioListener::SetPosition(m_Scenes[m_SceneId]->GetCamera().GetPosition());
 	AudioListener::SetOrientation(m_Scenes[m_SceneId]->GetCamera().GetFront(), m_Scenes[m_SceneId]->GetCamera().GetUp());

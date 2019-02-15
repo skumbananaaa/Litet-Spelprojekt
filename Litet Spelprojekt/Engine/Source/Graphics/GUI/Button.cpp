@@ -4,7 +4,6 @@
 Button::Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*), void(*onReleasedCallback)(Button*), int textSize) : TextView(x, y, width, height, text, true, textSize),
 	m_pOnPressedTexture(nullptr),
 	m_IsPressed(false),
-	m_IsHovered(false),
 	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
 	m_HoverColor(0.6F, 0.6F, 0.6F, 1.0F),
 	m_SelectedColor(0.553F, 0.824F, 0.541F, 1.0F),
@@ -147,6 +146,15 @@ void Button::SetSelected(bool selected)
 	}
 }
 
+void Button::SetHovered(bool hovered)
+{
+	if (IsHovered() != hovered)
+	{
+		IHoverable::SetHovered(hovered);
+		RequestRepaint();
+	}
+}
+
 void Button::SetOnButtonPressed(void(*callback)(Button*))
 {
 	m_OnPressedCallback = callback;
@@ -205,10 +213,7 @@ void Button::OnReleased(const glm::vec2 & position, MouseButton mousebutton) noe
 	{
 		listener->OnButtonReleased(this);
 	}
-	for (ISelectableListener* listener : GetSelectionListeners())
-	{
-		listener->OnSelected(this);
-	}
+	TriggerOnSelected(this);
 }
 
 void Button::OnMousePressed(const glm::vec2& position, MouseButton mousebutton)
@@ -239,10 +244,6 @@ void Button::OnMouseMove(const glm::vec2& position)
 		{
 			m_IsHovered = true;
 			RequestRepaint();
-			for (IButtonListener* listener : m_ButtonListeners)
-			{
-				listener->OnButtonHovered(this);
-			}
 		}
 	}
 	else if (m_IsHovered)
@@ -254,6 +255,7 @@ void Button::OnMouseMove(const glm::vec2& position)
 			listener->OnButtonNotHovered(this);
 		}
 	}
+	TriggerSendUpdate(this);
 }
 
 void Button::OnAdded(GUIObject* parent)

@@ -44,9 +44,9 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 	static glm::vec4 buttonColor = glm::vec4(0.25F, 0.25F, 0.25F, 1.0F);
 	static glm::vec2 textOffset = glm::vec2(10.0, 0.0);
 
-	m_Fires = new PanelExpandable(x, 750, width, 50, fires.size() * buttonHeight + extraHeight, "Rökdykare");
-	m_Medics = new PanelExpandable(x, 700, width, 50, medics.size() * buttonHeight + extraHeight, "Sjukvårdare");
-	m_Strengths = new PanelExpandable(x, 650, width, 50, strength.size() * buttonHeight + extraHeight, "Biffar");
+	m_Fires = new PanelExpandable(x, y + 100, width, 50, fires.size() * buttonHeight + extraHeight, "Rökdykare");
+	m_Medics = new PanelExpandable(x, y + 50, width, 50, medics.size() * buttonHeight + extraHeight, "Sjukvårdare");
+	m_Strengths = new PanelExpandable(x, y + 0, width, 50, strength.size() * buttonHeight + extraHeight, "Biffar");
 
 	m_Fires->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_FIRE));
 	m_Medics->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_MEDIC));
@@ -81,6 +81,8 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 	m_SelectionHandler.AddSelectable(m_Strengths);
 	m_SelectionHandler.AddSelectionListener(this);
 
+	m_HoveringHandler.AddHoveringListener(this);
+
 	for (int i = 0; i < fires.size(); i++)
 	{
 		Button* button = new Button(0, i * buttonHeight + extraHeight, m_Fires->GetWidth(), buttonHeight, fires[i]->GetName());
@@ -89,6 +91,7 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 		button->SetTextOffset(textOffset);
 		button->SetUserData(reinterpret_cast<void*>(fires[i]->GetShipNumber()));
 		button->AddButtonListener(this);
+		m_HoveringHandler.AddHoverable(button);
 		m_Fires->Add(button);
 	}
 
@@ -100,6 +103,7 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 		button->SetTextOffset(textOffset);
 		button->SetUserData(reinterpret_cast<void*>(medics[i]->GetShipNumber()));
 		button->AddButtonListener(this);
+		m_HoveringHandler.AddHoverable(button);
 		m_Medics->Add(button);
 	}
 
@@ -111,6 +115,7 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 		button->SetTextOffset(textOffset);
 		button->SetUserData(reinterpret_cast<void*>(strength[i]->GetShipNumber()));
 		button->AddButtonListener(this);
+		m_HoveringHandler.AddHoverable(button);
 		m_Strengths->Add(button);
 	}
 
@@ -162,6 +167,18 @@ void UICrew::OnDeselected(const SelectionHandler* handler, ISelectable* selectio
 
 }
 
+void UICrew::OnHovered(const HoveringHandler* handler, IHoverable* selection)
+{
+	Game* game = Game::GetGame();
+	game->m_pUICrewMember->SetCrewMember(game->GetCrewmember(reinterpret_cast<uint32>(((Button*)selection)->GetUserData())));
+}
+
+void UICrew::OnDehovered(const HoveringHandler* handler, IHoverable* selection)
+{
+	Game* game = Game::GetGame();
+	game->m_pUICrewMember->SetCrewMember(nullptr);
+}
+
 void UICrew::OnRenderGUIObject(GUIContext* context, GUIObject* object)
 {
 	context->RenderTexture(ResourceHandler::GetTexture2D(reinterpret_cast<uint32>(object->GetUserData())), object->GetWidth() - 40, 10, 30, 30, GUIContext::COLOR_WHITE);
@@ -179,12 +196,10 @@ void UICrew::OnButtonReleased(Button* button)
 
 void UICrew::OnButtonHovered(Button* button)
 {
-	Game* game = Game::GetGame();
-	game->m_pUICrewMember->SetCrewMember(game->GetCrewmember(reinterpret_cast<uint32>(button->GetUserData())));
+	
 }
 
 void UICrew::OnButtonNotHovered(Button* button)
 {
-	Game* game = Game::GetGame();
-	game->m_pUICrewMember->SetCrewMember(nullptr);
+	
 }

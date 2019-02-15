@@ -59,7 +59,13 @@ public:
 	void SetUserData(void* data);
 	void* GetUserData() const;
 
-	const std::vector<GUIObject*>& GetChildren();
+	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseMove(const glm::vec2& position) {};
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) {};
+
+	const std::vector<GUIObject*>& GetChildren() noexcept;
+	int32 GetNrOfChildren() const noexcept;
 
 protected:
 	GUIObject(float x, float y, float width, float height);
@@ -69,11 +75,6 @@ protected:
 
 	virtual void OnUpdate(float dtS) {};
 	virtual void OnRender(GUIContext* context);
-
-	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
-	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
-	virtual void OnMouseMove(const glm::vec2& position) {};
-	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) {};
 
 	virtual void OnKeyUp(KEY keycode) {};
 	virtual void OnKeyDown(KEY keycode) {};
@@ -113,6 +114,8 @@ protected:
 
 	void InternalRootOnMouseMove(const glm::vec2& position);
 
+	static std::vector<GUIObject*> s_MouseListeners;
+
 private:
 	void InternalOnUpdate(float dtS);
 	void InternalOnRender(GUIContext* context);
@@ -145,7 +148,6 @@ private:
 	bool m_DeleteAll;
 	void* m_pUserData;
 
-	static std::vector<GUIObject*> s_MouseListeners;
 	static std::vector<GUIObject*> s_RealTimeRenderers;
 	static Texture2D* s_pDefaultTexture;
 };

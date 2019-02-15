@@ -673,10 +673,12 @@ void Game::OnUpdate(float dtS)
 		if (Input::IsKeyDown(KEY_E))
 		{
 			localMove.y = cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 		else if (Input::IsKeyDown(KEY_Q))
 		{
 			localMove.y = -cartesianCameraSpeed * dtS;
+			m_pUICrewMember->SetCrewMember(nullptr);
 		}
 
 		m_Scenes[m_SceneId]->GetCamera().MoveLocalCoords(localMove);

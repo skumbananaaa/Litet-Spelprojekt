@@ -257,7 +257,6 @@ void Game::OnResourcesLoaded()
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
-	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetDissolveFactor(0.0f);
 
 	//SetClipPlanes(0);
 
@@ -335,7 +334,7 @@ void Game::OnResourcesLoaded()
 
 	m_pUICrew = new UICrew(0, 0, 200, 500, members);
 
-	m_Scenes[0]->SetConceal(true);
+	m_Scenes[0]->SetConceal(false);
 
 	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId]);
 

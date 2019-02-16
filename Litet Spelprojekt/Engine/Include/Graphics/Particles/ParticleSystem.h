@@ -7,6 +7,7 @@
 class API ParticleSystem
 {
 	friend class DefferedRenderer;
+	friend class ParticleEmitter;
 
 public:
 	ParticleSystem(ParticleSystem&& other) = delete;
@@ -17,10 +18,9 @@ public:
 	ParticleSystem();
 	~ParticleSystem();
 
-	void Update(float deltaTime) noexcept;
+	void Update(const Camera& camera, float deltaTime) noexcept;
 
 	void SetConeAngle(float angleRad) noexcept;
-	void SetParticlesPerFrame(uint32 particlePerFrame) noexcept;
 	void SetSpeed(float min, float max) noexcept;
 	void SetTimeToLive(float timeToLive) noexcept;
 	void SetTexture(uint32 textureID) noexcept;
@@ -28,14 +28,13 @@ public:
 	uint32 GetNumParticles() const noexcept;
 
 private:
-	void SortParticles(const Camera& camera) const noexcept;
+	void SpawnParticle(const glm::vec3& position) noexcept;
 	const Texture2D* GetTexture() const noexcept;
 	const ParticleInstance* GetParticleInstances() const noexcept;
 	const glm::vec4& GetColor() const noexcept;
 	ParticleData& GetLivingParticle(uint32 index) noexcept;
 	ParticleData& GetSortedParticle(uint32 index) noexcept;
 	void InsertSortedParticle(uint32 id) noexcept;
-	void SpawnParticle() noexcept;
 	void KillParticle(uint32 index);
 
 private:
@@ -54,5 +53,4 @@ private:
 	uint32 m_NumSortedParticles;
 	uint32 m_NumParticles;
 	uint32 m_MaxParticles;
-	uint32 m_ParticlesPerFrame;
 };

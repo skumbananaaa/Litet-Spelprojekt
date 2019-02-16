@@ -6,6 +6,16 @@
 
 #define REFLECTIONSIZE 384
 
+TimerQuery::TimerQuery()
+{
+	glGenQueries(12, Queries);
+}
+
+TimerQuery::~TimerQuery()
+{
+	glDeleteQueries(12, Queries);
+}
+
 DefferedRenderer::DefferedRenderer()
 	: m_pGBufferCBR(nullptr),
 	m_pParticle(nullptr),
@@ -202,6 +212,9 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
+	//Set current query
+	m_pCurrentQuery = &m_Queries[m_FrameCounter % 2];
+
 	//Clear last frame's batches
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
@@ -299,8 +312,13 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.Disable(BLEND);
 
 	//Render reflections
+
+	glQueryCounter(m_pCurrentQuery->Queries[0], GL_TIMESTAMP);
+
 	ReflectionPass(scene);
 	
+	glQueryCounter(m_pCurrentQuery->Queries[1], GL_TIMESTAMP);
+
 	//Update camera buffer from scene
 	UpdateCameraBuffer(scene.GetCamera());
 
@@ -313,11 +331,17 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//First the deffered rendering passes
 	//DepthPrePass(scene);
+
+	glQueryCounter(m_pCurrentQuery->Queries[2], GL_TIMESTAMP);
 	SkyBoxPass(scene.GetCamera(), scene);
+	glQueryCounter(m_pCurrentQuery->Queries[3], GL_TIMESTAMP);
 	GeometryPass(scene.GetCamera(), scene);
+	glQueryCounter(m_pCurrentQuery->Queries[4], GL_TIMESTAMP);
 	DecalPass(scene.GetCamera(), scene);
+	glQueryCounter(m_pCurrentQuery->Queries[5], GL_TIMESTAMP);
 	ParticlePass(scene.GetCamera(), scene);
-	
+	glQueryCounter(m_pCurrentQuery->Queries[6], GL_TIMESTAMP);
+
 	context.Disable(MULTISAMPLE);
 
 	//Resolve the gbuffer (aka we render the rendertargets to a non-MSAA target)
@@ -325,18 +349,61 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.SetViewport(m_pResolveTarget->GetWidth(), m_pResolveTarget->GetHeight(), 0, 0);
 	context.Disable(DEPTH_TEST);
 	
+	glQueryCounter(m_pCurrentQuery->Queries[7], GL_TIMESTAMP);
 	GBufferResolvePass(scene.GetCamera(), scene, m_pGBufferCBR);
+	glQueryCounter(m_pCurrentQuery->Queries[8], GL_TIMESTAMP);
 
 	//Render to the window, now we want to put everything together
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
 	context.SetFramebuffer(m_pBlur);
-	
+
 	//context.Enable(DEPTH_TEST);
 	//context.SetDepthFunc(FUNC_ALWAYS);
 
+	glQueryCounter(m_pCurrentQuery->Queries[9], GL_TIMESTAMP);
 	ReconstructionPass();
+	glQueryCounter(m_pCurrentQuery->Queries[10], GL_TIMESTAMP);
+
+	//int32 available = 0;
+	//while (!available)
+	//{
+	//	glGetQueryObjectiv(m_pCurrentQuery->Queries[11], GL_QUERY_RESULT_AVAILABLE, &available);
+	//}
+
+	uint64 startTime = 0;
+	uint64 stopTime = 0;
+
+	//Get query results
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[0], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[1], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.ReflectionPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
 	
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[2], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[3], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[4], GL_QUERY_RESULT, &startTime);
+	m_FrameTimes.GeometryPass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[5], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.DecalPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[6], GL_QUERY_RESULT, &startTime);
+	m_FrameTimes.ParticlePass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[7], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[8], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.LightPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[9], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->Queries[10], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.ReconstructionPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+
 	//context.SetDepthFunc(FUNC_LESS);
+
+	m_FrameCounter++;
+}
+
+FrameTimes& DefferedRenderer::GetFrameTimes() const
+{
+	return m_FrameTimes;
 }
 
 void DefferedRenderer::UpdateLightBuffer(const Scene& scene) const noexcept

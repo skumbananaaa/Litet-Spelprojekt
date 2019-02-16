@@ -45,6 +45,25 @@ struct PlaneBuffer
 	glm::vec4 ClipPlane;
 };
 
+struct FrameTimes
+{
+	float ReflectionPass = 0.0f;
+	float SkyboxPass = 0.0f;
+	float GeometryPass = 0.0f;
+	float DecalPass = 0.0f;
+	float ParticlePass = 0.0f;
+	float LightPass = 0.0f;
+	float ReconstructionPass = 0.0f;
+};
+
+struct TimerQuery
+{
+	TimerQuery();
+	~TimerQuery();
+
+	uint32 Queries[12];
+};
+
 class API DefferedRenderer final : public IRenderer
 {
 public:
@@ -58,6 +77,7 @@ public:
 
 	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, float dtS) const override final;
+	FrameTimes& GetFrameTimes() const;
 
 private:
 	void Create() noexcept;
@@ -101,6 +121,11 @@ private:
 	const ShaderProgram* m_pParticleProgram;
 	const ShaderProgram* m_pDepthPrePassProgram;
 	const ShaderProgram* m_pSkyBoxPassProgram;
+
+	mutable TimerQuery* m_pCurrentQuery;
+	mutable uint64 m_FrameCounter;
+	mutable TimerQuery m_Queries[2];
+	mutable FrameTimes m_FrameTimes;
 
 	glm::vec4 m_ClipDistances[NUM_CLIP_DISTANCES];
 	

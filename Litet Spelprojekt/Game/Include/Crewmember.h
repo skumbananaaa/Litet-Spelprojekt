@@ -46,7 +46,7 @@ public:
 	///<summary>Used to determine path of crewmember to an already selected target. Function made to run on multiple threads.</summary>
 	virtual void RunParallel() override;
 	///<summary>Updates matrix of the object.</summary>
-	virtual void Update(const Camera& camera, float deltaTime) override;
+	virtual void Update(float deltaTime) noexcept override;
 
 	virtual void OnPicked();
 	virtual void OnHovered();

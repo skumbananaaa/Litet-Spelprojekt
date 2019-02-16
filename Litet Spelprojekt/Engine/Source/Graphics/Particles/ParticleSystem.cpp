@@ -6,11 +6,21 @@
 
 ParticleSystem::ParticleSystem()
 	: m_pTexture(nullptr),
-	m_pParticleInstances(nullptr),
 	m_pLivingParticles(nullptr),
-	m_NumParticles(0)
+	m_pSortedParticles(nullptr),
+	m_pParticles(nullptr),
+	m_pParticleInstances(nullptr),
+	m_TimeToLive(0.0f),
+	m_MinSpeed(0.0f),
+	m_MaxSpeed(0.0f),
+	m_ConeAngle(0.0f),
+	m_NumSortedParticles(0),
+	m_NumParticles(0),
+	m_MaxParticles(0),
+	m_Direction(),
+	m_Color()
 {
-	m_MaxParticles = 2000;
+	m_MaxParticles = 10000;
 
 	m_pParticles = new ParticleData[m_MaxParticles];
 	m_pLivingParticles = new uint32[m_MaxParticles];
@@ -41,7 +51,7 @@ ParticleSystem::~ParticleSystem()
 	DeleteArrSafe(m_pParticleInstances);
 }
 
-void ParticleSystem::Update(float deltaTime) noexcept
+void ParticleSystem::Update(const Camera& camera, float deltaTime) noexcept
 {
 	//Update and sort particles
 	m_NumSortedParticles = 0;
@@ -65,12 +75,6 @@ void ParticleSystem::Update(float deltaTime) noexcept
 		InsertSortedParticle(m_pLivingParticles[i]);
 	}
 
-	//Spawn particles
-	for (uint32 i = 0; i < m_ParticlesPerFrame; i++)
-	{
-		SpawnParticle();
-	}
-
 	//Fill instances
 	for (uint32 i = 0; i < m_NumSortedParticles; i++)
 	{
@@ -84,11 +88,6 @@ void ParticleSystem::Update(float deltaTime) noexcept
 void ParticleSystem::SetConeAngle(float angleRad) noexcept
 {
 	m_ConeAngle = abs(angleRad);
-}
-
-void ParticleSystem::SetParticlesPerFrame(uint32 particlePerFrame) noexcept
-{
-	m_ParticlesPerFrame = particlePerFrame;
 }
 
 void ParticleSystem::SetSpeed(float min, float max) noexcept
@@ -115,10 +114,6 @@ void ParticleSystem::SetColor(const glm::vec4& color) noexcept
 uint32 ParticleSystem::GetNumParticles() const noexcept
 {
 	return m_NumParticles;
-}
-
-void ParticleSystem::SortParticles(const Camera& camera) const noexcept
-{
 }
 
 const Texture2D* ParticleSystem::GetTexture() const noexcept
@@ -169,13 +164,13 @@ void ParticleSystem::InsertSortedParticle(uint32 id) noexcept
 	m_NumSortedParticles++;
 }
 
-void ParticleSystem::SpawnParticle() noexcept
+void ParticleSystem::SpawnParticle(const glm::vec3& position) noexcept
 {
 	if (m_NumParticles < m_MaxParticles)
 	{
 		ParticleData& particle = GetLivingParticle(m_NumParticles);
 		particle.Speed = Random::GenerateFloat(m_MinSpeed, m_MaxSpeed);
-		particle.Position = GetPosition();
+		particle.Position = position;
 
 		glm::vec4 direction = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, m_ConeAngle), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::vec4(UP_VECTOR, 0.0f);
 		direction = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, glm::two_pi<float>()), glm::vec3(0.0f, 1.0f, 0.0f)) * direction;

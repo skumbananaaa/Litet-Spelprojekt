@@ -176,10 +176,16 @@ void Scene::OnUpdate(float dtS) noexcept
 {
 	for (GameObject* pGameObject : m_GameObjects)
 	{
-		pGameObject->Update(*m_pCamera, dtS);
+		pGameObject->Update(dtS);
 	}
+
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
-		pSpotLight->Update(*m_pCamera, dtS);
+		pSpotLight->Update(dtS);
+	}
+
+	for (ParticleSystem* pSystem : m_ParticleSystems)
+	{
+		pSystem->Update(*m_pCamera, dtS);
 	}
 }

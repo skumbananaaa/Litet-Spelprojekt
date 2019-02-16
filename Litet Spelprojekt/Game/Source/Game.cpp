@@ -226,18 +226,19 @@ void Game::OnResourcesLoaded()
 
 	ParticleSystem* pFire = new ParticleSystem();
 	pFire->SetTexture(TEXTURE::SMOKE);
-	pFire->SetTimeToLive(0.5f);
-	pFire->SetParticlesPerFrame(1);
+	pFire->SetTimeToLive(1.5f);
 	pFire->SetConeAngle(glm::radians<float>(30.0f));
 	pFire->SetSpeed(0.5f, 2.0f);
 	pFire->SetColor(glm::vec4(1.0f, 0.55f, 0.0f, 1.0f));
-	
-	for (uint32 j = 0; j < 15; j++)
+	m_Scenes[0]->AddParticleSystem(pFire);
+
+	for (uint32 j = 0; j < 1; j++)
 	{
-		for (uint32 i = 0; i < 15; i++)
+		for (uint32 i = 0; i < 1; i++)
 		{
 			ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
-			pEmitter->SetPosition(glm::vec3(j, 8.0f, 0.0f + (3.0f * i)));
+			pEmitter->SetPosition(glm::vec3(0.0, 8.0f, 15.0f + (3.0f * i)));
+			pEmitter->SetParticlesPerFrame(4);
 			m_Scenes[0]->AddGameObject(pEmitter);
 		}
 	}
@@ -601,6 +602,33 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
+	static float timer = 0.0f;
+	timer += dtS;
+	if (timer >= 1.0f)
+	{
+		FrameTimes& times = ((DefferedRenderer*)m_pRenderer)->GetFrameTimes();
+		float fps = static_cast<float>(GetFPS());
+
+		std::cout << "Frametimes:" << std::endl;
+		std::cout << "Reflectionpass: " << times.ReflectionPass / fps << std::endl;
+		std::cout << "Skyboxpass:" << times.SkyboxPass / fps << std::endl;
+		std::cout << "Geometrypass:" << times.GeometryPass / fps << std::endl;
+		std::cout << "Decalpass:" << times.DecalPass / fps << std::endl;
+		std::cout << "Particlepass:" << times.ParticlePass / fps << std::endl;
+		std::cout << "Lightpass:" << times.LightPass / fps << std::endl;
+		std::cout << "Reconstructionpass:" << times.ReconstructionPass / fps << std::endl;
+		std::cout << "-----------" << std::endl;
+
+		times.ReflectionPass = 0.0f;
+		times.SkyboxPass = 0.0f;
+		times.GeometryPass = 0.0f;
+		times.ParticlePass = 0.0f;
+		times.LightPass = 0.0f;
+		times.ReconstructionPass = 0.0f;
+
+		timer = 0.0f;
+	}
+
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);

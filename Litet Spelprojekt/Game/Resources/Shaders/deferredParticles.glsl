@@ -61,7 +61,7 @@ layout(binding = 0) uniform sampler2D g_DiffuseMap;
 void main()
 {
 	vec4 tex = texture(g_DiffuseMap, fs_in.TexCoords) * fs_in.Color;
-	if (tex.a < 0.01f)
+	if (tex.a < 0.05f)
 	{
 		discard;
 	}

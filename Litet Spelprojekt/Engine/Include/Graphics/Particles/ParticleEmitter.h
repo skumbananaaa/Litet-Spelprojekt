@@ -11,11 +11,14 @@ public:
 	ParticleEmitter& operator=(ParticleEmitter&& other) = delete;
 	ParticleEmitter& operator=(const ParticleEmitter& other) = delete;
 
-	ParticleEmitter(const ParticleSystem* pSystem);
+	ParticleEmitter(ParticleSystem* pSystem);
 	~ParticleEmitter();
 
 	virtual void Update(float deltaTime) noexcept override;
 
+	void SetParticlesPerFrame(int32 numParticles) noexcept;
+
 private:
-	const ParticleSystem* m_pSystem;
+	ParticleSystem* m_pSystem;
+	int32 m_ParticlesPerFrame;
 };

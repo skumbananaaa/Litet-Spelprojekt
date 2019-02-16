@@ -602,33 +602,6 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
-	static float timer = 0.0f;
-	timer += dtS;
-	if (timer >= 1.0f)
-	{
-		FrameTimes& times = ((DefferedRenderer*)m_pRenderer)->GetFrameTimes();
-		float fps = static_cast<float>(GetFPS());
-
-		std::cout << "Frametimes:" << std::endl;
-		std::cout << "Reflectionpass: " << times.ReflectionPass / fps << std::endl;
-		std::cout << "Skyboxpass:" << times.SkyboxPass / fps << std::endl;
-		std::cout << "Geometrypass:" << times.GeometryPass / fps << std::endl;
-		std::cout << "Decalpass:" << times.DecalPass / fps << std::endl;
-		std::cout << "Particlepass:" << times.ParticlePass / fps << std::endl;
-		std::cout << "Lightpass:" << times.LightPass / fps << std::endl;
-		std::cout << "Reconstructionpass:" << times.ReconstructionPass / fps << std::endl;
-		std::cout << "-----------" << std::endl;
-
-		times.ReflectionPass = 0.0f;
-		times.SkyboxPass = 0.0f;
-		times.GeometryPass = 0.0f;
-		times.ParticlePass = 0.0f;
-		times.LightPass = 0.0f;
-		times.ReconstructionPass = 0.0f;
-
-		timer = 0.0f;
-	}
-
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);

@@ -210,6 +210,11 @@ void DefferedRenderer::Create() noexcept
 
 void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 {
+	static float timer = 0.0f;
+	static float frametime = 0.0f;
+	frametime += dtS;
+	timer += dtS;
+
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
 	//Set current query
@@ -337,7 +342,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	glQueryCounter(m_pCurrentQuery->Queries[3], GL_TIMESTAMP);
 	GeometryPass(scene.GetCamera(), scene);
 	glQueryCounter(m_pCurrentQuery->Queries[4], GL_TIMESTAMP);
-	DecalPass(scene.GetCamera(), scene);
+	//DecalPass(scene.GetCamera(), scene);
 	glQueryCounter(m_pCurrentQuery->Queries[5], GL_TIMESTAMP);
 	ParticlePass(scene.GetCamera(), scene);
 	glQueryCounter(m_pCurrentQuery->Queries[6], GL_TIMESTAMP);
@@ -398,12 +403,32 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//context.SetDepthFunc(FUNC_LESS);
 
-	m_FrameCounter++;
-}
+	if (timer >= 1.0f)
+	{
+		float fps = static_cast<float>(Application::GetInstance().GetFPS());
 
-FrameTimes& DefferedRenderer::GetFrameTimes() const
-{
-	return m_FrameTimes;
+		std::cout << "Frametimes (total :"  << (frametime / fps) * 1000.0f << "ms) "<< std::endl;
+		std::cout << "Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
+		std::cout << "Skyboxpass:" << m_FrameTimes.SkyboxPass / fps << "ms" << std::endl;
+		std::cout << "Geometrypass:" << m_FrameTimes.GeometryPass / fps << "ms" << std::endl;
+		std::cout << "Decalpass:" << m_FrameTimes.DecalPass / fps << "ms" << std::endl;
+		std::cout << "Particlepass:" << m_FrameTimes.ParticlePass / fps << "ms" << std::endl;
+		std::cout << "Lightpass:" << m_FrameTimes.LightPass / fps << "ms" << std::endl;
+		std::cout << "Reconstructionpass:" << m_FrameTimes.ReconstructionPass / fps << "ms" << std::endl;
+		std::cout << "-----------" << std::endl;
+
+		frametime = 0.0f;
+		m_FrameTimes.ReflectionPass = 0.0f;
+		m_FrameTimes.SkyboxPass = 0.0f;
+		m_FrameTimes.GeometryPass = 0.0f;
+		m_FrameTimes.ParticlePass = 0.0f;
+		m_FrameTimes.LightPass = 0.0f;
+		m_FrameTimes.ReconstructionPass = 0.0f;
+
+		timer = 0.0f;
+	}
+
+	m_FrameCounter++;
 }
 
 void DefferedRenderer::UpdateLightBuffer(const Scene& scene) const noexcept

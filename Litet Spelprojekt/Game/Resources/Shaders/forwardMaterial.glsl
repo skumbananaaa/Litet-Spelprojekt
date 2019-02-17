@@ -27,6 +27,11 @@ layout(location = 2) in vec3 g_Tangent;
 layout(location = 3) in vec2 g_TexCoords;
 layout(location = 4) in mat4 g_InstanceModel;
 
+layout(std140, binding = 3) uniform PlaneBuffer
+{
+	vec4 g_ReflectionClipPlane;
+};
+
 out VS_OUT
 {
 	vec3 WorldPosition;
@@ -40,7 +45,9 @@ out VS_OUT
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
+
 	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
+	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;

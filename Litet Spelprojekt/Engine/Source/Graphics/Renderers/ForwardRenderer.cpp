@@ -320,6 +320,9 @@ void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 
 	UpdateCameraBuffer(reflectionCam);
 
+	context.Enable(CLIP_DISTANCE1);
+	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
+
 	const std::vector<PlanarReflector*>& reflectors = scene.GetPlanarReflectors();
 	for (size_t i = 0; i < reflectors.size(); i++)
 	{
@@ -334,6 +337,9 @@ void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 
 		MainPass(reflectionCam, scene);
 	}
+
+	context.SetUniformBuffer(nullptr, PLANE_BUFFER_BINDING_SLOT);
+	context.Disable(CLIP_DISTANCE1);
 }
 
 void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const noexcept

@@ -59,7 +59,6 @@ void ForwardRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//Create batches
 	CreateBatches(scene);
-
 	//Update lights
 	UpdateLightBuffer(scene);
 
@@ -68,8 +67,17 @@ void ForwardRenderer::DrawScene(const Scene& scene, float dtS) const
 	ReflectionPass(scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[1], GL_TIMESTAMP);
 
-	//Render scene
+	//Update camrerabuffer to main camera
 	const Camera& mainCamera = scene.GetCamera();
+	UpdateCameraBuffer(mainCamera);
+
+	//Set viewport and framebuffer
+	context.SetFramebuffer(nullptr);
+	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	context.SetStencilMask(~0); //Active write to stencil or clear stencil does not work
+	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
+
+	//Render scene
 	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
 	SkyBoxPass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
@@ -131,7 +139,7 @@ void ForwardRenderer::Create() noexcept
 
 	m_pDepthPrePassProgram = ResourceHandler::GetShader(SHADER::DEPTH_PRE_PASS);
 	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
-	m_pParticleProgram = ResourceHandler::GetShader(SHADER::DEFERRED_PARTICLES);
+	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
 	{
@@ -276,18 +284,120 @@ void ForwardRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 
 void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 {
+	{
+		CameraBuffer buff = {};
+		buff.ProjectionView = camera.GetCombinedMatrix();
+		buff.View = camera.GetViewMatrix();
+		buff.Projection = camera.GetProjectionMatrix();
+		buff.InverseView = camera.GetInverseViewMatrix();
+		buff.InverseProjection = camera.GetInverseProjectionMatrix();
+		buff.CameraLookAt = camera.GetLookAt();
+		buff.CameraPosition = camera.GetPosition();
+
+		m_pCameraBuffer->UpdateData(&buff);
+	}
 }
 
-void ForwardRenderer::ReflectionPass(const Scene& sceen) const noexcept
+void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 {
+	if (scene.GetReflectables().size() < 1 || scene.GetPlanarReflectors().size() < 1)
+	{
+#if defined(_DEBUG)
+		//std::cout << "No reflectables or reflectors, skipping reflectionpass" << std::endl;
+#endif
+		return;
+	}
+
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	Camera reflectionCam = scene.GetCamera();
+	float reflDistance = reflectionCam.GetPosition().y * 2.0f;
+	reflectionCam.SetPos(reflectionCam.GetPosition() - glm::vec3(0.0f, reflDistance, 0.0f));
+	reflectionCam.InvertPitch();
+	reflectionCam.UpdateFromPitchYawNoInverse();
+
+	PlaneBuffer planeBuffer = {};
+
+	UpdateCameraBuffer(reflectionCam);
+
+	const std::vector<PlanarReflector*>& reflectors = scene.GetPlanarReflectors();
+	for (size_t i = 0; i < reflectors.size(); i++)
+	{
+		const Framebuffer* pFramebuffer = reflectors[i]->GetFramebuffer();
+
+		planeBuffer.ClipPlane = reflectors[i]->GetLevelClipPlane();
+		m_pPlaneBuffer->UpdateData(&planeBuffer);
+
+		context.SetViewport(pFramebuffer->GetWidth(), pFramebuffer->GetHeight(), 0, 0);
+		context.SetFramebuffer(pFramebuffer);
+		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
+
+		MainPass(reflectionCam, scene);
+	}
 }
 
 void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const noexcept
 {
+	if (m_DrawableBatches.size() < 1)
+	{
+#if defined(_DEBUG)
+		//std::cout << "No drawables, skipping geomtrypass" << std::endl;
+#endif
+		return;
+	}
+
+	GLContext& context = GLContext::GetCurrentContext();
+
+	MaterialBuffer perBatch = {};
+	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
+	{
+		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
+		const Material& material = *m_DrawableBatches[i].pMaterial;
+
+		perBatch.Color = material.GetColor();
+		perBatch.ClipPlane = material.GetLevelClipPlane();
+		perBatch.Specular = material.GetSpecular();
+		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
+		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
+		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
+		m_pMaterialBuffer->UpdateData(&perBatch);
+
+		material.SetCameraBuffer(m_pCameraBuffer);
+		material.SetLightBuffer(m_pLightBuffer);
+		material.SetMaterialBuffer(m_pMaterialBuffer);
+		material.Bind(nullptr);
+
+		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+		context.DrawIndexedMeshInstanced(mesh);
+
+		context.Enable(CULL_FACE);
+
+		material.Unbind();
+	}
 }
 
 void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) const noexcept
 {
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	context.Disable(CULL_FACE);
+	context.Enable(BLEND);
+
+	context.SetProgram(m_pParticleProgram);
+
+	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+
+	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	for (size_t i = 0; i < particleSystems.size(); i++)
+	{
+		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
+
+		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
+		context.DrawParticle(*m_pParticle);
+	}
+
+	context.Enable(CULL_FACE);
+	context.Disable(BLEND);
 }
 
 void ForwardRenderer::SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept

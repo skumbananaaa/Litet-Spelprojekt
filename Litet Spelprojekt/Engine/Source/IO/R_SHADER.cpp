@@ -15,12 +15,12 @@ uint32 SHADER::DEPTH_PRE_PASS = 0;
 uint32 SHADER::FORWARD_PASS = 0;
 uint32 SHADER::SKYBOX_PASS = 0;
 uint32 SHADER::ORTHOGRAPHIC = 0;
-uint32 SHADER::DEFERRED_WALL = 0;
-uint32 SHADER::DEFERRED_WATER = 0;
+uint32 SHADER::WALL_MATERIAL = 0;
+uint32 SHADER::WATER_MATERIAL = 0;
 uint32 SHADER::DEFERRED_DECALS = 0;
-uint32 SHADER::DEFERRED_MATERIAL = 0;
+uint32 SHADER::STANDARD_MATERIAL = 0;
 uint32 SHADER::EQUIREC_TO_CUBEMAP = 0;
-uint32 SHADER::DEFERRED_PARTICLES = 0;
+uint32 SHADER::PARTICLES = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -44,10 +44,14 @@ void SHADER::RegisterResources()
 	SKYBOX_PASS				= ResourceHandler::RegisterShader("skybox.glsl", "skybox.glsl");
 #if defined(DEFERRED_RENDER_PATH)
 	DEFERRED_DECALS			= ResourceHandler::RegisterShader("deferredDecals.glsl", "deferredDecals.glsl");
-	DEFERRED_MATERIAL		= ResourceHandler::RegisterShader("deferredMaterial.glsl", "deferredMaterial.glsl");
-	DEFERRED_WATER			= ResourceHandler::RegisterShader("deferredWater.glsl", "deferredWater.glsl");
-	DEFERRED_PARTICLES		= ResourceHandler::RegisterShader("deferredParticles.glsl", "deferredParticles.glsl");
+	STANDARD_MATERIAL		= ResourceHandler::RegisterShader("deferredMaterial.glsl", "deferredMaterial.glsl");
+	WATER_MATERIAL			= ResourceHandler::RegisterShader("deferredWater.glsl", "deferredWater.glsl");
+	PARTICLES				= ResourceHandler::RegisterShader("deferredParticles.glsl", "deferredParticles.glsl");
 #elif defined(FORWARD_RENDER_PATH)
+	DEFERRED_DECALS			= ResourceHandler::RegisterShader("deferredDecals.glsl", "deferredDecals.glsl");
+	STANDARD_MATERIAL		= ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl");
+	WATER_MATERIAL			= ResourceHandler::RegisterShader("forwardWater.glsl", "forwardWater.glsl");
+	PARTICLES				= ResourceHandler::RegisterShader("forwardParticles.glsl", "forwardParticles.glsl");
 #endif
 
 	{
@@ -60,6 +64,11 @@ void SHADER::RegisterResources()
 		ShaderDefines defines = {};
 		defines.ppDefines = pDefines;
 		defines.NumDefines = _countof(pDefines);
-		DEFERRED_WALL		= ResourceHandler::RegisterShader("deferredWall.glsl", "deferredWall.glsl", defines);
+
+#if defined(DEFERRED_RENDER_PATH)
+		WALL_MATERIAL		= ResourceHandler::RegisterShader("deferredWall.glsl", "deferredWall.glsl", defines);
+#elif defined(FORWARD_RENDER_PATH)
+		WALL_MATERIAL		= ResourceHandler::RegisterShader("forwardWall.glsl", "forwardWall.glsl", defines);
+#endif
 	}
 }

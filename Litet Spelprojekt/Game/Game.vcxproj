@@ -178,6 +178,9 @@
     </None>
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
     <None Include="Resources\Shaders\deferredWall.glsl" />
+    <None Include="Resources\Shaders\forwardMaterial.glsl" />
+    <None Include="Resources\Shaders\forwardWall.glsl" />
+    <None Include="Resources\Shaders\forwardWater.glsl" />
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
@@ -217,6 +220,7 @@
   <ItemGroup>
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
     <Text Include="Resources\Shaders\deferredDecals.glsl" />
+    <Text Include="Resources\Shaders\forwardParticles.glsl" />
     <Text Include="Resources\Shaders\skybox.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
   </ItemGroup>

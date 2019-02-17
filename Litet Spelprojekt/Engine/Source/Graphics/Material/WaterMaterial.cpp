@@ -3,7 +3,7 @@
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/Renderers/GLContext.h>
 
-WaterMaterial::WaterMaterial() : Material(SHADER::DEFERRED_WATER),
+WaterMaterial::WaterMaterial() : Material(SHADER::WATER_MATERIAL),
 	m_pReflector(nullptr),
 	m_pDistortion(nullptr),
 	m_pDepthMap(nullptr),

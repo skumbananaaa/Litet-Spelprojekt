@@ -88,6 +88,9 @@
     <None Include="Resources\Shaders\deferredWall.glsl" />
     <None Include="Resources\Shaders\deferredWater.glsl" />
     <None Include="Resources\Shaders\deferredParticles.glsl" />
+    <None Include="Resources\Shaders\forwardMaterial.glsl" />
+    <None Include="Resources\Shaders\forwardWater.glsl" />
+    <None Include="Resources\Shaders\forwardWall.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -125,5 +128,6 @@
     </Text>
     <Text Include="Resources\Shaders\deferredDecals.glsl" />
     <Text Include="Resources\Shaders\skybox.glsl" />
+    <Text Include="Resources\Shaders\forwardParticles.glsl" />
   </ItemGroup>
 </Project>

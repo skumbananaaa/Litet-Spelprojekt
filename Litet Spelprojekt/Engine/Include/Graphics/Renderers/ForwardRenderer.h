@@ -29,7 +29,7 @@ private:
 	void CreateBatches(const Scene& scene) const noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
-	void ReflectionPass(const Scene& sceen) const noexcept;
+	void ReflectionPass(const Scene& scene) const noexcept;
 	void MainPass(const Camera& camera, const Scene& scene) const noexcept;
 	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept;

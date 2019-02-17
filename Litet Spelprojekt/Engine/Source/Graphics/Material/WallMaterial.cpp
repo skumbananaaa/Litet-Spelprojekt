@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/Materials/WallMaterial.h>
 
-WallMaterial::WallMaterial() : Material(SHADER::DEFERRED_WALL),
+WallMaterial::WallMaterial() : Material(SHADER::WALL_MATERIAL),
 	m_pDissolveBuffer(nullptr)
 {
 	m_Buffer.DissolveFactor = 0.0f;

@@ -45,7 +45,7 @@ private:
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
 	void ReconstructionPass() const noexcept;
-	void ReflectionPass(const Scene& sceen) const noexcept;
+	void ReflectionPass(const Scene& scene) const noexcept;
 	void GeometryPass(const Camera& camera, const Scene& scene) const noexcept;
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;

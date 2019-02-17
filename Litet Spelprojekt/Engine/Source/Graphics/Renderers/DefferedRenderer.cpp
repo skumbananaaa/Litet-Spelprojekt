@@ -136,7 +136,7 @@ void DefferedRenderer::Create() noexcept
 	m_pDecalsPassProgram = ResourceHandler::GetShader(SHADER::DEFERRED_DECALS);
 	m_pForwardPass = ResourceHandler::GetShader(SHADER::FORWARD_PASS);
 	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
-	m_pParticleProgram = ResourceHandler::GetShader(SHADER::DEFERRED_PARTICLES);
+	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
 	{

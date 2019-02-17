@@ -7,6 +7,7 @@
 class API ParticleSystem
 {
 	friend class DefferedRenderer;
+	friend class ForwardRenderer;
 	friend class ParticleEmitter;
 
 public:

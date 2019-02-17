@@ -324,11 +324,8 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	context.Disable(BLEND);
 
 	//Render reflections
-
 	glQueryCounter(m_pCurrentQuery->pQueries[0], GL_TIMESTAMP);
-
 	ReflectionPass(scene);
-	
 	glQueryCounter(m_pCurrentQuery->pQueries[1], GL_TIMESTAMP);
 
 	//Update camera buffer from scene

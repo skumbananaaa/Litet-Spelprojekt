@@ -64,13 +64,54 @@ void ForwardRenderer::DrawScene(const Scene& scene, float dtS) const
 	UpdateLightBuffer(scene);
 
 	//Reflections
+	glQueryCounter(m_pCurrentQuery->pQueries[0], GL_TIMESTAMP);
 	ReflectionPass(scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[1], GL_TIMESTAMP);
 
 	//Render scene
 	const Camera& mainCamera = scene.GetCamera();
+	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
 	SkyBoxPass(mainCamera, scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
 	MainPass(mainCamera, scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
 	ParticlePass(mainCamera, scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
+
+	//Get query results
+	uint64 startTime = 0;
+	uint64 stopTime = 0;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[0], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[1], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.ReflectionPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[2], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[3], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[4], GL_QUERY_RESULT, &startTime);
+	m_FrameTimes.LightPass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[5], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.ParticlePass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+
+	if (timer >= 1.0f)
+	{
+		float fps = static_cast<float>(Application::GetInstance().GetFPS());
+
+		std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms) " << std::endl;
+		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
+		std::cout << " Skyboxpass: " << m_FrameTimes.SkyboxPass / fps << "ms" << std::endl;
+		std::cout << " Particlepass: " << m_FrameTimes.ParticlePass / fps << "ms" << std::endl;
+		std::cout << " Lightpass: " << m_FrameTimes.LightPass / fps << "ms" << std::endl;
+		std::cout << "-----------" << std::endl;
+
+		frametime = 0.0f;
+		m_FrameTimes.ReflectionPass = 0.0f;
+		m_FrameTimes.SkyboxPass = 0.0f;
+		m_FrameTimes.ParticlePass = 0.0f;
+		m_FrameTimes.LightPass = 0.0f;
+
+		timer = 0.0f;
+	}
 
 	m_FrameCounter++;
 }
@@ -80,8 +121,8 @@ void ForwardRenderer::Create() noexcept
 	std::cout << "Creating forward renderer" << std::endl;
 
 	//CREATE QUERIES
-	m_pQueries[0] = new TimerQuery(12);
-	m_pQueries[1] = new TimerQuery(12);
+	m_pQueries[0] = new TimerQuery(6);
+	m_pQueries[1] = new TimerQuery(6);
 
 	//CREATE MESHES NEEDED
 	{

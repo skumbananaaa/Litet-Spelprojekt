@@ -270,18 +270,6 @@ void Game::OnResourcesLoaded()
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
-	//LookAt Cube
-	//{
-	//	pGameObject = new GameObject();
-	//	pGameObject->SetMaterial(MATERIAL::BLUE);
-	//	pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
-	//	pGameObject->SetPosition(pCamera->GetLookAt());
-	//	pGameObject->SetScale(glm::vec3(0.25f));
-	//	pGameObject->UpdateTransform();
-	//	pGameObject->SetName("cameraLookAt");
-	//	m_Scenes[0]->AddGameObject(pGameObject);
-	//}
-
 	//Water?? YAAAS
 	{
 		pGameObject = new GameObject();

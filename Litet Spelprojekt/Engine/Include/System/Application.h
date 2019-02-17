@@ -63,7 +63,7 @@ private:
 	int32 m_fps;
 	int32 m_ups;
 	bool m_ShouldRun;
-	RESOURCE_MODE m_ResourceMode;
+	volatile RESOURCE_MODE m_ResourceMode;
 	std::string m_Resource;
 	float m_Progress;
 	float m_LastProgress;

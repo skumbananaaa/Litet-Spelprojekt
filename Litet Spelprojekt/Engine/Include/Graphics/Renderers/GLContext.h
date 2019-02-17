@@ -1,6 +1,5 @@
 #pragma once
 #include <EnginePch.h>
-#include <Defines.h>
 #include <Graphics/Geometry/Mesh.h>
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Textures/Texture.h>

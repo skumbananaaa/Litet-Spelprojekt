@@ -154,7 +154,8 @@ int32_t Application::Run()
 		m_pGraphicsContext->SetFramebuffer(nullptr);*/
 
 		InternalOnRender(deltaTime);
-		fps++;	
+		fps++;
+
 		m_pWindow->SwapBuffers();
 	}
 	ThreadHandler::Exit();

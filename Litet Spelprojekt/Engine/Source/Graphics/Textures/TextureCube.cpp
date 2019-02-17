@@ -1,9 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics/Textures/TextureCube.h>
 #include <Graphics/Renderers/GLContext.h>
-
-#include <STB/stb_image.h>
-#include <GLM/gtc/matrix_transform.hpp>
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Shaders/Shader.h>
 #include <System/Application.h>

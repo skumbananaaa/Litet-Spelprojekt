@@ -3,7 +3,6 @@
 #include <Graphics/GUI/PanelExpandable.h>
 #include "../Crewmember.h"
 
-
 class UICrew
 {
 public:

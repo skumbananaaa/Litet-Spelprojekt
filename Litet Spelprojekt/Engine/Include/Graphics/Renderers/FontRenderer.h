@@ -1,10 +1,7 @@
 #pragma once
-
 #include <EnginePch.h>
 #include <IO/ResourceHandler.h>
 #include <Graphics/Renderers/GLContext.h>
-
-#include <map>
 
 struct Character
 {

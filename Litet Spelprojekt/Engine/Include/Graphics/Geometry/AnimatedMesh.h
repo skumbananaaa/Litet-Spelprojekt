@@ -1,11 +1,7 @@
 #pragma once
 #include <EnginePch.h>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include <Graphics/Geometry/Joint.h>
 #include <vector>
-
 
 class API AnimatedMesh
 {

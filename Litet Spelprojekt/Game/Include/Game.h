@@ -26,12 +26,6 @@
 #include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/WaterMaterial.h>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <GLM/glm.hpp>
-#include <GLM/gtc/type_ptr.hpp>
-#include <GLM/gtx/string_cast.hpp>
-#include <math.h>
-
 #define NUM_CREW 15
 
 class Game : public Application

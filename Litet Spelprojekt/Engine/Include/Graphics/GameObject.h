@@ -1,7 +1,5 @@
 #pragma once
-
 #include <EnginePch.h>
-#include <GLM/gtc/matrix_transform.hpp>
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/Decal.h>

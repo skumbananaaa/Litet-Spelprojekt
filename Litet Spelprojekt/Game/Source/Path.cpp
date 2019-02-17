@@ -1,7 +1,6 @@
 #include <EnginePch.h>
 #include "..\Include\Path.h"
 
-
 void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 {
 	int newY = std::min(std::max(y + addY, 0), ((int)m_pWorld->GetNumLevels() / 2 - 1));

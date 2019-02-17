@@ -161,6 +161,7 @@
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
     <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

@@ -1,9 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Renderers/GLContext.h>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 IndexedMesh::IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept
 	: m_VAO(0),

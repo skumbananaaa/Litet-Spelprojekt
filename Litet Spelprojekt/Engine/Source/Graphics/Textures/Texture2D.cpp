@@ -2,9 +2,6 @@
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/Renderers/GLContext.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <STB/stb_image.h>
-
 Texture2D::Texture2D(const void* pInitalData, const TextureDesc& desc, const TextureParams& params)
 	: Texture(),
 	m_Width(0),

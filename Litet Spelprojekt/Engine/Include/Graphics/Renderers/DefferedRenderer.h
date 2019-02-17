@@ -5,23 +5,7 @@
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
 #include <IO/ResourceHandler.h>
-
-struct GPassVSPerFrame
-{
-	glm::mat4 ViewProjection;
-	glm::vec3 CameraPosition;
-	float Padding;
-	glm::vec3 CameraLookAt;
-	float Padding2;
-	glm::vec4 ClipDistances[NUM_CLIP_DISTANCES];
-};
-
-struct DrawableBatch
-{
-	const Material* pMaterial = nullptr;
-	const IndexedMesh* pMesh = nullptr;
-	std::vector<InstanceData> Instances;
-};
+#include "TimerQuery.h"
 
 struct DecalBatch
 {
@@ -29,23 +13,7 @@ struct DecalBatch
 	std::vector<InstanceData> Instances;
 };
 
-struct SkyBoxPassBuffer
-{
-	glm::mat4 CameraCombined;
-	glm::vec4 CameraPosition;
-};
-
-struct SkyBoxPassPerObject
-{
-	glm::mat4 model;
-};
-
-struct PlaneBuffer
-{
-	glm::vec4 ClipPlane;
-};
-
-struct FrameTimes
+struct DeferredFrameTimes
 {
 	float ReflectionPass = 0.0f;
 	float SkyboxPass = 0.0f;
@@ -54,14 +22,6 @@ struct FrameTimes
 	float ParticlePass = 0.0f;
 	float LightPass = 0.0f;
 	float ReconstructionPass = 0.0f;
-};
-
-struct TimerQuery
-{
-	TimerQuery();
-	~TimerQuery();
-
-	uint32 Queries[12];
 };
 
 class API DefferedRenderer final : public IRenderer
@@ -80,6 +40,7 @@ public:
 
 private:
 	void Create() noexcept;
+	void CreateBatches(const Scene& scene) const noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
 	void GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer) const noexcept;
@@ -89,7 +50,7 @@ private:
 	void DecalPass(const Camera& camera, const Scene& scene) const noexcept;
 	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;
 	void ForwardPass(const Camera& camera, const Scene& scene) const noexcept;
-	void SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept;
+	void SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept;
 	
 	//DELETE?
 	void DepthPrePass(const Scene& scene) const noexcept;
@@ -122,9 +83,9 @@ private:
 	const ShaderProgram* m_pSkyBoxPassProgram;
 
 	mutable TimerQuery* m_pCurrentQuery;
+	mutable TimerQuery* m_pQueries[2];
 	mutable uint64 m_FrameCounter;
-	mutable TimerQuery m_Queries[2];
-	mutable FrameTimes m_FrameTimes;
+	mutable DeferredFrameTimes m_FrameTimes;
 
 	glm::vec4 m_ClipDistances[NUM_CLIP_DISTANCES];
 	

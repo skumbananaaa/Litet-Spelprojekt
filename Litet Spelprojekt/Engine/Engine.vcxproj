@@ -60,10 +60,12 @@
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Mesh.h" />
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIManager.h" />
     <ClInclude Include="Include\Graphics\Renderers\OrthographicRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
     <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
@@ -112,6 +114,8 @@
     <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />

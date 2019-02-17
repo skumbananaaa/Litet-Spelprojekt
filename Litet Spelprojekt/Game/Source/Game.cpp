@@ -3,6 +3,7 @@
 #include <System/Random.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
+#include <Graphics/Renderers/ForwardRenderer.h>
 #include <Graphics/Particles/ParticleEmitter.h>
 
 #include <Graphics/GUI/TextView.h>
@@ -87,9 +88,18 @@ void Game::OnResourcesLoaded()
 	}
 
 	//Create renderers
+#if defined(DEFERRED_RENDER_PATH)
 	m_pRenderer = new DefferedRenderer();
-	//m_pRenderer = new OrthographicRenderer();
+#elif defined(FORWARD_RENDER_PATH)
+	m_pRenderer = new ForwardRenderer();
+#else
+#error "No renderpath defined. Check 'Defines.h'."
+#endif
+
+#if defined(_DEBUG)
 	m_pDebugRenderer = new DebugRenderer();
+#endif
+	//m_pRenderer = new OrthographicRenderer();
 
 	//Audio
 	{

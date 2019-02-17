@@ -72,6 +72,8 @@
     <ClCompile Include="Source\Graphics\Geometry\Particle.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -157,6 +159,8 @@
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
+    <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

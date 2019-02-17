@@ -1,0 +1,57 @@
+#pragma once
+#include "IRenderer.h"
+#include "TimerQuery.h"
+
+struct ForwardFrameTimes
+{
+	float ReflectionPass = 0.0f;
+	float SkyboxPass = 0.0f;
+	float ParticlePass = 0.0f;
+	float LightPass = 0.0f;
+};
+
+class API ForwardRenderer : public IRenderer
+{
+public:
+	ForwardRenderer(ForwardRenderer&& other) = delete;
+	ForwardRenderer(const ForwardRenderer& other) = delete;
+	ForwardRenderer& operator=(ForwardRenderer&& other) = delete;
+	ForwardRenderer& operator=(const ForwardRenderer& other) = delete;
+
+	ForwardRenderer();
+	~ForwardRenderer();
+
+	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
+	void DrawScene(const Scene& scene, float dtS) const override final;
+
+private:
+	void Create() noexcept;
+	void CreateBatches(const Scene& scene) const noexcept;
+	void UpdateLightBuffer(const Scene& scene) const noexcept;
+	void UpdateCameraBuffer(const Camera& camera) const noexcept;
+	void ReflectionPass(const Scene& sceen) const noexcept;
+	void MainPass(const Camera& camera, const Scene& scene) const noexcept;
+	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;
+	void SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept;
+
+private:
+	UniformBuffer* m_pLightBuffer;
+	UniformBuffer* m_pCameraBuffer;
+	UniformBuffer* m_pMaterialBuffer;
+	UniformBuffer* m_pPlaneBuffer;
+
+	UniformBuffer* m_pSkyBoxPassPerFrame;
+	UniformBuffer* m_pSkyBoxPassPerObject;
+
+	Particle* m_pParticle;
+
+	const ShaderProgram* m_pParticleProgram;
+	const ShaderProgram* m_pDepthPrePassProgram;
+	const ShaderProgram* m_pSkyBoxPassProgram;
+
+	mutable TimerQuery* m_pCurrentQuery;
+	mutable TimerQuery* m_pQueries[2];
+	mutable uint64 m_FrameCounter;
+	mutable ForwardFrameTimes m_FrameTimes;
+	mutable std::vector<DrawableBatch> m_DrawableBatches;
+};

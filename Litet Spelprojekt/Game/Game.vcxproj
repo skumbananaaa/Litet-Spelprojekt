@@ -217,6 +217,7 @@
   <ItemGroup>
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
     <Text Include="Resources\Shaders\deferredDecals.glsl" />
+    <Text Include="Resources\Shaders\skybox.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

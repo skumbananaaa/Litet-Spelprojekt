@@ -124,5 +124,6 @@
       <Filter>Source Files</Filter>
     </Text>
     <Text Include="Resources\Shaders\deferredDecals.glsl" />
+    <Text Include="Resources\Shaders\skybox.glsl" />
   </ItemGroup>
 </Project>

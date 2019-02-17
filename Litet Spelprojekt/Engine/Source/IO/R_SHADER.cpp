@@ -39,13 +39,16 @@ void SHADER::RegisterResources()
 	CBR_BLUR				= ResourceHandler::RegisterShader("fullscreenTriVert.glsl", "cbrFilterFrag.glsl");
 	DEPTH_PRE_PASS			= ResourceHandler::RegisterShader("defferedDepthPreVert.glsl");
 	FORWARD_PASS			= ResourceHandler::RegisterShader("forwardVert.glsl", "forwardFrag.glsl");
-	SKYBOX_PASS				= ResourceHandler::RegisterShader("VShaderSkyBox.glsl", "FShaderSkyBox.glsl");
 	ORTHOGRAPHIC			= ResourceHandler::RegisterShader("orthoVert.glsl", "orthoFrag.glsl");
+	EQUIREC_TO_CUBEMAP		= ResourceHandler::RegisterShader("VShaderEquirecToCubemap.glsl", "FShaderEquirecToCubemap.glsl");
+	SKYBOX_PASS				= ResourceHandler::RegisterShader("skybox.glsl", "skybox.glsl");
+#if defined(DEFERRED_RENDER_PATH)
 	DEFERRED_DECALS			= ResourceHandler::RegisterShader("deferredDecals.glsl", "deferredDecals.glsl");
 	DEFERRED_MATERIAL		= ResourceHandler::RegisterShader("deferredMaterial.glsl", "deferredMaterial.glsl");
 	DEFERRED_WATER			= ResourceHandler::RegisterShader("deferredWater.glsl", "deferredWater.glsl");
 	DEFERRED_PARTICLES		= ResourceHandler::RegisterShader("deferredParticles.glsl", "deferredParticles.glsl");
-	EQUIREC_TO_CUBEMAP		= ResourceHandler::RegisterShader("VShaderEquirecToCubemap.glsl", "FShaderEquirecToCubemap.glsl");
+#elif defined(FORWARD_RENDER_PATH)
+#endif
 
 	{
 		std::string str = (TO_STRING(WALL_STUMP_FROM_CENTER)) + std::string(" ") + std::to_string(WALL_STUMP_FROM_CENTER);

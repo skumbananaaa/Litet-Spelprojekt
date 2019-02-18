@@ -77,6 +77,11 @@ void GLContext::SetCullMode(CULL_MODE mode) const noexcept
 	GL_CALL(glCullFace(mode));
 }
 
+void GLContext::SetBlendFunc(BlendFunc src, BlendFunc dst)
+{
+	GL_CALL(glBlendFunc(src, dst));
+}
+
 void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 {
 	if (pProgram == m_pCurrentProgram)

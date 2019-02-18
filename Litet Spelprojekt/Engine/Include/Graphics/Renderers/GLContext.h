@@ -90,6 +90,23 @@ enum StencilOp : uint32
 	STENCIL_OP_INVERT = 0x150A,
 };
 
+enum BlendFunc : uint32
+{
+	BLEND_FUNC_ZERO = 0,
+	BLEND_FUNC_ONE = 1,
+	BLEND_FUNC_SRC_COLOR = 0x0300,
+	BLEND_FUNC_ONE_MINUS_SRC_COLOR = 0x0301,
+	BLEND_FUNC_DST_COLOR = 0x0306,
+	BLEND_FUNC_ONE_MINUS_DST_COLOR = 0x0307,
+	BLEND_FUNC_SRC_ALPHA = 0x0302,
+	BLEND_FUNC_ONE_MINUS_SRC_ALPHA = 0x0303,
+	BLEND_FUNC_DST_ALPHA = 0x0304,
+	BLEND_FUNC_ONE_MINUS_DST_ALPHA = 0x0305,
+	BLEND_FUNC_CONSTANT_COLOR = 0x8001,
+	BLEND_FUNC_CONSTANT_ALPHA = 0x8003,
+	BLEND_FUNC_ONE_MINUS_CONSTANT_ALPHA = 0x8004,
+};
+
 typedef Capability Cap;
 
 class API GLContext
@@ -107,6 +124,7 @@ public:
 	void Disable(Cap cap) const noexcept;
 	
 	void SetCullMode(CULL_MODE mode) const noexcept;
+	void SetBlendFunc(BlendFunc src, BlendFunc dst);
 
 	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept;
 	void SetViewport(const glm::vec4& viewport) noexcept;

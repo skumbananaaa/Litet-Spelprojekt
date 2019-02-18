@@ -440,6 +440,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 
 	context.Disable(CULL_FACE);
 	context.Enable(BLEND);
+	//context.SetDepthMask(true);
 
 	context.SetProgram(m_pParticleProgram);
 
@@ -448,6 +449,15 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
+		if (particleSystems[i]->GetParticleBlendMode() == PARTICLE_ADDITIVE)
+		{
+			context.SetBlendFunc(BLEND_FUNC_SRC_ALPHA, BLEND_FUNC_ONE);
+		}
+		else if (particleSystems[i]->GetParticleBlendMode() == PARTICLE_NORMAL)
+		{
+			context.SetBlendFunc(BLEND_FUNC_SRC_ALPHA, BLEND_FUNC_ONE_MINUS_SRC_ALPHA);
+		}
+
 		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
 
 		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
@@ -456,6 +466,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 
 	context.Enable(CULL_FACE);
 	context.Disable(BLEND);
+	context.SetBlendFunc(BLEND_FUNC_SRC_ALPHA, BLEND_FUNC_ONE_MINUS_SRC_ALPHA);
 }
 
 void ForwardRenderer::SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept

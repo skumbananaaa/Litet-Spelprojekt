@@ -18,7 +18,8 @@ ParticleSystem::ParticleSystem()
 	m_NumParticles(0),
 	m_MaxParticles(0),
 	m_Direction(),
-	m_Color()
+	m_BeginColor(),
+	m_EndColor()
 {
 	m_MaxParticles = 100000;
 
@@ -69,9 +70,14 @@ void ParticleSystem::Update(const Camera& camera, float deltaTime) noexcept
 			continue;
 		}
 
+		//Position
 		particle.Position += (particle.Direction * particle.Speed * deltaTime);
 		particle.LifePercentage = particle.TimeLived / m_TimeToLive;
 		particle.DistToCameraSqrd = LengthSqrd(particle.Position - camera.GetPosition());
+
+		//Color
+		glm::vec4 diff =  m_EndColor - m_BeginColor;
+		particle.Color = m_BeginColor + (diff * particle.LifePercentage);
 
 		InsertSortedParticle(m_pLivingParticles[i]);
 	}
@@ -80,10 +86,20 @@ void ParticleSystem::Update(const Camera& camera, float deltaTime) noexcept
 	for (uint32 i = 0; i < m_NumSortedParticles; i++)
 	{
 		ParticleData& data = GetSortedParticle(i);
-		m_pParticleInstances[i].Color = m_Color;
-		m_pParticleInstances[i].Color.a = 1.0f - data.LifePercentage;
+		m_pParticleInstances[i].Color = data.Color;
+		m_pParticleInstances[i].Color.a = data.Color.a * (1.0f - data.LifePercentage);
 		m_pParticleInstances[i].Position = data.Position;
 	}
+}
+
+void ParticleSystem::SetParticleBlendMode(ParticleBlendMode blendMode) noexcept
+{
+	m_BlendMode = blendMode;
+}
+
+ParticleBlendMode ParticleSystem::GetParticleBlendMode() const noexcept
+{
+	return m_BlendMode;
 }
 
 void ParticleSystem::SetConeAngle(float angleRad) noexcept
@@ -107,9 +123,10 @@ void ParticleSystem::SetTexture(uint32 textureID) noexcept
 	m_pTexture = ResourceHandler::GetTexture2D(textureID);
 }
 
-void ParticleSystem::SetColor(const glm::vec4& color) noexcept
+void ParticleSystem::SetColor(const glm::vec4& begin, const glm::vec4& end) noexcept
 {
-	m_Color = color;
+	m_BeginColor = begin;
+	m_EndColor = end;
 }
 
 uint32 ParticleSystem::GetNumParticles() const noexcept
@@ -127,9 +144,14 @@ const ParticleInstance* ParticleSystem::GetParticleInstances() const noexcept
 	return m_pParticleInstances;
 }
 
-const glm::vec4& ParticleSystem::GetColor() const noexcept
+const glm::vec4& ParticleSystem::GetBeginColor() const noexcept
 {
-	return m_Color;
+	return m_BeginColor;
+}
+
+const glm::vec4& ParticleSystem::GetEndColor() const noexcept
+{
+	return m_EndColor;
 }
 
 ParticleData& ParticleSystem::GetLivingParticle(uint32 index) noexcept

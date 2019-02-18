@@ -4,6 +4,7 @@
 struct ParticleData
 {
 public:
+	glm::vec4 Color;
 	glm::vec3 Position;
 	glm::vec3 Direction;
 	float Speed;

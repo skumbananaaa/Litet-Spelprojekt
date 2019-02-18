@@ -168,14 +168,6 @@
     <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
     <None Include="Resources\Shaders\debugVert.glsl" />
     <None Include="Resources\Shaders\deferredParticles.glsl" />
-    <None Include="Resources\Shaders\defferedGeometryFrag.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="Resources\Shaders\defferedGeometryVert.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
     <None Include="Resources\Shaders\deferredWall.glsl" />
     <None Include="Resources\Shaders\depthPrePass.glsl" />

@@ -7,7 +7,7 @@ class API ScenarioManager
 public:
 	static uint32 RegisterScenario(IScenario* scenario) noexcept;
 	static void Release() noexcept;
-	static void Update(float dtS) noexcept;
+	static void Update(float dtS, World* world, Room* room, Scene* scene) noexcept;
 
 private:
 	static void SetAsNonActive(int id);

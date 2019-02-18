@@ -14,7 +14,7 @@ void ScenarioFire::OnEnd() noexcept
 	
 }
 
-bool ScenarioFire::Update(float dtS) noexcept
+bool ScenarioFire::Update(float dtS, World* world, Room* room, Scene* scene) noexcept
 {
 	return true;
 }

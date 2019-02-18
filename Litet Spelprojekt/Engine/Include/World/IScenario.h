@@ -1,5 +1,8 @@
 #pragma once
 #include <EnginePch.h>
+#include <World/World.h>
+#include <World/Room.h>
+#include <Graphics/Scene.h>
 
 class API IScenario
 {
@@ -9,7 +12,7 @@ protected:
 public:
 	virtual void OnStart() noexcept = 0;
 	virtual void OnEnd()noexcept = 0;
-	virtual bool Update(float dtS) noexcept = 0;
+	virtual bool Update(float dtS, World* world, Room* room, Scene* scene) noexcept = 0;
 	virtual std::string GetName() noexcept = 0;
 	virtual int32 GetCooldownTime() noexcept = 0;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept = 0;

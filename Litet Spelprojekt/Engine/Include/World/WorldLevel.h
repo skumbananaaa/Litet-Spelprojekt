@@ -1,6 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Scene.h>
+#include <Graphics/Scenarios/WaterObject.h>
 
 struct TileData 
 {
@@ -8,9 +9,12 @@ struct TileData
 	float BurnsAt;
 	float SmokeAmount;
 	float SmokeLimit;
+
 	float WaterLevel;
+	float WaterLevelChange;
+	float WaterLevelLastUpdated;
+	float WaterLevelAge;
 	bool AlreadyFlooded;
-	bool WaterLevelChanged;
 	std::string WaterBlockName;
 };
 
@@ -39,7 +43,7 @@ public:
 	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
 	void GenerateRooms();
-	void GenerateWater(Scene* scene, uint32 levelHeight);
+	void GenerateWater(Scene* pScene, uint32 levelHeight);
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 private:
@@ -52,5 +56,5 @@ private:
 	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
 
-	std::vector<glm::uvec4> roomBounds;
+	std::vector<glm::uvec4> m_RoomBounds;
 };

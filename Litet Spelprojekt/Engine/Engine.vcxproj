@@ -115,6 +115,7 @@
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Scenarios\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />
@@ -124,6 +125,7 @@
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\IO\R_SOUND.cpp" />
     <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
+    <ClInclude Include="Include\Graphics\Scenarios\WaterObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio\ALContext.cpp" />

@@ -120,7 +120,7 @@ void GameObject::UpdateTransform() noexcept
 	}
 }
 
-void GameObject::Update(float deltaTime)
+void GameObject::Update(float deltaTime) noexcept
 {
 	Extend(deltaTime);
 	UpdateTransform();

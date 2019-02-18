@@ -51,7 +51,7 @@ public:
 	void SetTypeId(int32 typeId) noexcept;
 	int32 GetTypeId() const noexcept;
 
-	virtual void Update(float deltaTime);
+	virtual void Update(float deltaTime) noexcept;
 	virtual void UpdateTransform() noexcept;
 
 private:

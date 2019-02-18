@@ -156,7 +156,7 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 			pGameObject->SetIsVisible(false);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetMaterial(MATERIAL::OCEAN_BLUE);
-			pGameObject->SetScale(glm::vec3(0.0f));
+			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
 			pGameObject->UpdateTransform();
 			pGameObject->SetName(m_ppLevelData[x][z].WaterBlockName);

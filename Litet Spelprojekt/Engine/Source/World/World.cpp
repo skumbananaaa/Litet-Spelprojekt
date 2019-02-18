@@ -157,7 +157,7 @@ void World::Update(Scene* pScene, float dt)
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
 		//TEMP
-		if (levelIndex == 5 && Input::IsKeyDown(KEY_I))
+		if (levelIndex == 5/* && Input::IsKeyDown(KEY_I)*/)
 		{
 			ppLevelData[10][10].WaterLevel = 1.0f;
 			ppLevelData[10][10].WaterLevelAge = 0.0f;
@@ -165,7 +165,7 @@ void World::Update(Scene* pScene, float dt)
 			GameObject* pGameObject = pScene->GetGameObject(ppLevelData[10][10].WaterBlockName);
 			pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevelLastUpdated, 0.0f));
 			//pGameObject->UpdateTransform();
-			pGameObject->SetIsVisible(true);
+			//pGameObject->SetIsVisible(true);
 
 			bool contains1010 = false;
 			for (uint32 i = 0; i < floodingIDs.size(); i++)
@@ -212,32 +212,32 @@ void World::Update(Scene* pScene, float dt)
 				glm::ivec2 currentTile = glm::ivec2(floodingIDs[i].x, floodingIDs[i].y);
 				bool hasStairsBelow = false;
 
-				//if (levelIndex > 0)
-				//{
-				//	for (uint32 stairId = 0; stairId < m_NumStairs; stairId++)
-				//	{
-				//		if (levelIndex - m_pStairs[stairId].y == 2)
-				//		{
-				//			if (currentTile.x == m_pStairs[stairId].x && currentTile.y == m_pStairs[stairId].y)
-				//			{
-				//				UpdateFloodingIdsBelow(m_ppLevels[levelIndex - 1], currentTile);
-				//				UpdateWaterLevelBelow(m_ppLevels[levelIndex], m_ppLevels[levelIndex - 1], currentTile);
+				if (levelIndex > 0)
+				{
+					for (uint32 stairId = 0; stairId < m_NumStairs; stairId++)
+					{
+						if (levelIndex - m_pStairs[stairId].y == 2)
+						{
+							if (currentTile.x == m_pStairs[stairId].x && currentTile.y == m_pStairs[stairId].z)
+							{
+								UpdateFloodingIdsBelow(m_ppLevels[levelIndex - 1], currentTile);
+								UpdateWaterLevelBelow(m_ppLevels[levelIndex], m_ppLevels[levelIndex - 1], currentTile);
 
-				//				//Remove Current Water Object (All the water flows down)
-				//				ppLevelData[currentTile.x][currentTile.y].WaterLevel = 0.0f;
-				//				ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = 0.0f;
-				//				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = 0.0f;
-				//				ppLevelData[currentTile.x][currentTile.y].WaterLevelAge = 1.0f;
-				//				ppLevelData[currentTile.x][currentTile.y].AlreadyFlooded = false;
-				//				pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName)->SetIsVisible(false);
-				//				toRemoveFloodingIDs.push_back(currentTile);
+								//Remove Current Water Object (All the water flows down)
+								ppLevelData[currentTile.x][currentTile.y].WaterLevel = 0.0f;
+								ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = 0.0f;
+								ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = 0.0f;
+								ppLevelData[currentTile.x][currentTile.y].WaterLevelAge = 1.0f;
+								ppLevelData[currentTile.x][currentTile.y].AlreadyFlooded = false;
+								pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName)->SetIsVisible(false);
+								toRemoveFloodingIDs.push_back(currentTile);
 
-				//				hasStairsBelow = true;
-				//				break;
-				//			}
-				//		}
-				//	}
-				//}
+								hasStairsBelow = true;
+								break;
+							}
+						}
+					}
+				}
 
 				if (!hasStairsBelow)
 				{
@@ -296,10 +296,10 @@ void World::Update(Scene* pScene, float dt)
 				GameObject* pGameObject = pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName);
 				float yOffset = levelIndex % 2 == 0 ? 0.05f : 0.0f;
 				float yScale = glm::max(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f);
-				pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated / 2.0f + yOffset, currentTile.y));
+				pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + yOffset + ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated / 2.0f, currentTile.y));
 				pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
-				pGameObject->UpdateTransform();
 				pGameObject->SetIsVisible(true);
+				pGameObject->UpdateTransform();
 			}
 		}
 

@@ -20,8 +20,9 @@ ParticleSystem::ParticleSystem()
 	m_Direction(),
 	m_Color()
 {
-	m_MaxParticles = 10000;
+	m_MaxParticles = 100000;
 
+	m_pTempBuff = new uint32[m_MaxParticles];
 	m_pParticles = new ParticleData[m_MaxParticles];
 	m_pLivingParticles = new uint32[m_MaxParticles];
 	m_pSortedParticles = new uint32[m_MaxParticles];
@@ -146,16 +147,12 @@ void ParticleSystem::InsertSortedParticle(uint32 id) noexcept
 	ParticleData& particle = m_pParticles[id];
 
 	int32 index = m_NumSortedParticles;
-	for (uint32 i = 0; i < m_NumSortedParticles; i++)
+	for (int32 i = m_NumSortedParticles - 1; i > 0; i--)
 	{
 		if (particle > GetSortedParticle(i))
 		{
 			index = i;
-			for (int32 j = m_NumSortedParticles; j > i; j--)
-			{
-				m_pSortedParticles[j] = m_pSortedParticles[j - 1];
-			}
-
+			memcpy(&m_pSortedParticles[i + 1], &m_pSortedParticles[i], sizeof(uint32) * (m_NumSortedParticles - i));
 			break;
 		}
 	}

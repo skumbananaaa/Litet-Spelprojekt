@@ -40,6 +40,10 @@ void main()
 }
 
 #elif defined(FRAGMENT_SHADER)
+#define NUM_DIRECTIONAL_LIGHTS 1
+#define NUM_POINT_LIGHTS 18
+#define NUM_SPOT_LIGHTS 17
+
 layout(early_fragment_tests) in;
 
 layout(location = 0) out vec4 g_OutColor;
@@ -63,7 +67,7 @@ in VS_OUT
 } fs_in;
 
 const float distortionStrength = 0.005;
-const float specularStrength = 0.6;
+const float specularStrength = 256.0f;//0.6;
 const float shininess = 20.0;
 const float refractionExp = 1.5;
 const float normalYSmoothness = 4.0;
@@ -73,6 +77,51 @@ const float depthOfFullSpecular = 0.7;
 
 const float fogDensity = 0.075;
 const float fogGradient = 5.0;
+
+struct DirectionalLight
+{
+	vec4 Color;
+	vec4 Direction;
+};
+
+struct PointLight
+{
+	vec4 Color;
+	vec4 Position;
+};
+
+struct SpotLight
+{
+	vec4 Color;
+	vec3 Position;
+	float Angle;
+	vec3 TargetDirection;
+	float OuterAngle;
+};
+
+layout(binding = 1) uniform LightBuffer
+{
+	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
+	PointLight g_PointLights[NUM_POINT_LIGHTS];
+	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)
+{
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+
+	//AMBIENT
+	vec3 ambient = vec3(0.2f);
+
+	//DIFFUSE
+	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
+
+	//SPECULAR
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), specularIntensity);
+	vec3 specular = vec3(spec) * lightColor * intensity;
+
+	return ((ambient + diffuse) * color * lightColor) + specular;
+}
 
 void main()
 {
@@ -125,6 +174,60 @@ void main()
 	col = mix(col, vec4(0.7, 0.25, 0.33, 1.0), 0.25);// + vec4(specular, 0.0);
 	//FragColor = mix(vec4(0.392, 0.584, 0.929, 1.0), FragColor, visibility); //Fog
 	//FragColor.a = clamp(waterDepth / depthOfFullOpaque, 0.0, 1.0);
-	g_OutColor = col;
+
+	//Do lightcalculation
+	vec3 c = vec3(0.0f);
+	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
+	{
+		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
+		vec3 lightColor = g_DirLights[i].Color.rgb;
+		float cosTheta = dot(normal, lightDir);
+
+		c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
+	}
+
+	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
+	{
+		vec3 lightDir = g_PointLights[i].Position.xyz - fs_in.Position;
+		float dist = length(lightDir);
+
+		float attenuation = 1.0f / (dist * dist);
+		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
+		lightDir = normalize(lightDir);
+		float cosTheta = dot(normal, lightDir);
+
+		c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
+	}
+
+	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
+	{
+		float light_attenuation = 1.0f;
+		vec3 lightDir = g_SpotLights[i].Position.xyz - fs_in.Position;
+		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
+		float dist = length(lightDir);
+		lightDir = normalize(lightDir);
+		float cosTheta = dot(normal, lightDir);
+
+		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
+		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
+		if (lightToSurfaceAngle > coneAngle)
+		{
+			light_attenuation += lightToSurfaceAngle - coneAngle;
+		}
+		float attenuation = 1.0f / ((dist));
+		
+		vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
+
+		float theta = dot(lightDir, -targetDir);
+		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
+		float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
+
+		if(theta > g_SpotLights[i].OuterAngle)
+		{
+			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, col.rgb, specularStrength, intensity);
+		}
+	}
+
+	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);
 }
 #endif

@@ -33,8 +33,7 @@ void main()
 	vs_out.Color = g_InstanceColor;
 
 	vec3 position = g_InstancePosition + (cameraRight * g_Position.x) + (cameraUp * g_Position.y);
-	vec4 clipSpace = g_ProjectionView * vec4(position, 1.0f);
-	gl_Position = clipSpace;
+	gl_Position = g_ProjectionView * vec4(position, 1.0f);
 }
 
 #elif defined(FRAGMENT_SHADER)
@@ -54,11 +53,6 @@ layout(binding = 0) uniform sampler2D g_DiffuseMap;
 void main()
 {
 	vec4 tex = texture(g_DiffuseMap, fs_in.TexCoords) * fs_in.Color;
-	if (tex.a < 0.05f)
-	{
-		discard;
-	}
-
 	g_OutColor = tex;
 }
 

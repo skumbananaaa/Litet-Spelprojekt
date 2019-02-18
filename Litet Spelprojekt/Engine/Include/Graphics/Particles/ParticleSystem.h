@@ -42,6 +42,7 @@ private:
 	const Texture2D* m_pTexture;
 	uint32* m_pLivingParticles;
 	uint32* m_pSortedParticles;
+	uint32* m_pTempBuff;
 	ParticleData* m_pParticles;
 	ParticleInstance* m_pParticleInstances;
 	

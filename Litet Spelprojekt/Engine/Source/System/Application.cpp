@@ -2,7 +2,7 @@
 #include <System/Application.h>
 #include <System/Input.h>
 
-constexpr float timestep = 1.0f / 60.0f;
+constexpr float timestep = 1.0f / 45.0f;
 Application* Application::s_Instance = nullptr;
 
 //Framebuffer* temp;

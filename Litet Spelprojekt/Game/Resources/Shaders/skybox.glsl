@@ -16,11 +16,14 @@ out vec3 texCoords;
 
 void main()
 {
-	gl_Position = g_CameraCombined * vec4(g_Position * 2.0, 1.0f);
 	texCoords = g_Position * 2.0;
+	vec4 pos = g_CameraCombined * vec4(g_Position * 2.0, 1.0f);
+	gl_Position = pos.xyww;
 }
 
 #elif defined(FRAGMENT_SHADER)
+layout(early_fragment_tests) in;
+
 layout(location = 0) out vec4 g_OutColor;
 
 in vec3 texCoords;

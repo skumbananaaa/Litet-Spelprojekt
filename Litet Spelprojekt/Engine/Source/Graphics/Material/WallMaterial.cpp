@@ -6,6 +6,8 @@ WallMaterial::WallMaterial() : Material(SHADER::WALL_MATERIAL),
 {
 	m_Buffer.DissolveFactor = 0.0f;
 	m_pDissolveBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(DissolveBuffer));
+
+	SetCullMode(CULL_MODE_NONE);
 }
 
 WallMaterial::~WallMaterial()
@@ -20,7 +22,6 @@ void WallMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 	context.Enable(CLIP_DISTANCE0);
 	context.Enable(CLIP_DISTANCE1);
 	context.Enable(CLIP_DISTANCE2);
-	context.Disable(CULL_FACE);
 
 	context.SetUniformBuffer(m_pDissolveBuffer, 3);
 
@@ -31,7 +32,6 @@ void WallMaterial::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.Enable(CULL_FACE);
 	context.Disable(CLIP_DISTANCE0);
 	context.Disable(CLIP_DISTANCE1);
 	context.Disable(CLIP_DISTANCE2);

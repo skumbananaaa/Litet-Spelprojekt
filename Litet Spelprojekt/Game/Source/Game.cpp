@@ -15,13 +15,10 @@
 //#define DRAW_DEBUG_BOXES
 #endif
 
-
-GameObject* g_pDecalObject = nullptr;
-
 float g_Rot = 1.0;
 
-Game::Game() noexcept : 
-	Application(false, 1920, 1080, "", true),
+Game::Game() noexcept 
+	: Application(false, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -150,7 +147,6 @@ void Game::OnResourcesLoaded()
 			pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
 			pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			pGameObject->UpdateTransform();
-			g_pDecalObject = pGameObject;
 			m_Scenes[0]->AddGameObject(pGameObject);
 		}
 
@@ -242,13 +238,13 @@ void Game::OnResourcesLoaded()
 	pFire->SetColor(glm::vec4(1.0f, 0.55f, 0.0f, 1.0f));
 	m_Scenes[0]->AddParticleSystem(pFire);
 
-	for (uint32 j = 0; j < 1; j++)
+	for (uint32 j = 0; j < 10; j++)
 	{
 		for (uint32 i = 0; i < 1; i++)
 		{
 			ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
-			pEmitter->SetPosition(glm::vec3(0.0, 8.0f, 15.0f + (3.0f * i)));
-			pEmitter->SetParticlesPerFrame(4);
+			pEmitter->SetPosition(glm::vec3(1.0f + j, 4.3f, 1.5f + (i * 0.5f)));
+			pEmitter->SetParticlesPerFrame(1);
 			m_Scenes[0]->AddGameObject(pEmitter);
 		}
 	}
@@ -767,25 +763,6 @@ void Game::OnUpdate(float dtS)
 	AudioListener::SetPosition(m_Scenes[m_SceneId]->GetCamera().GetPosition());
 	AudioListener::SetOrientation(m_Scenes[m_SceneId]->GetCamera().GetFront(), m_Scenes[m_SceneId]->GetCamera().GetUp());
 
-	static float decalRot = 0.0f;
-	static float decalX = g_pDecalObject->GetPosition().x;
-	static float decalXSpeed = -1.0f;
-	
-	if (decalX > 6.5f)
-	{
-		decalXSpeed = -1.0f;
-	}
-	else if (decalX < -6.5f)
-	{
-		decalXSpeed = 1.0f;
-	}
-
-	decalX += decalXSpeed * dtS;
-	//decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
-
-	g_pDecalObject->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(-45.0f)));
-	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
-	g_pDecalObject->UpdateTransform();
 	if (Input::IsKeyPressed(KEY_NUMPAD_2))
 	{
 		if (m_CurrentElevation > 0)

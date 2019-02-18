@@ -8,6 +8,7 @@ struct ForwardFrameTimes
 	float SkyboxPass = 0.0f;
 	float ParticlePass = 0.0f;
 	float LightPass = 0.0f;
+	float DepthPrePass = 0.0f;
 };
 
 class API ForwardRenderer : public IRenderer
@@ -30,6 +31,7 @@ private:
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
 	void ReflectionPass(const Scene& scene) const noexcept;
+	void DepthPrePass(const Camera& camera, const Scene& scene) const noexcept;
 	void MainPass(const Camera& camera, const Scene& scene) const noexcept;
 	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept;

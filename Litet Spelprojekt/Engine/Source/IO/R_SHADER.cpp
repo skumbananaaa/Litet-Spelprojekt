@@ -37,7 +37,7 @@ void SHADER::RegisterResources()
 	CBR_RESOLVE				= ResourceHandler::RegisterShader("fullscreenTriVert.glsl", "cbrResolveFrag.glsl");
 	CBR_RECONSTRUCTION		= ResourceHandler::RegisterShader("fullscreenTriVert.glsl", "cbrReconstructionFrag.glsl");
 	CBR_BLUR				= ResourceHandler::RegisterShader("fullscreenTriVert.glsl", "cbrFilterFrag.glsl");
-	DEPTH_PRE_PASS			= ResourceHandler::RegisterShader("defferedDepthPreVert.glsl");
+	DEPTH_PRE_PASS			= ResourceHandler::RegisterShader("depthPrePass.glsl", "depthPrePass.glsl");
 	FORWARD_PASS			= ResourceHandler::RegisterShader("forwardVert.glsl", "forwardFrag.glsl");
 	ORTHOGRAPHIC			= ResourceHandler::RegisterShader("orthoVert.glsl", "orthoFrag.glsl");
 	EQUIREC_TO_CUBEMAP		= ResourceHandler::RegisterShader("VShaderEquirecToCubemap.glsl", "FShaderEquirecToCubemap.glsl");

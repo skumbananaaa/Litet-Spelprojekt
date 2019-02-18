@@ -91,6 +91,7 @@
     <None Include="Resources\Shaders\forwardMaterial.glsl" />
     <None Include="Resources\Shaders\forwardWater.glsl" />
     <None Include="Resources\Shaders\forwardWall.glsl" />
+    <None Include="Resources\Shaders\depthPrePass.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

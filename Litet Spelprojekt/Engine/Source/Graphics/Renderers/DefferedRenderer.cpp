@@ -498,8 +498,6 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
 	context.SetColorMask(1, 1, 1, 1);
-
-	context.SetDepthMask(false);
 }
 
 void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const noexcept

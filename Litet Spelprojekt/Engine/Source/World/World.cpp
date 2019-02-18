@@ -134,7 +134,6 @@ Room* World::GetRoom(uint32 room) const noexcept
 
 void World::Update(float dt)
 {
-	m_ppLevels[2]->UpdateFire(dt);
 }
 
 void World::SetTileData(const glm::ivec3 & pos, const TileData & data)

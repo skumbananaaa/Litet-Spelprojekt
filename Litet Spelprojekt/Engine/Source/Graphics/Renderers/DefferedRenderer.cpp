@@ -58,6 +58,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pGeoPassPerObject);
 	DeleteSafe(m_pLightPassBuffer);
 	DeleteSafe(m_pLightBuffer);
+	DeleteSafe(m_pWorldBuffer);
 
 	DeleteSafe(m_pDecalPassPerFrame);
 	DeleteSafe(m_pDecalPassPerObject);
@@ -76,7 +77,7 @@ void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 	m_ClipDistances[index] = plane;
 }
 
-void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
+void DefferedRenderer::DrawScene(const Scene& scene, const World* pWorld, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -98,32 +99,35 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
 		{
-			bool batchFound = false;
-			const Material* pMaterial = drawables[i]->GetMaterial();
-			const IndexedMesh* pMesh = drawables[i]->GetMesh();
-			
-			InstanceData instance = {};
-			instance.Model = drawables[i]->GetTransform();
-			instance.InverseModel = drawables[i]->GetInverseTransform();
-		
-			for (size_t j = 0; j < m_DrawableBatches.size(); j++)
+			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsCrew()))
 			{
-				if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
-				{
-					m_DrawableBatches[j].Instances.push_back(instance);
-					batchFound = true;
-					break;
-				}
-			}
+				bool batchFound = false;
+				const Material* pMaterial = drawables[i]->GetMaterial();
+				const IndexedMesh* pMesh = drawables[i]->GetMesh();
 
-			if (!batchFound)
-			{
-				DrawableBatch batch = {};
-				batch.pMaterial = pMaterial;
-				batch.pMesh = pMesh;
-				batch.Instances.push_back(instance);
-				
-				m_DrawableBatches.push_back(batch);
+				InstanceData instance = {};
+				instance.Model = drawables[i]->GetTransform();
+				instance.InverseModel = drawables[i]->GetInverseTransform();
+
+				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
+				{
+					if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
+					{
+						m_DrawableBatches[j].Instances.push_back(instance);
+						batchFound = true;
+						break;
+					}
+				}
+
+				if (!batchFound)
+				{
+					DrawableBatch batch = {};
+					batch.pMaterial = pMaterial;
+					batch.pMesh = pMesh;
+					batch.Instances.push_back(instance);
+
+					m_DrawableBatches.push_back(batch);
+				}
 			}
 		}
 	}
@@ -171,6 +175,9 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 
 	//Update Lightbuffer
 	UpdateLightBuffer(scene);
+
+	//Update WorldBuffer
+	UpdateWorldBuffer(scene);
 
 	//Setup for start rendering
 	context.Enable(DEPTH_TEST);
@@ -225,6 +232,28 @@ void DefferedRenderer::DrawScene(const Scene& scene, float dtS) const
 	m_FrameCount++;
 	m_pLastResolveTarget = m_pCurrentResolveTarget;
 	m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
+}
+
+void DefferedRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
+{
+	if (pWorld != nullptr)
+	{
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y)->GetLevel()[x][z]);
+				}
+			}
+		}
+	}
+
+	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
+	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void DefferedRenderer::Create() noexcept
@@ -409,6 +438,7 @@ void DefferedRenderer::Create() noexcept
 	//	m_pWaterPassPerObject = new UniformBuffer(&object, 1, sizeof(WaterPassPerObjectVS));
 	//}
 
+	//Camera
 	{
 		CameraBuffer buff = {};
 		buff.InverseView = glm::mat4(1.0f);
@@ -417,21 +447,21 @@ void DefferedRenderer::Create() noexcept
 
 		m_pCameraBuffer = new UniformBuffer(&buff, 1, sizeof(CameraBuffer));
 	}
-
+	//Material
 	{
 		MaterialBuffer buff = {};
 		buff.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		m_pMaterialBuffer = new UniformBuffer(&buff, 1, sizeof(MaterialBuffer));
 	}
-
+	//Plane
 	{
 		PlaneBuffer buff = {};
 		buff.ClipPlane = glm::vec4(0.0f);
 
 		m_pPlaneBuffer = new UniformBuffer(&buff, 1, sizeof(PlaneBuffer));
 	}
-	
+	//Light
 	{
 		LightBuffer buff = {};
 		for (uint32 i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
@@ -457,7 +487,23 @@ void DefferedRenderer::Create() noexcept
 
 		m_pLightBuffer = new UniformBuffer(&buff, 1, sizeof(LightBuffer));
 	}
-
+	//World
+	{
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = 1;
+				}
+			}
+		}
+		m_LocalWorldBuff.concealed = false;
+		m_LocalWorldBuff.extended = false;
+		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
+	}
+	//Skybox
 	{
 		SkyBoxPassBuffer buff= {};
 		buff.CameraCombined = glm::mat4(1.0f);
@@ -470,12 +516,12 @@ void DefferedRenderer::Create() noexcept
 
 		m_pSkyBoxPassPerObject = new UniformBuffer(&object, 1, sizeof(SkyBoxPassPerObject));
 	}
-
+	//Water
 	{
 		m_pWaterDistortionMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_DISTORTION);
 		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
 	}
-
+	//Clip distances
 	{
 		for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
 		{
@@ -531,6 +577,14 @@ void DefferedRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 
 		m_pCameraBuffer->UpdateData(&buff);
 	}
+}
+
+void DefferedRenderer::UpdateWorldBuffer(const Scene & scene) const noexcept
+{
+	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
+	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
@@ -650,6 +704,7 @@ void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& sce
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pLightBuffer, LIGHT_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pWorldBuffer, WORLD_BUFFER_BINDING_SLOT);
 
 	context.SetTexture(pGBuffer->GetColorAttachment(0), 0); //color buffer
 	context.SetTexture(pGBuffer->GetColorAttachment(1), 1); //normal buffer
@@ -660,6 +715,7 @@ void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& sce
 	//Unbind resources = no bugs
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, LIGHT_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(nullptr, WORLD_BUFFER_BINDING_SLOT);
 
 	context.SetTexture(nullptr, 0);
 	context.SetTexture(nullptr, 1);

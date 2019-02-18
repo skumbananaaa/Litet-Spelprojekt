@@ -22,9 +22,14 @@
 #include <Graphics/GUI/ProgressBar.h>
 #include "GUI/UICrew.h"
 #include "GUI/UICrewMember.h"
+#include <Graphics/GUI/ListScrollable.h>
 
 #include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/WaterMaterial.h>
+
+#include <World/Logger.h>
+#include <World/ScenarioManager.h>
+#include "../Include/ScenarioFire.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/glm.hpp>
@@ -33,12 +38,15 @@
 #include <math.h>
 
 #define NUM_CREW 15
+#define MAX_ROOMS_VISIBLE 3
 
-class Game : public Application
+class Game : public Application, public ILogListener
 {
 public:
 	Game() noexcept;
 	~Game();
+
+	void OnLogged(const std::string& text) noexcept override;
 
 	void OnResourceLoading(const std::string&, float percentage) override;
 	void OnResourcesLoaded() override;
@@ -60,6 +68,7 @@ public:
 
 	void SetClipPlanes(uint32 scene);
 
+	Crewmember* GetCrewmember(uint32 shipNumber);
 	Scene* GetScene();
 	static Game* GetGame();
 
@@ -70,21 +79,28 @@ private:
 	DebugRenderer* m_pDebugRenderer;
 	std::vector<Scene*> m_Scenes;
 	uint32 m_SceneId = 0;
-
-	TextureCube* m_pSkyBoxTex;
 	World* m_pWorld;
 
-	TextView* m_pTextViewFPS;
-	TextView* m_pTextViewUPS;
+	TextureCube* m_pSkyBoxTex;
+	UICrew* m_pUICrew;
+
 	TextView* m_pTextViewScene;
 	TextView* m_pTextViewFile;
 	ProgressBar* m_pLoadingBar;
+
+	ListScrollable* m_ListScrollableLog;
+	TextView* m_pTextViewLog;
+	Panel* m_PanelLog;
 	
 	Crew m_Crew;
-	std::string m_CrewList[NUM_CREW];
 
 	bool cartesianCamera;
 	int32 m_CurrentElevation;
+
+	std::vector<uint32> m_ActiveRooms;
+	std::vector<float> m_RoomLightsTimers;
+	float m_DoorLightTimer = 0.0f;
+	uint32 m_CurrentLight = 0;
 
 	//Sound
 	AudioSource* m_pTestAudioSource;

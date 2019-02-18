@@ -1,11 +1,15 @@
 #pragma once
 #include <EnginePch.h>
+#include <Graphics/Scene.h>
 
-struct TileData {
+struct TileData 
+{
 	float Temp;
 	float BurnsAt;
 	float SmokeAmount;
 	float SmokeLimit;
+	float WaterLevel;
+	std::string WaterBlockName;
 };
 
 class API WorldLevel
@@ -16,7 +20,7 @@ public:
 	WorldLevel& operator=(WorldLevel&& other) = delete;
 	WorldLevel& operator=(const WorldLevel& other) = delete;
 
-	WorldLevel(const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept;
+	WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept;
 	~WorldLevel();
 
 	const uint32* const* const GetLevel() const noexcept;
@@ -27,8 +31,10 @@ public:
 	///<summary>Returns a vec4. The first two values are the position of the wall (x, z), the second two are the dimensions of the wall (x, z)</summary>
 	const glm::vec4& GetWall(uint32 index) const noexcept;
 	uint32 GetNrOfWalls() const noexcept;
+	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
-	void GenerateWalls();
+	void GenerateRooms();
+	void GenerateWater(Scene* scene, uint32 levelHeight);
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 private:
@@ -39,4 +45,6 @@ private:
 	uint32 m_SizeZ;
 	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
+
+	std::vector<glm::uvec4> roomBounds;
 };

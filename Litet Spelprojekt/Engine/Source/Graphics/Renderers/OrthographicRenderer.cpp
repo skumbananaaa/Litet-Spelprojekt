@@ -21,7 +21,7 @@ void OrthographicRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 {
 }
 
-void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
+void OrthographicRenderer::DrawScene(const Scene& scene, const World* pWorld, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -79,6 +79,10 @@ void OrthographicRenderer::DrawScene(const Scene& scene, float dtS) const
 			context.DrawIndexedMesh(*gameobject.GetMesh());
 		}
 	}
+}
+
+void OrthographicRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
+{
 }
 
 void OrthographicRenderer::Create() noexcept

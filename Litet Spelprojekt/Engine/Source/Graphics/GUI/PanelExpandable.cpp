@@ -4,7 +4,8 @@
 PanelExpandable::PanelExpandable(float x, float y, float width, float height, float clientHeight, const std::string& text) : Button(x, y, width, height, text),
 	m_pFrameBufferClientArea(nullptr),
 	m_Mode(CLOSED),
-	m_Percentage(0)
+	m_Percentage(0),
+	m_ClientAreaColor(0.408F, 0.408F, 0.408F, 1.0F)
 {
 	SetClientSize(clientHeight);
 	SetBackgroundColor(glm::vec4(0.118F, 0.118F, 0.118F, 1.0F));
@@ -14,6 +15,12 @@ PanelExpandable::PanelExpandable(float x, float y, float width, float height, fl
 
 PanelExpandable::~PanelExpandable()
 {
+}
+
+void PanelExpandable::SetSelected(bool selected)
+{
+	Button::SetSelected(selected);
+	SetExpanded(selected);
 }
 
 void PanelExpandable::SetExpanded(bool expanded) noexcept
@@ -42,6 +49,56 @@ float PanelExpandable::GetClientWidth() const noexcept
 float PanelExpandable::GetClientHeight() const noexcept
 {
 	return m_pFrameBufferClientArea->GetHeight();
+}
+
+void PanelExpandable::AddExpandableListener(IExpandableListener* listener)
+{
+	if (!Contains<IExpandableListener>(m_Listeners, listener))
+	{
+		m_Listeners.push_back(listener);
+	}
+	else
+	{
+		std::cout << "ExpandableListener already added" << std::endl;
+	}
+}
+
+void PanelExpandable::RemoveExpandableListener(IExpandableListener* listener)
+{
+	int32 counter = 0;
+	for (IExpandableListener* object : m_Listeners)
+	{
+		if (object == listener)
+		{
+			m_Listeners.erase(m_Listeners.begin() + counter);
+			return;
+		}
+		counter++;
+	}
+}
+
+const glm::vec4& PanelExpandable::GetClientAreaColor() const noexcept
+{
+	return m_ClientAreaColor;
+}
+
+void PanelExpandable::SetClientAreaColor(const glm::vec4& color)
+{
+	if (m_ClientAreaColor != color)
+	{
+		m_ClientAreaColor = color;
+		RequestRepaint();
+	}
+}
+
+float PanelExpandable::GetPercentage() const noexcept
+{
+	return m_Percentage;
+}
+
+float PanelExpandable::GetYForClientArea() const noexcept
+{
+	return GetY() - GetClientHeight() * m_Percentage;
 }
 
 void PanelExpandable::SetClientSize(float height) noexcept
@@ -92,7 +149,7 @@ bool PanelExpandable::ContainsPoint(const glm::vec2& position, const GUIObject* 
 
 void PanelExpandable::RenderChildrensFrameBuffers(GUIContext* context)
 {
-	context->BeginSelfRendering(m_pFrameBufferClientArea, GetBackgroundColor());
+	context->BeginSelfRendering(m_pFrameBufferClientArea, m_ClientAreaColor);
 	Button::RenderChildrensFrameBuffers(context);
 }
 
@@ -120,12 +177,6 @@ float PanelExpandable::GetYInWorld(const GUIObject* child) const noexcept
 	return value;
 }
 
-void PanelExpandable::OnReleased(const glm::vec2& position, MouseButton mousebutton) noexcept
-{
-	Button::OnReleased(position, mousebutton);
-	SetExpanded(!IsExpanded());
-}
-
 void PanelExpandable::OnUpdate(float dtS)
 {
 	static const float speed = 6.0F;
@@ -138,6 +189,10 @@ void PanelExpandable::OnUpdate(float dtS)
 			m_Percentage = 1.0;
 			m_Mode = OPEN;
 		}
+		for (IExpandableListener* listener : m_Listeners)
+		{
+			listener->OnExpanding(this, m_Percentage);
+		}
 	}
 	else if (m_Mode == COLLAPSING)
 	{
@@ -147,6 +202,10 @@ void PanelExpandable::OnUpdate(float dtS)
 			m_Percentage = 0.0;
 			m_Mode = CLOSED;
 			RemoveRealTimeRenderer(this);
+		}
+		for (IExpandableListener* listener : m_Listeners)
+		{
+			listener->OnCollapsing(this, m_Percentage);
 		}
 	}
 }

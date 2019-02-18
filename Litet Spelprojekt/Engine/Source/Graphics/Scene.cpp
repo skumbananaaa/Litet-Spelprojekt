@@ -139,6 +139,12 @@ void Scene::AddSpotLight(SpotLight* pLight) noexcept
 	m_SpotLights.push_back(pLight);
 }
 
+void Scene::AddRoomLight(PointLight* pLight) noexcept
+{
+	m_RoomLights.push_back(pLight);
+	AddPointLight(pLight);
+}
+
 void Scene::AddPlanarReflector(PlanarReflector* pReflector) noexcept
 {
 	m_PlanarReflectors.push_back(pReflector);
@@ -159,7 +165,16 @@ void Scene::ExtendScene(bool extend) noexcept
 	{
 		pSpotLight->SetExtend(extend);
 	}
+	for (PointLight* pPointLight : m_PointLights)
+	{
+		pPointLight->SetExtend(extend);
+	}
 	m_Extended = !m_Extended;
+}
+
+void Scene::SetConceal(bool conceal) noexcept
+{
+	m_Concealed = conceal;
 }
 
 void Scene::OnUpdate(float dtS) noexcept
@@ -171,5 +186,9 @@ void Scene::OnUpdate(float dtS) noexcept
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
 		pSpotLight->Update(dtS);
+	}
+	for (PointLight* pPointLight : m_PointLights)
+	{
+		pPointLight->Update(dtS);
 	}
 }

@@ -4,6 +4,14 @@
 #include <Graphics/GUI/GUIContext.h>
 #include <Graphics/Textures/Texture2D.h>
 
+class GUIObject;
+
+class API IExternalUIRenderer
+{
+public:
+	virtual void OnRenderGUIObject(GUIContext* context, GUIObject* object) = 0;
+};
+
 class API GUIObject
 {
 	friend class GUIManager;
@@ -44,11 +52,21 @@ public:
 
 	virtual void DeleteChildren();
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
+	virtual bool WillDeleteAllChildrenOnDestruction() const noexcept;
+
+	void AddExternalRenderer(IExternalUIRenderer* renderer);
+	void RemoveExternalRenderer(IExternalUIRenderer* renderer);
 
 	void SetUserData(void* data);
 	void* GetUserData() const;
 
-	const std::vector<GUIObject*>& GetChildren();
+	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
+	virtual void OnMouseMove(const glm::vec2& position) {};
+	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) {};
+
+	const std::vector<GUIObject*>& GetChildren() noexcept;
+	int32 GetNrOfChildren() const noexcept;
 
 protected:
 	GUIObject(float x, float y, float width, float height);
@@ -58,11 +76,6 @@ protected:
 
 	virtual void OnUpdate(float dtS) {};
 	virtual void OnRender(GUIContext* context);
-
-	virtual void OnMousePressed(const glm::vec2& position, MouseButton mousebutton) {};
-	virtual void OnMouseReleased(const glm::vec2& position, MouseButton mousebutton) {};
-	virtual void OnMouseMove(const glm::vec2& position) {};
-	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) {};
 
 	virtual void OnKeyUp(KEY keycode) {};
 	virtual void OnKeyDown(KEY keycode) {};
@@ -94,6 +107,9 @@ protected:
 
 	void RequestRepaint();
 
+	const std::vector<GUIObject*>& GetChildrenToAdd() noexcept;
+	const std::vector<GUIObject*>& GetChildrenToRemove() noexcept;
+
 	static void AddMouseListener(GUIObject* listener);
 	static void RemoveMouseListener(GUIObject* listener);
 
@@ -101,6 +117,8 @@ protected:
 	static void RemoveRealTimeRenderer(GUIObject* listener);
 
 	void InternalRootOnMouseMove(const glm::vec2& position);
+
+	static std::vector<GUIObject*> s_MouseListeners;
 
 private:
 	void InternalOnUpdate(float dtS);
@@ -124,6 +142,7 @@ private:
 	std::vector<GUIObject*> m_ChildrenToRemove;
 	std::vector<GUIObject*> m_ChildrenToAdd;
 	std::vector<GUIObject*> m_ChildrenDirty;
+	std::vector<IExternalUIRenderer*> m_ExternalRenderers;
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_Position;
 	bool m_IsDirty;
@@ -133,7 +152,6 @@ private:
 	bool m_DeleteAll;
 	void* m_pUserData;
 
-	static std::vector<GUIObject*> s_MouseListeners;
 	static std::vector<GUIObject*> s_RealTimeRenderers;
 	static Texture2D* s_pDefaultTexture;
 };

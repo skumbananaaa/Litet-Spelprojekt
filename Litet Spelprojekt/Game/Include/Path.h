@@ -25,6 +25,7 @@ public:
 	glm::ivec3* FindPath(const glm::ivec3& start, const glm::ivec3& goal);
 	bool IsGoalSet();
 	int GetNrOfPathTiles();
+	const World* GetWorld() const noexcept;
 
 private:
 	void AddToOpen(int x, int y, int z, int addX, int addY, int addZ);

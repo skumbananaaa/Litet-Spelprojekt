@@ -10,6 +10,7 @@ GameObject::GameObject() noexcept
 	m_Scale(1.0f),
 	m_IsDirty(true),
 	m_IsReflectable(false),
+	m_IsVisible(true),
 	m_TypeId(-1)
 {
 	UpdateTransform();
@@ -27,6 +28,11 @@ void GameObject::SetName(const std::string& name) noexcept
 void GameObject::SetIsReflectable(bool isReflectable) noexcept
 {
 	m_IsReflectable = isReflectable;
+}
+
+void GameObject::SetIsVisible(bool isVisible) noexcept
+{
+	m_IsVisible = isVisible;
 }
 
 void GameObject::SetPosition(const glm::vec3& position) noexcept
@@ -50,6 +56,11 @@ void GameObject::SetScale(const glm::vec3& scale) noexcept
 {
 	m_Scale = scale;
 	m_IsDirty = true;
+}
+
+void GameObject::SetRoom(uint32 room) noexcept
+{
+	m_Room = room;
 }
 
 void GameObject::SetExtend(bool extend) noexcept
@@ -89,9 +100,14 @@ void GameObject::Extend(float dtS) noexcept
 	}
 }
 
+void GameObject::SetIsCrew(bool isCrew) noexcept
+{
+	m_IsCrew = isCrew;
+}
+
 void GameObject::UpdateTransform() noexcept
 {
-	if (m_IsDirty)
+	if (m_IsDirty && m_IsVisible)
 	{
 		glm::mat4 transform(1.0f);
 		transform = glm::translate(transform, m_Position);

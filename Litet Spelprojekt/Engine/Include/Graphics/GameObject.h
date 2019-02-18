@@ -16,14 +16,17 @@ public:
 
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
+	virtual void SetIsVisible(bool isVisible) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
 	virtual void SetMaterial(int32 material) noexcept;
 	virtual void SetDecal(int32 decal) noexcept;
 	virtual void SetPosition(const glm::vec3& position) noexcept;
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
+	virtual void SetRoom(uint32 room) noexcept;
 	void SetExtend(bool extend) noexcept;
 	void Extend(float dtS) noexcept;
+	void SetIsCrew(bool isCrew) noexcept;
 
 	const std::string& GetName() const noexcept;
 	const Decal* GetDecal() const noexcept;
@@ -34,10 +37,13 @@ public:
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
-	const bool IsExtending() const noexcept;
-	const bool IsExtended() const noexcept;
+	uint32 GetRoom() const noexcept;
+	bool IsExtending() const noexcept;
+	bool IsExtended() const noexcept;
+	bool IsCrew() const noexcept;
 
 	bool IsReflectable() const noexcept;
+	bool IsVisible() const noexcept;
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
@@ -62,7 +68,10 @@ private:
 	glm::mat4 m_InverseTransform;
 	bool m_IsDirty;
 	bool m_IsReflectable;
+	bool m_IsVisible;
 	int32 m_TypeId;
+	int32 m_Room = 1;
+	bool m_IsCrew = false;
 	bool m_Extending = false;
 	bool m_Extended = false;
 };
@@ -82,14 +91,24 @@ inline const glm::vec3& GameObject::GetScale() const noexcept
 	return m_Scale;
 }
 
-inline const bool GameObject::IsExtending() const noexcept
+inline uint32 GameObject::GetRoom() const noexcept
+{
+	return m_Room;
+}
+
+inline bool GameObject::IsExtending() const noexcept
 {
 	return m_Extending;
 }
 
-inline const bool GameObject::IsExtended() const noexcept
+inline bool GameObject::IsExtended() const noexcept
 {
 	return m_Extended;
+}
+
+inline bool GameObject::IsCrew() const noexcept
+{
+	return m_IsCrew;
 }
 
 inline void GameObject::SetMesh(int32 mesh) noexcept
@@ -143,6 +162,11 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 inline bool GameObject::IsReflectable() const noexcept
 {
 	return m_IsReflectable;
+}
+
+inline bool GameObject::IsVisible() const noexcept
+{
+	return m_IsVisible;
 }
 
 inline bool GameObject::HasMaterial() const noexcept

@@ -20,9 +20,18 @@ PanelScrollable::~PanelScrollable()
 	{
 		GetParent()->Remove(m_pSliderVertical);
 		GetParent()->Remove(m_pSliderHorizontal);
+
+		if (!GetParent()->WillDeleteAllChildrenOnDestruction())
+		{
+			delete m_pSliderVertical;
+			delete m_pSliderHorizontal;
+		}
 	}
-	delete m_pSliderVertical;
-	delete m_pSliderHorizontal;
+	else
+	{
+		delete m_pSliderVertical;
+		delete m_pSliderHorizontal;
+	}
 	delete m_pFrameBufferClientArea;
 }
 
@@ -175,7 +184,17 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 	{
 		m_ClientOffset.x = (1.0 - slider->GetRatio()) * GetClientWidth() * percentage;
 	}
-	InternalRootOnMouseMove(m_LastMousePos);
+
+	glm::vec2 mousePos = Input::GetMousePosition();
+	mousePos.y = Window::GetCurrentWindow().GetHeight() - mousePos.y;
+
+	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
+	{
+		if (s_MouseListeners[i]->IsVisible() && IsMyChild(s_MouseListeners[i]))
+		{
+			s_MouseListeners[i]->OnMouseMove(mousePos);
+		}
+	}
 }
 
 bool PanelScrollable::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
@@ -246,7 +265,6 @@ void PanelScrollable::OnMouseScroll(const glm::vec2& position, const glm::vec2& 
 		{
 			m_pSliderHorizontal->AccelerateSlider(-offset.y * 600 * m_pSliderHorizontal->GetRatio());
 		}
-		m_LastMousePos = position;
 	}
 }
 

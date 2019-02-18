@@ -59,8 +59,11 @@ void SelectionHandler::OnSelected(ISelectable* selection)
 			lastObject->SetSelected(false);
 			TriggerOnDeselected(lastObject);
 		}
-		selection->SetSelected(true);
-		TriggerOnSelected(selection);
+		if (selection != nullptr)
+		{
+			selection->SetSelected(true);
+			TriggerOnSelected(selection);
+		}
 	}
 	else if (!m_AtLeastOneSelected && lastObject != nullptr)
 	{
@@ -122,4 +125,4 @@ void SelectionHandler::TriggerOnDeselected(ISelectable* selection) const
 	{
 		listener->OnDeselected(this, selection);
 	}
-};
+}

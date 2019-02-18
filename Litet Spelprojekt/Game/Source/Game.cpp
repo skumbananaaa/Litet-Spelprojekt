@@ -631,7 +631,7 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
-	ScenarioManager::Update(dtS);
+	ScenarioManager::Update(dtS, m_pWorld, m_Scenes[m_SceneId]);
 
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;

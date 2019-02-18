@@ -22,7 +22,7 @@ void ScenarioManager::Release() noexcept
 	}
 }
 
-void ScenarioManager::Update(float dtS, World* world, Room* room, Scene* scene) noexcept
+void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
 {
 	for (int i = m_NonActiveSenarios.size() - 1; i >= 0; i--)
 	{
@@ -44,7 +44,7 @@ void ScenarioManager::Update(float dtS, World* world, Room* room, Scene* scene) 
 	for (int i = m_ActiveSenarios.size() - 1; i >= 0; i--)
 	{
 		IScenario* scenario = m_Scenarios[m_ActiveSenarios[i]];
-		if (scenario->Update(dtS, world, room, scene))
+		if (scenario->Update(dtS, world, scene))
 		{
 			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Ended!");
 			scenario->OnEnd();

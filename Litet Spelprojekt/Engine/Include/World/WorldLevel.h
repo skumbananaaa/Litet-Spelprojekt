@@ -9,6 +9,7 @@ struct TileData
 	float SmokeAmount;
 	float SmokeLimit;
 	float WaterLevel;
+	bool Burning;
 	std::string WaterBlockName;
 };
 
@@ -35,8 +36,6 @@ public:
 
 	void GenerateRooms();
 	void GenerateWater(Scene* scene, uint32 levelHeight);
-	void UpdateFire(float dt);
-	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 	void SetTileData(const glm::ivec2 & pos, const TileData & data);
 private:
 	TileData** m_ppLevelData;

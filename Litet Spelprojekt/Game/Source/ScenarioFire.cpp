@@ -12,6 +12,10 @@ void ScenarioFire::OnStart() noexcept
 	uint32 x = Random::GenerateInt(1, m_pWorld->GetLevel(lvl)->GetSizeX() - 2);
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl)->GetSizeZ() - 2);
 	m_OnFire.push_back(glm::vec3(x, lvl, z));
+
+	TileData tileData = m_pWorld->GetLevel(lvl)->GetLevelData()[x][z];
+	tileData.Temp = 100.0f;
+	m_pWorld->SetTileData(glm::ivec3(x, lvl, z), tileData);
 }
 
 void ScenarioFire::OnEnd() noexcept
@@ -25,20 +29,20 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene) noexcept
 	for (uint32 i = 0; i < m_OnFire.size(); i++)
 	{
 		glm::vec3 curr = m_OnFire[i];
-		CheckFire(dtS, glm::ivec3(0, 0, 0), curr);
-		CheckFire(dtS, glm::ivec3(1, 0, 0), curr);
-		CheckFire(dtS, glm::ivec3(-1, 0, 0), curr);
-		CheckFire(dtS, glm::ivec3(0, 0, 1), curr);
-		CheckFire(dtS, glm::ivec3(0, 0, -1), curr);
+		CheckFire(dtS, glm::ivec3(0, 0, 0), curr, scene);
+		CheckFire(dtS, glm::ivec3(1, 0, 0), curr, scene);
+		CheckFire(dtS, glm::ivec3(-1, 0, 0), curr, scene);
+		CheckFire(dtS, glm::ivec3(0, 0, 1), curr, scene);
+		CheckFire(dtS, glm::ivec3(0, 0, -1), curr, scene);
 		
 		if (curr.y < m_pWorld->GetNumLevels() - 1)
 		{
-			CheckFire(dtS, glm::ivec3(0, 1, 0), curr);
+			CheckFire(dtS, glm::ivec3(0, 1, 0), curr, scene);
 		}
 
 		if (curr.y - 1 > 0)
 		{
-			CheckFire(dtS, glm::ivec3(0, -1, 0), curr);
+			CheckFire(dtS, glm::ivec3(0, -1, 0), curr, scene);
 		}
 
 
@@ -60,7 +64,8 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene) noexcept
 			}
 		}
 	}
-	return true;
+
+	return m_OnFire.empty();
 }
 
 std::string ScenarioFire::GetName() noexcept
@@ -78,7 +83,7 @@ int32 ScenarioFire::GetMaxTimeBeforeOutbreak() noexcept
 	return 60;
 }
 
-void ScenarioFire::CheckFire(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin)
+void ScenarioFire::CheckFire(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, Scene* scene)
 {
 
 	TileData tileData;
@@ -97,16 +102,28 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3 & offset, const glm::iv
 		originTile = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x][origin.z];
 		tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
 
-		bool alreadyBurns = tileData.Temp >= tileData.BurnsAt;
 		tileData.Temp += std::max((originTile.Temp - tileData.BurnsAt) * dtS, 0.0f);
 
 
-		if (tileData.Temp >= tileData.BurnsAt && !alreadyBurns)
+		if (tileData.Temp >= tileData.BurnsAt && !tileData.Burning)
 		{
 			m_OnFire.push_back(glm::vec3(origin) + glm::vec3(offset));
+			tileData.Burning = true;
+
+			GameObject* pGameObject;
+			{
+				pGameObject = new GameObject();
+				pGameObject->SetMaterial(MATERIAL::RED);
+				pGameObject->SetMesh(MESH::CUBE_OBJ);
+				pGameObject->SetPosition(glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, -0.25f, 0.0f));
+				pGameObject->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+				pGameObject->UpdateTransform();
+				scene->AddGameObject(pGameObject);
+			}
 		}
-		else if (tileData.Temp < tileData.BurnsAt && alreadyBurns)
+		else if (tileData.Temp < tileData.BurnsAt && tileData.Burning)
 		{
+			tileData.Burning = false;
 			for (uint32 i = 0; i < m_OnFire.size(); i++)
 			{
 				if (m_OnFire[i] == glm::vec3(origin) + glm::vec3(offset))

@@ -15,7 +15,7 @@ public:
 private:
 	World * m_pWorld;
 
-	void CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin);
+	void CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
 	void CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount);
 
 	// x, y, z = x, level, z

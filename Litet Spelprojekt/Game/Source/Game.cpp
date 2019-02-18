@@ -516,26 +516,7 @@ void Game::OnKeyDown(KEY keycode)
 		}
 		case KEY_R:
 		{
-			glm::ivec3 tile = m_Crew.GetMember(0)->GetTile();
-			if (!m_Crew.GetMember(0)->IsExtending())
-			{
-				uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
-
-				if (!m_pWorld->GetRoom(roomIndex)->IsActive() && roomIndex != 0)
-				{
-					const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
-					std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
-
-					roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
-					m_RoomLightsTimers[m_CurrentLight] = 0.0f;
-					m_ActiveRooms[m_CurrentLight] = roomIndex;
-					m_pWorld->GetRoom(roomIndex)->SetActive(true);
-					m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
-
-					m_pWorld->GetRoom(0)->SetActive(true);
-					m_DoorLightTimer = 0.0f;
-				}
-			}
+			ShowCrewmember(0);
 			break;
 		}
 	}
@@ -954,6 +935,30 @@ glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 wi
 	glm::vec3 rayDir = glm::normalize(glm::vec3(rayDir4));
 
 	return rayDir;
+}
+
+void Game::ShowCrewmember(uint32 crewmember)
+{
+	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
+	if (!m_Crew.GetMember(crewmember)->IsExtending())
+	{
+		uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+
+		if (!m_pWorld->GetRoom(roomIndex)->IsActive() && roomIndex != 0)
+		{
+			const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
+			std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
+
+			roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
+			m_RoomLightsTimers[m_CurrentLight] = 0.0f;
+			m_ActiveRooms[m_CurrentLight] = roomIndex;
+			m_pWorld->GetRoom(roomIndex)->SetActive(true);
+			m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
+
+			m_pWorld->GetRoom(0)->SetActive(true);
+			m_DoorLightTimer = 0.0f;
+		}
+	}
 }
 
 Crewmember* Game::RayTestCrewmembers()

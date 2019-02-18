@@ -64,6 +64,8 @@ public:
 	void PickCrew(bool hover);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 
+	void ShowCrewmember(uint32 crewmember);
+
 	Crewmember* RayTestCrewmembers();
 
 	void SetClipPlanes(uint32 scene);

@@ -37,6 +37,8 @@ public:
 	Room* GetRoom(uint32 room) const noexcept;
 	void Update(float dt);
 
+	void SetTileData(const glm::ivec3 & pos, const TileData & data);
+
 private:
 	WorldLevel** m_ppLevels;
 	uint32 m_NumLevels;

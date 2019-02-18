@@ -149,44 +149,6 @@ void WorldLevel::GenerateWater(Scene* scene, uint32 levelHeight)
 //alla tiles i hela vår grid. 
 void WorldLevel::UpdateFire(float dt)
 {
-	// Ej optimerad.
-	/*for (uint32 x = 0; x < m_SizeX; x++)
-	{
-		for (uint32 z = 0; z < m_SizeZ; z++)
-		{
-			if (x + 1 < m_SizeX)
-			{
-				if (m_ppLevel[x + 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x + 1][z] == 0)
-				{
-					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x + 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
-				}
-			}
-
-			if (x > 0)
-			{
-				if (m_ppLevel[x - 1][z] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x - 1][z] == 0)
-				{
-					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x - 1][z].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
-				}
-			}
-
-			if (z + 1 < m_SizeZ)
-			{
-				if (m_ppLevel[x][z + 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[x][z + 1] == 0)
-				{
-					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x][z + 1].Temp - m_ppLevelData[x][z].Temp)*dt, 0.0f);
-				}
-			}
-
-			if (z > 0)
-			{
-				if (m_ppLevel[x][z - 1] == m_ppLevel[x][z] || m_ppLevel[x][z] == 0 || m_ppLevel[1][z - 1] == 0)
-				{
-					m_ppLevelData[x][z].Temp += std::fmaxf((m_ppLevelData[x][z - 1].Temp- m_ppLevelData[x][z].Temp)*dt, 0.0f);
-				}
-			}
-		}
-	}*/
 
 	// optimerad version.
 	for (uint32 i = 0; i < m_burningIDs.size(); i++)
@@ -291,7 +253,7 @@ void WorldLevel::UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLe
 				}
 
 				// Smoke leaves the air right?
-				m_ppLevelData[x][z].SmokeAmount -= spread;
+				m_ppLevelData[x][z].SmokeAmount -= spread * dt;
 
 				if (x + 1 < m_SizeX)
 				{
@@ -327,5 +289,10 @@ void WorldLevel::UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLe
 			}
 		}
 	}
+}
+
+void WorldLevel::SetTileData(const glm::ivec2 & pos, const TileData & data)
+{
+	m_ppLevelData[pos.x][pos.y] = data;
 }
 

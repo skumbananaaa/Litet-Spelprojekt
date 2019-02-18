@@ -37,6 +37,7 @@ public:
 	void GenerateWater(Scene* scene, uint32 levelHeight);
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
+	void SetTileData(const glm::ivec2 & pos, const TileData & data);
 private:
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;

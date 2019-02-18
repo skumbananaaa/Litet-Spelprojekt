@@ -102,7 +102,7 @@ void Game::OnResourcesLoaded()
 		GetGUIManager().Add(m_pTextViewScene);
 	}
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
+	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
 
 	//Create renderers
 	m_pRenderer = new DefferedRenderer();

@@ -136,3 +136,8 @@ void World::Update(float dt)
 {
 	m_ppLevels[2]->UpdateFire(dt);
 }
+
+void World::SetTileData(const glm::ivec3 & pos, const TileData & data)
+{
+	m_ppLevels[pos.y]->SetTileData(glm::ivec2(pos.x, pos.z), data);
+}

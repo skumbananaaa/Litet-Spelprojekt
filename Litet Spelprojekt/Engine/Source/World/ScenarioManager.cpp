@@ -4,8 +4,8 @@
 #include <World/Logger.h>
 
 std::vector<IScenario*> ScenarioManager::m_Scenarios;
-std::vector<int32> ScenarioManager::m_ActiveSenarios;
-std::vector<int32> ScenarioManager::m_NonActiveSenarios;
+std::vector<int32> ScenarioManager::m_ActiveScenarios;
+std::vector<int32> ScenarioManager::m_NonActiveScenarios;
 
 uint32 ScenarioManager::RegisterScenario(IScenario* scenario) noexcept
 {
@@ -24,16 +24,29 @@ void ScenarioManager::Release() noexcept
 
 void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
 {
-	for (int i = m_NonActiveSenarios.size() - 1; i >= 0; i--)
+	for (int i = m_NonActiveScenarios.size() - 1; i >= 0; i--)
 	{
-		IScenario* scenario = m_Scenarios[m_NonActiveSenarios[i]];
+		IScenario* scenario = m_Scenarios[m_NonActiveScenarios[i]];
 		float time = scenario->GetTimeOfNextOutBreak() - dtS;
+
+		if (glm::floor(time) != glm::floor(scenario->GetTimeOfNextOutBreak()))
+		{
+			if (time >= 0)
+			{
+				std::cout << glm::floor(time) + 1 << std::endl;
+			}
+			else
+			{
+				std::cout << "FIRE\n";
+			}
+		}
+
 		if (time <= 0)
 		{
 			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Started!");
 			scenario->OnStart();
-			m_ActiveSenarios.push_back(m_NonActiveSenarios[i]);
-			m_NonActiveSenarios.erase(m_NonActiveSenarios.begin() + i);
+			m_ActiveScenarios.push_back(m_NonActiveScenarios[i]);
+			m_NonActiveScenarios.erase(m_NonActiveScenarios.begin() + i);
 		}
 		else
 		{
@@ -41,15 +54,15 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
 		}
 	}
 
-	for (int i = m_ActiveSenarios.size() - 1; i >= 0; i--)
+	for (int i = m_ActiveScenarios.size() - 1; i >= 0; i--)
 	{
-		IScenario* scenario = m_Scenarios[m_ActiveSenarios[i]];
+		IScenario* scenario = m_Scenarios[m_ActiveScenarios[i]];
 		if (scenario->Update(dtS, world, scene))
 		{
 			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Ended!");
 			scenario->OnEnd();
-			SetAsNonActive(m_ActiveSenarios[i]);
-			m_ActiveSenarios.erase(m_ActiveSenarios.begin() + i);
+			SetAsNonActive(m_ActiveScenarios[i]);
+			m_ActiveScenarios.erase(m_ActiveScenarios.begin() + i);
 		}
 	}
 }
@@ -57,6 +70,6 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
 void ScenarioManager::SetAsNonActive(int id)
 {
 	IScenario* scenario = m_Scenarios[id];
-	m_NonActiveSenarios.push_back(id);
-	scenario->SetTimeOfNextOutBreak(Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetMaxTimeBeforeOutbreak()));
+	m_NonActiveScenarios.push_back(id);
+	scenario->SetTimeOfNextOutBreak(10);//Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetMaxTimeBeforeOutbreak()));
 }

@@ -13,6 +13,6 @@ private:
 	static void SetAsNonActive(int id);
 
 	static std::vector<IScenario*> m_Scenarios;
-	static std::vector<int32> m_ActiveSenarios;
-	static std::vector<int32> m_NonActiveSenarios;
+	static std::vector<int32> m_ActiveScenarios;
+	static std::vector<int32> m_NonActiveScenarios;
 };

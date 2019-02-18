@@ -1,5 +1,6 @@
 #include "..\Include\ScenarioFire.h"
 #include <System/Random.h>
+
 ScenarioFire::ScenarioFire(World* world)
 {
 	m_pWorld = world;
@@ -109,7 +110,7 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3 & offset, const glm::iv
 			}
 			else if (tileData.Temp < tileData.BurnsAt && alreadyBurns)
 			{
-				for (uint32 i = 0; i < m_OnFire.size; i++)
+				for (uint32 i = 0; i < m_OnFire.size(); i++)
 				{
 					if (m_OnFire[i] == curr + glm::vec3(offset))
 					{

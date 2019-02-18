@@ -101,9 +101,7 @@ void Game::OnResourcesLoaded()
 
 		GetGUIManager().Add(m_pTextViewScene);
 	}
-
-	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
-
+	
 	//Create renderers
 	m_pRenderer = new DefferedRenderer();
 	//m_pRenderer = new OrthographicRenderer();
@@ -224,6 +222,9 @@ void Game::OnResourcesLoaded()
 
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
+
+
+	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
 
 	int gameObjects = m_pWorld->GetNumWorldObjects();
 	

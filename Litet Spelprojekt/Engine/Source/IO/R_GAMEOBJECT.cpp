@@ -2,6 +2,7 @@
 #include <IO/GAMEOBJECT.h>
 #include <IO/ResourceHandler.h>
 #include <Graphics/GameObject.h>
+#include <World/VisualAudioSource.h>
 
 uint32 GAMEOBJECT::CHAIR = 0;
 uint32 GAMEOBJECT::BED_BUNK = 0;
@@ -9,6 +10,7 @@ uint32 GAMEOBJECT::BED_SINGLE = 0;
 uint32 GAMEOBJECT::INSTRUMENT_1 = 0;
 uint32 GAMEOBJECT::INSTRUMENT_2 = 0;
 uint32 GAMEOBJECT::LAMP = 0;
+uint32 GAMEOBJECT::FIREALARM = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -26,13 +28,14 @@ void GAMEOBJECT::RegisterResources()
 	INSTRUMENT_1				= ResourceHandler::RegisterGameObject("Instrument 1", MESH::INSTRUMENT_1, MATERIAL::WHITE);
 	INSTRUMENT_2				= ResourceHandler::RegisterGameObject("Instrument 2", MESH::INSTRUMENT_2, MATERIAL::WHITE);
 	LAMP						= ResourceHandler::RegisterGameObject("Lamp", MESH::LAMP, MATERIAL::WHITE);
+	FIREALARM					= ResourceHandler::RegisterGameObject("Firealarm", MESH::LAMP, MATERIAL::RED);
 }
 
 GameObject* GAMEOBJECT::CreateGameObject(uint32 gameObject) noexcept
 {
-	switch (gameObject)
+	if(gameObject == FIREALARM)
 	{
-		
+		return VisualAudioSource::CreateResource(SOUND::MONO_FIREALARM);
 	}
 	return new GameObject();
 }

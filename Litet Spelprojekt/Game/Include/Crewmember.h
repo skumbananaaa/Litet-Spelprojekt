@@ -54,6 +54,8 @@ public:
 	virtual void OnPicked();
 	virtual void OnHovered();
 	virtual void OnNotHovered();
+	void UpdateLastKnownPosition() noexcept;
+	const glm::vec3& GetLastKnownPosition() noexcept;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept;
 
 	int32 GetShipNumber() const noexcept;
@@ -81,6 +83,7 @@ private:
 	glm::ivec3* m_pPath;
 	glm::vec3 m_TargetPos;
 	glm::vec3 m_Direction;
+	glm::vec3 m_LastKnownPosition;
 	int m_NrOfPathTiles;
 	bool m_IsHovered;
 	int32 m_ShipNumber;

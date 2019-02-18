@@ -28,13 +28,13 @@ bool Slider::IsVertical() const noexcept
 
 void Slider::OnAdded(GUIObject* parent)
 {
-	AddRealTimeRenderer(this);
+	AddRealTimeRenderer();
 	AddMouseListener(this);
 }
 
 void Slider::OnRemoved(GUIObject* parent)
 {
-	RemoveRealTimeRenderer(this);
+	RemoveRealTimeRenderer();
 	RemoveMouseListener(this);
 }
 
@@ -108,10 +108,8 @@ void Slider::OnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
 	}
 }
 
-void Slider::RenderRealTime(GUIContext* context)
+void Slider::RenderRealTime(GUIContext* context, float x, float y)
 {
-	float x = GetXInWorld();
-	float y = GetYInWorld();
 	float width = 0;
 	float height = 0;
 

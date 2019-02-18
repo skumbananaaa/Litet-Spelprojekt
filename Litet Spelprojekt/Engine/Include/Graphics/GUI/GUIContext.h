@@ -49,6 +49,7 @@ public:
 	FontRenderer* GetFontRenderer() const;
 	const ShaderProgram* GetShaderProgram() const;
 
+	static const glm::vec4 COLOR_TRANSPARENT;
 	static const glm::vec4 COLOR_WHITE;
 	static const glm::vec4 COLOR_BLACK;
 	static const glm::vec4 COLOR_RED;

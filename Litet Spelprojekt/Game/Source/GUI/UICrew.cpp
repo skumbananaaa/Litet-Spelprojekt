@@ -1,5 +1,6 @@
 #include "..\..\Include\GUI\UICrew.h"
 #include "../../Include/Game.h"
+#include <System/Random.h>
 
 UICrew::UICrew(float x, float y, float width, float height, const std::vector<Crewmember*> crewmembers) :
 	m_SelectionHandler(false)
@@ -39,14 +40,13 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 		}
 	}
 
-	static int32 extraHeight = 5;
 	static int32 buttonHeight = 35;
 	static glm::vec4 buttonColor = glm::vec4(0.25F, 0.25F, 0.25F, 1.0F);
 	static glm::vec2 textOffset = glm::vec2(10.0, 0.0);
 
-	m_Fires = new PanelExpandable(x, y + 100, width, 50, fires.size() * buttonHeight + extraHeight, "Rökdykare");
-	m_Medics = new PanelExpandable(x, y + 50, width, 50, medics.size() * buttonHeight + extraHeight, "Sjukvårdare");
-	m_Strengths = new PanelExpandable(x, y + 0, width, 50, strength.size() * buttonHeight + extraHeight, "Biffar");
+	m_Fires = new PanelExpandable(x, y + 100, width, 50, fires.size() * buttonHeight, "Rökdykare");
+	m_Medics = new PanelExpandable(x, y + 50, width, 50, medics.size() * buttonHeight, "Sjukvårdare");
+	m_Strengths = new PanelExpandable(x, y + 0, width, 50, strength.size() * buttonHeight, "Biffar");
 
 	m_Fires->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_FIRE));
 	m_Medics->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_MEDIC));
@@ -85,38 +85,17 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 
 	for (int i = 0; i < fires.size(); i++)
 	{
-		Button* button = new Button(0, i * buttonHeight + extraHeight, m_Fires->GetWidth(), buttonHeight, fires[i]->GetName());
-		button->SetBackgroundColor(buttonColor);
-		button->SetTextCentered(false);
-		button->SetTextOffset(textOffset);
-		button->SetUserData(reinterpret_cast<void*>(fires[i]->GetShipNumber()));
-		button->AddButtonListener(this);
-		m_HoveringHandler.AddHoverable(button);
-		m_Fires->Add(button);
+		m_Fires->Add(CreateButton(fires[i]->GetName(), buttonColor, i * buttonHeight, buttonHeight, textOffset, fires[i]->GetShipNumber()));
 	}
 
 	for (int i = 0; i < medics.size(); i++)
 	{
-		Button* button = new Button(0, i * buttonHeight + extraHeight, m_Medics->GetWidth(), buttonHeight, medics[i]->GetName());
-		button->SetBackgroundColor(buttonColor);
-		button->SetTextCentered(false);
-		button->SetTextOffset(textOffset);
-		button->SetUserData(reinterpret_cast<void*>(medics[i]->GetShipNumber()));
-		button->AddButtonListener(this);
-		m_HoveringHandler.AddHoverable(button);
-		m_Medics->Add(button);
+		m_Medics->Add(CreateButton(medics[i]->GetName(), buttonColor, i * buttonHeight, buttonHeight, textOffset, medics[i]->GetShipNumber()));
 	}
 
 	for (int i = 0; i < strength.size(); i++)
 	{
-		Button* button = new Button(0, i * buttonHeight + extraHeight, m_Strengths->GetWidth(), buttonHeight, strength[i]->GetName());
-		button->SetBackgroundColor(buttonColor);
-		button->SetTextCentered(false);
-		button->SetTextOffset(textOffset);
-		button->SetUserData(reinterpret_cast<void*>(strength[i]->GetShipNumber()));
-		button->AddButtonListener(this);
-		m_HoveringHandler.AddHoverable(button);
-		m_Strengths->Add(button);
+		m_Strengths->Add(CreateButton(strength[i]->GetName(), buttonColor, i * buttonHeight, buttonHeight, textOffset, strength[i]->GetShipNumber()));
 	}
 
 	Game::GetGame()->GetGUIManager().Add(m_Fires);
@@ -186,7 +165,9 @@ void UICrew::OnRenderGUIObject(GUIContext* context, GUIObject* object)
 
 void UICrew::OnButtonPressed(Button* button)
 {
-	
+	ProgressButton* progressButton = (ProgressButton*)button;
+	progressButton->StartAnimation(Random::GenerateInt(3, 15));
+	progressButton->SetTextColor(GUIContext::COLOR_BLACK);
 }
 
 void UICrew::OnButtonReleased(Button* button)
@@ -202,4 +183,26 @@ void UICrew::OnButtonHovered(Button* button)
 void UICrew::OnButtonNotHovered(Button* button)
 {
 	
+}
+
+void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
+{
+	progressButton->SetPercentage(0.0);
+	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
+	Game* game = Game::GetGame();
+	game->GetCrewmember(reinterpret_cast<uint32>(progressButton->GetUserData()))->UpdateLastKnownPosition();
+}
+
+ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& color, float y, float height, const glm::vec2& textOffset, int shipnumber)
+{
+	ProgressButton* button = new ProgressButton(0, y, m_Strengths->GetWidth(), height, text);
+	button->SetBackgroundColor(color);
+	button->SetProgressColor(glm::vec4(0.698, 0.961, 1, 1.0F));
+	button->SetTextCentered(false);
+	button->SetTextOffset(textOffset);
+	button->SetUserData(reinterpret_cast<void*>(shipnumber));
+	button->AddButtonListener(this);
+	button->AddProgressListener(this);
+	m_HoveringHandler.AddHoverable(button);
+	return button;
 }

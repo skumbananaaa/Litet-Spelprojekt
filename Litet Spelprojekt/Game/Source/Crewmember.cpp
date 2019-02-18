@@ -103,6 +103,16 @@ void Crewmember::OnNotHovered()
 	Game::GetGame()->m_pUICrewMember->SetCrewMember(nullptr);
 }
 
+void Crewmember::UpdateLastKnownPosition() noexcept
+{
+	m_LastKnownPosition = GetPosition();
+}
+
+const glm::vec3& Crewmember::GetLastKnownPosition() noexcept
+{
+	return m_LastKnownPosition;
+}
+
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept
 {
 	glm::vec3 centre = GetPosition();

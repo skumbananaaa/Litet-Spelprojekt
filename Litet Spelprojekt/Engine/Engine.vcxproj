@@ -43,6 +43,7 @@
     <ClInclude Include="Include\Graphics\GUI\ProgressBar.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
+    <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
     <ClInclude Include="Include\Graphics\GUI\SelectionHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
@@ -112,6 +113,7 @@
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />

@@ -14,8 +14,13 @@ public:
 	const glm::vec4& GetProgressColor() const noexcept;
 	void SetProgressColor(const glm::vec4& color);
 
+	void BeginProgress() noexcept;
+	void EndProgress() noexcept;
+
 protected:
 	virtual void OnRender(GUIContext* context) override;
+	virtual void RenderRealTime(GUIContext* context, float x = 0, float y = 0) override;
+	virtual void RenderProgress(GUIContext* context, float x = 0, float y = 0) noexcept;
 	virtual void PrintName() const override;
 
 private:

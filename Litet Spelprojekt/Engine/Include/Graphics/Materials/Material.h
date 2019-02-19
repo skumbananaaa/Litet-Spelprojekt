@@ -55,7 +55,7 @@ public:
 protected:
 	Material();
 	Material(int32 shader);
-	~Material();
+	virtual ~Material();
 
 	void SetProgram(int32 shader) noexcept;
 

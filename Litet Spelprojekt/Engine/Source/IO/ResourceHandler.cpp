@@ -359,6 +359,7 @@ void ResourceHandler::Load()
 		SHADER_DESC_INTERNAL desc = m_ShaderFiles[i];
 		std::cout << "Loading Shader: " << desc.vertex << std::endl;
 		TriggerOnLoading(desc.vertex, currentFile++ / (float)nrOfFiles);
+		
 		Shader* vertexShader = Shader::Create((m_PrePath + "Resources/Shaders/" + desc.vertex).c_str(), VERTEX_SHADER, desc.defines);
 		Shader* pixelShader = nullptr;
 		if (!desc.pixel.empty())

@@ -24,13 +24,12 @@ WorldLevel::~WorldLevel()
 {
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
-		DeleteArr(m_ppLevelData[x]);
-		delete[] m_ppLevel[x];
-		m_ppLevel[x] = nullptr;
+		DeleteArrSafe(m_ppLevelData[x]);
+		DeleteArrSafe(m_ppLevel[x]);
 	}
-	Delete(m_ppLevelData);
-	delete[] m_ppLevel;
-	m_ppLevel = nullptr;
+
+	DeleteArrSafe(m_ppLevelData);
+	DeleteArrSafe(m_ppLevel);
 }
 
 const uint32* const* const WorldLevel::GetLevel() const noexcept

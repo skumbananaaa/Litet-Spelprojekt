@@ -37,5 +37,3 @@ void Tile::SetHasStairs(bool value) noexcept
 {
 	m_HasStairs = value;
 }
-
-

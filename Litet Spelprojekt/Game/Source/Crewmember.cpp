@@ -94,13 +94,13 @@ void Crewmember::OnPicked()
 void Crewmember::OnHovered()
 {
 	m_IsHovered = true;
-	Game::GetGame()->m_pUICrewMember->SetCrewMember(this);
+	Game::GetGame()->GetUICrewMember()->SetCrewMember(this);
 }
 
 void Crewmember::OnNotHovered()
 {
 	m_IsHovered = false;
-	Game::GetGame()->m_pUICrewMember->SetCrewMember(nullptr);
+	Game::GetGame()->GetUICrewMember()->SetCrewMember(nullptr);
 }
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept

@@ -11,7 +11,6 @@ FontRenderer::FontRenderer(void* face)
 {
 	m_pPerFrameUniform = new UniformBuffer(&m_PerFrameData, 1, sizeof(PerFrameFontRenderer));
 
-	
 	// Disable byte-alignment restriction
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 

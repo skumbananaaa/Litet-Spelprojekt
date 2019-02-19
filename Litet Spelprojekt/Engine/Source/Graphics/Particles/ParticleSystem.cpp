@@ -23,7 +23,6 @@ ParticleSystem::ParticleSystem()
 {
 	m_MaxParticles = 100000;
 
-	m_pTempBuff = new uint32[m_MaxParticles];
 	m_pParticles = new ParticleData[m_MaxParticles];
 	m_pLivingParticles = new uint32[m_MaxParticles];
 	m_pSortedParticles = new uint32[m_MaxParticles];

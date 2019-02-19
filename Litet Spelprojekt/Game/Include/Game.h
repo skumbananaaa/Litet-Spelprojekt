@@ -54,12 +54,13 @@ public:
 
 	void SetClipPlanes(uint32 scene);
 
+	UICrewMember* GetUICrewMember() noexcept;
+
 	Scene* GetScene();
 	static Game* GetGame();
 
-	UICrewMember* m_pUICrewMember;
-
 private:
+	UICrewMember* m_pUICrewMember;
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	std::vector<Scene*> m_Scenes;

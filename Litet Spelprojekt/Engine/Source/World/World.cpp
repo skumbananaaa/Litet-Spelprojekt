@@ -24,14 +24,11 @@ World::~World()
 {
 	for (uint32 i = 0; i < m_NumLevels; i++)
 	{
-		delete m_ppLevels[i];
-		m_ppLevels[i] = nullptr;
+		DeleteSafe(m_ppLevels[i]);
 	}
 
-	delete[] m_ppLevels;
-	m_ppLevels = nullptr;
-	delete[] m_pStairs;
-	m_pStairs = nullptr;
+	DeleteArrSafe(m_ppLevels);
+	DeleteArrSafe(m_pStairs);
 }
 
 void World::AddWorldObject(const WorldObject& object) noexcept

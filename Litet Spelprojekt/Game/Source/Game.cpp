@@ -107,7 +107,7 @@ void Game::OnResourcesLoaded()
 		//m_pTestAudioSource->Play();
 	}
 
-	//Create Scene
+	////Create Scene
 	m_Scenes.push_back(new Scene());
 
 	//Camera
@@ -206,21 +206,6 @@ void Game::OnResourcesLoaded()
 			pGameObject->UpdateTransform();
 			m_Scenes[0]->AddGameObject(pGameObject);
 		}
-
-		//test objects
-		{
-			pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_SINGLE);
-			pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
-			pGameObject->SetScale(glm::vec3(1.0f));
-			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
-
-			pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_BUNK);
-			pGameObject->SetPosition(glm::vec3(-5.0f, 4.0f, -10.0f));
-			pGameObject->SetScale(glm::vec3(1.0f));
-			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
-		}
 	}
 
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
@@ -307,11 +292,8 @@ void Game::OnResourcesLoaded()
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
-
-
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
-
-	//Enable clipplane for wallmaterial
+	////Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 	((WallMaterial*)ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD))->SetDissolveFactor(1.0f);
 
@@ -376,7 +358,7 @@ void Game::OnResourcesLoaded()
 		members.push_back(m_Crew.GetMember(i));
 	}
 
-	new UICrew(0, 0, 200, 500, members);
+	//new UICrew(0, 0, 200, 500, members);
 
 	/*_______________________________________________________________________________________________________________*/
 	//SCENE2
@@ -390,14 +372,13 @@ void Game::OnResourcesLoaded()
 	m_Scenes[1]->SetCamera(pCamera);
 
 	//Skybox
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_Scenes[1]->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 
 	//Lights
 	m_Scenes[1]->AddDirectionalLight(new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	
 	//Create GameObjects
-
+	pGameObject = nullptr;
 	for (uint32 i = 0; i < 5; i++)
 	{
 		pGameObject = new GameObject();
@@ -460,7 +441,7 @@ void Game::OnResourcesLoaded()
 		pGameObject->UpdateTransform();
 		m_Scenes[1]->AddGameObject(pGameObject);
 
-		pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
+		PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 		m_Scenes[1]->AddPlanarReflector(pReflector);
 	}
 	//((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
@@ -943,6 +924,11 @@ void Game::SetClipPlanes(uint32 scene)
 	
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
+}
+
+UICrewMember* Game::GetUICrewMember() noexcept
+{
+	return m_pUICrewMember;
 }
 
 Scene* Game::GetScene()

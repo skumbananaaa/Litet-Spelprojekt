@@ -17,7 +17,7 @@ layout(std140, binding = 0) uniform CameraBuffer
 	vec3 g_CameraPosition;
 };
 
-layout(std140, binding = 3) uniform PlaneBuffer
+layout(std140, binding = 4) uniform PlaneBuffer
 {
 	vec4 g_ClipPlane;
 };

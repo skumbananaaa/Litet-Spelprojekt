@@ -27,7 +27,7 @@ layout(location = 2) in vec3 g_Tangent;
 layout(location = 3) in vec2 g_TexCoords;
 layout(location = 4) in mat4 g_InstanceModel;
 
-layout(std140, binding = 3) uniform PlaneBuffer
+layout(std140, binding = 4) uniform PlaneBuffer
 {
 	vec4 g_ReflectionClipPlane;
 };
@@ -65,8 +65,8 @@ void main()
 
 #elif defined(FRAGMENT_SHADER)
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 17
+#define NUM_POINT_LIGHTS 3
+#define NUM_SPOT_LIGHTS 2
 
 layout(early_fragment_tests) in;
 

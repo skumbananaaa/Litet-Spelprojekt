@@ -226,7 +226,7 @@ void DefferedRenderer::Create() noexcept
 	}
 }
 
-void DefferedRenderer::CreateBatches(const Scene& scene) const noexcept
+void DefferedRenderer::CreateBatches(const Scene& scene, const World* const pWorld) const noexcept
 {
 	//Create batches for drawables
 	//Dahlsson är detta verkligen det mest optimierade du kan göra?
@@ -235,32 +235,35 @@ void DefferedRenderer::CreateBatches(const Scene& scene) const noexcept
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
 		{
-			bool batchFound = false;
-			const Material* pMaterial = drawables[i]->GetMaterial();
-			const IndexedMesh* pMesh = drawables[i]->GetMesh();
-
-			InstanceData instance = {};
-			instance.Model = drawables[i]->GetTransform();
-			instance.InverseModel = drawables[i]->GetInverseTransform();
-
-			for (size_t j = 0; j < m_DrawableBatches.size(); j++)
+			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsCrew()))
 			{
-				if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
+				bool batchFound = false;
+				const Material* pMaterial = drawables[i]->GetMaterial();
+				const IndexedMesh* pMesh = drawables[i]->GetMesh();
+
+				InstanceData instance = {};
+				instance.Model = drawables[i]->GetTransform();
+				instance.InverseModel = drawables[i]->GetInverseTransform();
+
+				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
 				{
-					m_DrawableBatches[j].Instances.push_back(instance);
-					batchFound = true;
-					break;
+					if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
+					{
+						m_DrawableBatches[j].Instances.push_back(instance);
+						batchFound = true;
+						break;
+					}
 				}
-			}
 
-			if (!batchFound)
-			{
-				DrawableBatch batch = {};
-				batch.pMaterial = pMaterial;
-				batch.pMesh = pMesh;
-				batch.Instances.push_back(instance);
+				if (!batchFound)
+				{
+					DrawableBatch batch = {};
+					batch.pMaterial = pMaterial;
+					batch.pMesh = pMesh;
+					batch.Instances.push_back(instance);
 
-				m_DrawableBatches.push_back(batch);
+					m_DrawableBatches.push_back(batch);
+				}
 			}
 		}
 	}
@@ -325,7 +328,7 @@ void DefferedRenderer::DrawScene(const Scene& scene, const World* pWorld, float 
 	}
 
 	//Create batches
-	CreateBatches(scene);
+	CreateBatches(scene, pWorld);
 
 	//Set depth and clear color
 	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);

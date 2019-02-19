@@ -50,7 +50,7 @@ public:
 
 private:
 	void Create() noexcept;
-	void CreateBatches(const Scene& scene) const noexcept;
+	void CreateBatches(const Scene& scene, const World* const pWorld) const noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
 	void UpdateWorldBuffer(const Scene& scene) const noexcept;

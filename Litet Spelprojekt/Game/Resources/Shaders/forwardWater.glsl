@@ -41,8 +41,8 @@ void main()
 
 #elif defined(FRAGMENT_SHADER)
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 18
-#define NUM_SPOT_LIGHTS 17
+#define NUM_POINT_LIGHTS 3
+#define NUM_SPOT_LIGHTS 2
 
 layout(early_fragment_tests) in;
 

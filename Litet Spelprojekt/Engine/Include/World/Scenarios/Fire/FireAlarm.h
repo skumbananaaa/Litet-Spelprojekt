@@ -9,6 +9,7 @@ class API FireAlarm : public GameObject
 {
 public:
 	FireAlarm(int32 source);
+	~FireAlarm();
 	virtual void SetPosition(const glm::vec3& position) noexcept override;
 	void TurnOff() noexcept;
 	virtual void Update(float dt) noexcept override;
@@ -18,6 +19,6 @@ public:
 private:
 	bool m_FireDetected;
 	float m_Rotation;
-	AudioSource* m_Src;
-	SpotLight* m_Spotlight;
+	AudioSource* m_pAudioSrc;
+	SpotLight* m_pSpotlight;
 };

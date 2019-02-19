@@ -15,6 +15,7 @@ PanelExpandable::PanelExpandable(float x, float y, float width, float height, fl
 
 PanelExpandable::~PanelExpandable()
 {
+	DeleteSafe(m_pFrameBufferClientArea);
 }
 
 void PanelExpandable::SetSelected(bool selected)

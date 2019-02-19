@@ -52,6 +52,7 @@ Game::~Game()
 		DeleteSafe(m_Scenes[i]);
 	}
 
+	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pTextViewScene);
 	DeleteSafe(m_pTextViewFile);
 	DeleteSafe(m_pLoadingBar);
@@ -62,6 +63,7 @@ Game::~Game()
 	DeleteSafe(m_pTestAudioSource);
 
 	ScenarioManager::Release();
+	LightManager::Release();
 }
 
 void Game::OnLogged(const std::string& text) noexcept

@@ -2,8 +2,11 @@
 #include "../../Include/Game.h"
 #include <System/Random.h>
 
-UICrew::UICrew(float x, float y, float width, float height, const std::vector<Crewmember*> crewmembers) :
-	m_SelectionHandler(false)
+UICrew::UICrew(float x, float y, float width, float height, const std::vector<Crewmember*>& crewmembers) :
+	m_SelectionHandler(false),
+	m_Fires(nullptr),
+	m_Medics(nullptr),
+	m_Strengths(nullptr)
 {
 	std::vector<Crewmember*> fires;
 	std::vector<Crewmember*> medics;
@@ -105,9 +108,9 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 
 UICrew::~UICrew()
 {
-	Delete(m_Fires);
-	Delete(m_Medics);
-	Delete(m_Strengths);
+	DeleteSafe(m_Fires);
+	DeleteSafe(m_Medics);
+	DeleteSafe(m_Strengths);
 }
 
 void UICrew::OnExpanding(PanelExpandable* panel, float percentage)

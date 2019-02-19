@@ -16,6 +16,26 @@ void LightManager::Init(Scene* scene, int32 nrOfLights) noexcept
 	}
 }
 
+void LightManager::Release() noexcept
+{
+	for (SpotLight* spotlight : s_Spotlights)
+	{
+		bool isFree = true;
+		for (SpotLight* object : s_SpotlightsInUse)
+		{
+			if (spotlight == object)
+			{
+				isFree = false;
+				break;
+			}
+		}
+		if (isFree)
+		{
+			Delete(spotlight);
+		}
+	}
+}
+
 SpotLight* LightManager::AcquireSpotlight(const glm::vec3& pos, float innerAngle, float outerAngle, const glm::vec3& direction, const glm::vec4& color) noexcept
 {
 	if (s_SpotlightsInUse.size() == s_Spotlights.size())

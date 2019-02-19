@@ -28,7 +28,7 @@ public:
 	virtual void SetRoom(uint32 room) noexcept;
 	void SetExtend(bool extend) noexcept;
 	void Extend(float dtS) noexcept;
-	void SetIsHidden(bool isCrew) noexcept;
+	void SetHidden(bool isCrew) noexcept;
 
 	const std::string& GetName() const noexcept;
 	const Decal* GetDecal() const noexcept;

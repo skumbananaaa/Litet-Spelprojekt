@@ -2,6 +2,10 @@
 #include "IRenderer.h"
 #include "TimerQuery.h"
 
+#define LEVEL_SIZE_X 12
+#define LEVEL_SIZE_Y 6
+#define LEVEL_SIZE_Z 42
+
 struct ForwardFrameTimes
 {
 	float ReflectionPass = 0.0f;
@@ -9,6 +13,13 @@ struct ForwardFrameTimes
 	float ParticlePass = 0.0f;
 	float LightPass = 0.0f;
 	float DepthPrePass = 0.0f;
+};
+
+struct WorldBuffer
+{
+	int concealed;
+	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
+	int extended;
 };
 
 class API ForwardRenderer : public IRenderer

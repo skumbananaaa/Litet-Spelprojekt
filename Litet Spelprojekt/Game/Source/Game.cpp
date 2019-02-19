@@ -230,47 +230,51 @@ void Game::OnResourcesLoaded()
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	ParticleSystem* pFire = new ParticleSystem();
-	pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
-	pFire->SetTexture(TEXTURE::SMOKE);
-	pFire->SetTimeToLive(1.2f);
-	pFire->SetConeAngle(glm::radians<float>(30.0f));
-	pFire->SetSpeed(0.7f, 2.0f);
-	pFire->SetColor(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	m_Scenes[0]->AddParticleSystem(pFire);
 
-	ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
-	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+	//Particles
+	{
+		ParticleSystem* pFire = new ParticleSystem();
+		pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
+		pFire->SetTexture(TEXTURE::SMOKE);
+		pFire->SetTimeToLive(1.2f);
+		pFire->SetConeAngle(glm::radians<float>(30.0f));
+		pFire->SetSpeed(0.7f, 2.0f);
+		pFire->SetColor(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		m_Scenes[0]->AddParticleSystem(pFire);
 
-	pEmitter = new ParticleEmitter(pFire);
-	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+		ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
+		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
 
-	ParticleSystem* pSmoke = new ParticleSystem();
-	pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
-	pSmoke->SetTexture(TEXTURE::SMOKE);
-	pSmoke->SetTimeToLive(7.0f);
-	pSmoke->SetConeAngle(glm::radians<float>(40.0f));
-	pSmoke->SetSpeed(0.1f, 0.4f);
-	pSmoke->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f), glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-	m_Scenes[0]->AddParticleSystem(pSmoke);
+		pEmitter = new ParticleEmitter(pFire);
+		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
 
-	pEmitter = new ParticleEmitter(pSmoke);
-	pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 17.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+		ParticleSystem* pSmoke = new ParticleSystem();
+		pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
+		pSmoke->SetTexture(TEXTURE::SMOKE);
+		pSmoke->SetTimeToLive(7.0f);
+		pSmoke->SetConeAngle(glm::radians<float>(40.0f));
+		pSmoke->SetSpeed(0.1f, 0.4f);
+		pSmoke->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f), glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+		m_Scenes[0]->AddParticleSystem(pSmoke);
 
-	pEmitter = new ParticleEmitter(pSmoke);
-	pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 18.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+		pEmitter = new ParticleEmitter(pSmoke);
+		pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 17.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
+
+		pEmitter = new ParticleEmitter(pSmoke);
+		pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 18.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
+	}
 
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -378,7 +382,7 @@ void Game::OnResourcesLoaded()
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetPath(m_pWorld);
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(0)->SetIsHidden(true);
+	m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
 	m_Scenes[0]->AddGameObject(m_Crew.GetMember(0));
 
@@ -393,7 +397,7 @@ void Game::OnResourcesLoaded()
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
-		m_Crew.GetMember(i)->SetIsHidden(true);
+		m_Crew.GetMember(i)->SetHidden(true);
 		m_Crew.GetMember(i)->UpdateTransform();
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}

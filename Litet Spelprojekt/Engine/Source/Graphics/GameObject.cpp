@@ -100,7 +100,7 @@ void GameObject::Extend(float dtS) noexcept
 	}
 }
 
-void GameObject::SetIsHidden(bool isCrew) noexcept
+void GameObject::SetHidden(bool isCrew) noexcept
 {
 	m_IsHidden = isCrew;
 }

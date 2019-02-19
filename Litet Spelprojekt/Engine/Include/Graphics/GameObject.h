@@ -28,7 +28,7 @@ public:
 	virtual void SetRoom(uint32 room) noexcept;
 	void SetExtend(bool extend) noexcept;
 	void Extend(float dtS) noexcept;
-	void SetIsCrew(bool isCrew) noexcept;
+	void SetIsHidden(bool isCrew) noexcept;
 
 	const std::string& GetName() const noexcept;
 	const Decal* GetDecal() const noexcept;
@@ -42,7 +42,7 @@ public:
 	uint32 GetRoom() const noexcept;
 	bool IsExtending() const noexcept;
 	bool IsExtended() const noexcept;
-	bool IsCrew() const noexcept;
+	bool IsHidden() const noexcept;
 
 	bool IsReflectable() const noexcept;
 	bool IsVisible() const noexcept;
@@ -75,7 +75,7 @@ private:
 	bool m_IsVisible;
 	int32 m_TypeId;
 	int32 m_Room = 1;
-	bool m_IsCrew = false;
+	bool m_IsHidden = false;
 	bool m_Extending = false;
 	bool m_Extended = false;
 };
@@ -110,9 +110,9 @@ inline bool GameObject::IsExtended() const noexcept
 	return m_Extended;
 }
 
-inline bool GameObject::IsCrew() const noexcept
+inline bool GameObject::IsHidden() const noexcept
 {
-	return m_IsCrew;
+	return m_IsHidden;
 }
 
 inline void GameObject::SetMesh(int32 mesh) noexcept

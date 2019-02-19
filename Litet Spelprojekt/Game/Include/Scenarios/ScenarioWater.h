@@ -15,7 +15,7 @@ public:
 
 private:
 	//Scenario Spread Helper Functions
-	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo) const noexcept;
+	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept;
 
 	//Water Scenario Helper Functions
 	float CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept;
@@ -30,14 +30,14 @@ private:
 	void Evaporate(Scene* pScene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
 };
 
-inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo) const noexcept
+inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept
 {
 	if (tileTo.x <= 0 || tileTo.x >= levelSize.x - 1 || tileTo.y <= 0 || tileTo.y >= levelSize.y - 1)
 	{
 		return 0;
 	}
 
-	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || ppLevel[tileFrom.x][tileFrom.y] == 0 || ppLevel[tileTo.x][tileTo.y] == 0)
+	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || (ppLevelData[tileFrom.x][tileFrom.y].HasDoor && ppLevelData[tileTo.x][tileTo.y].HasDoor))
 	{
 		return 1;
 	}

@@ -318,7 +318,8 @@ void Editor::CreateWalls()
 	}
 
 	std::vector<glm::ivec3> stairs;
-	WorldLevel** ppWorldLevels = CreateWorldLevels(stairs);
+	std::vector<glm::ivec3> doors;
+	WorldLevel** ppWorldLevels = CreateWorldLevels(stairs, doors);
 
 	for (int level = 0; level < NUM_GRID_LEVELS; level += 2)
 	{
@@ -342,7 +343,7 @@ void Editor::CreateWalls()
 	}
 }
 
-WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs)
+WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vector<glm::ivec3>& doors)
 {
 	WorldLevel** ppWorldLevels = new WorldLevel*[NUM_GRID_LEVELS];
 
@@ -369,11 +370,20 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs)
 					{
 						stairs.push_back(glm::ivec3(x, gridId, y));
 					}
+					else if (pTile->HasDoor())
+					{
+						doors.push_back(glm::ivec3(x, gridId, y));
+					}
 				}
 			}
 		}
 
 		ppWorldLevels[gridId] = new WorldLevel(gridId, pLevel, levelSizeX, levelSizeY);
+
+		for (uint32 doorId = 0; doorId < doors.size(); doorId++)
+		{
+			ppWorldLevels[gridId]->GetLevelData()[doors[doorId].x][doors[doorId].z].HasDoor = true;
+		}
 	}
 	return ppWorldLevels;
 }
@@ -599,7 +609,7 @@ void Editor::NormalizeTileIndexes() noexcept
 					uint32 newIndex = pTile->GetID() - indexesMissingBefore[index];
 					pTile->SetID(newIndex);
 
-					if (!pTile->HasStairs())
+					if (!pTile->HasStairs() && !pTile->HasDoor())
 					{
 						pTile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 					}
@@ -779,18 +789,13 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						Tile* pTile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-						Tile* pTile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-						pTile0->SetID(TILE_DOOR_INDEX);
-
-						if (!pTile0->HasStairs())
+						if (!pTile->HasStairs())
 						{
-							pTile0->SetDefaultMaterial(MATERIAL::WHITE);
+							pTile->SetDefaultMaterial(MATERIAL::WHITE);
+							pTile->SetHasDoor(true);
 						}
-
-						pTile1->SetID(TILE_DOOR_INDEX);
-						pTile1->SetDefaultMaterial(MATERIAL::WHITE);
 					}
 				}
 				else if (m_CurrentEditingMode == REMOVE_DOOR)
@@ -800,20 +805,26 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
 						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						Tile* pTile0 = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-						Tile* pTile1 = m_ppGrids[m_CurrentGridIndex + 1]->GetTile(currentPos);
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-						if (pTile0->GetID() == TILE_DOOR_INDEX)
+						if (pTile->HasDoor())
 						{
-							pTile0->SetID(TILE_NON_WALKABLE_INDEX);
+							uint32 tileId = pTile->GetID();
 
-							if (!pTile0->HasStairs())
+							if (tileId >= TILE_SMALLEST_FREE)
 							{
-								pTile0->SetDefaultMaterial(MATERIAL::BLACK);
+								pTile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							}
+							else if (tileId == TILE_NON_WALKABLE_INDEX)
+							{
+								pTile->SetDefaultMaterial(MATERIAL::BLACK);
+							}
+							else
+							{
+								pTile->SetDefaultMaterial(MATERIAL::WHITE);
 							}
 
-							pTile1->SetID(TILE_NON_WALKABLE_INDEX);
-							pTile1->SetDefaultMaterial(MATERIAL::BLACK);
+							pTile->SetHasDoor(false);
 						}
 					}
 				}
@@ -826,8 +837,11 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 					{
 						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
 
-						pTile->SetDefaultMaterial(MATERIAL::BLUE);
-						pTile->SetHasStairs(true);
+						if (!pTile->HasDoor())
+						{
+							pTile->SetDefaultMaterial(MATERIAL::BLUE);
+							pTile->SetHasStairs(true);
+						}
 					}
 				}
 				else if (m_CurrentEditingMode == REMOVE_STAIRS)
@@ -908,7 +922,7 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 						{
 							pTile0->SetID(m_LargestIndexUsed);
 
-							if (!pTile0->HasStairs())
+							if (!pTile0->HasStairs() && !pTile0->HasDoor())
 							{
 								pTile0->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 							}
@@ -955,7 +969,7 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 					{
 						pTile0->SetID(m_RoomBeingEdited);
 
-						if (!pTile0->HasStairs())
+						if (!pTile0->HasStairs() && !pTile0->HasDoor())
 						{
 							pTile0->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
 						}
@@ -985,7 +999,7 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 					{
 						pTile0->SetID(TILE_NON_WALKABLE_INDEX);
 
-						if (!pTile0->HasStairs())
+						if (!pTile0->HasStairs() && !pTile0->HasDoor())
 						{
 							pTile0->SetDefaultMaterial(MATERIAL::BLACK);
 						}
@@ -1159,7 +1173,8 @@ void Editor::OnButtonReleased(Button* button)
 	if (button == editor->m_pButtonSave)
 	{
 		std::vector<glm::ivec3> stairs;
-		WorldLevel** ppWorldLevels = editor->CreateWorldLevels(stairs);
+		std::vector<glm::ivec3> doors;
+		WorldLevel** ppWorldLevels = editor->CreateWorldLevels(stairs, doors);
 	
 
 		int objects = 0;
@@ -1197,10 +1212,16 @@ void Editor::OnButtonReleased(Button* button)
 
 		World* pWorld = new World(ppWorldLevels, NUM_GRID_LEVELS, worldObjects, objects);
 		uint32 numStairs = stairs.size();
+		uint32 numDoors = doors.size();
 
 		if (numStairs > 0)
 		{
 			pWorld->SetStairs(&stairs[0], numStairs);
+		}
+
+		if (numDoors > 0)
+		{
+			pWorld->SetDoors(&doors[0], numDoors);
 		}
 
 		WorldSerializer::Write("../Game/world.json", *pWorld);
@@ -1292,6 +1313,14 @@ void Editor::OnButtonReleased(Button* button)
 			Tile* pTile = editor->m_ppGrids[stairs.y]->GetTile(glm::ivec2(stairs.x - 1, stairs.z - 1));
 			pTile->SetHasStairs(true);
 			pTile->SetDefaultMaterial(MATERIAL::BLUE);
+		}
+
+		for (uint32 doorId = 0; doorId < pWorld->GetNumDoors(); doorId++)
+		{
+			const glm::ivec3& door = pWorld->GetDoor(doorId);
+			Tile* pTile = editor->m_ppGrids[door.y]->GetTile(glm::ivec2(door.x - 1, door.z - 1));
+			pTile->SetHasDoor(true);
+			pTile->SetDefaultMaterial(MATERIAL::WHITE);
 		}
 
 		int gameObjects = pWorld->GetNumWorldObjects();

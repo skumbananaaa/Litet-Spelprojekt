@@ -138,8 +138,6 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
 
 			GameObject* pGameObject = pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName);
-			bool waterIsVisible = std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
-			pGameObject->SetIsVisible(waterIsVisible);
 
 			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel - ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated) > WATER_UPDATE_INTERVAL)
 			{
@@ -172,9 +170,19 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 					pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
 				}
 
-				pGameObject->UpdateTransform();
-
 				ppLevelData[currentTile.x][currentTile.y].WaterFloodsFromeAbove = false;
+			}
+
+			bool waterIsVisible = std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
+
+			if (waterIsVisible)
+			{
+				pGameObject->SetIsVisible(true);
+				pGameObject->UpdateTransform();
+			}
+			else
+			{
+				pGameObject->SetIsVisible(false);
 			}
 		}
 

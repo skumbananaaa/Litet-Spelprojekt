@@ -11,6 +11,7 @@ uint32 MATERIAL::RED_3 = 0;
 uint32 MATERIAL::RED_4 = 0;
 uint32 MATERIAL::GREEN = 0;
 uint32 MATERIAL::BLUE = 0;
+uint32 MATERIAL::OCEAN_BLUE = 0;
 uint32 MATERIAL::BOAT = 0;
 uint32 MATERIAL::GROUND = 0;
 uint32 MATERIAL::WATER = 0;
@@ -29,6 +30,7 @@ void MATERIAL::RegisterResourcesPreLoading()
 
 void MATERIAL::RegisterResources()
 {
+	OCEAN_BLUE			= ResourceHandler::RegisterMaterial(glm::vec4(0.09f, 0.34f, 0.49f, 1.0f)	, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	BLACK				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	WHITE				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);

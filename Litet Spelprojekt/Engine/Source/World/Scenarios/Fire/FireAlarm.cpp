@@ -1,12 +1,12 @@
 #include <EnginePch.h>
-#include <World/FireAlarm.h>
+#include <World/Scenarios/Fire/FireAlarm.h>
 #include <World/LightManager.h>
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/Scene.h>
 
 FireAlarm::FireAlarm(int32 source) : GameObject(),
-	m_FireDetected(false),
-	m_Spotlight(nullptr)
+m_FireDetected(false),
+m_Spotlight(nullptr)
 {
 	m_Src = AudioSource::CreateSoundSource(source);
 	m_Src->SetRollOffFactor(10.0f);

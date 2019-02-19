@@ -3,6 +3,10 @@
 #include <World/WorldLevel.h>
 #include <World/Room.h>
 #include <Graphics/Scene.h>
+#include <System/Input.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <GLM/gtx/string_cast.hpp>
 
 struct WorldObject
 {
@@ -24,18 +28,22 @@ public:
 	~World();
 
 	void AddWorldObject(const WorldObject& object) noexcept;
+	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 
 	const WorldLevel* const GetLevel(uint32 level) const noexcept;
-	uint32 GetNumLevels() const noexcept;
+	WorldLevel* const GetLevel(uint32 level) noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
+	uint32 GetNumLevels() const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
-	void GenerateRooms();
-	void GenerateWater(Scene* pScene) noexcept;
-	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
+
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
 	Room* GetRoom(uint32 room) const noexcept;
-	void Update(float dt);
+
+	void GenerateRooms();
+	void GenerateWater(Scene* pScene) noexcept;
+
+	void Update(Scene* pScene, float dt);
 
 private:
 	WorldLevel** m_ppLevels;

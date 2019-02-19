@@ -28,8 +28,9 @@
 #include <Graphics/Materials/WaterMaterial.h>
 
 #include <World/Logger.h>
-#include <World/ScenarioManager.h>
-#include "../Include/ScenarioFire.h"
+#include <World/Scenarios/ScenarioManager.h>
+#include "../Include/Scenarios/ScenarioWater.h"
+#include "../Include/Scenarios/ScenarioFire.h"
 
 #define NUM_CREW 15
 #define MAX_ROOMS_VISIBLE 3

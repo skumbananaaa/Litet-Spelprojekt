@@ -788,7 +788,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 
 void DefferedRenderer::ReflectionPass(const Scene& scene) const noexcept
 {
-	if (scene.GetReflectables().size() < 1 || scene.GetPlanarReflectors().size() < 1)
+	if (scene.GetPlanarReflectors().size() < 1)
 	{
 #if defined(_DEBUG)
 		//std::cout << "No reflectables or reflectors, skipping reflectionpass" << std::endl;

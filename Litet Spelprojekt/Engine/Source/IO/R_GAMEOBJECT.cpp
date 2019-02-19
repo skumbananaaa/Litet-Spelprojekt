@@ -2,7 +2,7 @@
 #include <IO/GAMEOBJECT.h>
 #include <IO/ResourceHandler.h>
 #include <Graphics/GameObject.h>
-#include <World/FireAlarm.h>
+#include <World/Scenarios/Fire/FireAlarm.h>
 
 uint32 GAMEOBJECT::CHAIR = 0;
 uint32 GAMEOBJECT::BED_BUNK = 0;

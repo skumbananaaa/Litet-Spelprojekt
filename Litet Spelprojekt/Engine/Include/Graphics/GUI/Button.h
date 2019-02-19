@@ -2,6 +2,7 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/ISelectable.h>
+#include <Graphics/GUI/IHoverable.h>
 
 class Button;
 
@@ -10,10 +11,11 @@ class API IButtonListener
 public:
 	virtual void OnButtonPressed(Button* button) = 0;
 	virtual void OnButtonReleased(Button* button) = 0;
+	virtual void OnButtonHovered(Button* button) = 0;
+	virtual void OnButtonNotHovered(Button* button) = 0;
 };
 
-
-class API Button : public TextView, public ISelectable
+class API Button : public TextView, public ISelectable, public IHoverable
 {
 public:
 	Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*) = nullptr, void(*onReleasedCallback)(Button*) = nullptr, int textSize = 100);
@@ -41,6 +43,9 @@ public:
 	void SetOnSelectedTextColor(const glm::vec4& color);
 
 	virtual void SetSelected(bool selected) override;
+	virtual void SetHovered(bool hovered) override;
+
+	void SetTextBuffered(bool buffered) noexcept;
 
 	void AddButtonListener(IButtonListener* listener);
 	void RemoveButtonListener(IButtonListener* listener);
@@ -64,10 +69,16 @@ protected:
 	virtual Texture2D* GetClearTexture() const override;
 	virtual const glm::vec4& GetClearTextColor() const;
 
+	virtual void OnRender(GUIContext* context) override;
+	virtual void OnPreRender(GUIContext* context) override;
+	virtual void RenderTextBuffered(GUIContext* context, float x = 0, float y = 0);
+	virtual void RecreateFrameBuffer(float width, float height) override;
+
 private:
 	Texture2D* m_pOnPressedTexture;
+	Framebuffer* m_pFramebufferText;
 	bool m_IsPressed;
-	bool m_IsHovered;
+	bool m_IsTextBuffered;
 	glm::vec4 m_PressedColor;
 	glm::vec4 m_HoverColor;
 	glm::vec4 m_SelectedColor;

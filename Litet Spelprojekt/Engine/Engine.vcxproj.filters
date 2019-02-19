@@ -74,6 +74,15 @@
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
+    <ClCompile Include="Source\World\FireAlarm.cpp" />
+    <ClCompile Include="Source\World\VisualAudioSource.cpp" />
+    <ClCompile Include="Source\World\Room.cpp" />
+    <ClCompile Include="Source\World\Logger.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\ListScrollable.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
+    <ClCompile Include="Source\World\ScenarioManager.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
+    <ClCompile Include="Source\World\LightManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -162,6 +171,17 @@
     <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
+    <ClInclude Include="Include\World\FireAlarm.h" />
+    <ClInclude Include="Include\World\VisualAudioSource.h" />
+    <ClInclude Include="Include\World\Room.h" />
+    <ClInclude Include="Include\World\Logger.h" />
+    <ClInclude Include="Include\Graphics\GUI\ListScrollable.h" />
+    <ClInclude Include="Include\Graphics\GUI\HoveringHandler.h" />
+    <ClInclude Include="Include\Graphics\GUI\IHoverable.h" />
+    <ClInclude Include="Include\World\ScenarioManager.h" />
+    <ClInclude Include="Include\World\IScenario.h" />
+    <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
+    <ClInclude Include="Include\World\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

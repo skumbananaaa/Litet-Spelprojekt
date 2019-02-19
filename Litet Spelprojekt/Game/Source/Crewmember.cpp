@@ -50,6 +50,8 @@ Crewmember::Crewmember(Crewmember& other)
 Crewmember::~Crewmember()
 {
 	DeleteSafe(m_pPathFinder);
+	DeleteSafe(m_pLight);
+	DeleteSafe(m_pTorch);
 }
 
 void Crewmember::RunParallel()
@@ -101,6 +103,16 @@ void Crewmember::OnNotHovered()
 {
 	m_IsHovered = false;
 	Game::GetGame()->GetUICrewMember()->SetCrewMember(nullptr);
+}
+
+void Crewmember::UpdateLastKnownPosition() noexcept
+{
+	m_LastKnownPosition = GetPosition();
+}
+
+const glm::vec3& Crewmember::GetLastKnownPosition() noexcept
+{
+	return m_LastKnownPosition;
 }
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept
@@ -168,6 +180,11 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) no
 	return t;
 }
 
+int32 Crewmember::GetShipNumber() const noexcept
+{
+	return m_ShipNumber;
+}
+
 bool Crewmember::IsHovered() const noexcept
 {
 	return m_IsHovered;
@@ -201,6 +218,11 @@ bool Crewmember::HasInjuryBurned() const noexcept
 bool Crewmember::HasInjurySmoke() const noexcept
 {
 	return m_HasInjurySmoke;
+}
+
+void Crewmember::SetShipNumber(int32 shipnumber) noexcept
+{
+	m_ShipNumber = shipnumber;
 }
 
 void Crewmember::Move(const glm::vec3 & dir)
@@ -259,6 +281,11 @@ void Crewmember::SwitchLight() noexcept
 	m_pLight->SetColor(temp);
 }
 
+glm::ivec3 Crewmember::GetTile() const noexcept
+{
+	return m_PlayerTile;
+}
+
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
 	if (!IsExtending())
@@ -278,19 +305,15 @@ void Crewmember::FollowPath(float dtS)
 			{
 				m_TargetTile = m_pPath[--m_NrOfPathTiles];
 				m_TargetPos = glm::vec3(m_TargetTile.x + m_TargetTile.y * 10 * IsExtended(), m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
-				/*if (m_PlayerTile.y != m_TargetTile.y)
-				{
-					GameObject::SetPosition(GetPosition() + glm::vec3((m_TargetTile.y - m_PlayerTile.y) * 10 * IsExtended(), 0, 0));
-				}*/
 			}
 		}
 		if ((std::abs(GetPosition().x - m_TargetPos.x) > 0.01 || std::abs(GetPosition().y - m_TargetPos.y) > 0.01 || std::abs(GetPosition().z - m_TargetPos.z) > 0.01))
 		{
-			if (GetPosition().x > (std::round(GetPosition().y - 0.9) / 2.0f + 1.0f) * 10.0f)
+			if (GetPosition().x > (std::round(GetPosition().y - 0.9) / 2.0f + 1.0f) * 10.0f + 0.5f)
 			{
 				GameObject::SetPosition(GetPosition() - glm::vec3(10.0f, 0.0f, 0.0f));
 			}
-			else if (GetPosition().x <= (std::round(GetPosition().y - 0.9) / 2.0f) * 10 * IsExtended())
+			else if (GetPosition().x <= ((std::round(GetPosition().y - 0.9) / 2.0f) * 10 + 0.5f) * IsExtended())
 			{
 				GameObject::SetPosition(GetPosition() + glm::vec3(10.0f, 0.0f, 0.0f));
 			}
@@ -308,6 +331,10 @@ void Crewmember::FollowPath(float dtS)
 				GameObject::SetPosition(GetPosition() + m_Direction * dtS);
 			}
 			m_PlayerTile = glm::ivec3(std::round(GetPosition().x) - std::round(GetPosition().y - 0.9) * 5 * IsExtended(), std::round((GetPosition().y - 0.9) / 2), std::round(GetPosition().z));
+			if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
+			{
+				SetRoom(m_pPathFinder->GetWorld()->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+			}
 		}
 	}
 }

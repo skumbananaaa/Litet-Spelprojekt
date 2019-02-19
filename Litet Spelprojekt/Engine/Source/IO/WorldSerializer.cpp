@@ -32,7 +32,7 @@ World* WorldSerializer::Read(const char* const path)
 			}
 		}
 
-		pWorldLevels[levelId] = new WorldLevel(pLevelIndexes, xSize, zSize);
+		pWorldLevels[levelId] = new WorldLevel(levelId, pLevelIndexes, xSize, zSize);
 		DeleteArrSafe(pLevelIndexes);
 	}
 

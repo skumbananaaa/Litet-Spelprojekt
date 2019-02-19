@@ -7,7 +7,7 @@
 class UICrewMember : public Panel
 {
 public:
-	UICrewMember(float x, float y, float width, float height);
+	UICrewMember(float width, float height);
 	virtual ~UICrewMember();
 
 	void SetCrewMember(const Crewmember* crewmember);

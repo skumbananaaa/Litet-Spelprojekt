@@ -6,15 +6,20 @@ class API SpotLight :
 	public GameObject
 {
 public:
-	SpotLight(const glm::vec3& pos, const float innerAngle, const float outerAngle, const glm::vec3& direction, const glm::vec4& color = glm::vec4(1.0f)) noexcept;
+	SpotLight(const glm::vec3& pos, float innerAngle, float outerAngle, const glm::vec3& direction, const glm::vec4& color = glm::vec4(1.0f)) noexcept;
 	~SpotLight();
 
-	const glm::vec4& GetColor() const noexcept;
-	const glm::vec3& GetDirection() const noexcept;
-	const float GetCutOffAngle() const noexcept;
-	const float GetOuterCutOffAngle() const noexcept;
-	void  SetDirection(glm::vec3 target) noexcept;
 	void SetColor(const glm::vec4& color) noexcept;
+	const glm::vec4& GetColor() const noexcept;
+
+	void SetDirection(glm::vec3 target) noexcept;
+	const glm::vec3& GetDirection() const noexcept;
+
+	void SetCutOffAngle(float angle) noexcept;
+	float GetCutOffAngle() const noexcept;
+
+	void SetOuterCutOffAngle(float angle) noexcept;
+	float GetOuterCutOffAngle() const noexcept;
 
 
 public:
@@ -37,12 +42,22 @@ inline const glm::vec3& SpotLight::GetDirection() const noexcept
 	return m_Direction;
 }
 
-inline const float SpotLight::GetCutOffAngle() const noexcept
+inline void SpotLight::SetCutOffAngle(float angle) noexcept
+{
+	m_CutOffAngle = angle;
+}
+
+inline float SpotLight::GetCutOffAngle() const noexcept
 {
 	return m_CutOffAngle;
 }
 
-inline const float SpotLight::GetOuterCutOffAngle() const noexcept
+inline void SpotLight::SetOuterCutOffAngle(float angle) noexcept
+{
+	m_OuterCutOffAngle = angle;
+}
+
+inline float SpotLight::GetOuterCutOffAngle() const noexcept
 {
 	return m_OuterCutOffAngle;
 }

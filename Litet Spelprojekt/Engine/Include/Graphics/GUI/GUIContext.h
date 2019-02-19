@@ -49,8 +49,15 @@ public:
 	FontRenderer* GetFontRenderer() const;
 	const ShaderProgram* GetShaderProgram() const;
 
+	static const glm::vec4 COLOR_TRANSPARENT;
 	static const glm::vec4 COLOR_WHITE;
 	static const glm::vec4 COLOR_BLACK;
+	static const glm::vec4 COLOR_RED;
+	static const glm::vec4 COLOR_GREEN;
+	static const glm::vec4 COLOR_BLUE;
+	static const glm::vec4 COLOR_YELLOW;
+	static const glm::vec4 COLOR_CYAN;
+	static const glm::vec4 COLOR_PURPLE;
 
 private:
 	GUIUniformData m_UniformData;

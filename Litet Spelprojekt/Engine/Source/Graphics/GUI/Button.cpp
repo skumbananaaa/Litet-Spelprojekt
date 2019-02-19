@@ -3,8 +3,9 @@
 
 Button::Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*), void(*onReleasedCallback)(Button*), int textSize) : TextView(x, y, width, height, text, true, textSize),
 	m_pOnPressedTexture(nullptr),
+	m_pFramebufferText(nullptr),
 	m_IsPressed(false),
-	m_IsHovered(false),
+	m_IsTextBuffered(false),
 	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
 	m_HoverColor(0.6F, 0.6F, 0.6F, 1.0F),
 	m_SelectedColor(0.553F, 0.824F, 0.541F, 1.0F),
@@ -14,6 +15,7 @@ Button::Button(float x, float y, float width, float height, const std::string& t
 	m_OnPressedCallback(onPressedCallback),
 	m_OnReleasedCallback(onReleasedCallback)
 {
+	RecreateFrameBuffer(width, height);
 	SetBackgroundColor(glm::vec4(0.408F, 0.408F, 0.408F, 1.0F));
 }
 
@@ -147,6 +149,32 @@ void Button::SetSelected(bool selected)
 	}
 }
 
+void Button::SetHovered(bool hovered)
+{
+	if (IsHovered() != hovered)
+	{
+		IHoverable::SetHovered(hovered);
+		RequestRepaint();
+	}
+}
+
+void Button::SetTextBuffered(bool buffered) noexcept
+{
+	if (m_IsTextBuffered != buffered)
+	{
+		m_IsTextBuffered = buffered;
+		RequestRepaint();
+		if (m_IsTextBuffered)
+		{
+			RecreateFrameBuffer(GetWidth(), GetHeight());
+		}
+		else
+		{
+			DeleteSafe(m_pFramebufferText);
+		}
+	}
+}
+
 void Button::SetOnButtonPressed(void(*callback)(Button*))
 {
 	m_OnPressedCallback = callback;
@@ -205,10 +233,7 @@ void Button::OnReleased(const glm::vec2 & position, MouseButton mousebutton) noe
 	{
 		listener->OnButtonReleased(this);
 	}
-	for (ISelectableListener* listener : GetSelectionListeners())
-	{
-		listener->OnSelected(this);
-	}
+	TriggerOnSelected(this);
 }
 
 void Button::OnMousePressed(const glm::vec2& position, MouseButton mousebutton)
@@ -245,7 +270,12 @@ void Button::OnMouseMove(const glm::vec2& position)
 	{
 		m_IsHovered = false;
 		RequestRepaint();
+		for (IButtonListener* listener : m_ButtonListeners)
+		{
+			listener->OnButtonNotHovered(this);
+		}
 	}
+	TriggerSendUpdate(this);
 }
 
 void Button::OnAdded(GUIObject* parent)
@@ -304,4 +334,58 @@ const glm::vec4& Button::GetClearTextColor() const
 		return GetOnHoverTextColor();
 	}
 	return TextView::GetClearTextColor();
+}
+
+void Button::OnPreRender(GUIContext* context)
+{
+	if (m_IsTextBuffered)
+	{
+		context->BeginSelfRendering(m_pFramebufferText, GUIContext::COLOR_TRANSPARENT);
+		RenderText(context);
+	}
+}
+
+void Button::RenderTextBuffered(GUIContext* context, float x, float y)
+{
+	context->RenderFrameBuffer(m_pFramebufferText, x, y);
+}
+
+void Button::OnRender(GUIContext* context)
+{
+	if (m_IsTextBuffered)
+	{
+		GUIObject::OnRender(context);
+		RenderTextBuffered(context);
+	}
+	else
+	{
+		TextView::OnRender(context);
+	}
+}
+
+void Button::RecreateFrameBuffer(float width, float height)
+{
+	TextView::RecreateFrameBuffer(width, height);
+
+	if (m_IsTextBuffered)
+	{
+		if (m_pFramebufferText)
+		{
+			if (GetWidth() == width && GetHeight() == height)
+			{
+				return;
+			}
+			delete m_pFramebufferText;
+		}
+
+		FramebufferDesc desc;
+		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
+		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
+		desc.SamplingParams = { TEX_PARAM_EDGECLAMP, TEX_PARAM_LINEAR, TEX_PARAM_LINEAR };
+		desc.NumColorAttachments = 1;
+		desc.Width = static_cast<uint32>(width);
+		desc.Height = static_cast<uint32>(height);
+
+		m_pFramebufferText = new Framebuffer(desc);
+	}
 }

@@ -5,7 +5,8 @@ TextView::TextView(float x, float y, float width, float height, const std::strin
 	m_Text(text), 
 	m_TextSize(textSize),
 	m_TextCentered(center),
-	m_TextColor(1.0F, 1.0F, 1.0F, 1.0F)
+	m_TextColor(1.0F, 1.0F, 1.0F, 1.0F),
+	m_TextOffset(0.0F, 0.0F)
 {
 	SetBackgroundColor(glm::vec4(1.0F, 1.0F, 1.0F, 0.0F));
 }
@@ -71,6 +72,20 @@ void TextView::SetTextColor(const glm::vec4& color)
 	}
 }
 
+const glm::vec2& TextView::GetTextOffset() const noexcept
+{
+	return m_TextOffset;
+}
+
+void TextView::SetTextOffset(const glm::vec2& offset)
+{
+	if (m_TextOffset != offset)
+	{
+		m_TextOffset = offset;
+		RequestRepaint();
+	}
+}
+
 void TextView::OnRender(GUIContext* context)
 {
 	GUIObject::OnRender(context);
@@ -85,11 +100,11 @@ void TextView::RenderText(GUIContext* context)
 
 		if (m_TextCentered)
 		{
-			context->RenderText(m_Text, GetWidth() / 2, GetHeight() / 2, GetWidth(), GetHeight(), scale, GetClearTextColor(), CENTER);
+			context->RenderText(m_Text, GetWidth() / 2 + m_TextOffset.x, GetHeight() / 2 + m_TextOffset.y, GetWidth(), GetHeight(), scale, GetClearTextColor(), CENTER);
 		}
 		else
 		{
-			context->RenderText(m_Text, 0, GetHeight() / 2, GetWidth(), GetHeight(), scale, GetClearTextColor(), CENTER_VERTICAL);
+			context->RenderText(m_Text, m_TextOffset.x, GetHeight() / 2 + m_TextOffset.y, GetWidth(), GetHeight(), scale, GetClearTextColor(), CENTER_VERTICAL);
 		}
 	}
 }

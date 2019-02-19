@@ -19,7 +19,10 @@ void ProgressBar::SetPercentage(float percentage)
 	if (percentage != m_Percentage)
 	{
 		m_Percentage = percentage;
-		RequestRepaint();
+		if (!IsRealtimeRendered())
+		{
+			RequestRepaint();
+		}
 	}
 }
 
@@ -38,14 +41,40 @@ void ProgressBar::SetProgressColor(const glm::vec4& color)
 	if (m_ProgressColor != color)
 	{
 		m_ProgressColor = color;
-		RequestRepaint();
+		if (!IsRealtimeRendered())
+		{
+			RequestRepaint();
+		}
 	}
+}
+
+void ProgressBar::BeginProgress() noexcept
+{
+	AddRealTimeRenderer();
+}
+
+void ProgressBar::EndProgress() noexcept
+{
+	RemoveRealTimeRenderer();
 }
 
 void ProgressBar::OnRender(GUIContext* context)
 {
 	GUIObject::OnRender(context);
-	context->RenderTexture(GetDefaultTexture(), 0, 0, GetWidth() * m_Percentage, GetHeight(), GetProgressColor());
+	if (!IsRealtimeRendered())
+	{
+		RenderProgress(context);
+	}
+}
+
+void ProgressBar::RenderRealTime(GUIContext* context, float x, float y)
+{
+	RenderProgress(context, x, y);
+}
+
+void ProgressBar::RenderProgress(GUIContext* context, float x, float y) noexcept
+{
+	context->RenderTexture(GetDefaultTexture(), x, y, GetWidth() * m_Percentage, GetHeight(), GetProgressColor());
 }
 
 void ProgressBar::PrintName() const

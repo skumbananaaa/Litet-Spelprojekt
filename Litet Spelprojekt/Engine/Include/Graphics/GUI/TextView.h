@@ -20,6 +20,9 @@ public:
 	const glm::vec4& GetTextColor() const noexcept;
 	void SetTextColor(const glm::vec4& color);
 
+	const glm::vec2& GetTextOffset() const noexcept;
+	void SetTextOffset(const glm::vec2& offset);
+
 protected:
 	virtual void OnRender(GUIContext* context) override;
 	virtual void RenderText(GUIContext* context);
@@ -31,4 +34,5 @@ private:
 	int m_TextSize;
 	bool m_TextCentered;
 	glm::vec4 m_TextColor;
+	glm::vec2 m_TextOffset;
 };

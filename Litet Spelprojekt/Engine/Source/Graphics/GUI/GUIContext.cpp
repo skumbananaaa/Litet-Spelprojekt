@@ -4,8 +4,15 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 
+const glm::vec4 GUIContext::COLOR_TRANSPARENT(0.0f, 0.0f, 0.0f, 0.0f);
 const glm::vec4 GUIContext::COLOR_WHITE(1.0f, 1.0f, 1.0f, 1.0f);
 const glm::vec4 GUIContext::COLOR_BLACK(0.0f, 0.0f, 0.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_RED(1.0f, 0.0f, 0.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_GREEN(0.0f, 1.0f, 0.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_BLUE(0.0f, 0.0f, 1.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_YELLOW(1.0f, 1.0f, 0.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_CYAN(0.0f, 1.0f, 1.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_PURPLE(1.0f, 0.0f, 1.0f, 1.0f);
 
 GUIContext::GUIContext(GLContext* context, const ShaderProgram* shaderProgram, FontRenderer* fontRenderer) :
 	m_pContext(context),

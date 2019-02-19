@@ -7,7 +7,6 @@
 #include <GLM/gtc/type_ptr.hpp>
 
 std::vector<GUIObject*> GUIObject::s_MouseListeners;
-std::vector<GUIObject*> GUIObject::s_RealTimeRenderers;
 Texture2D* GUIObject::s_pDefaultTexture = nullptr;
 
 GUIObject::GUIObject(float x, float y, float width, float height) :
@@ -18,6 +17,7 @@ GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_IsVisible(true),
 	m_pUserData(nullptr),
 	m_IsDirty(false),
+	m_IsRealtime(false),
 	m_BackgroundColor(1.0, 1.0, 1.0, 1.0)
 {
 	if (width > 0 && height > 0)
@@ -34,7 +34,7 @@ GUIObject::~GUIObject()
 	}
 
 	RemoveMouseListener(this);
-	RemoveRealTimeRenderer(this);
+	RemoveRealTimeRenderer();
 
 	if (m_DeleteAll)
 	{
@@ -73,6 +73,7 @@ void GUIObject::Remove(GUIObject* object) noexcept
 	if (Contains<GUIObject>(m_Children, object))
 	{
 		m_ChildrenToRemove.push_back(object);
+		object->RemoveRealTimeRenderer();
 	}
 }
 
@@ -87,6 +88,16 @@ void GUIObject::RequestRepaint()
 			m_IsDirty = true;
 		}
 	}
+}
+
+const std::vector<GUIObject*>& GUIObject::GetChildrenToAdd() noexcept
+{
+	return m_ChildrenToAdd;
+}
+
+const std::vector<GUIObject*>& GUIObject::GetChildrenToRemove() noexcept
+{
+	return m_ChildrenToRemove;
 }
 
 void GUIObject::AddMouseListener(GUIObject* listener)
@@ -115,30 +126,14 @@ void GUIObject::RemoveMouseListener(GUIObject* listener)
 	}
 }
 
-void GUIObject::AddRealTimeRenderer(GUIObject* listener)
+void GUIObject::AddRealTimeRenderer()
 {
-	if (!Contains<GUIObject>(s_RealTimeRenderers, listener))
-	{
-		s_RealTimeRenderers.push_back(listener);
-	}
-	else
-	{
-		std::cout << "RealtimeRenderer already added" << std::endl;
-	}
+	m_IsRealtime = true;
 }
 
-void GUIObject::RemoveRealTimeRenderer(GUIObject* listener)
+void GUIObject::RemoveRealTimeRenderer()
 {
-	int32 counter = 0;
-	for (GUIObject* object : s_RealTimeRenderers)
-	{
-		if (object == listener)
-		{
-			s_RealTimeRenderers.erase(s_RealTimeRenderers.begin() + counter);
-			return;
-		}
-		counter++;
-	}
+	m_IsRealtime = false;
 }
 
 bool GUIObject::IsDirty() const noexcept
@@ -259,6 +254,11 @@ bool GUIObject::IsVisible() noexcept
 	return m_IsVisible;
 }
 
+bool GUIObject::IsRealtimeRendered() const noexcept
+{
+	return m_IsRealtime;
+}
+
 void GUIObject::InternalOnUpdate(float dtS)
 {
 	/*
@@ -276,7 +276,6 @@ void GUIObject::InternalOnUpdate(float dtS)
 					m_Children.erase(m_Children.begin() + counter);
 					objectToRemove->OnRemoved(this);
 					objectToRemove->m_pParent = nullptr;
-					std::cout << "GUI Object Removed" << std::endl;
 					return;
 				}
 				counter++;
@@ -306,11 +305,6 @@ void GUIObject::InternalOnUpdate(float dtS)
 			objectToAdd->m_pParent = this;
 			objectToAdd->RequestRepaint();
 			objectToAdd->OnAdded(this);
-			std::cout << "Added: ";
-			objectToAdd->PrintName();
-			std::cout << ", Parent: ";
-			PrintName();
-			std::cout << std::endl;
 		}
 		newChildren.clear();
 	}
@@ -340,8 +334,13 @@ void GUIObject::InternalOnRender(GUIContext* context)
 	/*
 	* Render my self
 	*/
+	this->OnPreRender(context);
 	context->BeginSelfRendering(m_pFramebuffer, GetClearColor());
 	this->OnRender(context);
+	for (IExternalUIRenderer* object : m_ExternalRenderers)
+	{
+		object->OnRenderGUIObject(context, this);
+	}
 
 	/*
 	* Render all childrens Framebuffers
@@ -349,6 +348,25 @@ void GUIObject::InternalOnRender(GUIContext* context)
 	RenderChildrensFrameBuffers(context);
 
 	m_IsDirty = false;
+}
+
+void GUIObject::InternalOnRealtimeRender(GUIContext* context)
+{
+	float x = GetXInWorld();
+	float y = GetYInWorld();
+	RenderRealTimePre(context, x, y);
+	if (IsRealtimeRendered())
+	{
+		RenderRealTime(context, x, y);
+	}
+	for (GUIObject* object : m_Children)
+	{
+		if (object->IsVisible())
+		{
+			object->InternalOnRealtimeRender(context);
+		}
+	}
+	RenderRealTimePost(context);
 }
 
 /*
@@ -367,22 +385,7 @@ void GUIObject::InternalRootOnRender(GUIContext* context)
 	context->BeginRootRendering();
 	RenderChildrensFrameBuffers(context);
 
-	for (GUIObject* object : s_RealTimeRenderers)
-	{
-		if (object->IsVisible())
-		{
-			if (object->HasParent())
-			{
-				object->GetParent()->ControllRealTimeRenderingForChildPre(context, object);
-				object->RenderRealTime(context);
-				object->GetParent()->ControllRealTimeRenderingForChildPost(context, object);
-			}
-			else
-			{
-				object->RenderRealTime(context);
-			}
-		}
-	}
+	InternalOnRealtimeRender(context);
 }
 
 void GUIObject::RerenderChildren(GUIContext* context)
@@ -398,6 +401,10 @@ void GUIObject::RecreateFrameBuffer(float width, float height)
 {
 	if (m_pFramebuffer)
 	{
+		if (GetWidth() == width && GetHeight() == height)
+		{
+			return;
+		}
 		delete m_pFramebuffer;
 	}
 
@@ -448,18 +455,8 @@ void GUIObject::RenderChildrensFrameBuffers(GUIContext* context)
 	}
 }
 
-void GUIObject::RenderRealTime(GUIContext* context)
+void GUIObject::RenderRealTime(GUIContext* context, float x, float y)
 {
-}
-
-void GUIObject::ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child)
-{
-	
-}
-
-void GUIObject::ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child)
-{
-	
 }
 
 void GUIObject::OnRender(GUIContext* context)
@@ -515,6 +512,37 @@ void GUIObject::SetDeleteAllChildrenOnDestruction(bool deleteAll)
 	m_DeleteAll = deleteAll;
 }
 
+bool GUIObject::WillDeleteAllChildrenOnDestruction() const noexcept
+{
+	return m_DeleteAll;
+}
+
+void GUIObject::AddExternalRenderer(IExternalUIRenderer* renderer)
+{
+	if (!Contains<IExternalUIRenderer>(m_ExternalRenderers, renderer))
+	{
+		m_ExternalRenderers.push_back(renderer);
+	}
+	else
+	{
+		std::cout << "IExternalUIRenderer already added" << std::endl;
+	}
+}
+
+void GUIObject::RemoveExternalRenderer(IExternalUIRenderer* renderer)
+{
+	int32 counter = 0;
+	for (IExternalUIRenderer* object : m_ExternalRenderers)
+	{
+		if (object == renderer)
+		{
+			m_ExternalRenderers.erase(m_ExternalRenderers.begin() + counter);
+			return;
+		}
+		counter++;
+	}
+}
+
 void GUIObject::SetUserData(void* data)
 {
 	m_pUserData = data;
@@ -525,9 +553,14 @@ void* GUIObject::GetUserData() const
 	return m_pUserData;
 }
 
-const std::vector<GUIObject*>& GUIObject::GetChildren()
+const std::vector<GUIObject*>& GUIObject::GetChildren() noexcept
 {
 	return m_Children;
+}
+
+int32 GUIObject::GetNrOfChildren() const noexcept
+{
+	return m_Children.size() + m_ChildrenToAdd.size() - m_ChildrenToRemove.size();
 }
 
 Texture2D* GUIObject::GetDefaultTexture() const

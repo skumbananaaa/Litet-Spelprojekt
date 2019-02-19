@@ -26,9 +26,9 @@ public:
 	virtual bool ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept override;
 
 	void RenderChildrensFrameBuffers(GUIContext* context) override;
-	void RenderRealTime(GUIContext* context) override;
-	virtual void ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child) override;
-	virtual void ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child) override;
+	virtual void RenderRealTimePre(GUIContext* context, float x = 0, float y = 0) override;
+	virtual void RenderRealTime(GUIContext* context, float x = 0, float y = 0) override;
+	virtual void RenderRealTimePost(GUIContext* context) override;
 
 	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) override;
 
@@ -40,5 +40,4 @@ private:
 	Slider* m_pSliderHorizontal;
 	Framebuffer* m_pFrameBufferClientArea;
 	glm::vec2 m_ClientOffset;
-	glm::vec2 m_LastMousePos;
 };

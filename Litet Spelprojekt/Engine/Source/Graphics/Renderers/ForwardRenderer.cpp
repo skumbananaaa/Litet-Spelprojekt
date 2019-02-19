@@ -39,7 +39,7 @@ ForwardRenderer::~ForwardRenderer()
 	DeleteSafe(m_pQueries[1]);
 }
 
-void ForwardRenderer::DrawScene(const Scene& scene, float dtS) const
+void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float dtS) const
 {
 	static float timer = 0.0f;
 	static float frametime = 0.0f;
@@ -291,6 +291,10 @@ void ForwardRenderer::UpdateLightBuffer(const Scene& scene) const noexcept
 }
 
 void ForwardRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
+{
+}
+
+void ForwardRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
 {
 }
 

@@ -1,5 +1,6 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Editor.h"
+#include <World/LightManager.h>
 
 Editor::Editor() noexcept : Application(false, 1600, 900, "../Game/"),
 	m_SelectionHandlerFloor(true),
@@ -69,6 +70,7 @@ void Editor::OnResourcesLoaded()
 		m_ppScenes[i]->SetCamera(pCameraPersp, 0);
 		m_ppScenes[i]->SetCamera(pCameraOrth, 1);
 	}
+	LightManager::Init(m_ppScenes[0], 3);
 
 	m_RoomBeingEdited = -1;
 	m_CurrentGridIndex = 0;
@@ -320,7 +322,7 @@ void Editor::CreateWalls()
 
 	for (int level = 0; level < NUM_GRID_LEVELS; level += 2)
 	{
-		ppWorldLevels[level]->GenerateWalls();
+		ppWorldLevels[level]->GenerateRooms();
 		float halfWidth = ppWorldLevels[level]->GetSizeX() / 2;
 		float halfHeight = ppWorldLevels[level]->GetSizeZ() / 2;
 		glm::vec4 wall;
@@ -371,7 +373,7 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs)
 			}
 		}
 
-		ppWorldLevels[gridId] = new WorldLevel(pLevel, levelSizeX, levelSizeY);
+		ppWorldLevels[gridId] = new WorldLevel(gridId, pLevel, levelSizeX, levelSizeY);
 	}
 	return ppWorldLevels;
 }
@@ -1436,5 +1438,5 @@ void Editor::OnUpdate(float dtS)
 
 void Editor::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*GetCurrentScene(), dtS);
+	m_pRenderer->DrawScene(*GetCurrentScene(), nullptr, dtS);
 }

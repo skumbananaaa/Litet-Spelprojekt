@@ -1,9 +1,6 @@
 #pragma once
 #include <EnginePch.h>
 #include <System/IRunnable.h>
-#include <thread>
-#include <mutex>
-#include <queue>
 
 class API ThreadHandler
 {

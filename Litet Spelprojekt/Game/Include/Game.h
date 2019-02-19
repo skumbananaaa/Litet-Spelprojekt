@@ -32,12 +32,6 @@
 #include "../Include/Scenarios/ScenarioWater.h"
 #include "../Include/Scenarios/ScenarioFire.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <GLM/glm.hpp>
-#include <GLM/gtc/type_ptr.hpp>
-#include <GLM/gtx/string_cast.hpp>
-#include <math.h>
-
 #define NUM_CREW 15
 #define MAX_ROOMS_VISIBLE 3
 
@@ -72,12 +66,13 @@ public:
 	void SetClipPlanes(uint32 scene);
 
 	Crewmember* GetCrewmember(uint32 shipNumber);
+	UICrewMember* GetUICrewMember() noexcept;
+
 	Scene* GetScene();
 	static Game* GetGame();
 
-	UICrewMember* m_pUICrewMember;
-
 private:
+	UICrewMember* m_pUICrewMember;
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	std::vector<Scene*> m_Scenes;

@@ -171,17 +171,13 @@
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
     <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
     <None Include="Resources\Shaders\debugVert.glsl" />
-    <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
-    <None Include="Resources\Shaders\defferedGeometryFrag.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="Resources\Shaders\defferedGeometryVert.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
+    <None Include="Resources\Shaders\deferredParticles.glsl" />
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
     <None Include="Resources\Shaders\deferredWall.glsl" />
+    <None Include="Resources\Shaders\depthPrePass.glsl" />
+    <None Include="Resources\Shaders\forwardMaterial.glsl" />
+    <None Include="Resources\Shaders\forwardWall.glsl" />
+    <None Include="Resources\Shaders\forwardWater.glsl" />
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
@@ -198,7 +194,7 @@
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />
-    <None Include="Resources\Shaders\waterVert.glsl" />
+    <None Include="Resources\Shaders\deferredWater.glsl" />
     <None Include="Resources\Textures\SkyBoxTextures\ocean.hdr" />
     <None Include="Resources\Textures\SkyBoxTextures\VShaderEquirecToCubemap.glsl" />
   </ItemGroup>
@@ -220,9 +216,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
-    <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
+    <Text Include="Resources\Shaders\deferredDecals.glsl" />
+    <Text Include="Resources\Shaders\forwardParticles.glsl" />
+    <Text Include="Resources\Shaders\skybox.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
-    <Text Include="Resources\Shaders\waterFrag.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

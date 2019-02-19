@@ -19,7 +19,7 @@ uint32 TEXTURE::ICON_SKILL_FIRE = 0;
 uint32 TEXTURE::ICON_SKILL_MEDIC = 0;
 uint32 TEXTURE::ICON_SKILL_STRENGTH = 0;
 uint32 TEXTURE::ICON_CIRCLE = 0;
-
+uint32 TEXTURE::SMOKE = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -50,11 +50,8 @@ void TEXTURE::RegisterResources()
 	BUNK_BED			= ResourceHandler::RegisterTexture2D("uv_bunk_Bed_Texture.jpg", TEX_FORMAT_RGBA);
 	WATER_DISTORTION	= ResourceHandler::RegisterTexture2D("waterDUDV.png", TEX_FORMAT_RGBA, true, false, params);
 	WATER_NORMAL		= ResourceHandler::RegisterTexture2D("waterNormalMap.png", TEX_FORMAT_RGBA, true, false, params);
-
-
-
+	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 
 	params.Wrap = TEX_PARAM_EDGECLAMP;
-
 	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, true, false, params);
 }

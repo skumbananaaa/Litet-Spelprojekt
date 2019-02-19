@@ -4,7 +4,6 @@
 #include <Graphics/GUI/TextView.h>
 #include "../Crewmember.h"
 
-
 class UICrewMember : public Panel
 {
 public:

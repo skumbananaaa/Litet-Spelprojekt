@@ -40,6 +40,11 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_PlanarReflectors[i]);
 	}
+
+	for (size_t i = 0; i < m_ParticleSystems.size(); i++)
+	{
+		DeleteSafe(m_ParticleSystems[i]);
+	}
 }
 
 void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
@@ -125,6 +130,11 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	}
 }
 
+void Scene::AddParticleSystem(ParticleSystem* pParticleSystem) noexcept
+{
+	m_ParticleSystems.push_back(pParticleSystem);
+}
+
 void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
 {
 	m_DirectionalLights.push_back(pLight);
@@ -198,6 +208,7 @@ void Scene::OnUpdate(float dtS) noexcept
 	{
 		pGameObject->Update(dtS);
 	}
+
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
 		pSpotLight->Update(dtS);
@@ -205,5 +216,10 @@ void Scene::OnUpdate(float dtS) noexcept
 	for (PointLight* pPointLight : m_PointLights)
 	{
 		pPointLight->Update(dtS);
+	}
+
+	for (ParticleSystem* pSystem : m_ParticleSystems)
+	{
+		pSystem->Update(*m_pCamera, dtS);
 	}
 }

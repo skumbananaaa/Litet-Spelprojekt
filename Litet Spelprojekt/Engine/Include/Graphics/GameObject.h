@@ -1,11 +1,10 @@
 #pragma once
-
 #include <EnginePch.h>
-#include <GLM/gtc/matrix_transform.hpp>
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/Decal.h>
 #include <IO/ResourceHandler.h>
+#include "Camera.h"
 
 class Scene;
 
@@ -15,6 +14,8 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
+	virtual void Update(float deltaTime) noexcept;
+	virtual void UpdateTransform() noexcept;
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetIsVisible(bool isVisible) noexcept;
@@ -51,9 +52,6 @@ public:
 
 	void SetTypeId(int32 typeId) noexcept;
 	int32 GetTypeId() const noexcept;
-
-	virtual void Update(float deltaTime) noexcept;
-	virtual void UpdateTransform() noexcept;
 
 	virtual void OnAddedToScene(Scene* scene) noexcept {};
 	virtual void OnFireDetected() noexcept {};

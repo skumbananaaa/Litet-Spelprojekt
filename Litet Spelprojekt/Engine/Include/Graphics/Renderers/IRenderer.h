@@ -2,6 +2,29 @@
 #include <Graphics/Scene.h>
 #include <World/World.h>
 
+struct DrawableBatch
+{
+	const Material* pMaterial = nullptr;
+	const IndexedMesh* pMesh = nullptr;
+	std::vector<InstanceData> Instances;
+};
+
+struct SkyBoxPassBuffer
+{
+	glm::mat4 CameraCombined;
+	glm::vec4 CameraPosition;
+};
+
+struct SkyBoxPassPerObject
+{
+	glm::mat4 model;
+};
+
+struct PlaneBuffer
+{
+	glm::vec4 ClipPlane;
+};
+
 class API IRenderer
 {
 public:

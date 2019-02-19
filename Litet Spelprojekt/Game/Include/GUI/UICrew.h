@@ -9,7 +9,7 @@
 class UICrew : public IExpandableListener, public ISelectionListener, public IHoveringListener, public IExternalUIRenderer, public IButtonListener, public IProgressListener
 {
 public:
-	UICrew(float x, float y, float width, float height, const std::vector<Crewmember*> crewmembers);
+	UICrew(float x, float y, float width, float height, const std::vector<Crewmember*>& crewmembers);
 	virtual ~UICrew();
 
 	virtual void OnExpanding(PanelExpandable* panel, float percentage) override;

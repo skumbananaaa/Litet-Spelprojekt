@@ -1,10 +1,10 @@
 #ifndef CREWMEMBER_H
 #define CREWMEMBER_H
+#include <EnginePch.h>
 #include <Graphics/Lights/PointLight.h>
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/GameObject.h>
 #include <System/ThreadHandler.h>
-#include <string>
 #include "..\Include\Path.h"
 
 #define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)

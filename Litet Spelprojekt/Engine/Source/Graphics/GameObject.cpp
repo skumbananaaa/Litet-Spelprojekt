@@ -124,5 +124,4 @@ void GameObject::Update(float deltaTime) noexcept
 {
 	Extend(deltaTime);
 	UpdateTransform();
-	//////
 }

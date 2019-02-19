@@ -26,6 +26,29 @@ void Material::Bind(const Framebuffer* pGBuffer) const noexcept
 
 	context.SetProgram(m_pProgram);
 
+	if (m_PipelineState.StencilTest)
+	{
+		context.Enable(STENCIL_TEST);
+		context.SetStencilOpFrontFace(m_PipelineState.Front.StencilFail, m_PipelineState.Front.DepthFail, m_PipelineState.Front.DepthPass);
+		context.SetStencilOpBackFace(m_PipelineState.Back.StencilFail, m_PipelineState.Back.DepthFail, m_PipelineState.Back.DepthPass);
+		context.SetStencilFunc(m_PipelineState.StencilFunc, m_PipelineState.StencilRef, m_PipelineState.StencilValue);
+		context.SetStencilMask(m_PipelineState.StencilMask);
+	}
+	else
+	{
+		context.Disable(STENCIL_TEST);
+	}
+
+	if (m_PipelineState.CullMode != CULL_MODE_NONE)
+	{
+		context.Enable(CULL_FACE);
+		context.SetCullMode(m_PipelineState.CullMode);
+	}
+	else
+	{
+		context.Disable(CULL_FACE);
+	}
+
 	context.Enable(CLIP_DISTANCE0);
 
 	context.SetUniformBuffer(m_Data.pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
@@ -41,9 +64,8 @@ void Material::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.SetProgram(nullptr);
-
 	context.Disable(CLIP_DISTANCE0);
+	context.Disable(STENCIL_TEST);
 
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, LIGHT_BUFFER_BINDING_SLOT);

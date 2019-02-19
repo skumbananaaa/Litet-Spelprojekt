@@ -56,6 +56,7 @@ private:
 
 	virtual void Construct() override;
 
+private:
 	uint32 m_VAO;
 	uint32 m_VBO;
 	uint32 m_IBO;

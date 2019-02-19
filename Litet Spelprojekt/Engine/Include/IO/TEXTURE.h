@@ -22,6 +22,7 @@ public:
 	static uint32 ICON_SKILL_MEDIC;
 	static uint32 ICON_SKILL_STRENGTH;
 	static uint32 ICON_CIRCLE;
+	static uint32 SMOKE;
 
 private:
 	static void RegisterResourcesPreLoading();

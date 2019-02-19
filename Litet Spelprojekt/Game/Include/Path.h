@@ -1,11 +1,8 @@
 #pragma once
 #include <EnginePch.h>
-#include <GLM\vec2.hpp>
 #include <World/Grid.h>
 #include <World/Tile.h>
 #include <World/World.h>
-#include <math.h>
-#include <algorithm>
 
 struct tls {
 	int g = 0;

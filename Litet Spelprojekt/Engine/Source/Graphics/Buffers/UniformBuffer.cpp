@@ -2,7 +2,7 @@
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Renderers/GLContext.h>
 
-UniformBuffer::UniformBuffer(const void * pInitalData, uint32 count, uint32 stride)
+UniformBuffer::UniformBuffer(const void* pInitalData, uint32 count, uint32 stride)
 	: m_Buffer(0),
 	m_Count(0),
 	m_Stride(0)

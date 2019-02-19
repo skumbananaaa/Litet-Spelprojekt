@@ -17,7 +17,6 @@ out vec3 texCoords;
 
 void main()
 {
-	//vec4 worldPos = model;
 	gl_Position = cameraCombined * vec4(position * 2.0, 1.0f);
 	texCoords = position * 2.0;
 }

@@ -15,71 +15,68 @@ World* WorldSerializer::Read(const char* const path)
 	const Value& jsonObject = document.GetObjectA();
 	const Value& levels = jsonObject["levels"];
 	
-	WorldLevel** worldLevels = new WorldLevel*[levels.Size()];
-
+	WorldLevel** pWorldLevels = new WorldLevel*[levels.Size()];
 	for (uint32 levelId = 0; levelId < levels.Size(); levelId++)
 	{
 		const Value& level = levels[levelId];
 		uint32 xSize = level.Size();
 		uint32 zSize = level[0].Size();
-		uint32* levelIndexes = new uint32[xSize * zSize];
 
+		uint32* pLevelIndexes = new uint32[xSize * zSize];
 		for (uint32 xId = 0; xId < xSize; xId++)
 		{
 			const Value& x = level[xId];
-
 			for (uint32 zId = 0; zId < zSize; zId++)
 			{
-				levelIndexes[xId *  zSize + zId] = x[zId].GetUint();
+				pLevelIndexes[xId *  zSize + zId] = x[zId].GetUint();
 			}
 		}
 
-		worldLevels[levelId] = new WorldLevel(levelId, levelIndexes, xSize, zSize);
-		delete[] levelIndexes;
-		levelIndexes = nullptr;
+		pWorldLevels[levelId] = new WorldLevel(levelId, pLevelIndexes, xSize, zSize);
+		DeleteArrSafe(pLevelIndexes);
 	}
 
 	const Value& objects = jsonObject["objects"];
-	WorldObject* worldObjects = new WorldObject[objects.Size()];
+	WorldObject* pWorldObjects = new WorldObject[objects.Size()];
 
 	for (uint32 objectId = 0; objectId < objects.Size(); objectId++)
 	{
-		worldObjects[objectId].TileId.x = objects[objectId]["tileIdX"].GetUint();
-		worldObjects[objectId].TileId.y = objects[objectId]["tileIdY"].GetUint();
-		worldObjects[objectId].TileId.z = objects[objectId]["tileIdZ"].GetUint();
-		worldObjects[objectId].GameObject = objects[objectId]["gameObject"].GetInt();
-		worldObjects[objectId].Rotation = objects[objectId]["rotation"].GetFloat();
+		pWorldObjects[objectId].TileId.x = objects[objectId]["tileIdX"].GetUint();
+		pWorldObjects[objectId].TileId.y = objects[objectId]["tileIdY"].GetUint();
+		pWorldObjects[objectId].TileId.z = objects[objectId]["tileIdZ"].GetUint();
+		pWorldObjects[objectId].GameObject = objects[objectId]["gameObject"].GetInt();
+		pWorldObjects[objectId].Rotation = objects[objectId]["rotation"].GetFloat();
 	}
 
 	const Value& stairs = jsonObject["stairs"];
-	glm::ivec3* worldStairs = new glm::ivec3[stairs.Size()];
+	glm::ivec3* pWorldStairs = new glm::ivec3[stairs.Size()];
 
 	for (uint32 stairId = 0; stairId < stairs.Size(); stairId++)
 	{
 		const Value& stair = stairs[stairId];
-		worldStairs[stairId] = glm::ivec3(stair[0].GetUint(), stair[1].GetUint(), stair[2].GetUint());
+		pWorldStairs[stairId] = glm::ivec3(stair[0].GetUint(), stair[1].GetUint(), stair[2].GetUint());
 	}
 
-	World* world = new World(worldLevels, levels.Size(), worldObjects, objects.Size());
-	world->SetStairs(worldStairs, stairs.Size());
+	World* pWorld = new World(pWorldLevels, levels.Size(), pWorldObjects, objects.Size());
+	pWorld->SetStairs(pWorldStairs, stairs.Size());
 
 	const Value& doors = jsonObject["doors"];
-	glm::ivec3* worldDoors = new glm::ivec3[doors.Size()];
+	glm::ivec3* pWorldDoors = new glm::ivec3[doors.Size()];
 
 	for (uint32 doorId = 0; doorId < doors.Size(); doorId++)
 	{
 		const Value& door = doors[doorId];
-		worldDoors[doorId] = glm::ivec3(door[0].GetUint(), door[1].GetUint(), door[2].GetUint());
+		pWorldDoors[doorId] = glm::ivec3(door[0].GetUint(), door[1].GetUint(), door[2].GetUint());
 	}
 
-	world->SetDoors(worldDoors, doors.Size());
+	pWorld->SetDoors(pWorldDoors, doors.Size());
 
-	DeleteArrSafe(worldLevels);
-	DeleteArrSafe(worldObjects);
-	DeleteArrSafe(worldStairs);
-	DeleteArrSafe(worldDoors);
+	DeleteArrSafe(pWorldLevels);
+	DeleteArrSafe(pWorldObjects);
+	DeleteArrSafe(pWorldStairs);
+	DeleteArrSafe(pWorldDoors);
 	
-	return world;
+	return pWorld;
 }
 
 void WorldSerializer::Write(const char* const path, const World& world)

@@ -1,7 +1,6 @@
 #pragma once
 #include <EnginePch.h>
-#include <GLM/matrix.hpp>
-#include<GLM/gtc/matrix_transform.hpp>
+
 class API Joint
 {
 private:

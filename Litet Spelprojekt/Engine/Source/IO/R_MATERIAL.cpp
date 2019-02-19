@@ -30,21 +30,21 @@ void MATERIAL::RegisterResourcesPreLoading()
 
 void MATERIAL::RegisterResources()
 {
-	BLACK				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	WHITE				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	RED_1				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 128.0f, -1, SHADER::DEFERRED_MATERIAL);
-	RED_2				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 96.0f, -1, SHADER::DEFERRED_MATERIAL);
-	RED_3				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 32.0f, -1, SHADER::DEFERRED_MATERIAL);
-	RED_4				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 16.0f, -1, SHADER::DEFERRED_MATERIAL);
-	GREEN				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	BLUE				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	OCEAN_BLUE			= ResourceHandler::RegisterMaterial(glm::vec4(0.09f, 0.34f, 0.49f, 1.0f)	, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	BOAT				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::DEFERRED_MATERIAL);
-	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)	, 256.0f, -1);
+	OCEAN_BLUE			= ResourceHandler::RegisterMaterial(glm::vec4(0.09f, 0.34f, 0.49f, 1.0f)	, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	BLACK				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	WHITE				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	RED_1				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 128.0f, -1, SHADER::STANDARD_MATERIAL);
+	RED_2				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 96.0f, -1, SHADER::STANDARD_MATERIAL);
+	RED_3				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 32.0f, -1, SHADER::STANDARD_MATERIAL);
+	RED_4				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 16.0f, -1, SHADER::STANDARD_MATERIAL);
+	GREEN				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	BLUE				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	BOAT				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1);
 	WATER				= ResourceHandler::RegisterWaterMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
-	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, SHADER::DEFERRED_MATERIAL);
-	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, SHADER::DEFERRED_MATERIAL);
+	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, SHADER::STANDARD_MATERIAL);
+	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, SHADER::STANDARD_MATERIAL);
 }

@@ -135,10 +135,11 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 	}
 }
 
-void World::SetDoor(const glm::ivec3* doors, uint32 nrOfDoors)
+void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 {
 	for (int i = 0; i < nrOfDoors; i++)
 	{
+		m_Doors.push_back(doors[i]);
 		m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].HasDoor = true;
 	}
 }
@@ -157,6 +158,17 @@ Room* World::GetRoom(uint32 room) const noexcept
 {
 	assert(room < m_Rooms.size());
 	return m_Rooms[room];
+}
+
+const glm::ivec3 & World::GetDoor(uint32 index) const noexcept
+{
+	assert(index < m_Doors.size());
+	return m_Doors[index];
+}
+
+uint32 World::GetNumDoors() const noexcept
+{
+	return m_Doors.size();
 }
 
 void World::Update(Scene* pScene, float dt)

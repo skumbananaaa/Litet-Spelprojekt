@@ -633,13 +633,6 @@ void Game::OnUpdate(float dtS)
 		}
 	}
 
-	m_DoorLightTimer += dtS;
-	if (m_DoorLightTimer >= 5.0f)
-	{
-		m_DoorLightTimer = 0.0f;
-		m_pWorld->GetRoom(0)->SetActive(false);
-	}
-
 	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
 
@@ -866,7 +859,7 @@ void Game::ShowCrewmember(uint32 crewmember)
 	{
 		uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
 
-		if (!m_pWorld->GetRoom(roomIndex)->IsActive() && roomIndex != 0)
+		if (!m_pWorld->GetRoom(roomIndex)->IsActive())
 		{
 			const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
 			std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
@@ -876,9 +869,6 @@ void Game::ShowCrewmember(uint32 crewmember)
 			m_ActiveRooms[m_CurrentLight] = roomIndex;
 			m_pWorld->GetRoom(roomIndex)->SetActive(true);
 			m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
-
-			m_pWorld->GetRoom(0)->SetActive(true);
-			m_DoorLightTimer = 0.0f;
 		}
 	}
 }

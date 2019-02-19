@@ -50,6 +50,7 @@ public:
 	void GenerateWater(Scene* pScene, uint32 levelHeight);
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
+
 private:
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;

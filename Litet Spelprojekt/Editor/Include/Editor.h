@@ -79,7 +79,7 @@ public:
 	void OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelection) override;
 
 	void CreateWalls();
-	WorldLevel** CreateWorldLevels(std::vector<glm::ivec3>& stairs);
+	WorldLevel** CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vector<glm::ivec3>& doors);
 	void CreateMesh(GameObject* pGameObject, const std::string& name, int32 index = 0, int32 total = 0);
 	void ClearLevels();
 	glm::vec3 CalculateMeshPosition(const glm::vec3& position) noexcept;

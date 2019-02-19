@@ -72,7 +72,7 @@ World* WorldSerializer::Read(const char* const path)
 		worldDoors[doorId] = glm::ivec3(door[0].GetUint(), door[1].GetUint(), door[2].GetUint());
 	}
 
-	world->SetDoor(worldDoors, doors.Size());
+	world->SetDoors(worldDoors, doors.Size());
 
 	DeleteArrSafe(worldLevels);
 	DeleteArrSafe(worldObjects);
@@ -145,6 +145,21 @@ void WorldSerializer::Write(const char* const path, const World& world)
 		writer.Uint(stairs[stairId].x);
 		writer.Uint(stairs[stairId].y);
 		writer.Uint(stairs[stairId].z);
+
+		writer.EndArray();
+	}
+	writer.EndArray();
+
+	writer.String("doors");
+	writer.StartArray();
+	for (uint32 doorId = 0; doorId < world.GetNumDoors(); doorId++)
+	{
+		const glm::ivec3& door = world.GetDoor(doorId);
+		writer.StartArray();
+
+		writer.Uint(door.x);
+		writer.Uint(door.y);
+		writer.Uint(door.z);
 
 		writer.EndArray();
 	}

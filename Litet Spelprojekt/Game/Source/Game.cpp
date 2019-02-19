@@ -339,8 +339,18 @@ void Game::OnResourcesLoaded()
 		"Britt-Marie",
 		"Bert Karlsson"
 	};
+
+	m_Crew.AddMember(DEFAULT_LIGHT, glm::vec3(10.0f, 0.9f + 4.0f, 10.0f), 100, names[0]);
+	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+	m_Crew.GetMember(0)->SetPath(m_pWorld);
+	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
+	m_Crew.GetMember(0)->SetIsCrew(true);
+	m_Crew.GetMember(0)->UpdateTransform();
+	m_Scenes[0]->AddGameObject(m_Crew.GetMember(0));
+
 	float x, y, z;
-	for (int i = 0; i < NUM_CREW; i++)
+	for (int i = 1; i < NUM_CREW; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
@@ -613,7 +623,7 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 
 void Game::OnUpdate(float dtS)
 {
-	ScenarioManager::Update(dtS, m_pWorld, m_Scenes[m_SceneId]);
+	ScenarioManager::Update(dtS, m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;

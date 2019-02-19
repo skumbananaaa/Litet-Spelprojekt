@@ -371,7 +371,7 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs)
 			}
 		}
 
-		ppWorldLevels[gridId] = new WorldLevel(pLevel, levelSizeX, levelSizeY);
+		ppWorldLevels[gridId] = new WorldLevel(gridId, pLevel, levelSizeX, levelSizeY);
 	}
 	return ppWorldLevels;
 }
@@ -1436,5 +1436,5 @@ void Editor::OnUpdate(float dtS)
 
 void Editor::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*GetCurrentScene(), dtS);
+	m_pRenderer->DrawScene(*GetCurrentScene(), nullptr, dtS);
 }

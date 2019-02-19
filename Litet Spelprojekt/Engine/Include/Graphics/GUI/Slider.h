@@ -55,7 +55,7 @@ protected:
 	virtual void OnMouseMove(const glm::vec2& position) override;
 	virtual void OnMouseScroll(const glm::vec2& position, const glm::vec2& offset) override;
 
-	void RenderRealTime(GUIContext* context) override;
+	virtual void RenderRealTime(GUIContext* context, float x = 0, float y = 0) override;
 
 private:
 	Texture2D* m_pTextureForeground;

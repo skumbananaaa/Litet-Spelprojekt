@@ -28,7 +28,7 @@ void PanelExpandable::SetExpanded(bool expanded) noexcept
 	if ((m_Mode == CLOSED || m_Mode == COLLAPSING) && expanded)
 	{
 		m_Mode = EXPANDING;
-		AddRealTimeRenderer(this);
+		AddRealTimeRenderer();
 	}
 	if ((m_Mode == OPEN || m_Mode == EXPANDING) && !expanded)
 	{
@@ -132,7 +132,7 @@ bool PanelExpandable::ContainsPoint(const glm::vec2& position, const GUIObject* 
 
 			if (position.x > x && position.x < x + GetWidth())
 			{
-				if (position.y > y - GetClientHeight() && position.y < y + GetHeight())
+				if (position.y > y - GetClientHeight() * m_Percentage && position.y < y + GetHeight())
 				{
 					if (HasParent())
 					{
@@ -153,12 +153,20 @@ void PanelExpandable::RenderChildrensFrameBuffers(GUIContext* context)
 	Button::RenderChildrensFrameBuffers(context);
 }
 
-void PanelExpandable::RenderRealTime(GUIContext* context)
+void PanelExpandable::RenderRealTimePre(GUIContext* context, float x, float y)
+{
+	glScissor(x, y - GetClientHeight() * m_Percentage, GetWidth(), GetClientHeight() * m_Percentage + 1);
+	glEnable(GL_SCISSOR_TEST);
+}
+
+void PanelExpandable::RenderRealTime(GUIContext* context, float x, float y)
+{
+	context->RenderTexture((Texture2D*)m_pFrameBufferClientArea->GetColorAttachment(0), x, y - GetClientHeight(), GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
+}
+
+void PanelExpandable::RenderRealTimePost(GUIContext* context)
 {
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
-	glScissor(GetXInWorld(), GetYInWorld() - GetClientHeight() * m_Percentage, GetWidth(), GetClientHeight() * m_Percentage + 1);
-	glEnable(GL_SCISSOR_TEST);
-	context->RenderTexture((Texture2D*)m_pFrameBufferClientArea->GetColorAttachment(0), GetXInWorld(), GetYInWorld() - GetClientHeight(), GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
 	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
 	glDisable(GL_SCISSOR_TEST);
 }
@@ -201,7 +209,7 @@ void PanelExpandable::OnUpdate(float dtS)
 		{
 			m_Percentage = 0.0;
 			m_Mode = CLOSED;
-			RemoveRealTimeRenderer(this);
+			RemoveRealTimeRenderer();
 		}
 		for (IExpandableListener* listener : m_Listeners)
 		{

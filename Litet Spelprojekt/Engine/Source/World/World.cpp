@@ -135,6 +135,14 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 	}
 }
 
+void World::SetDoor(const glm::ivec3* doors, uint32 nrOfDoors)
+{
+	for (int i = 0; i < nrOfDoors; i++)
+	{
+		m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].HasDoor = true;
+	}
+}
+
 const glm::ivec3* World::GetStairs() const noexcept
 {
 	return m_pStairs;

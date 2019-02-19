@@ -6,6 +6,7 @@
 struct TileData 
 {
 	bool HasStairs;
+	bool HasDoor;
 
 	float Temp;
 	float BurnsAt;

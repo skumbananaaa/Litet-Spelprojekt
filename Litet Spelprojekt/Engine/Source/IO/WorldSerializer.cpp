@@ -62,12 +62,23 @@ World* WorldSerializer::Read(const char* const path)
 
 	World* world = new World(worldLevels, levels.Size(), worldObjects, objects.Size());
 	world->SetStairs(worldStairs, stairs.Size());
-	delete[] worldLevels;
-	worldLevels = nullptr;
-	delete[] worldObjects;
-	worldObjects = nullptr;
-	delete[] worldStairs;
-	worldStairs = nullptr;
+
+	const Value& doors = jsonObject["doors"];
+	glm::ivec3* worldDoors = new glm::ivec3[doors.Size()];
+
+	for (uint32 doorId = 0; doorId < doors.Size(); doorId++)
+	{
+		const Value& door = doors[doorId];
+		worldDoors[doorId] = glm::ivec3(door[0].GetUint(), door[1].GetUint(), door[2].GetUint());
+	}
+
+	world->SetDoor(worldDoors, doors.Size());
+
+	DeleteArrSafe(worldLevels);
+	DeleteArrSafe(worldObjects);
+	DeleteArrSafe(worldStairs);
+	DeleteArrSafe(worldDoors);
+	
 	return world;
 }
 

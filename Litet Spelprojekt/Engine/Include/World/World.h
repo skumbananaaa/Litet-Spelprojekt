@@ -29,6 +29,7 @@ public:
 
 	void AddWorldObject(const WorldObject& object) noexcept;
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
+	void SetDoor(const glm::ivec3* doors, uint32 nrOfDoors);
 
 	const WorldLevel* const GetLevel(uint32 level) const noexcept;
 	WorldLevel* const GetLevel(uint32 level) noexcept;

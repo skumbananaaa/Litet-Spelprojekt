@@ -15,6 +15,7 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 		{
 			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
 			m_ppLevelData[x][z].HasStairs = false;
+			m_ppLevelData[x][z].HasDoor = false;
 			m_ppLevelData[x][z].BurnsAt = 100;
 			m_ppLevelData[x][z].Temp = 30;
 			m_ppLevelData[x][z].WaterLevel = 0.0f;
@@ -105,13 +106,13 @@ void WorldLevel::GenerateRooms()
 			maxRoomNum = glm::max(maxRoomNum, m_ppLevel[i][j]);
 
 			wallH = (m_ppLevel[i][j] != m_ppLevel[i + 1][j]);
-			if ((!wallH || (m_ppLevel[i][j] == 0 && m_ppLevel[i + 1][j] != 1) || (m_ppLevel[i + 1][j] == 0 && m_ppLevel[i][j] != 1) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0))
+			if ((!wallH || (m_ppLevelData[i][j].HasDoor && m_ppLevelData[i + 1][j].HasDoor) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0))
 			{
 				endWallH = glm::vec2(i + 0.5, j - 0.5);
 				m_Walls.push_back(glm::vec4((startWallH + endWallH) / 2.0f, endWallH - startWallH));
 				startWallH = glm::vec2(0, 0);
 			}
-			if (wallH && startWallH == glm::vec2(0, 0) && (m_ppLevel[i][j] != 0 || m_ppLevel[i + 1][j] == 1) && (m_ppLevel[i + 1][j] != 0 || m_ppLevel[i][j] == 1))
+			if (wallH && startWallH == glm::vec2(0, 0) && (!m_ppLevelData[i][j].HasDoor || !m_ppLevelData[i + 1][j].HasDoor))
 			{
 				startWallH = glm::vec2(i + 0.5, j - 0.5);
 			}
@@ -132,13 +133,13 @@ void WorldLevel::GenerateRooms()
 			m_RoomBounds[m_ppLevel[j][i]].w = glm::max(m_RoomBounds[m_ppLevel[j][i]].w, i);
 
 			wallV = (m_ppLevel[j][i] != m_ppLevel[j][i + 1]);
-			if ((!wallV || (m_ppLevel[j][i] == 0 && m_ppLevel[j][i + 1] != 1) || (m_ppLevel[j][i + 1] == 0 && m_ppLevel[j][i] != 1) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
+			if ((!wallV || (m_ppLevelData[j][i].HasDoor && m_ppLevelData[j][i + 1].HasDoor) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
 			{
 				endWallV = glm::vec2(j - 0.5, i + 0.5);
 				m_Walls.push_back(glm::vec4((startWallV + endWallV) / 2.0f, endWallV - startWallV));
 				startWallV = glm::vec2(0, 0);
 			}
-			if (wallV && startWallV == glm::vec2(0, 0) && (m_ppLevel[j][i] != 0 || m_ppLevel[j][i + 1] == 1) && (m_ppLevel[j][i + 1] != 0 || m_ppLevel[j][i] == 1))
+			if (wallV && startWallV == glm::vec2(0, 0) && (!m_ppLevelData[j][i].HasDoor || !m_ppLevelData[j][i + 1].HasDoor))
 			{
 				startWallV = glm::vec2(j - 0.5, i + 0.5);
 			}

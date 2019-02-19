@@ -335,7 +335,7 @@ void Game::OnResourcesLoaded()
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetPath(m_pWorld);
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(0)->SetIsCrew(true);
+	m_Crew.GetMember(0)->SetIsHidden(false);
 	m_Crew.GetMember(0)->UpdateTransform();
 	m_Scenes[0]->AddGameObject(m_Crew.GetMember(0));
 
@@ -350,7 +350,7 @@ void Game::OnResourcesLoaded()
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
-		m_Crew.GetMember(i)->SetIsCrew(true);
+		m_Crew.GetMember(i)->SetIsHidden(false);
 		m_Crew.GetMember(i)->UpdateTransform();
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}

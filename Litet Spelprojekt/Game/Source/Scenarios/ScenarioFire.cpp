@@ -1,4 +1,4 @@
-#include "..\Include\ScenarioFire.h"
+#include "..\..\Include\Scenarios\ScenarioFire.h"
 
 ScenarioFire::ScenarioFire()
 {
@@ -14,7 +14,7 @@ void ScenarioFire::OnEnd() noexcept
 	
 }
 
-bool ScenarioFire::Update(float dtS, World* world, Scene* scene) noexcept
+bool ScenarioFire::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 {
 	return true;
 }

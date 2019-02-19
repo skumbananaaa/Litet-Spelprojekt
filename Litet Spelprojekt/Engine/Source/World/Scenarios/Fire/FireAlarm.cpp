@@ -1,5 +1,5 @@
 #include <EnginePch.h>
-#include <World/FireAlarm.h>
+#include <World/Scenarios/Fire/FireAlarm.h>
 
 FireAlarm::FireAlarm(int32 source) : GameObject(), 
 	m_FireDetected(false)
@@ -33,7 +33,7 @@ void FireAlarm::SetDetection(bool fireDetected)
 	}
 }
 
-void FireAlarm::Update(float dt)
+void FireAlarm::Update(float dt) noexcept
 {
 	GameObject::Update(dt);
 }

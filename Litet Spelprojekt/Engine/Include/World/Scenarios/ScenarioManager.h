@@ -1,6 +1,6 @@
 #pragma once
 #include <EnginePch.h>
-#include <World/IScenario.h>
+#include <World/Scenarios/IScenario.h>
 
 class API ScenarioManager
 {

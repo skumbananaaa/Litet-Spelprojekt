@@ -103,6 +103,7 @@ void Game::OnResourcesLoaded()
 	}
 
 	ScenarioManager::RegisterScenario(new ScenarioFire());
+	ScenarioManager::RegisterScenario(new ScenarioWater());
 
 	//Create renderers
 	m_pRenderer = new DefferedRenderer();

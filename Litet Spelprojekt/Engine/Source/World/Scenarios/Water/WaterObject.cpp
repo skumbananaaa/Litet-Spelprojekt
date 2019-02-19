@@ -1,5 +1,5 @@
 #include <EnginePch.h>
-#include <Graphics/Scenarios/WaterObject.h>
+#include <World/Scenarios/Water/WaterObject.h>
 
 WaterObject::WaterObject() noexcept : GameObject()
 {

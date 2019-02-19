@@ -1,7 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Scene.h>
-#include <Graphics/Scenarios/WaterObject.h>
+#include <World/Scenarios/Water/WaterObject.h>
 
 struct TileData 
 {
@@ -16,6 +16,7 @@ struct TileData
 	float WaterLevelChange;
 	float WaterLevelLastUpdated;
 	float WaterLevelAge;
+	bool WaterFloodsFromeAbove;
 	bool AlreadyFlooded;
 	std::string WaterBlockName;
 };

@@ -11,7 +11,7 @@ protected:
 public:
 	virtual void OnStart() noexcept = 0;
 	virtual void OnEnd()noexcept = 0;
-	virtual bool Update(float dtS, World* world, Scene* scene) noexcept = 0;
+	virtual bool Update(float dtS, World* pWorld, Scene* pScene) noexcept = 0;
 	virtual std::string GetName() noexcept = 0;
 	virtual int32 GetCooldownTime() noexcept = 0;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept = 0;

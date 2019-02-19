@@ -1,5 +1,4 @@
 #pragma once
-
 #include <EnginePch.h>
 #include <Graphics\Shaders\Shader.h>
 

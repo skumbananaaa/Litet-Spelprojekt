@@ -69,6 +69,12 @@
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\System\Random.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\Particle.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
+    <ClCompile Include="Source\World\FireAlarm.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
@@ -89,8 +95,6 @@
     <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Mesh.h" />
-    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
-    <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
     <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
@@ -161,6 +165,15 @@
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\System\Random.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelExpandable.h" />
+    <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
+    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
+    <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
+    <ClInclude Include="Include\World\FireAlarm.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\Room.h" />
     <ClInclude Include="Include\World\Logger.h" />
@@ -173,5 +186,8 @@
     <ClInclude Include="Include\World\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\World\Scenarios\Water\WaterObject.h" />
     <ClInclude Include="Include\World\LightManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Include\GLMHelper.inl" />
   </ItemGroup>
 </Project>

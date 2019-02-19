@@ -13,14 +13,14 @@ public:
 	static uint32 CBR_RECONSTRUCTION;
 	static uint32 CBR_BLUR;
 	static uint32 DEPTH_PRE_PASS;
-	static uint32 WATER_PASS;
-	static uint32 DECAL_PASS;
 	static uint32 FORWARD_PASS;
 	static uint32 SKYBOX_PASS;
 	static uint32 ORTHOGRAPHIC;
-	static uint32 DEFERRED_WALL;
-	static uint32 DEFERRED_WATER;
-	static uint32 DEFERRED_MATERIAL;
+	static uint32 WALL_MATERIAL;
+	static uint32 WATER_MATERIAL;
+	static uint32 DEFERRED_DECALS;
+	static uint32 STANDARD_MATERIAL;
+	static uint32 PARTICLES;
 	static uint32 EQUIREC_TO_CUBEMAP;
 
 private:

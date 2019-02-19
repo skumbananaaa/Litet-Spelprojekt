@@ -24,8 +24,7 @@ World::~World()
 {
 	for (uint32 i = 0; i < m_NumLevels; i++)
 	{
-		delete m_ppLevels[i];
-		m_ppLevels[i] = nullptr;
+		DeleteSafe(m_ppLevels[i]);
 	}
 
 	DeleteArrSafe(m_ppLevels);
@@ -109,17 +108,6 @@ void World::GenerateWater(Scene* pScene) noexcept
 	{
 		m_ppLevels[level]->GenerateWater(pScene, level);
 	}
-
-	m_ppLevels[5]->GetFloodingIDs().push_back(glm::ivec2(10, 10));
-
-	TileData* const * ppLevelData = m_ppLevels[5]->GetLevelData();
-	//ppLevelData[10][10].WaterLevel = 0.05f;
-	ppLevelData[10][10].WaterLevel = 1.0f;
-	ppLevelData[10][10].AlreadyFlooded = true;
-	//GameObject* pGameObject = scene->GetGameObject(ppLevelData[10][10].WaterBlockName);
-	//pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevel, 0.0f));
-	//pGameObject->UpdateTransform();
-	//pGameObject->SetIsVisible(true);
 }
 
 void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)

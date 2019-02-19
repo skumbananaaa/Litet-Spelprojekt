@@ -65,7 +65,9 @@ void Crewmember::RunParallel()
 void Crewmember::Update(float deltaTime) noexcept
 {
 	FollowPath(deltaTime);
+	
 	GameObject::Update(deltaTime);
+	
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
@@ -94,13 +96,13 @@ void Crewmember::OnPicked()
 void Crewmember::OnHovered()
 {
 	m_IsHovered = true;
-	Game::GetGame()->m_pUICrewMember->SetCrewMember(this);
+	Game::GetGame()->GetUICrewMember()->SetCrewMember(this);
 }
 
 void Crewmember::OnNotHovered()
 {
 	m_IsHovered = false;
-	Game::GetGame()->m_pUICrewMember->SetCrewMember(nullptr);
+	Game::GetGame()->GetUICrewMember()->SetCrewMember(nullptr);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept

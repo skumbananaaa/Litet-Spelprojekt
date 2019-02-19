@@ -22,3 +22,6 @@
 #if !defined(DeleteArrSafe)
 #define DeleteArrSafe(x) if (x != nullptr) { DeleteArr(x); }
 #endif
+
+#define FORWARD_RENDER_PATH
+//#define DEFERRED_RENDER_PATH

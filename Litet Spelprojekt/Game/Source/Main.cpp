@@ -1,8 +1,5 @@
 #include <System/Application.h>
-#include <iostream>
-#include <crtdbg.h>
-
-#include "..\Include\Game.h"
+#include "../Include/Game.h"
 
 int main(int argc, char* argv[])
 {

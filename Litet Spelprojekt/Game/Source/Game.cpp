@@ -1,8 +1,12 @@
 #include "..\Include\Game.h"
+#include <World/Grid.h>
+#include <System/Random.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <World/Grid.h>
 #include <World/LightManager.h>
+#include <Graphics/Renderers/ForwardRenderer.h>
+#include <Graphics/Particles/ParticleEmitter.h>
 
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
@@ -13,13 +17,10 @@
 //#define DRAW_DEBUG_BOXES
 #endif
 
-
-GameObject* g_pDecalObject = nullptr;
-
 float g_Rot = 1.0;
 
-Game::Game() noexcept : 
-	Application(false, 1600, 900, "", true),
+Game::Game() noexcept 
+	: Application(false, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -51,6 +52,7 @@ Game::~Game()
 		DeleteSafe(m_Scenes[i]);
 	}
 
+	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pTextViewScene);
 	DeleteSafe(m_pTextViewFile);
 	DeleteSafe(m_pLoadingBar);
@@ -61,6 +63,7 @@ Game::~Game()
 	DeleteSafe(m_pTestAudioSource);
 
 	ScenarioManager::Release();
+	LightManager::Release();
 }
 
 void Game::OnLogged(const std::string& text) noexcept
@@ -112,9 +115,18 @@ void Game::OnResourcesLoaded()
 
 
 	//Create renderers
+#if defined(DEFERRED_RENDER_PATH)
 	m_pRenderer = new DefferedRenderer();
-	//m_pRenderer = new OrthographicRenderer();
+#elif defined(FORWARD_RENDER_PATH)
+	m_pRenderer = new ForwardRenderer();
+#else
+#error "No renderpath defined. Check 'Defines.h'."
+#endif
+
+#if defined(_DEBUG)
 	m_pDebugRenderer = new DebugRenderer();
+#endif
+	//m_pRenderer = new OrthographicRenderer();
 
 	//Audio
 	{
@@ -150,7 +162,6 @@ void Game::OnResourcesLoaded()
 			pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
 			pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 			pGameObject->UpdateTransform();
-			g_pDecalObject = pGameObject;
 			m_Scenes[0]->AddGameObject(pGameObject);
 		}
 
@@ -212,12 +223,57 @@ void Game::OnResourcesLoaded()
 		}
 	}
 
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetFrontFaceStencilOp(STENCIL_OP_KEEP, STENCIL_OP_REPLACE, STENCIL_OP_ZERO);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetBackFaceStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_REPLACE);
+	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	int gameObjects = m_pWorld->GetNumWorldObjects();
-	
+	ParticleSystem* pFire = new ParticleSystem();
+	pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
+	pFire->SetTexture(TEXTURE::SMOKE);
+	pFire->SetTimeToLive(1.2f);
+	pFire->SetConeAngle(glm::radians<float>(30.0f));
+	pFire->SetSpeed(0.7f, 2.0f);
+	pFire->SetColor(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	m_Scenes[0]->AddParticleSystem(pFire);
+
+	ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
+	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
+	pEmitter->SetParticlesPerFrame(1);
+	pEmitter->UpdateTransform();
+	m_Scenes[0]->AddGameObject(pEmitter);
+
+	pEmitter = new ParticleEmitter(pFire);
+	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
+	pEmitter->SetParticlesPerFrame(1);
+	pEmitter->UpdateTransform();
+	m_Scenes[0]->AddGameObject(pEmitter);
+
+	ParticleSystem* pSmoke = new ParticleSystem();
+	pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
+	pSmoke->SetTexture(TEXTURE::SMOKE);
+	pSmoke->SetTimeToLive(7.0f);
+	pSmoke->SetConeAngle(glm::radians<float>(40.0f));
+	pSmoke->SetSpeed(0.1f, 0.4f);
+	pSmoke->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f), glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	m_Scenes[0]->AddParticleSystem(pSmoke);
+
+	pEmitter = new ParticleEmitter(pSmoke);
+	pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 17.0f));
+	pEmitter->SetParticlesPerFrame(1);
+	pEmitter->UpdateTransform();
+	m_Scenes[0]->AddGameObject(pEmitter);
+
+	pEmitter = new ParticleEmitter(pSmoke);
+	pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 18.0f));
+	pEmitter->SetParticlesPerFrame(1);
+	pEmitter->UpdateTransform();
+	m_Scenes[0]->AddGameObject(pEmitter);
+
 	//Place objects in scene
+	int gameObjects = m_pWorld->GetNumWorldObjects();
 	for (int i = 0; i < gameObjects; i++)
 	{
 		WorldObject worldObject = m_pWorld->GetWorldObject(i);
@@ -235,18 +291,6 @@ void Game::OnResourcesLoaded()
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
-	//LookAt Cube
-	{
-		/*pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::BLUE);
-		pGameObject->SetMesh(MESH::CUBE_INV_NORMALS);
-		pGameObject->SetPosition(pCamera->GetLookAt());
-		pGameObject->SetScale(glm::vec3(0.25f));
-		pGameObject->UpdateTransform();
-		pGameObject->SetName("cameraLookAt");
-		m_Scenes[0]->AddGameObject(pGameObject);*/
-	}
-
 	//Water?? YAAAS
 	{
 		pGameObject = new GameObject();
@@ -262,12 +306,11 @@ void Game::OnResourcesLoaded()
 	//Reflector for water
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	m_Scenes[0]->AddPlanarReflector(pReflector);
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
+	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
 	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
-
-
-	//Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
-
+	////Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
 	//SetClipPlanes(0);
@@ -379,14 +422,13 @@ void Game::OnResourcesLoaded()
 	m_Scenes[1]->SetCamera(pCamera);
 
 	//Skybox
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_Scenes[1]->SetSkyBox(new SkyBox(m_pSkyBoxTex));
 
 	//Lights
 	m_Scenes[1]->AddDirectionalLight(new DirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	
 	//Create GameObjects
-
+	pGameObject = nullptr;
 	for (uint32 i = 0; i < 5; i++)
 	{
 		pGameObject = new GameObject();
@@ -449,7 +491,7 @@ void Game::OnResourcesLoaded()
 		pGameObject->UpdateTransform();
 		m_Scenes[1]->AddGameObject(pGameObject);
 
-		pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
+		PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 		m_Scenes[1]->AddPlanarReflector(pReflector);
 	}
 	//((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
@@ -723,25 +765,6 @@ void Game::OnUpdate(float dtS)
 	AudioListener::SetPosition(m_Scenes[m_SceneId]->GetCamera().GetPosition());
 	AudioListener::SetOrientation(m_Scenes[m_SceneId]->GetCamera().GetFront(), m_Scenes[m_SceneId]->GetCamera().GetUp());
 
-	static float decalRot = 0.0f;
-	static float decalX = g_pDecalObject->GetPosition().x;
-	static float decalXSpeed = -1.0f;
-	
-	if (decalX > 6.5f)
-	{
-		decalXSpeed = -1.0f;
-	}
-	else if (decalX < -6.5f)
-	{
-		decalXSpeed = 1.0f;
-	}
-
-	decalX += decalXSpeed * dtS;
-	//decalRot += (glm::half_pi<float>() / 2.0f) * dtS;
-
-	g_pDecalObject->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(-45.0f)));
-	g_pDecalObject->SetPosition(glm::vec3(0.0f, 1.0f, 0.0f));
-	g_pDecalObject->UpdateTransform();
 	if (Input::IsKeyPressed(KEY_NUMPAD_2))
 	{
 		if (m_CurrentElevation > 0)
@@ -928,6 +951,11 @@ void Game::SetClipPlanes(uint32 scene)
 Crewmember* Game::GetCrewmember(uint32 shipNumber)
 {
 	return m_Crew.GetMember(shipNumber);
+}
+
+UICrewMember* Game::GetUICrewMember() noexcept
+{
+	return m_pUICrewMember;
 }
 
 Scene* Game::GetScene()

@@ -50,7 +50,7 @@ out VS_OUT
 
 void main()
 {
-	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
 	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
 	
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
@@ -68,6 +68,8 @@ void main()
 
 
 #elif defined(FRAGMENT_SHADER)
+layout(early_fragment_tests) in;
+
 layout(location = 0) out vec4 g_OutColor;
 layout(location = 1) out vec4 g_Normal;
 

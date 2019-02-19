@@ -6,8 +6,8 @@ Joint::Joint(glm::mat4 bindLocalTransform, uint32 nrOfChildren)
 	m_LocalBindTransform = bindLocalTransform;
 	m_Transform = glm::mat4(1.0f);
 	m_NrOfChildren = nrOfChildren;
-	m_ppChildren = new Joint*[m_NrOfChildren];
 
+	m_ppChildren = new Joint*[m_NrOfChildren];
 	for (uint32 i = 0; i < m_NrOfChildren; i++)
 	{
 		m_ppChildren[i] = nullptr;
@@ -46,7 +46,7 @@ const glm::mat4& Joint::GetLocalBindTransform() const noexcept
 	return m_LocalBindTransform;
 }
 
-const uint32 & Joint::GetNrOfChildren() const noexcept
+const uint32& Joint::GetNrOfChildren() const noexcept
 {
 	return m_NrOfChildren;
 }
@@ -57,13 +57,13 @@ void Joint::SetRotation(const glm::vec4& rotationVec)
 	m_isDirty = true;
 }
 
-void Joint::SetPosition(const glm::vec3 & dir)
+void Joint::SetPosition(const glm::vec3& dir)
 {
 	m_LocalPos = dir;
 	m_isDirty = true;
 }
 
-void Joint::SetChild(uint32 index, const Joint * child) noexcept
+void Joint::SetChild(uint32 index, const Joint* child) noexcept
 {
 	DeleteSafe(m_ppChildren[index]);
 	m_ppChildren[index] = CreateFromJoint(child);
@@ -87,28 +87,30 @@ void Joint::UpdateTransform(const glm::mat4 & parentTransform)
 		m_InverseBindTransform = m_Transform;
 		m_InverseBindTransform = glm::inverse(m_InverseBindTransform);
 	}
+
 	for (uint32 i = 0; i < m_NrOfChildren; i++)
 	{
 		m_ppChildren[i]->UpdateTransform(m_Transform);
 	}
 }
 
-Joint * Joint::CreateFromJoint(const Joint * joint) noexcept
+Joint* Joint::CreateFromJoint(const Joint* joint) noexcept
 {
-	Joint * tmp = new Joint(joint->m_LocalBindTransform, joint->m_NrOfChildren);
+	Joint* tmp = new Joint(joint->m_LocalBindTransform, joint->m_NrOfChildren);
 	for (uint32 i = 0; i < tmp->m_NrOfChildren; i++)
 	{
 		tmp->m_ppChildren[i] = CreateFromJoint(joint->m_ppChildren[i]);
 	}
+
 	return tmp;
 }
 
-const Joint * Joint::GetChild(uint32 index) const
+const Joint* Joint::GetChild(uint32 index) const
 {
 	return m_ppChildren[index];
 }
 
-const Joint * Joint::operator[](int index) const
+const Joint* Joint::operator[](int index) const
 {
 	return m_ppChildren[index];
 }

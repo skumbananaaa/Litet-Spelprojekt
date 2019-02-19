@@ -72,15 +72,12 @@
   <ItemGroup>
     <None Include="Resources\Shaders\VShader.glsl" />
     <None Include="Resources\Shaders\FShader.glsl" />
-    <None Include="Resources\Shaders\defferedGeometryFrag.glsl" />
-    <None Include="Resources\Shaders\defferedGeometryVert.glsl" />
     <None Include="Resources\Shaders\FShaderWater.glsl" />
     <None Include="Resources\Shaders\VShaderWater.glsl" />
     <None Include="Resources\Shaders\FShaderGUI.glsl" />
     <None Include="Resources\Shaders\FShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
-    <None Include="Resources\Shaders\defferedDecalsFrag.glsl" />
     <None Include="Resources\Shaders\forwardFrag.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
@@ -97,9 +94,14 @@
     </None>
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\VShaderEquirecToCubemap.glsl" />
-    <None Include="Resources\Shaders\waterVert.glsl" />
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
     <None Include="Resources\Shaders\deferredWall.glsl" />
+    <None Include="Resources\Shaders\deferredWater.glsl" />
+    <None Include="Resources\Shaders\deferredParticles.glsl" />
+    <None Include="Resources\Shaders\forwardMaterial.glsl" />
+    <None Include="Resources\Shaders\forwardWater.glsl" />
+    <None Include="Resources\Shaders\forwardWall.glsl" />
+    <None Include="Resources\Shaders\depthPrePass.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />
@@ -131,11 +133,12 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\Shaders\defferedDecalsVert.glsl" />
     <Text Include="Resources\Shaders\forwardVert.glsl" />
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl">
       <Filter>Source Files</Filter>
     </Text>
-    <Text Include="Resources\Shaders\waterFrag.glsl" />
+    <Text Include="Resources\Shaders\deferredDecals.glsl" />
+    <Text Include="Resources\Shaders\skybox.glsl" />
+    <Text Include="Resources\Shaders\forwardParticles.glsl" />
   </ItemGroup>
 </Project>

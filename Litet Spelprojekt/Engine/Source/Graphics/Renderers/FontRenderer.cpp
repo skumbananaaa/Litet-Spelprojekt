@@ -1,13 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics/Renderers/FontRenderer.h>
 
-#include <GLM/glm.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
-#include <GLM/gtc/type_ptr.hpp>
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 #define VERTEX_COUNT 6
 
 unsigned int FontRenderer::m_VAO;
@@ -18,7 +11,6 @@ FontRenderer::FontRenderer(void* face)
 {
 	m_pPerFrameUniform = new UniformBuffer(&m_PerFrameData, 1, sizeof(PerFrameFontRenderer));
 
-	
 	// Disable byte-alignment restriction
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 

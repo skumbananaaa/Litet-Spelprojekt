@@ -2,28 +2,20 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <System/Window.h>
 #include <System/Application.h>
+#include <Graphics/Renderers/DefferedRenderer.h>
 
 #define REFLECTIONSIZE 384
 
 DefferedRenderer::DefferedRenderer()
 	: m_pGBufferCBR(nullptr),
-	m_pReflection(nullptr),
+	m_pParticle(nullptr),
 	m_pTriangle(nullptr),
 	m_pDecalMesh(nullptr),
-	m_pForwardCBR(nullptr),
 	m_pBlur(nullptr),
-	m_pLastResolveTarget(nullptr),
-	m_pCurrentResolveTarget(nullptr),
-	m_pGeoPassPerFrame(nullptr),
+	m_pCameraBuffer(nullptr),
+	m_pMaterialBuffer(nullptr),
 	m_pLightBuffer(nullptr),
-	m_pGeoPassPerObject(nullptr),
-	m_pDecalPassPerFrame(nullptr),
-	m_pDecalPassPerObject(nullptr),
-	m_pLightPassBuffer(nullptr),
-	m_pWaterPassPerFrame(nullptr),
-	m_pWaterPassPerObject(nullptr),
-	m_pWaterNormalMap(nullptr),
-	m_pWaterDistortionMap(nullptr),
+	m_pPlaneBuffer(nullptr),
 	m_pForwardPass(nullptr),
 	m_pCbrBlurProgram(nullptr),
 	m_pCbrReconstructionProgram(nullptr),
@@ -31,236 +23,52 @@ DefferedRenderer::DefferedRenderer()
 	m_pDepthPrePassProgram(nullptr),
 	m_pGeometryPassProgram(nullptr),
 	m_pDecalsPassProgram(nullptr),
-	m_pWaterpassProgram(nullptr),
 	m_pSkyBoxPassProgram(nullptr),
-	m_pResolveTargets(),
-	m_FrameCount(0)
+	m_pResolveTarget(nullptr),
+	m_pQueries()
 {
+	m_pQueries[0] = nullptr;
+	m_pQueries[1] = nullptr;
+
 	Create();
 }
 
 DefferedRenderer::~DefferedRenderer()
 {
+	DeleteSafe(m_pResolveTarget);
 	DeleteSafe(m_pGBufferCBR);
-	DeleteSafe(m_pReflection);
 	DeleteSafe(m_pBlur);
-	DeleteSafe(m_pForwardCBR);
-	DeleteSafe(m_pForwardCBRTexture);
-
-	for (uint32 i = 0; i < 2; i++)
-	{
-		DeleteSafe(m_pResolveTargets[i]);
-	}
 
 	DeleteSafe(m_pTriangle);
+	DeleteSafe(m_pParticle);
 	
-	DeleteSafe(m_pGeoPassPerFrame);
-	DeleteSafe(m_pGeoPassPerObject);
-	DeleteSafe(m_pLightPassBuffer);
 	DeleteSafe(m_pLightBuffer);
+	DeleteSafe(m_pMaterialBuffer);
+	DeleteSafe(m_pCameraBuffer);
 	DeleteSafe(m_pWorldBuffer);
-
-	DeleteSafe(m_pDecalPassPerFrame);
-	DeleteSafe(m_pDecalPassPerObject);
-
-	DeleteSafe(m_pWaterPassPerFrame);
-	DeleteSafe(m_pWaterPassPerObject);
 
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
+
+	DeleteSafe(m_pQueries[0]);
+	DeleteSafe(m_pQueries[1]);
 }
 
 void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 {
 	assert(index < NUM_CLIP_DISTANCES);
-
 	m_ClipDistances[index] = plane;
-}
-
-void DefferedRenderer::DrawScene(const Scene& scene, const World* pWorld, float dtS) const
-{
-	GLContext& context = Application::GetInstance().GetGraphicsContext();
-
-	//Clear last frame's batches
-	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
-	{
-		m_DrawableBatches[i].Instances.clear();
-	}
-
-	for (size_t i = 0; i < m_DecalBatches.size(); i++)
-	{
-		m_DecalBatches[i].Instances.clear();
-	}
-
-	//Create batches for drawables
-	//Dahlsson är detta verkligen det mest optimierade du kan göra?
-	//-Nej men får duga tills vidare
-	{
-		const std::vector<GameObject*>& drawables = scene.GetDrawables();
-		for (size_t i = 0; i < drawables.size(); i++)
-		{
-			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsCrew()))
-			{
-				bool batchFound = false;
-				const Material* pMaterial = drawables[i]->GetMaterial();
-				const IndexedMesh* pMesh = drawables[i]->GetMesh();
-
-				InstanceData instance = {};
-				instance.Model = drawables[i]->GetTransform();
-				instance.InverseModel = drawables[i]->GetInverseTransform();
-
-				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
-				{
-					if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
-					{
-						m_DrawableBatches[j].Instances.push_back(instance);
-						batchFound = true;
-						break;
-					}
-				}
-
-				if (!batchFound)
-				{
-					DrawableBatch batch = {};
-					batch.pMaterial = pMaterial;
-					batch.pMesh = pMesh;
-					batch.Instances.push_back(instance);
-
-					m_DrawableBatches.push_back(batch);
-				}
-			}
-		}
-	}
-
-	//Create batches for decals
-	{
-		const std::vector<GameObject*>& decals = scene.GetDecals();
-		for (size_t i = 0; i < decals.size(); i++)
-		{
-			bool batchFound = false;
-			const Decal* pDecal = decals[i]->GetDecal();
-			const glm::mat4& transform = decals[i]->GetTransform();
-
-			InstanceData instance = {};
-			instance.Model = decals[i]->GetTransform();
-			instance.InverseModel = decals[i]->GetInverseTransform();
-			instance.Direction = instance.Model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-
-			for (size_t j = 0; j < m_DecalBatches.size(); j++)
-			{
-				if (pDecal == m_DecalBatches[j].pDecal)
-				{
-					m_DecalBatches[j].Instances.push_back(instance);
-					batchFound = true;
-					break;
-				}
-			}
-
-			if (!batchFound)
-			{
-				DecalBatch batch = {};
-				batch.pDecal = pDecal;
-				batch.Instances.push_back(instance);
-
-				m_DecalBatches.push_back(batch);
-			}
-		}
-	}
-
-	//Render reflections to their rendertargets
-	//Render skybox
-	//Render deffered
-	//Render decals
-	//Render forward
-
-	//Update Lightbuffer
-	UpdateLightBuffer(scene);
-
-	//Update WorldBuffer
-	UpdateWorldBuffer(scene);
-
-	//Setup for start rendering
-	context.Enable(DEPTH_TEST);
-	context.Enable(CULL_FACE);
-	context.Disable(BLEND);
-
-	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
-	context.SetClearDepth(1.0f);
-
-	//Render reflections
-	ReflectionPass(scene);
-	
-	//Update camera buffer from scene
-	UpdateCameraBuffer(scene.GetCamera());
-
-	//Render geometry to MSAA targets for checkerboard rendering
-	context.Enable(MULTISAMPLE);
-	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
-	context.SetFramebuffer(m_pGBufferCBR);
-	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
-
-	//First the deffered rendering passes
-	SkyBoxPass(scene.GetCamera(), scene);
-	GeometryPass(scene.GetCamera(), scene);
-	//DecalPass(scene.GetCamera(), scene);
-	
-	//Then the forwards passes (Only water for now)
-	//context.SetViewport(m_pForwardCBR->GetWidth(), m_pForwardCBR->GetHeight(), 0, 0);
-	//context.SetFramebuffer(m_pForwardCBR);
-	//context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
-
-	//WaterPass(scene, dtS);
-	context.Disable(MULTISAMPLE);
-
-	//Resolve the gbuffer (aka we render the rendertargets to a non-MSAA target)
-	context.SetFramebuffer(m_pCurrentResolveTarget);
-	context.SetViewport(m_pCurrentResolveTarget->GetWidth(), m_pCurrentResolveTarget->GetHeight(), 0, 0);
-	context.Disable(DEPTH_TEST);
-	GBufferResolvePass(scene.GetCamera(), scene, m_pGBufferCBR);
-
-	//Render to the window, now we want to put everything together
-	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
-	context.SetFramebuffer(m_pBlur);
-	
-	//context.Enable(DEPTH_TEST);
-	//context.SetDepthFunc(FUNC_ALWAYS);
-
-	ReconstructionPass();
-	
-	//context.SetDepthFunc(FUNC_LESS);
-
-	m_FrameCount++;
-	m_pLastResolveTarget = m_pCurrentResolveTarget;
-	m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
-}
-
-void DefferedRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
-{
-	if (pWorld != nullptr)
-	{
-		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
-		{
-			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
-			{
-				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
-				{
-					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y)->GetLevel()[x][z]);
-				}
-			}
-		}
-	}
-
-	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
-	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
-
-	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void DefferedRenderer::Create() noexcept
 {
 	std::cout << "Creating deffered renderer" << std::endl;
 
-	//We can destroy desc when gbuffer is created
+	//CREATE QUERIES
+	m_pQueries[0] = new TimerQuery(12);
+	m_pQueries[1] = new TimerQuery(12);
+
+	//CREATE FRAMEBUFFERS
 	{
 		TextureParams params = {};
 		params.MinFilter = TEX_PARAM_NEAREST;
@@ -278,16 +86,6 @@ void DefferedRenderer::Create() noexcept
 		desc.Samples = 2;
 
 		m_pGBufferCBR = new Framebuffer(desc);
-
-		TextureDesc desc2 = {};
-		desc2.Format = TEX_FORMAT_RGBA;
-		desc2.Width = desc.Width;
-		desc2.Height = desc.Height;
-		desc2.Samples = desc.Samples;
-		desc2.GenerateMips = false;
-
-		m_pForwardCBRTexture = new Texture2D(nullptr, desc2, params);
-		m_pForwardCBR = new Framebuffer(&m_pForwardCBRTexture, 1, (Texture2D*)m_pGBufferCBR->GetDepthAttachment());
 	}
 
 	{
@@ -298,42 +96,19 @@ void DefferedRenderer::Create() noexcept
 
 		FramebufferDesc desc = {};
 		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.ColorAttchmentFormats[1] = TEX_FORMAT_R32F;
-		desc.NumColorAttachments = 2;
+		//desc.ColorAttchmentFormats[1] = TEX_FORMAT_R32F;
+		desc.NumColorAttachments = 1;
 		desc.Width = m_pGBufferCBR->GetWidth() * 2;
 		desc.Height = m_pGBufferCBR->GetHeight();
 		desc.SamplingParams = params;
 		desc.Samples = 1;
 
-		for (uint32 i = 0; i < 2; i++)
-		{
-			m_pResolveTargets[i] = new Framebuffer(desc);
-		}
-
-		m_pCurrentResolveTarget = m_pResolveTargets[m_FrameCount % 2];
-		m_pLastResolveTarget = m_pCurrentResolveTarget;
+		m_pResolveTarget = new Framebuffer(desc);
 	}
 
 	{
 		TextureParams params = {};
-		params.Wrap = TEX_PARAM_REPEAT;
-		params.MinFilter = TEX_PARAM_LINEAR;
-		params.MagFilter = TEX_PARAM_LINEAR;
-
-		FramebufferDesc desc = {};
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.NumColorAttachments = 1;
-		desc.SamplingParams = params;
-		desc.DepthStencilFormat = TEX_FORMAT_DEPTH;
-		desc.Width = REFLECTIONSIZE;
-		desc.Height = REFLECTIONSIZE;
-
-		m_pReflection = new Framebuffer(desc);
-	}
-
-	{
-		TextureParams params = {};
-		params.Wrap = TEX_PARAM_REPEAT;
+		params.Wrap = TEX_PARAM_EDGECLAMP;
 		params.MinFilter = TEX_PARAM_LINEAR;
 		params.MagFilter = TEX_PARAM_LINEAR;
 
@@ -348,97 +123,23 @@ void DefferedRenderer::Create() noexcept
 		m_pBlur = new Framebuffer(desc);
 	}
 
+	//CREATE MESHES NEEDED
 	{
 		m_pDecalMesh = ResourceHandler::GetMesh(MESH::CUBE);
 		m_pTriangle = new FullscreenTri();
+		m_pParticle = new Particle();
 	}
 
 	m_pCbrResolveProgram = ResourceHandler::GetShader(SHADER::CBR_RESOLVE);
 	m_pCbrReconstructionProgram = ResourceHandler::GetShader(SHADER::CBR_RECONSTRUCTION);
 	m_pCbrBlurProgram = ResourceHandler::GetShader(SHADER::CBR_BLUR);
 	m_pDepthPrePassProgram = ResourceHandler::GetShader(SHADER::DEPTH_PRE_PASS);
-	m_pWaterpassProgram = ResourceHandler::GetShader(SHADER::WATER_PASS);
-	m_pDecalsPassProgram = ResourceHandler::GetShader(SHADER::DECAL_PASS);
+	m_pDecalsPassProgram = ResourceHandler::GetShader(SHADER::DEFERRED_DECALS);
 	m_pForwardPass = ResourceHandler::GetShader(SHADER::FORWARD_PASS);
 	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
-
-	//{
-	//	Shader vs;
-	//	if (vs.CompileFromFile("Resources/Shaders/defferedGeometryVert.glsl", VERTEX_SHADER))
-	//	{
-	//		std::cout << "Created Geomtrypass Vertex shader" << std::endl;
-	//	}
-
-	//	Shader fs;
-	//	if(fs.CompileFromFile("Resources/Shaders/defferedGeometryFrag.glsl", FRAGMENT_SHADER))
-	//	{
-	//		std::cout << "Created Geomtrypass Fragment shader" << std::endl;
-	//	}
-
-	//	m_pGeometryPassProgram = new ShaderProgram(vs, fs);
-	//}
-
+	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
-	{
-		GPassVSPerFrame object = {};
-		object.ViewProjection = glm::mat4(1.0f);
-		object.CameraPosition = glm::vec3();
-		object.Padding = 0.0f;
-		object.CameraLookAt = glm::vec3();
-
-		for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
-		{
-			object.ClipDistances[i] = glm::vec4(0.0f);
-		}
-
-		m_pGeoPassPerFrame = new UniformBuffer(&object, 1, sizeof(GPassVSPerFrame));
-	}
-
-	//{
-	//	GeometryPassPerObject object = {};
-	//	object.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//	object.HasNormalMap = 0.0f;
-	//	object.HasTexture = 0.0f;
-	//	object.DissolvePercentage = 0.0f;
-
-	//	m_pGeoPassPerObject = new UniformBuffer(&object, 1, sizeof(GeometryPassPerObject));
-	//}
-
-	{
-		DecalPassPerFrame object = {};
-		object.ViewProj = glm::mat4(1.0f);
-		object.InverseView = glm::mat4(1.0f);
-		object.InverseProjection = glm::mat4(1.0f);
-
-		m_pDecalPassPerFrame = new UniformBuffer(&object, 1, sizeof(DecalPassPerFrame));
-	}
-
-	{
-		DecalPassPerObject object = {};
-		object.HasNormalMap = 0.0f;
-		object.HasTexture = 0.0f;
-
-		m_pDecalPassPerObject = new UniformBuffer(&object, 1, sizeof(DecalPassPerObject));
-	}
-
-	//{
-	//	WaterPassPerFrame object = {};
-	//	object.CameraCombined = glm::mat4(1.0f);
-	//	object.CameraPosition = glm::vec3();
-	//	object.DistortionMoveFactor = 0.0f;
-
-	//	m_pWaterPassPerFrame = new UniformBuffer(&object, 1, sizeof(WaterPassPerFrame));
-	//}
-
-	//{
-	//	WaterPassPerObjectVS object = {};
-	//	object.Model = glm::mat4(1.0f);
-
-	//	m_pWaterPassPerObject = new UniformBuffer(&object, 1, sizeof(WaterPassPerObjectVS));
-	//}
-
-	//Camera
 	{
 		CameraBuffer buff = {};
 		buff.InverseView = glm::mat4(1.0f);
@@ -518,16 +219,232 @@ void DefferedRenderer::Create() noexcept
 	}
 	//Water
 	{
-		m_pWaterDistortionMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_DISTORTION);
-		m_pWaterNormalMap = ResourceHandler::GetTexture2D(TEXTURE::WATER_NORMAL);
-	}
-	//Clip distances
-	{
 		for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
 		{
 			m_ClipDistances[i] = glm::vec4(0.0f);
 		}
 	}
+}
+
+void DefferedRenderer::CreateBatches(const Scene& scene, const World* const pWorld) const noexcept
+{
+	//Create batches for drawables
+	//Dahlsson är detta verkligen det mest optimierade du kan göra?
+	//-Nej men får duga tills vidare
+	{
+		const std::vector<GameObject*>& drawables = scene.GetDrawables();
+		for (size_t i = 0; i < drawables.size(); i++)
+		{
+			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsCrew()))
+			{
+				bool batchFound = false;
+				const Material* pMaterial = drawables[i]->GetMaterial();
+				const IndexedMesh* pMesh = drawables[i]->GetMesh();
+
+				InstanceData instance = {};
+				instance.Model = drawables[i]->GetTransform();
+				instance.InverseModel = drawables[i]->GetInverseTransform();
+
+				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
+				{
+					if (pMaterial == m_DrawableBatches[j].pMaterial && pMesh == m_DrawableBatches[j].pMesh)
+					{
+						m_DrawableBatches[j].Instances.push_back(instance);
+						batchFound = true;
+						break;
+					}
+				}
+
+				if (!batchFound)
+				{
+					DrawableBatch batch = {};
+					batch.pMaterial = pMaterial;
+					batch.pMesh = pMesh;
+					batch.Instances.push_back(instance);
+
+					m_DrawableBatches.push_back(batch);
+				}
+			}
+		}
+	}
+
+	//Create batches for decals
+	{
+		const std::vector<GameObject*>& decals = scene.GetDecals();
+		for (size_t i = 0; i < decals.size(); i++)
+		{
+			bool batchFound = false;
+			const Decal* pDecal = decals[i]->GetDecal();
+			const glm::mat4& transform = decals[i]->GetTransform();
+
+			InstanceData instance = {};
+			instance.Model = decals[i]->GetTransform();
+			instance.InverseModel = decals[i]->GetInverseTransform();
+			instance.Direction = instance.Model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+
+			for (size_t j = 0; j < m_DecalBatches.size(); j++)
+			{
+				if (pDecal == m_DecalBatches[j].pDecal)
+				{
+					m_DecalBatches[j].Instances.push_back(instance);
+					batchFound = true;
+					break;
+				}
+			}
+
+			if (!batchFound)
+			{
+				DecalBatch batch = {};
+				batch.pDecal = pDecal;
+				batch.Instances.push_back(instance);
+
+				m_DecalBatches.push_back(batch);
+			}
+		}
+	}
+}
+
+void DefferedRenderer::DrawScene(const Scene& scene, const World* pWorld, float dtS) const
+{
+	static float timer = 0.0f;
+	static float frametime = 0.0f;
+	frametime += dtS;
+	timer += dtS;
+
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	//Set current query
+	m_pCurrentQuery = m_pQueries[m_FrameCounter % 2];
+
+	//Clear last frame's batches
+	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
+	{
+		m_DrawableBatches[i].Instances.clear();
+	}
+
+	for (size_t i = 0; i < m_DecalBatches.size(); i++)
+	{
+		m_DecalBatches[i].Instances.clear();
+	}
+
+	//Create batches
+	CreateBatches(scene, pWorld);
+
+	//Set depth and clear color
+	context.SetClearColor(0.392f, 0.584f, 0.929f, 1.0f);
+	context.SetClearDepth(1.0f);
+	context.SetClearStencil(0x00);
+
+	//Update Lightbuffer
+	UpdateLightBuffer(scene);
+
+	//Setup for start rendering
+	context.Enable(DEPTH_TEST);
+	context.Enable(CULL_FACE);
+	context.Disable(BLEND);
+
+	//Render reflections
+	glQueryCounter(m_pCurrentQuery->pQueries[0], GL_TIMESTAMP);
+	ReflectionPass(scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[1], GL_TIMESTAMP);
+
+	//Update camera buffer from scene
+	UpdateCameraBuffer(scene.GetCamera());
+
+	//Render geometry to MSAA targets for checkerboard rendering
+	context.Enable(MULTISAMPLE);
+	context.SetViewport(m_pGBufferCBR->GetWidth(), m_pGBufferCBR->GetHeight(), 0, 0);
+	context.SetFramebuffer(m_pGBufferCBR);
+	context.SetStencilMask(~0); //Active write to stencil or clear stencil does not work
+	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
+
+	//First the deffered rendering passes
+	//DepthPrePass(scene);
+
+	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
+	SkyBoxPass(scene.GetCamera(), scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
+	GeometryPass(scene.GetCamera(), scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
+	DecalPass(scene.GetCamera(), scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
+	ParticlePass(scene.GetCamera(), scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[6], GL_TIMESTAMP);
+
+	context.Disable(MULTISAMPLE);
+
+	//Resolve the gbuffer (aka we render the rendertargets to a non-MSAA target)
+	context.SetFramebuffer(m_pResolveTarget);
+	context.SetViewport(m_pResolveTarget->GetWidth(), m_pResolveTarget->GetHeight(), 0, 0);
+	context.Disable(DEPTH_TEST);
+	
+	glQueryCounter(m_pCurrentQuery->pQueries[7], GL_TIMESTAMP);
+	GBufferResolvePass(scene.GetCamera(), scene, m_pGBufferCBR);
+	glQueryCounter(m_pCurrentQuery->pQueries[8], GL_TIMESTAMP);
+
+	//Render to the window, now we want to put everything together
+	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
+	context.SetFramebuffer(m_pBlur);
+
+	glQueryCounter(m_pCurrentQuery->pQueries[9], GL_TIMESTAMP);
+	ReconstructionPass();
+	glQueryCounter(m_pCurrentQuery->pQueries[10], GL_TIMESTAMP);
+
+	//Get query results
+	uint64 startTime = 0;
+	uint64 stopTime = 0;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[0], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[1], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.ReflectionPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[2], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[3], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[4], GL_QUERY_RESULT, &startTime);
+	m_FrameTimes.GeometryPass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[5], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.DecalPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[6], GL_QUERY_RESULT, &startTime);
+	m_FrameTimes.ParticlePass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[7], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[8], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.LightPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[9], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[10], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.ReconstructionPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+
+	if (timer >= 1.0f)
+	{
+		float fps = static_cast<float>(Application::GetInstance().GetFPS());
+
+		std::cout << "Frametimes: (Total time: "  << (frametime / fps) * 1000.0f << "ms) "<< std::endl;
+		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
+		std::cout << " Skyboxpass: " << m_FrameTimes.SkyboxPass / fps << "ms" << std::endl;
+		std::cout << " Geometrypass: " << m_FrameTimes.GeometryPass / fps << "ms" << std::endl;
+		std::cout << " Decalpass: " << m_FrameTimes.DecalPass / fps << "ms" << std::endl;
+		std::cout << " Particlepass: " << m_FrameTimes.ParticlePass / fps << "ms" << std::endl;
+		std::cout << " Lightpass: " << m_FrameTimes.LightPass / fps << "ms" << std::endl;
+		std::cout << " Reconstructionpass: " << m_FrameTimes.ReconstructionPass / fps << "ms" << std::endl;
+		std::cout << "-----------" << std::endl;
+
+		frametime = 0.0f;
+		m_FrameTimes.ReflectionPass = 0.0f;
+		m_FrameTimes.SkyboxPass = 0.0f;
+		m_FrameTimes.GeometryPass = 0.0f;
+		m_FrameTimes.ParticlePass = 0.0f;
+		m_FrameTimes.LightPass = 0.0f;
+		m_FrameTimes.ReconstructionPass = 0.0f;
+
+		timer = 0.0f;
+	}
+
+	m_FrameCounter++;
+}
+
+void DefferedRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
+{
 }
 
 void DefferedRenderer::UpdateLightBuffer(const Scene& scene) const noexcept
@@ -594,32 +511,25 @@ void DefferedRenderer::DepthPrePass(const Scene& scene) const noexcept
 	context.SetProgram(m_pDepthPrePassProgram);
 
 	context.SetColorMask(0, 0, 0, 0);
+	context.SetDepthMask(true);
 	context.SetDepthFunc(FUNC_LESS);
 
-	GPassVSPerFrame perFrame = {};
-	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
-	perFrame.CameraPosition = scene.GetCamera().GetPosition();
-	perFrame.CameraLookAt = scene.GetCamera().GetLookAt();
-
-	for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
+	MaterialBuffer perBatch = {};
+	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
-		perFrame.ClipDistances[i] = m_ClipDistances[i];
+		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
+		
+		context.Enable(CULL_FACE);
+		
+		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+		context.DrawIndexedMeshInstanced(mesh);
+
+		context.Disable(CULL_FACE);
 	}
-
-	m_pGeoPassPerFrame->UpdateData(&perFrame);
-
-	//GeometryPassPerObject perObject = {};
-	//for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
-	//{
-	//	m_pGeoPassPerObject->UpdateData(&perObject);
-
-	//	context.DrawIndexedMesh(*scene.GetGameObjects()[i]->GetMesh());
-	//}
-
+	
+	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
 	context.SetColorMask(1, 1, 1, 1);
-
-	context.SetDepthMask(false);
 }
 
 void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const noexcept
@@ -627,7 +537,7 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	if (scene.GetDecals().size() < 1)
 	{
 #if defined(_DEBUG)
-		std::cout << "No decals, skipping decalspass" << std::endl;
+		//std::cout << "No decals, skipping decalspass" << std::endl;
 #endif
 		return;
 	}
@@ -641,59 +551,77 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	context.Disable(CULL_FACE);
 	context.Enable(BLEND);
 
-	context.SetUniformBuffer(m_pDecalPassPerFrame, 0);
-	context.SetUniformBuffer(m_pDecalPassPerObject, 1);
+	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pMaterialBuffer, MATERIAL_BUFFER_BINDING_SLOT);
 
-	context.SetTexture(m_pGBufferCBR->GetDepthAttachment(), 2);
+	context.SetTexture(m_pGBufferCBR->GetDepthAttachment(), 3);
 
-	DecalPassPerFrame perFrame = {};
-	perFrame.ViewProj = camera.GetCombinedMatrix();
-	perFrame.InverseView = camera.GetInverseViewMatrix();
-	perFrame.InverseProjection = camera.GetInverseProjectionMatrix();
-	m_pDecalPassPerFrame->UpdateData(&perFrame);
-
-	DecalPassPerObject perObject = {};
+	MaterialBuffer perBatch = {};
 	for (size_t i = 0; i < m_DecalBatches.size(); i++)
 	{
 		const Decal& decal = *m_DecalBatches[i].pDecal;
 		if (decal.HasTexture())
 		{
-			perObject.HasTexture = 1.0f;
-			context.SetTexture(decal.GetTexture(), 0);
+			perBatch.HasDiffuseMap = 1.0f;
+			context.SetTexture(decal.GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
 		}
 		else
 		{
-			perObject.HasTexture = 0.0f;
+			perBatch.HasDiffuseMap = 0.0f;
 		}
 
 		if (decal.HasNormalMap())
 		{
-			perObject.HasNormalMap = 1.0f;
-			context.SetTexture(decal.GetNormalMap(), 1);
+			perBatch.HasNormalMap = 1.0f;
+			context.SetTexture(decal.GetNormalMap(), NORMAL_MAP_BINDING_SLOT);
 		}
 		else
 		{
-			perObject.HasNormalMap = 0.0f;
+			perBatch.HasNormalMap = 0.0f;
 		}
 
-		m_pDecalPassPerObject->UpdateData(&perObject);
+		m_pMaterialBuffer->UpdateData(&perBatch);
 
 		m_pDecalMesh->SetInstances(m_DecalBatches[i].Instances.data(), m_DecalBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(*m_pDecalMesh);
 	}
 
 	//Unbind = no bugs
-	context.SetUniformBuffer(nullptr, 0);
-	context.SetUniformBuffer(nullptr, 1);
+	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(nullptr, MATERIAL_BUFFER_BINDING_SLOT);
 
-	context.SetTexture(nullptr, 0);
-	context.SetTexture(nullptr, 1);
-	context.SetTexture(nullptr, 2);
+	context.SetTexture(nullptr, DIFFUSE_MAP_BINDING_SLOT);
+	context.SetTexture(nullptr, NORMAL_MAP_BINDING_SLOT);
+	context.SetTexture(nullptr, 3);
 
 	context.SetDepthMask(true);
 	context.Disable(BLEND);
 	context.Enable(CULL_FACE);
 	context.Enable(DEPTH_TEST);
+}
+
+void DefferedRenderer::ParticlePass(const Camera& camera, const Scene& scene) const noexcept
+{
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	context.Disable(CULL_FACE);
+	context.Enable(BLEND);
+
+	context.SetProgram(m_pParticleProgram);
+
+	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+
+	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	for (size_t i = 0; i < particleSystems.size(); i++)
+	{
+		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
+		
+		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
+		context.DrawParticle(*m_pParticle);
+	}
+
+	context.Enable(CULL_FACE);
+	context.Disable(BLEND);
 }
 
 void DefferedRenderer::GBufferResolvePass(const Camera& camera, const Scene& scene, const Framebuffer* const pGBuffer)  const noexcept
@@ -728,24 +656,16 @@ void DefferedRenderer::ReconstructionPass() const noexcept
 
 	context.SetProgram(m_pCbrReconstructionProgram);
 
-	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(0), 0);	//Color
-	context.SetTexture(m_pCurrentResolveTarget->GetColorAttachment(1), 1);	//Depth
-	context.SetTexture(m_pForwardCBR->GetColorAttachment(0), 2); //Forward color
-	context.SetTexture(m_pForwardCBR->GetDepthAttachment(), 3); //Forward depth
+	context.SetTexture(m_pResolveTarget->GetColorAttachment(0), 0);	//Color
 
 	context.DrawFullscreenTriangle(*m_pTriangle);
 
 	context.SetProgram(m_pCbrBlurProgram);
 
-	context.SetTexture(m_pBlur->GetColorAttachment(0), 0);
 	context.SetFramebuffer(nullptr);
+	context.SetTexture(m_pBlur->GetColorAttachment(0), 0);
 	
 	context.DrawFullscreenTriangle(*m_pTriangle);
-
-	//Unbind = no bugs
-	context.SetTexture(nullptr, 1);
-	context.SetTexture(nullptr, 2);
-	context.SetTexture(nullptr, 3);
 
 	//Unbind = no bugs
 	context.SetTexture(nullptr, 0);
@@ -756,20 +676,12 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 	if (m_DrawableBatches.size() < 1)
 	{
 #if defined(_DEBUG)
-		std::cout << "No drawables, skipping geomtrypass" << std::endl;
+		//std::cout << "No drawables, skipping geomtrypass" << std::endl;
 #endif
 		return;
 	}
 
 	GLContext& context = GLContext::GetCurrentContext();
-	//for (uint32 i = 0; i < NUM_CLIP_DISTANCES; i++)
-	//{
-	//	perFrame.ClipDistances[i] = m_ClipDistances[i];
-	//}
-
-	//m_pGeoPassPerFrame->UpdateData(&perFrame);
-
-	//context.SetTexture(m_pDissolveMap, 2);
 
 	MaterialBuffer perBatch = {};
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
@@ -783,33 +695,12 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
 		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
 		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
-		//perBatch.DissolvePercentage = material.GetDissolvePercentage();
 		m_pMaterialBuffer->UpdateData(&perBatch);
 
 		material.SetCameraBuffer(m_pCameraBuffer);
 		material.SetLightBuffer(m_pLightBuffer);
 		material.SetMaterialBuffer(m_pMaterialBuffer);
 		material.Bind(m_pGBufferCBR);
-		
-		/*for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
-		{
-			if (material.ClipPlaneEnabled(cP))
-			{
-				context.Enable((Capability)((uint32)CLIP_DISTANCE0 + cP));
-				continue;
-			}
-
-			context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
-		}
-
-		if (material.GetCullMode() != CULL_MODE_NONE)
-		{
-			context.SetCullMode(material.GetCullMode());
-		}
-		else
-		{
-			context.Disable(CULL_FACE);
-		}*/
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
@@ -818,11 +709,6 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 		
 		material.Unbind();
 	}
-
-	//for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
-	//{
-	//	context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
-	//}
 }
 
 void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) const noexcept
@@ -830,7 +716,7 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 	if (m_DrawableBatches.size() < 1)
 	{
 #if defined(_DEBUG)
-		std::cout << "No drawables, skipping forwardpass" << std::endl;
+		//std::cout << "No drawables, skipping forwardpass" << std::endl;
 #endif
 		return;
 	}
@@ -884,17 +770,6 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 			matBuffer.HasSpecularMap = 0.0f;
 		}
 		
-		/*for (uint32 cP = 0; cP < NUM_CLIP_DISTANCES; cP++)
-		{
-			if (material.ClipPlaneEnabled(cP))
-			{
-				context.Enable((Capability)((uint32)CLIP_DISTANCE0 + cP));
-				continue;
-			}
-
-			context.Disable((Capability)((uint32)CLIP_DISTANCE0 + cP));
-		}*/
-		
 		m_pMaterialBuffer->UpdateData(&matBuffer);
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
@@ -919,7 +794,7 @@ void DefferedRenderer::ReflectionPass(const Scene& scene) const noexcept
 	if (scene.GetPlanarReflectors().size() < 1)
 	{
 #if defined(_DEBUG)
-		std::cout << "No reflectors, skipping reflectionpass" << std::endl;
+		//std::cout << "No reflectables or reflectors, skipping reflectionpass" << std::endl;
 #endif
 		return;
 	}
@@ -952,56 +827,7 @@ void DefferedRenderer::ReflectionPass(const Scene& scene) const noexcept
 	}
 }
 
-void DefferedRenderer::WaterPass(const Scene& scene, float dtS) const noexcept
-{
-	static float dist = 0.0f;
-
-	GLContext& context = Application::GetInstance().GetGraphicsContext();
-
-	//Start water with forward rendering
-	context.SetProgram(m_pWaterpassProgram);
-
-	context.SetTexture(m_pReflection->GetColorAttachment(0), 0);
-	context.SetTexture(m_pWaterDistortionMap, 1);
-	context.SetTexture(m_pWaterNormalMap, 2);
-	context.SetTexture(m_pGBufferCBR->GetDepthAttachment(), 3);
-
-	//WaterPassPerFrame perFrame = {};
-	//perFrame.CameraCombined = scene.GetCamera().GetCombinedMatrix();
-	//perFrame.CameraPosition = scene.GetCamera().GetPosition();
-	//
-	//dist += 0.02f * dtS;
-	//perFrame.DistortionMoveFactor = dist;
-
-	//m_pWaterPassPerFrame->UpdateData(&perFrame);
-
-	//context.SetUniformBuffer(m_pWaterPassPerObject, 0);
-	//context.SetUniformBuffer(m_pWaterPassPerFrame, 1);
-
-	//WaterPassPerObjectVS perObject= {};
-	//for (uint32 i = 0; i < scene.GetGameObjects().size(); i++)
-	//{
-	//	GameObject& gameobject = *scene.GetGameObjects()[i];
-	//	if (!gameobject.HasMaterial() && gameobject.HasMesh())
-	//	{
-	//		perObject.Model = gameobject.GetTransform();
-	//		m_pWaterPassPerObject->UpdateData(&perObject);
-
-	//		context.DrawIndexedMesh(*(gameobject.GetMesh()));
-	//	}
-	//}
-
-	//Unbind = no bugs
-	context.SetTexture(nullptr, 0);
-	context.SetTexture(nullptr, 1);
-	context.SetTexture(nullptr, 2);
-	context.SetTexture(nullptr, 3);
-
-	context.SetUniformBuffer(nullptr, 0);
-	context.SetUniformBuffer(nullptr, 1);
-}
-
-void DefferedRenderer::SkyBoxPass(const Camera& camera, const Scene& screen) const noexcept
+void DefferedRenderer::SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 	context.SetProgram(m_pSkyBoxPassProgram);
@@ -1019,12 +845,12 @@ void DefferedRenderer::SkyBoxPass(const Camera& camera, const Scene& screen) con
 	perObject.model = glm::mat4(1.0f);
 	m_pSkyBoxPassPerObject->UpdateData(&perObject);
 
-	context.SetTexture(&screen.GetSkyBox().GetTexture(),0);
+	context.SetTexture(&scene.GetSkyBox().GetTexture(),0);
 
 	context.SetUniformBuffer(m_pSkyBoxPassPerObject, 0);
 	context.SetUniformBuffer(m_pSkyBoxPassPerFrame, 1);
 
-	context.DrawIndexedMesh(screen.GetSkyBox().GetMesh());
+	context.DrawIndexedMesh(scene.GetSkyBox().GetMesh());
 
 	context.Enable(DEPTH_TEST);
 	context.Enable(CULL_FACE);

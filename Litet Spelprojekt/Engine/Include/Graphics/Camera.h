@@ -1,8 +1,5 @@
 #pragma once
-
 #include <EnginePch.h>
-#include <GLM\gtc\matrix_transform.hpp>
-#include <GLM\gtc\type_ptr.hpp>
 
 enum PosRelativeLookAt : uint8
 {

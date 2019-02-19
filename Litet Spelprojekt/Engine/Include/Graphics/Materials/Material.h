@@ -33,6 +33,7 @@ public:
 	void SetLightBuffer(const UniformBuffer* pLightBuffer) const noexcept;
 	void SetCameraBuffer(const UniformBuffer* pCameraBuffer) const noexcept;
 	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
+	void SetWorldBuffer(const UniformBuffer* pWorldBuffer) const noexcept;
 
 	void SetStencilTest(bool enable, Func func = FUNC_ALWAYS, uint8 mask = 0xff, uint8 ref = 1, uint8 value = 0xff) const noexcept;
 	void SetStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
@@ -75,6 +76,7 @@ private:
 		mutable const UniformBuffer* pLightBuffer = nullptr;
 		mutable const UniformBuffer* pCameraBuffer = nullptr;
 		mutable const UniformBuffer* pMaterialBuffer = nullptr;
+		mutable const UniformBuffer* pWorldBuffer = nullptr;
 		const Texture2D* pDiffuseMap = nullptr;
 		const Texture2D* pNormalMap = nullptr;
 		const Texture2D* pSpecularMap = nullptr;

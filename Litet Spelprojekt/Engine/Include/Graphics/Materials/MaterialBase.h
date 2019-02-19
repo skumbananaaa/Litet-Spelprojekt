@@ -5,6 +5,11 @@
 #define NUM_POINT_LIGHTS 3
 #define NUM_SPOT_LIGHTS 2
 
+#define LEVEL_SIZE_X 12
+#define LEVEL_SIZE_Y 6
+#define LEVEL_SIZE_Z 42
+
+
 __declspec(align(16)) struct DirectionalLightBuffer
 {
 	glm::vec4 Color = glm::vec4(0.0f);
@@ -53,4 +58,11 @@ struct MaterialBuffer
 	float HasDiffuseMap;
 	float HasNormalMap;
 	float HasSpecularMap;
+};
+
+struct WorldBuffer
+{
+	int concealed;
+	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
+	int extended;
 };

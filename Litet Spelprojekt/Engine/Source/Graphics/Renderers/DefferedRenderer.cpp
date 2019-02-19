@@ -445,6 +445,24 @@ void DefferedRenderer::DrawScene(const Scene& scene, const World* pWorld, float 
 
 void DefferedRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
 {
+	if (pWorld != nullptr)
+	{
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y)->GetLevel()[x][z]);
+				}
+			}
+		}
+	}
+
+	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
+	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void DefferedRenderer::UpdateLightBuffer(const Scene& scene) const noexcept

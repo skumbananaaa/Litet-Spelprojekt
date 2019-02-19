@@ -154,6 +154,8 @@ void ForwardRenderer::Create() noexcept
 	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
+
+	//Camera
 	{
 		CameraBuffer buff = {};
 		buff.InverseView = glm::mat4(1.0f);
@@ -163,6 +165,7 @@ void ForwardRenderer::Create() noexcept
 		m_pCameraBuffer = new UniformBuffer(&buff, 1, sizeof(CameraBuffer));
 	}
 
+	//Material
 	{
 		MaterialBuffer buff = {};
 		buff.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -170,6 +173,7 @@ void ForwardRenderer::Create() noexcept
 		m_pMaterialBuffer = new UniformBuffer(&buff, 1, sizeof(MaterialBuffer));
 	}
 
+	//Plane
 	{
 		PlaneBuffer buff = {};
 		buff.ClipPlane = glm::vec4(0.0f);
@@ -177,6 +181,7 @@ void ForwardRenderer::Create() noexcept
 		m_pPlaneBuffer = new UniformBuffer(&buff, 1, sizeof(PlaneBuffer));
 	}
 
+	//Light
 	{
 		LightBuffer buff = {};
 		for (uint32 i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
@@ -203,6 +208,24 @@ void ForwardRenderer::Create() noexcept
 		m_pLightBuffer = new UniformBuffer(&buff, 1, sizeof(LightBuffer));
 	}
 
+	//World
+	{
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = 1;
+				}
+			}
+		}
+		m_LocalWorldBuff.concealed = false;
+		m_LocalWorldBuff.extended = false;
+		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
+	}
+
+	//Skybox
 	{
 		SkyBoxPassBuffer buff = {};
 		buff.CameraCombined = glm::mat4(1.0f);
@@ -299,6 +322,24 @@ void ForwardRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 
 void ForwardRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
 {
+	if (pWorld != nullptr)
+	{
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y)->GetLevel()[x][z]);
+				}
+			}
+		}
+	}
+
+	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
+	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
@@ -315,6 +356,14 @@ void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 
 		m_pCameraBuffer->UpdateData(&buff);
 	}
+}
+
+void ForwardRenderer::UpdateWorldBuffer(const Scene & scene) const noexcept
+{
+	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
+	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
@@ -430,6 +479,7 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 		material.SetCameraBuffer(m_pCameraBuffer);
 		material.SetLightBuffer(m_pLightBuffer);
 		material.SetMaterialBuffer(m_pMaterialBuffer);
+		material.SetWorldBuffer(m_pWorldBuffer);
 		material.Bind(nullptr);
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());

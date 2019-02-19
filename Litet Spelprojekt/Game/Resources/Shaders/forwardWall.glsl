@@ -84,6 +84,8 @@ void main()
 #define NUM_POINT_LIGHTS 3
 #define NUM_SPOT_LIGHTS 2
 
+#define LEVEL_SIZE 756
+
 layout(early_fragment_tests) in;
 
 layout(location = 0) out vec4 g_OutColor;
@@ -224,6 +226,13 @@ layout(binding = 1) uniform LightBuffer
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+layout(binding = 3) uniform WorldBuffer
+{
+	ivec4 map[LEVEL_SIZE];
+	int concealed;
+	int extended;
 };
 
 vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)

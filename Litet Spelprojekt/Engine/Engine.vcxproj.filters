@@ -77,6 +77,7 @@
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
     <ClCompile Include="Source\World\ScenarioManager.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
+    <ClCompile Include="Source\World\LightManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -169,5 +170,6 @@
     <ClInclude Include="Include\World\ScenarioManager.h" />
     <ClInclude Include="Include\World\IScenario.h" />
     <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
+    <ClInclude Include="Include\World\LightManager.h" />
   </ItemGroup>
 </Project>

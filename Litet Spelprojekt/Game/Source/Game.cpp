@@ -2,7 +2,7 @@
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include <World/Grid.h>
-
+#include <World/LightManager.h>
 
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
@@ -102,7 +102,13 @@ void Game::OnResourcesLoaded()
 		GetGUIManager().Add(m_pTextViewScene);
 	}
 
+	//Create Scene
+	m_Scenes.push_back(new Scene());
+
+	LightManager::Init(m_Scenes[0], 3);
+
 	ScenarioManager::RegisterScenario(new ScenarioFire());
+
 
 	//Create renderers
 	m_pRenderer = new DefferedRenderer();
@@ -118,8 +124,6 @@ void Game::OnResourcesLoaded()
 		//m_pTestAudioSource->Play();
 	}
 
-	//Create Scene
-	m_Scenes.push_back(new Scene());
 
 	//Camera
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 10.0f, 20.0f), glm::vec3(9.0f, 4.0f, 20.0f));
@@ -205,21 +209,6 @@ void Game::OnResourcesLoaded()
 			pGameObject->UpdateTransform();
 			m_Scenes[0]->AddGameObject(pGameObject);*/
 		}
-
-		//test objects
-		{
-			pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_SINGLE);
-			pGameObject->SetPosition(glm::vec3(-5.0f, 2.0f, -10.0f));
-			pGameObject->SetScale(glm::vec3(1.0f));
-			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
-
-			pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::BED_BUNK);
-			pGameObject->SetPosition(glm::vec3(-5.0f, 4.0f, -10.0f));
-			pGameObject->SetScale(glm::vec3(1.0f));
-			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
-		}
 	}
 
 	//Create world
@@ -235,6 +224,7 @@ void Game::OnResourcesLoaded()
 		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
+
 		glm::uvec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;

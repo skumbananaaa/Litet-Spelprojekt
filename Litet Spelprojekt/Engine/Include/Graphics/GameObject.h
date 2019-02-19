@@ -7,6 +7,7 @@
 #include <Graphics/Materials/Decal.h>
 #include <IO/ResourceHandler.h>
 
+class Scene;
 
 class API GameObject
 {
@@ -53,6 +54,11 @@ public:
 
 	virtual void Update(float deltaTime);
 	virtual void UpdateTransform() noexcept;
+
+	virtual void OnAddedToScene(Scene* scene) noexcept {};
+	virtual void OnFireDetected() noexcept {};
+	virtual void OnSmokeDetected() noexcept {};
+	virtual void OnWaterDetected() noexcept {};
 
 private:
 	std::string m_Name;

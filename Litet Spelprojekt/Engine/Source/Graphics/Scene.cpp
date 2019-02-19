@@ -101,6 +101,7 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
 	assert(pGameObject != nullptr);
 
+	pGameObject->OnAddedToScene(this);
 	m_GameObjects.push_back(pGameObject);
 	if (pGameObject->HasMaterial() && pGameObject->HasMesh())
 	{
@@ -143,6 +144,20 @@ void Scene::AddRoomLight(PointLight* pLight) noexcept
 {
 	m_RoomLights.push_back(pLight);
 	AddPointLight(pLight);
+}
+
+void Scene::RemoveSpotLight(SpotLight* pLight) noexcept
+{
+	int32 counter = 0;
+	for (SpotLight* object : m_SpotLights)
+	{
+		if (object == pLight)
+		{
+			m_SpotLights.erase(m_SpotLights.begin() + counter);
+			return;
+		}
+		counter++;
+	}
 }
 
 void Scene::AddPlanarReflector(PlanarReflector* pReflector) noexcept

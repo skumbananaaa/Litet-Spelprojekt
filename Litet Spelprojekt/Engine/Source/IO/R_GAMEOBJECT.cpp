@@ -2,7 +2,7 @@
 #include <IO/GAMEOBJECT.h>
 #include <IO/ResourceHandler.h>
 #include <Graphics/GameObject.h>
-#include <World/VisualAudioSource.h>
+#include <World/FireAlarm.h>
 
 uint32 GAMEOBJECT::CHAIR = 0;
 uint32 GAMEOBJECT::BED_BUNK = 0;
@@ -35,7 +35,7 @@ GameObject* GAMEOBJECT::CreateGameObject(uint32 gameObject) noexcept
 {
 	if(gameObject == FIREALARM)
 	{
-		return VisualAudioSource::CreateResource(SOUND::MONO_FIREALARM);
+		return new FireAlarm(SOUND::MONO_FIREALARM)/*VisualAudioSource::CreateResource(SOUND::MONO_FIREALARM)*/;
 	}
 	return new GameObject();
 }

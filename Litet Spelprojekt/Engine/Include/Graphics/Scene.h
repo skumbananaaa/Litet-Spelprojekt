@@ -24,6 +24,7 @@ public:
 	void AddPointLight(PointLight* pLight) noexcept;
 	void AddSpotLight(SpotLight* pLight) noexcept;
 	void AddRoomLight(PointLight* pLight) noexcept;
+	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
 	void ExtendScene(bool extend) noexcept;

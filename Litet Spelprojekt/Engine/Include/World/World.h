@@ -25,6 +25,7 @@ public:
 
 	void AddWorldObject(const WorldObject& object) noexcept;
 
+	WorldLevel* const GetLevel(uint32 level) noexcept;
 	const WorldLevel* const GetLevel(uint32 level) const noexcept;
 	uint32 GetNumLevels() const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;

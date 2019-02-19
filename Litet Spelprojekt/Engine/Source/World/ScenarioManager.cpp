@@ -37,7 +37,7 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
 			}
 			else
 			{
-				std::cout << "FIRE\n";
+				std::cout << scenario->GetName() <<  "\n";
 			}
 		}
 

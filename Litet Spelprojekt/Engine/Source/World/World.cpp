@@ -42,6 +42,12 @@ void World::AddWorldObject(const WorldObject& object) noexcept
 	m_Objects.push_back(object);
 }
 
+WorldLevel* const World::GetLevel(uint32 level) noexcept
+{
+	assert(level < m_NumLevels);
+	return m_ppLevels[level];
+}
+
 const WorldLevel* const World::GetLevel(uint32 level) const noexcept
 {
 	assert(level < m_NumLevels);

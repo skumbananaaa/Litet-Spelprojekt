@@ -55,7 +55,15 @@ GLContext::GLContext(float width, float height)
 		m_pCurrentUniforms[i] = nullptr;
 	}
 
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	GL_CALL(glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS));
+	
+	GLboolean depthMask;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+	GLint depthFunc;
+	glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
+
+	m_CurrentDepthMask = depthMask;
+	m_CurrentDepthFunc = static_cast<Func>(depthFunc);
 }
 
 GLContext::~GLContext()
@@ -209,6 +217,16 @@ void GLContext::SetViewport(const glm::vec4& viewport) noexcept
 	SetViewport(viewport.x, viewport.y, viewport.z, viewport.w);
 }
 
+bool GLContext::GetDepthMask() const noexcept
+{
+	return m_CurrentDepthMask;
+}
+
+Func GLContext::GetDepthFunc() const noexcept
+{
+	return m_CurrentDepthFunc;
+}
+
 const glm::vec4 GLContext::GetViewPort() const noexcept
 {
 	return m_ViewPort;
@@ -241,6 +259,7 @@ void GLContext::SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept
 
 void GLContext::SetDepthMask(bool writeDepth) const noexcept
 {
+	m_CurrentDepthMask = writeDepth;
 	GL_CALL(glDepthMask((writeDepth) ? GL_TRUE : GL_FALSE));
 }
 
@@ -251,6 +270,7 @@ void GLContext::SetStencilMask(uint8 mask) const noexcept
 
 void GLContext::SetDepthFunc(Func func) const noexcept
 {
+	m_CurrentDepthFunc = func;
 	GL_CALL(glDepthFunc(func));
 }
 

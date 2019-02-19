@@ -86,6 +86,7 @@ void Particle::Create()
 	{
 		instances[i].Position = glm::vec3(0.0f);
 		instances[i].Color = glm::vec4(1.0f);
+		instances[i].Scale = glm::vec2(1.0f);
 	}
 
 	GL_CALL(glGenBuffers(1, &m_InstanceBuffer));
@@ -101,6 +102,11 @@ void Particle::Create()
 	GL_CALL(glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(ParticleInstance), (void*)sizeof(glm::vec3))));
 	GL_CALL(glEnableVertexAttribArray(3));
 	GL_CALL(glVertexAttribDivisor(3, 1));
+
+	//Per instance scale
+	GL_CALL(glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(ParticleInstance), (void*)(sizeof(float) * 7)));
+	GL_CALL(glEnableVertexAttribArray(4));
+	GL_CALL(glVertexAttribDivisor(4, 1));
 
 	GL_CALL(glBindVertexArray(0));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));

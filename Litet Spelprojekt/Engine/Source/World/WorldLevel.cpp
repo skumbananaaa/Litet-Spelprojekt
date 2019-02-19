@@ -14,6 +14,7 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
 			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
+			m_ppLevelData[x][z].HasStairs = false;
 			m_ppLevelData[x][z].BurnsAt = 100;
 			m_ppLevelData[x][z].Temp = 30;
 			m_ppLevelData[x][z].WaterLevel = 0.0f;

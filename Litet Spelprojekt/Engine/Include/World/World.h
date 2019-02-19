@@ -177,7 +177,10 @@ inline void World::UpdateFloodingIdsBelow(WorldLevel* pWorldLevelBelow, const gl
 
 inline void World::UpdateWaterLevelBelow(WorldLevel* pWorldLevel, WorldLevel* pWorldLevelBelow, const glm::ivec2& tile) const noexcept
 {
-	pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevelChange += pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel;
+	float missingWaterBelow = 1.0f - pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevel;
+	float waterLeft = glm::max<float>(pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel - missingWaterBelow, 0.0f);
+	pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevelChange += pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel - waterLeft;
+	pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevelChange -= pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel - waterLeft;
 }
 
 inline void World::Evaporate(Scene* scene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept

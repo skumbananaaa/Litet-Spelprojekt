@@ -124,6 +124,8 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 	for (int i = 0; i < m_NumStairs; i++) 
 	{
 		m_pStairs[i] = stairs[i];
+
+		m_ppLevels[m_pStairs[i].y]->GetLevelData()[m_pStairs[i].x][m_pStairs[i].z].HasStairs = true;
 	}
 }
 
@@ -183,8 +185,10 @@ void World::Update(Scene* pScene, float dt)
 			}
 		}
 
+		bool isOnUpperGridLevel = levelIndex % 2 == 1;
+
 		//We are on the upper grid level of a world level
-		if (levelIndex % 2 == 1)
+		if (isOnUpperGridLevel)
 		{
 			for (uint32 i = 0; i < floodingIDs.size(); i++)
 			{
@@ -194,13 +198,7 @@ void World::Update(Scene* pScene, float dt)
 				UpdateWaterLevelBelow(m_ppLevels[levelIndex], m_ppLevels[levelIndex - 1], currentTile);
 
 				//Remove Current Water Object (All the water flows down)
-				ppLevelData[currentTile.x][currentTile.y].WaterLevel = 0.0f;
-				ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = 0.0f;
-				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = 0.0f;
-				ppLevelData[currentTile.x][currentTile.y].WaterLevelAge = 1.0f;
-				ppLevelData[currentTile.x][currentTile.y].AlreadyFlooded = false;
-				pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName)->SetIsVisible(false);
-				toRemoveFloodingIDs.push_back(currentTile);
+				//toRemoveFloodingIDs.push_back(currentTile);
 			}
 		}
 		//We are on the lower grid level of a world level
@@ -214,28 +212,15 @@ void World::Update(Scene* pScene, float dt)
 
 				if (levelIndex > 0)
 				{
-					for (uint32 stairId = 0; stairId < m_NumStairs; stairId++)
+					if (m_ppLevels[levelIndex - 2]->GetLevelData()[currentTile.x][currentTile.y].HasStairs)
 					{
-						if (levelIndex - m_pStairs[stairId].y == 2)
-						{
-							if (currentTile.x == m_pStairs[stairId].x && currentTile.y == m_pStairs[stairId].z)
-							{
-								UpdateFloodingIdsBelow(m_ppLevels[levelIndex - 1], currentTile);
-								UpdateWaterLevelBelow(m_ppLevels[levelIndex], m_ppLevels[levelIndex - 1], currentTile);
+						UpdateFloodingIdsBelow(m_ppLevels[levelIndex - 1], currentTile);
+						UpdateWaterLevelBelow(m_ppLevels[levelIndex], m_ppLevels[levelIndex - 1], currentTile);
 
-								//Remove Current Water Object (All the water flows down)
-								ppLevelData[currentTile.x][currentTile.y].WaterLevel = 0.0f;
-								ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = 0.0f;
-								ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = 0.0f;
-								ppLevelData[currentTile.x][currentTile.y].WaterLevelAge = 1.0f;
-								ppLevelData[currentTile.x][currentTile.y].AlreadyFlooded = false;
-								pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName)->SetIsVisible(false);
-								toRemoveFloodingIDs.push_back(currentTile);
+						//Remove Current Water Object (All the water flows down)
+						//toRemoveFloodingIDs.push_back(currentTile);
 
-								hasStairsBelow = true;
-								break;
-							}
-						}
+						hasStairsBelow = true;
 					}
 				}
 
@@ -294,11 +279,21 @@ void World::Update(Scene* pScene, float dt)
 				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = (float)((uint32)(WATER_ROUNDING_FACTOR * ppLevelData[currentTile.x][currentTile.y].WaterLevel)) / WATER_ROUNDING_FACTOR;
 
 				GameObject* pGameObject = pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName);
-				float yOffset = levelIndex % 2 == 0 ? 0.05f : 0.0f;
-				float yScale = glm::max(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f);
-				pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + yOffset + ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated / 2.0f, currentTile.y));
-				pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
 				pGameObject->SetIsVisible(true);
+				
+				if (isOnUpperGridLevel)
+				{
+					float xzScale = glm::max(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f);
+					pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex, currentTile.y));
+					pGameObject->SetScale(glm::vec3(xzScale, 2.0f, xzScale));
+				}
+				else
+				{
+					float yScale = glm::max(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f);
+					pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + 0.05f + ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated / 2.0f, currentTile.y));
+					pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
+				}
+
 				pGameObject->UpdateTransform();
 			}
 		}
@@ -308,6 +303,12 @@ void World::Update(Scene* pScene, float dt)
 
 		for (uint32 i = 0; i < toRemoveFloodingIDs.size(); i++)
 		{
+			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].WaterLevel = 0.0f;
+			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].WaterLevelChange = 0.0f;
+			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].WaterLevelLastUpdated = 0.0f;
+			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].WaterLevelAge = 1.0f;
+			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].AlreadyFlooded = false;
+			pScene->GetGameObject(ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].WaterBlockName)->SetIsVisible(false);
 			floodingIDs.erase(std::remove(floodingIDs.begin(), floodingIDs.end(), toRemoveFloodingIDs[i]));
 		}
 

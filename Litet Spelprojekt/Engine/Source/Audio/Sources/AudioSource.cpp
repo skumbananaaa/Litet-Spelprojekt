@@ -39,12 +39,15 @@ void AudioSource::Pause() const noexcept
 
 void AudioSource::TogglePause() noexcept
 {
-	if (m_Paused) {
+	if (m_Paused) 
+	{
 		alSourcePlay(m_SourceId);
 	}
-	else {
+	else 
+	{
 		alSourcePause(m_SourceId);
 	}
+
 	m_Paused = !m_Paused;
 }
 

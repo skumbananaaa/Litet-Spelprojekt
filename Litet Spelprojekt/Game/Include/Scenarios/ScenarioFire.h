@@ -1,5 +1,5 @@
 #pragma once
-#include <World/IScenario.h>
+#include <World/Scenarios/IScenario.h>
 
 class ScenarioFire : public IScenario
 {
@@ -8,7 +8,7 @@ public:
 
 	virtual void OnStart() noexcept override;
 	virtual void OnEnd()noexcept override;
-	virtual bool Update(float dtS, World* world, Scene* scene) noexcept override;
+	virtual bool Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;

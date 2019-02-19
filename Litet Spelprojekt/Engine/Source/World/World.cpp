@@ -48,6 +48,12 @@ const WorldLevel* const World::GetLevel(uint32 level) const noexcept
 	return m_ppLevels[level];
 }
 
+WorldLevel* const World::GetLevel(uint32 level) noexcept
+{
+	assert(level < m_NumLevels);
+	return m_ppLevels[level];
+}
+
 uint32 World::GetNumLevels() const noexcept
 {
 	return m_NumLevels;
@@ -66,7 +72,7 @@ uint32 World::GetNumWorldObjects() const noexcept
 
 void World::GenerateRooms()
 {
-	std::vector<glm::uvec4> roomBounds;
+	std::vector<glm::uvec4> m_RoomBounds;
 	std::vector<glm::uvec4> temp;
 
 	std::vector<glm::vec3> center;
@@ -77,9 +83,9 @@ void World::GenerateRooms()
 		temp = m_ppLevels[level]->GetRooms();
 		for (size_t i = 0; i < temp.size(); i++)
 		{
-			if (i >= roomBounds.size())
+			if (i >= m_RoomBounds.size())
 			{
-				roomBounds.push_back(temp[i]);
+				m_RoomBounds.push_back(temp[i]);
 				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.9, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
 			}
 			else if (temp[i].x != 11)
@@ -103,6 +109,17 @@ void World::GenerateWater(Scene* pScene) noexcept
 	{
 		m_ppLevels[level]->GenerateWater(pScene, level);
 	}
+
+	m_ppLevels[5]->GetFloodingIDs().push_back(glm::ivec2(10, 10));
+
+	TileData* const * ppLevelData = m_ppLevels[5]->GetLevelData();
+	//ppLevelData[10][10].WaterLevel = 0.05f;
+	ppLevelData[10][10].WaterLevel = 1.0f;
+	ppLevelData[10][10].AlreadyFlooded = true;
+	//GameObject* pGameObject = scene->GetGameObject(ppLevelData[10][10].WaterBlockName);
+	//pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevel, 0.0f));
+	//pGameObject->UpdateTransform();
+	//pGameObject->SetIsVisible(true);
 }
 
 void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
@@ -113,6 +130,8 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 	for (int i = 0; i < m_NumStairs; i++) 
 	{
 		m_pStairs[i] = stairs[i];
+
+		m_ppLevels[m_pStairs[i].y]->GetLevelData()[m_pStairs[i].x][m_pStairs[i].z].HasStairs = true;
 	}
 }
 
@@ -132,7 +151,9 @@ Room* World::GetRoom(uint32 room) const noexcept
 	return m_Rooms[room];
 }
 
-void World::Update(float dt)
+void World::Update(Scene* pScene, float dt)
 {
-	m_ppLevels[2]->UpdateFire(dt);
+	//m_ppLevels[2]->UpdateFire(dt);
+
+	
 }

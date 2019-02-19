@@ -36,7 +36,10 @@
     <ClCompile Include="Source\GUI\UICrew.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ScenarioFire.cpp">
+    <ClCompile Include="Source\Scenarios\ScenarioFire.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scenarios\ScenarioWater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +62,10 @@
     <ClInclude Include="Include\GUI\UICrew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\ScenarioFire.h">
+    <ClInclude Include="Include\Scenarios\ScenarioFire.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Scenarios\ScenarioWater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

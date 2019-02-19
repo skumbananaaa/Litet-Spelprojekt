@@ -69,14 +69,15 @@
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\System\Random.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
-    <ClCompile Include="Source\World\FireAlarm.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ListScrollable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
-    <ClCompile Include="Source\World\ScenarioManager.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
+    <ClCompile Include="Source\World\Scenarios\Fire\FireAlarm.cpp" />
+    <ClCompile Include="Source\World\Scenarios\ScenarioManager.cpp" />
+    <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\World\LightManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,16 +161,17 @@
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\System\Random.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelExpandable.h" />
-    <ClInclude Include="Include\World\FireAlarm.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\Room.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\Graphics\GUI\ListScrollable.h" />
     <ClInclude Include="Include\Graphics\GUI\HoveringHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\IHoverable.h" />
-    <ClInclude Include="Include\World\ScenarioManager.h" />
-    <ClInclude Include="Include\World\IScenario.h" />
     <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
+    <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
+    <ClInclude Include="Include\World\Scenarios\IScenario.h" />
+    <ClInclude Include="Include\World\Scenarios\ScenarioManager.h" />
+    <ClInclude Include="Include\World\Scenarios\Water\WaterObject.h" />
     <ClInclude Include="Include\World\LightManager.h" />
   </ItemGroup>
 </Project>

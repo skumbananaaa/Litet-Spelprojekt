@@ -9,7 +9,7 @@ public:
 	FireAlarm(int32 source);
 	void SetPosition(const glm::vec3& position) noexcept;
 	void SetDetection(bool fireDetected);
-	void Update(float dt);
+	void Update(float dt) noexcept;
 private:
 	bool m_FireDetected;
 	AudioSource* m_Src;

@@ -62,7 +62,7 @@ void Crewmember::RunParallel()
 	//}
 }
 
-void Crewmember::Update(float deltaTime)
+void Crewmember::Update(float deltaTime) noexcept
 {
 	FollowPath(deltaTime);
 	GameObject::Update(deltaTime);

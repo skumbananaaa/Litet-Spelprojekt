@@ -22,7 +22,6 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 			m_ppLevelData[x][z].WaterLevelChange = 0.0f;
 			m_ppLevelData[x][z].WaterLevelLastUpdated = 0.0f;
 			m_ppLevelData[x][z].WaterLevelAge = 1.0f;
-			m_ppLevelData[x][z].WaterFloodsFromeAbove = false;
 			m_ppLevelData[x][z].AlreadyFlooded = false;
 			m_ppLevelData[x][z].WaterBlockName = "WaterBlock [" + std::to_string(x) + ", " + std::to_string(levelHeight) + ", " + std::to_string(z) + "]";
 		}

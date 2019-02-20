@@ -13,6 +13,7 @@
 #define MATERIAL_BUFFER_BINDING_SLOT 2
 #define WORLD_BUFFER_BINDING_SLOT 3
 #define PLANE_BUFFER_BINDING_SLOT 4
+#define EXTENSION_BUFFER_BINDING_SLOT 5
 
 class API Material
 {
@@ -33,6 +34,8 @@ public:
 	void SetLightBuffer(const UniformBuffer* pLightBuffer) const noexcept;
 	void SetCameraBuffer(const UniformBuffer* pCameraBuffer) const noexcept;
 	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
+	void SetWorldBuffer(const UniformBuffer* pWorldBuffer) const noexcept;
+	void SetExtensionBuffer(const UniformBuffer* pExtensionBuffer) const noexcept;
 
 	void SetStencilTest(bool enable, Func func = FUNC_ALWAYS, uint8 mask = 0xff, uint8 ref = 1, uint8 value = 0xff) const noexcept;
 	void SetStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
@@ -77,6 +80,8 @@ private:
 		mutable const UniformBuffer* pLightBuffer = nullptr;
 		mutable const UniformBuffer* pCameraBuffer = nullptr;
 		mutable const UniformBuffer* pMaterialBuffer = nullptr;
+		mutable const UniformBuffer* pWorldBuffer = nullptr;
+		mutable const UniformBuffer* pExtensionBuffer = nullptr;
 		const Texture2D* pDiffuseMap = nullptr;
 		const Texture2D* pNormalMap = nullptr;
 		const Texture2D* pSpecularMap = nullptr;

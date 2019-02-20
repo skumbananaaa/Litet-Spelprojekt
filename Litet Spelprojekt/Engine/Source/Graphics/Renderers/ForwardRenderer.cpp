@@ -8,6 +8,8 @@ ForwardRenderer::ForwardRenderer()
 	m_pCameraBuffer(nullptr),
 	m_pMaterialBuffer(nullptr),
 	m_pPlaneBuffer(nullptr),
+	m_pWorldBuffer(nullptr),
+	m_pExtensionBuffer(nullptr),
 	m_pSkyBoxPassPerFrame(nullptr),
 	m_pSkyBoxPassPerObject(nullptr),
 	m_pParticle(nullptr),
@@ -32,6 +34,8 @@ ForwardRenderer::~ForwardRenderer()
 	DeleteSafe(m_pCameraBuffer);
 	DeleteSafe(m_pMaterialBuffer);
 	DeleteSafe(m_pPlaneBuffer);
+	DeleteSafe(m_pWorldBuffer);
+	DeleteSafe(m_pExtensionBuffer);
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
 	DeleteSafe(m_pParticle);
@@ -61,6 +65,9 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	CreateBatches(scene, pWorld);
 	//Update lights
 	UpdateLightBuffer(scene);
+
+	//Update WorldBuffer
+	UpdateExtensionBuffer(scene);
 
 	//Reflections
 	glQueryCounter(m_pCurrentQuery->pQueries[0], GL_TIMESTAMP);
@@ -153,6 +160,8 @@ void ForwardRenderer::Create() noexcept
 	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
+
+	//Camera
 	{
 		CameraBuffer buff = {};
 		buff.InverseView = glm::mat4(1.0f);
@@ -162,6 +171,7 @@ void ForwardRenderer::Create() noexcept
 		m_pCameraBuffer = new UniformBuffer(&buff, 1, sizeof(CameraBuffer));
 	}
 
+	//Material
 	{
 		MaterialBuffer buff = {};
 		buff.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -169,6 +179,7 @@ void ForwardRenderer::Create() noexcept
 		m_pMaterialBuffer = new UniformBuffer(&buff, 1, sizeof(MaterialBuffer));
 	}
 
+	//Plane
 	{
 		PlaneBuffer buff = {};
 		buff.ClipPlane = glm::vec4(0.0f);
@@ -176,6 +187,7 @@ void ForwardRenderer::Create() noexcept
 		m_pPlaneBuffer = new UniformBuffer(&buff, 1, sizeof(PlaneBuffer));
 	}
 
+	//Light
 	{
 		LightBuffer buff = {};
 		for (uint32 i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
@@ -202,6 +214,29 @@ void ForwardRenderer::Create() noexcept
 		m_pLightBuffer = new UniformBuffer(&buff, 1, sizeof(LightBuffer));
 	}
 
+	//World
+	{
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = 1;
+				}
+			}
+		}
+		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
+	}
+
+	//Extension
+	{
+		float extension = 0.0f;
+
+		m_pExtensionBuffer = new UniformBuffer(&extension, 1, sizeof(float));
+	}
+
+	//Skybox
 	{
 		SkyBoxPassBuffer buff = {};
 		buff.CameraCombined = glm::mat4(1.0f);
@@ -298,6 +333,21 @@ void ForwardRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
 
 void ForwardRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
 {
+	if (pWorld != nullptr)
+	{
+		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
+		{
+			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
+			{
+				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
+				{
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y)->GetLevel()[x][z]);
+				}
+			}
+		}
+	}
+
+	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
 void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
@@ -314,6 +364,13 @@ void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 
 		m_pCameraBuffer->UpdateData(&buff);
 	}
+}
+
+void ForwardRenderer::UpdateExtensionBuffer(const Scene & scene) const noexcept
+{
+	float extension = scene.GetExtension();
+
+	m_pExtensionBuffer->UpdateData(&extension);
 }
 
 void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
@@ -371,6 +428,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) con
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
 	MaterialBuffer perBatch = {};
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
@@ -434,6 +492,8 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 		material.SetCameraBuffer(m_pCameraBuffer);
 		material.SetLightBuffer(m_pLightBuffer);
 		material.SetMaterialBuffer(m_pMaterialBuffer);
+		material.SetWorldBuffer(m_pWorldBuffer);
+		material.SetExtensionBuffer(m_pExtensionBuffer);
 		material.Bind(nullptr);
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
@@ -456,6 +516,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	context.SetProgram(m_pParticleProgram);
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
 	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
 	for (size_t i = 0; i < particleSystems.size(); i++)

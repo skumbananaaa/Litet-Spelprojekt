@@ -20,7 +20,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(false, 1920, 1080, "", true),
+	: Application(true, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -232,52 +232,54 @@ void Game::OnResourcesLoaded()
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	//Create particles
-	ParticleSystem* pFire = new ParticleSystem();
-	pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
-	pFire->SetTexture(TEXTURE::SMOKE);
-	pFire->SetTimeToLive(1.2f);
-	pFire->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
-	pFire->SetConeAngle(glm::radians<float>(30.0f));
-	pFire->SetSpeed(0.7f, 2.0f);
-	pFire->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-	pFire->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-	pFire->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	m_Scenes[0]->AddParticleSystem(pFire);
+	{
+		ParticleSystem* pFire = new ParticleSystem();
+		pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
+		pFire->SetTexture(TEXTURE::SMOKE);
+		pFire->SetTimeToLive(1.2f);
+		pFire->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
+		pFire->SetConeAngle(glm::radians<float>(30.0f));
+		pFire->SetSpeed(0.7f, 2.0f);
+		pFire->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+		pFire->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+		pFire->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		m_Scenes[0]->AddParticleSystem(pFire);
 
-	ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
-	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+		ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
+		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
 
-	pEmitter = new ParticleEmitter(pFire);
-	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+		pEmitter = new ParticleEmitter(pFire);
+		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
 
-	ParticleSystem* pSmoke = new ParticleSystem();
-	pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
-	pSmoke->SetTexture(TEXTURE::SMOKE);
-	pSmoke->SetTimeToLive(7.0f);
-	pSmoke->SetConeAngle(glm::radians<float>(40.0f));
-	pSmoke->SetSpeed(0.1f, 0.4f);
-	pSmoke->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-	pSmoke->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-	pSmoke->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-	m_Scenes[0]->AddParticleSystem(pSmoke);
+		ParticleSystem* pSmoke = new ParticleSystem();
+		pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
+		pSmoke->SetTexture(TEXTURE::SMOKE);
+		pSmoke->SetTimeToLive(7.0f);
+		pSmoke->SetConeAngle(glm::radians<float>(40.0f));
+		pSmoke->SetSpeed(0.1f, 0.4f);
+		pSmoke->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
+		pSmoke->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+		pSmoke->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+		m_Scenes[0]->AddParticleSystem(pSmoke);
 
-	pEmitter = new ParticleEmitter(pSmoke);
-	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+		pEmitter = new ParticleEmitter(pSmoke);
+		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
 
-	pEmitter = new ParticleEmitter(pSmoke);
-	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
-	pEmitter->SetParticlesPerFrame(1);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
+		pEmitter = new ParticleEmitter(pSmoke);
+		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
+		pEmitter->SetParticlesPerFrame(1);
+		pEmitter->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pEmitter);
+	}
 
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -347,7 +349,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
@@ -385,7 +387,7 @@ void Game::OnResourcesLoaded()
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetPath(m_pWorld);
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(0)->SetHidden(false);
+	m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
 	m_Scenes[0]->AddGameObject(m_Crew.GetMember(0));
 
@@ -400,7 +402,7 @@ void Game::OnResourcesLoaded()
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
-		m_Crew.GetMember(i)->SetHidden(false);
+		m_Crew.GetMember(i)->SetHidden(true);
 		m_Crew.GetMember(i)->UpdateTransform();
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}
@@ -412,8 +414,6 @@ void Game::OnResourcesLoaded()
 	}
 
 	m_pUICrew = new UICrew(0, GetWindow().GetHeight() - 150, 200, 500, members);
-
-	m_Scenes[0]->SetConceal(false);
 
 	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
 
@@ -519,11 +519,6 @@ void Game::OnKeyUp(KEY keycode)
 {
 	switch (keycode)
 	{
-		case KEY_SPACE:
-		{
-			m_Scenes[m_SceneId]->ExtendScene(false);
-			break;
-		}
 	}
 
 	Application::OnKeyUp(keycode);
@@ -545,7 +540,7 @@ void Game::OnKeyDown(KEY keycode)
 		}
 		case KEY_SPACE:
 		{
-			m_Scenes[m_SceneId]->ExtendScene(true);
+			m_Scenes[m_SceneId]->ExtendScene();
 			break;
 		}
 		case KEY_L:
@@ -819,9 +814,11 @@ void Game::PickPosition() {
 		if ((t >= 0 && lastT == -1) || (t > 0 && t < lastT))
 		{
 			pointOnSurface = rayOrigin + rayDir * t;
-			bool extended = m_Scenes[m_SceneId]->IsExtended();
-			if (pointOnSurface.x > 5 * d * extended)
+
+			float extension = m_Scenes[m_SceneId]->GetExtension();
+			if (pointOnSurface.x > extension * d / 2.0f)
 			{
+				pointOnSurface.x -= extension * floor(pointOnSurface.y / 2.0f);
 				lastT = t;
 			}
 			else
@@ -888,21 +885,18 @@ glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 wi
 void Game::ShowCrewmember(uint32 crewmember)
 {
 	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
-	if (!m_Crew.GetMember(crewmember)->IsExtending())
+	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+
+	if (!m_pWorld->GetRoom(roomIndex)->IsActive())
 	{
-		uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+		const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
+		std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
 
-		if (!m_pWorld->GetRoom(roomIndex)->IsActive())
-		{
-			const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
-			std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
-
-			roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
-			m_RoomLightsTimers[m_CurrentLight] = 0.0f;
-			m_ActiveRooms[m_CurrentLight] = roomIndex;
-			m_pWorld->GetRoom(roomIndex)->SetActive(true);
-			m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
-		}
+		roomLights[m_CurrentLight]->SetPosition(roomCenter);
+		m_RoomLightsTimers[m_CurrentLight] = 0.0f;
+		m_ActiveRooms[m_CurrentLight] = roomIndex;
+		m_pWorld->GetRoom(roomIndex)->SetActive(true);
+		m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
 	}
 }
 
@@ -916,7 +910,7 @@ Crewmember* Game::RayTestCrewmembers()
 
 	for (int i = 0; i < m_Crew.GetCount(); i++)
 	{
-		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin);
+		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin, m_Scenes[m_SceneId]->GetExtension());
 
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{

@@ -22,7 +22,7 @@ void WaterIndoorMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.SetUniformBuffer(m_pWaterBuffer, 3);
+	context.SetUniformBuffer(m_pWaterBuffer, 6);
 
 	context.SetTexture(m_pDistortion, 3);
 
@@ -33,7 +33,7 @@ void WaterIndoorMaterial::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.SetUniformBuffer(nullptr, 3);
+	context.SetUniformBuffer(nullptr, 6);
 
 	context.SetTexture(nullptr, 3);
 

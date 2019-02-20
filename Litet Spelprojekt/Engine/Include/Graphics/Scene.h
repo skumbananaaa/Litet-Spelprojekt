@@ -29,8 +29,7 @@ public:
 	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
-	void ExtendScene(bool extend) noexcept;
-	void SetConceal(bool conceal) noexcept;
+	void ExtendScene() noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
@@ -50,8 +49,7 @@ public:
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
 	const std::vector<PointLight*>& GetRoomLights() const noexcept;
 	std::vector<PointLight*>& GetRoomLights() noexcept;
-	const bool IsExtended() const noexcept;
-	const bool IsConcealed() const noexcept;
+	const float GetExtension() const noexcept;
 
 private:
 	Camera* m_pCamera;
@@ -69,9 +67,9 @@ private:
 	std::vector<PointLight*> m_RoomLights;
 	SkyBox* m_pSkyBox;
 
-	bool m_Concealed = false;
+	float m_Extension = 0.0f;
+	bool m_Extending = false;
 	bool m_Extended = false;
-	bool m_WasExtended = false;
 };
 
 inline Camera& Scene::GetCamera() noexcept
@@ -146,12 +144,7 @@ inline std::vector<PointLight*>& Scene::GetRoomLights() noexcept
 	return m_RoomLights;
 }
 
-inline const bool Scene::IsExtended() const noexcept
+inline const float Scene::GetExtension() const noexcept
 {
-	return m_Extended;
-}
-
-inline const bool Scene::IsConcealed() const noexcept
-{
-	return m_Concealed;
+	return m_Extension;
 }

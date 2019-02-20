@@ -111,7 +111,7 @@ void Game::OnResourcesLoaded()
 	LightManager::Init(m_Scenes[0], 3);
 
 	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
+	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 
 
 	//Create renderers

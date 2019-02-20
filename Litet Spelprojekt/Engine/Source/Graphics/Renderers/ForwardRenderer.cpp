@@ -85,9 +85,8 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	//Render scene
 	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
 	context.SetDepthFunc(FUNC_LESS);
-
 	DepthPrePass(mainCamera, scene);
-	
+
 	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
 	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
@@ -431,6 +430,11 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) con
 	{
 		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
 		const Material& material = *m_DrawableBatches[i].pMaterial;
+
+		if (!material.IncludeInDepthPrePass())
+		{
+			continue;
+		}
 
 		PlaneBuffer buff = {};
 		buff.ClipPlane = material.GetLevelClipPlane();

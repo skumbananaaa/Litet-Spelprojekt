@@ -53,6 +53,7 @@ public:
 	bool HasDiffuseMap() const noexcept;
 	bool HasNormalMap() const noexcept;
 	bool HasSpecularMap() const noexcept;
+	bool IncludeInDepthPrePass() const noexcept;
 
 protected:
 	Material();
@@ -60,6 +61,7 @@ protected:
 	virtual ~Material();
 
 	void SetProgram(int32 shader) noexcept;
+	void SetIncludeInDepthPrePass(bool include) noexcept;
 
 private:
 	void SetDiffuseMap(const Texture2D* const pTexture) noexcept;
@@ -87,6 +89,7 @@ private:
 	mutable struct
 	{
 		bool StencilTest = false;
+		bool DepthPrePass = true;
 		Func StencilFunc = FUNC_ALWAYS;
 		StencilFace Front;
 		StencilFace Back;
@@ -113,9 +116,19 @@ inline bool Material::HasSpecularMap() const noexcept
 	return m_Data.pSpecularMap != nullptr;
 }
 
+inline bool Material::IncludeInDepthPrePass() const noexcept
+{
+	return m_PipelineState.DepthPrePass;
+}
+
 inline void Material::SetProgram(int32 shader) noexcept
 {
 	m_pProgram = ResourceHandler::GetShader(shader);
+}
+
+inline void Material::SetIncludeInDepthPrePass(bool include) noexcept
+{
+	m_PipelineState.DepthPrePass = include;
 }
 
 inline void Material::SetDiffuseMap(const Texture2D* const pTexture) noexcept

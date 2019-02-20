@@ -136,7 +136,7 @@ inline void ScenarioWater::UpdateFloodingIdsBelow(WorldLevel* pWorldLevelBelow, 
 
 inline bool ScenarioWater::UpdateWaterLevelBelow(WorldLevel* pWorldLevel, WorldLevel* pWorldLevelBelow, const glm::ivec2& tile) const noexcept
 {
-	float missingWaterBelow = 1.0f - pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevel;
+	float missingWaterBelow = WATER_MAX_LEVEL - pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevel;
 	float waterLeft = glm::max<float>(pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel - missingWaterBelow, 0.0f);
 	float waterLevelChange = pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel - waterLeft;
 	pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevelChange += waterLevelChange;
@@ -144,7 +144,6 @@ inline bool ScenarioWater::UpdateWaterLevelBelow(WorldLevel* pWorldLevel, WorldL
 
 	if (waterLevelChange > 0.0f)
 	{
-		pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterFloodsFromeAbove = true;
 		return true;
 	}
 

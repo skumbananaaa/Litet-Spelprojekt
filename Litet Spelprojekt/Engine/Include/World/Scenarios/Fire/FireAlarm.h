@@ -14,7 +14,6 @@ public:
 	void TurnOff() noexcept;
 	virtual void Update(float dt) noexcept override;
 	virtual void OnSmokeDetected() noexcept override;
-	virtual void OnAddedToScene(Scene* scene) noexcept override;
 
 private:
 	bool m_FireDetected;

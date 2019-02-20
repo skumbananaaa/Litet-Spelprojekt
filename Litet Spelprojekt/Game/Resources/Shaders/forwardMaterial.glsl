@@ -142,6 +142,11 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 
 void main()
 {
+	//NORMALIZE
+	vec3 inTangent = normalize(fs_in.Tangent);
+	vec3 inBinormal = normalize(fs_in.Binormal);
+	vec3 inNormal = normalize(fs_in.Normal);
+
 	//VIEWDIR
 	vec3 viewDir = normalize(g_CameraPosition.xyz - fs_in.WorldPosition);
 
@@ -150,9 +155,9 @@ void main()
 
 	//NORMAL
 	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
-	mat3 tbn = mat3(fs_in.Tangent, fs_in.Binormal, fs_in.Normal);
+	mat3 tbn = mat3(inTangent, inBinormal, inNormal);
 	mappedNormal = tbn * mappedNormal;
-	vec3 normal = (fs_in.Normal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
+	vec3 normal = (inNormal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
 
 	//COLOR
 	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;

@@ -26,17 +26,21 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::
 		for (uint32 i = 0; i < floodingIDs.size(); i++)
 		{
 			glm::ivec2 currentTile = glm::ivec2(floodingIDs[i].x, floodingIDs[i].y);
-			GameObject* pGameObject = pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName);
-			bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
-			
-			if (waterIsVisible)
+
+			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_INTERVAL))
 			{
-				pGameObject->SetIsVisible(true);
-				pGameObject->UpdateTransform();
-			}
-			else
-			{
-				pGameObject->SetIsVisible(false);
+				GameObject* pGameObject = pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName);
+				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
+
+				if (waterIsVisible)
+				{
+					pGameObject->SetIsVisible(true);
+						pGameObject->UpdateTransform();
+				}
+				else
+				{
+					pGameObject->SetIsVisible(false);
+				}
 			}
 		}
 	}

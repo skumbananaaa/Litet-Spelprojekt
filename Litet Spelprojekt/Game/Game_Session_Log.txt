@@ -1,1 +1,3 @@
-13:58:24   Scenario [Water] Started!
+15:30:28   Scenario [Water] Started!
+15:31:17   Scenario [Fire] Started!
+15:31:17   Scenario [Fire] Ended!

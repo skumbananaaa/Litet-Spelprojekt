@@ -294,6 +294,18 @@ void main()
 		}
 	}
 
+	ivec3 mapPos = ivec3(round(fs_in.WorldPosition.x)- floor(fs_in.WorldPosition.y / 2.0f) * 10 * extended, fs_in.WorldPosition.y, round(fs_in.WorldPosition.z) + 1);
+	mapPos.x = clamp(mapPos.x, 0, 11);
+	mapPos.y = clamp(mapPos.y, 0, 5);
+	mapPos.z = clamp(mapPos.z, 0, 41);
+
+	uint roomIndex[] = {
+		map[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) / 4].x,
+		map[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) / 4].y,
+		map[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) / 4].z,
+		map[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) / 4].w
+	};
+
 	//Do lightcalculation
 	vec3 c = vec3(0.0f);
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
@@ -307,43 +319,66 @@ void main()
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
-		vec3 lightDir = g_PointLights[i].Position.xyz - fs_in.WorldPosition;
-		float dist = length(lightDir);
+		ivec3 lightMapPos = ivec3(round(g_PointLights[i].Position.x) - floor(g_PointLights[i].Position.y / 2.0f) * 10 * extended, g_PointLights[i].Position.y, round(g_PointLights[i].Position.z));
+		lightMapPos.x = clamp(lightMapPos.x, 0, 11);
+		lightMapPos.y = clamp(lightMapPos.y, 0, 5);
+		lightMapPos.z = clamp(lightMapPos.z, 0, 41);
 
-		float attenuation = 1.0f / (dist * dist);
-		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
-		lightDir = normalize(lightDir);
-		float cosTheta = dot(normal, lightDir);
+		uint lightRoomIndex[] = {
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].x,
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].y,
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].z,
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].w
+		};
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
+		{
+			vec3 lightDir = g_PointLights[i].Position.xyz - fs_in.WorldPosition;
+			float dist = length(lightDir);
+	
+			float attenuation = 1.0f / (dist);
+			vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
+			lightDir = normalize(lightDir);
+			float cosTheta = dot(normal, lightDir);
+	
+			c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		}
 	}
 
 	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
 	{
-		float light_attenuation = 1.0f;
-		vec3 lightDir = g_SpotLights[i].Position.xyz - fs_in.WorldPosition;
-		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
-		float dist = length(lightDir);
-		lightDir = normalize(lightDir);
-		float cosTheta = dot(normal, lightDir);
+		ivec3 lightMapPos = ivec3(round(g_SpotLights[i].Position.x) - floor(g_PointLights[i].Position.y / 2.0f) * 10 * extended, g_SpotLights[i].Position.y, round(g_SpotLights[i].Position.z));
+		lightMapPos.x = clamp(lightMapPos.x, 0, 11);
+		lightMapPos.y = clamp(lightMapPos.y, 0, 5);
+		lightMapPos.z = clamp(lightMapPos.z, 0, 41);
 
-		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
-		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
-		if (lightToSurfaceAngle > coneAngle)
-		{
-			light_attenuation += lightToSurfaceAngle - coneAngle;
-		}
-		float attenuation = 1.0f / ((dist));
+		uint lightRoomIndex[] = {
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].x,
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].y,
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].z,
+			map[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) / 4].w
+		};
 		
-		vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
-
-		float theta = dot(lightDir, -targetDir);
-		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
-		float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
-
-		if(theta > g_SpotLights[i].OuterAngle)
+		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
 		{
-			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, specular, intensity);
+			float light_attenuation = 1.0f;
+			vec3 lightDir = g_SpotLights[i].Position.xyz - fs_in.WorldPosition;
+			vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
+			float dist = length(lightDir);
+			lightDir = normalize(lightDir);
+			
+			float attenuation = 1.0f / ((dist));
+			
+			vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
+	
+			float theta = dot(lightDir, -targetDir);
+			float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
+			float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
+	
+			if(theta > g_SpotLights[i].OuterAngle)
+			{
+				c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, specular, intensity);
+			}
 		}
 	}
 

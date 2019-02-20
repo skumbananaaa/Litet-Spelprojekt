@@ -32,6 +32,7 @@ ForwardRenderer::~ForwardRenderer()
 	DeleteSafe(m_pCameraBuffer);
 	DeleteSafe(m_pMaterialBuffer);
 	DeleteSafe(m_pPlaneBuffer);
+	DeleteSafe(m_pWorldBuffer);
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
 	DeleteSafe(m_pParticle);
@@ -61,6 +62,9 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	CreateBatches(scene, pWorld);
 	//Update lights
 	UpdateLightBuffer(scene);
+
+	//Update WorldBuffer
+	UpdateWorldBuffer(scene);
 
 	//Reflections
 	glQueryCounter(m_pCurrentQuery->pQueries[0], GL_TIMESTAMP);

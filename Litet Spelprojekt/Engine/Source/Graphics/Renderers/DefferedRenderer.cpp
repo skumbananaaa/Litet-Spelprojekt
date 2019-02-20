@@ -200,8 +200,7 @@ void DefferedRenderer::Create() noexcept
 				}
 			}
 		}
-		m_LocalWorldBuff.concealed = false;
-		m_LocalWorldBuff.extended = false;
+
 		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
 	}
 	//Skybox
@@ -459,9 +458,6 @@ void DefferedRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) c
 		}
 	}
 
-	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
-	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
-
 	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
@@ -516,9 +512,6 @@ void DefferedRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 
 void DefferedRenderer::UpdateWorldBuffer(const Scene & scene) const noexcept
 {
-	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
-	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
-
 	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 

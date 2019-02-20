@@ -20,7 +20,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(false, 1920, 1080, "", true),
+	: Application(true, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -887,21 +887,18 @@ glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 wi
 void Game::ShowCrewmember(uint32 crewmember)
 {
 	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
-	if (!m_Crew.GetMember(crewmember)->IsExtending())
+	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+
+	if (!m_pWorld->GetRoom(roomIndex)->IsActive())
 	{
-		uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+		const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
+		std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
 
-		if (!m_pWorld->GetRoom(roomIndex)->IsActive())
-		{
-			const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
-			std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
-
-			roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
-			m_RoomLightsTimers[m_CurrentLight] = 0.0f;
-			m_ActiveRooms[m_CurrentLight] = roomIndex;
-			m_pWorld->GetRoom(roomIndex)->SetActive(true);
-			m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
-		}
+		roomLights[m_CurrentLight]->SetPosition(roomCenter);
+		m_RoomLightsTimers[m_CurrentLight] = 0.0f;
+		m_ActiveRooms[m_CurrentLight] = roomIndex;
+		m_pWorld->GetRoom(roomIndex)->SetActive(true);
+		m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
 	}
 }
 
@@ -915,7 +912,7 @@ Crewmember* Game::RayTestCrewmembers()
 
 	for (int i = 0; i < m_Crew.GetCount(); i++)
 	{
-		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin);
+		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin, m_Scenes[m_SceneId]->GetExtension());
 
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{

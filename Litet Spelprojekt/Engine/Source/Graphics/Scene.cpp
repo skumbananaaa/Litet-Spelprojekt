@@ -182,19 +182,8 @@ void Scene::RemoveGameObject(uint32 index) noexcept
 
 void Scene::ExtendScene(bool extend) noexcept
 {
-	for (GameObject* pGameObject : m_GameObjects)
-	{
-		pGameObject->SetExtend(extend);
-	}
-	for (SpotLight* pSpotLight : m_SpotLights)
-	{
-		pSpotLight->SetExtend(extend);
-	}
-	for (PointLight* pPointLight : m_PointLights)
-	{
-		pPointLight->SetExtend(extend);
-	}
-	m_Extended = !m_Extended;
+	m_Extending = true;
+	m_Extended = extend;
 }
 
 void Scene::SetConceal(bool conceal) noexcept
@@ -207,19 +196,38 @@ void Scene::OnUpdate(float dtS) noexcept
 	for (GameObject* pGameObject : m_GameObjects)
 	{
 		pGameObject->Update(dtS);
+		pGameObject->SetExtending(m_Extending);
 	}
 
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
 		pSpotLight->Update(dtS);
+		pSpotLight->SetExtending(m_Extending);
 	}
 	for (PointLight* pPointLight : m_PointLights)
 	{
 		pPointLight->Update(dtS);
+		pPointLight->SetExtending(m_Extending);
 	}
 
 	for (ParticleSystem* pSystem : m_ParticleSystems)
 	{
 		pSystem->Update(*m_pCamera, dtS);
+	}
+
+	if (m_Extending)
+	{
+		m_Extension += 20.0f * dtS * ((m_Extended * 2) - 1);
+
+		if (m_Extension > 10.0f)
+		{
+			m_Extending = false;
+			m_Extension = 10.0f;
+		}
+		else if (m_Extension < 0.0f)
+		{
+			m_Extending = false;
+			m_Extension = 0.0f;
+		}
 	}
 }

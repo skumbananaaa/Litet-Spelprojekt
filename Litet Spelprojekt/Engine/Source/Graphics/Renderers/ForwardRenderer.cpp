@@ -8,6 +8,8 @@ ForwardRenderer::ForwardRenderer()
 	m_pCameraBuffer(nullptr),
 	m_pMaterialBuffer(nullptr),
 	m_pPlaneBuffer(nullptr),
+	m_pWorldBuffer(nullptr),
+	m_pExtensionBuffer(nullptr),
 	m_pSkyBoxPassPerFrame(nullptr),
 	m_pSkyBoxPassPerObject(nullptr),
 	m_pParticle(nullptr),
@@ -33,6 +35,7 @@ ForwardRenderer::~ForwardRenderer()
 	DeleteSafe(m_pMaterialBuffer);
 	DeleteSafe(m_pPlaneBuffer);
 	DeleteSafe(m_pWorldBuffer);
+	DeleteSafe(m_pExtensionBuffer);
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
 	DeleteSafe(m_pParticle);
@@ -64,7 +67,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	UpdateLightBuffer(scene);
 
 	//Update WorldBuffer
-	UpdateWorldBuffer(scene);
+	UpdateExtensionBuffer(scene);
 
 	//Reflections
 	glQueryCounter(m_pCurrentQuery->pQueries[0], GL_TIMESTAMP);
@@ -223,9 +226,14 @@ void ForwardRenderer::Create() noexcept
 				}
 			}
 		}
-		m_LocalWorldBuff.concealed = false;
-		m_LocalWorldBuff.extended = false;
 		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
+	}
+
+	//Extension
+	{
+		float extension = 0.0f;
+
+		m_pExtensionBuffer = new UniformBuffer(&extension, 1, sizeof(float));
 	}
 
 	//Skybox
@@ -339,9 +347,6 @@ void ForwardRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) co
 		}
 	}
 
-	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
-	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
-
 	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
 }
 
@@ -361,12 +366,11 @@ void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 	}
 }
 
-void ForwardRenderer::UpdateWorldBuffer(const Scene & scene) const noexcept
+void ForwardRenderer::UpdateExtensionBuffer(const Scene & scene) const noexcept
 {
-	m_LocalWorldBuff.concealed = (scene.IsConcealed()) ? 1 : 0;
-	m_LocalWorldBuff.extended = (scene.IsExtended()) ? 1 : 0;
+	float extension = scene.GetExtension();
 
-	m_pWorldBuffer->UpdateData(&m_LocalWorldBuff);
+	m_pExtensionBuffer->UpdateData(&extension);
 }
 
 void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
@@ -424,6 +428,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) con
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
 	MaterialBuffer perBatch = {};
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
@@ -488,6 +493,7 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 		material.SetLightBuffer(m_pLightBuffer);
 		material.SetMaterialBuffer(m_pMaterialBuffer);
 		material.SetWorldBuffer(m_pWorldBuffer);
+		material.SetExtensionBuffer(m_pExtensionBuffer);
 		material.Bind(nullptr);
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
@@ -510,6 +516,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	context.SetProgram(m_pParticleProgram);
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
 	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
 	for (size_t i = 0; i < particleSystems.size(); i++)

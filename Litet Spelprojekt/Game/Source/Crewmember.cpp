@@ -115,9 +115,10 @@ const glm::vec3& Crewmember::GetLastKnownPosition() noexcept
 	return m_LastKnownPosition;
 }
 
-int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept
+int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept
 {
 	glm::vec3 centre = GetPosition();
+	centre.x += extension * glm::floor(centre.y / 2.0f);
 
 	glm::vec3 normals[]{
 		m_Direction,
@@ -253,12 +254,12 @@ const bool Crewmember::IsMoving() const
 
 void Crewmember::SetPosition(const glm::vec3 & position) noexcept
 {
-	m_PlayerTile = glm::ivec3(std::round(position.x) - std::round(position.y - 0.9) * 5 * IsExtended(), std::round((position.y - 0.9) / 2),std::round(position.z));
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
 	if (m_NrOfPathTiles <= 0)
 	{
 		m_TargetTile = m_PlayerTile;
 	}
-	m_TargetPos = glm::vec3(m_TargetTile.x + m_TargetTile.y * 10 * IsExtended(), m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 	GameObject::SetPosition(position);
 }
 
@@ -288,53 +289,47 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (!IsExtending())
-	{
-		m_GoalTile = glm::ivec3(goalPos.x - goalPos.y * 5 * IsExtended(), goalPos.y / 2, goalPos.z);
-		ThreadHandler::RequestExecution(this);
-	}
+	m_GoalTile = glm::ivec3(goalPos.x, goalPos.y / 2, goalPos.z);
+	ThreadHandler::RequestExecution(this);
 }
 
 void Crewmember::FollowPath(float dtS)
 {
-	if (!IsExtending())
+	if (m_NrOfPathTiles > 0)
 	{
-		if (m_NrOfPathTiles > 0)
+		if (m_PlayerTile == m_TargetTile)
 		{
-			if (m_PlayerTile == m_TargetTile)
-			{
-				m_TargetTile = m_pPath[--m_NrOfPathTiles];
-				m_TargetPos = glm::vec3(m_TargetTile.x + m_TargetTile.y * 10 * IsExtended(), m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
-			}
+			m_TargetTile = m_pPath[--m_NrOfPathTiles];
+			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 		}
-		if ((std::abs(GetPosition().x - m_TargetPos.x) > 0.01 || std::abs(GetPosition().y - m_TargetPos.y) > 0.01 || std::abs(GetPosition().z - m_TargetPos.z) > 0.01))
+	}
+	if ((std::abs(GetPosition().x - m_TargetPos.x) > 0.01 || std::abs(GetPosition().y - m_TargetPos.y) > 0.01 || std::abs(GetPosition().z - m_TargetPos.z) > 0.01))
+	{
+		if (GetPosition().x > (std::round(GetPosition().y - 0.9) / 2.0f + 1.0f) * 10.0f + 0.5f)
 		{
-			if (GetPosition().x > (std::round(GetPosition().y - 0.9) / 2.0f + 1.0f) * 10.0f + 0.5f)
-			{
-				GameObject::SetPosition(GetPosition() - glm::vec3(10.0f, 0.0f, 0.0f));
-			}
-			else if (GetPosition().x <= ((std::round(GetPosition().y - 0.9) / 2.0f) * 10 + 0.5f) * IsExtended())
-			{
-				GameObject::SetPosition(GetPosition() + glm::vec3(10.0f, 0.0f, 0.0f));
-			}
-			glm::vec3 move = m_TargetPos - GetPosition();
-			move = glm::normalize(move);
-			if (std::abs(move.y) > 0.01)
-			{
-				move.y /= std::abs(move.y);
-				SetDirection(glm::vec3(0, 0, 1));
-				GameObject::SetPosition(GetPosition() + glm::vec3(0, move.y * dtS, 0));
-			}
-			else
-			{
-				SetDirection(glm::vec3(move.x, 0, move.z));
-				GameObject::SetPosition(GetPosition() + m_Direction * dtS);
-			}
-			m_PlayerTile = glm::ivec3(std::round(GetPosition().x) - std::round(GetPosition().y - 0.9) * 5 * IsExtended(), std::round((GetPosition().y - 0.9) / 2), std::round(GetPosition().z));
-			if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
-			{
-				SetRoom(m_pPathFinder->GetWorld()->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
-			}
+			GameObject::SetPosition(GetPosition() - glm::vec3(10.0f, 0.0f, 0.0f));
+		}
+		else if (GetPosition().x <= ((std::round(GetPosition().y - 0.9) / 2.0f) * 10 + 0.5f) * IsExtended() * 0)
+		{
+			GameObject::SetPosition(GetPosition() + glm::vec3(10.0f, 0.0f, 0.0f));
+		}
+		glm::vec3 move = m_TargetPos - GetPosition();
+		move = glm::normalize(move);
+		if (std::abs(move.y) > 0.01)
+		{
+			move.y /= std::abs(move.y);
+			SetDirection(glm::vec3(0, 0, 1));
+			GameObject::SetPosition(GetPosition() + glm::vec3(0, move.y * dtS, 0));
+		}
+		else
+		{
+			SetDirection(glm::vec3(move.x, 0, move.z));
+			GameObject::SetPosition(GetPosition() + m_Direction * dtS);
+		}
+		m_PlayerTile = glm::ivec3(std::round(GetPosition().x), std::round((GetPosition().y - 0.9) / 2), std::round(GetPosition().z));
+		if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
+		{
+			SetRoom(m_pPathFinder->GetWorld()->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 		}
 	}
 }

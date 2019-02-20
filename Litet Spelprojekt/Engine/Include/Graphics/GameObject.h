@@ -26,7 +26,7 @@ public:
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
 	virtual void SetRoom(uint32 room) noexcept;
-	void SetExtend(bool extend) noexcept;
+	void SetExtending(bool extend) noexcept;
 	void Extend(float dtS) noexcept;
 	void SetHidden(bool isCrew) noexcept;
 

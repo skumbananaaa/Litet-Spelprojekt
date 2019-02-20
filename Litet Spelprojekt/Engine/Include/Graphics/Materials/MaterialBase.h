@@ -62,7 +62,5 @@ struct MaterialBuffer
 
 struct WorldBuffer
 {
-	int concealed;
 	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
-	int extended;
 };

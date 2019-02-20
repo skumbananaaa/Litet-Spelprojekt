@@ -50,6 +50,8 @@ public:
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
 	const std::vector<PointLight*>& GetRoomLights() const noexcept;
 	std::vector<PointLight*>& GetRoomLights() noexcept;
+	const float GetExtension() const noexcept;
+	const bool IsExtending() const noexcept;
 	const bool IsExtended() const noexcept;
 	const bool IsConcealed() const noexcept;
 
@@ -68,6 +70,9 @@ private:
 	std::vector<SpotLight*> m_SpotLights;
 	std::vector<PointLight*> m_RoomLights;
 	SkyBox* m_pSkyBox;
+
+	float m_Extension = 0.0f;
+	bool m_Extending = false;
 
 	bool m_Concealed = false;
 	bool m_Extended = false;
@@ -144,6 +149,16 @@ inline const std::vector<PointLight*>& Scene::GetRoomLights() const noexcept
 inline std::vector<PointLight*>& Scene::GetRoomLights() noexcept
 {
 	return m_RoomLights;
+}
+
+inline const float Scene::GetExtension() const noexcept
+{
+	return m_Extension;
+}
+
+inline const bool Scene::IsExtending() const noexcept
+{
+	return m_Extending;
 }
 
 inline const bool Scene::IsExtended() const noexcept

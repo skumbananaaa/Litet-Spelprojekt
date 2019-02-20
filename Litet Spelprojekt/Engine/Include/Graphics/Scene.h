@@ -29,7 +29,7 @@ public:
 	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
-	void ExtendScene(bool extend) noexcept;
+	void ExtendScene() noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;

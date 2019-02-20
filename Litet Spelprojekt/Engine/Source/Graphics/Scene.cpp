@@ -180,10 +180,10 @@ void Scene::RemoveGameObject(uint32 index) noexcept
 	m_GameObjects.erase(m_GameObjects.begin() + index);
 }
 
-void Scene::ExtendScene(bool extend) noexcept
+void Scene::ExtendScene() noexcept
 {
 	m_Extending = true;
-	m_Extended = extend;
+	m_Extended = !m_Extended;
 }
 
 void Scene::OnUpdate(float dtS) noexcept

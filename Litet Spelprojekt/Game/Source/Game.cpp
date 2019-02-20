@@ -519,11 +519,6 @@ void Game::OnKeyUp(KEY keycode)
 {
 	switch (keycode)
 	{
-		case KEY_SPACE:
-		{
-			m_Scenes[m_SceneId]->ExtendScene(false);
-			break;
-		}
 	}
 
 	Application::OnKeyUp(keycode);
@@ -545,7 +540,7 @@ void Game::OnKeyDown(KEY keycode)
 		}
 		case KEY_SPACE:
 		{
-			m_Scenes[m_SceneId]->ExtendScene(true);
+			m_Scenes[m_SceneId]->ExtendScene();
 			break;
 		}
 		case KEY_L:

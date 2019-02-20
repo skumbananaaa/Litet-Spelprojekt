@@ -186,28 +186,20 @@ void Scene::ExtendScene(bool extend) noexcept
 	m_Extended = extend;
 }
 
-void Scene::SetConceal(bool conceal) noexcept
-{
-	m_Concealed = conceal;
-}
-
 void Scene::OnUpdate(float dtS) noexcept
 {
 	for (GameObject* pGameObject : m_GameObjects)
 	{
 		pGameObject->Update(dtS);
-		pGameObject->SetExtending(m_Extending);
 	}
 
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
 		pSpotLight->Update(dtS);
-		pSpotLight->SetExtending(m_Extending);
 	}
 	for (PointLight* pPointLight : m_PointLights)
 	{
 		pPointLight->Update(dtS);
-		pPointLight->SetExtending(m_Extending);
 	}
 
 	for (ParticleSystem* pSystem : m_ParticleSystems)

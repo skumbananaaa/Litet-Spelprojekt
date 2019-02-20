@@ -209,11 +209,14 @@ void main()
 	vec3 c = vec3(0.0f);
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
-		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
-		vec3 lightColor = g_DirLights[i].Color.rgb;
-		float cosTheta = dot(normal, lightDir);
+		if (worldPos.y >= 5.9f || (worldPos.y >= 3.9 && worldPos.y <= 4.0) || (worldPos.y >= 1.9 && worldPos.y <= 2.0) || worldPos.x > 30.5f || worldPos.x < 0.5f || worldPos.z > 40.5f || worldPos.z < 0.5f || worldPos.y < 0.0f)
+		{
+			vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
+			vec3 lightColor = g_DirLights[i].Color.rgb * 10.0f;
+			float cosTheta = dot(normal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+			c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		}
 	}
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)

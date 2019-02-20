@@ -11,10 +11,4 @@ WaterObject::~WaterObject()
 
 void WaterObject::Update(float deltaTime) noexcept
 {
-	Extend(deltaTime);
-
-	if (IsExtended())
-	{
-		UpdateTransform();
-	}
 }

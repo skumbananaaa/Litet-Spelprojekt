@@ -55,7 +55,7 @@ public:
 	virtual void OnHovered();
 	virtual void OnNotHovered();
 	void UpdateLastKnownPosition() noexcept;
-	const glm::vec3& GetLastKnownPosition() noexcept;
+	const glm::vec3& GetLastKnownPosition() const noexcept;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
 
 	int32 GetShipNumber() const noexcept;

@@ -19,6 +19,7 @@ Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, f
 	SetScale(glm::vec3(0.2, 1.8, 0.5));
 	UpdateTransform();
 
+	m_LastKnownPosition = position;
 
 	//Test
 	m_HasInjuryBoneBroken = Random::GenerateBool();
@@ -110,7 +111,7 @@ void Crewmember::UpdateLastKnownPosition() noexcept
 	m_LastKnownPosition = GetPosition();
 }
 
-const glm::vec3& Crewmember::GetLastKnownPosition() noexcept
+const glm::vec3& Crewmember::GetLastKnownPosition() const noexcept
 {
 	return m_LastKnownPosition;
 }
@@ -305,14 +306,6 @@ void Crewmember::FollowPath(float dtS)
 	}
 	if ((std::abs(GetPosition().x - m_TargetPos.x) > 0.01 || std::abs(GetPosition().y - m_TargetPos.y) > 0.01 || std::abs(GetPosition().z - m_TargetPos.z) > 0.01))
 	{
-		if (GetPosition().x > (std::round(GetPosition().y - 0.9) / 2.0f + 1.0f) * 10.0f + 0.5f)
-		{
-			GameObject::SetPosition(GetPosition() - glm::vec3(10.0f, 0.0f, 0.0f));
-		}
-		else if (GetPosition().x <= ((std::round(GetPosition().y - 0.9) / 2.0f) * 10 + 0.5f) * IsExtended() * 0)
-		{
-			GameObject::SetPosition(GetPosition() + glm::vec3(10.0f, 0.0f, 0.0f));
-		}
 		glm::vec3 move = m_TargetPos - GetPosition();
 		move = glm::normalize(move);
 		if (std::abs(move.y) > 0.01)

@@ -14,6 +14,10 @@ void ScenarioFire::OnEnd() noexcept
 	
 }
 
+void ScenarioFire::OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms)
+{
+}
+
 bool ScenarioFire::Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept
 {
 	return true;

@@ -3,12 +3,12 @@
 #include <Graphics/Buffers/UniformBuffer.h>
 #include "Material.h"
 
-_declspec(align(16)) struct WaterBuffer
+_declspec(align(16)) struct WaterOutdoorBuffer
 {
 	float DistortionFactor;
 };
 
-class API WaterMaterial : public Material
+class API WaterOutdoorMaterial : public Material
 {
 	friend class ResourceHandler;
 
@@ -21,12 +21,12 @@ public:
 	void SetDistortionFactor(float distortionFactor) const;
 
 private:
-	WaterMaterial();
-	~WaterMaterial();
+	WaterOutdoorMaterial();
+	~WaterOutdoorMaterial();
 
 	Texture2D* m_pDistortion;
 	Texture2D* m_pDepthMap;
 	mutable UniformBuffer* m_pWaterBuffer;
 	mutable PlanarReflector* m_pReflector;
-	mutable WaterBuffer m_Buffer;
+	mutable WaterOutdoorBuffer m_Buffer;
 };

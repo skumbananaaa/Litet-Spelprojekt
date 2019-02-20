@@ -1,0 +1,189 @@
+layout(std140, binding = 0) uniform CameraBuffer
+{
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
+	vec3 g_CameraLookAt;
+	float pad1;
+	vec3 g_CameraPosition;
+};
+
+#if defined(VERTEX_SHADER)
+layout(location = 0) in vec3 g_Position;
+layout(location = 1) in vec3 g_Normal;
+layout(location = 2) in vec3 g_Tangent;
+layout(location = 3) in vec2 g_TexCoords;
+layout(location = 4) in mat4 g_InstanceModel;
+
+out VS_OUT
+{
+	vec3 Position;
+	vec3 Normal;
+	vec2 TexCoords;
+	vec4 ClipSpacePosition;
+} vs_out;
+
+void main()
+{
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	vs_out.Position = worldPos.xyz;
+	vs_out.Normal = (g_InstanceModel * vec4(g_Normal, 0.0)).xyz;
+	vs_out.TexCoords = g_TexCoords;
+	vs_out.ClipSpacePosition = g_ProjectionView * worldPos;
+
+	gl_Position = vs_out.ClipSpacePosition;
+}
+
+#elif defined(FRAGMENT_SHADER)
+#define NUM_DIRECTIONAL_LIGHTS 1
+#define NUM_POINT_LIGHTS 3
+#define NUM_SPOT_LIGHTS 2
+
+layout(early_fragment_tests) in;
+
+layout(location = 0) out vec4 g_OutColor;
+
+layout(binding = 1) uniform sampler2D normalMap;
+layout(binding = 3) uniform sampler2D dudvMap;
+
+layout(std140, binding = 3) uniform WaterBuffer
+{
+	float g_DistortionFactor;
+};
+
+in VS_OUT
+{
+	vec3 Position;
+	vec3 Normal;
+	vec2 TexCoords;
+	vec4 ClipSpacePosition;
+} fs_in;
+
+const float specularStrength = 256.0f;
+const float shininess = 20.0;
+const float normalYSmoothness = 8.0;
+
+struct DirectionalLight
+{
+	vec4 Color;
+	vec4 Direction;
+};
+
+struct PointLight
+{
+	vec4 Color;
+	vec4 Position;
+};
+
+struct SpotLight
+{
+	vec4 Color;
+	vec3 Position;
+	float Angle;
+	vec3 TargetDirection;
+	float OuterAngle;
+};
+
+layout(binding = 1) uniform LightBuffer
+{
+	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
+	PointLight g_PointLights[NUM_POINT_LIGHTS];
+	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)
+{
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+
+	//AMBIENT
+	vec3 ambient = vec3(0.2f);
+
+	//DIFFUSE
+	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
+
+	//SPECULAR
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), specularIntensity);
+	vec3 specular = vec3(spec) * lightColor * intensity;
+
+	return ((ambient + diffuse) * color * lightColor) + specular;
+}
+
+void main()
+{
+	//SETUP
+	vec4 col = vec4(0.09f, 0.34f, 0.49f, 1.0f); //Ocean Blue
+	vec3 inNormal = normalize(fs_in.Normal);
+	vec2 ndcTexCoords = (fs_in.ClipSpacePosition.xy / fs_in.ClipSpacePosition.w) / 2.0 + 0.5;
+
+	vec2 distortionTexCoords = texture(dudvMap, vec2(fs_in.TexCoords.x + g_DistortionFactor, fs_in.TexCoords.y)).rg * 0.1f;
+	distortionTexCoords = fs_in.TexCoords + vec2(distortionTexCoords.x, distortionTexCoords.y + g_DistortionFactor);
+
+	//NORMAL
+	vec3 normal = texture(normalMap, distortionTexCoords).xyz;
+	normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y * normalYSmoothness, normal.z * 2.0 - 1.0));
+	float useNormalMap = abs(inNormal.y);
+	normal = normal * useNormalMap + inNormal * (1.0f - useNormalMap);
+
+	//VIEWDIR
+	vec3 viewDir = g_CameraPosition - fs_in.Position;
+	float distFromCamera = length(viewDir);
+	viewDir = normalize(viewDir);
+
+	//Do lightcalculation
+	vec3 c = vec3(0.0f);
+	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
+	{
+		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
+		vec3 lightColor = g_DirLights[i].Color.rgb;
+		float cosTheta = dot(normal, lightDir);
+
+		c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
+	}
+
+	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
+	{
+		vec3 lightDir = g_PointLights[i].Position.xyz - fs_in.Position;
+		float dist = length(lightDir);
+
+		float attenuation = 1.0f / (dist * dist);
+		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
+		lightDir = normalize(lightDir);
+		float cosTheta = dot(normal, lightDir);
+
+		c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
+	}
+
+	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
+	{
+		float light_attenuation = 1.0f;
+		vec3 lightDir = g_SpotLights[i].Position.xyz - fs_in.Position;
+		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
+		float dist = length(lightDir);
+		lightDir = normalize(lightDir);
+		float cosTheta = dot(normal, lightDir);
+
+		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
+		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
+		if (lightToSurfaceAngle > coneAngle)
+		{
+			light_attenuation += lightToSurfaceAngle - coneAngle;
+		}
+		float attenuation = 1.0f / ((dist));
+		
+		vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
+
+		float theta = dot(lightDir, -targetDir);
+		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
+		float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
+
+		if(theta > g_SpotLights[i].OuterAngle)
+		{
+			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, col.rgb, specularStrength, intensity);
+		}
+	}
+
+	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);
+}
+#endif

@@ -111,7 +111,7 @@ void Game::OnResourcesLoaded()
 	LightManager::Init(m_Scenes[0], 3);
 
 	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater());
+	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 
 
 	//Create renderers
@@ -305,7 +305,7 @@ void Game::OnResourcesLoaded()
 		pGameObject = new GameObject();
 		pGameObject->SetIsReflectable(true);
 		pGameObject->SetMesh(MESH::QUAD);
-		pGameObject->SetMaterial(MATERIAL::WATER);
+		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetScale(glm::vec3(200.0f));
 		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 		pGameObject->UpdateTransform();
@@ -315,9 +315,9 @@ void Game::OnResourcesLoaded()
 	//Reflector for water
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	m_Scenes[0]->AddPlanarReflector(pReflector);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 	////Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
@@ -491,7 +491,7 @@ void Game::OnResourcesLoaded()
 		pGameObject = new GameObject();
 		pGameObject->SetMesh(MESH::QUAD);
 		pGameObject->SetIsReflectable(true);
-		pGameObject->SetMaterial(MATERIAL::WATER);
+		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::radians<float>(90.0f)));
 		pGameObject->SetScale(glm::vec3(30.0f));
@@ -501,7 +501,7 @@ void Game::OnResourcesLoaded()
 		PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 		m_Scenes[1]->AddPlanarReflector(pReflector);
 	}
-	//((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
+	//((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
 	m_SceneId = 0;
 }
@@ -560,13 +560,14 @@ void Game::OnKeyDown(KEY keycode)
 		{
 			m_SceneId = (m_SceneId + 1) % m_Scenes.size();
 			m_pTextViewScene->SetText("Scene " + std::to_string(m_SceneId));
-			((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(m_Scenes[m_SceneId]->GetPlanarReflectors()[0]);
+			((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(m_Scenes[m_SceneId]->GetPlanarReflectors()[0]);
 			m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
 			break;
 		}
 		case KEY_R:
 		{
 			ShowCrewmember(0);
+			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 			break;
 		}
 	}
@@ -666,7 +667,8 @@ void Game::OnUpdate(float dtS)
 
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetDistortionFactor(dist);
+	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
 
 	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
 
@@ -679,6 +681,7 @@ void Game::OnUpdate(float dtS)
 			m_RoomLightsTimers[i] = 0.0f;
 			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
 			m_ActiveRooms[i] = 1;
+			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 		}
 	}
 

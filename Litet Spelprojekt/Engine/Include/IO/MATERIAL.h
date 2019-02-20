@@ -18,7 +18,8 @@ public:
 	static uint32 OCEAN_BLUE;
 	static uint32 BOAT;
 	static uint32 GROUND;
-	static uint32 WATER;
+	static uint32 WATER_OUTDOOR;
+	static uint32 WATER_INDOOR;
 	static uint32 WALL_STANDARD;
 	static uint32 CREW_STANDARD;
 	static uint32 SINGLE_BED;

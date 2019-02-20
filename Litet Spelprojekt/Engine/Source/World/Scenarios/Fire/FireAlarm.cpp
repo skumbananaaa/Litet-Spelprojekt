@@ -5,8 +5,8 @@
 #include <Graphics/Scene.h>
 
 FireAlarm::FireAlarm(int32 source) : GameObject(),
-m_FireDetected(false),
-m_pSpotlight(nullptr)
+	m_FireDetected(false),
+	m_pSpotlight(nullptr)
 {
 	m_pAudioSrc = AudioSource::CreateSoundSource(source);
 	m_pAudioSrc->SetRollOffFactor(10.0f);
@@ -66,10 +66,5 @@ void FireAlarm::OnSmokeDetected() noexcept
 
 	m_FireDetected = true;
 	m_Rotation = 0;
-	//m_Src->Play();
-}
-
-void FireAlarm::OnAddedToScene(Scene* scene) noexcept
-{
-	OnSmokeDetected();
+	m_pAudioSrc->Play();
 }

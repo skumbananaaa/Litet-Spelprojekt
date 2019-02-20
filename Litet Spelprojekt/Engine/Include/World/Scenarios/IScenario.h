@@ -11,6 +11,7 @@ protected:
 public:
 	virtual void OnStart() noexcept = 0;
 	virtual void OnEnd()noexcept = 0;
+	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) = 0;
 	virtual bool Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept = 0;
 	virtual std::string GetName() noexcept = 0;
 	virtual int32 GetCooldownTime() noexcept = 0;

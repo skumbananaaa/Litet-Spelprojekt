@@ -25,7 +25,8 @@
 #include <Graphics/GUI/ListScrollable.h>
 
 #include <Graphics/Materials/WallMaterial.h>
-#include <Graphics/Materials/WaterMaterial.h>
+#include <Graphics/Materials/WaterOutdoorMaterial.h>
+#include <Graphics/Materials/WaterIndoorMaterial.h>
 
 #include <World/Logger.h>
 #include <World/Scenarios/ScenarioManager.h>
@@ -97,7 +98,6 @@ private:
 
 	std::vector<uint32> m_ActiveRooms;
 	std::vector<float> m_RoomLightsTimers;
-	float m_DoorLightTimer = 0.0f;
 	uint32 m_CurrentLight = 0;
 
 	//Sound

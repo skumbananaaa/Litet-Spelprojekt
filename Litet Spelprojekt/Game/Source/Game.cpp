@@ -111,7 +111,7 @@ void Game::OnResourcesLoaded()
 	LightManager::Init(m_Scenes[0], 3);
 
 	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater());
+	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 
 	//Create renderers
@@ -299,7 +299,7 @@ void Game::OnResourcesLoaded()
 		pGameObject = new GameObject();
 		pGameObject->SetIsReflectable(true);
 		pGameObject->SetMesh(MESH::QUAD);
-		pGameObject->SetMaterial(MATERIAL::WATER);
+		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetScale(glm::vec3(200.0f));
 		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 		pGameObject->UpdateTransform();
@@ -309,9 +309,9 @@ void Game::OnResourcesLoaded()
 	//Reflector for water
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	m_Scenes[0]->AddPlanarReflector(pReflector);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 	////Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
@@ -381,7 +381,7 @@ void Game::OnResourcesLoaded()
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetPath(m_pWorld);
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(0)->SetIsCrew(true);
+	m_Crew.GetMember(0)->SetHidden(false);
 	m_Crew.GetMember(0)->UpdateTransform();
 	m_Scenes[0]->AddGameObject(m_Crew.GetMember(0));
 
@@ -396,7 +396,7 @@ void Game::OnResourcesLoaded()
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
-		m_Crew.GetMember(i)->SetIsCrew(true);
+		m_Crew.GetMember(i)->SetHidden(false);
 		m_Crew.GetMember(i)->UpdateTransform();
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}
@@ -487,7 +487,7 @@ void Game::OnResourcesLoaded()
 		pGameObject = new GameObject();
 		pGameObject->SetMesh(MESH::QUAD);
 		pGameObject->SetIsReflectable(true);
-		pGameObject->SetMaterial(MATERIAL::WATER);
+		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::radians<float>(90.0f)));
 		pGameObject->SetScale(glm::vec3(30.0f));
@@ -497,7 +497,7 @@ void Game::OnResourcesLoaded()
 		PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 		m_Scenes[1]->AddPlanarReflector(pReflector);
 	}
-	//((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(pReflector);
+	//((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
 	m_SceneId = 0;
 }
@@ -556,13 +556,14 @@ void Game::OnKeyDown(KEY keycode)
 		{
 			m_SceneId = (m_SceneId + 1) % m_Scenes.size();
 			m_pTextViewScene->SetText("Scene " + std::to_string(m_SceneId));
-			((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetPlanarReflector(m_Scenes[m_SceneId]->GetPlanarReflectors()[0]);
+			((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(m_Scenes[m_SceneId]->GetPlanarReflectors()[0]);
 			m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
 			break;
 		}
 		case KEY_R:
 		{
 			ShowCrewmember(0);
+			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 			break;
 		}
 	}
@@ -662,7 +663,8 @@ void Game::OnUpdate(float dtS)
 
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
-	((WaterMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER))->SetDistortionFactor(dist);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetDistortionFactor(dist);
+	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
 
 	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
 
@@ -675,14 +677,8 @@ void Game::OnUpdate(float dtS)
 			m_RoomLightsTimers[i] = 0.0f;
 			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
 			m_ActiveRooms[i] = 1;
+			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 		}
-	}
-
-	m_DoorLightTimer += dtS;
-	if (m_DoorLightTimer >= 5.0f)
-	{
-		m_DoorLightTimer = 0.0f;
-		m_pWorld->GetRoom(0)->SetActive(false);
 	}
 
 	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
@@ -892,7 +888,7 @@ void Game::ShowCrewmember(uint32 crewmember)
 	{
 		uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
 
-		if (!m_pWorld->GetRoom(roomIndex)->IsActive() && roomIndex != 0)
+		if (!m_pWorld->GetRoom(roomIndex)->IsActive())
 		{
 			const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
 			std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
@@ -902,9 +898,6 @@ void Game::ShowCrewmember(uint32 crewmember)
 			m_ActiveRooms[m_CurrentLight] = roomIndex;
 			m_pWorld->GetRoom(roomIndex)->SetActive(true);
 			m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
-
-			m_pWorld->GetRoom(0)->SetActive(true);
-			m_DoorLightTimer = 0.0f;
 		}
 	}
 }

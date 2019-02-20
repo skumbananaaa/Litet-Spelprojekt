@@ -15,13 +15,13 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 		{
 			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
 			m_ppLevelData[x][z].HasStairs = false;
+			m_ppLevelData[x][z].HasDoor = false;
 			m_ppLevelData[x][z].BurnsAt = 100;
 			m_ppLevelData[x][z].Temp = 30;
 			m_ppLevelData[x][z].WaterLevel = 0.0f;
 			m_ppLevelData[x][z].WaterLevelChange = 0.0f;
 			m_ppLevelData[x][z].WaterLevelLastUpdated = 0.0f;
 			m_ppLevelData[x][z].WaterLevelAge = 1.0f;
-			m_ppLevelData[x][z].WaterFloodsFromeAbove = false;
 			m_ppLevelData[x][z].AlreadyFlooded = false;
 			m_ppLevelData[x][z].WaterBlockName = "WaterBlock [" + std::to_string(x) + ", " + std::to_string(levelHeight) + ", " + std::to_string(z) + "]";
 		}
@@ -104,13 +104,13 @@ void WorldLevel::GenerateRooms()
 			maxRoomNum = glm::max(maxRoomNum, m_ppLevel[i][j]);
 
 			wallH = (m_ppLevel[i][j] != m_ppLevel[i + 1][j]);
-			if ((!wallH || (m_ppLevel[i][j] == 0 && m_ppLevel[i + 1][j] != 1) || (m_ppLevel[i + 1][j] == 0 && m_ppLevel[i][j] != 1) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0))
+			if ((!wallH || (m_ppLevelData[i][j].HasDoor && m_ppLevelData[i + 1][j].HasDoor) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0))
 			{
 				endWallH = glm::vec2(i + 0.5, j - 0.5);
 				m_Walls.push_back(glm::vec4((startWallH + endWallH) / 2.0f, endWallH - startWallH));
 				startWallH = glm::vec2(0, 0);
 			}
-			if (wallH && startWallH == glm::vec2(0, 0) && (m_ppLevel[i][j] != 0 || m_ppLevel[i + 1][j] == 1) && (m_ppLevel[i + 1][j] != 0 || m_ppLevel[i][j] == 1))
+			if (wallH && startWallH == glm::vec2(0, 0) && (!m_ppLevelData[i][j].HasDoor || !m_ppLevelData[i + 1][j].HasDoor))
 			{
 				startWallH = glm::vec2(i + 0.5, j - 0.5);
 			}
@@ -131,13 +131,13 @@ void WorldLevel::GenerateRooms()
 			m_RoomBounds[m_ppLevel[j][i]].w = glm::max(m_RoomBounds[m_ppLevel[j][i]].w, i);
 
 			wallV = (m_ppLevel[j][i] != m_ppLevel[j][i + 1]);
-			if ((!wallV || (m_ppLevel[j][i] == 0 && m_ppLevel[j][i + 1] != 1) || (m_ppLevel[j][i + 1] == 0 && m_ppLevel[j][i] != 1) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
+			if ((!wallV || (m_ppLevelData[j][i].HasDoor && m_ppLevelData[j][i + 1].HasDoor) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
 			{
 				endWallV = glm::vec2(j - 0.5, i + 0.5);
 				m_Walls.push_back(glm::vec4((startWallV + endWallV) / 2.0f, endWallV - startWallV));
 				startWallV = glm::vec2(0, 0);
 			}
-			if (wallV && startWallV == glm::vec2(0, 0) && (m_ppLevel[j][i] != 0 || m_ppLevel[j][i + 1] == 1) && (m_ppLevel[j][i + 1] != 0 || m_ppLevel[j][i] == 1))
+			if (wallV && startWallV == glm::vec2(0, 0) && (!m_ppLevelData[j][i].HasDoor || !m_ppLevelData[j][i + 1].HasDoor))
 			{
 				startWallV = glm::vec2(j - 0.5, i + 0.5);
 			}
@@ -156,7 +156,7 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 			pGameObject->SetIsReflectable(true);
 			pGameObject->SetIsVisible(false);
 			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetMaterial(MATERIAL::OCEAN_BLUE);
+			pGameObject->SetMaterial(MATERIAL::WATER_INDOOR);
 			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
 			pGameObject->UpdateTransform();

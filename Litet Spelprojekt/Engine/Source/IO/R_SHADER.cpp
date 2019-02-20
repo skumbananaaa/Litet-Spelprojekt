@@ -16,7 +16,8 @@ uint32 SHADER::FORWARD_PASS = 0;
 uint32 SHADER::SKYBOX_PASS = 0;
 uint32 SHADER::ORTHOGRAPHIC = 0;
 uint32 SHADER::WALL_MATERIAL = 0;
-uint32 SHADER::WATER_MATERIAL = 0;
+uint32 SHADER::WATER_OUTDOOR_MATERIAL = 0;
+uint32 SHADER::WATER_INDOOR_MATERIAL = 0;
 uint32 SHADER::DEFERRED_DECALS = 0;
 uint32 SHADER::STANDARD_MATERIAL = 0;
 uint32 SHADER::EQUIREC_TO_CUBEMAP = 0;
@@ -50,7 +51,8 @@ void SHADER::RegisterResources()
 #elif defined(FORWARD_RENDER_PATH)
 	DEFERRED_DECALS			= ResourceHandler::RegisterShader("deferredDecals.glsl", "deferredDecals.glsl");
 	STANDARD_MATERIAL		= ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl");
-	WATER_MATERIAL			= ResourceHandler::RegisterShader("forwardWater.glsl", "forwardWater.glsl");
+	WATER_OUTDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardOutdoorWater.glsl", "forwardOutdoorWater.glsl");
+	WATER_INDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl");
 	PARTICLES				= ResourceHandler::RegisterShader("forwardParticles.glsl", "forwardParticles.glsl");
 #endif
 

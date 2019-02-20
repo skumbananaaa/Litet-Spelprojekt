@@ -29,6 +29,7 @@ public:
 
 	void AddWorldObject(const WorldObject& object) noexcept;
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
+	void SetDoors(const glm::ivec3* doors, uint32 nrOfDoors);
 
 	const WorldLevel* const GetLevel(uint32 level) const noexcept;
 	WorldLevel* const GetLevel(uint32 level) noexcept;
@@ -39,6 +40,8 @@ public:
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
 	Room* GetRoom(uint32 room) const noexcept;
+	const glm::ivec3& GetDoor(uint32 index) const noexcept;
+	uint32 GetNumDoors() const noexcept;
 
 	void GenerateRooms();
 	void GenerateWater(Scene* pScene) noexcept;
@@ -52,6 +55,8 @@ private:
 
 	glm::ivec3* m_pStairs;
 	uint32 m_NumStairs;
+
+	std::vector<glm::ivec3> m_Doors;
 
 	std::vector<Room*> m_Rooms;
 };

@@ -15,16 +15,19 @@ public:
 	///<summary>Sets the current material to the default material. </summary>
 	void ResetMaterial() noexcept;
 	void SetHasStairs(bool value) noexcept;
+	void SetHasDoor(bool value) noexcept;
 
 	///<summary>Returns the id of the tile.</summary>
 	uint32 GetID() const;
 	///<summary>Returns the id of the tile.</summary>
 	bool HasStairs() const;
+	bool HasDoor() const;
 
 private:
 	uint32 m_Id;
 	uint32 m_DefaultMaterial;
 	bool m_HasStairs;
+	bool m_HasDoor;
 };
 
 inline uint32 Tile::GetID() const
@@ -35,4 +38,9 @@ inline uint32 Tile::GetID() const
 inline bool Tile::HasStairs() const
 {
 	return m_HasStairs;
+}
+
+inline bool Tile::HasDoor() const
+{
+	return m_HasDoor;
 }

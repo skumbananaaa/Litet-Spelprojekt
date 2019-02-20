@@ -225,7 +225,7 @@ void ForwardRenderer::CreateBatches(const Scene& scene, const World* const pWorl
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
 		{
-			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsCrew()))
+			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsHidden()))
 			{
 				bool batchFound = false;
 				const Material* pMaterial = drawables[i]->GetMaterial();

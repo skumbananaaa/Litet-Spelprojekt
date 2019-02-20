@@ -17,7 +17,8 @@ public:
 	static uint32 SKYBOX_PASS;
 	static uint32 ORTHOGRAPHIC;
 	static uint32 WALL_MATERIAL;
-	static uint32 WATER_MATERIAL;
+	static uint32 WATER_OUTDOOR_MATERIAL;
+	static uint32 WATER_INDOOR_MATERIAL;
 	static uint32 DEFERRED_DECALS;
 	static uint32 STANDARD_MATERIAL;
 	static uint32 PARTICLES;

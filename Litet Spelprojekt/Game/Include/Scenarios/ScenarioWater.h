@@ -4,18 +4,22 @@
 class ScenarioWater : public IScenario
 {
 public:
-	ScenarioWater();
+	ScenarioWater(bool waterAlwaysVisible = false);
 
 	virtual void OnStart() noexcept override;
 	virtual void OnEnd()noexcept override;
+	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) override;
 	virtual bool Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 
 private:
+	bool m_WaterAlwaysVisible;
+
+private:
 	//Scenario Spread Helper Functions
-	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo) const noexcept;
+	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept;
 
 	//Water Scenario Helper Functions
 	float CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept;
@@ -30,14 +34,14 @@ private:
 	void Evaporate(Scene* pScene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
 };
 
-inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo) const noexcept
+inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept
 {
 	if (tileTo.x <= 0 || tileTo.x >= levelSize.x - 1 || tileTo.y <= 0 || tileTo.y >= levelSize.y - 1)
 	{
 		return 0;
 	}
 
-	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || ppLevel[tileFrom.x][tileFrom.y] == 0 || ppLevel[tileTo.x][tileTo.y] == 0)
+	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || (ppLevelData[tileFrom.x][tileFrom.y].HasDoor && ppLevelData[tileTo.x][tileTo.y].HasDoor))
 	{
 		return 1;
 	}
@@ -136,7 +140,7 @@ inline void ScenarioWater::UpdateFloodingIdsBelow(WorldLevel* pWorldLevelBelow, 
 
 inline bool ScenarioWater::UpdateWaterLevelBelow(WorldLevel* pWorldLevel, WorldLevel* pWorldLevelBelow, const glm::ivec2& tile) const noexcept
 {
-	float missingWaterBelow = 1.0f - pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevel;
+	float missingWaterBelow = WATER_MAX_LEVEL - pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevel;
 	float waterLeft = glm::max<float>(pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel - missingWaterBelow, 0.0f);
 	float waterLevelChange = pWorldLevel->GetLevelData()[tile.x][tile.y].WaterLevel - waterLeft;
 	pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterLevelChange += waterLevelChange;
@@ -144,7 +148,6 @@ inline bool ScenarioWater::UpdateWaterLevelBelow(WorldLevel* pWorldLevel, WorldL
 
 	if (waterLevelChange > 0.0f)
 	{
-		pWorldLevelBelow->GetLevelData()[tile.x][tile.y].WaterFloodsFromeAbove = true;
 		return true;
 	}
 

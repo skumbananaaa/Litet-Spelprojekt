@@ -10,16 +10,6 @@ layout(std140, binding = 0) uniform CameraBuffer
 	vec3 g_CameraPosition;
 };
 
-layout(std140, binding = 2) uniform MaterialBuffer
-{
-	vec4 g_Color;
-	vec4 g_ClipPlane;
-	float g_Specular;
-	float g_HasDiffuseMap;
-	float g_HasNormalMap;
-	float g_HasSpecularMap;
-};
-
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
@@ -27,41 +17,24 @@ layout(location = 2) in vec3 g_Tangent;
 layout(location = 3) in vec2 g_TexCoords;
 layout(location = 4) in mat4 g_InstanceModel;
 
-layout(std140, binding = 4) uniform PlaneBuffer
-{
-	vec4 g_ReflectionClipPlane;
-};
-
 out VS_OUT
 {
-	vec3 WorldPosition;
-	vec3 ObjectPosition;
+	vec3 Position;
 	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
 	vec2 TexCoords;
+	vec4 ClipSpacePosition;
 } vs_out;
 
 void main()
 {
-	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
-
-	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
-	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
-
-	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
-	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
-
-	vs_out.WorldPosition = worldPos.xyz;
-	vs_out.ObjectPosition = g_InstanceModel[3].xyz;
-	vs_out.Normal = normal;
-	vs_out.Tangent = tangent;
-	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	vs_out.Position = worldPos.xyz;
+	vs_out.Normal = (g_InstanceModel * vec4(g_Normal, 0.0)).xyz;
 	vs_out.TexCoords = g_TexCoords;
+	vs_out.ClipSpacePosition = g_ProjectionView * worldPos;
 
-	gl_Position = g_ProjectionView * worldPos;
+	gl_Position = vs_out.ClipSpacePosition;
 }
-
 
 #elif defined(FRAGMENT_SHADER)
 #define NUM_DIRECTIONAL_LIGHTS 1
@@ -72,19 +45,25 @@ layout(early_fragment_tests) in;
 
 layout(location = 0) out vec4 g_OutColor;
 
-layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform sampler2D g_NormalMap;
-layout(binding = 2) uniform sampler2D g_SpecularMap;
+layout(binding = 1) uniform sampler2D normalMap;
+layout(binding = 3) uniform sampler2D dudvMap;
+
+layout(std140, binding = 3) uniform WaterBuffer
+{
+	float g_DistortionFactor;
+};
 
 in VS_OUT
 {
-	vec3 WorldPosition;
-	vec3 ObjectPosition;
+	vec3 Position;
 	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
 	vec2 TexCoords;
+	vec4 ClipSpacePosition;
 } fs_in;
+
+const float specularStrength = 256.0f;
+const float shininess = 20.0;
+const float normalYSmoothness = 8.0;
 
 struct DirectionalLight
 {
@@ -133,27 +112,24 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 
 void main()
 {
-	//NORMALIZE
-	vec3 inTangent = normalize(fs_in.Tangent);
-	vec3 inBinormal = normalize(fs_in.Binormal);
+	//SETUP
+	vec4 col = vec4(0.09f, 0.34f, 0.49f, 1.0f); //Ocean Blue
 	vec3 inNormal = normalize(fs_in.Normal);
+	vec2 ndcTexCoords = (fs_in.ClipSpacePosition.xy / fs_in.ClipSpacePosition.w) / 2.0 + 0.5;
 
-	//VIEWDIR
-	vec3 viewDir = normalize(g_CameraPosition.xyz - fs_in.WorldPosition);
-
-	//SPECULAR
-	float specular = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + ((g_Specular) * (1.0f - g_HasSpecularMap));
+	vec2 distortionTexCoords = texture(dudvMap, vec2(fs_in.TexCoords.x + g_DistortionFactor, fs_in.TexCoords.y)).rg * 0.1f;
+	distortionTexCoords = fs_in.TexCoords + vec2(distortionTexCoords.x, distortionTexCoords.y + g_DistortionFactor);
 
 	//NORMAL
-	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
-	mat3 tbn = mat3(inTangent, inBinormal, inNormal);
-	mappedNormal = tbn * mappedNormal;
-	vec3 normal = (inNormal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
+	vec3 normal = texture(normalMap, distortionTexCoords).xyz;
+	normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y * normalYSmoothness, normal.z * 2.0 - 1.0));
+	float useNormalMap = abs(inNormal.y);
+	normal = normal * useNormalMap + inNormal * (1.0f - useNormalMap);
 
-	//COLOR
-	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
-	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
-	vec3 color = mappedColor + uniformColor;
+	//VIEWDIR
+	vec3 viewDir = g_CameraPosition - fs_in.Position;
+	float distFromCamera = length(viewDir);
+	viewDir = normalize(viewDir);
 
 	//Do lightcalculation
 	vec3 c = vec3(0.0f);
@@ -163,12 +139,12 @@ void main()
 		vec3 lightColor = g_DirLights[i].Color.rgb;
 		float cosTheta = dot(normal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
 	}
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
-		vec3 lightDir = g_PointLights[i].Position.xyz - fs_in.WorldPosition;
+		vec3 lightDir = g_PointLights[i].Position.xyz - fs_in.Position;
 		float dist = length(lightDir);
 
 		float attenuation = 1.0f / (dist * dist);
@@ -176,13 +152,13 @@ void main()
 		lightDir = normalize(lightDir);
 		float cosTheta = dot(normal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
 	}
 
 	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
 	{
 		float light_attenuation = 1.0f;
-		vec3 lightDir = g_SpotLights[i].Position.xyz - fs_in.WorldPosition;
+		vec3 lightDir = g_SpotLights[i].Position.xyz - fs_in.Position;
 		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
 		float dist = length(lightDir);
 		lightDir = normalize(lightDir);
@@ -204,10 +180,10 @@ void main()
 
 		if(theta > g_SpotLights[i].OuterAngle)
 		{
-			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, specular, intensity);
+			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, col.rgb, specularStrength, intensity);
 		}
 	}
 
-	g_OutColor = vec4(c, 1.0f);
+	g_OutColor = vec4(min(c, vec3(1.0f)), 1.0f);
 }
 #endif

@@ -14,7 +14,8 @@ uint32 MATERIAL::BLUE = 0;
 uint32 MATERIAL::OCEAN_BLUE = 0;
 uint32 MATERIAL::BOAT = 0;
 uint32 MATERIAL::GROUND = 0;
-uint32 MATERIAL::WATER = 0;
+uint32 MATERIAL::WATER_OUTDOOR = 0;
+uint32 MATERIAL::WATER_INDOOR = 0;
 uint32 MATERIAL::WALL_STANDARD = 0;
 uint32 MATERIAL::CREW_STANDARD = 0;
 uint32 MATERIAL::SINGLE_BED = 0;
@@ -44,7 +45,8 @@ void MATERIAL::RegisterResources()
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1);
-	WATER				= ResourceHandler::RegisterWaterMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
+	WATER_OUTDOOR		= ResourceHandler::RegisterWaterOutdoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
+	WATER_INDOOR		= ResourceHandler::RegisterWaterIndoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
 	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, SHADER::STANDARD_MATERIAL);
 	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, SHADER::STANDARD_MATERIAL);
 }

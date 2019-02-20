@@ -99,9 +99,10 @@
     <None Include="Resources\Shaders\deferredWater.glsl" />
     <None Include="Resources\Shaders\deferredParticles.glsl" />
     <None Include="Resources\Shaders\forwardMaterial.glsl" />
-    <None Include="Resources\Shaders\forwardWater.glsl" />
     <None Include="Resources\Shaders\forwardWall.glsl" />
     <None Include="Resources\Shaders\depthPrePass.glsl" />
+    <None Include="Resources\Shaders\forwardOutdoorWater.glsl" />
+    <None Include="Resources\Shaders\forwardIndoorWater.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

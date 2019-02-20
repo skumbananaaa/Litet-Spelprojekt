@@ -25,7 +25,8 @@
 #include <Graphics/GUI/ListScrollable.h>
 
 #include <Graphics/Materials/WallMaterial.h>
-#include <Graphics/Materials/WaterMaterial.h>
+#include <Graphics/Materials/WaterOutdoorMaterial.h>
+#include <Graphics/Materials/WaterIndoorMaterial.h>
 
 #include <World/Logger.h>
 #include <World/Scenarios/ScenarioManager.h>

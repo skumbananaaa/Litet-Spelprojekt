@@ -1,9 +1,9 @@
 #include <EnginePch.h>
-#include <Graphics/Materials/WaterMaterial.h>
+#include <Graphics/Materials/WaterOutdoorMaterial.h>
 #include <Graphics/Textures/Texture2D.h>
 #include <Graphics/Renderers/GLContext.h>
 
-WaterMaterial::WaterMaterial() : Material(SHADER::WATER_MATERIAL),
+WaterOutdoorMaterial::WaterOutdoorMaterial() : Material(SHADER::WATER_OUTDOOR_MATERIAL),
 	m_pReflector(nullptr),
 	m_pDistortion(nullptr),
 	m_pDepthMap(nullptr),
@@ -11,15 +11,15 @@ WaterMaterial::WaterMaterial() : Material(SHADER::WATER_MATERIAL),
 	m_Buffer()
 {
 	m_Buffer.DistortionFactor = 0.0f;
-	m_pWaterBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(WaterBuffer));
+	m_pWaterBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(WaterOutdoorBuffer));
 }
 
-WaterMaterial::~WaterMaterial()
+WaterOutdoorMaterial::~WaterOutdoorMaterial()
 {
 	DeleteSafe(m_pWaterBuffer);
 }
 
-void WaterMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
+void WaterOutdoorMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
@@ -35,7 +35,7 @@ void WaterMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 	Material::Bind(pGBuffer);
 }
 
-void WaterMaterial::Unbind() const noexcept
+void WaterOutdoorMaterial::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
@@ -48,18 +48,18 @@ void WaterMaterial::Unbind() const noexcept
 	Material::Unbind();
 }
 
-void WaterMaterial::SetPlanarReflector(PlanarReflector* pReflector) const
+void WaterOutdoorMaterial::SetPlanarReflector(PlanarReflector* pReflector) const
 {
 	assert(pReflector != nullptr);
 	m_pReflector = pReflector;
 }
 
-void WaterMaterial::SetDistortionTexture(Texture2D* pDistortion)
+void WaterOutdoorMaterial::SetDistortionTexture(Texture2D* pDistortion)
 {
 	m_pDistortion = pDistortion;
 }
 
-void WaterMaterial::SetDistortionFactor(float distortionFactor) const
+void WaterOutdoorMaterial::SetDistortionFactor(float distortionFactor) const
 {
 	m_Buffer.DistortionFactor = distortionFactor;
 	m_pWaterBuffer->UpdateData(&m_Buffer);

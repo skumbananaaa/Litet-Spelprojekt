@@ -6,7 +6,8 @@
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
-#include <Graphics/Materials/WaterMaterial.h>
+#include <Graphics/Materials/WaterOutdoorMaterial.h>
+#include <Graphics/Materials/WaterIndoorMaterial.h>
 #include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/Decal.h>
 
@@ -114,10 +115,21 @@ uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, float specular,
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterWaterMaterial(int32 distorionMap, int32 normalMap)
+uint32 ResourceHandler::RegisterWaterOutdoorMaterial(int32 distorionMap, int32 normalMap)
 {
-	std::cout << "Creating Water Material" << std::endl;
-	WaterMaterial* material = new WaterMaterial();
+	std::cout << "Creating Water Outdoor Material" << std::endl;
+	WaterOutdoorMaterial* material = new WaterOutdoorMaterial();
+	material->SetDistortionTexture(GetTexture2D(distorionMap));
+	material->SetNormalMap(GetTexture2D(normalMap));
+
+	m_pMaterials[m_NrOfMaterials] = material;
+	return m_NrOfMaterials++;
+}
+
+uint32 ResourceHandler::RegisterWaterIndoorMaterial(int32 distorionMap, int32 normalMap)
+{
+	std::cout << "Creating Water Indoor Material" << std::endl;
+	WaterIndoorMaterial* material = new WaterIndoorMaterial();
 	material->SetDistortionTexture(GetTexture2D(distorionMap));
 	material->SetNormalMap(GetTexture2D(normalMap));
 

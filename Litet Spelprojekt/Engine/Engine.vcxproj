@@ -54,7 +54,8 @@
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
-    <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
@@ -126,7 +127,8 @@
     <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
-    <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />

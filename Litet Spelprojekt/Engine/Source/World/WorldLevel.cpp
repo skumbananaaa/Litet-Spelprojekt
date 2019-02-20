@@ -156,7 +156,7 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 			pGameObject->SetIsReflectable(true);
 			pGameObject->SetIsVisible(false);
 			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetMaterial(MATERIAL::OCEAN_BLUE);
+			pGameObject->SetMaterial(MATERIAL::WATER_INDOOR);
 			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
 			pGameObject->UpdateTransform();

@@ -63,7 +63,6 @@
     <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
-    <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
@@ -74,7 +73,6 @@
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
-    <ClCompile Include="Source\World\FireAlarm.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
@@ -85,6 +83,8 @@
     <ClCompile Include="Source\World\Scenarios\ScenarioManager.cpp" />
     <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\World\LightManager.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -160,7 +160,6 @@
     <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
     <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
-    <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
     <ClInclude Include="Include\System\Random.h" />
@@ -173,7 +172,6 @@
     <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
-    <ClInclude Include="Include\World\FireAlarm.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\Room.h" />
     <ClInclude Include="Include\World\Logger.h" />
@@ -186,6 +184,8 @@
     <ClInclude Include="Include\World\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\World\Scenarios\Water\WaterObject.h" />
     <ClInclude Include="Include\World\LightManager.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

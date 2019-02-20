@@ -57,6 +57,7 @@
     <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleManager.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
@@ -116,6 +117,7 @@
     <ClInclude Include="Include\IO\MATERIAL.h" />
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
+    <ClCompile Include="Include\Graphics\Particles\ParticleManager.cpp" />
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ListScrollable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />

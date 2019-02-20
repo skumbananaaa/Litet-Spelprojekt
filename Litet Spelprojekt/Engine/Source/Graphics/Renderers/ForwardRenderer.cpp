@@ -114,7 +114,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	{
 		float fps = static_cast<float>(Application::GetInstance().GetFPS());
 
-		std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms) " << std::endl;
+		std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms, FPS: " << fps << ")" << std::endl;
 		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
 		std::cout << " DepthPrePass: " << m_FrameTimes.DepthPrePass / fps << "ms" << std::endl;
 		std::cout << " Lightpass: " << m_FrameTimes.LightPass / fps << "ms" << std::endl;

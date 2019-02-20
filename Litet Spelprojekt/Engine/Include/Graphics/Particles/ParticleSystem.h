@@ -34,21 +34,23 @@ public:
 
 	void Update(const Camera& camera, float deltaTime) noexcept;
 
+	void AddColorNode(const glm::vec4& color, float atLifeTime) noexcept;
+	
 	void SetParticleBlendMode(ParticleBlendMode mode) noexcept;
 	void SetConeAngle(float angleRad) noexcept;
 	void SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept;
 	void SetSpeed(float min, float max) noexcept;
 	void SetTimeToLive(float timeToLive) noexcept;
 	void SetTexture(uint32 textureID) noexcept;
-	void AddColorNode(const glm::vec4& color, float atLifeTime) noexcept;
 	void SetBeginColor(const glm::vec4& color) noexcept;
+	void SetEndColor(const glm::vec4& color) noexcept;
+
 	Node<glm::vec4>& GetColorNode(uint32 index) noexcept;
 	const Node<glm::vec4>& GetColorNode(uint32 index) const noexcept;
-	void SetEndColor(const glm::vec4& color) noexcept;
 	uint32 GetNumParticles() const noexcept;
 
 private:
-	void SpawnParticle(const glm::vec3& position) noexcept;
+	void SpawnParticle(const glm::vec3& position, const glm::vec3& direction) noexcept;
 	const Texture2D* GetTexture() const noexcept;
 	const ParticleInstance* GetParticleInstances() const noexcept;
 	ParticleData& GetLivingParticle(uint32 index) noexcept;
@@ -67,7 +69,6 @@ private:
 	
 	ParticleBlendMode m_BlendMode;
 	std::vector<Node<glm::vec4>> m_ColorNodes;
-	glm::vec4 m_Direction;
 	glm::vec2 m_BeginScale;
 	glm::vec2 m_EndScale;
 	float m_TimeToLive;

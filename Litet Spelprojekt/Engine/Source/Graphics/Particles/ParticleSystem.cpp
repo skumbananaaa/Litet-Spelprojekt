@@ -17,7 +17,6 @@ ParticleSystem::ParticleSystem()
 	m_NumSortedParticles(0),
 	m_NumParticles(0),
 	m_MaxParticles(0),
-	m_Direction(),
 	m_ColorNodes(),
 	m_BeginScale(1.0f),
 	m_EndScale(1.0f)
@@ -248,7 +247,7 @@ void ParticleSystem::InsertSortedParticle(uint32 id) noexcept
 	m_NumSortedParticles++;
 }
 
-void ParticleSystem::SpawnParticle(const glm::vec3& position) noexcept
+void ParticleSystem::SpawnParticle(const glm::vec3& position, const glm::vec3& direction) noexcept
 {
 	if (m_NumParticles < m_MaxParticles)
 	{
@@ -256,11 +255,12 @@ void ParticleSystem::SpawnParticle(const glm::vec3& position) noexcept
 		particle.Speed = Random::GenerateFloat(m_MinSpeed, m_MaxSpeed);
 		particle.Position = position;
 
-		glm::vec4 direction = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, m_ConeAngle), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::vec4(UP_VECTOR, 0.0f);
-		direction = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, glm::two_pi<float>()), glm::vec3(0.0f, 1.0f, 0.0f)) * direction;
-		particle.Direction.x = direction.x;
-		particle.Direction.y = direction.y;
-		particle.Direction.z = direction.z;
+		glm::vec3 forward = FORWARD_VECTOR - ((glm::dot(direction, FORWARD_VECTOR) / glm::dot(direction, direction)) * FORWARD_VECTOR);
+		glm::vec4 dir = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, m_ConeAngle), glm::normalize(forward)) * glm::vec4(direction, 0.0f);
+		dir = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, glm::two_pi<float>()), direction) * dir;
+		particle.Direction.x = dir.x;
+		particle.Direction.y = dir.y;
+		particle.Direction.z = dir.z;
 
 		particle.TimeLived = 0.0f;
 		particle.DistToCameraSqrd = 0.0f;

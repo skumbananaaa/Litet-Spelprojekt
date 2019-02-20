@@ -15,10 +15,12 @@ public:
 	~ParticleEmitter();
 
 	virtual void Update(float deltaTime) noexcept override;
+	virtual void UpdateTransform() noexcept override;
 
 	void SetParticlesPerFrame(int32 numParticles) noexcept;
 
 private:
 	ParticleSystem* m_pSystem;
 	int32 m_ParticlesPerFrame;
+	glm::vec3 m_Direction;
 };

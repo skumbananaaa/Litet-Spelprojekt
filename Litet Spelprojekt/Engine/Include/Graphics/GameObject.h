@@ -26,8 +26,9 @@ public:
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
 	virtual void SetRoom(uint32 room) noexcept;
-	void SetExtend(bool extend) noexcept;
+
 	void Extend(float dtS) noexcept;
+	void SetExtend(bool extend) noexcept;
 	void SetIsCrew(bool isCrew) noexcept;
 
 	const std::string& GetName() const noexcept;
@@ -40,10 +41,10 @@ public:
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
 	uint32 GetRoom() const noexcept;
+	
 	bool IsExtending() const noexcept;
 	bool IsExtended() const noexcept;
 	bool IsCrew() const noexcept;
-
 	bool IsReflectable() const noexcept;
 	bool IsVisible() const noexcept;
 	bool HasMaterial() const noexcept;

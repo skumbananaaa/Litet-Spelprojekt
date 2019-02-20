@@ -137,7 +137,6 @@ void Game::OnResourcesLoaded()
 		//m_pTestAudioSource->Play();
 	}
 
-
 	//Camera
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 10.0f, 20.0f), glm::vec3(9.0f, 4.0f, 20.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
@@ -246,13 +245,12 @@ void Game::OnResourcesLoaded()
 
 	ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
 	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
-	pEmitter->SetParticlesPerFrame(1);
+	pEmitter->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(45.0f)));
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);
 
 	pEmitter = new ParticleEmitter(pFire);
-	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
-	pEmitter->SetParticlesPerFrame(1);
+	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 22.0f));
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);
 
@@ -269,13 +267,11 @@ void Game::OnResourcesLoaded()
 
 	pEmitter = new ParticleEmitter(pSmoke);
 	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
-	pEmitter->SetParticlesPerFrame(1);
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);
 
 	pEmitter = new ParticleEmitter(pSmoke);
 	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
-	pEmitter->SetParticlesPerFrame(1);
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);
 

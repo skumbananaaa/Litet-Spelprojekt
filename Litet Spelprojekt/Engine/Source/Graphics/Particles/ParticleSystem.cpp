@@ -18,8 +18,9 @@ ParticleSystem::ParticleSystem()
 	m_NumParticles(0),
 	m_MaxParticles(0),
 	m_Direction(),
-	m_BeginColor(),
-	m_EndColor()
+	m_ColorNodes(),
+	m_BeginScale(1.0f),
+	m_EndScale(1.0f)
 {
 	m_MaxParticles = 100000;
 
@@ -41,7 +42,11 @@ ParticleSystem::ParticleSystem()
 
 		m_pParticleInstances[i].Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		m_pParticleInstances[i].Position = glm::vec3(0.0f);
+		m_pParticleInstances[i].Scale = glm::vec2(1.0f);
 	}
+
+	Node<glm::vec4> beginColor = { glm::vec4(1.0f), 0.0f };
+	m_ColorNodes.push_back(beginColor);
 }
 
 ParticleSystem::~ParticleSystem()
@@ -75,8 +80,27 @@ void ParticleSystem::Update(const Camera& camera, float deltaTime) noexcept
 		particle.DistToCameraSqrd = LengthSqrd(particle.Position - camera.GetPosition());
 
 		//Color
-		glm::vec4 diff =  m_EndColor - m_BeginColor;
-		particle.Color = m_BeginColor + (diff * particle.LifePercentage);
+		int32 colorCurrentIndex = 0;
+		for (size_t i = 0; i < m_ColorNodes.size(); i++)
+		{
+			if (particle.LifePercentage >= m_ColorNodes[i].AtLifeTime)
+			{
+				colorCurrentIndex = i;
+			}
+		}
+
+		int32 colorNextIndex = colorCurrentIndex;
+		if ((m_ColorNodes.size() - 1 > colorCurrentIndex))
+		{
+			colorNextIndex++;
+		}
+
+		glm::vec4 diffColor = m_ColorNodes[colorNextIndex].Data - m_ColorNodes[colorCurrentIndex].Data;
+		particle.Color = m_ColorNodes[colorCurrentIndex].Data + (diffColor * particle.LifePercentage);
+
+		//Scale
+		glm::vec2 diffScale = m_EndScale - m_BeginScale;
+		particle.Scale = m_BeginScale + (diffScale * particle.LifePercentage);
 
 		InsertSortedParticle(m_pLivingParticles[i]);
 	}
@@ -88,6 +112,7 @@ void ParticleSystem::Update(const Camera& camera, float deltaTime) noexcept
 		m_pParticleInstances[i].Color = data.Color;
 		m_pParticleInstances[i].Color.a = data.Color.a * (1.0f - data.LifePercentage);
 		m_pParticleInstances[i].Position = data.Position;
+		m_pParticleInstances[i].Scale = data.Scale;
 	}
 }
 
@@ -106,6 +131,12 @@ void ParticleSystem::SetConeAngle(float angleRad) noexcept
 	m_ConeAngle = abs(angleRad);
 }
 
+void ParticleSystem::SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept
+{
+	m_BeginScale = begin;
+	m_EndScale = end;
+}
+
 void ParticleSystem::SetSpeed(float min, float max) noexcept
 {
 	m_MinSpeed = min;
@@ -122,10 +153,55 @@ void ParticleSystem::SetTexture(uint32 textureID) noexcept
 	m_pTexture = ResourceHandler::GetTexture2D(textureID);
 }
 
-void ParticleSystem::SetColor(const glm::vec4& begin, const glm::vec4& end) noexcept
+void ParticleSystem::AddColorNode(const glm::vec4& color, float atLifeTime) noexcept
 {
-	m_BeginColor = begin;
-	m_EndColor = end;
+	Node<glm::vec4> node;
+	node.Data = color;
+
+	if (atLifeTime > 1.0f)
+	{
+		node.AtLifeTime = 1.0f;
+	}
+	else if (atLifeTime < 0.0f)
+	{
+		node.AtLifeTime = 0.0f;
+	}
+	else
+	{
+		node.AtLifeTime = atLifeTime;
+	}
+
+	m_ColorNodes.push_back(node);
+}
+
+void ParticleSystem::SetBeginColor(const glm::vec4& color) noexcept
+{
+	m_ColorNodes[0].Data = color;
+}
+
+Node<glm::vec4>& ParticleSystem::GetColorNode(uint32 index) noexcept
+{
+	return m_ColorNodes[index];
+}
+
+const Node<glm::vec4>& ParticleSystem::GetColorNode(uint32 index) const noexcept
+{
+	return m_ColorNodes[index];
+}
+
+void ParticleSystem::SetEndColor(const glm::vec4& color) noexcept
+{
+	if (m_ColorNodes.size() > 1)
+	{
+		if (m_ColorNodes[m_ColorNodes.size() - 1].AtLifeTime >= 1.0f)
+		{
+			m_ColorNodes[m_ColorNodes.size() - 1].Data = color;
+			return;
+		}
+	}
+
+	Node<glm::vec4> node = { color, 1.0f };
+	m_ColorNodes.push_back(node);
 }
 
 uint32 ParticleSystem::GetNumParticles() const noexcept
@@ -141,16 +217,6 @@ const Texture2D* ParticleSystem::GetTexture() const noexcept
 const ParticleInstance* ParticleSystem::GetParticleInstances() const noexcept
 {
 	return m_pParticleInstances;
-}
-
-const glm::vec4& ParticleSystem::GetBeginColor() const noexcept
-{
-	return m_BeginColor;
-}
-
-const glm::vec4& ParticleSystem::GetEndColor() const noexcept
-{
-	return m_EndColor;
 }
 
 ParticleData& ParticleSystem::GetLivingParticle(uint32 index) noexcept

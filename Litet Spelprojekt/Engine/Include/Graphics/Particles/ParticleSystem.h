@@ -10,6 +10,13 @@ enum ParticleBlendMode : uint32
 	PARTICLE_ADDITIVE = 2
 };
 
+template<typename T>
+struct Node
+{
+	T Data;
+	float AtLifeTime;
+};
+
 class API ParticleSystem
 {
 	friend class DefferedRenderer;
@@ -29,18 +36,21 @@ public:
 
 	void SetParticleBlendMode(ParticleBlendMode mode) noexcept;
 	void SetConeAngle(float angleRad) noexcept;
+	void SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept;
 	void SetSpeed(float min, float max) noexcept;
 	void SetTimeToLive(float timeToLive) noexcept;
 	void SetTexture(uint32 textureID) noexcept;
-	void SetColor(const glm::vec4& begin, const glm::vec4& end) noexcept;
+	void AddColorNode(const glm::vec4& color, float atLifeTime) noexcept;
+	void SetBeginColor(const glm::vec4& color) noexcept;
+	Node<glm::vec4>& GetColorNode(uint32 index) noexcept;
+	const Node<glm::vec4>& GetColorNode(uint32 index) const noexcept;
+	void SetEndColor(const glm::vec4& color) noexcept;
 	uint32 GetNumParticles() const noexcept;
 
 private:
 	void SpawnParticle(const glm::vec3& position) noexcept;
 	const Texture2D* GetTexture() const noexcept;
 	const ParticleInstance* GetParticleInstances() const noexcept;
-	const glm::vec4& GetBeginColor() const noexcept;
-	const glm::vec4& GetEndColor() const noexcept;
 	ParticleData& GetLivingParticle(uint32 index) noexcept;
 	ParticleData& GetSortedParticle(uint32 index) noexcept;
 	void InsertSortedParticle(uint32 id) noexcept;
@@ -56,9 +66,10 @@ private:
 	ParticleInstance* m_pParticleInstances;
 	
 	ParticleBlendMode m_BlendMode;
+	std::vector<Node<glm::vec4>> m_ColorNodes;
 	glm::vec4 m_Direction;
-	glm::vec4 m_BeginColor;
-	glm::vec4 m_EndColor;
+	glm::vec2 m_BeginScale;
+	glm::vec2 m_EndScale;
 	float m_TimeToLive;
 	float m_MinSpeed;
 	float m_MaxSpeed;

@@ -70,7 +70,6 @@ void Editor::OnResourcesLoaded()
 		m_ppScenes[i]->SetCamera(pCameraPersp, 0);
 		m_ppScenes[i]->SetCamera(pCameraOrth, 1);
 	}
-	LightManager::Init(m_ppScenes[0], 3);
 
 	m_RoomBeingEdited = -1;
 	m_CurrentGridIndex = 0;

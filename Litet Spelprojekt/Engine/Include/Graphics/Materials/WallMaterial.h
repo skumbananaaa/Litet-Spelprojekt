@@ -22,6 +22,10 @@ private:
 	WallMaterial();
 	~WallMaterial();
 
+private:
+	mutable bool m_LastDepthMask;
+	mutable Func m_LastDepthFunc;
+
 	UniformBuffer* m_pDissolveBuffer;
 	mutable DissolveBuffer m_Buffer;
 };

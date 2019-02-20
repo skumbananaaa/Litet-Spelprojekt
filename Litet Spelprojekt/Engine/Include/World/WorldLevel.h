@@ -17,7 +17,6 @@ struct TileData
 	float WaterLevelChange;
 	float WaterLevelLastUpdated;
 	float WaterLevelAge;
-	bool WaterFloodsFromeAbove;
 	bool AlreadyFlooded;
 	std::string WaterBlockName;
 };

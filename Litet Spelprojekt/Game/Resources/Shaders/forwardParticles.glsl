@@ -15,6 +15,7 @@ layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec2 g_TexCoord;
 layout(location = 2) in vec3 g_InstancePosition;
 layout(location = 3) in vec4 g_InstanceColor;
+layout(location = 4) in vec2 g_InstanceScale;
 
 out VS_OUT
 {
@@ -32,7 +33,8 @@ void main()
 	vs_out.TexCoords = g_TexCoord;
 	vs_out.Color = g_InstanceColor;
 
-	vec3 position = g_InstancePosition + (cameraRight * g_Position.x) + (cameraUp * g_Position.y);
+	vec2 quadPosition = g_Position.xy * g_InstanceScale;
+	vec3 position = g_InstancePosition + (cameraRight * quadPosition.x) + (cameraUp * quadPosition.y);
 	gl_Position = g_ProjectionView * vec4(position, 1.0f);
 }
 

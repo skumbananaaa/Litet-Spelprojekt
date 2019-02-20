@@ -7,6 +7,7 @@ public:
 	glm::vec4 Color;
 	glm::vec3 Position;
 	glm::vec3 Direction;
+	glm::vec2 Scale;
 	float Speed;
 	float TimeLived;
 	float DistToCameraSqrd;

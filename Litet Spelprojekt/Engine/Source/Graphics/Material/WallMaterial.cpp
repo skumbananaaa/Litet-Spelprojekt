@@ -7,6 +7,7 @@ WallMaterial::WallMaterial() : Material(SHADER::WALL_MATERIAL),
 	m_pDissolveBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(DissolveBuffer));
 
 	SetCullMode(CULL_MODE_NONE);
+	SetIncludeInDepthPrePass(false);
 }
 
 WallMaterial::~WallMaterial()
@@ -24,6 +25,12 @@ void WallMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 
 	context.SetUniformBuffer(m_pDissolveBuffer, 3);
 
+	m_LastDepthMask = context.GetDepthMask();
+	m_LastDepthFunc = context.GetDepthFunc();
+
+	context.SetDepthFunc(FUNC_LESS);
+	context.SetDepthMask(true);
+
 	Material::Bind(pGBuffer);
 }
 
@@ -36,6 +43,8 @@ void WallMaterial::Unbind() const noexcept
 	context.Disable(CLIP_DISTANCE2);
 
 	context.SetUniformBuffer(nullptr, 3);
+	context.SetDepthFunc(m_LastDepthFunc);
+	context.SetDepthMask(m_LastDepthMask);
 
 	Material::Unbind();
 }

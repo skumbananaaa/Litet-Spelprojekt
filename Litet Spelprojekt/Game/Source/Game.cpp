@@ -227,16 +227,21 @@ void Game::OnResourcesLoaded()
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetFrontFaceStencilOp(STENCIL_OP_KEEP, STENCIL_OP_REPLACE, STENCIL_OP_ZERO);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetBackFaceStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_REPLACE);
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
+	
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
+	//Create particles
 	ParticleSystem* pFire = new ParticleSystem();
 	pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
 	pFire->SetTexture(TEXTURE::SMOKE);
 	pFire->SetTimeToLive(1.2f);
+	pFire->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
 	pFire->SetConeAngle(glm::radians<float>(30.0f));
 	pFire->SetSpeed(0.7f, 2.0f);
-	pFire->SetColor(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pFire->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+	pFire->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+	pFire->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	m_Scenes[0]->AddParticleSystem(pFire);
 
 	ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
@@ -257,17 +262,19 @@ void Game::OnResourcesLoaded()
 	pSmoke->SetTimeToLive(7.0f);
 	pSmoke->SetConeAngle(glm::radians<float>(40.0f));
 	pSmoke->SetSpeed(0.1f, 0.4f);
-	pSmoke->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f), glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pSmoke->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
+	pSmoke->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+	pSmoke->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
 	m_Scenes[0]->AddParticleSystem(pSmoke);
 
 	pEmitter = new ParticleEmitter(pSmoke);
-	pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 17.0f));
+	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
 	pEmitter->SetParticlesPerFrame(1);
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);
 
 	pEmitter = new ParticleEmitter(pSmoke);
-	pEmitter->SetPosition(glm::vec3(5.0f, 4.4f, 18.0f));
+	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
 	pEmitter->SetParticlesPerFrame(1);
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);

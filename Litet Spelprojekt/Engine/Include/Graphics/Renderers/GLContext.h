@@ -128,6 +128,9 @@ public:
 
 	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept;
 	void SetViewport(const glm::vec4& viewport) noexcept;
+	
+	bool GetDepthMask() const noexcept;
+	Func GetDepthFunc() const noexcept;
 	const glm::vec4 GetViewPort() const noexcept;
 
 	void ResetClearColor() const noexcept;
@@ -162,7 +165,10 @@ public:
 private:
 	glm::vec4 m_ViewPort;
 	glm::vec4 m_DefaultClearColor;
-	
+
+	mutable bool m_CurrentDepthMask;
+	mutable Func m_CurrentDepthFunc;
+
 	mutable uint32 m_CurrentTextures[16];
 	mutable const ShaderProgram* m_pCurrentProgram;
 	mutable const Texture* m_pCurrentTextures[16];

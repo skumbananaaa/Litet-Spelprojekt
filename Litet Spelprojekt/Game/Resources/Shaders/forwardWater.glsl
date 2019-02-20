@@ -20,7 +20,6 @@ layout(location = 4) in mat4 g_InstanceModel;
 out VS_OUT
 {
 	vec3 Position;
-	vec3 Normal;
 	vec2 TexCoords;
 	vec4 ClipSpacePosition;
 } vs_out;
@@ -29,10 +28,8 @@ const float tiling = 4.0f;
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
 
 	vs_out.Position = worldPos.xyz;
-	vs_out.Normal = normal;
 	vs_out.TexCoords = tiling * g_TexCoords;
 	vs_out.ClipSpacePosition = g_ProjectionView * worldPos;
 
@@ -61,7 +58,6 @@ layout(std140, binding = 3) uniform WaterBuffer
 in VS_OUT
 {
 	vec3 Position;
-	vec3 Normal;
 	vec2 TexCoords;
 	vec4 ClipSpacePosition;
 } fs_in;

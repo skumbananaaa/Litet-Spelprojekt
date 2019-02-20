@@ -1,7 +1,8 @@
 #include "../../Include/Scenarios/ScenarioWater.h"
 
-ScenarioWater::ScenarioWater()
+ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
 {
+	m_WaterAlwaysVisible = waterAlwaysVisible;
 }
 
 void ScenarioWater::OnStart() noexcept
@@ -12,6 +13,33 @@ void ScenarioWater::OnStart() noexcept
 void ScenarioWater::OnEnd() noexcept
 {
 
+}
+
+void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms)
+{
+	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
+	{
+		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
+		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex)->GetLevelData();
+		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex)->GetFloodingIDs();
+
+		for (uint32 i = 0; i < floodingIDs.size(); i++)
+		{
+			glm::ivec2 currentTile = glm::ivec2(floodingIDs[i].x, floodingIDs[i].y);
+			GameObject* pGameObject = pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName);
+			bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
+			
+			if (waterIsVisible)
+			{
+				pGameObject->SetIsVisible(true);
+				pGameObject->UpdateTransform();
+			}
+			else
+			{
+				pGameObject->SetIsVisible(false);
+			}
+		}
+	}
 }
 
 bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept
@@ -125,6 +153,8 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 
 			GameObject* pGameObject = pScene->GetGameObject(ppLevelData[currentTile.x][currentTile.y].WaterBlockName);
 
+			
+
 			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel - ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated) > WATER_UPDATE_INTERVAL)
 			{
 				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = (float)((uint32)(WATER_ROUNDING_FACTOR * ppLevelData[currentTile.x][currentTile.y].WaterLevel)) / WATER_ROUNDING_FACTOR;
@@ -133,10 +163,9 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 				pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + 0.05f + yScale / 2.0f, currentTile.y));
 				pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
 
-				bool waterIsVisible = std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
-				pGameObject->SetIsVisible(true);
-				pGameObject->UpdateTransform();
-				/*if (waterIsVisible)
+				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
+
+				if (waterIsVisible)
 				{
 					pGameObject->SetIsVisible(true);
 					pGameObject->UpdateTransform();
@@ -144,7 +173,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 				else
 				{
 					pGameObject->SetIsVisible(false);
-				}*/
+				}
 			}
 
 		}

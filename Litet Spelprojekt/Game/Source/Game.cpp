@@ -567,6 +567,7 @@ void Game::OnKeyDown(KEY keycode)
 		case KEY_R:
 		{
 			ShowCrewmember(0);
+			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 			break;
 		}
 	}
@@ -680,6 +681,7 @@ void Game::OnUpdate(float dtS)
 			m_RoomLightsTimers[i] = 0.0f;
 			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
 			m_ActiveRooms[i] = 1;
+			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 		}
 	}
 

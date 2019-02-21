@@ -350,7 +350,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)

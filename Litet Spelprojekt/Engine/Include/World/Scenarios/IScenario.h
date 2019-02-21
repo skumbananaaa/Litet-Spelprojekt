@@ -9,6 +9,7 @@ protected:
 	IScenario() : m_TimeOfNextOutBreak(0) {};
 
 public:
+	virtual ~IScenario() {};
 	virtual void OnStart() noexcept = 0;
 	virtual void OnEnd()noexcept = 0;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) = 0;

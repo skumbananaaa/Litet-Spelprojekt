@@ -41,6 +41,7 @@ public:
 	std::vector<GameObject*>& GetGameObjects() noexcept;
 	const std::vector<GameObject*>& GetGameObjects() const noexcept;
 	const std::vector<GameObject*>& GetDrawables() const noexcept;
+	const std::vector<GameObject*>& GetAnimatedDrawables() const noexcept;
 	const std::vector<GameObject*>& GetDecals() const noexcept;
 	const std::vector<GameObject*>& GetReflectables() const noexcept;
 	const std::vector<ParticleSystem*>& GetParticleSystem() const noexcept;
@@ -57,6 +58,7 @@ private:
 	std::unordered_map<std::string, GameObject*> m_NamedObjects;
 	std::vector<GameObject*> m_GameObjects;
 	std::vector<GameObject*> m_Drawables;
+	std::vector<GameObject*> m_AnimatedDrawables;
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
 	std::vector<ParticleSystem*> m_ParticleSystems;
@@ -102,6 +104,11 @@ inline const std::vector<GameObject*>& Scene::GetGameObjects() const noexcept
 inline const std::vector<GameObject*>& Scene::GetDrawables() const noexcept
 {
 	return m_Drawables;
+}
+
+inline const std::vector<GameObject*>& Scene::GetAnimatedDrawables() const noexcept
+{
+	return m_AnimatedDrawables;
 }
 
 inline const std::vector<GameObject*>& Scene::GetDecals() const noexcept

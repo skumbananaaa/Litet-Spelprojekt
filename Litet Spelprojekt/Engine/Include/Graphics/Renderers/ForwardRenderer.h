@@ -1,4 +1,5 @@
 #pragma once
+#include <Graphics/Materials/AnimatedSkeleton.h>
 #include "IRenderer.h"
 #include "TimerQuery.h"
 
@@ -35,6 +36,7 @@ private:
 	void ReflectionPass(const Scene& scene) const noexcept;
 	void DepthPrePass(const Camera& camera, const Scene& scene) const noexcept;
 	void MainPass(const Camera& camera, const Scene& scene) const noexcept;
+	void AnimationPass(float dtS, const Scene& scene) const noexcept;
 	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept;
 
@@ -46,6 +48,7 @@ private:
 	mutable WorldBuffer m_LocalWorldBuff = {};
 	UniformBuffer* m_pWorldBuffer;
 	UniformBuffer* m_pExtensionBuffer;
+	UniformBuffer* m_pBoneBuffer;
 
 	UniformBuffer* m_pSkyBoxPassPerFrame;
 	UniformBuffer* m_pSkyBoxPassPerObject;
@@ -54,6 +57,7 @@ private:
 
 	const ShaderProgram* m_pParticleProgram;
 	const ShaderProgram* m_pDepthPrePassProgram;
+	const ShaderProgram* m_pAnimatedDepthPrePassProgram;
 	const ShaderProgram* m_pSkyBoxPassProgram;
 
 	mutable TimerQuery* m_pCurrentQuery;

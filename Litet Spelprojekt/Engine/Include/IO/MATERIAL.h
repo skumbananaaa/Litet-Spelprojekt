@@ -24,6 +24,7 @@ public:
 	static uint32 CREW_STANDARD;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
+	static uint32 ANIMATED_MODEL;
 
 private:
 	static void RegisterResourcesPreLoading();

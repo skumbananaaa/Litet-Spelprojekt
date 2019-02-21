@@ -85,6 +85,7 @@
     <ClCompile Include="Source\World\LightManager.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -186,8 +187,10 @@
     <ClInclude Include="Include\World\LightManager.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\AnimatedSkeleton.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />
+    <None Include="Include\Graphics\Geometry\AssimpHelper.inl" />
   </ItemGroup>
 </Project>

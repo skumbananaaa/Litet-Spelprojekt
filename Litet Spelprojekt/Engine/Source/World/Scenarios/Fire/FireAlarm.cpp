@@ -33,9 +33,9 @@ void FireAlarm::TurnOff() noexcept
 	m_pAudioSrc->Stop();
 }
 
-void FireAlarm::Update(float dt) noexcept
+void FireAlarm::Update(const Camera& camera, float dt) noexcept
 {
-	GameObject::Update(dt);
+	GameObject::Update(camera, dt);
 
 	if (m_pSpotlight)
 	{

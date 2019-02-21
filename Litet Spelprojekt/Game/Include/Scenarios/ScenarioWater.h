@@ -169,7 +169,7 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 			ppLevelData[tile.x][tile.y].WaterLevelLastUpdated = 0.0f;
 			ppLevelData[tile.x][tile.y].WaterLevelAge = 1.0f;
 			ppLevelData[tile.x][tile.y].AlreadyFlooded = false;
-			scene->GetGameObject(ppLevelData[tile.x][tile.y].WaterBlockName)->SetIsVisible(false);
+			ppLevelData[tile.x][tile.y].GameObjects[0]->SetIsVisible(false);
 			toRemoveFloodingIDs.push_back(tile);
 		}
 	}

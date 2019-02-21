@@ -23,7 +23,11 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 			m_ppLevelData[x][z].WaterLevelLastUpdated = 0.0f;
 			m_ppLevelData[x][z].WaterLevelAge = 1.0f;
 			m_ppLevelData[x][z].AlreadyFlooded = false;
-			m_ppLevelData[x][z].WaterBlockName = "WaterBlock [" + std::to_string(x) + ", " + std::to_string(levelHeight) + ", " + std::to_string(z) + "]";
+
+			if (levelHeight % 2 == 0)
+			{
+				m_ppLevelData[x][z].GameObjects.push_back(nullptr);
+			}
 		}
 	}
 }
@@ -160,8 +164,8 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
 			pGameObject->UpdateTransform();
-			pGameObject->SetName(m_ppLevelData[x][z].WaterBlockName);
 			pScene->AddGameObject(pGameObject);
+			m_ppLevelData[x][z].GameObjects[0] = pGameObject;
 		}
 	}
 }

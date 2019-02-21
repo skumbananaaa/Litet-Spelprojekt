@@ -204,7 +204,6 @@ void Scene::OnUpdate(float dtS) noexcept
 	{
 		pGameObject->Update(*m_pCamera, dtS);
 	}
-
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
 		pSpotLight->Update(*m_pCamera, dtS);

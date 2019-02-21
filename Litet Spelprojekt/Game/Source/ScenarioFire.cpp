@@ -65,7 +65,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene) noexcept
 
 			tileData.SmokeAmount += m_pWorld->GetLevel((int32)m_OnFire[i].y)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z].Temp;
 			tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
-			m_pWorld->SetTileData(pos, tileData);
+			//m_pWorld->SetTileData(pos, tileData);
 			
 			if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
 			{
@@ -88,7 +88,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene) noexcept
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), pos, spread);
 			data.SmokeAmount -= spread * rest;
 
-			m_pWorld->SetTileData(pos, data);
+			//m_pWorld->SetTileData(pos, data);
 		}
 	}
 
@@ -132,7 +132,7 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 		{
 			m_Smoke.push_back(origin + offset);
 		}
-		m_pWorld->SetTileData(origin + offset, tileData);
+		//m_pWorld->SetTileData(origin + offset, tileData);
 		res = true;
 	}
 	return res;

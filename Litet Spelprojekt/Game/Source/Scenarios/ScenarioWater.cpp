@@ -5,7 +5,7 @@ ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
 	m_WaterAlwaysVisible = waterAlwaysVisible;
 }
 
-void ScenarioWater::OnStart() noexcept
+void ScenarioWater::OnStart(Scene* scene) noexcept
 {
 
 }

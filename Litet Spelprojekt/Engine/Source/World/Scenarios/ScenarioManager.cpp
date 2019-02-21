@@ -39,7 +39,7 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene, const std::v
 		if (time <= 0)
 		{
 			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Started!");
-			scenario->OnStart();
+			scenario->OnStart(scene);
 			s_ActiveScenarios.push_back(s_NonActiveScenarios[i]);
 			s_NonActiveScenarios.erase(s_NonActiveScenarios.begin() + i);
 		}

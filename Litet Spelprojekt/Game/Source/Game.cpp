@@ -110,9 +110,6 @@ void Game::OnResourcesLoaded()
 
 	LightManager::Init(m_Scenes[0], 3);
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
-
 
 	//Create renderers
 #if defined(DEFERRED_RENDER_PATH)
@@ -230,37 +227,12 @@ void Game::OnResourcesLoaded()
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
+	//Create scenarios
+	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
+	ScenarioManager::RegisterScenario(new ScenarioWater(false));
+
 	//Create particles
 	ParticleEmitter* pEmitter = new ParticleEmitter();
-	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
-	pEmitter->SetRotation(glm::vec4(0.0f, 0.0f, 1.0f, glm::radians<float>(45.0f)));
-	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
-	pEmitter->SetTexture(TEXTURE::SMOKE);
-	pEmitter->SetTimeToLive(1.2f);
-	pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
-	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
-	pEmitter->SetSpeed(0.7f, 2.0f);
-	pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-	pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
-
-	pEmitter = new ParticleEmitter();
-	pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 22.0f));
-	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
-	pEmitter->SetTexture(TEXTURE::SMOKE);
-	pEmitter->SetTimeToLive(1.2f);
-	pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
-	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
-	pEmitter->SetSpeed(0.7f, 2.0f);
-	pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-	pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
-
-	pEmitter = new ParticleEmitter();
 	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
 	pEmitter->SetTexture(TEXTURE::SMOKE);
 	pEmitter->SetTimeToLive(7.0f);
@@ -270,6 +242,7 @@ void Game::OnResourcesLoaded()
 	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
 	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
 	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
+	pEmitter->SetParticlesPerSeconds(5);
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);
 
@@ -283,6 +256,7 @@ void Game::OnResourcesLoaded()
 	pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
 	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
 	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pEmitter->SetParticlesPerSeconds(5);
 	pEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pEmitter);
 
@@ -354,7 +328,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
@@ -392,7 +366,7 @@ void Game::OnResourcesLoaded()
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetPath(m_pWorld);
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(0)->SetHidden(false);
+	m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
 	m_Scenes[0]->AddGameObject(m_Crew.GetMember(0));
 
@@ -407,7 +381,7 @@ void Game::OnResourcesLoaded()
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetPath(m_pWorld);
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
-		m_Crew.GetMember(i)->SetHidden(false);
+		m_Crew.GetMember(i)->SetHidden(true);
 		m_Crew.GetMember(i)->UpdateTransform();
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}
@@ -419,8 +393,6 @@ void Game::OnResourcesLoaded()
 	}
 
 	m_pUICrew = new UICrew(0, GetWindow().GetHeight() - 150, 200, 500, members);
-
-	m_Scenes[0]->SetConceal(false);
 
 	m_pRenderer->SetWorldBuffer(*m_Scenes[m_SceneId], m_pWorld);
 
@@ -526,11 +498,6 @@ void Game::OnKeyUp(KEY keycode)
 {
 	switch (keycode)
 	{
-		case KEY_SPACE:
-		{
-			m_Scenes[m_SceneId]->ExtendScene(false);
-			break;
-		}
 	}
 
 	Application::OnKeyUp(keycode);
@@ -552,7 +519,7 @@ void Game::OnKeyDown(KEY keycode)
 		}
 		case KEY_SPACE:
 		{
-			m_Scenes[m_SceneId]->ExtendScene(true);
+			m_Scenes[m_SceneId]->ExtendScene();
 			break;
 		}
 		case KEY_L:
@@ -826,9 +793,11 @@ void Game::PickPosition() {
 		if ((t >= 0 && lastT == -1) || (t > 0 && t < lastT))
 		{
 			pointOnSurface = rayOrigin + rayDir * t;
-			bool extended = m_Scenes[m_SceneId]->IsExtended();
-			if (pointOnSurface.x > 5 * d * extended)
+
+			float extension = m_Scenes[m_SceneId]->GetExtension();
+			if (pointOnSurface.x > extension * d / 2.0f)
 			{
+				pointOnSurface.x -= extension * floor(pointOnSurface.y / 2.0f);
 				lastT = t;
 			}
 			else
@@ -895,21 +864,18 @@ glm::vec3 Game::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint32 wi
 void Game::ShowCrewmember(uint32 crewmember)
 {
 	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
-	if (!m_Crew.GetMember(crewmember)->IsExtending())
+	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+
+	if (!m_pWorld->GetRoom(roomIndex)->IsActive())
 	{
-		uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
+		const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
+		std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
 
-		if (!m_pWorld->GetRoom(roomIndex)->IsActive())
-		{
-			const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
-			std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
-
-			roomLights[m_CurrentLight]->SetPosition(roomCenter + glm::vec3(floor(roomCenter.y / 2.0f) * 10.0f * m_Scenes[m_SceneId]->IsExtended(), 0.0f, 0.0f));
-			m_RoomLightsTimers[m_CurrentLight] = 0.0f;
-			m_ActiveRooms[m_CurrentLight] = roomIndex;
-			m_pWorld->GetRoom(roomIndex)->SetActive(true);
-			m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
-		}
+		roomLights[m_CurrentLight]->SetPosition(roomCenter);
+		m_RoomLightsTimers[m_CurrentLight] = 0.0f;
+		m_ActiveRooms[m_CurrentLight] = roomIndex;
+		m_pWorld->GetRoom(roomIndex)->SetActive(true);
+		m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
 	}
 }
 
@@ -923,7 +889,7 @@ Crewmember* Game::RayTestCrewmembers()
 
 	for (int i = 0; i < m_Crew.GetCount(); i++)
 	{
-		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin);
+		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin, m_Scenes[m_SceneId]->GetExtension());
 
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{

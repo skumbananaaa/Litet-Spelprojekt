@@ -31,6 +31,7 @@ private:
 	void CreateBatches(const Scene& scene, const World* const pWorld) const noexcept;
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
+	void UpdateExtensionBuffer(const Scene& scene) const noexcept;
 	void ReflectionPass(const Scene& scene) const noexcept;
 	void DepthPrePass(const Camera& camera, const Scene& scene) const noexcept;
 	void MainPass(const Camera& camera, const Scene& scene) const noexcept;
@@ -42,6 +43,9 @@ private:
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;
 	UniformBuffer* m_pPlaneBuffer;
+	mutable WorldBuffer m_LocalWorldBuff = {};
+	UniformBuffer* m_pWorldBuffer;
+	UniformBuffer* m_pExtensionBuffer;
 
 	UniformBuffer* m_pSkyBoxPassPerFrame;
 	UniformBuffer* m_pSkyBoxPassPerObject;

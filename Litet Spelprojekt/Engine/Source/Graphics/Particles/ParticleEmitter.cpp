@@ -14,10 +14,11 @@ ParticleEmitter::ParticleEmitter()
 	m_TimeToLive(1.0f),
 	m_MinSpeed(1.0f),
 	m_MaxSpeed(2.0f),
+	m_ParticleBacklog(0.0f),
 	m_ConeAngle(0.0f),
 	m_NumSortedParticles(0),
 	m_NumParticles(0),
-	m_ParticlesPerFrame(1),
+	m_ParticlesPerSecond(1),
 	m_Direction(0.0f),
 	m_ColorNodes(),
 	m_Particles(),
@@ -60,10 +61,12 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 	m_DistToCamera = LengthSqrd(GetPosition() - camera.GetPosition());
 
 	//Spawn particles
-	for (uint32 i = 0; i < m_ParticlesPerFrame; i++)
+	float particlesThisFrame = m_ParticleBacklog + (m_ParticlesPerSecond * deltaTime);
+	for (; particlesThisFrame >= 1.0f; particlesThisFrame -= 1.0f)
 	{
 		SpawnParticle();
 	}
+	m_ParticleBacklog = particlesThisFrame;
 
 	//Update and sort particles
 	m_NumSortedParticles = 0;
@@ -124,14 +127,20 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 
 void ParticleEmitter::UpdateTransform() noexcept
 {
+	bool isDirty = IsDirty();
+
 	GameObject::UpdateTransform();
-	m_Direction = GetTransform() * glm::vec4(UP_VECTOR, 0.0f);
-	m_Direction = glm::normalize(m_Direction);
+	
+	if (isDirty)
+	{
+		m_Direction = GetTransform() * glm::vec4(UP_VECTOR, 0.0f);
+		m_Direction = glm::normalize(m_Direction);
+	}
 }
 
-void ParticleEmitter::SetParticlesPerFrame(uint32 numParticles) noexcept
+void ParticleEmitter::SetParticlesPerSeconds(uint32 numParticles) noexcept
 {
-	m_ParticlesPerFrame = numParticles;
+	m_ParticlesPerSecond = numParticles;
 }
 
 void ParticleEmitter::SetParticleBlendMode(ParticleBlendMode blendMode) noexcept

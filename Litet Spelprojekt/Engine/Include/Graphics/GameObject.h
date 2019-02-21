@@ -27,9 +27,6 @@ public:
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
 	virtual void SetRoom(uint32 room) noexcept;
-
-	void Extend(float dtS) noexcept;
-	void SetExtend(bool extend) noexcept;
 	void SetHidden(bool isHidden) noexcept;
 
 	const std::string& GetName() const noexcept;
@@ -42,9 +39,6 @@ public:
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
 	uint32 GetRoom() const noexcept;
-	
-	bool IsExtending() const noexcept;
-	bool IsExtended() const noexcept;
 	bool IsHidden() const noexcept;
 
 	bool IsReflectable() const noexcept;
@@ -61,6 +55,9 @@ public:
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
 
+protected:
+	bool IsDirty() const noexcept;
+
 private:
 	std::string m_Name;
 	const IndexedMesh* m_pMesh;
@@ -69,7 +66,6 @@ private:
 	glm::vec3 m_Position;
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
-	glm::vec3 m_OriginalPos;
 	float m_ExtendPosX;
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
@@ -79,8 +75,6 @@ private:
 	int32 m_TypeId;
 	int32 m_Room = 1;
 	bool m_IsHidden = false;
-	bool m_Extending = false;
-	bool m_Extended = false;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -101,16 +95,6 @@ inline const glm::vec3& GameObject::GetScale() const noexcept
 inline uint32 GameObject::GetRoom() const noexcept
 {
 	return m_Room;
-}
-
-inline bool GameObject::IsExtending() const noexcept
-{
-	return m_Extending;
-}
-
-inline bool GameObject::IsExtended() const noexcept
-{
-	return m_Extended;
 }
 
 inline bool GameObject::IsHidden() const noexcept
@@ -199,4 +183,9 @@ inline void GameObject::SetTypeId(int32 typeId) noexcept
 inline int32 GameObject::GetTypeId() const noexcept
 {
 	return m_TypeId;
+}
+
+inline bool GameObject::IsDirty() const noexcept
+{
+	return m_IsDirty;
 }

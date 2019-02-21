@@ -193,6 +193,7 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	progressButton->SetPercentage(0.0);
 	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
 	Game* game = Game::GetGame();
+	game->ShowCrewmember(reinterpret_cast<uint32>(progressButton->GetUserData()));
 	game->GetCrewmember(reinterpret_cast<uint32>(progressButton->GetUserData()))->UpdateLastKnownPosition();
 }
 

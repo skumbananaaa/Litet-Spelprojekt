@@ -9,7 +9,7 @@ public:
 	virtual void OnStart() noexcept override;
 	virtual void OnEnd()noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) override;
-	virtual bool Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept override;
+	virtual bool Update(float dtS, World* pWorld, Scene* pScene,  const std::vector<uint32>& activeRooms) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
@@ -169,7 +169,7 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 			ppLevelData[tile.x][tile.y].WaterLevelLastUpdated = 0.0f;
 			ppLevelData[tile.x][tile.y].WaterLevelAge = 1.0f;
 			ppLevelData[tile.x][tile.y].AlreadyFlooded = false;
-			scene->GetGameObject(ppLevelData[tile.x][tile.y].WaterBlockName)->SetIsVisible(false);
+			ppLevelData[tile.x][tile.y].GameObjects[0]->SetIsVisible(false);
 			toRemoveFloodingIDs.push_back(tile);
 		}
 	}

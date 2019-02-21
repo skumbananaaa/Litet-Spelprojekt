@@ -18,7 +18,9 @@ struct TileData
 	float WaterLevelLastUpdated;
 	float WaterLevelAge;
 	bool AlreadyFlooded;
-	std::string WaterBlockName;
+	bool Burning;
+	
+	std::vector<GameObject*> GameObjects;
 };
 
 class API WorldLevel

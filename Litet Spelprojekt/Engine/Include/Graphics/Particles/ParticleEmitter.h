@@ -34,7 +34,7 @@ public:
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	virtual void UpdateTransform() noexcept override;
 	
-	void SetParticlesPerFrame(uint32 numParticles) noexcept;
+	void SetParticlesPerSeconds(uint32 numParticles) noexcept;
 	void SetParticleBlendMode(ParticleBlendMode mode) noexcept;
 	void SetConeAngle(float angleRad) noexcept;
 	void SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept;
@@ -62,7 +62,8 @@ private:
 	ParticleBlendMode GetParticleBlendMode() const noexcept;
 
 private:
-	uint32 m_ParticlesPerFrame;
+	uint32 m_ParticlesPerSecond;
+	float m_ParticleBacklog;
 	glm::vec3 m_Direction;
 	const Texture2D* m_pTexture;
 	uint32* m_pLivingParticles;

@@ -7,9 +7,6 @@
 #include <IO/ResourceHandler.h>
 #include "TimerQuery.h"
 
-#define LEVEL_SIZE_X 12
-#define LEVEL_SIZE_Y 6
-#define LEVEL_SIZE_Z 42
 struct DecalBatch
 {
 	const Decal* pDecal = nullptr;
@@ -27,12 +24,6 @@ struct DeferredFrameTimes
 	float ReconstructionPass = 0.0f;
 };
 
-struct WorldBuffer
-{
-	int concealed;
-	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
-	int extended;
-};
 class API DefferedRenderer final : public IRenderer
 {
 public:

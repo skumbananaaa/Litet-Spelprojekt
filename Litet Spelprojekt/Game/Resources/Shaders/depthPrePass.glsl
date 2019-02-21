@@ -22,10 +22,18 @@ layout(std140, binding = 4) uniform PlaneBuffer
 	vec4 g_ClipPlane;
 };
 
+layout(binding = 5) uniform Extension
+{
+	float extension;
+};
+
 void main()
 {
 	vec4 position = g_InstanceModel * vec4(g_Position, 1.0);
 	gl_ClipDistance[0] = dot(position, g_ClipPlane);
+
+	position.x += extension * floor(g_InstanceModel[3].y / 2.0f);
+
 	gl_Position = g_ProjectionView * position;
 }
 

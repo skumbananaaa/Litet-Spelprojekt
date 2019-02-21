@@ -35,7 +35,6 @@ public:
 	~WorldLevel();
 
 	const uint32* const* const GetLevel() const noexcept;
-	TileData* const* const GetLevelData() noexcept;
 	const TileData* const* const GetLevelData() const noexcept;
 	TileData* const* const GetLevelData() noexcept;
 	std::vector<glm::ivec2>& GetBurningIDs() noexcept;

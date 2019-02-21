@@ -52,7 +52,7 @@ const uint32* const* const WorldLevel::GetLevel() const noexcept
 	return m_ppLevel;
 }
 
-TileData* const * const WorldLevel::GetLevelData() noexcept
+const TileData* const * const WorldLevel::GetLevelData() const noexcept
 {
 	return m_ppLevelData;
 }
@@ -172,9 +172,3 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 		}
 	}
 }
-
-void WorldLevel::SetTileData(const glm::ivec2 & pos, const TileData & data)
-{
-	m_ppLevelData[pos.x][pos.y] = data;
-}
-

@@ -110,9 +110,6 @@ void Game::OnResourcesLoaded()
 
 	LightManager::Init(m_Scenes[0], 3);
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
-
 
 	//Create renderers
 #if defined(DEFERRED_RENDER_PATH)
@@ -230,6 +227,10 @@ void Game::OnResourcesLoaded()
 	
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
+
+	//Create scenarios
+	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
+	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 	//Create particles
 	{

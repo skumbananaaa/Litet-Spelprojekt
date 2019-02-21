@@ -735,7 +735,7 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 	bool clickedOnGUI = false;
 	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		if (pObject->ContainsPoint(position))
+		if (pObject->OwnsPoint(position))
 		{
 			clickedOnGUI = true;
 			break;

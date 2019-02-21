@@ -20,7 +20,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(true, 1920, 1080, "", true),
+	: Application(false, 1600, 900, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -290,7 +290,6 @@ void Game::OnResourcesLoaded()
 		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
-
 		glm::uvec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;
@@ -298,6 +297,7 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
 		m_Scenes[0]->AddGameObject(pGameObject);
+		//m_pWorld->GetLevel();
 	}
 
 	//Water?? YAAAS
@@ -610,23 +610,36 @@ void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 
 void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
-	switch (mousebutton)
+	bool clickedOnGUI = false;
+	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		case MOUSE_BUTTON_LEFT:
+		if (pObject->ContainsPoint(position))
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
-			{
-				PickPosition();
-			}
+			clickedOnGUI = true;
 			break;
 		}
-		case MOUSE_BUTTON_RIGHT:
+	}
+
+	if (!clickedOnGUI)
+	{
+		switch (mousebutton)
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+			case MOUSE_BUTTON_LEFT:
 			{
-				PickCrew(false);
+				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+				{
+					PickPosition();
+				}
+				break;
 			}
-			break;
+			case MOUSE_BUTTON_RIGHT:
+			{
+				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+				{
+					PickCrew(false);
+				}
+				break;
+			}
 		}
 	}
 }

@@ -69,7 +69,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		TileData& tileData = m_pWorld->GetLevel((int32)pos.y + ((int32)pos.y + 1) % 2)->GetLevelData()[(int32)pos.x][(int32)pos.z];
 		bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
 
-		tileData.SmokeAmount += pow(m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z].Temp,2.0f);
+		tileData.SmokeAmount += pow(m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z].Temp, 2.0f);
 		tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
 
 		if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
@@ -87,7 +87,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 	for (uint32 j = 0; j < max; j++)
 	{
 		glm::ivec3& smoke = m_Smoke[j];
-		TileData& data = m_pWorld->GetLevel((int32)smoke.y)->GetLevelData()[smoke.x][smoke.z];
+		TileData& data = m_pWorld->GetLevel((int32)smoke.y + ((int32)smoke.y + 1) % 2)->GetLevelData()[smoke.x][smoke.z];
 
 		float spread = data.SmokeAmount - data.SmokeLimit;
 		spread /= 4;
@@ -168,9 +168,12 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 {
 	bool res = false;
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
+	TileData& lowerTileData = m_pWorld->GetLevel(origin.y + offset.y - 1)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
 	bool filled = tileData.SmokeAmount >= tileData.SmokeLimit;
 	//HasDoor and hasStairs never set?
-	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || tileData.HasDoor || tileData.HasStairs)
+	if (lowerTileData.HasDoor)
+		bool hej = true;
+	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || lowerTileData.HasDoor || lowerTileData.HasStairs)
 	{
 		tileData.SmokeAmount += amount;
 		if (!filled && tileData.SmokeAmount >= tileData.SmokeLimit)

@@ -83,7 +83,7 @@ const glm::vec4& WorldLevel::GetWall(uint32 index) const noexcept
 
 uint32 WorldLevel::GetNrOfWalls() const noexcept
 {
-	return m_Walls.size();
+	return static_cast<uint32>(m_Walls.size());
 }
 
 const std::vector<glm::uvec4>& WorldLevel::GetRooms() const noexcept

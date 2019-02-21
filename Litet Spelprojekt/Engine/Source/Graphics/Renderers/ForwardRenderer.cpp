@@ -457,7 +457,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 
-	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
 		if (particleSystems[i]->GetParticleBlendMode() == PARTICLE_ADDITIVE)

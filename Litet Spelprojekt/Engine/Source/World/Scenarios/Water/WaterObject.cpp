@@ -9,7 +9,7 @@ WaterObject::~WaterObject()
 {
 }
 
-void WaterObject::Update(float deltaTime) noexcept
+void WaterObject::Update(const Camera& camera, float deltaTime) noexcept
 {
 	Extend(deltaTime);
 

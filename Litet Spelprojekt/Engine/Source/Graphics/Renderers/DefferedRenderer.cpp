@@ -611,7 +611,7 @@ void DefferedRenderer::ParticlePass(const Camera& camera, const Scene& scene) co
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 
-	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
 		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());

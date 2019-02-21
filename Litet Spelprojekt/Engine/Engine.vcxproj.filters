@@ -69,7 +69,6 @@
     <ClCompile Include="Source\System\Random.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Particle.cpp" />
-    <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
@@ -83,7 +82,6 @@
     <ClCompile Include="Source\World\Scenarios\ScenarioManager.cpp" />
     <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\World\LightManager.cpp" />
-    <ClCompile Include="Include\Graphics\Particles\ParticleManager.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
   </ItemGroup>
@@ -168,7 +166,6 @@
     <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
-    <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
     <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
@@ -185,7 +182,6 @@
     <ClInclude Include="Include\World\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\World\Scenarios\Water\WaterObject.h" />
     <ClInclude Include="Include\World\LightManager.h" />
-    <ClInclude Include="Include\Graphics\Particles\ParticleManager.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
   </ItemGroup>

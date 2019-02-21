@@ -14,8 +14,9 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
-	virtual void Update(float deltaTime) noexcept;
+	virtual void Update(const Camera& camera, float deltaTime) noexcept;
 	virtual void UpdateTransform() noexcept;
+	
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetIsVisible(bool isVisible) noexcept;

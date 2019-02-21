@@ -60,7 +60,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 			CheckFire(dtS, glm::ivec3(0, -1, 0), curr, scene);
 		}
 
-		glm::ivec3 pos = glm::ivec3((int32)m_OnFire[i].x, (int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z);
+		/*glm::ivec3 pos = glm::ivec3((int32)m_OnFire[i].x, (int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z);
 		for (uint32 i = 0; i < m_OnFire.size(); i++)
 		{
 			TileData& tileData = m_pWorld->GetLevel((int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z];
@@ -89,7 +89,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), pos, spread);
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), pos, spread);
 			data.SmokeAmount -= spread * rest;
-		}
+		}*/
 	}
 
 	return m_OnFire.empty();
@@ -113,11 +113,44 @@ int32 ScenarioFire::GetMaxTimeBeforeOutbreak() noexcept
 void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene)
 {
 
-	float rateOfSpread = (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || m_pppMap[origin.y][origin.x][origin.z] == 0 || m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == 0) && offset.y == 0 && m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] != 1;
+	TileData& originTile = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x][origin.z];
+	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
+	float rateOfSpread = 0.1f;
+	float rateOfWallSpread = 0.02;
+	float rateOfFloorSpread = 0.001;
 
+	rateOfSpread *= (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || (tileData.HasDoor && originTile.HasDoor));
+	rateOfSpread += (rateOfWallSpread * (offset.y + 1) + rateOfFloorSpread) * (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] != 1);
 
-	SpreadFire(dtS, offset, origin, scene, rateOfSpread);
+	tileData.Temp += std::max((originTile.Temp - tileData.BurnsAt) * rateOfSpread * dtS, 0.0f);
 
+	if (tileData.Temp >= tileData.BurnsAt && !tileData.Burning)
+	{
+		m_OnFire.push_back(glm::vec3(origin) + glm::vec3(offset));
+		tileData.Burning = true;
+
+		GameObject* pGameObject;
+		{
+			pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::BOAT);
+			pGameObject->SetMesh(MESH::CUBE_OBJ);
+			pGameObject->SetPosition(glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f));
+			pGameObject->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+			pGameObject->UpdateTransform();
+			scene->AddGameObject(pGameObject);
+		}
+	}
+	else if (tileData.Temp < tileData.BurnsAt && tileData.Burning)
+	{
+		tileData.Burning = false;
+		for (uint32 i = 0; i < m_OnFire.size(); i++)
+		{
+			if (m_OnFire[i] == glm::ivec3(origin) + glm::ivec3(offset))
+			{
+				m_OnFire.erase(m_OnFire.begin() + i);
+			}
+		}
+	}
 }
 
 bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, float amount)
@@ -135,40 +168,4 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 		res = true;
 	}
 	return res;
-}
-
-void ScenarioFire::SpreadFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene, float rateOfSpread)
-{
-	TileData& originTile = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x][origin.z];
-	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
-
-	tileData.Temp += std::max((originTile.Temp - tileData.BurnsAt) * rateOfSpread * dtS, 0.0f);
-
-	if (tileData.Temp >= tileData.BurnsAt && !tileData.Burning)
-	{
-		m_OnFire.push_back(glm::vec3(origin) + glm::vec3(offset));
-		tileData.Burning = true;
-
-		GameObject* pGameObject;
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::BOAT);
-			pGameObject->SetMesh(MESH::CUBE_OBJ);
-			pGameObject->SetPosition(glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, -0.5f, 0.0f));
-			pGameObject->SetScale(glm::vec3(0.5f, 1.0f, 0.5f));
-			pGameObject->UpdateTransform();
-			scene->AddGameObject(pGameObject);
-		}
-	}
-	else if (tileData.Temp < tileData.BurnsAt && tileData.Burning)
-	{
-		tileData.Burning = false;
-		for (uint32 i = 0; i < m_OnFire.size(); i++)
-		{
-			if (m_OnFire[i] == glm::ivec3(origin) + glm::ivec3(offset))
-			{
-				m_OnFire.erase(m_OnFire.begin() + i);
-			}
-		}
-	}
 }

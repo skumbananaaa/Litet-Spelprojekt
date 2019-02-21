@@ -16,6 +16,11 @@ IndexedMesh* ResourceHandler::m_pIndexedMeshes[64];
 uint32 ResourceHandler::m_NrOfMeshes = 0;
 uint32 ResourceHandler::m_NrOfMeshesLoaded = 0;
 
+ResourceHandler::ANIMATED_MESH_DESC_INTERNAL ResourceHandler::m_pAnimatedMeshFiles[64];
+AnimatedMesh* ResourceHandler::m_pAnimatedMeshes[64];
+uint32 ResourceHandler::m_NrOfAnimatedMeshes = 0;
+uint32 ResourceHandler::m_NrOfAnimatedMeshesLoaded = 0;
+
 ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[64];
 Texture2D* ResourceHandler::m_pTexture2Ds[64];
 uint32 ResourceHandler::m_NrOfTexture2D = 0;
@@ -80,6 +85,12 @@ uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh)
 	m_pIndexedMeshFiles[m_NrOfMeshes] = { "" };
 	m_pIndexedMeshes[m_NrOfMeshes] = mesh;
 	return m_NrOfMeshes++;
+}
+
+uint32 ResourceHandler::RegisterAnimatedMesh(const std::string& filename)
+{
+	m_pAnimatedMeshFiles[m_NrOfAnimatedMeshes] = { filename };
+	return m_NrOfAnimatedMeshes++;
 }
 
 uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
@@ -199,6 +210,15 @@ IndexedMesh* ResourceHandler::GetMesh(int32 mesh)
 		return nullptr;
 	}
 	return m_pIndexedMeshes[mesh];
+}
+
+AnimatedMesh* ResourceHandler::GetAnimatedMesh(int32 mesh)
+{
+	if (mesh == -1)
+	{
+		return nullptr;
+	}
+	return m_pAnimatedMeshes[mesh];
 }
 
 int32 ResourceHandler::GetMesh(const IndexedMesh* mesh)
@@ -342,6 +362,17 @@ void ResourceHandler::Load()
 		}
 	}
 
+	for (int i = m_NrOfAnimatedMeshesLoaded; i < m_NrOfAnimatedMeshes; i++)
+	{
+		ANIMATED_MESH_DESC_INTERNAL desc = m_pAnimatedMeshFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Loading Animated Mesh: " << desc.filename << std::endl;
+			TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
+			m_pAnimatedMeshes[i] = AnimatedMesh::ReadColladaFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
+		}
+	}
+
 	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
 	{
 		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
@@ -391,6 +422,11 @@ void ResourceHandler::Construct()
 		m_pIndexedMeshes[i]->Construct();
 	}
 
+	for (int i = m_NrOfAnimatedMeshesLoaded; i < m_NrOfAnimatedMeshes; i++)
+	{
+		m_pAnimatedMeshes[i]->Construct();
+	}
+
 	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
 	{
 		m_pTexture2Ds[i]->Construct();
@@ -415,6 +451,7 @@ void ResourceHandler::LoadResources(IResourceListener* resourceListener, std::st
 	Construct();
 
 	m_NrOfMeshesLoaded = m_NrOfMeshes;
+	m_NrOfAnimatedMeshesLoaded = m_NrOfAnimatedMeshes;
 	m_NrOfTexture2DLoaded = m_NrOfTexture2D;
 	m_NrOfSoundsLoaded = m_NrOfSounds;
 	m_NrOfMusicLoaded = m_NrOfMusic;
@@ -458,6 +495,16 @@ void ResourceHandler::ReleaseResources()
 			std::cout << "Releasing Mesh: " << desc.filename << std::endl;
 		}
 		Delete(m_pIndexedMeshes[i]);
+	}
+
+	for (int i = 0; i < m_NrOfAnimatedMeshes; i++)
+	{
+		ANIMATED_MESH_DESC_INTERNAL desc = m_pAnimatedMeshFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Releasing Animated Mesh: " << desc.filename << std::endl;
+		}
+		Delete(m_pAnimatedMeshes[i]);
 	}
 
 	for (int i = 0; i < m_NrOfTexture2D; i++)

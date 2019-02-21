@@ -308,6 +308,18 @@ void GLContext::DrawIndexedMeshInstanced(const IndexedMesh& mesh) const noexcept
 	GL_CALL(glBindVertexArray(0));
 }
 
+void GLContext::DrawAnimatedMesh(const AnimatedMesh& animatedMesh) const noexcept
+{
+	GL_CALL(glBindVertexArray(animatedMesh.m_VAO));
+
+	for (int i = 0; i < animatedMesh.m_Entries.size(); i++)
+	{
+		GL_CALL(glDrawElementsBaseVertex(GL_TRIANGLES, animatedMesh.m_Entries[i].NumIndices, GL_UNSIGNED_INT, (void*)(sizeof(uint32) * animatedMesh.m_Entries[i].BaseIndex), animatedMesh.m_Entries[i].BaseVertex));
+	}
+
+	GL_CALL(glBindVertexArray(0));
+}
+
 void GLContext::DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept
 {
 	GL_CALL(glBindVertexArray(mesh.m_VAO));

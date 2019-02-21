@@ -27,6 +27,7 @@ void ScenarioFire::OnStart() noexcept
 
 	TileData& tileData = m_pWorld->GetLevel(lvl)->GetLevelData()[x][z];
 	tileData.Temp = 100.1f;
+	tileData.Burning = true;
 }
 
 void ScenarioFire::OnEnd() noexcept
@@ -43,53 +44,73 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 	// current, right, left, forward, back, up, down.
 	for (uint32 i = 0; i < m_OnFire.size(); i++)
 	{
-		glm::vec3 curr = m_OnFire[i];
-		CheckFire(dtS, glm::ivec3(0, 0, 0), curr, scene);
-		CheckFire(dtS, glm::ivec3(1, 0, 0), curr, scene);
-		CheckFire(dtS, glm::ivec3(-1, 0, 0), curr, scene);
-		CheckFire(dtS, glm::ivec3(0, 0, 1), curr, scene);
-		CheckFire(dtS, glm::ivec3(0, 0, -1), curr, scene);
+		glm::ivec3 pos = m_OnFire[i];
+		CheckFire(dtS, glm::ivec3(0, 0, 0), pos, scene);
+		CheckFire(dtS, glm::ivec3(1, 0, 0), pos, scene);
+		CheckFire(dtS, glm::ivec3(-1, 0, 0), pos, scene);
+		CheckFire(dtS, glm::ivec3(0, 0, 1), pos, scene);
+		CheckFire(dtS, glm::ivec3(0, 0, -1), pos, scene);
 
-		if (curr.y < m_pWorld->GetNumLevels() - 1)
+		if (pos.y < m_pWorld->GetNumLevels() - 1)
 		{
-			CheckFire(dtS, glm::ivec3(0, 1, 0), curr, scene);
+			CheckFire(dtS, glm::ivec3(0, 1, 0), pos, scene);
 		}
 
-		if (curr.y - 1 > 0)
+		if (pos.y - 1 > 0)
 		{
-			CheckFire(dtS, glm::ivec3(0, -1, 0), curr, scene);
+			CheckFire(dtS, glm::ivec3(0, -1, 0), pos, scene);
 		}
 
-		/*glm::ivec3 pos = glm::ivec3((int32)m_OnFire[i].x, (int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z);
-		for (uint32 i = 0; i < m_OnFire.size(); i++)
+	}
+
+	for (uint32 i = 0; i < m_OnFire.size(); i++)
+	{
+		glm::ivec3& pos = m_OnFire[i];
+		TileData& tileData = m_pWorld->GetLevel((int32)pos.y + ((int32)pos.y + 1) % 2)->GetLevelData()[(int32)pos.x][(int32)pos.z];
+		bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
+
+		tileData.SmokeAmount += pow(m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z].Temp,2.0f);
+		tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
+
+		if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
 		{
-			TileData& tileData = m_pWorld->GetLevel((int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z];
-			bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
+			m_Smoke.push_back(pos);
 
-			tileData.SmokeAmount += m_pWorld->GetLevel((int32)m_OnFire[i].y)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z].Temp;
-			tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
-
-			if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
-			{
-				m_Smoke.push_back(pos);
-			}
+			ParticleEmitter* pEmitter = new ParticleEmitter();
+			pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
+			pEmitter->SetTexture(TEXTURE::SMOKE);
+			pEmitter->SetTimeToLive(7.0f);
+			pEmitter->SetConeAngle(glm::radians<float>(40.0f));
+			pEmitter->SetSpeed(0.1f, 0.4f);
+			pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
+			pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+			pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+			pEmitter->SetPosition(pos + glm::ivec3(0.0f, ((int32)pos.y + 1) % 2, 0.0f));
+			pEmitter->SetParticlesPerSeconds(5);
+			pEmitter->UpdateTransform();
+			scene->AddGameObject(pEmitter);
 		}
+	}
 
-		uint32 max = m_Smoke.size();
-		for (uint32 i = 0; i < max; i++)
+	uint32 max = m_Smoke.size();
+	for (uint32 j = 0; j < max; j++)
+	{
+		glm::ivec3& smoke = m_Smoke[j];
+		TileData& data = m_pWorld->GetLevel((int32)smoke.y)->GetLevelData()[smoke.x][smoke.z];
+
+		float spread = data.SmokeAmount - data.SmokeLimit;
+		spread /= 4;
+		spread *= dtS;
+		uint32 rest = 0;
+		if (spread > 0.0f)
 		{
-			TileData& data = m_pWorld->GetLevel((int32)m_Smoke[i].y)->GetLevelData()[m_Smoke[i].x][m_Smoke[i].z];
-
-			float spread = data.SmokeAmount - data.SmokeLimit;
-			spread /= 4;
-			spread *= dtS;
-			uint32 rest = 0;
-			rest += CheckSmoke(dtS, glm::ivec3(1, 0, 0), pos, spread);
-			rest += CheckSmoke(dtS, glm::ivec3(-1, 0, 0), pos, spread);
-			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), pos, spread);
-			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), pos, spread);
+			glm::ivec3 smokeOriginPos = glm::ivec3(smoke) /*+ glm::ivec3(0.0, (smoke.y + 1) % 2, 0.0f)*/;
+			rest += CheckSmoke(dtS, glm::ivec3(1, 0, 0), smokeOriginPos, spread, scene);
+			rest += CheckSmoke(dtS, glm::ivec3(-1, 0, 0), smokeOriginPos, spread, scene);
+			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), smokeOriginPos, spread, scene);
+			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), smokeOriginPos, spread, scene);
 			data.SmokeAmount -= spread * rest;
-		}*/
+		}
 	}
 
 	return m_OnFire.empty();
@@ -112,12 +133,11 @@ int32 ScenarioFire::GetMaxTimeBeforeOutbreak() noexcept
 
 void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene)
 {
-
 	TileData& originTile = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x][origin.z];
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
 	float rateOfSpread = 0.1f;
-	float rateOfWallSpread = 0.02;
-	float rateOfFloorSpread = 0.001;
+	float rateOfWallSpread = 0.002;
+	float rateOfFloorSpread = 0.0001;
 
 	rateOfSpread *= (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || (tileData.HasDoor && originTile.HasDoor));
 	rateOfSpread += (rateOfWallSpread * (offset.y + 1) + rateOfFloorSpread) * (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] != 1);
@@ -142,18 +162,8 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 		pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		pEmitter->SetParticlesPerSeconds(5);
 		pEmitter->UpdateTransform();
-		scene->AddGameObject(pEmitter);
 
-		//GameObject* pGameObject;
-		//{
-		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::BOAT);
-		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
-		//	pGameObject->SetPosition(glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f));
-		//	pGameObject->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-		//	pGameObject->UpdateTransform();
-		//	scene->AddGameObject(pGameObject);
-		//}
+		scene->AddGameObject(pEmitter);
 	}
 	else if (tileData.Temp < tileData.BurnsAt && tileData.Burning)
 	{
@@ -168,19 +178,43 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 	}
 }
 
-bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, float amount)
+bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, float amount, Scene* scene)
 {
 	bool res = false;
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
 	bool filled = tileData.SmokeAmount >= tileData.SmokeLimit;
-	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || m_pppMap[origin.y][origin.x][origin.z] == 0 || m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == 0)
+	//HasDoor and hasStairs never set?
+	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || tileData.HasDoor || tileData.HasStairs)
 	{
 		tileData.SmokeAmount += amount;
 		if (!filled && tileData.SmokeAmount >= tileData.SmokeLimit)
 		{
 			m_Smoke.push_back(origin + offset);
+
+			//GameObject* tmp = new GameObject();
+			//tmp->SetMesh(MESH::SPHERE);
+			//tmp->SetMaterial(MATERIAL::GREEN);
+			//
+			//tmp->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+			//scene->AddGameObject(tmp);
+
+			ParticleEmitter* pEmitter = new ParticleEmitter();
+			pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
+			pEmitter->SetTexture(TEXTURE::SMOKE);
+			pEmitter->SetTimeToLive(7.0f);
+			pEmitter->SetConeAngle(glm::radians<float>(40.0f));
+			pEmitter->SetSpeed(0.1f, 0.4f);
+			pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
+			pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+			pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+			pEmitter->SetPosition(origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f));
+			pEmitter->SetParticlesPerSeconds(5);
+			pEmitter->UpdateTransform();
+			scene->AddGameObject(pEmitter);
 		}
+
 		res = true;
 	}
+
 	return res;
 }

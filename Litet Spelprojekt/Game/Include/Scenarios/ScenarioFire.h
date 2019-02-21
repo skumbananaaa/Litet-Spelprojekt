@@ -5,7 +5,7 @@ class ScenarioFire : public IScenario
 {
 public:
 	ScenarioFire(World* world);
-	~ScenarioFire();
+	virtual ~ScenarioFire();
 
 	virtual void OnStart() noexcept override;
 	virtual void OnEnd()noexcept override;
@@ -21,7 +21,7 @@ private:
 	const uint32* const** m_pppMap;
 
 	void CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
-	bool CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount);
+	bool CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
 
 	// x, y, z = x, level, z
 	std::vector<glm::ivec3> m_OnFire;

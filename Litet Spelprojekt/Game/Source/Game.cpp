@@ -231,35 +231,6 @@ void Game::OnResourcesLoaded()
 	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
 	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
-	//Create particles
-	ParticleEmitter* pEmitter = new ParticleEmitter();
-	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
-	pEmitter->SetTexture(TEXTURE::SMOKE);
-	pEmitter->SetTimeToLive(7.0f);
-	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
-	pEmitter->SetSpeed(0.1f, 0.4f);
-	pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
-	pEmitter->SetParticlesPerSeconds(5);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
-
-	pEmitter = new ParticleEmitter();
-	pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
-	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
-	pEmitter->SetTexture(TEXTURE::SMOKE);
-	pEmitter->SetTimeToLive(7.0f);
-	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
-	pEmitter->SetSpeed(0.1f, 0.4f);
-	pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-	pEmitter->SetParticlesPerSeconds(5);
-	pEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pEmitter);
-
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
 	for (int i = 0; i < gameObjects; i++)

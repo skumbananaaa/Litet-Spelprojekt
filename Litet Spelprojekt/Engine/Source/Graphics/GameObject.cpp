@@ -3,6 +3,8 @@
 
 GameObject::GameObject() noexcept
 	: m_pMesh(nullptr),
+	m_pAMesh(nullptr),
+	m_pASkeleton(nullptr),
 	m_pDecal(nullptr),
 	m_pMaterial(nullptr),
 	m_Position(0.0f),
@@ -18,6 +20,7 @@ GameObject::GameObject() noexcept
 
 GameObject::~GameObject()
 {
+	DeleteSafe(m_pASkeleton);
 }
 
 void GameObject::SetName(const std::string& name) noexcept
@@ -75,6 +78,11 @@ void GameObject::UpdateTransform() noexcept
 		m_InverseTransform = glm::inverse(m_transform);
 		
 		m_IsDirty = false;
+
+		if (HasSkeleton())
+		{
+			m_pASkeleton->SetSkeletonTransform(m_transform);
+		}
 	}
 }
 

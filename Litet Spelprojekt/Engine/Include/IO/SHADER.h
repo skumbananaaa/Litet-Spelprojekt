@@ -23,6 +23,8 @@ public:
 	static uint32 STANDARD_MATERIAL;
 	static uint32 PARTICLES;
 	static uint32 EQUIREC_TO_CUBEMAP;
+	static uint32 ANIMATION;
+	static uint32 ANIMATION_DEPTH_PRE_PASS;
 
 private:
 	static void RegisterResourcesPreLoading();

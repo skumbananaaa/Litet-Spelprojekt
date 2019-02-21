@@ -152,11 +152,6 @@ bool PanelExpandable::ContainsPoint(const glm::vec2& position, const GUIObject* 
 	return Button::ContainsPoint(position, caller);
 }
 
-bool PanelExpandable::OwnsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
-{
-	return Button::OwnsPoint(position, caller);
-}
-
 void PanelExpandable::RenderChildrensFrameBuffers(GUIContext* context)
 {
 	context->BeginSelfRendering(m_pFrameBufferClientArea, m_ClientAreaColor);

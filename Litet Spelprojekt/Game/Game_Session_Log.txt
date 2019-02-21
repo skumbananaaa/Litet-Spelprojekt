@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-10:58:24   Scenario [Water] Started!
-10:58:51   Scenario [Fire] Started!
-10:58:51   Scenario [Fire] Ended!
-=======
-10:47:33   Scenario [Water] Started!
-10:48:01   Scenario [Fire] Started!
-10:48:01   Scenario [Fire] Ended!
-10:48:41   Scenario [Fire] Started!
-10:48:41   Scenario [Fire] Ended!
->>>>>>> develop
+11:15:38   Scenario [Water] Started!
+11:16:15   Scenario [Fire] Started!
+11:16:15   Scenario [Fire] Ended!

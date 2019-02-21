@@ -20,6 +20,20 @@ struct TileData
 	bool AlreadyFlooded;
 	
 	std::vector<GameObject*> GameObjects;
+
+	void RemoveGameObject(GameObject* gameObject)
+	{
+		int32 counter = 0;
+		for (GameObject* object : GameObjects)
+		{
+			if (object == gameObject)
+			{
+				GameObjects.erase(GameObjects.begin() + counter);
+				return;
+			}
+			counter++;
+		}
+	}
 };
 
 class API WorldLevel

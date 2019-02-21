@@ -44,7 +44,6 @@ public:
 	virtual void RenderRealTimePost(GUIContext* context) override;
 
 	virtual bool ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept override;
-	virtual bool OwnsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept override;
 
 protected:
 	virtual void OnUpdate(float dtS) override;

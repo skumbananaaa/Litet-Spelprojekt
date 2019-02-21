@@ -87,7 +87,7 @@ void Game::OnResourcesLoaded()
 
 	m_pUICrewMember = new UICrewMember(330, 170);
 
-	m_PanelLog = new Panel(GetWindow().GetWidth() - 300, GetWindow().GetHeight() - 450, 300, 450);
+	m_PanelLog = new Panel(GetWindow().GetWidth() - 350, GetWindow().GetHeight() - 450, 350, 450);
 	m_pTextViewLog = new TextView(0, m_PanelLog->GetHeight() - 50, m_PanelLog->GetWidth(), 50, "Loggbok", true);
 	m_ListScrollableLog = new ListScrollable(0, 0, m_PanelLog->GetWidth(), m_PanelLog->GetHeight() - m_pTextViewLog->GetHeight());
 	m_ListScrollableLog->SetBackgroundColor(glm::vec4(0.15F, 0.15F, 0.15F, 1.0F));
@@ -297,7 +297,7 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
 		m_Scenes[0]->AddGameObject(pGameObject);
-		//m_pWorld->GetLevel();
+		m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);
 	}
 
 	//Water?? YAAAS

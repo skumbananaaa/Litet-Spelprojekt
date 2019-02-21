@@ -1,10 +1,10 @@
 #ifndef CREWMEMBER_H
 #define CREWMEMBER_H
+#include <EnginePch.h>
 #include <Graphics/Lights/PointLight.h>
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/GameObject.h>
 #include <System/ThreadHandler.h>
-#include <string>
 #include "..\Include\Path.h"
 
 #define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
@@ -49,12 +49,14 @@ public:
 	///<summary>Used to determine path of crewmember to an already selected target. Function made to run on multiple threads.</summary>
 	virtual void RunParallel() override;
 	///<summary>Updates matrix of the object.</summary>
-	virtual void Update(float deltaTime) override;
+	virtual void Update(float deltaTime) noexcept override;
 
 	virtual void OnPicked();
 	virtual void OnHovered();
 	virtual void OnNotHovered();
-	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept;
+	void UpdateLastKnownPosition() noexcept;
+	const glm::vec3& GetLastKnownPosition() const noexcept;
+	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
 
 	int32 GetShipNumber() const noexcept;
 
@@ -81,6 +83,7 @@ private:
 	glm::ivec3* m_pPath;
 	glm::vec3 m_TargetPos;
 	glm::vec3 m_Direction;
+	glm::vec3 m_LastKnownPosition;
 	int m_NrOfPathTiles;
 	bool m_IsHovered;
 	int32 m_ShipNumber;

@@ -3,6 +3,10 @@
 #include <World/WorldLevel.h>
 #include <World/Room.h>
 #include <Graphics/Scene.h>
+#include <System/Input.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <GLM/gtx/string_cast.hpp>
 
 struct WorldObject
 {
@@ -24,19 +28,26 @@ public:
 	~World();
 
 	void AddWorldObject(const WorldObject& object) noexcept;
+	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
+	void SetDoors(const glm::ivec3* doors, uint32 nrOfDoors);
 
 	WorldLevel* const GetLevel(uint32 level) noexcept;
 	const WorldLevel* const GetLevel(uint32 level) const noexcept;
-	uint32 GetNumLevels() const noexcept;
+	WorldLevel* const GetLevel(uint32 level) noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
+	uint32 GetNumLevels() const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
-	void GenerateRooms();
-	void GenerateWater(Scene* pScene) noexcept;
-	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
+
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
 	Room* GetRoom(uint32 room) const noexcept;
-	void Update(float dt);
+	const glm::ivec3& GetDoor(uint32 index) const noexcept;
+	uint32 GetNumDoors() const noexcept;
+
+	void GenerateRooms();
+	void GenerateWater(Scene* pScene) noexcept;
+
+	void Update(Scene* pScene, float dt);
 
 	void SetTileData(const glm::ivec3 & pos, const TileData & data);
 
@@ -47,6 +58,8 @@ private:
 
 	glm::ivec3* m_pStairs;
 	uint32 m_NumStairs;
+
+	std::vector<glm::ivec3> m_Doors;
 
 	std::vector<Room*> m_Rooms;
 };

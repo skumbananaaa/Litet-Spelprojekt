@@ -2,8 +2,6 @@
 #include <Graphics/Textures/Texture.h>
 #include <Graphics/Textures/Texture2D.h>
 
-
-
 class API TextureCube : public Texture
 {
 public:

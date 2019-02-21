@@ -154,7 +154,7 @@ void PanelScrollable::OnAdded(GUIObject* parent)
 	parent->Add(m_pSliderVertical);
 	parent->Add(m_pSliderHorizontal);
 
-	AddRealTimeRenderer(this);
+	AddRealTimeRenderer();
 	AddMouseListener(this);
 }
 
@@ -166,7 +166,7 @@ void PanelScrollable::OnRemoved(GUIObject* parent)
 	parent->Remove(m_pSliderVertical);
 	parent->Remove(m_pSliderHorizontal);
 
-	RemoveRealTimeRenderer(this);
+	RemoveRealTimeRenderer();
 	RemoveMouseListener(this);
 }
 
@@ -224,30 +224,21 @@ void PanelScrollable::RenderChildrensFrameBuffers(GUIContext* context)
 	Panel::RenderChildrensFrameBuffers(context);
 }
 
-void PanelScrollable::RenderRealTime(GUIContext* context)
+void PanelScrollable::RenderRealTimePre(GUIContext* context, float x, float y)
 {
-	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
 	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
 	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
-	glScissor(GetXInWorld(), GetYInWorld() + heightIndent, GetWidth() - widthIndent, GetHeight() - heightIndent);
-	glEnable(GL_SCISSOR_TEST);
-	context->RenderTexture((Texture2D*)m_pFrameBufferClientArea->GetColorAttachment(0), GetXInWorld() - m_ClientOffset.x, GetYInWorld() + m_ClientOffset.y, GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
-	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
-	glDisable(GL_SCISSOR_TEST);
-}
-
-void PanelScrollable::ControllRealTimeRenderingForChildPre(GUIContext* context, GUIObject* child)
-{
-	Panel::ControllRealTimeRenderingForChildPre(context, child);
-	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
-	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
-	glScissor(GetXInWorld(), GetYInWorld() + heightIndent, GetWidth() - widthIndent, GetHeight() - heightIndent);
+	glScissor(x, y + heightIndent, GetWidth() - widthIndent, GetHeight() - heightIndent);
 	glEnable(GL_SCISSOR_TEST);
 }
 
-void PanelScrollable::ControllRealTimeRenderingForChildPost(GUIContext* context, GUIObject* child)
+void PanelScrollable::RenderRealTime(GUIContext* context, float x, float y)
 {
-	Panel::ControllRealTimeRenderingForChildPost(context, child);
+	context->RenderTexture((Texture2D*)m_pFrameBufferClientArea->GetColorAttachment(0), x - m_ClientOffset.x, y + m_ClientOffset.y, GetClientWidth(), GetClientHeight(), GUIContext::COLOR_WHITE);
+}
+
+void PanelScrollable::RenderRealTimePost(GUIContext* context)
+{
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
 	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
 	glDisable(GL_SCISSOR_TEST);

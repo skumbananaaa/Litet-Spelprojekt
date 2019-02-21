@@ -96,7 +96,7 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 
 	//AMBIENT
-	vec3 ambient = vec3(0.0f);
+	vec3 ambient = vec3(0.2f);
 
 	//DIFFUSE
 	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
@@ -130,7 +130,7 @@ void main()
 	//COLOR and SPECULAR
 	vec4 mappedColor = SampleMSAATexture(g_Color, fs_in.TexCoords);
 	vec3 color = mappedColor.rgb;
-	float specular = mappedColor.a;
+	float specular = 1.0f;//mappedColor.a;
 	
 	//x + y * 10 * IsExtended()
 

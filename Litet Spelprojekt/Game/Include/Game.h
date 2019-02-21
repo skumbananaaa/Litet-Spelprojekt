@@ -25,17 +25,13 @@
 #include <Graphics/GUI/ListScrollable.h>
 
 #include <Graphics/Materials/WallMaterial.h>
-#include <Graphics/Materials/WaterMaterial.h>
+#include <Graphics/Materials/WaterOutdoorMaterial.h>
+#include <Graphics/Materials/WaterIndoorMaterial.h>
 
 #include <World/Logger.h>
-#include <World/ScenarioManager.h>
-#include "../Include/ScenarioFire.h"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <GLM/glm.hpp>
-#include <GLM/gtc/type_ptr.hpp>
-#include <GLM/gtx/string_cast.hpp>
-#include <math.h>
+#include <World/Scenarios/ScenarioManager.h>
+#include "../Include/Scenarios/ScenarioWater.h"
+#include "../Include/Scenarios/ScenarioFire.h"
 
 #define NUM_CREW 15
 #define MAX_ROOMS_VISIBLE 3
@@ -64,17 +60,20 @@ public:
 	void PickCrew(bool hover);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 
+	void ShowCrewmember(uint32 crewmember);
+
 	Crewmember* RayTestCrewmembers();
 
 	void SetClipPlanes(uint32 scene);
 
 	Crewmember* GetCrewmember(uint32 shipNumber);
+	UICrewMember* GetUICrewMember() noexcept;
+
 	Scene* GetScene();
 	static Game* GetGame();
 
-	UICrewMember* m_pUICrewMember;
-
 private:
+	UICrewMember* m_pUICrewMember;
 	IRenderer* m_pRenderer;
 	DebugRenderer* m_pDebugRenderer;
 	std::vector<Scene*> m_Scenes;
@@ -99,7 +98,6 @@ private:
 
 	std::vector<uint32> m_ActiveRooms;
 	std::vector<float> m_RoomLightsTimers;
-	float m_DoorLightTimer = 0.0f;
 	uint32 m_CurrentLight = 0;
 
 	//Sound

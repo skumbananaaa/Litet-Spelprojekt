@@ -46,5 +46,4 @@ void AnimatedMesh::AddJointsToArray(Joint headJoint, glm::mat4* jointMatrix)
 		jointMatrix[i] = headJoint.GetTransformMat();
 
 	}
-
 }

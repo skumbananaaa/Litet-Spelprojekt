@@ -1,12 +1,12 @@
 #pragma once
 #include <EnginePch.h>
-#include <Defines.h>
 #include <Graphics/Geometry/Mesh.h>
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Textures/Texture.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Geometry/FullscreenTri.h>
+#include <Graphics/Geometry/Particle.h>
 
 #if defined(_DEBUG)
 #define GL_DEBUG_ASSERT
@@ -90,7 +90,25 @@ enum StencilOp : uint32
 	STENCIL_OP_INVERT = 0x150A,
 };
 
+enum BlendFunc : uint32
+{
+	BLEND_FUNC_ZERO = 0,
+	BLEND_FUNC_ONE = 1,
+	BLEND_FUNC_SRC_COLOR = 0x0300,
+	BLEND_FUNC_ONE_MINUS_SRC_COLOR = 0x0301,
+	BLEND_FUNC_DST_COLOR = 0x0306,
+	BLEND_FUNC_ONE_MINUS_DST_COLOR = 0x0307,
+	BLEND_FUNC_SRC_ALPHA = 0x0302,
+	BLEND_FUNC_ONE_MINUS_SRC_ALPHA = 0x0303,
+	BLEND_FUNC_DST_ALPHA = 0x0304,
+	BLEND_FUNC_ONE_MINUS_DST_ALPHA = 0x0305,
+	BLEND_FUNC_CONSTANT_COLOR = 0x8001,
+	BLEND_FUNC_CONSTANT_ALPHA = 0x8003,
+	BLEND_FUNC_ONE_MINUS_CONSTANT_ALPHA = 0x8004,
+};
+
 typedef Capability Cap;
+
 class API GLContext
 {
 public:
@@ -106,18 +124,24 @@ public:
 	void Disable(Cap cap) const noexcept;
 	
 	void SetCullMode(CULL_MODE mode) const noexcept;
+	void SetBlendFunc(BlendFunc src, BlendFunc dst);
 
 	void SetViewport(uint32 width, uint32 height, uint32 topX, uint32 topY) noexcept;
 	void SetViewport(const glm::vec4& viewport) noexcept;
+	
+	bool GetDepthMask() const noexcept;
+	Func GetDepthFunc() const noexcept;
 	const glm::vec4 GetViewPort() const noexcept;
 
 	void ResetClearColor() const noexcept;
 	void SetClearColor(float r, float g, float b, float a) const noexcept;
 	void SetClearDepth(float depth) const noexcept;
+	void SetClearStencil(uint8 stencil) const noexcept;
 	void SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept;
 	void SetDepthMask(bool writeDepth) const noexcept;
 	void SetStencilMask(uint8 mask) const noexcept;
-	void SetStencilOp(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept;
+	void SetStencilOpFrontFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept;
+	void SetStencilOpBackFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept;
 	void SetDepthFunc(Func func) const noexcept;
 	void SetStencilFunc(Func func, uint8 ref, uint8 mask) const noexcept;
 	void SetProgram(const ShaderProgram* pProgram) const noexcept;
@@ -133,6 +157,7 @@ public:
 	void DrawIndexedMeshInstanced(const IndexedMesh& mesh) const noexcept;
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
 	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
+	void DrawParticle(const Particle& mesh) const noexcept;
 
 	bool HasErrors() const noexcept;
 	void ClearErrors() const noexcept;
@@ -140,7 +165,14 @@ public:
 private:
 	glm::vec4 m_ViewPort;
 	glm::vec4 m_DefaultClearColor;
+
+	mutable bool m_CurrentDepthMask;
+	mutable Func m_CurrentDepthFunc;
+
 	mutable uint32 m_CurrentTextures[16];
+	mutable const ShaderProgram* m_pCurrentProgram;
+	mutable const Texture* m_pCurrentTextures[16];
+	mutable const UniformBuffer* m_pCurrentUniforms[16];
 
 public:
 	static GLContext& GetCurrentContext() noexcept;

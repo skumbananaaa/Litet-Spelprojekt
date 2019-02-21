@@ -24,8 +24,7 @@ World::~World()
 {
 	for (uint32 i = 0; i < m_NumLevels; i++)
 	{
-		delete m_ppLevels[i];
-		m_ppLevels[i] = nullptr;
+		DeleteSafe(m_ppLevels[i]);
 	}
 
 	DeleteArrSafe(m_ppLevels);
@@ -54,6 +53,12 @@ const WorldLevel* const World::GetLevel(uint32 level) const noexcept
 	return m_ppLevels[level];
 }
 
+WorldLevel* const World::GetLevel(uint32 level) noexcept
+{
+	assert(level < m_NumLevels);
+	return m_ppLevels[level];
+}
+
 uint32 World::GetNumLevels() const noexcept
 {
 	return m_NumLevels;
@@ -72,7 +77,7 @@ uint32 World::GetNumWorldObjects() const noexcept
 
 void World::GenerateRooms()
 {
-	std::vector<glm::uvec4> roomBounds;
+	std::vector<glm::uvec4> m_RoomBounds;
 	std::vector<glm::uvec4> temp;
 
 	std::vector<glm::vec3> center;
@@ -83,9 +88,9 @@ void World::GenerateRooms()
 		temp = m_ppLevels[level]->GetRooms();
 		for (size_t i = 0; i < temp.size(); i++)
 		{
-			if (i >= roomBounds.size())
+			if (i >= m_RoomBounds.size())
 			{
-				roomBounds.push_back(temp[i]);
+				m_RoomBounds.push_back(temp[i]);
 				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.9, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
 			}
 			else if (temp[i].x != 11)
@@ -105,7 +110,7 @@ void World::GenerateRooms()
 
 void World::GenerateWater(Scene* pScene) noexcept
 {
-	for (int level = 0; level < m_NumLevels; level++)
+	for (int level = 0; level < m_NumLevels; level += 2)
 	{
 		m_ppLevels[level]->GenerateWater(pScene, level);
 	}
@@ -119,6 +124,17 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 	for (int i = 0; i < m_NumStairs; i++) 
 	{
 		m_pStairs[i] = stairs[i];
+
+		m_ppLevels[m_pStairs[i].y]->GetLevelData()[m_pStairs[i].x][m_pStairs[i].z].HasStairs = true;
+	}
+}
+
+void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
+{
+	for (int i = 0; i < nrOfDoors; i++)
+	{
+		m_Doors.push_back(doors[i]);
+		m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].HasDoor = true;
 	}
 }
 
@@ -138,11 +154,17 @@ Room* World::GetRoom(uint32 room) const noexcept
 	return m_Rooms[room];
 }
 
-void World::Update(float dt)
+const glm::ivec3 & World::GetDoor(uint32 index) const noexcept
 {
+	assert(index < m_Doors.size());
+	return m_Doors[index];
 }
 
-void World::SetTileData(const glm::ivec3 & pos, const TileData & data)
+uint32 World::GetNumDoors() const noexcept
 {
-	m_ppLevels[pos.y]->SetTileData(glm::ivec2(pos.x, pos.z), data);
+	return m_Doors.size();
+}
+
+void World::Update(Scene* pScene, float dt)
+{
 }

@@ -1,16 +1,26 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Scene.h>
+#include <World/Scenarios/Water/WaterObject.h>
 
 struct TileData 
 {
+	bool HasStairs;
+	bool HasDoor;
+
 	float Temp;
 	float BurnsAt;
 	float SmokeAmount;
 	float SmokeLimit;
+
 	float WaterLevel;
+	float WaterLevelChange;
+	float WaterLevelLastUpdated;
+	float WaterLevelAge;
+	bool AlreadyFlooded;
 	bool Burning;
-	std::string WaterBlockName;
+	
+	std::vector<GameObject*> GameObjects;
 };
 
 class API WorldLevel
@@ -27,6 +37,9 @@ public:
 	const uint32* const* const GetLevel() const noexcept;
 	TileData* const* const GetLevelData() noexcept;
 	const TileData* const* const GetLevelData() const noexcept;
+	TileData* const* const GetLevelData() noexcept;
+	std::vector<glm::ivec2>& GetBurningIDs() noexcept;
+	std::vector<glm::ivec2>& GetFloodingIDs() noexcept;
 	uint32 GetSizeX() const noexcept;
 	uint32 GetSizeZ() const noexcept;
 
@@ -36,16 +49,19 @@ public:
 	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
 	void GenerateRooms();
-	void GenerateWater(Scene* scene, uint32 levelHeight);
-	void SetTileData(const glm::ivec2 & pos, const TileData & data);
+	void GenerateWater(Scene* pScene, uint32 levelHeight);
+	void UpdateFire(float dt);
+	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
+
 private:
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
-	std::vector<glm::ivec2> m_burningIDs;
+	std::vector<glm::ivec2> m_BurningIDs;
+	std::vector<glm::ivec2> m_FloodingIDs;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
 	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
 
-	std::vector<glm::uvec4> roomBounds;
+	std::vector<glm::uvec4> m_RoomBounds;
 };

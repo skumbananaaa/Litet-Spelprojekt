@@ -38,7 +38,10 @@ public:
 	void SetClientSize(float height) noexcept;
 
 	void RenderChildrensFrameBuffers(GUIContext* context) override;
-	void RenderRealTime(GUIContext* context) override;
+
+	virtual void RenderRealTimePre(GUIContext* context, float x = 0, float y = 0) override;
+	virtual void RenderRealTime(GUIContext* context, float x = 0, float y = 0) override;
+	virtual void RenderRealTimePost(GUIContext* context) override;
 
 	virtual bool ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept override;
 

@@ -2,7 +2,7 @@
 #include <System/Application.h>
 #include <System/Input.h>
 
-constexpr float timestep = 1.0f / 60.0f;
+constexpr float timestep = 1.0f / 45.0f;
 Application* Application::s_Instance = nullptr;
 
 //Framebuffer* temp;
@@ -55,7 +55,6 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 
 	m_pAudioContext = IAudioContext::CreateContext();
 
-	
 	std::cout << "Application Initalized" << std::endl;
 }
 
@@ -154,9 +153,11 @@ int32_t Application::Run()
 		m_pGraphicsContext->SetFramebuffer(nullptr);*/
 
 		InternalOnRender(deltaTime);
-		fps++;	
+		fps++;
+
 		m_pWindow->SwapBuffers();
 	}
+
 	ThreadHandler::Exit();
 	ResourceHandler::ReleaseResources();
 	return 0;

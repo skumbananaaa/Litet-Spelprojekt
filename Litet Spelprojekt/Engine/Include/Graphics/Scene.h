@@ -7,6 +7,7 @@
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/SkyBox.h>
 #include <Graphics/Textures/PlanarReflector.h>
+#include <Graphics/Particles/ParticleSystem.h>
 
 class API Scene
 {
@@ -20,14 +21,15 @@ public:
 	void SelectCamera(uint32 index);
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
 	void AddGameObject(GameObject* pGameObject) noexcept;
+	void AddParticleSystem(ParticleSystem* pParticleSystem) noexcept;
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
 	void AddPointLight(PointLight* pLight) noexcept;
 	void AddSpotLight(SpotLight* pLight) noexcept;
 	void AddRoomLight(PointLight* pLight) noexcept;
+	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
-	void ExtendScene(bool extend) noexcept;
-	void SetConceal(bool conceal) noexcept;
+	void ExtendScene() noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
@@ -41,13 +43,13 @@ public:
 	const std::vector<GameObject*>& GetDrawables() const noexcept;
 	const std::vector<GameObject*>& GetDecals() const noexcept;
 	const std::vector<GameObject*>& GetReflectables() const noexcept;
+	const std::vector<ParticleSystem*>& GetParticleSystem() const noexcept;
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
 	const std::vector<PointLight*>& GetRoomLights() const noexcept;
 	std::vector<PointLight*>& GetRoomLights() noexcept;
-	const bool IsExtended() const noexcept;
-	const bool IsConcealed() const noexcept;
+	const float GetExtension() const noexcept;
 
 private:
 	Camera* m_pCamera;
@@ -57,6 +59,7 @@ private:
 	std::vector<GameObject*> m_Drawables;
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
+	std::vector<ParticleSystem*> m_ParticleSystems;
 	std::vector<PlanarReflector*> m_PlanarReflectors;
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;
@@ -64,9 +67,9 @@ private:
 	std::vector<PointLight*> m_RoomLights;
 	SkyBox* m_pSkyBox;
 
-	bool m_Concealed = false;
+	float m_Extension = 0.0f;
+	bool m_Extending = false;
 	bool m_Extended = false;
-	bool m_WasExtended = false;
 };
 
 inline Camera& Scene::GetCamera() noexcept
@@ -111,6 +114,11 @@ inline const std::vector<GameObject*>& Scene::GetReflectables() const noexcept
 	return m_Reflectables;
 }
 
+inline const std::vector<ParticleSystem*>& Scene::GetParticleSystem() const noexcept
+{
+	return m_ParticleSystems;
+}
+
 inline const std::vector<DirectionalLight*>& Scene::GetDirectionalLights() const noexcept
 {
 	return m_DirectionalLights;
@@ -136,12 +144,7 @@ inline std::vector<PointLight*>& Scene::GetRoomLights() noexcept
 	return m_RoomLights;
 }
 
-inline const bool Scene::IsExtended() const noexcept
+inline const float Scene::GetExtension() const noexcept
 {
-	return m_Extended;
-}
-
-inline const bool Scene::IsConcealed() const noexcept
-{
-	return m_Concealed;
+	return m_Extension;
 }

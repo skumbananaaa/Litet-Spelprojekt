@@ -40,6 +40,11 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_PlanarReflectors[i]);
 	}
+
+	for (size_t i = 0; i < m_ParticleSystems.size(); i++)
+	{
+		DeleteSafe(m_ParticleSystems[i]);
+	}
 }
 
 void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
@@ -101,6 +106,7 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 {
 	assert(pGameObject != nullptr);
 
+	pGameObject->OnAddedToScene(this);
 	m_GameObjects.push_back(pGameObject);
 	if (pGameObject->HasMaterial() && pGameObject->HasMesh())
 	{
@@ -124,6 +130,11 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	}
 }
 
+void Scene::AddParticleSystem(ParticleSystem* pParticleSystem) noexcept
+{
+	m_ParticleSystems.push_back(pParticleSystem);
+}
+
 void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
 {
 	m_DirectionalLights.push_back(pLight);
@@ -145,6 +156,20 @@ void Scene::AddRoomLight(PointLight* pLight) noexcept
 	AddPointLight(pLight);
 }
 
+void Scene::RemoveSpotLight(SpotLight* pLight) noexcept
+{
+	int32 counter = 0;
+	for (SpotLight* object : m_SpotLights)
+	{
+		if (object == pLight)
+		{
+			m_SpotLights.erase(m_SpotLights.begin() + counter);
+			return;
+		}
+		counter++;
+	}
+}
+
 void Scene::AddPlanarReflector(PlanarReflector* pReflector) noexcept
 {
 	m_PlanarReflectors.push_back(pReflector);
@@ -155,26 +180,10 @@ void Scene::RemoveGameObject(uint32 index) noexcept
 	m_GameObjects.erase(m_GameObjects.begin() + index);
 }
 
-void Scene::ExtendScene(bool extend) noexcept
+void Scene::ExtendScene() noexcept
 {
-	for (GameObject* pGameObject : m_GameObjects)
-	{
-		pGameObject->SetExtend(extend);
-	}
-	for (SpotLight* pSpotLight : m_SpotLights)
-	{
-		pSpotLight->SetExtend(extend);
-	}
-	for (PointLight* pPointLight : m_PointLights)
-	{
-		pPointLight->SetExtend(extend);
-	}
+	m_Extending = true;
 	m_Extended = !m_Extended;
-}
-
-void Scene::SetConceal(bool conceal) noexcept
-{
-	m_Concealed = conceal;
 }
 
 void Scene::OnUpdate(float dtS) noexcept
@@ -183,6 +192,7 @@ void Scene::OnUpdate(float dtS) noexcept
 	{
 		pGameObject->Update(dtS);
 	}
+
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
 		pSpotLight->Update(dtS);
@@ -190,5 +200,26 @@ void Scene::OnUpdate(float dtS) noexcept
 	for (PointLight* pPointLight : m_PointLights)
 	{
 		pPointLight->Update(dtS);
+	}
+
+	for (ParticleSystem* pSystem : m_ParticleSystems)
+	{
+		pSystem->Update(*m_pCamera, dtS);
+	}
+
+	if (m_Extending)
+	{
+		m_Extension += 20.0f * dtS * ((m_Extended * 2) - 1);
+
+		if (m_Extension > 10.0f)
+		{
+			m_Extending = false;
+			m_Extension = 10.0f;
+		}
+		else if (m_Extension < 0.0f)
+		{
+			m_Extending = false;
+			m_Extension = 0.0f;
+		}
 	}
 }

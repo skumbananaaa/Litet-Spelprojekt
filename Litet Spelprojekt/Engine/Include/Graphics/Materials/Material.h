@@ -12,9 +12,19 @@
 #define LIGHT_BUFFER_BINDING_SLOT 1
 #define MATERIAL_BUFFER_BINDING_SLOT 2
 #define WORLD_BUFFER_BINDING_SLOT 3
+#define PLANE_BUFFER_BINDING_SLOT 4
+#define EXTENSION_BUFFER_BINDING_SLOT 5
 
 class API Material
 {
+private:
+	struct StencilFace
+	{
+		StencilOp StencilFail = STENCIL_OP_KEEP;
+		StencilOp DepthFail = STENCIL_OP_KEEP;
+		StencilOp DepthPass = STENCIL_OP_REPLACE;
+	};
+
 	friend class ResourceHandler;
 
 public:
@@ -24,8 +34,14 @@ public:
 	void SetLightBuffer(const UniformBuffer* pLightBuffer) const noexcept;
 	void SetCameraBuffer(const UniformBuffer* pCameraBuffer) const noexcept;
 	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
+	void SetWorldBuffer(const UniformBuffer* pWorldBuffer) const noexcept;
+	void SetExtensionBuffer(const UniformBuffer* pExtensionBuffer) const noexcept;
 
-	void SetCullMode(CULL_MODE mode) noexcept;
+	void SetStencilTest(bool enable, Func func = FUNC_ALWAYS, uint8 mask = 0xff, uint8 ref = 1, uint8 value = 0xff) const noexcept;
+	void SetStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
+	void SetFrontFaceStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
+	void SetBackFaceStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
+	void SetCullMode(CULL_MODE mode) const noexcept;
 	void SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept;
 
 	const Texture2D* GetNormalMap() const noexcept;
@@ -39,13 +55,15 @@ public:
 	bool HasDiffuseMap() const noexcept;
 	bool HasNormalMap() const noexcept;
 	bool HasSpecularMap() const noexcept;
+	bool IncludeInDepthPrePass() const noexcept;
 
 protected:
 	Material();
 	Material(int32 shader);
-	~Material();
+	virtual ~Material();
 
 	void SetProgram(int32 shader) noexcept;
+	void SetIncludeInDepthPrePass(bool include) noexcept;
 
 private:
 	void SetDiffuseMap(const Texture2D* const pTexture) noexcept;
@@ -62,6 +80,8 @@ private:
 		mutable const UniformBuffer* pLightBuffer = nullptr;
 		mutable const UniformBuffer* pCameraBuffer = nullptr;
 		mutable const UniformBuffer* pMaterialBuffer = nullptr;
+		mutable const UniformBuffer* pWorldBuffer = nullptr;
+		mutable const UniformBuffer* pExtensionBuffer = nullptr;
 		const Texture2D* pDiffuseMap = nullptr;
 		const Texture2D* pNormalMap = nullptr;
 		const Texture2D* pSpecularMap = nullptr;
@@ -71,7 +91,15 @@ private:
 
 	mutable struct
 	{
-		glm::vec4 ClipPlane;
+		bool StencilTest = false;
+		bool DepthPrePass = true;
+		Func StencilFunc = FUNC_ALWAYS;
+		StencilFace Front;
+		StencilFace Back;
+		uint8 StencilMask = 0;
+		uint8 StencilRef = 1;
+		uint8 StencilValue = 0xff;
+		glm::vec4 ClipPlane = glm::vec4(0.0f);
 		CULL_MODE CullMode = CULL_MODE_BACK;
 	} m_PipelineState;
 };
@@ -91,9 +119,19 @@ inline bool Material::HasSpecularMap() const noexcept
 	return m_Data.pSpecularMap != nullptr;
 }
 
+inline bool Material::IncludeInDepthPrePass() const noexcept
+{
+	return m_PipelineState.DepthPrePass;
+}
+
 inline void Material::SetProgram(int32 shader) noexcept
 {
 	m_pProgram = ResourceHandler::GetShader(shader);
+}
+
+inline void Material::SetIncludeInDepthPrePass(bool include) noexcept
+{
+	m_PipelineState.DepthPrePass = include;
 }
 
 inline void Material::SetDiffuseMap(const Texture2D* const pTexture) noexcept
@@ -111,7 +149,38 @@ inline void Material::SetSpecularMap(const Texture2D* const pSpecularMap) noexce
 	m_Data.pSpecularMap = pSpecularMap;
 }
 
-inline void Material::SetCullMode(CULL_MODE mode) noexcept
+inline void Material::SetStencilTest(bool enable, Func func, uint8 mask, uint8 ref, uint8 value) const noexcept
+{
+	m_PipelineState.StencilTest = enable;
+	m_PipelineState.StencilFunc = func;
+	m_PipelineState.StencilMask = mask;
+	m_PipelineState.StencilRef = ref;
+	m_PipelineState.StencilValue = value;
+}
+
+inline void Material::SetStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept
+{
+	m_PipelineState.Front.StencilFail = sFail;
+	m_PipelineState.Front.DepthFail = dFail;
+	m_PipelineState.Front.DepthPass = dPass;
+	m_PipelineState.Back = m_PipelineState.Front;
+}
+
+inline void Material::SetFrontFaceStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept
+{
+	m_PipelineState.Front.StencilFail = sFail;
+	m_PipelineState.Front.DepthFail = dFail;
+	m_PipelineState.Front.DepthPass = dPass;
+}
+
+inline void Material::SetBackFaceStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept
+{
+	m_PipelineState.Back.StencilFail = sFail;
+	m_PipelineState.Back.DepthFail = dFail;
+	m_PipelineState.Back.DepthPass = dPass;
+}
+
+inline void Material::SetCullMode(CULL_MODE mode) const noexcept
 {
 	m_PipelineState.CullMode = mode;
 }

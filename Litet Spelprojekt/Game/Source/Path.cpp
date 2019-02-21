@@ -1,7 +1,6 @@
 #include <EnginePch.h>
 #include "..\Include\Path.h"
 
-
 void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 {
 	int newY = std::min(std::max(y + addY, 0), ((int)m_pWorld->GetNumLevels() / 2 - 1));
@@ -13,13 +12,15 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 		{
 			if (m_pppTiles[newX][newY][newZ].g == 0 || m_pppTiles[newX][newY][newZ].g > m_pppTiles[x][y][z].g)
 			{
-				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || m_pppMap[y][x][z] == 0 || m_pppMap[newY][newX][newZ] == 0 || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
+				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || (m_pWorld->GetLevel(y * 2)->GetLevelData()[x][z].HasDoor && m_pWorld->GetLevel(newY * 2)->GetLevelData()[newX][newZ].HasDoor) || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
 				{
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);
 					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + 1 + std::abs(addY);
+					
 					int h = std::abs(m_GoalTile.x - newX) + std::abs(m_GoalTile.y - newY) + std::abs(m_GoalTile.z - newZ);
 					m_pppTiles[newX][newY][newZ].f = m_pppTiles[newX][newY][newZ].g + h;
+					
 					if (h < m_SmallestH && newY == m_GoalTile.y)
 					{
 						m_SmallestH = h;
@@ -76,6 +77,7 @@ Path::Path(const World * world)
 	m_pWorld = world;
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels() / 2];
 	m_pSize = new glm::ivec2[m_pWorld->GetNumLevels() / 2];
+	
 	int totalSize = 0;
 	for (int i = 0; i < (m_pWorld->GetNumLevels() / 2); i++)
 	{
@@ -86,8 +88,10 @@ Path::Path(const World * world)
 		m_LargestX = std::max(m_LargestX, m_pSize[i].x);
 		m_LargestZ = std::max(m_LargestZ, m_pSize[i].y);
 	}
+	
 	m_pPath = new glm::ivec3[totalSize];
 	m_pOpenList = new glm::ivec3[totalSize];
+
 	m_pppTiles = new tls**[m_LargestX];
 	for (int i = 0; i < m_LargestX; i++)
 	{
@@ -117,10 +121,11 @@ Path::~Path()
 		{
 			DeleteArrSafe(m_pppTiles[i][j]);
 		}
+
 		DeleteArrSafe(m_pppTiles[i]);
 	}
-
 	DeleteArrSafe(m_pppTiles);
+
 	DeleteSafe(m_pPath);
 	DeleteSafe(m_pOpenList);
 	DeleteSafe(m_pppMap);

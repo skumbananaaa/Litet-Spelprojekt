@@ -37,14 +37,12 @@ Grid::Grid(uint32 material, const glm::ivec2& size, const glm::vec3& position)
 
 Grid::~Grid()
 {
-	for (int i = 0; i < m_Size.x; i++)
+	for (int32 x = 0; x < m_Size.x; x++)
 	{
-		delete[] m_pppTiles[i];
-		m_pppTiles[i] = nullptr;
+		DeleteArrSafe(m_pppTiles[x]);
 	}
 
-	delete[] m_pppTiles;
-	m_pppTiles = nullptr;
+	DeleteArrSafe(m_pppTiles);
 }
 
 void Grid::Edit(const glm::ivec2& pos, uint32 val)

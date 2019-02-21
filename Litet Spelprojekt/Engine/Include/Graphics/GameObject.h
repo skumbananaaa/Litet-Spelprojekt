@@ -1,12 +1,12 @@
 #pragma once
-
 #include <EnginePch.h>
-#include <GLM/gtc/matrix_transform.hpp>
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/Decal.h>
 #include <IO/ResourceHandler.h>
+#include "Camera.h"
 
+class Scene;
 
 class API GameObject
 {
@@ -14,6 +14,8 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
+	virtual void Update(float deltaTime) noexcept;
+	virtual void UpdateTransform() noexcept;
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetIsVisible(bool isVisible) noexcept;
@@ -24,9 +26,7 @@ public:
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
 	virtual void SetRoom(uint32 room) noexcept;
-	void SetExtend(bool extend) noexcept;
-	void Extend(float dtS) noexcept;
-	void SetIsCrew(bool isCrew) noexcept;
+	void SetHidden(bool isHidden) noexcept;
 
 	const std::string& GetName() const noexcept;
 	const Decal* GetDecal() const noexcept;
@@ -38,9 +38,7 @@ public:
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
 	uint32 GetRoom() const noexcept;
-	bool IsExtending() const noexcept;
-	bool IsExtended() const noexcept;
-	bool IsCrew() const noexcept;
+	bool IsHidden() const noexcept;
 
 	bool IsReflectable() const noexcept;
 	bool IsVisible() const noexcept;
@@ -51,8 +49,10 @@ public:
 	void SetTypeId(int32 typeId) noexcept;
 	int32 GetTypeId() const noexcept;
 
-	virtual void Update(float deltaTime);
-	virtual void UpdateTransform() noexcept;
+	virtual void OnAddedToScene(Scene* scene) noexcept {};
+	virtual void OnFireDetected() noexcept {};
+	virtual void OnSmokeDetected() noexcept {};
+	virtual void OnWaterDetected() noexcept {};
 
 private:
 	std::string m_Name;
@@ -62,7 +62,6 @@ private:
 	glm::vec3 m_Position;
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
-	glm::vec3 m_OriginalPos;
 	float m_ExtendPosX;
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
@@ -71,9 +70,7 @@ private:
 	bool m_IsVisible;
 	int32 m_TypeId;
 	int32 m_Room = 1;
-	bool m_IsCrew = false;
-	bool m_Extending = false;
-	bool m_Extended = false;
+	bool m_IsHidden = false;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -96,19 +93,9 @@ inline uint32 GameObject::GetRoom() const noexcept
 	return m_Room;
 }
 
-inline bool GameObject::IsExtending() const noexcept
+inline bool GameObject::IsHidden() const noexcept
 {
-	return m_Extending;
-}
-
-inline bool GameObject::IsExtended() const noexcept
-{
-	return m_Extended;
-}
-
-inline bool GameObject::IsCrew() const noexcept
-{
-	return m_IsCrew;
+	return m_IsHidden;
 }
 
 inline void GameObject::SetMesh(int32 mesh) noexcept

@@ -1,10 +1,13 @@
 #include <EnginePch.h>
 #include <Graphics/Materials/WallMaterial.h>
 
-WallMaterial::WallMaterial() : Material(SHADER::DEFERRED_WALL),
+WallMaterial::WallMaterial() : Material(SHADER::WALL_MATERIAL),
 	m_pDissolveBuffer(nullptr)
 {
 	m_pDissolveBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(DissolveBuffer));
+
+	SetCullMode(CULL_MODE_NONE);
+	SetIncludeInDepthPrePass(false);
 }
 
 WallMaterial::~WallMaterial()
@@ -19,9 +22,14 @@ void WallMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 	context.Enable(CLIP_DISTANCE0);
 	context.Enable(CLIP_DISTANCE1);
 	context.Enable(CLIP_DISTANCE2);
-	context.Disable(CULL_FACE);
 
 	context.SetUniformBuffer(m_pDissolveBuffer, 3);
+
+	m_LastDepthMask = context.GetDepthMask();
+	m_LastDepthFunc = context.GetDepthFunc();
+
+	context.SetDepthFunc(FUNC_LESS);
+	context.SetDepthMask(true);
 
 	Material::Bind(pGBuffer);
 }
@@ -30,12 +38,13 @@ void WallMaterial::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.Enable(CULL_FACE);
 	context.Disable(CLIP_DISTANCE0);
 	context.Disable(CLIP_DISTANCE1);
 	context.Disable(CLIP_DISTANCE2);
 
 	context.SetUniformBuffer(nullptr, 3);
+	context.SetDepthFunc(m_LastDepthFunc);
+	context.SetDepthMask(m_LastDepthMask);
 
 	Material::Unbind();
 }

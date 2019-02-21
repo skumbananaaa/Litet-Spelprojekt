@@ -32,6 +32,7 @@
     <ClInclude Include="Include\Graphics\Camera.h" />
     <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
+    <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="Include\Graphics\GUI\ProgressBar.h" />
     <ClInclude Include="Include\Graphics\GUI\Panel.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelScrollable.h" />
+    <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
     <ClInclude Include="Include\Graphics\GUI\SelectionHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
@@ -52,7 +54,11 @@
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
-    <ClInclude Include="Include\Graphics\Materials\WaterMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
+    <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
     <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
@@ -60,10 +66,12 @@
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Mesh.h" />
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIManager.h" />
     <ClInclude Include="Include\Graphics\Renderers\OrthographicRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
     <ClInclude Include="Include\Graphics\Scene.h" />
     <ClInclude Include="Include\Graphics\Shaders\Shader.h" />
     <ClInclude Include="Include\Graphics\Shaders\ShaderProgram.h" />
@@ -91,12 +99,13 @@
     <ClInclude Include="Include\Types.h" />
     <ClInclude Include="Include\IO\IResourceListener.h" />
     <ClInclude Include="Include\IO\ResourceHandler.h" />
-    <ClInclude Include="Include\World\FireAlarm.h" />
+    <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
     <ClInclude Include="Include\World\Grid.h" />
-    <ClInclude Include="Include\World\IScenario.h" />
+    <ClInclude Include="Include\World\LightManager.h" />
+    <ClInclude Include="Include\World\Scenarios\IScenario.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\World\Room.h" />
-    <ClInclude Include="Include\World\ScenarioManager.h" />
+    <ClInclude Include="Include\World\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\World\Tile.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\World.h" />
@@ -111,12 +120,20 @@
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ListScrollable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\Particle.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
-    <ClCompile Include="Source\Graphics\Material\WaterMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
+    <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />
@@ -126,6 +143,7 @@
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\IO\R_SOUND.cpp" />
     <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
+    <ClInclude Include="Include\World\Scenarios\Water\WaterObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio\ALContext.cpp" />
@@ -188,15 +206,19 @@
     <ClCompile Include="Source\System\ThreadHandler.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
     <ClCompile Include="Source\IO\ResourceHandler.cpp" />
-    <ClCompile Include="Source\World\FireAlarm.cpp" />
+    <ClCompile Include="Source\World\Scenarios\Fire\FireAlarm.cpp" />
     <ClCompile Include="Source\World\Grid.cpp" />
+    <ClCompile Include="Source\World\LightManager.cpp" />
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
-    <ClCompile Include="Source\World\ScenarioManager.cpp" />
+    <ClCompile Include="Source\World\Scenarios\ScenarioManager.cpp" />
     <ClCompile Include="Source\World\Tile.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\World.cpp" />
     <ClCompile Include="Source\World\WorldLevel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Include\GLMHelper.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{58070825-549E-4173-8861-4C6341B6E166}</ProjectGuid>

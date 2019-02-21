@@ -4,7 +4,11 @@
 
 GLContext* GLContext::s_CurrentContext = nullptr;
 
-GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.584f, 0.929f, 1.0f)
+GLContext::GLContext(float width, float height) 
+	: m_pCurrentProgram(nullptr),
+	m_DefaultClearColor(0.392f, 0.584f, 0.929f, 1.0f),
+	m_ViewPort(),
+	m_CurrentTextures()
 {
 	assert(s_CurrentContext == nullptr);
 	s_CurrentContext = this;
@@ -41,7 +45,25 @@ GLContext::GLContext(float width, float height) : m_DefaultClearColor(0.392f, 0.
 		m_CurrentTextures[i] = GL_TEXTURE_2D;
 	}
 
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	for (int i = 0; i < 16; i++)
+	{
+		m_pCurrentTextures[i] = nullptr;
+	}
+
+	for (int i = 0; i < 16; i++)
+	{
+		m_pCurrentUniforms[i] = nullptr;
+	}
+
+	GL_CALL(glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS));
+	
+	GLboolean depthMask;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+	GLint depthFunc;
+	glGetIntegerv(GL_DEPTH_FUNC, &depthFunc);
+
+	m_CurrentDepthMask = depthMask;
+	m_CurrentDepthFunc = static_cast<Func>(depthFunc);
 }
 
 GLContext::~GLContext()
@@ -63,8 +85,18 @@ void GLContext::SetCullMode(CULL_MODE mode) const noexcept
 	GL_CALL(glCullFace(mode));
 }
 
+void GLContext::SetBlendFunc(BlendFunc src, BlendFunc dst)
+{
+	GL_CALL(glBlendFunc(src, dst));
+}
+
 void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 {
+	if (pProgram == m_pCurrentProgram)
+	{
+		return;
+	}
+
 	if (pProgram == nullptr)
 	{
 		GL_CALL(glUseProgram(0));
@@ -73,10 +105,17 @@ void GLContext::SetProgram(const ShaderProgram* pProgram) const noexcept
 	{
 		GL_CALL(glUseProgram(pProgram->m_Program));
 	}
+
+	m_pCurrentProgram = pProgram;
 }
 
 void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 {
+	if (m_pCurrentTextures[slot] == pTexture)
+	{
+		return;
+	}
+
 	GL_CALL(glActiveTexture(GL_TEXTURE0 + slot));
 
 	if (pTexture == nullptr)
@@ -88,10 +127,17 @@ void GLContext::SetTexture(const Texture* pTexture, uint32 slot) const noexcept
 		m_CurrentTextures[slot] = pTexture->GetType();
 		GL_CALL(glBindTexture(m_CurrentTextures[slot], pTexture->m_Texture));
 	}
+
+	m_pCurrentTextures[slot] = pTexture;
 }
 
 void GLContext::SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) const noexcept
 {
+	if (m_pCurrentUniforms[slot] == pBuffer)
+	{
+		return;
+	}
+
 	if (pBuffer == nullptr)
 	{
 		GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, slot, 0));
@@ -100,6 +146,8 @@ void GLContext::SetUniformBuffer(const UniformBuffer* pBuffer, uint32 slot) cons
 	{
 		GL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, slot, pBuffer->m_Buffer));
 	}
+
+	m_pCurrentUniforms[slot] = pBuffer;
 }
 
 void GLContext::SetFramebuffer(const Framebuffer* pFramebuffer) const noexcept
@@ -169,6 +217,16 @@ void GLContext::SetViewport(const glm::vec4& viewport) noexcept
 	SetViewport(viewport.x, viewport.y, viewport.z, viewport.w);
 }
 
+bool GLContext::GetDepthMask() const noexcept
+{
+	return m_CurrentDepthMask;
+}
+
+Func GLContext::GetDepthFunc() const noexcept
+{
+	return m_CurrentDepthFunc;
+}
+
 const glm::vec4 GLContext::GetViewPort() const noexcept
 {
 	return m_ViewPort;
@@ -189,6 +247,11 @@ void GLContext::SetClearDepth(float depth) const noexcept
 	GL_CALL(glClearDepthf(depth));
 }
 
+void GLContext::SetClearStencil(uint8 stencil) const noexcept
+{
+	GL_CALL(glClearStencil(stencil));
+}
+
 void GLContext::SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept
 {
 	GL_CALL(glColorMask(r, g, b, a));
@@ -196,6 +259,7 @@ void GLContext::SetColorMask(uint8 r, uint8 g, uint8 b, uint8 a) const noexcept
 
 void GLContext::SetDepthMask(bool writeDepth) const noexcept
 {
+	m_CurrentDepthMask = writeDepth;
 	GL_CALL(glDepthMask((writeDepth) ? GL_TRUE : GL_FALSE));
 }
 
@@ -206,6 +270,7 @@ void GLContext::SetStencilMask(uint8 mask) const noexcept
 
 void GLContext::SetDepthFunc(Func func) const noexcept
 {
+	m_CurrentDepthFunc = func;
 	GL_CALL(glDepthFunc(func));
 }
 
@@ -214,9 +279,14 @@ void GLContext::SetStencilFunc(Func func, uint8 ref, uint8 mask) const noexcept
 	GL_CALL(glStencilFunc(func, ref, mask));
 }
 
-void GLContext::SetStencilOp(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
+void GLContext::SetStencilOpFrontFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
 {
-	GL_CALL(glStencilOp(sFail, dpFail, dpPass));
+	GL_CALL(glStencilOpSeparate(GL_FRONT, sFail, dpFail, dpPass));
+}
+
+void GLContext::SetStencilOpBackFace(StencilOp sFail, StencilOp dpFail, StencilOp dpPass) const noexcept
+{
+	GL_CALL(glStencilOpSeparate(GL_BACK, sFail, dpFail, dpPass));
 }
 
 void GLContext::Clear(uint32 flags) const noexcept
@@ -249,6 +319,14 @@ void GLContext::DrawFullscreenTriangle(const FullscreenTri & triangle) const noe
 {
 	GL_CALL(glBindVertexArray(triangle.m_VAO));
 	GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 3));
+	GL_CALL(glBindVertexArray(0));
+}
+
+void GLContext::DrawParticle(const Particle& mesh) const noexcept
+{
+	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	uint32 instanceCount = mesh.GetInstanceCount();
+	GL_CALL(glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instanceCount));
 	GL_CALL(glBindVertexArray(0));
 }
 

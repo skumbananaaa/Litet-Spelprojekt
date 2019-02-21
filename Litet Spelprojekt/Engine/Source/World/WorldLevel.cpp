@@ -16,6 +16,8 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 			m_ppLevel[x][z] = levelIndexes[x * m_SizeZ + z];
 			m_ppLevelData[x][z].BurnsAt = 100;
 			m_ppLevelData[x][z].Temp = 30;
+			m_ppLevelData[x][z].SmokeAmount = 0;
+			m_ppLevelData[x][z].SmokeLimit = 100;
 			m_ppLevelData[x][z].WaterLevel = 0.0f;
 			m_ppLevelData[x][z].Burning = false;
 			m_ppLevelData[x][z].WaterBlockName = "WaterBlock [" + std::to_string(x) + ", " + std::to_string(levelHeight) + ", " + std::to_string(z) + "]";

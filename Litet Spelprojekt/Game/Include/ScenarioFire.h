@@ -20,10 +20,11 @@ private:
 	const uint32* const** m_pppMap;
 
 	void CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
-	void CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount);
+	bool CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount);
 
 	void SpreadFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene, float rateOfSpread);
 
 	// x, y, z = x, level, z
-	std::vector<glm::vec3> m_OnFire;
+	std::vector<glm::ivec3> m_OnFire;
+	std::vector<glm::ivec3> m_Smoke;
 };

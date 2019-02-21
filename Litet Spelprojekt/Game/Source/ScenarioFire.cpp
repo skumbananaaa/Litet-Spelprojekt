@@ -57,22 +57,39 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene) noexcept
 			CheckFire(dtS, glm::ivec3(0, -1, 0), curr, scene);
 		}
 
-		/*for (uint32 i = 0; i < m_OnFire.size(); i++)
+		glm::ivec3 pos = glm::ivec3((int32)m_OnFire[i].x, (int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z);
+		for (uint32 i = 0; i < m_OnFire.size(); i++)
 		{
 			TileData& tileData = m_pWorld->GetLevel((int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z];
+			bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
 
 			tileData.SmokeAmount += m_pWorld->GetLevel((int32)m_OnFire[i].y)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z].Temp;
-
-			m_pWorld->SetTileData(glm::ivec3((int32)m_OnFire[i].x, (int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].y), tileData);
-			float amount = std::max((tileData.SmokeAmount - tileData.SmokeLimit) * dtS / 4, 0.0f);
-			if (amount > 0.0f)
+			tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
+			m_pWorld->SetTileData(pos, tileData);
+			
+			if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
 			{
-				CheckSmoke(dtS, glm::ivec3(1, 0, 0), glm::ivec3((int32)m_OnFire[i].x, m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z), amount);
-				CheckSmoke(dtS, glm::ivec3(-1, 0, 0), glm::ivec3((int32)m_OnFire[i].x, m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z), amount);
-				CheckSmoke(dtS, glm::ivec3(0, 0, 1), glm::ivec3((int32)m_OnFire[i].x, m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z), amount);
-				CheckSmoke(dtS, glm::ivec3(0, 0, -1), glm::ivec3((int32)m_OnFire[i].x, m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z), amount);
+				m_Smoke.push_back(pos);
 			}
-		}*/
+		}
+
+		uint32 max = m_Smoke.size();
+		for (uint32 i = 0; i < max; i++)
+		{
+			TileData& data = m_pWorld->GetLevel((int32)m_Smoke[i].y)->GetLevelData()[m_Smoke[i].x][m_Smoke[i].z];
+
+			float spread = data.SmokeAmount - data.SmokeLimit;
+			spread /= 4;
+			spread *= dtS;
+			uint32 rest = 0;
+			rest += CheckSmoke(dtS, glm::ivec3(1, 0, 0), pos, spread);
+			rest += CheckSmoke(dtS, glm::ivec3(-1, 0, 0), pos, spread);
+			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), pos, spread);
+			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), pos, spread);
+			data.SmokeAmount -= spread * rest;
+
+			m_pWorld->SetTileData(pos, data);
+		}
 	}
 
 	return m_OnFire.empty();
@@ -103,25 +120,22 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 
 }
 
-void ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, float amount)
+bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, float amount)
 {
+	bool res = false;
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
-
+	bool filled = tileData.SmokeAmount >= tileData.SmokeLimit;
 	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || m_pppMap[origin.y][origin.x][origin.z] == 0 || m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == 0)
 	{
 		tileData.SmokeAmount += amount;
-		float amount = std::max((tileData.SmokeAmount - tileData.SmokeLimit) * dtS / 4, 0.0f);
-		tileData.SmokeAmount -= amount;
-
-		if (amount > 0.0f)
+		if (!filled && tileData.SmokeAmount >= tileData.SmokeLimit)
 		{
-			// Om trycket är högre på en tile bör den inte få ta in mer rök från den lägre täta tilen!
-			CheckSmoke(dtS, glm::ivec3(1, 0, 0), offset + origin, amount);
-			CheckSmoke(dtS, glm::ivec3(-1, 0, 0), offset + origin, amount);
-			CheckSmoke(dtS, glm::ivec3(0, 0, 1), offset + origin, amount);
-			CheckSmoke(dtS, glm::ivec3(0, 0, -1), offset + origin, amount);
+			m_Smoke.push_back(origin + offset);
 		}
+		m_pWorld->SetTileData(origin + offset, tileData);
+		res = true;
 	}
+	return res;
 }
 
 void ScenarioFire::SpreadFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene, float rateOfSpread)
@@ -152,7 +166,7 @@ void ScenarioFire::SpreadFire(float dtS, const glm::ivec3& offset, const glm::iv
 		tileData.Burning = false;
 		for (uint32 i = 0; i < m_OnFire.size(); i++)
 		{
-			if (m_OnFire[i] == glm::vec3(origin) + glm::vec3(offset))
+			if (m_OnFire[i] == glm::ivec3(origin) + glm::ivec3(offset))
 			{
 				m_OnFire.erase(m_OnFire.begin() + i);
 			}

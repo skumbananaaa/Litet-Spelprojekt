@@ -14,8 +14,9 @@ public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
-	virtual void Update(float deltaTime) noexcept;
+	virtual void Update(const Camera& camera, float deltaTime) noexcept;
 	virtual void UpdateTransform() noexcept;
+	
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetIsVisible(bool isVisible) noexcept;
@@ -53,6 +54,9 @@ public:
 	virtual void OnFireDetected() noexcept {};
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
+
+protected:
+	bool IsDirty() const noexcept;
 
 private:
 	std::string m_Name;
@@ -179,4 +183,9 @@ inline void GameObject::SetTypeId(int32 typeId) noexcept
 inline int32 GameObject::GetTypeId() const noexcept
 {
 	return m_TypeId;
+}
+
+inline bool GameObject::IsDirty() const noexcept
+{
+	return m_IsDirty;
 }

@@ -20,7 +20,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(false, 1600, 900, "", true),
+	: Application(false, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -134,7 +134,6 @@ void Game::OnResourcesLoaded()
 		//m_pTestAudioSource->Play();
 	}
 
-
 	//Camera
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 10.0f, 20.0f), glm::vec3(9.0f, 4.0f, 20.0f));
 	float aspect = static_cast<float>(GetWindow().GetWidth()) / static_cast<float>(GetWindow().GetHeight());
@@ -232,56 +231,6 @@ void Game::OnResourcesLoaded()
 	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
 	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
-	//Create particles
-	{
-		ParticleSystem* pFire = new ParticleSystem();
-		pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
-		pFire->SetTexture(TEXTURE::SMOKE);
-		pFire->SetTimeToLive(1.2f);
-		pFire->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
-		pFire->SetConeAngle(glm::radians<float>(30.0f));
-		pFire->SetSpeed(0.7f, 2.0f);
-		pFire->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-		pFire->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-		pFire->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		m_Scenes[0]->AddParticleSystem(pFire);
-
-		ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
-		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		pEmitter = new ParticleEmitter(pFire);
-		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		ParticleSystem* pSmoke = new ParticleSystem();
-		pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
-		pSmoke->SetTexture(TEXTURE::SMOKE);
-		pSmoke->SetTimeToLive(7.0f);
-		pSmoke->SetConeAngle(glm::radians<float>(40.0f));
-		pSmoke->SetSpeed(0.1f, 0.4f);
-		pSmoke->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-		pSmoke->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-		pSmoke->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-		m_Scenes[0]->AddParticleSystem(pSmoke);
-
-		pEmitter = new ParticleEmitter(pSmoke);
-		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		pEmitter = new ParticleEmitter(pSmoke);
-		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-	}
-
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
 	for (int i = 0; i < gameObjects; i++)
@@ -350,7 +299,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)

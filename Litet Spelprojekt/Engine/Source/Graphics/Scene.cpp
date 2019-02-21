@@ -197,14 +197,6 @@ void Scene::OnUpdate(float dtS) noexcept
 		pPointLight->Update(*m_pCamera, dtS);
 	}
 
-	int n = 0;
-	for (ParticleEmitter* pEmitter : m_ParticleEmitters)
-	{
-		n += pEmitter->GetNumParticles();
-	}
-
-	std::cout << "NUM PARTICLES: " << n << std::endl;
-
 	if (m_Extending)
 	{
 		m_Extension += 20.0f * dtS * ((m_Extended * 2) - 1);

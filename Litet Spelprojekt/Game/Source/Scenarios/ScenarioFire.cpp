@@ -27,6 +27,7 @@ void ScenarioFire::OnStart() noexcept
 
 	TileData& tileData = m_pWorld->GetLevel(lvl)->GetLevelData()[x][z];
 	tileData.Temp = 100.1f;
+	tileData.Burning = true;
 }
 
 void ScenarioFire::OnEnd() noexcept
@@ -43,52 +44,54 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 	// current, right, left, forward, back, up, down.
 	for (uint32 i = 0; i < m_OnFire.size(); i++)
 	{
-		glm::vec3 curr = m_OnFire[i];
-		CheckFire(dtS, glm::ivec3(0, 0, 0), curr, scene);
-		CheckFire(dtS, glm::ivec3(1, 0, 0), curr, scene);
-		CheckFire(dtS, glm::ivec3(-1, 0, 0), curr, scene);
-		CheckFire(dtS, glm::ivec3(0, 0, 1), curr, scene);
-		CheckFire(dtS, glm::ivec3(0, 0, -1), curr, scene);
+		glm::ivec3 pos = m_OnFire[i];
+		CheckFire(dtS, glm::ivec3(0, 0, 0), pos, scene);
+		CheckFire(dtS, glm::ivec3(1, 0, 0), pos, scene);
+		CheckFire(dtS, glm::ivec3(-1, 0, 0), pos, scene);
+		CheckFire(dtS, glm::ivec3(0, 0, 1), pos, scene);
+		CheckFire(dtS, glm::ivec3(0, 0, -1), pos, scene);
 
-		if (curr.y < m_pWorld->GetNumLevels() - 1)
+		if (pos.y < m_pWorld->GetNumLevels() - 1)
 		{
-			CheckFire(dtS, glm::ivec3(0, 1, 0), curr, scene);
+			CheckFire(dtS, glm::ivec3(0, 1, 0), pos, scene);
 		}
 
-		if (curr.y - 1 > 0)
+		if (pos.y - 1 > 0)
 		{
-			CheckFire(dtS, glm::ivec3(0, -1, 0), curr, scene);
-		}
-
-		glm::ivec3 pos = glm::ivec3((int32)m_OnFire[i].x, (int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2, (int32)m_OnFire[i].z);
-		for (uint32 i = 0; i < m_OnFire.size(); i++)
-		{
-			TileData& tileData = m_pWorld->GetLevel((int32)m_OnFire[i].y + ((int32)m_OnFire[i].y + 1) % 2)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z];
-			bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
-
-			tileData.SmokeAmount += m_pWorld->GetLevel((int32)m_OnFire[i].y)->GetLevelData()[(int32)m_OnFire[i].x][(int32)m_OnFire[i].z].Temp;
-			tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
-
-			if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
-			{
-				m_Smoke.push_back(pos);
-			}
+			CheckFire(dtS, glm::ivec3(0, -1, 0), pos, scene);
 		}
 
 		uint32 max = m_Smoke.size();
 		for (uint32 i = 0; i < max; i++)
 		{
-			TileData& data = m_pWorld->GetLevel((int32)m_Smoke[i].y)->GetLevelData()[m_Smoke[i].x][m_Smoke[i].z];
+			glm::ivec3& smoke = m_Smoke[i];
+			TileData& data = m_pWorld->GetLevel((int32)smoke.y)->GetLevelData()[smoke.x][smoke.z];
 
 			float spread = data.SmokeAmount - data.SmokeLimit;
 			spread /= 4;
 			spread *= dtS;
 			uint32 rest = 0;
-			rest += CheckSmoke(dtS, glm::ivec3(1, 0, 0), pos, spread);
-			rest += CheckSmoke(dtS, glm::ivec3(-1, 0, 0), pos, spread);
-			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), pos, spread);
-			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), pos, spread);
+			glm::ivec3 smokeOriginPos = glm::ivec3(pos) + glm::ivec3(0.0, (pos.y + 1) % 2, 0.0f);
+			rest += CheckSmoke(dtS, glm::ivec3(1, 0, 0), smokeOriginPos, spread);
+			rest += CheckSmoke(dtS, glm::ivec3(-1, 0, 0), smokeOriginPos, spread);
+			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), smokeOriginPos, spread);
+			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), smokeOriginPos, spread);
 			data.SmokeAmount -= spread * rest;
+		}
+	}
+
+	for (uint32 i = 0; i < m_OnFire.size(); i++)
+	{
+		glm::ivec3& pos = m_OnFire[i];
+		TileData& tileData = m_pWorld->GetLevel((int32)pos.y + ((int32)pos.y + 1) % 2)->GetLevelData()[(int32)pos.x][(int32)pos.z];
+		bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
+
+		tileData.SmokeAmount += m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z].Temp;
+		tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
+
+		if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
+		{
+			m_Smoke.push_back(pos);
 		}
 	}
 

@@ -45,25 +45,6 @@ void main()
 
 layout(early_fragment_tests) in;
 
-layout(location = 0) out vec4 g_OutColor;
-
-layout(binding = 1) uniform sampler2D normalMap;
-layout(binding = 3) uniform sampler2D dudvMap;
-layout(binding = 4) uniform sampler2D reflectionTexture;
-layout(binding = 5) uniform sampler2D depthMap;
-
-layout(std140, binding = 3) uniform WaterBuffer
-{
-	float g_DistortionFactor;
-};
-
-in VS_OUT
-{
-	vec3 Position;
-	vec2 TexCoords;
-	vec4 ClipSpacePosition;
-} fs_in;
-
 const float distortionStrength = 0.005;
 const float specularStrength = 256.0f;//0.6;
 const float shininess = 20.0;
@@ -97,6 +78,20 @@ struct SpotLight
 	float OuterAngle;
 };
 
+layout(location = 0) out vec4 g_OutColor;
+
+in VS_OUT
+{
+	vec3 Position;
+	vec2 TexCoords;
+	vec4 ClipSpacePosition;
+} fs_in;
+
+layout(binding = 1) uniform sampler2D normalMap;
+layout(binding = 3) uniform sampler2D dudvMap;
+layout(binding = 4) uniform sampler2D reflectionTexture;
+layout(binding = 5) uniform sampler2D depthMap;
+
 layout(std140, binding = 1) uniform LightBuffer
 {
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
@@ -107,6 +102,11 @@ layout(std140, binding = 1) uniform LightBuffer
 layout(std140, binding = 3) uniform WorldBuffer
 {
 	ivec4 map[LEVEL_SIZE];
+};
+
+layout(std140, binding = 6) uniform WaterBuffer
+{
+	float g_DistortionFactor;
 };
 
 vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)

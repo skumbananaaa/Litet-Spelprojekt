@@ -23,7 +23,7 @@ void WaterOutdoorMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.SetUniformBuffer(m_pWaterBuffer, 3);
+	context.SetUniformBuffer(m_pWaterBuffer, 6);
 
 	context.SetTexture(m_pDistortion, 3);
 	if (m_pReflector)
@@ -39,7 +39,7 @@ void WaterOutdoorMaterial::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.SetUniformBuffer(nullptr, 3);
+	context.SetUniformBuffer(nullptr, 6);
 
 	context.SetTexture(nullptr, 3);
 	context.SetTexture(nullptr, 4);

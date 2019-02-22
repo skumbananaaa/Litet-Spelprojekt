@@ -19,7 +19,7 @@ ParticleEmitter::ParticleEmitter()
 	m_NumSortedParticles(0),
 	m_NumParticles(0),
 	m_ParticlesPerSecond(1),
-	m_Direction(0.0f),
+	m_Direction(UP_VECTOR),
 	m_ColorNodes(),
 	m_Particles(),
 	m_ParticleInstances()
@@ -127,11 +127,9 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 
 void ParticleEmitter::UpdateTransform() noexcept
 {
-	bool isDirty = IsDirty();
-
 	GameObject::UpdateTransform();
 	
-	if (isDirty)
+	if (m_IsDirty)
 	{
 		m_Direction = GetTransform() * glm::vec4(UP_VECTOR, 0.0f);
 		m_Direction = glm::normalize(m_Direction);
@@ -298,9 +296,14 @@ void ParticleEmitter::SpawnParticle() noexcept
 		particle.Speed = Random::GenerateFloat(m_MinSpeed, m_MaxSpeed);
 		particle.Position = GetPosition();
 
-		glm::vec3 forward = FORWARD_VECTOR - ((glm::dot(m_Direction, FORWARD_VECTOR) / glm::dot(m_Direction, m_Direction)) * FORWARD_VECTOR);
-		glm::vec4 dir = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, m_ConeAngle), glm::normalize(forward)) * glm::vec4(m_Direction, 0.0f);
+
+		float dDotD = glm::dot(m_Direction, m_Direction);
+		dDotD = (dDotD < 0.00001f) ? 0.00001f : dDotD;
+
+		glm::vec3 forward = glm::normalize(FORWARD_VECTOR - ((glm::dot(m_Direction, FORWARD_VECTOR) / dDotD) * FORWARD_VECTOR));
+		glm::vec4 dir = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, m_ConeAngle), forward) * glm::vec4(m_Direction, 0.0f);
 		dir = glm::rotate(glm::mat4(1.0f), Random::GenerateFloat(0.0f, glm::two_pi<float>()), m_Direction) * dir;
+		
 		particle.Direction.x = dir.x;
 		particle.Direction.y = dir.y;
 		particle.Direction.z = dir.z;

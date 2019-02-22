@@ -220,8 +220,3 @@ inline int32 GameObject::GetTypeId() const noexcept
 {
 	return m_TypeId;
 }
-
-inline bool GameObject::IsDirty() const noexcept
-{
-	return m_IsDirty;
-}

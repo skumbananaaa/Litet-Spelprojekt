@@ -70,13 +70,16 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
 
 	MaterialBuffer perBatch = {};
-
+	
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
-		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
-		const Material& material = *animatedGameObjects[i]->GetMaterial();
+		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		{
+			const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+			const Material& material = *animatedGameObjects[i]->GetMaterial();
 
-		skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
+			skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
+		}
 	}
 
 	//Update lights
@@ -104,7 +107,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	//Render scene
 	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
 	context.SetDepthFunc(FUNC_LESS);
-	DepthPrePass(mainCamera, scene);
+	DepthPrePass(mainCamera, scene, pWorld);
 
 	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
@@ -115,7 +118,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
 	ParticlePass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[6], GL_TIMESTAMP);
-	AnimationPass(dtS, scene);
+	AnimationPass(dtS, scene, pWorld);
 
 	//Get query results
 	uint64 startTime = 0;
@@ -440,7 +443,7 @@ void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 	context.Disable(CLIP_DISTANCE1);
 }
 
-void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) const noexcept
+void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, const World* pWorld) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -504,9 +507,10 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) con
 
 		buff.ClipPlane = material.GetLevelClipPlane();
 		m_pPlaneBuffer->UpdateData(&buff);
-
-		m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
-
+		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		{
+			m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
+		}
 		if (material.GetCullMode() != CULL_MODE_NONE)
 		{
 			context.Enable(CULL_FACE);
@@ -566,7 +570,7 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 	}
 }
 
-void ForwardRenderer::AnimationPass(float dtS, const Scene& scene) const noexcept
+void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* const pWorld) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -577,28 +581,30 @@ void ForwardRenderer::AnimationPass(float dtS, const Scene& scene) const noexcep
 	MaterialBuffer perBatch = {};
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
-		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
-		const Material& material = *animatedGameObjects[i]->GetMaterial();
+		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		{
+			const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+			const Material& material = *animatedGameObjects[i]->GetMaterial();
+			m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
 
-		m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
+			perBatch.Color = material.GetColor();
+			perBatch.ClipPlane = material.GetLevelClipPlane();
+			perBatch.Specular = material.GetSpecular();
+			perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
+			perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
+			perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
+			m_pMaterialBuffer->UpdateData(&perBatch);
 
-		perBatch.Color = material.GetColor();
-		perBatch.ClipPlane = material.GetLevelClipPlane();
-		perBatch.Specular = material.GetSpecular();
-		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
-		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
-		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
-		m_pMaterialBuffer->UpdateData(&perBatch);
+			material.SetCameraBuffer(m_pCameraBuffer);
+			material.SetLightBuffer(m_pLightBuffer);
+			material.SetMaterialBuffer(m_pMaterialBuffer);
 
-		material.SetCameraBuffer(m_pCameraBuffer);
-		material.SetLightBuffer(m_pLightBuffer);
-		material.SetMaterialBuffer(m_pMaterialBuffer);
+			material.Bind(nullptr);
 
-		material.Bind(nullptr);
+			context.DrawAnimatedMesh(*animatedGameObjects[i]->GetAnimatedMesh());
 
-		context.DrawAnimatedMesh(*animatedGameObjects[i]->GetAnimatedMesh());
-
-		material.Unbind();
+			material.Unbind();
+		}
 	}
 }
 

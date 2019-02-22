@@ -726,17 +726,20 @@ void Game::OnUpdate(float dtS)
 	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
 
 	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
-
+	const std::vector<GameObject*>& drawables = m_Scenes[m_SceneId]->GetAnimatedDrawables();
 	for (uint32 i = 0; i < roomLights.size(); i++)
 	{
-		m_RoomLightsTimers[i] += dtS;
-		if (m_RoomLightsTimers[i] >= 5.0f)
+		for (uint32 j = 0; j < drawables.size(); j++)
 		{
-			roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-			m_RoomLightsTimers[i] = 0.0f;
-			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
-			m_ActiveRooms[i] = 1;
-			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
+			m_RoomLightsTimers[i] += dtS;
+			if (m_RoomLightsTimers[i] >= 15.0f || !m_pWorld->GetRoom(drawables[j]->GetRoom())->IsActive())
+			{
+				roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+				m_RoomLightsTimers[i] = 0.0f;
+				m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+				m_ActiveRooms[i] = 1;
+				ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
+			}
 		}
 	}
 

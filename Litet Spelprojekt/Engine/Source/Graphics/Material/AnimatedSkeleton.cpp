@@ -29,7 +29,7 @@ AnimatedSkeleton::~AnimatedSkeleton()
 {
 }
 
-void AnimatedSkeleton::SetSkeletonTransform(const glm::mat4& transform) noexcept
+void AnimatedSkeleton::SetSkeletonTransform(const glm::mat4& transform) const noexcept
 {
 	m_SkeletonBuffer.Model = transform;
 }

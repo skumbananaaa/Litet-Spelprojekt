@@ -13,10 +13,11 @@ Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, f
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 	SetDirection(glm::vec3(1.0f, 0.0f, 0.0f));
 	m_pTorch = new SpotLight(position, glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(25.0f)), glm::vec3(m_Direction.x, 0.0, m_Direction.z), glm::vec4(0.0f));
-	SetMaterial(MATERIAL::CREW_STANDARD);
-	SetMesh(MESH::CUBE);
+	SetMaterial(MATERIAL::ANIMATED_MODEL);
+	SetAnimatedMesh(MESH::ANIMATED_MODEL);
 	SetPosition(position);
-	SetScale(glm::vec3(0.2, 1.8, 0.5));
+	SetScale(glm::vec3(0.2f));
+	SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
 	UpdateTransform();
 
 	m_LastKnownPosition = position;

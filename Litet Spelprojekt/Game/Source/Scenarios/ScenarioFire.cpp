@@ -183,6 +183,7 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 	bool res = false;
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
 	bool filled = tileData.SmokeAmount >= tileData.SmokeLimit;
+	
 	//HasDoor and hasStairs never set?
 	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || tileData.HasDoor || tileData.HasStairs)
 	{
@@ -190,13 +191,6 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 		if (!filled && tileData.SmokeAmount >= tileData.SmokeLimit)
 		{
 			m_Smoke.push_back(origin + offset);
-
-			//GameObject* tmp = new GameObject();
-			//tmp->SetMesh(MESH::SPHERE);
-			//tmp->SetMaterial(MATERIAL::GREEN);
-			//
-			//tmp->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-			//scene->AddGameObject(tmp);
 
 			ParticleEmitter* pEmitter = new ParticleEmitter();
 			pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
@@ -208,7 +202,7 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 			pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
 			pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
 			pEmitter->SetPosition(origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f));
-			pEmitter->SetParticlesPerSeconds(5);
+			pEmitter->SetParticlesPerSeconds(2);
 			pEmitter->UpdateTransform();
 			scene->AddGameObject(pEmitter);
 		}

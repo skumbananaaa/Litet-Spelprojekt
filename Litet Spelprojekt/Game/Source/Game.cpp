@@ -20,7 +20,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(false, 1600, 900, "", true),
+	: Application(false, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -82,6 +82,10 @@ void Game::OnResourceLoading(const std::string& file, float percentage)
 
 void Game::OnResourcesLoaded()
 {
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Init();
+#endif
+
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
 
@@ -110,9 +114,6 @@ void Game::OnResourcesLoaded()
 
 	LightManager::Init(m_Scenes[0], 3);
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
-
 
 	//Create renderers
 #if defined(DEFERRED_RENDER_PATH)
@@ -136,7 +137,6 @@ void Game::OnResourcesLoaded()
 		m_pTestAudioSource->SetLooping(true);
 		//m_pTestAudioSource->Play();
 	}
-
 
 	//Camera
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 10.0f, 20.0f), glm::vec3(9.0f, 4.0f, 20.0f));
@@ -231,55 +231,9 @@ void Game::OnResourcesLoaded()
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	//Create particles
-	{
-		ParticleSystem* pFire = new ParticleSystem();
-		pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
-		pFire->SetTexture(TEXTURE::SMOKE);
-		pFire->SetTimeToLive(1.2f);
-		pFire->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
-		pFire->SetConeAngle(glm::radians<float>(30.0f));
-		pFire->SetSpeed(0.7f, 2.0f);
-		pFire->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-		pFire->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-		pFire->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		m_Scenes[0]->AddParticleSystem(pFire);
-
-		ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
-		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		pEmitter = new ParticleEmitter(pFire);
-		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		ParticleSystem* pSmoke = new ParticleSystem();
-		pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
-		pSmoke->SetTexture(TEXTURE::SMOKE);
-		pSmoke->SetTimeToLive(7.0f);
-		pSmoke->SetConeAngle(glm::radians<float>(40.0f));
-		pSmoke->SetSpeed(0.1f, 0.4f);
-		pSmoke->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-		pSmoke->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-		pSmoke->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-		m_Scenes[0]->AddParticleSystem(pSmoke);
-
-		pEmitter = new ParticleEmitter(pSmoke);
-		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		pEmitter = new ParticleEmitter(pSmoke);
-		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-	}
+	//Create scenarios
+	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
+	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -399,7 +353,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
@@ -743,8 +697,21 @@ void Game::OnUpdate(float dtS)
 		}
 	}
 
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_0);
+#endif
 	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
+#endif
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_1);
+#endif
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Scene Update took %.3f ms", CPU_PROFILER_SLOT_1);
+#endif
 
 	float cartesianCameraSpeed = 5.0F;
 	float cartesianCameraAngularSpeed = 1.5F;
@@ -847,6 +814,11 @@ void Game::OnUpdate(float dtS)
 		SetClipPlanes(m_SceneId); 
 		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
 	}
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Update(dtS);
+	CPUProfiler::PrintTime();
+#endif
 }
 
 void Game::OnRender(float dtS)

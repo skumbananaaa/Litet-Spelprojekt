@@ -161,7 +161,4 @@ uint32 World::GetNumDoors() const noexcept
 
 void World::Update(Scene* pScene, float dt)
 {
-	//m_ppLevels[2]->UpdateFire(dt);
-
-	
 }

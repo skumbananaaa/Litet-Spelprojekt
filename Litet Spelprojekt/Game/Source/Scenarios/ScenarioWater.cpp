@@ -5,7 +5,7 @@ ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
 	m_WaterAlwaysVisible = waterAlwaysVisible;
 }
 
-void ScenarioWater::OnStart() noexcept
+void ScenarioWater::OnStart(Scene* scene) noexcept
 {
 
 }
@@ -17,6 +17,9 @@ void ScenarioWater::OnEnd() noexcept
 
 void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms)
 {
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_2);
+#endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
 		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
@@ -44,10 +47,16 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::
 			}
 		}
 	}
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Water On Visibility Change took %.3f ms", CPU_PROFILER_SLOT_2);
+#endif
 }
 
 bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept
 {
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_3);
+#endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
 		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
@@ -200,6 +209,10 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 
 		//std::cout << floodingIDs.size() << std::endl;
 	}
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Water Scenario Update took %.3f ms", CPU_PROFILER_SLOT_3);
+#endif
 
 	return false;
 }

@@ -138,7 +138,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	{
 		float fps = static_cast<float>(Application::GetInstance().GetFPS());
 
-		std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms) " << std::endl;
+		std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms, FPS: " << fps << ")" << std::endl;
 		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
 		std::cout << " DepthPrePass: " << m_FrameTimes.DepthPrePass / fps << "ms" << std::endl;
 		std::cout << " Lightpass: " << m_FrameTimes.LightPass / fps << "ms" << std::endl;
@@ -608,14 +608,13 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 
 	context.Disable(CULL_FACE);
 	context.Enable(BLEND);
-	//context.SetDepthMask(true);
 
 	context.SetProgram(m_pParticleProgram);
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
-	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
 		if (particleSystems[i]->GetParticleBlendMode() == PARTICLE_ADDITIVE)
@@ -628,7 +627,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 		}
 
 		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
-
+		
 		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
 		context.DrawParticle(*m_pParticle);
 	}

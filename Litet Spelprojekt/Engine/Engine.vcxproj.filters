@@ -69,7 +69,6 @@
     <ClCompile Include="Source\System\Random.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Particle.cpp" />
-    <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
@@ -87,6 +86,7 @@
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
+    <ClCompile Include="Source\System\CPUProfiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -169,7 +169,6 @@
     <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
     <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
-    <ClInclude Include="Include\Graphics\Particles\ParticleSystem.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
     <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\TimerQuery.h" />
@@ -190,6 +189,7 @@
     <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\AnimatedSkeleton.h" />
     <ClInclude Include="Include\World\GameObjectDoor.h" />
+    <ClInclude Include="Include\System\CPUProfiler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

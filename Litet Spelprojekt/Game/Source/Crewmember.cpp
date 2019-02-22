@@ -63,11 +63,12 @@ void Crewmember::RunParallel()
 	//}
 }
 
-void Crewmember::Update(float deltaTime) noexcept
+void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 {
 	FollowPath(deltaTime);
 	
-	GameObject::Update(deltaTime);
+	GameObject::Update(camera, deltaTime);
+	UpdateTransform();
 	
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());

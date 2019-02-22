@@ -34,6 +34,10 @@
 #include "../Include/Scenarios/ScenarioWater.h"
 #include "../Include/Scenarios/ScenarioFire.h"
 
+#if defined(PRINT_CPU_DEBUG_DATA)
+#include <System/CPUProfiler.h>
+#endif
+
 #define NUM_CREW 15
 #define MAX_ROOMS_VISIBLE 3
 

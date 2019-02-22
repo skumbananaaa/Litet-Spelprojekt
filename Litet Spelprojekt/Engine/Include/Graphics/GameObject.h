@@ -61,6 +61,12 @@ public:
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
 
+protected:
+	bool m_IsDirty;
+	bool m_IsVisible;
+	glm::mat4 m_transform;
+	glm::mat4 m_InverseTransform;
+
 private:
 	std::string m_Name;
 	const IndexedMesh* m_pMesh;
@@ -72,11 +78,7 @@ private:
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
 	float m_ExtendPosX;
-	glm::mat4 m_transform;
-	glm::mat4 m_InverseTransform;
-	bool m_IsDirty;
 	bool m_IsReflectable;
-	bool m_IsVisible;
 	int32 m_TypeId;
 	int32 m_Room = 1;
 	bool m_IsHidden = false;

@@ -492,9 +492,19 @@ bool GUIObject::ContainsPoint(const glm::vec2& position, const GUIObject* caller
 	return false;
 }
 
-bool GUIObject::ContainsPoint(const glm::vec2 & position) const noexcept
+bool GUIObject::ContainsPoint(const glm::vec2& position) const noexcept
 {
 	return ContainsPoint(position, this);
+}
+
+bool GUIObject::OwnsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
+{
+	return ContainsPoint(position, caller);
+}
+
+bool GUIObject::OwnsPoint(const glm::vec2& position) const noexcept
+{
+	return OwnsPoint(position, this);
 }
 
 void GUIObject::DeleteChildren()

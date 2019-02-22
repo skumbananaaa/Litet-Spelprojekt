@@ -101,6 +101,7 @@
     <ClInclude Include="Include\Types.h" />
     <ClInclude Include="Include\IO\IResourceListener.h" />
     <ClInclude Include="Include\IO\ResourceHandler.h" />
+    <ClInclude Include="Include\World\GameObjectDoor.h" />
     <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
     <ClInclude Include="Include\World\Grid.h" />
     <ClInclude Include="Include\World\LightManager.h" />
@@ -136,6 +137,7 @@
     <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
+    <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />

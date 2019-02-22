@@ -124,7 +124,7 @@ void PanelExpandable::SetClientSize(float height) noexcept
 
 bool PanelExpandable::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
 {
-	if (caller == this || IsMyChild(caller))
+	if (IsMyChild(caller))
 	{
 		if (IsExpanded())
 		{
@@ -143,13 +143,35 @@ bool PanelExpandable::ContainsPoint(const glm::vec2& position, const GUIObject* 
 				}
 			}
 		}
-		else if (caller == this)
-		{
-			return Button::ContainsPoint(position, caller);
-		}
 		return false;
 	}
 	return Button::ContainsPoint(position, caller);
+}
+
+bool PanelExpandable::OwnsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
+{
+	if (caller == this)
+	{
+		if (IsExpanded())
+		{
+			float x = GetXInWorld();
+			float y = GetYInWorld();
+
+			if (position.x > x && position.x < x + GetWidth())
+			{
+				if (position.y > y - GetClientHeight() * m_Percentage && position.y < y + GetHeight())
+				{
+					if (HasParent())
+					{
+						return GetParent()->ContainsPoint(position);
+					}
+					return true;
+				}
+			}
+		}
+		return Button::OwnsPoint(position, caller);
+	}
+	return false;
 }
 
 void PanelExpandable::RenderChildrensFrameBuffers(GUIContext* context)

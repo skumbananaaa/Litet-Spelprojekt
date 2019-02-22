@@ -52,6 +52,9 @@ public:
 	virtual bool ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept;
 	bool ContainsPoint(const glm::vec2& position) const noexcept;
 
+	virtual bool OwnsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept;
+	bool OwnsPoint(const glm::vec2& position) const noexcept;
+
 	virtual void DeleteChildren();
 	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
 	virtual bool WillDeleteAllChildrenOnDestruction() const noexcept;

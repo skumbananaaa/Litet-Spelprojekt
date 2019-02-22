@@ -21,8 +21,14 @@ ScenarioFire::~ScenarioFire()
 void ScenarioFire::OnStart(Scene* scene) noexcept
 {
 	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
+	lvl += lvl % 2;
+	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 1);
+	lvl = 0;
 	uint32 x = Random::GenerateInt(1, m_pWorld->GetLevel(lvl)->GetSizeX() - 2);
+	x = m_pWorld->GetLevel(lvl)->GetSizeX() / 2;
+	x -= 2;
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl)->GetSizeZ() - 2);
+	z = m_pWorld->GetLevel(lvl)->GetSizeZ() / 2;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 	m_OnFire.push_back(pos);
 
@@ -91,7 +97,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 
 		if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
 		{
-			m_Smoke.push_back(pos);
+			m_Smoke.push_back(pos + glm::ivec3(0.0, (pos.y + 1) % 2, 0.0f));
 
 			ParticleEmitter* pEmitter = new ParticleEmitter();
 			pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
@@ -106,22 +112,38 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 			pEmitter->SetParticlesPerSeconds(5);
 			pEmitter->UpdateTransform();
 			scene->AddGameObject(pEmitter);
+
+			TileData& lowerTileData =  m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z];
+
+			for (uint32 j = 1; j < tileData.GameObjects.size(); j++)
+			{
+				tileData.GameObjects[j]->OnSmokeDetected();
+			}
+			for (uint32 j = 1; j < lowerTileData.GameObjects.size(); j++)
+			{
+				lowerTileData.GameObjects[j]->OnSmokeDetected();
+			}
 		}
 	}
 
 	uint32 max = m_Smoke.size();
+	if (max > 1)
+		bool hej = true;
+	float rateOfSpread = 1.0f;
 	for (uint32 j = 0; j < max; j++)
 	{
 		glm::ivec3& smoke = m_Smoke[j];
-		TileData& data = m_pWorld->GetLevel((int32)smoke.y + ((int32)smoke.y + 1) % 2)->GetLevelData()[smoke.x][smoke.z];
+		TileData& data = m_pWorld->GetLevel((int32)smoke.y)->GetLevelData()[smoke.x][smoke.z];
 
 		float spread = data.SmokeAmount - data.SmokeLimit;
 		spread /= 4;
-		spread *= dtS;
+		spread *= dtS * rateOfSpread;
+		dtS *= rateOfSpread;
 		uint32 rest = 0;
 		if (spread > 0.0f)
 		{
 			glm::ivec3 smokeOriginPos = glm::ivec3(smoke) /*+ glm::ivec3(0.0, (smoke.y + 1) % 2, 0.0f)*/;
+
 			rest += CheckSmoke(dtS, glm::ivec3(1, 0, 0), smokeOriginPos, spread, scene);
 			rest += CheckSmoke(dtS, glm::ivec3(-1, 0, 0), smokeOriginPos, spread, scene);
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), smokeOriginPos, spread, scene);
@@ -152,13 +174,14 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 {
 	TileData& originTile = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x][origin.z];
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
-	float rateOfSpread = 0.1f;
-	float rateOfWallSpread = 0.002;
-	float rateOfFloorSpread = 0.0001;
+	float rateOfSpread = 0.01f;
+	float rateOfWallSpread = 0.02;
+	float rateOfFloorSpread = 0.001;
 
 	rateOfSpread *= (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || (tileData.HasDoor && originTile.HasDoor));
 	rateOfSpread += (rateOfWallSpread * (offset.y + 1) + rateOfFloorSpread) * (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] != 1);
 
+	rateOfSpread /= (1 + (tileData.Temp/100));
 	tileData.Temp += std::max((originTile.Temp - tileData.BurnsAt) * rateOfSpread * dtS, 0.0f);
 
 	if (tileData.Temp >= tileData.BurnsAt && !tileData.Burning)
@@ -181,6 +204,11 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 		pEmitter->UpdateTransform();
 
 		scene->AddGameObject(pEmitter);
+
+		for (uint32 i = 1; i < tileData.GameObjects.size(); i++)
+		{
+			tileData.GameObjects[i]->OnFireDetected();
+		}
 	}
 	else if (tileData.Temp < tileData.BurnsAt && tileData.Burning)
 	{
@@ -198,12 +226,10 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, float amount, Scene* scene)
 {
 	bool res = false;
-	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
-	TileData& lowerTileData = m_pWorld->GetLevel(origin.y + offset.y - 1)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
+	TileData& tileData = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
+	TileData& lowerTileData = m_pWorld->GetLevel(origin.y - 1)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
 	bool filled = tileData.SmokeAmount >= tileData.SmokeLimit;
 	//HasDoor and hasStairs never set?
-	if (lowerTileData.HasDoor)
-		bool hej = true;
 	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || lowerTileData.HasDoor || lowerTileData.HasStairs)
 	{
 		tileData.SmokeAmount += amount;
@@ -231,6 +257,17 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 			pEmitter->SetParticlesPerSeconds(5);
 			pEmitter->UpdateTransform();
 			scene->AddGameObject(pEmitter);
+
+			if (origin + offset == glm::ivec3(-2 + (m_pWorld->GetLevel(0)->GetSizeX() / 2), 1, -4 + m_pWorld->GetLevel(0)->GetSizeZ() / 2))
+				bool hej = true;
+			for (uint32 j = 1; j < tileData.GameObjects.size(); j++)
+			{
+				tileData.GameObjects[j]->OnSmokeDetected();
+			}
+			for (uint32 j = 1; j < lowerTileData.GameObjects.size(); j++)
+			{
+				lowerTileData.GameObjects[j]->OnSmokeDetected();
+			}
 		}
 
 		res = true;

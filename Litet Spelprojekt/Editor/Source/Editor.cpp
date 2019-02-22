@@ -1133,6 +1133,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(FORWARD));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1144,6 +1145,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(BACKWARD));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1155,6 +1157,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(LEFT));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1166,6 +1169,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(RIGHT));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1177,6 +1181,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetRotation(glm::vec4(0, 1, 0, object->GetRotation().w + glm::half_pi<float>()));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1407,6 +1412,7 @@ void Editor::OnButtonReleased(Button* button)
 			GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 			pGameObject->SetPosition(editor->CalculateMeshPosition(glm::ivec3(static_cast<int32>(worldObject.TileId.x) - gridSize.x, worldObject.TileId.y % 2, static_cast<int32>(worldObject.TileId.z) - gridSize.y)));
 			pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
+			pGameObject->UpdateTransform();
 			editor->m_ppScenes[floorLevel]->AddGameObject(pGameObject);
 			editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(worldObject.GameObject), i, gameObjects);
 		}

@@ -250,6 +250,7 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetPosition(pos);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
+		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 		m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);
 	}

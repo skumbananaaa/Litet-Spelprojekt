@@ -441,6 +441,11 @@ void ResourceHandler::Construct()
 		m_pIndexedMeshes[i]->Construct();
 	}
 
+	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	{
+		m_pMeshParticles[i]->Construct();
+	}
+
 	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
 	{
 		m_pTexture2Ds[i]->Construct();
@@ -508,6 +513,16 @@ void ResourceHandler::ReleaseResources()
 			std::cout << "Releasing Mesh: " << desc.filename << std::endl;
 		}
 		Delete(m_pIndexedMeshes[i]);
+	}
+
+	for (int i = 0; i < m_NrOfMeshParticles; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Releasing Mesh-Particle: " << desc.filename << std::endl;
+		}
+		Delete(m_pMeshParticles[i]);
 	}
 
 	for (int i = 0; i < m_NrOfTexture2D; i++)

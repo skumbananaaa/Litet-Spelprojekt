@@ -359,14 +359,15 @@ void Game::OnResourcesLoaded()
 
 	MeshEmitter* pMeshEmitter = new MeshEmitter();
 	pMeshEmitter->SetMesh(MESH::MESH_PARTICLE);
-	pMeshEmitter->SetTimeToLive(7.0f);
+	pMeshEmitter->SetTimeToLive(1.2f);
 	pMeshEmitter->SetConeAngle(glm::radians<float>(40.0f));
 	pMeshEmitter->SetSpeed(0.1f, 0.4f);
-	pMeshEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
-	pMeshEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-	pMeshEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pMeshEmitter->SetScale(glm::vec2(1.0f), glm::vec2(5.0f));
+	pMeshEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+	pMeshEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+	pMeshEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	pMeshEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -4.0f));
-	pMeshEmitter->SetParticlesPerSeconds(5);
+	pMeshEmitter->SetParticlesPerSeconds(20);
 	pMeshEmitter->UpdateTransform();
 	m_Scenes[0]->AddGameObject(pMeshEmitter);
 

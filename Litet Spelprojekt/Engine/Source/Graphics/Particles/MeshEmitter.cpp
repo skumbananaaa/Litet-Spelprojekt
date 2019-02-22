@@ -21,6 +21,8 @@ MeshEmitter::MeshEmitter()
 {
 	for (uint32 i = 0; i < MAX_PARTICLES; i++)
 	{
+		m_LivingParticles[i] = i;
+
 		m_Particles[i].Position = glm::vec3(0.0f);
 		m_Particles[i].Direction = UP_VECTOR;
 		m_Particles[i].TimeLived = 0.0f;

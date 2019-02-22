@@ -33,9 +33,9 @@ void main()
 	vs_out.TexCoords = g_TexCoord;
 	vs_out.Color = g_InstanceColor;
 
-	vec2 quadPosition = 
 	vec3 position = g_InstancePosition + (g_Position * g_InstanceScale.x);
 	position.x += extension * floor(clamp(g_InstancePosition.y, 0.0f, 5.9f) / 2.0f);
+
 	gl_Position = g_ProjectionView * vec4(position, 1.0f);
 }
 

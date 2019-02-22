@@ -124,6 +124,12 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 		m_ParticleEmitters.push_back(pEmitter);
 	}
 
+	MeshEmitter* pMeshEmitter = dynamic_cast<MeshEmitter*>(pGameObject);
+	if (pMeshEmitter != nullptr)
+	{
+		m_MeshEmitters.push_back(pMeshEmitter);
+	}
+
 	const std::string& name = pGameObject->GetName();
 	if (name != "")
 	{

@@ -49,8 +49,8 @@ const WorldLevel* const World::GetLevel(uint32 level) const noexcept
 
 WorldLevel* const World::GetLevel(uint32 level) noexcept
 {
-	assert(level < m_NumLevels);
-	return m_ppLevels[level];
+	//assert(level < m_NumLevels);
+	return m_ppLevels[0];
 }
 
 uint32 World::GetNumLevels() const noexcept

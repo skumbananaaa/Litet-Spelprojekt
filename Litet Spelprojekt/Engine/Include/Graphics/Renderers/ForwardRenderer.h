@@ -53,6 +53,7 @@ private:
 	Particle* m_pParticle;
 
 	const ShaderProgram* m_pParticleProgram;
+	const ShaderProgram* m_pMeshParticleProgram;
 	const ShaderProgram* m_pDepthPrePassProgram;
 	const ShaderProgram* m_pSkyBoxPassProgram;
 

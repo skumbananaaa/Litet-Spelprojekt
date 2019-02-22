@@ -1,6 +1,42 @@
 #include "..\..\Include\Scenarios\ScenarioFire.h"
 #include <System/Random.h>
 
+void SpawnFire(Scene* pScene, const glm::vec3& position)
+{
+	ParticleEmitter* pEmitter = new ParticleEmitter();
+	pEmitter->SetPosition(position);
+	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(1.2f);
+	pEmitter->SetScale(glm::vec2(0.05f), glm::vec2(0.15f));
+	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
+	pEmitter->SetSpeed(0.7f, 2.0f);
+	pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+	pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pEmitter->SetParticlesPerSeconds(20);
+	pEmitter->UpdateTransform();
+
+	pScene->AddGameObject(pEmitter);
+}
+
+void SpawnSmoke(Scene* pScene, const glm::vec3& position)
+{
+	ParticleEmitter* pEmitter = new ParticleEmitter();
+	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(7.0f);
+	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
+	pEmitter->SetSpeed(0.1f, 0.4f);
+	pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.3f));
+	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pEmitter->SetPosition(position);
+	pEmitter->SetParticlesPerSeconds(2);
+	pEmitter->UpdateTransform();
+	pScene->AddGameObject(pEmitter);
+}
+
 ScenarioFire::ScenarioFire(World* world)
 {
 	m_pWorld = world;
@@ -30,21 +66,7 @@ void ScenarioFire::OnStart(Scene* scene) noexcept
 	tileData.Temp = 100.1f;
 	tileData.Burning = true;
 
-	ParticleEmitter* pEmitter = new ParticleEmitter();
-	pEmitter->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
-	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
-	pEmitter->SetTexture(TEXTURE::SMOKE);
-	pEmitter->SetTimeToLive(1.2f);
-	pEmitter->SetScale(glm::vec2(1.0f), glm::vec2(5.0f));
-	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
-	pEmitter->SetSpeed(0.7f, 2.0f);
-	pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-	pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	pEmitter->SetParticlesPerSeconds(5);
-	pEmitter->UpdateTransform();
-
-	scene->AddGameObject(pEmitter);
+	SpawnFire(scene, pos);
 }
 
 void ScenarioFire::OnEnd() noexcept
@@ -93,19 +115,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		{
 			m_Smoke.push_back(pos);
 
-			ParticleEmitter* pEmitter = new ParticleEmitter();
-			pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
-			pEmitter->SetTexture(TEXTURE::SMOKE);
-			pEmitter->SetTimeToLive(7.0f);
-			pEmitter->SetConeAngle(glm::radians<float>(40.0f));
-			pEmitter->SetSpeed(0.1f, 0.4f);
-			pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-			pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-			pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-			pEmitter->SetPosition(pos + glm::ivec3(0.0f, ((int32)pos.y + 1) % 2, 0.0f));
-			pEmitter->SetParticlesPerSeconds(5);
-			pEmitter->UpdateTransform();
-			scene->AddGameObject(pEmitter);
+			SpawnSmoke(scene, pos + glm::ivec3(0.0f, ((int32)pos.y + 1) % 2, 0.0f));
 		}
 	}
 
@@ -166,21 +176,7 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 		m_OnFire.push_back(glm::vec3(origin) + glm::vec3(offset));
 		tileData.Burning = true;
 
-		ParticleEmitter* pEmitter = new ParticleEmitter();
-		pEmitter->SetPosition(glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f));
-		pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
-		pEmitter->SetTexture(TEXTURE::SMOKE);
-		pEmitter->SetTimeToLive(1.2f);
-		pEmitter->SetScale(glm::vec2(1.0f), glm::vec2(5.0f));
-		pEmitter->SetConeAngle(glm::radians<float>(30.0f));
-		pEmitter->SetSpeed(0.7f, 2.0f);
-		pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-		pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-		pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		pEmitter->SetParticlesPerSeconds(5);
-		pEmitter->UpdateTransform();
-
-		scene->AddGameObject(pEmitter);
+		SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f));
 	}
 	else if (tileData.Temp < tileData.BurnsAt && tileData.Burning)
 	{
@@ -195,7 +191,7 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 	}
 }
 
-bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::ivec3 & origin, float amount, Scene* scene)
+bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene)
 {
 	bool res = false;
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
@@ -212,19 +208,7 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3 & offset, const glm::i
 		{
 			m_Smoke.push_back(origin + offset);
 
-			ParticleEmitter* pEmitter = new ParticleEmitter();
-			pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
-			pEmitter->SetTexture(TEXTURE::SMOKE);
-			pEmitter->SetTimeToLive(7.0f);
-			pEmitter->SetConeAngle(glm::radians<float>(40.0f));
-			pEmitter->SetSpeed(0.1f, 0.4f);
-			pEmitter->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-			pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-			pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-			pEmitter->SetPosition(origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f));
-			pEmitter->SetParticlesPerSeconds(2);
-			pEmitter->UpdateTransform();
-			scene->AddGameObject(pEmitter);
+			SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f));
 		}
 
 		res = true;

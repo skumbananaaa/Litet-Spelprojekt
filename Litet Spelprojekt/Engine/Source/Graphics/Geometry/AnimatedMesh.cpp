@@ -2,8 +2,6 @@
 #include <EnginePch.h>
 #include <Graphics/Geometry/AnimatedMesh.h>
 
-
-
 glm::mat4 AnimatedMesh::AssimpToGLMMat4(aiMatrix4x4 mat)
 {
 	glm::mat4 retMat;
@@ -37,13 +35,4 @@ glm::mat4 AnimatedMesh::GetJoinTransofrm()
 	
 
 	return glm::mat4();
-}
-
-void AnimatedMesh::AddJointsToArray(Joint headJoint, glm::mat4* jointMatrix)
-{
-	for (int i = 0; i < headJoint.GetNrOfChildren(); i++)
-	{
-		jointMatrix[i] = headJoint.GetTransformMat();
-
-	}
 }

@@ -357,6 +357,19 @@ void Game::OnResourcesLoaded()
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}
 
+	MeshEmitter* pMeshEmitter = new MeshEmitter();
+	pMeshEmitter->SetMesh(MESH::MESH_PARTICLE);
+	pMeshEmitter->SetTimeToLive(7.0f);
+	pMeshEmitter->SetConeAngle(glm::radians<float>(40.0f));
+	pMeshEmitter->SetSpeed(0.1f, 0.4f);
+	pMeshEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
+	pMeshEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+	pMeshEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pMeshEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -4.0f));
+	pMeshEmitter->SetParticlesPerSeconds(5);
+	pMeshEmitter->UpdateTransform();
+	m_Scenes[0]->AddGameObject(pMeshEmitter);
+
 	std::vector<Crewmember*> members;
 	for (int i = 0; i < m_Crew.GetCount(); i++)
 	{
@@ -451,6 +464,36 @@ void Game::OnResourcesLoaded()
 		PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 		m_Scenes[1]->AddPlanarReflector(pReflector);
 	}
+
+	ParticleEmitter* pEmitter = new ParticleEmitter();
+	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(7.0f);
+	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
+	pEmitter->SetSpeed(0.1f, 0.4f);
+	pEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
+	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -4.0f));
+	pEmitter->SetParticlesPerSeconds(5);
+	pEmitter->UpdateTransform();
+	m_Scenes[1]->AddGameObject(pEmitter);
+
+	pEmitter = new ParticleEmitter();
+	pEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -6.0f));
+	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(1.2f);
+	pEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
+	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
+	pEmitter->SetSpeed(0.7f, 2.0f);
+	pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+	pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pEmitter->SetParticlesPerSeconds(5);
+	pEmitter->UpdateTransform();
+	m_Scenes[1]->AddGameObject(pEmitter);
+
 	//((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
 	m_SceneId = 0;

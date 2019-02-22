@@ -1,33 +1,26 @@
 #include <EnginePch.h>
-#include <Graphics/Particles/ParticleEmitter.h>
+#include <Graphics/Particles/MeshEmitter.h>
 #include <System/Random.h>
 #include <GLMHelper.inl>
 
-ParticleEmitter::ParticleEmitter()
-	: m_pTexture(nullptr),
-	m_BlendMode(PARTICLE_NORMAL),
-	m_BeginScale(1.0f),
+MeshEmitter::MeshEmitter()
+	: m_BeginScale(1.0f),
 	m_EndScale(1.0f),
 	m_TimeToLive(1.0f),
 	m_MinSpeed(1.0f),
 	m_MaxSpeed(2.0f),
 	m_ParticleBacklog(0.0f),
 	m_ConeAngle(0.0f),
-	m_NumSortedParticles(0),
 	m_NumParticles(0),
 	m_ParticlesPerSecond(1),
 	m_Direction(0.0f),
 	m_ColorNodes(),
 	m_LivingParticles(),
-	m_SortedParticles(),
 	m_Particles(),
 	m_ParticleInstances()
 {
 	for (uint32 i = 0; i < MAX_PARTICLES; i++)
 	{
-		m_LivingParticles[i] = i;
-		m_SortedParticles[i] = i;
-
 		m_Particles[i].Position = glm::vec3(0.0f);
 		m_Particles[i].Direction = UP_VECTOR;
 		m_Particles[i].TimeLived = 0.0f;
@@ -43,16 +36,13 @@ ParticleEmitter::ParticleEmitter()
 	m_ColorNodes.push_back(beginColor);
 }
 
-ParticleEmitter::~ParticleEmitter()
+MeshEmitter::~MeshEmitter()
 {
 }
 
-void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
+void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 {
 	GameObject::Update(camera, deltaTime);
-	
-	//Get distance to camera
-	m_DistToCamera = LengthSqrd(GetPosition() - camera.GetPosition());
 
 	//Spawn particles
 	float particlesThisFrame = m_ParticleBacklog + (m_ParticlesPerSecond * deltaTime);
@@ -63,7 +53,6 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 	m_ParticleBacklog = particlesThisFrame;
 
 	//Update and sort particles
-	m_NumSortedParticles = 0;
 	for (uint32 i = 0; i < GetNumParticles(); i++)
 	{
 		//Update
@@ -104,14 +93,12 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 		//Scale
 		glm::vec2 diffScale = m_EndScale - m_BeginScale;
 		particle.Scale = m_BeginScale + (diffScale * particle.LifePercentage);
-
-		InsertSortedParticle(m_LivingParticles[i]);
 	}
 
 	//Fill instances
-	for (uint32 i = 0; i < m_NumSortedParticles; i++)
+	for (uint32 i = 0; i < m_NumParticles; i++)
 	{
-		ParticleData& data = GetSortedParticle(i);
+		ParticleData& data = GetLivingParticle(i);
 		m_ParticleInstances[i].Color = data.Color;
 		m_ParticleInstances[i].Color.a = data.Color.a * (1.0f - data.LifePercentage);
 		m_ParticleInstances[i].Position = data.Position;
@@ -119,12 +106,12 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 	}
 }
 
-void ParticleEmitter::UpdateTransform() noexcept
+void MeshEmitter::UpdateTransform() noexcept
 {
 	bool isDirty = IsDirty();
 
 	GameObject::UpdateTransform();
-	
+
 	if (isDirty)
 	{
 		m_Direction = GetTransform() * glm::vec4(UP_VECTOR, 0.0f);
@@ -132,59 +119,39 @@ void ParticleEmitter::UpdateTransform() noexcept
 	}
 }
 
-void ParticleEmitter::SetParticlesPerSeconds(uint32 numParticles) noexcept
+void MeshEmitter::SetMesh(uint32 meshID) noexcept
+{
+	m_pMesh = ResourceHandler::GetMeshParticle(meshID);
+}
+
+void MeshEmitter::SetParticlesPerSeconds(uint32 numParticles) noexcept
 {
 	m_ParticlesPerSecond = numParticles;
 }
 
-void ParticleEmitter::SetParticleBlendMode(ParticleBlendMode blendMode) noexcept
-{
-	m_BlendMode = blendMode;
-}
-
-ParticleBlendMode ParticleEmitter::GetParticleBlendMode() const noexcept
-{
-	return m_BlendMode;
-}
-
-bool ParticleEmitter::DistLess(ParticleEmitter* pEmitter1, ParticleEmitter* pEmitter2)
-{
-	return pEmitter1->m_DistToCamera < pEmitter2->m_DistToCamera;
-}
-
-bool ParticleEmitter::DistGreater(ParticleEmitter* pEmitter1, ParticleEmitter* pEmitter2)
-{
-	return pEmitter1->m_DistToCamera > pEmitter2->m_DistToCamera;
-}
-
-void ParticleEmitter::SetConeAngle(float angleRad) noexcept
+void MeshEmitter::SetConeAngle(float angleRad) noexcept
 {
 	m_ConeAngle = abs(angleRad);
 }
 
-void ParticleEmitter::SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept
+void MeshEmitter::SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept
 {
 	m_BeginScale = begin;
 	m_EndScale = end;
 }
 
-void ParticleEmitter::SetSpeed(float min, float max) noexcept
+void MeshEmitter::SetSpeed(float min, float max) noexcept
 {
 	m_MinSpeed = min;
 	m_MaxSpeed = max;
 }
 
-void ParticleEmitter::SetTimeToLive(float timeToLive) noexcept
+void MeshEmitter::SetTimeToLive(float timeToLive) noexcept
 {
 	m_TimeToLive = timeToLive;
 }
 
-void ParticleEmitter::SetTexture(uint32 textureID) noexcept
-{
-	m_pTexture = ResourceHandler::GetTexture2D(textureID);
-}
-
-void ParticleEmitter::AddColorNode(const glm::vec4& color, float atLifeTime) noexcept
+void MeshEmitter::AddColorNode(const glm::vec4& color, float atLifeTime) noexcept
 {
 	Node<glm::vec4> node;
 	node.Data = color;
@@ -205,22 +172,22 @@ void ParticleEmitter::AddColorNode(const glm::vec4& color, float atLifeTime) noe
 	m_ColorNodes.push_back(node);
 }
 
-void ParticleEmitter::SetBeginColor(const glm::vec4& color) noexcept
+void MeshEmitter::SetBeginColor(const glm::vec4& color) noexcept
 {
 	m_ColorNodes[0].Data = color;
 }
 
-Node<glm::vec4>& ParticleEmitter::GetColorNode(uint32 index) noexcept
+Node<glm::vec4>& MeshEmitter::GetColorNode(uint32 index) noexcept
 {
 	return m_ColorNodes[index];
 }
 
-const Node<glm::vec4>& ParticleEmitter::GetColorNode(uint32 index) const noexcept
+const Node<glm::vec4>& MeshEmitter::GetColorNode(uint32 index) const noexcept
 {
 	return m_ColorNodes[index];
 }
 
-void ParticleEmitter::SetEndColor(const glm::vec4& color) noexcept
+void MeshEmitter::SetEndColor(const glm::vec4& color) noexcept
 {
 	if (m_ColorNodes.size() > 1)
 	{
@@ -235,56 +202,22 @@ void ParticleEmitter::SetEndColor(const glm::vec4& color) noexcept
 	m_ColorNodes.push_back(node);
 }
 
-uint32 ParticleEmitter::GetNumParticles() const noexcept
+uint32 MeshEmitter::GetNumParticles() const noexcept
 {
 	return m_NumParticles;
 }
 
-float ParticleEmitter::GetDistToCamera() const noexcept
-{
-	return m_DistToCamera;
-}
-
-const Texture2D* ParticleEmitter::GetTexture() const noexcept
-{
-	return m_pTexture;
-}
-
-const ParticleInstance* ParticleEmitter::GetParticleInstances() const noexcept
+const ParticleInstance* MeshEmitter::GetParticleInstances() const noexcept
 {
 	return m_ParticleInstances;
 }
 
-ParticleData& ParticleEmitter::GetLivingParticle(uint32 index) noexcept
+ParticleData& MeshEmitter::GetLivingParticle(uint32 index) noexcept
 {
 	return m_Particles[m_LivingParticles[index]];
 }
 
-ParticleData& ParticleEmitter::GetSortedParticle(uint32 index) noexcept
-{
-	return m_Particles[m_SortedParticles[index]];
-}
-
-void ParticleEmitter::InsertSortedParticle(uint32 id) noexcept
-{
-	ParticleData& particle = m_Particles[id];
-
-	int32 index = m_NumSortedParticles;
-	for (int32 i = m_NumSortedParticles - 1; i > 0; i--)
-	{
-		if (particle > GetSortedParticle(i))
-		{
-			index = i;
-			memcpy(&m_SortedParticles[i + 1], &m_SortedParticles[i], sizeof(uint32) * (m_NumSortedParticles - i));
-			break;
-		}
-	}
-
-	m_SortedParticles[index] = id;
-	m_NumSortedParticles++;
-}
-
-void ParticleEmitter::SpawnParticle() noexcept
+void MeshEmitter::SpawnParticle() noexcept
 {
 	if (m_NumParticles < MAX_PARTICLES)
 	{
@@ -306,7 +239,7 @@ void ParticleEmitter::SpawnParticle() noexcept
 	}
 }
 
-void ParticleEmitter::KillParticle(uint32 index)
+void MeshEmitter::KillParticle(uint32 index) noexcept
 {
 	if (index == m_NumParticles - 1)
 	{
@@ -319,4 +252,9 @@ void ParticleEmitter::KillParticle(uint32 index)
 	m_LivingParticles[m_NumParticles - 1] = temp;
 
 	m_NumParticles--;
+}
+
+const MeshParticle* MeshEmitter::GetMesh() const noexcept
+{
+	return m_pMesh;
 }

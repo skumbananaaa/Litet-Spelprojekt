@@ -5,6 +5,7 @@
 #include <Audio/SoundEffect.h>
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Geometry/IndexedMesh.h>
+#include <Graphics/Geometry/MeshParticle.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/WaterOutdoorMaterial.h>
 #include <Graphics/Materials/WaterIndoorMaterial.h>
@@ -15,6 +16,11 @@ ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pIndexedMeshFiles[64];
 IndexedMesh* ResourceHandler::m_pIndexedMeshes[64];
 uint32 ResourceHandler::m_NrOfMeshes = 0;
 uint32 ResourceHandler::m_NrOfMeshesLoaded = 0;
+
+ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pMeshParticleFiles[64];
+MeshParticle* ResourceHandler::m_pMeshParticles[64];
+uint32 ResourceHandler::m_NrOfMeshParticles = 0;
+uint32 ResourceHandler::m_NrOfMeshParticlesLoaded = 0;
 
 ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[64];
 Texture2D* ResourceHandler::m_pTexture2Ds[64];
@@ -80,6 +86,19 @@ uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh)
 	m_pIndexedMeshFiles[m_NrOfMeshes] = { "" };
 	m_pIndexedMeshes[m_NrOfMeshes] = mesh;
 	return m_NrOfMeshes++;
+}
+
+uint32 ResourceHandler::RegisterMeshParticle(const std::string& filename)
+{
+	m_pMeshParticleFiles[m_NrOfMeshParticles] = { filename };
+	return m_NrOfMeshParticles++;
+}
+
+uint32 ResourceHandler::RegisterMeshParticle(MeshParticle* mesh)
+{
+	m_pMeshParticleFiles[m_NrOfMeshParticles] = { "" };
+	m_pMeshParticles[m_NrOfMeshParticles] = mesh;
+	return m_NrOfMeshParticles++;
 }
 
 uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
@@ -199,6 +218,16 @@ IndexedMesh* ResourceHandler::GetMesh(int32 mesh)
 		return nullptr;
 	}
 	return m_pIndexedMeshes[mesh];
+}
+
+MeshParticle* ResourceHandler::GetMeshParticle(int32 mesh)
+{
+	if (mesh == -1)
+	{
+		return nullptr;
+	}
+
+	return m_pMeshParticles[mesh];
 }
 
 int32 ResourceHandler::GetMesh(const IndexedMesh* mesh)
@@ -339,6 +368,27 @@ void ResourceHandler::Load()
 			std::cout << "Loading Mesh: " << desc.filename << std::endl;
 			TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
 			m_pIndexedMeshes[i] = IndexedMesh::CreateIndexedMeshFromFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
+		}
+	}
+
+	//Counting MeshParticles
+	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
+		if (!desc.filename.empty())
+		{
+			nrOfFiles++;
+		}
+	}
+
+	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Loading MeshParticle: " << desc.filename << std::endl;
+			TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
+			m_pMeshParticles[i] = MeshParticle::CreateMeshParticleFromFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
 		}
 	}
 

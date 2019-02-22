@@ -1,6 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Geometry/Mesh.h>
+#include <Graphics/Geometry/MeshParticle.h>
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Textures/Texture.h>
 #include <Graphics/Buffers/UniformBuffer.h>
@@ -158,6 +159,7 @@ public:
 	void DrawMesh(const Mesh& mesh, PrimitiveTopology primitiveTopology) const noexcept;
 	void DrawFullscreenTriangle(const FullscreenTri& triangle) const noexcept;
 	void DrawParticle(const Particle& mesh) const noexcept;
+	void DrawMeshParticle(const MeshParticle& mesh) const noexcept;
 
 	bool HasErrors() const noexcept;
 	void ClearErrors() const noexcept;

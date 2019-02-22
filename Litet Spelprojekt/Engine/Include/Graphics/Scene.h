@@ -8,6 +8,7 @@
 #include <Graphics/SkyBox.h>
 #include <Graphics/Textures/PlanarReflector.h>
 #include <Graphics/Particles/ParticleEmitter.h>
+#include <Graphics/Particles/MeshEmitter.h>
 
 class API Scene
 {
@@ -44,6 +45,7 @@ public:
 	const std::vector<GameObject*>& GetDecals() const noexcept;
 	const std::vector<GameObject*>& GetReflectables() const noexcept;
 	const std::vector<ParticleEmitter*>& GetParticleEmitters() const noexcept;
+	const std::vector<MeshEmitter*>& GetMeshEmitters() const noexcept;
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
@@ -60,6 +62,7 @@ private:
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
 	std::vector<ParticleEmitter*> m_ParticleEmitters;
+	std::vector<MeshEmitter*> m_MeshEmitters;
 	std::vector<PlanarReflector*> m_PlanarReflectors;
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;
@@ -117,6 +120,11 @@ inline const std::vector<GameObject*>& Scene::GetReflectables() const noexcept
 inline const std::vector<ParticleEmitter*>& Scene::GetParticleEmitters() const noexcept
 {
 	return m_ParticleEmitters;
+}
+
+inline const std::vector<MeshEmitter*>& Scene::GetMeshEmitters() const noexcept
+{
+	return m_MeshEmitters;
 }
 
 inline const std::vector<DirectionalLight*>& Scene::GetDirectionalLights() const noexcept

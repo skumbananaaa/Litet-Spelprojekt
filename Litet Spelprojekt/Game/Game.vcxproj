@@ -177,6 +177,7 @@
     <None Include="Resources\Shaders\depthPrePass.glsl" />
     <None Include="Resources\Shaders\forwardIndoorWater.glsl" />
     <None Include="Resources\Shaders\forwardMaterial.glsl" />
+    <None Include="Resources\Shaders\forwardMeshParticles.glsl" />
     <None Include="Resources\Shaders\forwardWall.glsl" />
     <None Include="Resources\Shaders\forwardOutdoorWater.glsl" />
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />

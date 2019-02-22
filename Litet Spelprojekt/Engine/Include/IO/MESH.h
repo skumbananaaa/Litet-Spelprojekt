@@ -20,6 +20,8 @@ public:
 	static uint32 INSTRUMENT_2;
 	static uint32 LAMP;
 	static uint32 ANIMATED_MODEL;
+	static uint32 DOOR;
+	static uint32 DOOR_FRAME;
 
 private:
 	static void RegisterResourcesPreLoading();

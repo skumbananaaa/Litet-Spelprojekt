@@ -82,6 +82,10 @@ void Game::OnResourceLoading(const std::string& file, float percentage)
 
 void Game::OnResourcesLoaded()
 {
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Init();
+#endif
+
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
 
@@ -298,6 +302,37 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
 		m_Scenes[0]->AddGameObject(pGameObject);
 		m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);
+	}
+
+	// Place Doors
+	float halfWidth = m_pWorld->GetLevel(0)->GetSizeX() / 2;
+	float halfHeight = m_pWorld->GetLevel(0)->GetSizeZ() / 2;
+	for (uint32 i = 0; i < m_pWorld->GetNumDoors(); i++)
+	{
+		glm::vec3 door1 = m_pWorld->GetDoor(i);
+		for (uint32 j = i + 1; j < m_pWorld->GetNumDoors(); j++)
+		{
+			glm::vec3 door2 = m_pWorld->GetDoor(j);
+			glm::vec3 delta = door1 - door2;
+			if (glm::length(delta) <= 1.0)
+			{
+				GameObject* pGameObject = new GameObject();
+				pGameObject->SetMaterial(MATERIAL::WHITE);
+				pGameObject->SetMesh(MESH::DOOR_FRAME);
+				pGameObject->SetPosition((door1 + door2) / 2.0F);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_Scenes[0]->AddGameObject(pGameObject);
+
+				pGameObject = new GameObjectDoor();
+				pGameObject->SetPosition((door1 + door2) / 2.0F);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_Scenes[0]->AddGameObject(pGameObject);
+
+				break;
+			}
+		}
 	}
 
 	//BOB
@@ -625,7 +660,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 	bool clickedOnGUI = false;
 	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		if (pObject->ContainsPoint(position))
+		if (pObject->OwnsPoint(position))
 		{
 			clickedOnGUI = true;
 			break;
@@ -705,8 +740,21 @@ void Game::OnUpdate(float dtS)
 		}
 	}
 
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_0);
+#endif
 	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
+#endif
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_1);
+#endif
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Scene Update took %.3f ms", CPU_PROFILER_SLOT_1);
+#endif
 
 	float cartesianCameraSpeed = 5.0F;
 	float cartesianCameraAngularSpeed = 1.5F;
@@ -809,6 +857,11 @@ void Game::OnUpdate(float dtS)
 		SetClipPlanes(m_SceneId); 
 		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
 	}
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Update(dtS);
+	CPUProfiler::PrintTime();
+#endif
 }
 
 void Game::OnRender(float dtS)

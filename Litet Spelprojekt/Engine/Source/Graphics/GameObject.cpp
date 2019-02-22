@@ -88,5 +88,4 @@ void GameObject::UpdateTransform() noexcept
 
 void GameObject::Update(float deltaTime) noexcept
 {
-	UpdateTransform();
 }

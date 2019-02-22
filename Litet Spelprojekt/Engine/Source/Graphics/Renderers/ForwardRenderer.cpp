@@ -11,11 +11,13 @@ ForwardRenderer::ForwardRenderer()
 	m_pPlaneBuffer(nullptr),
 	m_pWorldBuffer(nullptr),
 	m_pExtensionBuffer(nullptr),
+	m_pBoneBuffer(nullptr),
 	m_pSkyBoxPassPerFrame(nullptr),
 	m_pSkyBoxPassPerObject(nullptr),
 	m_pParticle(nullptr),
 	m_pParticleProgram(nullptr),
 	m_pDepthPrePassProgram(nullptr),
+	m_pAnimatedDepthPrePassProgram(nullptr),
 	m_pSkyBoxPassProgram(nullptr),
 	m_pCurrentQuery(nullptr),
 	m_FrameCounter(0),
@@ -37,6 +39,7 @@ ForwardRenderer::~ForwardRenderer()
 	DeleteSafe(m_pPlaneBuffer);
 	DeleteSafe(m_pWorldBuffer);
 	DeleteSafe(m_pExtensionBuffer);
+	DeleteSafe(m_pBoneBuffer);
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
 	DeleteSafe(m_pParticle);
@@ -64,6 +67,19 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 
 	//Create batches
 	CreateBatches(scene, pWorld);
+
+	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
+
+	MaterialBuffer perBatch = {};
+
+	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
+	{
+		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+		const Material& material = *animatedGameObjects[i]->GetMaterial();
+
+		skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
+	}
+
 	//Update lights
 	UpdateLightBuffer(scene);
 
@@ -100,6 +116,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
 	ParticlePass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[6], GL_TIMESTAMP);
+	AnimationPass(dtS, scene);
 
 	//Get query results
 	uint64 startTime = 0;
@@ -157,6 +174,7 @@ void ForwardRenderer::Create() noexcept
 	}
 
 	m_pDepthPrePassProgram = ResourceHandler::GetShader(SHADER::DEPTH_PRE_PASS);
+	m_pAnimatedDepthPrePassProgram = ResourceHandler::GetShader(SHADER::ANIMATION_DEPTH_PRE_PASS);
 	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
 	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
 	m_pMeshParticleProgram = ResourceHandler::GetShader(SHADER::MESH_PARTICLES);
@@ -235,6 +253,11 @@ void ForwardRenderer::Create() noexcept
 		float extension = 0.0f;
 
 		m_pExtensionBuffer = new UniformBuffer(&extension, 1, sizeof(float));
+	}
+
+	//Bones
+	{
+		m_pBoneBuffer = new UniformBuffer(nullptr, 1, sizeof(SkeletonBuffer));
 	}
 
 	//Skybox
@@ -460,6 +483,44 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) con
 		context.DrawIndexedMeshInstanced(mesh);
 	}
 
+	context.SetProgram(m_pAnimatedDepthPrePassProgram);
+
+	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pBoneBuffer, ANIMATION_BUFFER_BINDING_SLOT);
+
+	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
+
+	PlaneBuffer buff = {};
+
+	for (size_t i = 0; i < animatedGameObjects.size(); i++)
+	{
+		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+		const Material& material = *animatedGameObjects[i]->GetMaterial();
+
+		if (!material.IncludeInDepthPrePass())
+		{
+			continue;
+		}
+
+		buff.ClipPlane = material.GetLevelClipPlane();
+		m_pPlaneBuffer->UpdateData(&buff);
+
+		m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
+
+		if (material.GetCullMode() != CULL_MODE_NONE)
+		{
+			context.Enable(CULL_FACE);
+			context.SetCullMode(material.GetCullMode());
+		}
+		else
+		{
+			context.Disable(CULL_FACE);
+		}
+
+		context.DrawAnimatedMesh(*animatedGameObjects[i]->GetAnimatedMesh());
+	}
+
 	context.Disable(CLIP_DISTANCE0);
 	context.SetColorMask(1, 1, 1, 1);
 }
@@ -501,6 +562,42 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 		context.DrawIndexedMeshInstanced(mesh);
 
 		context.Enable(CULL_FACE);
+
+		material.Unbind();
+	}
+}
+
+void ForwardRenderer::AnimationPass(float dtS, const Scene& scene) const noexcept
+{
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
+
+	context.SetUniformBuffer(m_pBoneBuffer, ANIMATION_BUFFER_BINDING_SLOT);
+
+	MaterialBuffer perBatch = {};
+	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
+	{
+		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+		const Material& material = *animatedGameObjects[i]->GetMaterial();
+
+		m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
+
+		perBatch.Color = material.GetColor();
+		perBatch.ClipPlane = material.GetLevelClipPlane();
+		perBatch.Specular = material.GetSpecular();
+		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
+		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
+		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
+		m_pMaterialBuffer->UpdateData(&perBatch);
+
+		material.SetCameraBuffer(m_pCameraBuffer);
+		material.SetLightBuffer(m_pLightBuffer);
+		material.SetMaterialBuffer(m_pMaterialBuffer);
+
+		material.Bind(nullptr);
+
+		context.DrawAnimatedMesh(*animatedGameObjects[i]->GetAnimatedMesh());
 
 		material.Unbind();
 	}

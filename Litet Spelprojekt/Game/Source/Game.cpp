@@ -82,12 +82,16 @@ void Game::OnResourceLoading(const std::string& file, float percentage)
 
 void Game::OnResourcesLoaded()
 {
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Init();
+#endif
+
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
 
 	m_pUICrewMember = new UICrewMember(330, 170);
 
-	m_PanelLog = new Panel(GetWindow().GetWidth() - 300, GetWindow().GetHeight() - 450, 300, 450);
+	m_PanelLog = new Panel(GetWindow().GetWidth() - 350, GetWindow().GetHeight() - 450, 350, 450);
 	m_pTextViewLog = new TextView(0, m_PanelLog->GetHeight() - 50, m_PanelLog->GetWidth(), 50, "Loggbok", true);
 	m_ListScrollableLog = new ListScrollable(0, 0, m_PanelLog->GetWidth(), m_PanelLog->GetHeight() - m_pTextViewLog->GetHeight());
 	m_ListScrollableLog->SetBackgroundColor(glm::vec4(0.15F, 0.15F, 0.15F, 1.0F));
@@ -240,13 +244,104 @@ void Game::OnResourcesLoaded()
 		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
-
 		glm::uvec3 pos = worldObject.TileId;
 		pos.x += 1;
 		pos.z += 1;
 		pGameObject->SetPosition(pos);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
+		pGameObject->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pGameObject);
+		m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);
+	}
+
+	//Generate Door GameObjects
+	for (uint32 i = 0; i < m_pWorld->GetNumDoors(); i++)
+	{
+		glm::vec3 door1 = m_pWorld->GetDoor(i);
+		WorldLevel* level = m_pWorld->GetLevel(door1.y);
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+
+		for (uint32 j = i + 1; j < m_pWorld->GetNumDoors(); j++)
+		{
+			glm::vec3 door2 = m_pWorld->GetDoor(j);
+			glm::vec3 delta = door1 - door2;
+			if (glm::length(delta) <= 1.0)
+			{
+				glm::vec3 position = (door1 + door2) / 2.0F;
+
+				GameObject* pGameObject = new GameObject();
+				pGameObject->SetMaterial(MATERIAL::WHITE);
+				pGameObject->SetMesh(MESH::DOOR_FRAME);
+				pGameObject->SetPosition(position);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_Scenes[0]->AddGameObject(pGameObject);
+
+				pGameObject = new GameObjectDoor();
+				pGameObject->SetPosition(position);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_Scenes[0]->AddGameObject(pGameObject);
+
+				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+
+				break;
+			}
+		}
+	}
+
+	//Generate Ladder GameObjects
+	for (uint32 i = 0; i < m_pWorld->GetNumStairs(); i++)
+	{
+		glm::ivec3 stair = m_pWorld->GetStairs()[i];
+		WorldLevel* level = m_pWorld->GetLevel(stair.y);
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+
+		glm::vec3 position = ((glm::vec3)stair);
+
+		const uint32* const* grid = level->GetLevel();
+		uint32 myId = grid[stair.x][stair.z];
+		float rotation = 0;
+
+		if (grid[stair.x + 1][stair.z] != myId)
+		{
+			rotation = glm::half_pi<float>() * 2.0F;
+		}
+		else if (grid[stair.x - 1][stair.z] != myId)
+		{
+			rotation = 0.0F;
+		}
+		else if (grid[stair.x][stair.z + 1] != myId)
+		{
+			rotation = glm::half_pi<float>();
+		}
+		else if (grid[stair.x][stair.z - 1] != myId)
+		{
+			rotation = glm::half_pi<float>() * 3.0F;
+		}
+
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMesh(MESH::LADDER);
+		pGameObject->SetPosition(position);
+		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
+		pGameObject->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pGameObject);
+	}
+
+	//BOB
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
+		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
+		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetScale(glm::vec3(0.2f));
+		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
@@ -604,23 +699,36 @@ void Game::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 
 void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
-	switch (mousebutton)
+	bool clickedOnGUI = false;
+	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		case MOUSE_BUTTON_LEFT:
+		if (pObject->OwnsPoint(position))
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
-			{
-				PickPosition();
-			}
+			clickedOnGUI = true;
 			break;
 		}
-		case MOUSE_BUTTON_RIGHT:
+	}
+
+	if (!clickedOnGUI)
+	{
+		switch (mousebutton)
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+			case MOUSE_BUTTON_LEFT:
 			{
-				PickCrew(false);
+				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+				{
+					PickPosition();
+				}
+				break;
 			}
-			break;
+			case MOUSE_BUTTON_RIGHT:
+			{
+				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+				{
+					PickCrew(false);
+				}
+				break;
+			}
 		}
 	}
 }
@@ -674,8 +782,21 @@ void Game::OnUpdate(float dtS)
 		}
 	}
 
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_0);
+#endif
 	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
+#endif
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_1);
+#endif
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Scene Update took %.3f ms", CPU_PROFILER_SLOT_1);
+#endif
 
 	float cartesianCameraSpeed = 5.0F;
 	float cartesianCameraAngularSpeed = 1.5F;
@@ -778,6 +899,11 @@ void Game::OnUpdate(float dtS)
 		SetClipPlanes(m_SceneId); 
 		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
 	}
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Update(dtS);
+	CPUProfiler::PrintTime();
+#endif
 }
 
 void Game::OnRender(float dtS)

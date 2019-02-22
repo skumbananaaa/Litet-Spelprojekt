@@ -20,6 +20,7 @@ uint32 MATERIAL::WALL_STANDARD = 0;
 uint32 MATERIAL::CREW_STANDARD = 0;
 uint32 MATERIAL::SINGLE_BED = 0;
 uint32 MATERIAL::BUNK_BED = 0;
+uint32 MATERIAL::ANIMATED_MODEL = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -49,4 +50,5 @@ void MATERIAL::RegisterResources()
 	WATER_INDOOR		= ResourceHandler::RegisterWaterIndoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
 	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, SHADER::STANDARD_MATERIAL);
 	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, SHADER::STANDARD_MATERIAL);
+	ANIMATED_MODEL		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), 256.0f, -1, SHADER::ANIMATION);
 }

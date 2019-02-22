@@ -6,7 +6,8 @@ Editor::Editor() noexcept : Application(false, 1600, 900, "../Game/"),
 	m_SelectionHandlerFloor(true),
 	m_SelectionHandlerRoom(false),
 	m_SelectionHandlerMesh(true),
-	m_SelectionHandlerMeshEdit(false)
+	m_SelectionHandlerMeshEdit(false),
+	m_pOriginalMaterial(nullptr)
 {
 	std::cout << "Editor" << std::endl;
 	m_MouseMaterial = MATERIAL::WHITE;
@@ -276,7 +277,11 @@ void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelectio
 	}
 	else if (pHandler == &m_SelectionHandlerMeshEdit)
 	{
-
+		Button* pButton = (Button*)pSelection;
+		GameObject* pGameObject = (GameObject*)pButton->GetUserData();
+		m_pOriginalMaterial = pGameObject->GetMaterial();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		GetCurrentScene()->GetCamera().SetLookAt(pGameObject->GetPosition());
 	}
 }
 
@@ -294,6 +299,12 @@ void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelect
 		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "Last Editing Mode: " << newMode << std::endl;
 		m_CurrentEditingMode = NONE;
+	}
+	else if (pHandler == &m_SelectionHandlerMeshEdit)
+	{
+		Button* pButton = (Button*)pSelection;
+		GameObject* pGameObject = (GameObject*)pButton->GetUserData();
+		pGameObject->SetMaterial(ResourceHandler::GetMaterial(m_pOriginalMaterial));
 	}
 }
 
@@ -379,11 +390,95 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 
 		ppWorldLevels[gridId] = new WorldLevel(gridId, pLevel, levelSizeX, levelSizeY);
 
-		for (uint32 doorId = 0; doorId < doors.size(); doorId++)
+
+		/*for (uint32 doorId = 0; doorId < doors.size(); doorId++)
 		{
 			ppWorldLevels[gridId]->GetLevelData()[doors[doorId].x][doors[doorId].z].HasDoor = true;
+		}*/
+	}
+
+	//Generate Door GameObjects
+	for (uint32 i = 0; i < doors.size(); i++)
+	{
+		glm::vec3 door1 = doors[i];
+		WorldLevel* level = ppWorldLevels[(int32)door1.y];
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+		for (uint32 j = i + 1; j < doors.size(); j++)
+		{
+			glm::vec3 door2 = doors[j];
+			glm::vec3 delta = door1 - door2;
+
+			if (glm::length(delta) <= 1.0)
+			{
+				glm::vec3 position = (door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight);
+				position.y = 0;
+
+				GameObject* pGameObject = new GameObject();
+				pGameObject->SetMaterial(MATERIAL::WHITE);
+				pGameObject->SetMesh(MESH::DOOR_FRAME);
+				pGameObject->SetPosition(position);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
+
+				pGameObject = new GameObjectDoor();
+				pGameObject->SetPosition(position);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
+
+				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				break;
+			}
 		}
 	}
+
+	//Generate Ladder GameObjects
+	for (uint32 i = 0; i < stairs.size(); i++)
+	{
+		glm::ivec3 stair = stairs[i];
+		WorldLevel* level = ppWorldLevels[stair.y];
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+	
+		glm::vec3 position = ((glm::vec3)stair) - glm::vec3(halfWidth, 0, halfHeight);
+		position.y = 0;
+
+
+		stair.x -= 1;
+		stair.z -= 1;
+		Grid* grid = m_ppGrids[stair.y];
+		uint32 myId = grid->GetVal(glm::vec2(stair.x, stair.z));
+		float rotation = 0;
+
+		if (stair.x + 1 >= grid->GetSize().x || grid->GetVal(glm::vec2(stair.x + 1, stair.z)) != myId)
+		{
+			rotation = glm::half_pi<float>() * 2.0F;
+		}
+		else if (stair.x - 1 < 0 || grid->GetVal(glm::vec2(stair.x - 1, stair.z)) != myId)
+		{
+			rotation = 0.0F;
+		}
+		else if (stair.z + 1 >= grid->GetSize().y || grid->GetVal(glm::vec2(stair.x, stair.z + 1)) != myId)
+		{
+			rotation = glm::half_pi<float>();
+		}
+		else if (stair.z - 1 < 0 || grid->GetVal(glm::vec2(stair.x, stair.z - 1)) != myId)
+		{
+			rotation = glm::half_pi<float>() * 3.0F;
+		}
+
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMesh(MESH::LADDER);
+		pGameObject->SetPosition(position);
+		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
+		pGameObject->UpdateTransform();
+		m_ppScenes[stair.y / 2]->AddGameObject(pGameObject);
+	}
+
 	return ppWorldLevels;
 }
 
@@ -644,89 +739,115 @@ glm::ivec2 Editor::CalculateLowestCorner(const glm::ivec2& firstCorner, const gl
 	return lowestCorner;
 }
 
+void Editor::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
+{
+	const float cameraZoomSensitivity = 0.1f;
+	GetCurrentScene()->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+}
+
 void Editor::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	for (uint32 x = 0; x < m_ppGrids[m_CurrentGridIndex]->GetSize().x; x++)
+	if (Input::IsKeyDown(KEY_LEFT_ALT) && !m_pPanelEditor->IsVisible())
 	{
-		for (uint32 y = 0; y < m_ppGrids[m_CurrentGridIndex]->GetSize().y; y++)
+		if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 		{
-			m_ppGrids[m_CurrentGridIndex]->GetTile(glm::ivec2(x, y))->ResetMaterial();
+			const float cameraRotationSensitivity = 0.005f;
+			glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
+
+			GetCurrentScene()->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
+			GetCurrentScene()->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
+		}
+
+		if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
+		{
+			const float cameraMoveSensitivityX = 0.5f;
+			const float cameraMoveSensitivityY = 0.025f;
+			glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
+			glm::vec3 forward(0.0f);
+			forward.x = GetCurrentScene()->GetCamera().GetFront().x;
+			forward.z = GetCurrentScene()->GetCamera().GetFront().z;
+			GetCurrentScene()->GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
+			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
 		}
 	}
-
-	glm::ivec2 gridPos = CalculateGridPosition(position);
-	if (gridPos.x >= 0 && gridPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
-		gridPos.y >= 0 && gridPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+	else
 	{
-		m_ppGrids[m_CurrentGridIndex]->GetTile(gridPos)->SetMaterial(m_MouseMaterial);
-	}
-
-	if (m_Dragging)
-	{
-		glm::ivec2 lowestCorner = CalculateLowestCorner(m_FirstCorner, gridPos);
-		glm::ivec2 area = glm::abs(gridPos - m_FirstCorner) + glm::ivec2(1, 1);
-		uint32 numTiles = area.x * area.y;
-
-		if (m_CurrentEditingMode == ADD_ROOM)
+		for (uint32 x = 0; x < m_ppGrids[m_CurrentGridIndex]->GetSize().x; x++)
 		{
-			for (uint32 i = 0; i < numTiles; i++)
+			for (uint32 y = 0; y < m_ppGrids[m_CurrentGridIndex]->GetSize().y; y++)
 			{
-				glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
+				m_ppGrids[m_CurrentGridIndex]->GetTile(glm::ivec2(x, y))->ResetMaterial();
+			}
+		}
 
-				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
-					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+		glm::ivec2 gridPos = CalculateGridPosition(position);
+		if (gridPos.x >= 0 && gridPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+			gridPos.y >= 0 && gridPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+		{
+			m_ppGrids[m_CurrentGridIndex]->GetTile(gridPos)->SetMaterial(m_MouseMaterial);
+		}
+
+		if (m_Dragging)
+		{
+			glm::ivec2 lowestCorner = CalculateLowestCorner(m_FirstCorner, gridPos);
+			glm::ivec2 area = glm::abs(gridPos - m_FirstCorner) + glm::ivec2(1, 1);
+			uint32 numTiles = area.x * area.y;
+
+			if (m_CurrentEditingMode == ADD_ROOM)
+			{
+				for (uint32 i = 0; i < numTiles; i++)
 				{
-					Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+					glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
 
-					if (pTile->GetID() == TILE_NON_WALKABLE_INDEX)
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
 					{
-						pTile->SetMaterial(m_TileTints[(m_LargestIndexUsed - TILE_SMALLEST_FREE + 1) % MAX_NUM_ROOMS]);
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+
+						if (pTile->GetID() == TILE_NON_WALKABLE_INDEX)
+						{
+							pTile->SetMaterial(m_TileTints[(m_LargestIndexUsed - TILE_SMALLEST_FREE + 1) % MAX_NUM_ROOMS]);
+						}
+					}
+				}
+			}
+			else if (m_CurrentEditingMode == EDIT_ROOM)
+			{
+				for (uint32 i = 0; i < numTiles; i++)
+				{
+					glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+
+						if (pTile->GetID() >= TILE_NON_WALKABLE_INDEX)
+						{
+							pTile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						}
+					}
+				}
+			}
+			else if (m_CurrentEditingMode == DELETE_ROOM)
+			{
+				for (uint32 i = 0; i < numTiles; i++)
+				{
+					glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+
+						if (pTile->GetID() >= TILE_NON_WALKABLE_INDEX)
+						{
+							pTile->SetMaterial(MATERIAL::BLACK);
+						}
 					}
 				}
 			}
 		}
-		else if (m_CurrentEditingMode == EDIT_ROOM)
-		{
-			for (uint32 i = 0; i < numTiles; i++)
-			{
-				glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
-
-				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
-					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
-				{
-					Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-
-					if (pTile->GetID() >= TILE_NON_WALKABLE_INDEX)
-					{
-						pTile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
-					}
-				}
-			}
-		}
-		else if (m_CurrentEditingMode == DELETE_ROOM)
-		{
-			for (uint32 i = 0; i < numTiles; i++)
-			{
-				glm::ivec2 currentPos = lowestCorner + glm::ivec2(i % area.x, i / area.x);
-
-				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
-					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
-				{
-					Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-
-					if (pTile->GetID() >= TILE_NON_WALKABLE_INDEX)
-					{
-						pTile->SetMaterial(MATERIAL::BLACK);
-					}
-				}
-			}
-		}
-	}
-
-	if (!Input::IsCurserVisible())
-	{
-		GetCurrentScene()->GetCamera().OffsetPitch((position.y - lastPosition.y) / 1000.0F);
-		GetCurrentScene()->GetCamera().OffsetYaw((position.x - lastPosition.x) / 1000.0F);
 	}
 }
 
@@ -1058,6 +1179,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(FORWARD));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1069,6 +1191,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(BACKWARD));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1080,6 +1203,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(LEFT));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1091,6 +1215,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(RIGHT));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1102,6 +1227,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetRotation(glm::vec4(0, 1, 0, object->GetRotation().w + glm::half_pi<float>()));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1332,6 +1458,7 @@ void Editor::OnButtonReleased(Button* button)
 			GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 			pGameObject->SetPosition(editor->CalculateMeshPosition(glm::ivec3(static_cast<int32>(worldObject.TileId.x) - gridSize.x, worldObject.TileId.y % 2, static_cast<int32>(worldObject.TileId.z) - gridSize.y)));
 			pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
+			pGameObject->UpdateTransform();
 			editor->m_ppScenes[floorLevel]->AddGameObject(pGameObject);
 			editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(worldObject.GameObject), i, gameObjects);
 		}
@@ -1422,46 +1549,15 @@ void Editor::OnUpdate(float dtS)
 			Camera& camera = GetCurrentScene()->GetCamera();
 			camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
 		}
+		GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
 	}
-	else if(!Input::IsCurserVisible())
+	else
 	{
-		static float cartesianCameraSpeed = 5.0f;
-		static float cartesianCameraAngularSpeed = 1.5f;
-
-		glm::vec3 localMove(0.0f);
-
-		if (Input::IsKeyDown(KEY_W))
-		{
-			localMove.z = cartesianCameraSpeed * dtS;
-		}
-		else if (Input::IsKeyDown(KEY_S))
-		{
-			localMove.z = -cartesianCameraSpeed * dtS;
-		}
-
-		if (Input::IsKeyDown(KEY_A))
-		{
-			localMove.x = cartesianCameraSpeed * dtS;
-		}
-		else if (Input::IsKeyDown(KEY_D))
-		{
-			localMove.x = -cartesianCameraSpeed * dtS;
-		}
-
-		if (Input::IsKeyDown(KEY_E))
-		{
-			localMove.y = cartesianCameraSpeed * dtS;
-		}
-		else if (Input::IsKeyDown(KEY_Q))
-		{
-			localMove.y = -cartesianCameraSpeed * dtS;
-		}
-
-		GetCurrentScene()->GetCamera().MoveLocalCoords(localMove);
+		GetCurrentScene()->GetCamera().UpdateFromLookAt();
 	}
 	GetCurrentScene()->OnUpdate(dtS);
 
-	GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
+	//GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
 }
 
 void Editor::OnRender(float dtS)

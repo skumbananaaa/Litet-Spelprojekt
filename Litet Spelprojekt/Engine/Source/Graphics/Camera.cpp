@@ -205,6 +205,9 @@ void Camera::SetPos(const glm::vec3& pos) noexcept
 	m_Position = pos;
 	m_IsDirty = true;
 	m_InverseIsDirty = true;
+
+	m_Front = glm::normalize(m_Position - m_LookAt);
+	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 }
 
 void Camera::SetLookAt(const glm::vec3& lookAt) noexcept
@@ -212,6 +215,9 @@ void Camera::SetLookAt(const glm::vec3& lookAt) noexcept
 	m_LookAt = lookAt;
 	m_IsDirty = true;
 	m_InverseIsDirty = true;
+
+	m_Front = glm::normalize(m_Position - m_LookAt);
+	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 }
 
 void Camera::SetYaw(float yaw) noexcept

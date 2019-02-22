@@ -11,7 +11,7 @@ void Logger::LogEvent(const std::string& text, bool showInUI) noexcept
 	struct tm tstruct;
 	char buf[80];
 	tstruct = *localtime(&now);
-	strftime(buf, sizeof(buf), "%X   ", &tstruct);
+	strftime(buf, sizeof(buf), "%X - ", &tstruct);
 
 	std::string line = buf;
 	line += text;

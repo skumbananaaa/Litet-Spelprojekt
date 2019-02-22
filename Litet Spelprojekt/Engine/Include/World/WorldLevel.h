@@ -3,10 +3,12 @@
 #include <Graphics/Scene.h>
 #include <World/Scenarios/Water/WaterObject.h>
 
+#define GAMEOBJECT_CONST_INDEX_WATER 0
+#define GAMEOBJECT_CONST_INDEX_DOOR 1
+
 struct TileData 
 {
 	bool HasStairs;
-	bool HasDoor;
 
 	float Temp;
 	float BurnsAt;
@@ -21,6 +23,29 @@ struct TileData
 	bool Burning;
 	
 	std::vector<GameObject*> GameObjects;
+
+	TileData()
+	{
+		GameObjects.push_back(nullptr);
+		GameObjects.push_back(nullptr);
+	}
+
+	void RemoveGameObject(GameObject* gameObject) noexcept
+	{
+		for (int i = 2; i < GameObjects.size(); i++)
+		{
+			if (GameObjects[i] == gameObject)
+			{
+				GameObjects.erase(GameObjects.begin() + i);
+				return;
+			}
+		}
+	}
+
+	bool HasDoor() const noexcept
+	{
+		return GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+	}
 };
 
 class API WorldLevel

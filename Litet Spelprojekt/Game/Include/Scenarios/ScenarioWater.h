@@ -1,6 +1,10 @@
 #pragma once
 #include <World/Scenarios/IScenario.h>
 
+#if defined(PRINT_CPU_DEBUG_DATA)
+#include <System/CPUProfiler.h>
+#endif
+
 class ScenarioWater : public IScenario
 {
 public:
@@ -41,7 +45,7 @@ inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const g
 		return 0;
 	}
 
-	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || (ppLevelData[tileFrom.x][tileFrom.y].HasDoor && ppLevelData[tileTo.x][tileTo.y].HasDoor))
+	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || (ppLevelData[tileFrom.x][tileFrom.y].HasDoor() && ppLevelData[tileTo.x][tileTo.y].HasDoor()))
 	{
 		return 1;
 	}

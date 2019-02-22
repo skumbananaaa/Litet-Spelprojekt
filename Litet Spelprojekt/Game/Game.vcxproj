@@ -167,6 +167,7 @@
     <ClInclude Include="Include\Scenarios\ScenarioWater.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\animatedDepthPrePass.glsl" />
     <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
     <None Include="Resources\Shaders\debugDecalsFrag.glsl" />
@@ -175,6 +176,7 @@
     <None Include="Resources\Shaders\deferredMaterial.glsl" />
     <None Include="Resources\Shaders\deferredWall.glsl" />
     <None Include="Resources\Shaders\depthPrePass.glsl" />
+    <None Include="Resources\Shaders\forwardAnimation.glsl" />
     <None Include="Resources\Shaders\forwardIndoorWater.glsl" />
     <None Include="Resources\Shaders\forwardMaterial.glsl" />
     <None Include="Resources\Shaders\forwardMeshParticles.glsl" />

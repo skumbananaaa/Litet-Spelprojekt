@@ -49,8 +49,8 @@ const WorldLevel* const World::GetLevel(uint32 level) const noexcept
 
 WorldLevel* const World::GetLevel(uint32 level) noexcept
 {
-	//assert(level < m_NumLevels);
-	return m_ppLevels[0];
+	assert(level < m_NumLevels);
+	return m_ppLevels[level];
 }
 
 uint32 World::GetNumLevels() const noexcept
@@ -128,7 +128,7 @@ void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 	for (int i = 0; i < nrOfDoors; i++)
 	{
 		m_Doors.push_back(doors[i]);
-		m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].HasDoor = true;
+		//m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = 
 	}
 }
 
@@ -148,7 +148,7 @@ Room* World::GetRoom(uint32 room) const noexcept
 	return m_Rooms[room];
 }
 
-const glm::ivec3 & World::GetDoor(uint32 index) const noexcept
+const glm::ivec3& World::GetDoor(uint32 index) const noexcept
 {
 	assert(index < m_Doors.size());
 	return m_Doors[index];

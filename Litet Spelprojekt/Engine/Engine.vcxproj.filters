@@ -85,6 +85,9 @@
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Particles\MeshEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\MeshParticle.cpp" />
+    <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
+    <ClCompile Include="Source\World\GameObjectDoor.cpp" />
+    <ClCompile Include="Source\System\CPUProfiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -184,10 +187,14 @@
     <ClInclude Include="Include\World\LightManager.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
+    <ClInclude Include="Include\Graphics\Materials\AnimatedSkeleton.h" />
+    <ClInclude Include="Include\World\GameObjectDoor.h" />
+    <ClInclude Include="Include\System\CPUProfiler.h" />
     <ClInclude Include="Include\Graphics\Particles\MeshEmitter.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />
+    <None Include="Include\Graphics\Geometry\AssimpHelper.inl" />
   </ItemGroup>
 </Project>

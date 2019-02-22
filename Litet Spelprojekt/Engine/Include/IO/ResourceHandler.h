@@ -21,6 +21,7 @@ class WaterIndoorMaterial;
 class WallMaterial;
 class Decal;
 class IndexedMesh;
+class AnimatedMesh;
 class MeshParticle;
 class GameObject;
 class SoundEffect;
@@ -35,6 +36,7 @@ class API ResourceHandler : public IRunnable
 public:
 	static uint32 RegisterMesh(const std::string& filename);
 	static uint32 RegisterMesh(IndexedMesh* mesh);
+	static uint32 RegisterAnimatedMesh(const std::string& fileName);
 	static uint32 RegisterMeshParticle(const std::string& filename);
 	static uint32 RegisterMeshParticle(MeshParticle* mesh);
 	static uint32 RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps = true, bool flipVertically = false, const TextureParams& params = TextureParams());
@@ -50,6 +52,7 @@ public:
 	static uint32 RegisterShader(const std::string vertex, const std::string pixel = "", const ShaderDefines& defines = ShaderDefines());
 
 	static IndexedMesh* GetMesh(int32 mesh);
+	static AnimatedMesh* GetAnimatedMesh(int32 mesh);
 	static MeshParticle* GetMeshParticle(int32 mesh);
 	static int32 GetMesh(const IndexedMesh* mesh);
 	static Texture2D* GetTexture2D(int32 texture);
@@ -90,6 +93,11 @@ private:
 		std::string filename = "";
 	};
 
+	struct ANIMATED_MESH_DESC_INTERNAL
+	{
+		std::string filename = "";
+	};
+
 	struct GAMEOBJECT_DESC_INTERNAL
 	{
 		std::string name = "";
@@ -119,6 +127,11 @@ private:
 	static IndexedMesh* m_pIndexedMeshes[64];
 	static uint32 m_NrOfMeshes;
 	static uint32 m_NrOfMeshesLoaded;
+
+	static ANIMATED_MESH_DESC_INTERNAL m_pAnimatedMeshFiles[64];
+	static AnimatedMesh* m_pAnimatedMeshes[64];
+	static uint32 m_NrOfAnimatedMeshes;
+	static uint32 m_NrOfAnimatedMeshesLoaded;
 
 	static MESH_DESC_INTERNAL m_pMeshParticleFiles[64];
 	static MeshParticle* m_pMeshParticles[64];

@@ -51,6 +51,7 @@
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />
+    <ClInclude Include="Include\Graphics\Materials\AnimatedSkeleton.h" />
     <ClInclude Include="Include\Graphics\Materials\Decal.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="Include\STB\stb_image.h" />
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
+    <ClInclude Include="Include\System\CPUProfiler.h" />
     <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\IRunnable.h" />
     <ClInclude Include="Include\System\Random.h" />
@@ -99,6 +101,7 @@
     <ClInclude Include="Include\Types.h" />
     <ClInclude Include="Include\IO\IResourceListener.h" />
     <ClInclude Include="Include\IO\ResourceHandler.h" />
+    <ClInclude Include="Include\World\GameObjectDoor.h" />
     <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
     <ClInclude Include="Include\World\Grid.h" />
     <ClInclude Include="Include\World\LightManager.h" />
@@ -126,6 +129,7 @@
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
+    <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
@@ -133,6 +137,8 @@
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
+    <ClCompile Include="Source\World\GameObjectDoor.cpp" />
+    <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
@@ -219,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />
+    <None Include="Include\Graphics\Geometry\AssimpHelper.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{58070825-549E-4173-8861-4C6341B6E166}</ProjectGuid>

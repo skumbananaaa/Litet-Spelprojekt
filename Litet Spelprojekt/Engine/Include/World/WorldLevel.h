@@ -18,6 +18,7 @@ struct TileData
 	float WaterLevelLastUpdated;
 	float WaterLevelAge;
 	bool AlreadyFlooded;
+	bool Burning;
 	
 	std::vector<GameObject*> GameObjects;
 

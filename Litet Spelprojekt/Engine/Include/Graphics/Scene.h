@@ -7,7 +7,7 @@
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/SkyBox.h>
 #include <Graphics/Textures/PlanarReflector.h>
-#include <Graphics/Particles/ParticleSystem.h>
+#include <Graphics/Particles/ParticleEmitter.h>
 
 class API Scene
 {
@@ -17,24 +17,24 @@ public:
 
 	void OnUpdate(float dtS) noexcept;
 	
-	void SetCamera(Camera* pCamera, uint32 index = 0) noexcept;
-	void SelectCamera(uint32 index);
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
+	void SetCamera(Camera* pCamera, uint32 index = 0) noexcept;
+	void SetConceal(bool conceal) noexcept;
+	
+	void SelectCamera(uint32 index);
 	void AddGameObject(GameObject* pGameObject) noexcept;
-	void AddParticleSystem(ParticleSystem* pParticleSystem) noexcept;
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
 	void AddPointLight(PointLight* pLight) noexcept;
 	void AddSpotLight(SpotLight* pLight) noexcept;
 	void AddRoomLight(PointLight* pLight) noexcept;
-	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
+	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void RemoveGameObject(uint32 index) noexcept;
 	void ExtendScene() noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
 	SkyBox& GetSkyBox() const noexcept;
-
 	const GameObject* GetGameObject(const std::string& name) const noexcept;
 	GameObject* GetGameObject(const std::string& name) noexcept;
 	const std::vector<PlanarReflector*>& GetPlanarReflectors() const noexcept;
@@ -44,7 +44,7 @@ public:
 	const std::vector<GameObject*>& GetAnimatedDrawables() const noexcept;
 	const std::vector<GameObject*>& GetDecals() const noexcept;
 	const std::vector<GameObject*>& GetReflectables() const noexcept;
-	const std::vector<ParticleSystem*>& GetParticleSystem() const noexcept;
+	const std::vector<ParticleEmitter*>& GetParticleEmitters() const noexcept;
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
@@ -61,7 +61,7 @@ private:
 	std::vector<GameObject*> m_AnimatedDrawables;
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
-	std::vector<ParticleSystem*> m_ParticleSystems;
+	std::vector<ParticleEmitter*> m_ParticleEmitters;
 	std::vector<PlanarReflector*> m_PlanarReflectors;
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;
@@ -121,9 +121,9 @@ inline const std::vector<GameObject*>& Scene::GetReflectables() const noexcept
 	return m_Reflectables;
 }
 
-inline const std::vector<ParticleSystem*>& Scene::GetParticleSystem() const noexcept
+inline const std::vector<ParticleEmitter*>& Scene::GetParticleEmitters() const noexcept
 {
-	return m_ParticleSystems;
+	return m_ParticleEmitters;
 }
 
 inline const std::vector<DirectionalLight*>& Scene::GetDirectionalLights() const noexcept

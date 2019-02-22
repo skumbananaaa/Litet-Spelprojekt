@@ -28,9 +28,9 @@ bool GameObjectDoor::IsClosed() const noexcept
 	return m_Percentage <= 0.0F;
 }
 
-void GameObjectDoor::Update(float deltaTime) noexcept
+void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept
 {
-	GameObject::Update(deltaTime);
+	GameObject::Update(camera, deltaTime);
 
 	//Test
 	/*if (IsOpen())

@@ -372,9 +372,7 @@ void Editor::CreateWalls()
 				pGameObject->UpdateTransform();
 				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
 
-				pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR);
+				pGameObject = new GameObjectDoor();
 				pGameObject->SetPosition((door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight));
 				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 				pGameObject->UpdateTransform();

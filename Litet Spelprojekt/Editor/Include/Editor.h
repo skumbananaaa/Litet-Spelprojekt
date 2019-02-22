@@ -2,6 +2,7 @@
 
 #include <System\Application.h>
 #include <Graphics\GameObject.h>
+#include <World/GameObjectDoor.h>
 #include <Graphics\Buffers\UniformBuffer.h>
 #include <Graphics\Camera.h>
 #include <Graphics/Renderers/IRenderer.h>

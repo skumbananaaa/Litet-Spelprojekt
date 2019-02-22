@@ -82,6 +82,10 @@ void Game::OnResourceLoading(const std::string& file, float percentage)
 
 void Game::OnResourcesLoaded()
 {
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Init();
+#endif
+
 	GetGUIManager().Remove(m_pTextViewFile);
 	GetGUIManager().Remove(m_pLoadingBar);
 
@@ -705,8 +709,21 @@ void Game::OnUpdate(float dtS)
 		}
 	}
 
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_0);
+#endif
 	m_pWorld->Update(m_Scenes[m_SceneId], dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
+#endif
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_1);
+#endif
 	m_Scenes[m_SceneId]->OnUpdate(dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Scene Update took %.3f ms", CPU_PROFILER_SLOT_1);
+#endif
 
 	float cartesianCameraSpeed = 5.0F;
 	float cartesianCameraAngularSpeed = 1.5F;
@@ -809,6 +826,11 @@ void Game::OnUpdate(float dtS)
 		SetClipPlanes(m_SceneId); 
 		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
 	}
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::Update(dtS);
+	CPUProfiler::PrintTime();
+#endif
 }
 
 void Game::OnRender(float dtS)

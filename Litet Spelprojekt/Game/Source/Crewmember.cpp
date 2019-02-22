@@ -67,7 +67,7 @@ void Crewmember::Update(float deltaTime) noexcept
 {
 	FollowPath(deltaTime);
 	
-	GameObject::Update(deltaTime);
+	UpdateTransform();
 	
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());

@@ -7,6 +7,7 @@
 #include "Input.h"
 #include <System/ThreadHandler.h>
 #include <IO/ResourceHandler.h>
+#include <System/CPUProfiler.h>
 
 class API Application : public IResourceListener
 {
@@ -95,7 +96,14 @@ inline void Application::InternalOnRender(float dtS)
 	{
 		OnRenderLoading(dtS);
 	}
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_6);
+#endif
 	m_pGUIManager->InternalRootOnRender();
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("GUI Draw took %.3f ms", CPU_PROFILER_SLOT_6);
+#endif
 }
 
 inline void Application::InternalOnUpdate(float dtS)
@@ -108,7 +116,14 @@ inline void Application::InternalOnUpdate(float dtS)
 	{
 		OnUpdateLoading(dtS);
 	}
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_5);
+#endif
 	m_pGUIManager->InternalRootOnUpdate(dtS);
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("GUI Update took %.3f ms", CPU_PROFILER_SLOT_5);
+#endif
 }
 
 inline void Application::InternalOnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)

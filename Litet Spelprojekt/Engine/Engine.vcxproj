@@ -92,6 +92,7 @@
     <ClInclude Include="Include\STB\stb_image.h" />
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
+    <ClInclude Include="Include\System\CPUProfiler.h" />
     <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\IRunnable.h" />
     <ClInclude Include="Include\System\Random.h" />
@@ -135,6 +136,7 @@
     <ClCompile Include="Source\Graphics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
+    <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />

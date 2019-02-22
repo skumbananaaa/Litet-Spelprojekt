@@ -301,30 +301,37 @@ void Game::OnResourcesLoaded()
 	}
 
 	// Place Doors
-	float halfWidth = m_pWorld->GetLevel(0)->GetSizeX() / 2;
-	float halfHeight = m_pWorld->GetLevel(0)->GetSizeZ() / 2;
 	for (uint32 i = 0; i < m_pWorld->GetNumDoors(); i++)
 	{
 		glm::vec3 door1 = m_pWorld->GetDoor(i);
+		WorldLevel* level = m_pWorld->GetLevel(door1.y);
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+
 		for (uint32 j = i + 1; j < m_pWorld->GetNumDoors(); j++)
 		{
 			glm::vec3 door2 = m_pWorld->GetDoor(j);
 			glm::vec3 delta = door1 - door2;
 			if (glm::length(delta) <= 1.0)
 			{
+				glm::vec3 position = (door1 + door2) / 2.0F;
+
 				GameObject* pGameObject = new GameObject();
 				pGameObject->SetMaterial(MATERIAL::WHITE);
 				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition((door1 + door2) / 2.0F);
+				pGameObject->SetPosition(position);
 				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 				pGameObject->UpdateTransform();
 				m_Scenes[0]->AddGameObject(pGameObject);
 
 				pGameObject = new GameObjectDoor();
-				pGameObject->SetPosition((door1 + door2) / 2.0F);
+				pGameObject->SetPosition(position);
 				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 				pGameObject->UpdateTransform();
 				m_Scenes[0]->AddGameObject(pGameObject);
+
+				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 
 				break;
 			}

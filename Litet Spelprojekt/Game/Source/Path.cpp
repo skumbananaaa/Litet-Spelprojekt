@@ -12,7 +12,7 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 		{
 			if (m_pppTiles[newX][newY][newZ].g == 0 || m_pppTiles[newX][newY][newZ].g > m_pppTiles[x][y][z].g)
 			{
-				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || (m_pWorld->GetLevel(y * 2)->GetLevelData()[x][z].HasDoor && m_pWorld->GetLevel(newY * 2)->GetLevelData()[newX][newZ].HasDoor) || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
+				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || (m_pWorld->GetLevel(y * 2)->GetLevelData()[x][z].HasDoor() && m_pWorld->GetLevel(newY * 2)->GetLevelData()[newX][newZ].HasDoor()) || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
 				{
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);

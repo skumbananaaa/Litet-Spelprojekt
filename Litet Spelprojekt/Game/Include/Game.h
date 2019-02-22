@@ -2,6 +2,7 @@
 
 #include <System/Application.h>
 #include <Graphics/GameObject.h>
+#include <World/GameObjectDoor.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Camera.h>
 #include <Graphics/Scene.h>
@@ -32,6 +33,10 @@
 #include <World/Scenarios/ScenarioManager.h>
 #include "../Include/Scenarios/ScenarioWater.h"
 #include "../Include/Scenarios/ScenarioFire.h"
+
+#if defined(PRINT_CPU_DEBUG_DATA)
+#include <System/CPUProfiler.h>
+#endif
 
 #define NUM_CREW 15
 #define MAX_ROOMS_VISIBLE 3

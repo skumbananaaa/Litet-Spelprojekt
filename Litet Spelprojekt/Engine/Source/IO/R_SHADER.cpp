@@ -22,6 +22,8 @@ uint32 SHADER::DEFERRED_DECALS = 0;
 uint32 SHADER::STANDARD_MATERIAL = 0;
 uint32 SHADER::EQUIREC_TO_CUBEMAP = 0;
 uint32 SHADER::PARTICLES = 0;
+uint32 SHADER::ANIMATION = 0;
+uint32 SHADER::ANIMATION_DEPTH_PRE_PASS = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -54,6 +56,8 @@ void SHADER::RegisterResources()
 	WATER_OUTDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardOutdoorWater.glsl", "forwardOutdoorWater.glsl");
 	WATER_INDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl");
 	PARTICLES				= ResourceHandler::RegisterShader("forwardParticles.glsl", "forwardParticles.glsl");
+	ANIMATION				= ResourceHandler::RegisterShader("forwardAnimation.glsl", "forwardAnimation.glsl");
+	ANIMATION_DEPTH_PRE_PASS = ResourceHandler::RegisterShader("animatedDepthPrePass.glsl", "animatedDepthPrePass.glsl");
 #endif
 
 	{

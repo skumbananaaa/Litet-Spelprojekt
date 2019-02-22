@@ -148,7 +148,7 @@ Room* World::GetRoom(uint32 room) const noexcept
 	return m_Rooms[room];
 }
 
-const glm::ivec3 & World::GetDoor(uint32 index) const noexcept
+const glm::ivec3& World::GetDoor(uint32 index) const noexcept
 {
 	assert(index < m_Doors.size());
 	return m_Doors[index];

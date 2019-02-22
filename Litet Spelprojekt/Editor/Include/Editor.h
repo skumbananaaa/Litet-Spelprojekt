@@ -2,6 +2,7 @@
 
 #include <System\Application.h>
 #include <Graphics\GameObject.h>
+#include <World/GameObjectDoor.h>
 #include <Graphics\Buffers\UniformBuffer.h>
 #include <Graphics\Camera.h>
 #include <Graphics/Renderers/IRenderer.h>
@@ -64,6 +65,7 @@ public:
 	glm::ivec2 CalculateGridPosition(const glm::vec2& mousePosition) noexcept;
 	glm::ivec2 CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept;
 
+	void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) override;
 	void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
 	void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) override;
 	void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) override;
@@ -115,6 +117,7 @@ private:
 
 	Grid** m_ppGrids;
 
+	const Material* m_pOriginalMaterial;
 	std::vector<GameObject*> m_Walls[NUM_BOAT_LEVELS];
 
 	ProgressBar* m_pLoadingBar;

@@ -107,6 +107,11 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	{
 		m_Drawables.push_back(pGameObject);
 	}
+
+	if (pGameObject->HasAnimatedMesh() && pGameObject->HasMaterial())
+	{
+		m_AnimatedDrawables.push_back(pGameObject);
+	}
 	
 	if (pGameObject->HasDecal())
 	{

@@ -193,8 +193,9 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	progressButton->SetPercentage(0.0);
 	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
 	Game* game = Game::GetGame();
-	game->ShowCrewmember(reinterpret_cast<uint32>(progressButton->GetUserData()));
-	game->GetCrewmember(reinterpret_cast<uint32>(progressButton->GetUserData()))->UpdateLastKnownPosition();
+	int32 shipnumber = reinterpret_cast<uint32>(progressButton->GetUserData());
+	game->ShowCrewmember(shipnumber);
+	game->GetCrewmember(shipnumber)->UpdateLastKnownPosition();
 }
 
 ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& color, float y, float height, const glm::vec2& textOffset, int shipnumber)

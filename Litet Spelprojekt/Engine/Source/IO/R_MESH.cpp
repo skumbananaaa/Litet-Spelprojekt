@@ -16,6 +16,9 @@ uint32 MESH::BED_SINGLE = 0;
 uint32 MESH::INSTRUMENT_1 = 0;
 uint32 MESH::INSTRUMENT_2 = 0;
 uint32 MESH::LAMP = 0;
+uint32 MESH::ANIMATED_MODEL = 0;
+uint32 MESH::DOOR = 0;
+uint32 MESH::DOOR_FRAME = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -40,4 +43,7 @@ void MESH::RegisterResources()
 	INSTRUMENT_1			= ResourceHandler::RegisterMesh("Instrument1.obj");
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
 	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
+	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("bob.dae");
+	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
+	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 }

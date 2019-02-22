@@ -1,6 +1,10 @@
 #pragma once
 #include <World/Scenarios/IScenario.h>
 
+#if defined(PRINT_CPU_DEBUG_DATA)
+#include <System/CPUProfiler.h>
+#endif
+
 class ScenarioWater : public IScenario
 {
 public:

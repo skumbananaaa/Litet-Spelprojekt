@@ -64,6 +64,11 @@ void ScenarioFire::OnVisibilityChange(World * pWorld, Scene * pScene, const std:
 
 bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vector<uint32>& activeRooms) noexcept
 {
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_4);
+#endif
+
+
 	// current, right, left, forward, back, up, down.
 	for (uint32 i = 0; i < m_OnFire.size(); i++)
 	{
@@ -151,7 +156,9 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 			data.SmokeAmount -= spread * rest;
 		}
 	}
-
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Fire Scenario Update took %.3f ms", CPU_PROFILER_SLOT_4);
+#endif
 	return m_OnFire.empty();
 }
 

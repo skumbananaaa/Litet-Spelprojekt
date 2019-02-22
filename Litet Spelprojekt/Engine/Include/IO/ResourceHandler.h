@@ -39,7 +39,7 @@ public:
 	static uint32 RegisterTexture2D(const std::string& filename, TEX_FORMAT format, bool generateMipmaps = true, bool flipVertically = false, const TextureParams& params = TextureParams());
 	static uint32 RegisterMaterial(int32 texture, int32 normalMap = -1, int32 shader = -1);
 	static uint32 RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap = -1, int32 shader = -1);
-	static uint32 RegisterWaterOutdoorMaterial(int32 distorionMap, int32 normalMap);
+	static uint32 RegisterWaterOutdoorMaterial(int32 distorionMap, int32 normalMap, int32 deplacementMap);
 	static uint32 RegisterWaterIndoorMaterial(int32 distorionMap, int32 normalMap);
 	static uint32 RegisterWallMaterial(const glm::vec4& color, float specular, int32 normalMap = -1);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);

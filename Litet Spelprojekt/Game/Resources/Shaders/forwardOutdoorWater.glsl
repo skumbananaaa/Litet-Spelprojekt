@@ -17,6 +17,13 @@ layout(location = 2) in vec3 g_Tangent;
 layout(location = 3) in vec2 g_TexCoords;
 layout(location = 4) in mat4 g_InstanceModel;
 
+layout(binding = 6) uniform sampler2D displacementMap;
+
+layout(std140, binding = 6) uniform WaterBuffer
+{
+	float g_DistortionFactor;
+};
+
 out VS_OUT
 {
 	vec3 Position;
@@ -25,12 +32,19 @@ out VS_OUT
 } vs_out;
 
 const float tiling = 4.0f;
+const float displacement = 2.0f;
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
 
-	vs_out.Position = worldPos.xyz;
 	vs_out.TexCoords = tiling * g_TexCoords;
+
+	//ivec2 displacementMapSize = textureSize(displacementMap, 0);
+	//ivec2 vertexTexCoords = ivec2(g_DistortionFactor) + ivec2(tiling * displacementMapSize * ((vs_out.TexCoords / 2.0f) + 0.5f));
+	vec2 vertexTexCoords = vec2(g_DistortionFactor) + vs_out.TexCoords;
+	worldPos.y += displacement * (textureLod(displacementMap, vertexTexCoords, 0).r - 0.5f) * 2.0f - 10.0f;
+
+	vs_out.Position = worldPos.xyz;
 	vs_out.ClipSpacePosition = g_ProjectionView * worldPos;
 
 	gl_Position = vs_out.ClipSpacePosition;
@@ -157,7 +171,7 @@ void main()
 	vec3 reflectionColor = texture(reflectionTexture, reflectionTexCoords).rgb;
 
 	//NORMAL
-	vec3 normal = texture(normalMap, distortionTexCoords).xyz;
+	vec3 normal = texture(normalMap, fs_in.TexCoords + vec2(g_DistortionFactor)).xyz;
 	normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y * normalYSmoothness, normal.z * 2.0 - 1.0));
 
 	vec3 viewDir = g_CameraPosition - fs_in.Position;

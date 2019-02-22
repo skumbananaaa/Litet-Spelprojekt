@@ -171,14 +171,14 @@ void Game::OnResourcesLoaded()
 
 		//Ground
 		{
-			pGameObject = new GameObject();
+			/*pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::GROUND);
 			pGameObject->SetMesh(MESH::CLIFF_3_LOW);
 			pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
 			pGameObject->SetScale(glm::vec3(0.4f));
 			pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
 			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
+			m_Scenes[0]->AddGameObject(pGameObject);*/
 		}
 
 		//Bottom floor
@@ -351,10 +351,10 @@ void Game::OnResourcesLoaded()
 	{
 		pGameObject = new GameObject();
 		pGameObject->SetIsReflectable(true);
-		pGameObject->SetMesh(MESH::QUAD);
+		pGameObject->SetMesh(MESH::WATER_QUAD);
 		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetScale(glm::vec3(200.0f));
-		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}

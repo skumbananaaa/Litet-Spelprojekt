@@ -12,6 +12,7 @@ WaterOutdoorMaterial::WaterOutdoorMaterial() : Material(SHADER::WATER_OUTDOOR_MA
 {
 	m_Buffer.DistortionFactor = 0.0f;
 	m_pWaterBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(WaterOutdoorBuffer));
+	SetIncludeInDepthPrePass(false);
 }
 
 WaterOutdoorMaterial::~WaterOutdoorMaterial()
@@ -26,11 +27,19 @@ void WaterOutdoorMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 	context.SetUniformBuffer(m_pWaterBuffer, 6);
 
 	context.SetTexture(m_pDistortion, 3);
+	context.SetTexture(m_pDisplacementMap, 6);
+
 	if (m_pReflector)
 	{
 		context.SetTexture(m_pReflector->GetReflectionTexture(), 4);
 	}
-	//context.SetTexture(pGBuffer->GetDepthAttachment(), 5);
+
+	m_LastDepthMask = context.GetDepthMask();
+	m_LastDepthFunc = context.GetDepthFunc();
+
+	context.Enable(DEPTH_TEST);
+	context.SetDepthFunc(FUNC_LESS);
+	context.SetDepthMask(true);
 
 	Material::Bind(pGBuffer);
 }
@@ -44,7 +53,10 @@ void WaterOutdoorMaterial::Unbind() const noexcept
 	context.SetTexture(nullptr, 3);
 	context.SetTexture(nullptr, 4);
 	context.SetTexture(nullptr, 5);
+	context.SetTexture(nullptr, 6);
 
+	context.SetDepthMask(m_LastDepthMask);
+	context.SetDepthFunc(m_LastDepthFunc);
 	Material::Unbind();
 }
 
@@ -57,6 +69,11 @@ void WaterOutdoorMaterial::SetPlanarReflector(PlanarReflector* pReflector) const
 void WaterOutdoorMaterial::SetDistortionTexture(Texture2D* pDistortion)
 {
 	m_pDistortion = pDistortion;
+}
+
+void WaterOutdoorMaterial::SetDisplacementMap(Texture2D* pDisplacementMap)
+{
+	m_pDisplacementMap = pDisplacementMap;
 }
 
 void WaterOutdoorMaterial::SetDistortionFactor(float distortionFactor) const

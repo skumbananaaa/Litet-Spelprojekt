@@ -46,7 +46,7 @@ void MATERIAL::RegisterResources()
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1);
-	WATER_OUTDOOR		= ResourceHandler::RegisterWaterOutdoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
+	WATER_OUTDOOR		= ResourceHandler::RegisterWaterOutdoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL, TEXTURE::WATER_DISPLACEMENT);
 	WATER_INDOOR		= ResourceHandler::RegisterWaterIndoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
 	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, SHADER::STANDARD_MATERIAL);
 	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, SHADER::STANDARD_MATERIAL);

@@ -22,6 +22,7 @@ public:
 	static uint32 ANIMATED_MODEL;
 	static uint32 DOOR;
 	static uint32 DOOR_FRAME;
+	static uint32 WATER_QUAD;
 
 private:
 	static void RegisterResourcesPreLoading();

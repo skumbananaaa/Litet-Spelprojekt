@@ -397,6 +397,7 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 		}*/
 	}
 
+	//Generate Door GameObjects
 	for (uint32 i = 0; i < doors.size(); i++)
 	{
 		glm::vec3 door1 = doors[i];
@@ -411,6 +412,7 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 			if (glm::length(delta) <= 1.0)
 			{
 				glm::vec3 position = (door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight);
+				position.y = 0;
 
 				GameObject* pGameObject = new GameObject();
 				pGameObject->SetMaterial(MATERIAL::WHITE);
@@ -431,6 +433,50 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 				break;
 			}
 		}
+	}
+
+	//Generate Ladder GameObjects
+	for (uint32 i = 0; i < stairs.size(); i++)
+	{
+		glm::ivec3 stair = stairs[i];
+		WorldLevel* level = ppWorldLevels[stair.y];
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+	
+		glm::vec3 position = ((glm::vec3)stair) - glm::vec3(halfWidth, 0, halfHeight);
+		position.y = 0;
+
+
+		stair.x -= 1;
+		stair.z -= 1;
+		Grid* grid = m_ppGrids[stair.y];
+		uint32 myId = grid->GetVal(glm::vec2(stair.x, stair.z));
+		float rotation = 0;
+
+		if (stair.x + 1 >= grid->GetSize().x || grid->GetVal(glm::vec2(stair.x + 1, stair.z)) != myId)
+		{
+			rotation = glm::half_pi<float>() * 2.0F;
+		}
+		else if (stair.x - 1 < 0 || grid->GetVal(glm::vec2(stair.x - 1, stair.z)) != myId)
+		{
+			rotation = 0.0F;
+		}
+		else if (stair.z + 1 >= grid->GetSize().y || grid->GetVal(glm::vec2(stair.x, stair.z + 1)) != myId)
+		{
+			rotation = glm::half_pi<float>();
+		}
+		else if (stair.z - 1 < 0 || grid->GetVal(glm::vec2(stair.x, stair.z - 1)) != myId)
+		{
+			rotation = glm::half_pi<float>() * 3.0F;
+		}
+
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMesh(MESH::LADDER);
+		pGameObject->SetPosition(position);
+		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
+		pGameObject->UpdateTransform();
+		m_ppScenes[stair.y / 2]->AddGameObject(pGameObject);
 	}
 
 	return ppWorldLevels;

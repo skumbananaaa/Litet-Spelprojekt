@@ -255,7 +255,7 @@ void Game::OnResourcesLoaded()
 		m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);
 	}
 
-	// Place Doors
+	//Generate Door GameObjects
 	for (uint32 i = 0; i < m_pWorld->GetNumDoors(); i++)
 	{
 		glm::vec3 door1 = m_pWorld->GetDoor(i);
@@ -291,6 +291,46 @@ void Game::OnResourcesLoaded()
 				break;
 			}
 		}
+	}
+
+	//Generate Ladder GameObjects
+	for (uint32 i = 0; i < m_pWorld->GetNumStairs(); i++)
+	{
+		glm::ivec3 stair = m_pWorld->GetStairs()[i];
+		WorldLevel* level = m_pWorld->GetLevel(stair.y);
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+
+		glm::vec3 position = ((glm::vec3)stair);
+
+		const uint32* const* grid = level->GetLevel();
+		uint32 myId = grid[stair.x][stair.z];
+		float rotation = 0;
+
+		if (grid[stair.x + 1][stair.z] != myId)
+		{
+			rotation = glm::half_pi<float>() * 2.0F;
+		}
+		else if (grid[stair.x - 1][stair.z] != myId)
+		{
+			rotation = 0.0F;
+		}
+		else if (grid[stair.x][stair.z + 1] != myId)
+		{
+			rotation = glm::half_pi<float>();
+		}
+		else if (grid[stair.x][stair.z - 1] != myId)
+		{
+			rotation = glm::half_pi<float>() * 3.0F;
+		}
+
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMesh(MESH::LADDER);
+		pGameObject->SetPosition(position);
+		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
+		pGameObject->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
 	//BOB

@@ -94,25 +94,41 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 	}
 	else
 	{
+		if (!pScene->HasMeshes())
+		{
+			std::cout << "Error: Scene does not contain any meshes." << std::endl;
+			return nullptr;
+		}
+		else
+		{
+			std::cout << "Scene has " << pScene->mNumMeshes << " meshes." << std::endl;
+		}
+
 		glm::mat4 globalTransform = AssimpToGLMMat4(pScene->mRootNode->mTransformation);
 		globalTransform = glm::inverse(globalTransform);
-		//InitFromScene(daeFile);
 
 		const aiMesh* pMesh = pScene->mMeshes[0];
+		if (!pMesh->HasBones())
+		{
+			std::cout << "Error: Mesh does not contain any bones." << std::endl;
+			return nullptr;
+		}
+		else
+		{
+			std::cout << "Scene has " << pMesh->mNumBones << " bones." << std::endl;
+		}
+		
 		const aiBone* paiBones = pMesh->mBones[0];
 
 		std::vector<MeshEntry> entries;
-		//m_Entries.resize(pScene->mNumMeshes);
 		entries.resize(pScene->mNumMeshes);
-		//std::cout << "number of Meshes in dae-file: " << m_Entries.size() << std::endl;
-		std::cout << "number of Meshes in dae-file: " << entries.size() << std::endl;
-
+		std::cout << "Number of Meshes in file: " << entries.size() << std::endl;
 
 		//making space for the vertex attributes and indices.
 		std::vector<aiMesh*> paiMeshes;
 
-		std::cout << "Loading dae-file data..." << std::endl;
-		//counting the number of indices and verteices in mesh
+		std::cout << "Loading data..." << std::endl;
+		//counting the number of indices and vertices in mesh
 		for (uint32 i = 0; i < entries.size(); i++)
 		{
 			entries[i].MaterialIndex = pScene->mMeshes[i]->mMaterialIndex;
@@ -125,17 +141,14 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 
 			//load all the meshes in to a vector array. 
 			paiMeshes.push_back(pScene->mMeshes[i]);
-			//NumIndices += m_Entries[i].NumIndices;
 		}
 
 		std::vector<VertexMeshData> verts;
 		std::vector<uint32> indices;
 
-		//pVerts = new VertexMeshData[nrOfVerts];
+
+		//Extracting all the needed data from the mesh/meshes
 		pBones = new VertexBoneData[nrOfVerts];
-
-
-		//Extracting all the needded data from the mesh/meshes
 		for (uint32 i = 0; i < entries.size(); i++)
 		{
 			for (uint32 j = 0; j < paiMeshes.at(i)->mNumVertices; j++)
@@ -164,6 +177,12 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 			//loop through bones
 			for (uint32 b = 0; b < paiMeshes.at(i)->mNumBones; b++)
 			{
+				if (b >= MAX_NUM_BONES)
+				{
+					std::cout << "Number of bones exceeds limit of " << MAX_NUM_BONES << " bones." << std::endl;
+					break;
+				}
+
 				uint32 boneIndex = 0;
 				std::string boneName(paiMeshes.at(i)->mBones[b]->mName.data);
 				std::cout << "extracting data from bone: " << paiMeshes.at(i)->mBones[b]->mName.data << std::endl;
@@ -189,8 +208,6 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 					uint32 vertexID = entries[i].BaseVertex + paiMeshes.at(i)->mBones[b]->mWeights[w].mVertexId;
 					float weight = paiMeshes.at(i)->mBones[b]->mWeights[w].mWeight;
 					pBones[vertexID].AddBoneData(boneIndex, weight);
-
-					//std::cout << vertexID << ", " <<  glm::to_string(pBones[vertexID].IDs) << ", " << glm::to_string(pBones[vertexID].BoneWeights) << std::endl;
 				}
 			}
 

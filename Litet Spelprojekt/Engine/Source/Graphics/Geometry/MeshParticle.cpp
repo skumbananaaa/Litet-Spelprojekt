@@ -151,7 +151,7 @@ MeshParticle* MeshParticle::CreateMeshParticleFromFile(const char* pFilename)
 
 MeshParticle* MeshParticle::CreateCube()
 {
-	MeshParticleVertex* pVertices = new MeshParticleVertex[24]
+	MeshParticleVertex vertices[24]
 	{
 		// Front (Seen from front)
 		{ glm::vec3(-0.5F,  0.5F,  0.5F),	glm::vec2(0.0F, 1.0F) },
@@ -189,6 +189,9 @@ MeshParticle* MeshParticle::CreateCube()
 		{ glm::vec3(0.5F, -0.5F,  0.5F),	glm::vec2(1.0F, 0.0F) },
 		{ glm::vec3(0.5F, -0.5F, -0.5F),	glm::vec2(0.0F, 0.0F) },
 	};
+
+	MeshParticleVertex* pVertices = new MeshParticleVertex[24];
+	memcpy(pVertices, vertices, sizeof(MeshParticleVertex) * 24);
 
 	uint32* pIndices = new uint32[36]
 	{

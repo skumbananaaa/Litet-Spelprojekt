@@ -4,7 +4,8 @@
 #include <GLMHelper.inl>
 
 MeshEmitter::MeshEmitter()
-	: m_BeginScale(1.0f),
+	: GameObject(),
+	m_BeginScale(1.0f),
 	m_EndScale(1.0f),
 	m_TimeToLive(1.0f),
 	m_MinSpeed(1.0f),

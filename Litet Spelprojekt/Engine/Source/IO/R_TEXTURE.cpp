@@ -20,6 +20,7 @@ uint32 TEXTURE::ICON_SKILL_MEDIC = 0;
 uint32 TEXTURE::ICON_SKILL_STRENGTH = 0;
 uint32 TEXTURE::ICON_CIRCLE = 0;
 uint32 TEXTURE::SMOKE = 0;
+uint32 TEXTURE::SJOFAN_DIFF = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -45,6 +46,7 @@ void TEXTURE::RegisterResources()
 	WATER_DISTORTION	= ResourceHandler::RegisterTexture2D("waterDUDV.png", TEX_FORMAT_RGBA, true, false, params);
 	WATER_NORMAL		= ResourceHandler::RegisterTexture2D("waterNormalMap.png", TEX_FORMAT_RGBA, true, false, params);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
+	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("sjofan_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
 
 	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BURN	= ResourceHandler::RegisterTexture2D("Icons/InjuryBurn.png", TEX_FORMAT_RGBA, false, true);

@@ -3,10 +3,9 @@
 
 void SpawnFire(Scene* pScene, const glm::vec3& position)
 {
-	ParticleEmitter* pEmitter = new ParticleEmitter();
+	MeshEmitter* pEmitter = new MeshEmitter();
 	pEmitter->SetPosition(position);
-	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
-	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetMesh(MESH::MESH_PARTICLE);
 	pEmitter->SetTimeToLive(1.2f);
 	pEmitter->SetScale(glm::vec2(0.05f), glm::vec2(0.15f));
 	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
@@ -22,9 +21,8 @@ void SpawnFire(Scene* pScene, const glm::vec3& position)
 
 void SpawnSmoke(Scene* pScene, const glm::vec3& position)
 {
-	ParticleEmitter* pEmitter = new ParticleEmitter();
-	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
-	pEmitter->SetTexture(TEXTURE::SMOKE);
+	MeshEmitter* pEmitter = new MeshEmitter();
+	pEmitter->SetMesh(MESH::MESH_PARTICLE);
 	pEmitter->SetTimeToLive(7.0f);
 	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
 	pEmitter->SetSpeed(0.1f, 0.4f);

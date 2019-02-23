@@ -1,4 +1,4 @@
-#define MAX_BONES 50
+#define MAX_BONES 60
 
 vec3 EncodeNormals(vec3 normal)
 {

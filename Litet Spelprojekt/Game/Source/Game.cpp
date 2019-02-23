@@ -339,8 +339,8 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
 		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
 		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
-		pGameObject->SetScale(glm::vec3(0.2f));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
@@ -451,20 +451,6 @@ void Game::OnResourcesLoaded()
 		m_Crew.GetMember(i)->UpdateTransform();
 		m_Scenes[0]->AddGameObject(m_Crew.GetMember(i));
 	}
-
-	MeshEmitter* pMeshEmitter = new MeshEmitter();
-	pMeshEmitter->SetMesh(MESH::MESH_PARTICLE);
-	pMeshEmitter->SetTimeToLive(1.2f);
-	pMeshEmitter->SetConeAngle(glm::radians<float>(40.0f));
-	pMeshEmitter->SetSpeed(1.0f, 4.0f);
-	pMeshEmitter->SetScale(glm::vec2(0.5f), glm::vec2(2.0f));
-	pMeshEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-	pMeshEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-	pMeshEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	pMeshEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -4.0f));
-	pMeshEmitter->SetParticlesPerSeconds(20);
-	pMeshEmitter->UpdateTransform();
-	m_Scenes[0]->AddGameObject(pMeshEmitter);
 
 	std::vector<Crewmember*> members;
 	for (int i = 0; i < m_Crew.GetCount(); i++)

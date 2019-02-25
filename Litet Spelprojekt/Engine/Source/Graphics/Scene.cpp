@@ -129,6 +129,12 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 		m_ParticleEmitters.push_back(pEmitter);
 	}
 
+	MeshEmitter* pMeshEmitter = dynamic_cast<MeshEmitter*>(pGameObject);
+	if (pMeshEmitter != nullptr)
+	{
+		m_MeshEmitters.push_back(pMeshEmitter);
+	}
+
 	const std::string& name = pGameObject->GetName();
 	if (name != "")
 	{
@@ -201,14 +207,6 @@ void Scene::OnUpdate(float dtS) noexcept
 	{
 		pPointLight->Update(*m_pCamera, dtS);
 	}
-
-	int n = 0;
-	for (ParticleEmitter* pEmitter : m_ParticleEmitters)
-	{
-		n += pEmitter->GetNumParticles();
-	}
-
-	std::cout << "NUM PARTICLES: " << n << std::endl;
 
 	if (m_Extending)
 	{

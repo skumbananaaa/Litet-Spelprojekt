@@ -351,37 +351,6 @@ void Editor::CreateWalls()
 			m_Walls[level / 2].push_back(pGameObject);
 		}
 	}
-
-	float halfWidth = ppWorldLevels[0]->GetSizeX() / 2;
-	float halfHeight = ppWorldLevels[0]->GetSizeZ() / 2;
-
-	for (uint32 i = 0; i < doors.size(); i++)
-	{
-		glm::vec3 door1 = doors[i];
-		for (uint32 j = i + 1; j < doors.size(); j++)
-		{
-			glm::vec3 door2 = doors[j];
-			glm::vec3 delta = door1 - door2;
-			if (glm::length(delta) <= 1.0)
-			{
-				GameObject* pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition((door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight));
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
-
-				pGameObject = new GameObjectDoor();
-				pGameObject->SetPosition((door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight));
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
-
-				break;
-			}
-		}
-	}
 }
 
 WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vector<glm::ivec3>& doors)
@@ -421,11 +390,95 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 
 		ppWorldLevels[gridId] = new WorldLevel(gridId, pLevel, levelSizeX, levelSizeY);
 
-		for (uint32 doorId = 0; doorId < doors.size(); doorId++)
+
+		/*for (uint32 doorId = 0; doorId < doors.size(); doorId++)
 		{
 			ppWorldLevels[gridId]->GetLevelData()[doors[doorId].x][doors[doorId].z].HasDoor = true;
+		}*/
+	}
+
+	//Generate Door GameObjects
+	for (uint32 i = 0; i < doors.size(); i++)
+	{
+		glm::vec3 door1 = doors[i];
+		WorldLevel* level = ppWorldLevels[(int32)door1.y];
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+		for (uint32 j = i + 1; j < doors.size(); j++)
+		{
+			glm::vec3 door2 = doors[j];
+			glm::vec3 delta = door1 - door2;
+
+			if (glm::length(delta) <= 1.0)
+			{
+				glm::vec3 position = (door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight);
+				position.y = 0;
+
+				GameObject* pGameObject = new GameObject();
+				pGameObject->SetMaterial(MATERIAL::WHITE);
+				pGameObject->SetMesh(MESH::DOOR_FRAME);
+				pGameObject->SetPosition(position);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
+
+				pGameObject = new GameObjectDoor();
+				pGameObject->SetPosition(position);
+				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+				pGameObject->UpdateTransform();
+				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
+
+				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				break;
+			}
 		}
 	}
+
+	//Generate Ladder GameObjects
+	for (uint32 i = 0; i < stairs.size(); i++)
+	{
+		glm::ivec3 stair = stairs[i];
+		WorldLevel* level = ppWorldLevels[stair.y];
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+	
+		glm::vec3 position = ((glm::vec3)stair) - glm::vec3(halfWidth, 0, halfHeight);
+		position.y = 0;
+
+
+		stair.x -= 1;
+		stair.z -= 1;
+		Grid* grid = m_ppGrids[stair.y];
+		uint32 myId = grid->GetVal(glm::vec2(stair.x, stair.z));
+		float rotation = 0;
+
+		if (stair.x + 1 >= grid->GetSize().x || grid->GetVal(glm::vec2(stair.x + 1, stair.z)) != myId)
+		{
+			rotation = glm::half_pi<float>() * 2.0F;
+		}
+		else if (stair.x - 1 < 0 || grid->GetVal(glm::vec2(stair.x - 1, stair.z)) != myId)
+		{
+			rotation = 0.0F;
+		}
+		else if (stair.z + 1 >= grid->GetSize().y || grid->GetVal(glm::vec2(stair.x, stair.z + 1)) != myId)
+		{
+			rotation = glm::half_pi<float>();
+		}
+		else if (stair.z - 1 < 0 || grid->GetVal(glm::vec2(stair.x, stair.z - 1)) != myId)
+		{
+			rotation = glm::half_pi<float>() * 3.0F;
+		}
+
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMesh(MESH::LADDER);
+		pGameObject->SetPosition(position);
+		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
+		pGameObject->UpdateTransform();
+		m_ppScenes[stair.y / 2]->AddGameObject(pGameObject);
+	}
+
 	return ppWorldLevels;
 }
 
@@ -1126,6 +1179,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(FORWARD));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1137,6 +1191,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(BACKWARD));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1148,6 +1203,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(LEFT));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1159,6 +1215,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(RIGHT));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1170,6 +1227,7 @@ void Editor::OnKeyDown(KEY keycode)
 				Button* button = (Button*)selectable;
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetRotation(glm::vec4(0, 1, 0, object->GetRotation().w + glm::half_pi<float>()));
+				object->UpdateTransform();
 			}
 			break;
 		}
@@ -1400,6 +1458,7 @@ void Editor::OnButtonReleased(Button* button)
 			GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 			pGameObject->SetPosition(editor->CalculateMeshPosition(glm::ivec3(static_cast<int32>(worldObject.TileId.x) - gridSize.x, worldObject.TileId.y % 2, static_cast<int32>(worldObject.TileId.z) - gridSize.y)));
 			pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
+			pGameObject->UpdateTransform();
 			editor->m_ppScenes[floorLevel]->AddGameObject(pGameObject);
 			editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(worldObject.GameObject), i, gameObjects);
 		}

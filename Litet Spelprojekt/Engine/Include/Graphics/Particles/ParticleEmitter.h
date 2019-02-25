@@ -2,19 +2,10 @@
 #include <Graphics/GameObject.h>
 #include "ParticleData.h"
 
-#define MAX_PARTICLES 1000
-
 enum ParticleBlendMode : uint32
 {
 	PARTICLE_NORMAL = 1,
 	PARTICLE_ADDITIVE = 2
-};
-
-template<typename T>
-struct Node
-{
-	T Data;
-	float AtLifeTime;
 };
 
 class API ParticleEmitter :  public GameObject
@@ -62,12 +53,12 @@ private:
 	ParticleBlendMode GetParticleBlendMode() const noexcept;
 
 private:
-	uint32 m_ParticlesPerSecond;
-	float m_ParticleBacklog;
-	glm::vec3 m_Direction;
 	const Texture2D* m_pTexture;
-	uint32* m_pLivingParticles;
-	uint32* m_pSortedParticles;
+	float m_ParticleBacklog;
+	uint32 m_ParticlesPerSecond;
+	glm::vec3 m_Direction;
+	uint32 m_LivingParticles[MAX_PARTICLES];
+	uint32 m_SortedParticles[MAX_PARTICLES];
 	ParticleData m_Particles[MAX_PARTICLES];
 	ParticleInstance m_ParticleInstances[MAX_PARTICLES];
 	ParticleBlendMode m_BlendMode;

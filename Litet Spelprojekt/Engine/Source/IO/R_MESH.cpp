@@ -2,6 +2,7 @@
 #include <IO/MESH.h>
 #include <IO/ResourceHandler.h>
 #include <Graphics/Geometry/IndexedMesh.h>
+#include <Graphics/Geometry/MeshParticle.h>
 
 uint32 MESH::QUAD = 0;
 uint32 MESH::SHIP = 0;
@@ -19,6 +20,8 @@ uint32 MESH::LAMP = 0;
 uint32 MESH::ANIMATED_MODEL = 0;
 uint32 MESH::DOOR = 0;
 uint32 MESH::DOOR_FRAME = 0;
+uint32 MESH::LADDER = 0;
+uint32 MESH::MESH_PARTICLE = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -43,7 +46,9 @@ void MESH::RegisterResources()
 	INSTRUMENT_1			= ResourceHandler::RegisterMesh("Instrument1.obj");
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
 	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
-	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("bob.dae");
+	MESH_PARTICLE			= ResourceHandler::RegisterMeshParticle(MeshParticle::CreateCube());
+	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("sjofanDance.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
+	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
 }

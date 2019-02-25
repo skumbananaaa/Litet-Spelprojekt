@@ -105,6 +105,7 @@
     <None Include="Resources\Shaders\forwardIndoorWater.glsl" />
     <None Include="Resources\Shaders\animatedDepthPrePass.glsl" />
     <None Include="Resources\Shaders\forwardAnimation.glsl" />
+    <None Include="Resources\Shaders\forwardMeshParticles.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

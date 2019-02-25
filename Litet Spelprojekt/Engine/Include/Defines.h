@@ -29,4 +29,4 @@
 #define PRINT_CPU_DEBUG_DATA
 
 #define MAX_NUM_BONES_PER_VERT 4
-#define MAX_NUM_BONES 50
+#define MAX_NUM_BONES 60

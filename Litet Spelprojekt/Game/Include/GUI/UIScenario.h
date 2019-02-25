@@ -8,16 +8,21 @@
 #include <Graphics/GUI/Button.h>
 #include "../Crewmember.h"
 
-class UIScenario : public Panel, public ISelectionListener
+class UIScenario : public Panel, public ISelectionListener, public IButtonListener
 {
 public:
 	UIScenario(float x, float y, float width, float height);
 	virtual ~UIScenario();
 
-	void CreateScenario(IScenario* scenario) noexcept;
+	void CreateScenario(IScenario* scenario, int32 id) noexcept;
 
 	virtual void OnSelected(const SelectionHandler* handler, ISelectable* selection) override;
 	virtual void OnDeselected(const SelectionHandler* handler, ISelectable* selection) override;
+
+	virtual void OnButtonPressed(Button* button) override;
+	virtual void OnButtonReleased(Button* button) override;
+	virtual void OnButtonHovered(Button* button) override;
+	virtual void OnButtonNotHovered(Button* button) override;
 
 protected:
 	virtual void PrintName() const override;

@@ -9,10 +9,10 @@ std::vector<int32> ScenarioManager::s_NonActiveScenarios;
 
 uint32 ScenarioManager::RegisterScenario(IScenario* scenario) noexcept
 {
-	Game::GetGame()->GetUIScenario()->CreateScenario(scenario);
+	int32 id = s_Scenarios.size();
 	s_Scenarios.push_back(scenario);
-	SetAsNonActive(s_Scenarios.size() - 1);
-	return s_Scenarios.size() - 1;
+	Game::GetGame()->GetUIScenario()->CreateScenario(scenario, id);
+	return id;
 }
 
 void ScenarioManager::Release() noexcept
@@ -63,9 +63,15 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene, const std::v
 	}
 }
 
+void ScenarioManager::SetEnabledScenarios(const std::vector<int32> ids) noexcept
+{
+	s_NonActiveScenarios = ids;
+	s_ActiveScenarios.clear();
+}
+
 void ScenarioManager::SetAsNonActive(int id)
 {
 	IScenario* scenario = s_Scenarios[id];
 	s_NonActiveScenarios.push_back(id);
-	scenario->SetTimeOfNextOutBreak(10.0f);// Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetMaxTimeBeforeOutbreak()));
+	Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetMaxTimeBeforeOutbreak());
 }

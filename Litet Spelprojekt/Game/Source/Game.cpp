@@ -1068,6 +1068,10 @@ void Game::SetClipPlanes(uint32 scene)
 	//m_pRenderer->SetClipDistance(glm::vec4(0.0f, -1.0f, 0.0f, 1.99f + (elevation * 2.0f)), 1);
 }
 
+void Game::StartGame()
+{
+}
+
 Crewmember* Game::GetCrewmember(uint32 shipNumber)
 {
 	return m_Crew.GetMember(shipNumber);

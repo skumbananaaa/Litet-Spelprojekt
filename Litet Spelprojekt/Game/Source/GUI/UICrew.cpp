@@ -170,6 +170,7 @@ void UICrew::OnButtonPressed(Button* button)
 {
 	ProgressButton* progressButton = (ProgressButton*)button;
 	progressButton->StartAnimation(Random::GenerateInt(3, 15));
+	progressButton->SetText("Inväntar svar");
 	progressButton->SetTextColor(GUIContext::COLOR_BLACK);
 }
 
@@ -195,7 +196,9 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	Game* game = Game::GetGame();
 	int32 shipnumber = reinterpret_cast<uint32>(progressButton->GetUserData());
 	game->ShowCrewmember(shipnumber);
-	game->GetCrewmember(shipnumber)->UpdateLastKnownPosition();
+	Crewmember* crewmember = game->GetCrewmember(shipnumber);
+	progressButton->SetText(crewmember->GetName());
+	crewmember->UpdateLastKnownPosition();
 }
 
 ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& color, float y, float height, const glm::vec2& textOffset, int shipnumber)

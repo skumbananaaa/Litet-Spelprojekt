@@ -72,6 +72,8 @@ public:
 
 	void SetClipPlanes(uint32 scene);
 
+	void StartGame();
+
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	UICrewMember* GetUICrewMember() noexcept;
 	UIScenario* GetUIScenario() noexcept;

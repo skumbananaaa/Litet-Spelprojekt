@@ -5,7 +5,7 @@
 
 _declspec(align(16)) struct WaterOutdoorBuffer
 {
-	float DistortionFactor;
+	float WaveFactor;
 };
 
 class API WaterOutdoorMaterial : public Material
@@ -19,7 +19,7 @@ public:
 	void SetDistortionTexture(Texture2D* pDistortion);
 	void SetDisplacementMap(Texture2D* pDisplacementMap);
 	void SetPlanarReflector(PlanarReflector* pReflector) const;
-	void SetDistortionFactor(float distortionFactor) const;
+	void SetWaveFactor(float waveFactor) const;
 
 private:
 	WaterOutdoorMaterial();

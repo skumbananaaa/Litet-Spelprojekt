@@ -7,21 +7,19 @@ constexpr uint32 WATER_QUAD_VERTICES_PER_SQUARE = 3 * 2;
 struct WaterVertex
 {
 	glm::vec2 Position;
-	glm::lowp_fvec2 Indicator0;
-	glm::lowp_fvec2 Indicator1;
+	glm::vec4 Indicators;
 
 public:
 	WaterVertex() {};
-	WaterVertex(const glm::vec2& p, const glm::lowp_fvec2& i0, const glm::lowp_fvec2& i1)
+	WaterVertex(const glm::vec2& p, const glm::vec4& i)
 	{
 		Position = p;
-		Indicator0 = i0;
-		Indicator1 = i1;
+		Indicators = i;
 	};
 
 	inline bool operator==(const WaterVertex& rs) const
 	{
-		return (Position == rs.Position) && (Indicator0 == rs.Indicator0) && (Indicator1 == rs.Indicator1);
+		return (Position == rs.Position) && (Indicators == rs.Indicators);
 	};
 };
 
@@ -44,11 +42,11 @@ private:
 	virtual void Construct() override;
 
 public:
-	static WaterQuad* CreateWaterQuad(uint32 gridDiameter) noexcept;
+	static WaterQuad* CreateWaterQuad(glm::vec2& pos, float scale, uint32 gridDiameter) noexcept;
 
 private:
-	static void StoreGridSquare(uint32 col, uint32 row, std::vector<WaterVertex>& vertices) noexcept;
-	static void CalculateCornerPositions(uint32 col, uint32 row, glm::vec2* cornerPositions) noexcept;
+	static void StoreGridSquare(float col, float row, float scale, std::vector<WaterVertex>& vertices) noexcept;
+	static void CalculateCornerPositions(float col, float row, float scale, glm::vec2* cornerPositions) noexcept;
 	static void StoreTriangle(glm::vec2 cornerPositions[4], std::vector<WaterVertex>& vertices, bool left) noexcept;
-	static glm::lowp_fvec2 GetIndicators(uint32 currentVertex, glm::vec2 cornerPositions[4], uint32 vertex) noexcept;
+	static glm::vec4 GetIndicators(uint32 currentVertex, glm::vec2 cornerPositions[4], uint32 vertex0, uint32 vertex1) noexcept;
 };

@@ -33,6 +33,7 @@
     <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
     <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
+    <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
@@ -121,6 +122,7 @@
     <ClInclude Include="Include\IO\MESH.h" />
     <ClInclude Include="Include\IO\TEXTURE.h" />
     <ClCompile Include="Source\Graphics\Geometry\MeshParticle.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\WaterQuad.cpp" />
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ListScrollable.cpp" />
     <ClCompile Include="Source\Graphics\GUI\PanelExpandable.cpp" />

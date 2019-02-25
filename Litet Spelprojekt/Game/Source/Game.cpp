@@ -233,7 +233,7 @@ void Game::OnResourcesLoaded()
 
 	//Create scenarios
 	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
+	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -348,7 +348,6 @@ void Game::OnResourcesLoaded()
 	//Water?? YAAAS
 	{
 		pGameObject = new GameObject();
-		pGameObject->SetIsReflectable(true);
 		pGameObject->SetMesh(MESH::WATER_QUAD);
 		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetScale(glm::vec3(200.0f));
@@ -535,7 +534,6 @@ void Game::OnResourcesLoaded()
 	{
 		pGameObject = new GameObject();
 		pGameObject->SetMesh(MESH::QUAD);
-		pGameObject->SetIsReflectable(true);
 		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::radians<float>(90.0f)));
@@ -750,8 +748,12 @@ void Game::OnUpdate(float dtS)
 
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetDistortionFactor(dist);
 	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
+
+	static float wave = 0.0f;
+	wave += 0.25f * dtS;
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetWaveFactor(wave);
+
 
 	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
 

@@ -45,6 +45,7 @@ public:
 	void SetBackFaceStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
 	void SetCullMode(CULL_MODE mode) const noexcept;
 	void SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept;
+	void SetIsReflectable(bool isReflectable) noexcept;
 
 	const Texture2D* GetNormalMap() const noexcept;
 	const Texture2D* GetDiffuseMap() const noexcept;
@@ -58,6 +59,7 @@ public:
 	bool HasNormalMap() const noexcept;
 	bool HasSpecularMap() const noexcept;
 	bool IncludeInDepthPrePass() const noexcept;
+	bool IsReflectable() const noexcept;
 
 protected:
 	Material();
@@ -95,6 +97,7 @@ private:
 	{
 		bool StencilTest = false;
 		bool DepthPrePass = true;
+		bool IsReflectable = false;
 		Func StencilFunc = FUNC_ALWAYS;
 		StencilFace Front;
 		StencilFace Back;
@@ -124,6 +127,11 @@ inline bool Material::HasSpecularMap() const noexcept
 inline bool Material::IncludeInDepthPrePass() const noexcept
 {
 	return m_PipelineState.DepthPrePass;
+}
+
+inline bool Material::IsReflectable() const noexcept
+{
+	return m_PipelineState.IsReflectable;
 }
 
 inline void Material::SetProgram(int32 shader) noexcept
@@ -190,6 +198,11 @@ inline void Material::SetCullMode(CULL_MODE mode) const noexcept
 inline void Material::SetLevelClipPlane(const glm::vec4& clipPlane) const noexcept
 {
 	m_PipelineState.ClipPlane = clipPlane;
+}
+
+inline void Material::SetIsReflectable(bool isReflectable) noexcept
+{
+	m_PipelineState.IsReflectable = isReflectable;
 }
 
 inline CULL_MODE Material::GetCullMode() const noexcept

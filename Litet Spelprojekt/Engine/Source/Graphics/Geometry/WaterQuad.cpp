@@ -30,7 +30,7 @@ void WaterQuad::Construct()
 	GL_CALL(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(WaterVertex), (void*)0));
 	GL_CALL(glEnableVertexAttribArray(0));
 	//Indicators
-	GL_CALL(glVertexAttribPointer(1, 4, GL_BYTE, GL_FALSE, sizeof(WaterVertex), (void*)(2 * sizeof(float))));
+	GL_CALL(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(WaterVertex), (void*)(2 * sizeof(float))));
 	GL_CALL(glEnableVertexAttribArray(1));
 
 	m_NumReservedInstances = 1;
@@ -79,16 +79,22 @@ void WaterQuad::Construct()
 	DeleteArrSafe(m_Indices);
 }
 
-WaterQuad* WaterQuad::CreateWaterQuad(uint32 gridDiameter) noexcept
+WaterQuad* WaterQuad::CreateWaterQuad(glm::vec2& pos, float scale, uint32 gridDiameter) noexcept
 {
 	uint32 numVertices = gridDiameter * gridDiameter * WATER_QUAD_VERTICES_PER_SQUARE;
 	std::vector<WaterVertex> vertices;
 
-	for (uint32 row = 0; row < gridDiameter; row++)
+	float gridRadius = gridDiameter / 2.0f;
+	float rowStart = pos.x - gridRadius * scale;
+	float colStart = pos.y - gridRadius * scale;
+	float rowEnd = pos.x + gridRadius * scale;
+	float colEnd = pos.y + gridRadius * scale;
+
+	for (float row = rowStart; row < rowEnd; row += scale)
 	{
-		for (uint32 col = 0; col < gridDiameter; col++)
+		for (float col = colStart; col < colEnd; col += scale)
 		{
-			StoreGridSquare(col, row, vertices);
+			StoreGridSquare(col, row, scale, vertices);
 		}
 	}
 
@@ -101,20 +107,20 @@ WaterQuad* WaterQuad::CreateWaterQuad(uint32 gridDiameter) noexcept
 	return new WaterQuad(arrVertices, arrIndices, numVertices, numVertices);
 }
 
-void WaterQuad::StoreGridSquare(uint32 col, uint32 row, std::vector<WaterVertex>& vertices) noexcept
+void WaterQuad::StoreGridSquare(float col, float row, float scale, std::vector<WaterVertex>& vertices) noexcept
 {
 	glm::vec2 cornerPositions[4];
-	CalculateCornerPositions(col, row, cornerPositions);
+	CalculateCornerPositions(col, row, scale, cornerPositions);
 	StoreTriangle(cornerPositions, vertices, true);
 	StoreTriangle(cornerPositions, vertices, false);
 }
 
-void WaterQuad::CalculateCornerPositions(uint32 col, uint32 row, glm::vec2* cornerPositions) noexcept
+void WaterQuad::CalculateCornerPositions(float col, float row, float scale, glm::vec2* cornerPositions) noexcept
 {
 	cornerPositions[0] = glm::vec2(col, row);
-	cornerPositions[1] = glm::vec2(col, row + 1);
-	cornerPositions[2] = glm::vec2(col + 1, row);
-	cornerPositions[3] = glm::vec2(col + 1, row + 1);
+	cornerPositions[1] = glm::vec2(col, row + scale);
+	cornerPositions[2] = glm::vec2(col + scale, row);
+	cornerPositions[3] = glm::vec2(col + scale, row + scale);
 }
 
 void WaterQuad::StoreTriangle(glm::vec2 cornerPositions[4], std::vector<WaterVertex>& vertices, bool left) noexcept
@@ -127,32 +133,31 @@ void WaterQuad::StoreTriangle(glm::vec2 cornerPositions[4], std::vector<WaterVer
 	//Vertex 0
 	{
 		vertex.Position = cornerPositions[index0];
-		vertex.Indicator0 = GetIndicators(index0, cornerPositions, index1);
-		vertex.Indicator1 = GetIndicators(index0, cornerPositions, index2);
+		vertex.Indicators = GetIndicators(index0, cornerPositions, index1, index2);
 		vertices.push_back(vertex);
 	}
 
 	//Vertex 1
 	{
 		vertex.Position = cornerPositions[index1];
-		vertex.Indicator0 = GetIndicators(index1, cornerPositions, index2);
-		vertex.Indicator1 = GetIndicators(index1, cornerPositions, index0);
+		vertex.Indicators = GetIndicators(index1, cornerPositions, index2, index0);
 		vertices.push_back(vertex);
 	}
 
 	//Vertex 2
 	{
 		vertex.Position = cornerPositions[index2];
-		vertex.Indicator0 = GetIndicators(index2, cornerPositions, index0);
-		vertex.Indicator1 = GetIndicators(index2, cornerPositions, index1);
+		vertex.Indicators = GetIndicators(index2, cornerPositions, index0, index1);
 		vertices.push_back(vertex);
 	}
 }
 
-glm::lowp_fvec2 WaterQuad::GetIndicators(uint32 currentVertex, glm::vec2 cornerPositions[4], uint32 vertex) noexcept
+glm::vec4 WaterQuad::GetIndicators(uint32 currentVertex, glm::vec2 cornerPositions[4], uint32 vertex0, uint32 vertex1) noexcept
 {
 	glm::vec2 currentVertexPos = cornerPositions[currentVertex];
-	glm::vec2 vertexPos = cornerPositions[vertex];
-	glm::vec2 offset = vertexPos - currentVertexPos;
-	return glm::lowp_fvec2(offset.x, offset.y);
+	glm::vec2 vertex0Pos = cornerPositions[vertex0];
+	glm::vec2 vertex1Pos = cornerPositions[vertex1];
+	glm::vec2 offset0 = vertex0Pos - currentVertexPos;
+	glm::vec2 offset1 = vertex1Pos - currentVertexPos;
+	return glm::vec4(offset0.x, offset0.y, offset1.x, offset1.y);
 }

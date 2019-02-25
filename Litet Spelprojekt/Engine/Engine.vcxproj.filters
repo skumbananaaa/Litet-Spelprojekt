@@ -88,6 +88,7 @@
     <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\WaterQuad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Include\System\CPUProfiler.h" />
     <ClInclude Include="Include\Graphics\Particles\MeshEmitter.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
+    <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

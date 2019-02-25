@@ -215,32 +215,29 @@ bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned;
+	return m_HasInjuryBurned > 1.0;
 }
 
 bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke;
+	return m_HasInjurySmoke > 1.0;
 }
 
 void Crewmember::UpdateDamage(const TileData*const* data)
 {
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
-	if (tileData.SmokeAmount - tileData.SmokeLimit > 100)
+	if (tileData.SmokeAmount - tileData.SmokeLimit > 1.0 && m_HasInjurySmoke < 1.0f)
 	{
-		m_HasInjuryBurned = true;
-		m_IsVisible = true;
-
-		m_LastKnownPosition = GetPosition();
+		m_HasInjurySmoke += tileData.SmokeAmount/tileData.SmokeLimit;
+		Logger::LogEvent("Crewmember " + GetName() + "got smoked" + std::to_string(m_HasInjurySmoke));
 	}
 
 	tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 
-	if (tileData.Temp > 100)
+	if (tileData.Temp > 100 && m_HasInjuryBurned < 1.0f)
 	{
-		m_HasInjuryBurned = true;
-		m_IsVisible = true;
-		m_LastKnownPosition = GetPosition();
+		m_HasInjuryBurned += tileData.Temp/100;
+		Logger::LogEvent("Crewmember " + GetName() + "got burned" + std::to_string(m_HasInjurySmoke));
 	}
 }
 

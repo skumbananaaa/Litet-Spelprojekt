@@ -14,7 +14,7 @@ public:
 	AnimatedSkeleton() noexcept;
 	~AnimatedSkeleton();
 
-	void SetSkeletonTransform(const glm::mat4& transform) noexcept;
+	void SetSkeletonTransform(const glm::mat4& transform) const noexcept;
 	const SkeletonBuffer& GetSkeletonBuffer() const noexcept;
 
 	void UpdateBoneTransforms(float dtS, const AnimatedMesh* mesh) const;

@@ -5,7 +5,7 @@ PanelExpandable::PanelExpandable(float x, float y, float width, float height, fl
 	m_pFrameBufferClientArea(nullptr),
 	m_Mode(CLOSED),
 	m_Percentage(0),
-	m_ClientAreaColor(0.408F, 0.408F, 0.408F, 1.0F)
+	m_ClientAreaColor(GUIContext::COLOR_PANEL_BACKGROUND)
 {
 	SetClientSize(clientHeight);
 	SetBackgroundColor(glm::vec4(0.118F, 0.118F, 0.118F, 1.0F));

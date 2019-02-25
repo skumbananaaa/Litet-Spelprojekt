@@ -7,7 +7,7 @@ GLContext* GLContext::s_CurrentContext = nullptr;
 
 GLContext::GLContext(float width, float height) 
 	: m_pCurrentProgram(nullptr),
-	m_DefaultClearColor(0.392f, 0.584f, 0.929f, 1.0f),
+	m_DefaultClearColor(0.05, 0.08, 0.06, 1.0f),
 	m_ViewPort(),
 	m_CurrentTextures()
 {

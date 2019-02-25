@@ -5,7 +5,7 @@ TextView::TextView(float x, float y, float width, float height, const std::strin
 	m_Text(text), 
 	m_TextSize(textSize),
 	m_TextCentered(center),
-	m_TextColor(1.0F, 1.0F, 1.0F, 1.0F),
+	m_TextColor(GUIContext::COLOR_TEXT),
 	m_TextOffset(0.0F, 0.0F)
 {
 	SetBackgroundColor(glm::vec4(1.0F, 1.0F, 1.0F, 0.0F));

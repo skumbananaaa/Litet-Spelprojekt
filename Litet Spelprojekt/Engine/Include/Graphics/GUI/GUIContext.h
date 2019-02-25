@@ -59,6 +59,19 @@ public:
 	static const glm::vec4 COLOR_CYAN;
 	static const glm::vec4 COLOR_PURPLE;
 
+
+	static const glm::vec4 COLOR_BUTTON_BACKGROUND;
+	static const glm::vec4 COLOR_SELECTED;
+	static const glm::vec4 COLOR_HOVER;
+	static const glm::vec4 COLOR_PRESSED;
+	static const glm::vec4 COLOR_PANEL_BACKGROUND;
+	static const glm::vec4 COLOR_PANEL_MIDGROUND;
+	static const glm::vec4 COLOR_PANEL_FOREGROUND;
+	static const glm::vec4 COLOR_TEXT;
+	static const glm::vec4 COLOR_TEXT_HOVER;
+	static const glm::vec4 COLOR_TEXT_SELECTED;
+	static const glm::vec4 COLOR_TEXT_PRESSED;
+
 private:
 	GUIUniformData m_UniformData;
 	UniformBuffer* m_pUniformBuffer;

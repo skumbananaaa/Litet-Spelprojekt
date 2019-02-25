@@ -7,7 +7,7 @@ PanelScrollable::PanelScrollable(float x, float y, float width, float height, fl
 	m_pFrameBufferClientArea(nullptr),
 	m_ClientOffset(0, 0)
 {
-	SetBackgroundColor(glm::vec4(0.08F, 0.08F, 0.08F, 1.0F));
+	SetBackgroundColor(GUIContext::COLOR_PANEL_MIDGROUND);
 
 	m_pSliderVertical = new Slider(x + width - SLIDER_SIZE, y + SLIDER_SIZE, SLIDER_SIZE, height - SLIDER_SIZE);
 	m_pSliderHorizontal = new Slider(x, y, width - SLIDER_SIZE, SLIDER_SIZE);

@@ -14,6 +14,18 @@ const glm::vec4 GUIContext::COLOR_YELLOW(1.0f, 1.0f, 0.0f, 1.0f);
 const glm::vec4 GUIContext::COLOR_CYAN(0.0f, 1.0f, 1.0f, 1.0f);
 const glm::vec4 GUIContext::COLOR_PURPLE(1.0f, 0.0f, 1.0f, 1.0f);
 
+const glm::vec4 GUIContext::COLOR_BUTTON_BACKGROUND(0.231, 0.329, 0.255, 1.0f);
+const glm::vec4 GUIContext::COLOR_SELECTED(0.51, 0.91, 0.369, 1.0f);
+const glm::vec4 GUIContext::COLOR_HOVER(0.424, 0.6, 0.463, 1.0f);
+const glm::vec4 GUIContext::COLOR_PRESSED(0.718, 0.949, 0.635, 1.0f);
+const glm::vec4 GUIContext::COLOR_PANEL_BACKGROUND(0.05, 0.08, 0.06, 1.0f);
+const glm::vec4 GUIContext::COLOR_PANEL_MIDGROUND(0.231, 0.329, 0.255, 1.0f);
+const glm::vec4 GUIContext::COLOR_PANEL_FOREGROUND(0.424, 0.6, 0.463, 1.0f);
+const glm::vec4 GUIContext::COLOR_TEXT(1.0f);
+const glm::vec4 GUIContext::COLOR_TEXT_HOVER(1.0f);
+const glm::vec4 GUIContext::COLOR_TEXT_SELECTED(0.0f, 0.0f, 0.0f, 1.0f);
+const glm::vec4 GUIContext::COLOR_TEXT_PRESSED(0.0f, 0.0f, 0.0f, 1.0f);
+
 GUIContext::GUIContext(GLContext* context, const ShaderProgram* shaderProgram, FontRenderer* fontRenderer) :
 	m_pContext(context),
 	m_pShaderProgram(shaderProgram),

@@ -1,36 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <IO/IResource.h>
-
-struct Vertex
-{
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec3 tangent;
-	glm::vec2 texCoords;
-
-public:
-	Vertex() {};
-	Vertex(const glm::vec3& p, const glm::vec3& n, const glm::vec3& t, const glm::vec2& tc)
-	{
-		position = p;
-		normal = n;
-		tangent = t;
-		texCoords = tc;
-	};
-
-	inline bool operator==(const Vertex& rs) const
-	{
-		return (position == rs.position) && (normal == rs.normal) && (tangent == rs.tangent) && (texCoords == rs.texCoords);
-	};
-};
-
-struct InstanceData
-{
-	glm::mat4 Model;
-	//glm::mat4 InverseModel;
-	//glm::vec3 Direction;
-};
+#include "MeshBase.h"
 
 class API IndexedMesh : public IResource
 {
@@ -51,7 +22,7 @@ private:
 	IndexedMesh& operator=(IndexedMesh&& other) = delete;
 	IndexedMesh& operator=(const IndexedMesh& other) = delete;
 
-	IndexedMesh(const Vertex* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
+	IndexedMesh(const BaseVertex* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept;
 	~IndexedMesh();
 
 	virtual void Construct() override;
@@ -63,8 +34,8 @@ private:
 	uint32 m_InstanceBuffer;
 	uint32 m_VertexCount;
 	uint32 m_IndexCount;
-	const Vertex* m_Vertices;
-	const uint32* m_Indices;
+	const BaseVertex* m_pVertices;
+	const uint32* m_pIndices;
 	mutable uint32 m_NumInstances;
 	mutable uint32 m_NumReservedInstances;
 

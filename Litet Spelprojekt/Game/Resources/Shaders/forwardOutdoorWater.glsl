@@ -13,9 +13,8 @@ layout(std140, binding = 0) uniform CameraBuffer
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec3 g_Tangent;
-layout(location = 3) in vec2 g_TexCoords;
-layout(location = 4) in mat4 g_InstanceModel;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in mat4 g_InstanceModel;
 
 out VS_OUT
 {
@@ -49,7 +48,6 @@ const float distortionStrength = 0.005;
 const float specularStrength = 256.0f;//0.6;
 const float shininess = 20.0;
 const float refractionExp = 1.5;
-const float normalYSmoothness = 4.0;
 const float depthOfFullOpaque = 0.7;
 const float depthOfFullDistortion = 0.9;
 const float depthOfFullSpecular = 0.7;
@@ -87,7 +85,6 @@ in VS_OUT
 	vec4 ClipSpacePosition;
 } fs_in;
 
-layout(binding = 1) uniform sampler2D normalMap;
 layout(binding = 3) uniform sampler2D dudvMap;
 layout(binding = 4) uniform sampler2D reflectionTexture;
 layout(binding = 5) uniform sampler2D depthMap;
@@ -157,8 +154,8 @@ void main()
 	vec3 reflectionColor = texture(reflectionTexture, reflectionTexCoords).rgb;
 
 	//NORMAL
-	vec3 normal = texture(normalMap, distortionTexCoords).xyz;
-	normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y * normalYSmoothness, normal.z * 2.0 - 1.0));
+	vec3 normal = vec3(0.0f, 1.0f, 0.0f);//texture(normalMap, distortionTexCoords).xyz;
+	//normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y * normalYSmoothness, normal.z * 2.0 - 1.0));
 
 	vec3 viewDir = g_CameraPosition - fs_in.Position;
 	float distFromCamera = length(viewDir);

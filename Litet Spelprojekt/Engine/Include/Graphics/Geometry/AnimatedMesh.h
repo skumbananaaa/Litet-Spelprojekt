@@ -2,23 +2,7 @@
 #include <EnginePch.h>
 #include <IO/IResource.h>
 #include <Graphics/Buffers/UniformBuffer.h>
-#include <map>
-
-struct VertexMeshData
-{
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec3 tangent;
-	glm::vec2 texCoords;
-};
-
-struct VertexBoneData
-{
-	glm::ivec4 IDs = glm::ivec4(0);
-	glm::vec4 BoneWeights = glm::vec4(0.0f);
-
-	void AddBoneData(uint32 BoneID, float Weight);
-};
+#include "MeshBase.h"
 
 class API AnimatedMesh : public IResource
 {
@@ -46,25 +30,24 @@ private:
 
 public:
 	AnimatedMesh(
-		VertexMeshData* vertices,
-		uint32* indices,
-		VertexBoneData* bones,
+		BaseVertex* pVertices,
+		uint32* pIndices,
+		VertexBoneData* pBones,
 		uint32 numVertices,
 		uint32 numIndices,
 		uint32 numBones,
 		glm::mat4& globalTransform,
 		std::map<std::string, uint32>& boneMap,
 		std::vector<glm::mat4>& boneOffsets,
-		const void* rootNode,
-		const void* scene,
-		const void* importer,
+		const void* pRootNode,
+		const void* pScene,
+		const void* pImporter,
 		std::vector<MeshEntry>& entries) noexcept;
 
 	~AnimatedMesh();
 
 private:
 	virtual void Construct() override;
-	static AnimatedMesh* ReadColladaFile(const char* daeFile);
 
 private:
 	uint32 m_VAO;
@@ -78,20 +61,17 @@ private:
 	const void* m_pScene;
 	const void* m_pRootNode;
 	const void* m_pImporter;
-
 	glm::mat4 m_GlobalInverseTransform;
-
-	VertexMeshData* m_Vertices;
+	BaseVertex* m_pVertices;
 	uint32 m_NumVerts;
-
-	VertexBoneData* m_Bones;
+	VertexBoneData* m_pBones;
 	uint32 m_NumBones;
-
-	uint32* m_Indices;
+	uint32* m_pIndices;
 	uint32 m_NumIndices;
-
-
 	mutable std::map<std::string, uint32> m_BoneMap;
 	std::vector<MeshEntry> m_Entries;
 	mutable std::vector<glm::mat4> m_BoneOffsets;
+	
+private:
+	static AnimatedMesh* ReadColladaFile(const char* daeFile);
 };

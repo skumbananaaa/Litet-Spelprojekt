@@ -1,28 +1,22 @@
 #include <EnginePch.h>
 #include <Graphics/Geometry/AnimatedMesh.h>
 #include <Graphics/Renderers/GLContext.h>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include <Graphics/Geometry/AssimpHelper.inl>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <GLM/gtx/string_cast.hpp>
-
-AnimatedMesh::AnimatedMesh(VertexMeshData* vertices,
-	uint32* indices,
-	VertexBoneData* bones, 
-	uint32 numVertices,
-	uint32 numIndices,
-	uint32 numBones,
-	glm::mat4& globalTransform,
-	std::map<std::string, uint32>& boneMap,
-	std::vector<glm::mat4>& boneOffsets,
-	const void* rootNode, 
-	const void* scene, 
-	const void* importer, 
-	std::vector<MeshEntry>& entries) noexcept
+AnimatedMesh::AnimatedMesh(
+		BaseVertex* pVertices,
+		uint32* pIndices,
+		VertexBoneData* pBones,
+		uint32 numVertices,
+		uint32 numIndices,
+		uint32 numBones,
+		glm::mat4& globalTransform,
+		std::map<std::string, uint32>& boneMap,
+		std::vector<glm::mat4>& boneOffsets,
+		const void* pRootNode,
+		const void* pScene,
+		const void* pImporter,
+		std::vector<MeshEntry>& entries) noexcept
 	: m_VAO(0),
 	m_VBO(0),
 	m_IBO(0),
@@ -31,33 +25,30 @@ AnimatedMesh::AnimatedMesh(VertexMeshData* vertices,
 	m_NumVerts(0),
 	m_NumIndices(0),
 	m_GlobalInverseTransform(0.0f),
-	m_Vertices(nullptr),
-	m_Bones(nullptr),
-	m_Indices(nullptr),
+	m_pVertices(nullptr),
+	m_pBones(nullptr),
+	m_pIndices(nullptr),
 	m_pRootNode(nullptr),
 	m_pScene(nullptr),
 	m_NumBones(0)
 {
-	m_Vertices = new VertexMeshData[numVertices];
-	memcpy(m_Vertices, vertices, sizeof(VertexMeshData) * numVertices);
+	//Copy data for use in construct
+	m_pVertices = new BaseVertex[numVertices];
+	memcpy(m_pVertices, pVertices, sizeof(BaseVertex) * numVertices);
+	m_pIndices = new uint32[numIndices];
+	memcpy(m_pIndices, pIndices, sizeof(uint32) * numIndices);
+	m_pBones = new VertexBoneData[numVertices];
+	memcpy(m_pBones, pBones, sizeof(VertexBoneData) * numVertices);
 
-	m_Indices = new uint32[numIndices];
-	memcpy(m_Indices, indices, sizeof(uint32) * numIndices);
-
-	m_Bones = new VertexBoneData[numVertices];
-	memcpy(m_Bones, bones, sizeof(VertexBoneData) * numVertices);
-	DeleteArrSafe(bones);
-
-	m_pImporter = importer;
-
+	m_pImporter = pImporter;
 	m_NumVerts = numVertices;
 	m_NumIndices = numIndices;
 	m_NumBones = numBones;
 	m_GlobalInverseTransform = globalTransform;
 	m_BoneOffsets = boneOffsets;
 	m_BoneMap = boneMap;
-	m_pRootNode = rootNode;
-	m_pScene = scene;
+	m_pRootNode = pRootNode;
+	m_pScene = pScene;
 	m_Entries = entries;
 }
 
@@ -67,25 +58,25 @@ AnimatedMesh::~AnimatedMesh()
 	DeleteSafe(pImporter);
 }
 
-AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
+AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 {
 	Assimp::Importer* importer = new Assimp::Importer();
-	const aiScene* pScene;
-	const aiNode* pRootNode;
+	const aiScene* pScene = nullptr;
+	const aiNode* pRootNode = nullptr;
+	VertexBoneData* pBones = nullptr;
 	uint32 nrOfVerts = 0;
 	uint32 nrOfbones = 0;
 	uint32 nrOfIndices = 0;
-	//VertexMeshData* pVerts = nullptr;
-	VertexBoneData* pBones = nullptr;
-	//uint32* pIndices = nullptr;
 	glm::mat4 globalTransform(0.0);
 	std::map<std::string, uint32> boneMap;
 	std::vector<glm::mat4> boneOffsets;
 	std::vector<MeshEntry> entries;
 
-
-	pScene = importer->ReadFile(daeFile, aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType | aiProcess_ConvertToLeftHanded);
-	pRootNode = pScene->mRootNode;
+#if !defined(_DEBUG)
+	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_DropNormals | aiProcess_GenNormals | aiProcess_ImproveCacheLocality | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
+#else
+	pScene = importer->ReadFile(pFilename, aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights | aiProcess_DropNormals | aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded);
+#endif
 
 	if (!pScene)
 	{
@@ -94,6 +85,8 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 	}
 	else
 	{
+		pRootNode = pScene->mRootNode;
+		
 		if (!pScene->HasMeshes())
 		{
 			std::cout << "Error: Scene does not contain any meshes." << std::endl;
@@ -143,21 +136,18 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 			paiMeshes.push_back(pScene->mMeshes[i]);
 		}
 
-		std::vector<VertexMeshData> verts;
-		std::vector<uint32> indices;
-
-
 		//Extracting all the needed data from the mesh/meshes
+		std::vector<BaseVertex> verts;
+		std::vector<uint32> indices;
 		pBones = new VertexBoneData[nrOfVerts];
 		for (uint32 i = 0; i < entries.size(); i++)
 		{
 			for (uint32 j = 0; j < paiMeshes.at(i)->mNumVertices; j++)
 			{
-				VertexMeshData data = {};
-				data.position = glm::vec3(paiMeshes.at(i)->mVertices[j].x, paiMeshes.at(i)->mVertices[j].y, paiMeshes.at(i)->mVertices[j].z);
-				data.normal = (paiMeshes.at(i)->HasNormals()) ? glm::vec3(paiMeshes.at(i)->mNormals[j].x, paiMeshes.at(i)->mNormals[j].y, paiMeshes.at(i)->mNormals[j].z) : glm::vec3();
-				data.tangent = (paiMeshes.at(i)->HasTangentsAndBitangents()) ? glm::vec3(paiMeshes.at(i)->mTangents[j].x, paiMeshes.at(i)->mTangents[j].y, paiMeshes.at(i)->mTangents[j].z) : glm::vec3();
-				data.texCoords = (paiMeshes.at(i)->HasTextureCoords(0)) ? glm::vec2(paiMeshes.at(i)->mTextureCoords[0][j].x, paiMeshes.at(i)->mTextureCoords[0][j].y) : glm::vec2();
+				BaseVertex data = {};
+				data.Position = glm::vec3(paiMeshes.at(i)->mVertices[j].x, paiMeshes.at(i)->mVertices[j].y, paiMeshes.at(i)->mVertices[j].z);
+				data.Normal = (paiMeshes.at(i)->HasNormals()) ? glm::vec3(paiMeshes.at(i)->mNormals[j].x, paiMeshes.at(i)->mNormals[j].y, paiMeshes.at(i)->mNormals[j].z) : glm::vec3();
+				data.TexCoord = (paiMeshes.at(i)->HasTextureCoords(0)) ? glm::vec2(paiMeshes.at(i)->mTextureCoords[0][j].x, paiMeshes.at(i)->mTextureCoords[0][j].y) : glm::vec2();
 
 				verts.push_back(data);
 			}
@@ -214,7 +204,10 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 			//////load bones and send them to VAO
 		}
 
-		return new AnimatedMesh(verts.data(), indices.data(), pBones, nrOfVerts, nrOfIndices, nrOfbones, globalTransform, boneMap, boneOffsets, pRootNode, pScene, importer, entries);
+		AnimatedMesh* pResult = new AnimatedMesh(verts.data(), indices.data(), pBones, nrOfVerts, nrOfIndices, nrOfbones, globalTransform, boneMap, boneOffsets, pRootNode, pScene, importer, entries);
+		DeleteArrSafe(pBones);
+
+		return pResult;
 	}
 }
 
@@ -229,55 +222,37 @@ void AnimatedMesh::Construct()
 	GL_CALL(glBindVertexArray(m_VAO));
 
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_NumVerts * sizeof(VertexMeshData), m_Vertices, GL_STATIC_DRAW));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_NumVerts * sizeof(BaseVertex), m_pVertices, GL_STATIC_DRAW));
 
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO));
-	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_NumIndices * sizeof(uint32), m_Indices, GL_STATIC_DRAW));
+	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_NumIndices * sizeof(uint32), m_pIndices, GL_STATIC_DRAW));
 
 	//Position
-	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexMeshData), (void*)0));
+	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)0));
 	GL_CALL(glEnableVertexAttribArray(0));
 	//Normal
-	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(VertexMeshData), (void*)(3 * sizeof(float))));
+	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(BaseVertex), (void*)(3 * sizeof(float))));
 	GL_CALL(glEnableVertexAttribArray(1));
-	//Tangent
-	GL_CALL(glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(VertexMeshData), (void*)(6 * sizeof(float))));
-	GL_CALL(glEnableVertexAttribArray(2));
 	//TexCoords
-	GL_CALL(glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(VertexMeshData), (void*)(9 * sizeof(float))));
-	GL_CALL(glEnableVertexAttribArray(3));
-	/*GL_CALL(glBindVertexArray(0));
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));*/
+	GL_CALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)(6 * sizeof(float))));
+	GL_CALL(glEnableVertexAttribArray(2));
 
-	//Bone data that will be sent to shader for calculations. 
+	//Bone data that will be sent to shader for calculations.
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_BonesBuffer));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_NumVerts * sizeof(VertexBoneData), m_Bones, GL_STATIC_DRAW));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_NumVerts * sizeof(VertexBoneData), m_pBones, GL_STATIC_DRAW));
 
 	//BoneID
-	GL_CALL(glVertexAttribIPointer(4, 4, GL_INT, sizeof(VertexBoneData), (void*)0));
-	GL_CALL(glEnableVertexAttribArray(4));
+	GL_CALL(glVertexAttribIPointer(3, 4, GL_INT, sizeof(VertexBoneData), (void*)0));
+	GL_CALL(glEnableVertexAttribArray(3));
 	//BoneWeight
-	GL_CALL(glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (void*)16));
-	GL_CALL(glEnableVertexAttribArray(5));
+	GL_CALL(glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (void*)16));
+	GL_CALL(glEnableVertexAttribArray(4));
 
 	GL_CALL(glBindVertexArray(0));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
-	DeleteArrSafe(m_Vertices);
-	DeleteArrSafe(m_Indices);
-	DeleteArrSafe(m_Bones);
-}
-
-void VertexBoneData::AddBoneData(uint32 BoneID, float Weight)
-{
-	for (uint32 i = 0; i < MAX_NUM_BONES_PER_VERT; i++)
-	{
-		if (BoneWeights[i] == 0.0f)
-		{
-			IDs[i] = BoneID;
-			BoneWeights[i] = Weight;
-			return;
-		}
-	}
+	DeleteArrSafe(m_pVertices);
+	DeleteArrSafe(m_pIndices);
+	DeleteArrSafe(m_pBones);
 }

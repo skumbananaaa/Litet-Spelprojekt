@@ -34,8 +34,10 @@ Game::Game() noexcept
 	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
 	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
 
+
 	GetGUIManager().Add(m_pTextViewFile);
 	GetGUIManager().Add(m_pLoadingBar);
+
 }
 
 Game::~Game()
@@ -78,6 +80,7 @@ void Game::OnResourceLoading(const std::string& file, float percentage)
 {
 	m_pTextViewFile->SetText("Loading: " + file);
 	m_pLoadingBar->SetPercentage(percentage);
+
 }
 
 void Game::OnResourcesLoaded()
@@ -583,7 +586,7 @@ void Game::OnResourcesLoaded()
 
 void Game::OnUpdateLoading(float dtS)
 {
-	
+
 }
 
 void Game::OnRenderLoading(float dtS)
@@ -757,17 +760,15 @@ void Game::OnUpdate(float dtS)
 	const std::vector<GameObject*>& drawables = m_Scenes[m_SceneId]->GetAnimatedDrawables();
 	for (uint32 i = 0; i < roomLights.size(); i++)
 	{
-		for (uint32 j = 0; j < drawables.size(); j++)
+	
+		m_RoomLightsTimers[i] += dtS;
+		if (m_RoomLightsTimers[i] >= 5.0f )
 		{
-			m_RoomLightsTimers[i] += dtS;
-			if (m_RoomLightsTimers[i] >= 15.0f || !m_pWorld->GetRoom(drawables[j]->GetRoom())->IsActive())
-			{
-				roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-				m_RoomLightsTimers[i] = 0.0f;
-				m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
-				m_ActiveRooms[i] = 1;
-				ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
-			}
+			roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+			m_RoomLightsTimers[i] = 0.0f;
+			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+			m_ActiveRooms[i] = 1;
+			ScenarioManager::OnVisibilityChange(m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
 		}
 	}
 

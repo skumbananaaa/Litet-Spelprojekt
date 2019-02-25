@@ -44,7 +44,7 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 	}
 
 	static int32 buttonHeight = 35;
-	static glm::vec4 buttonColor = glm::vec4(0.25F, 0.25F, 0.25F, 1.0F);
+	static glm::vec4 buttonColor = glm::vec4(GUIContext::COLOR_PANEL_MIDGROUND);
 	static glm::vec2 textOffset = glm::vec2(10.0, 0.0);
 
 	m_Fires = new PanelExpandable(x, y + 100, width, 50, fires.size() * buttonHeight, "Rökdykare");
@@ -202,7 +202,7 @@ ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& c
 {
 	ProgressButton* button = new ProgressButton(0, y, m_Strengths->GetWidth(), height, text);
 	button->SetBackgroundColor(color);
-	button->SetProgressColor(glm::vec4(0.698, 0.961, 1, 1.0F));
+	button->SetProgressColor(GUIContext::COLOR_SELECTED);
 	button->SetTextCentered(false);
 	button->SetTextOffset(textOffset);
 	button->SetUserData(reinterpret_cast<void*>(shipnumber));

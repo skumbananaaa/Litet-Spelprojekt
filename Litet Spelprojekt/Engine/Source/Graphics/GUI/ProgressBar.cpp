@@ -3,7 +3,7 @@
 
 ProgressBar::ProgressBar(float x, float y, float width, float height) : GUIObject(x, y, width, height),
 	m_Percentage(0),
-	m_ProgressColor(0.553F, 0.824F, 0.541F, 1.0F)
+	m_ProgressColor(0, 0.776, 0.878, 1.0F)
 {
 	SetBackgroundColor(glm::vec4(0.408F, 0.408F, 0.408F, 1.0F));
 }

@@ -5,7 +5,7 @@ ProgressButton::ProgressButton(float x, float y, float width, float height, cons
 	m_Percentage(0),
 	m_TimeOfAnimation(0.0F),
 	m_Timer(0.0F),
-	m_ProgressColor(0.553F, 0.824F, 0.541F, 1.0F)
+	m_ProgressColor(0, 0.776, 0.878, 1.0F)
 {
 	SetTextBuffered(true);
 }

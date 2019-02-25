@@ -31,6 +31,6 @@ private:
 
 private:
 	mutable SkeletonBuffer m_SkeletonBuffer;
-	mutable float m_AnimationTime;
-
+	mutable float m_AnimationTimeSeconds;
+	mutable float m_AnimationTimeTicks;
 };

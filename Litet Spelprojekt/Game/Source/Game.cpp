@@ -339,8 +339,8 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
 		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
 		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
-		pGameObject->SetScale(glm::vec3(0.2f));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
@@ -546,6 +546,36 @@ void Game::OnResourcesLoaded()
 		PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 		m_Scenes[1]->AddPlanarReflector(pReflector);
 	}
+
+	ParticleEmitter* pEmitter = new ParticleEmitter();
+	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(7.0f);
+	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
+	pEmitter->SetSpeed(0.1f, 0.4f);
+	pEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
+	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -4.0f));
+	pEmitter->SetParticlesPerSeconds(5);
+	pEmitter->UpdateTransform();
+	m_Scenes[1]->AddGameObject(pEmitter);
+
+	pEmitter = new ParticleEmitter();
+	pEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -6.0f));
+	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(1.2f);
+	pEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
+	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
+	pEmitter->SetSpeed(0.7f, 2.0f);
+	pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+	pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pEmitter->SetParticlesPerSeconds(5);
+	pEmitter->UpdateTransform();
+	m_Scenes[1]->AddGameObject(pEmitter);
+
 	//((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
 	m_SceneId = 0;

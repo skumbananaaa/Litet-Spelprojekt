@@ -24,6 +24,7 @@ uint32 SHADER::EQUIREC_TO_CUBEMAP = 0;
 uint32 SHADER::PARTICLES = 0;
 uint32 SHADER::ANIMATION = 0;
 uint32 SHADER::ANIMATION_DEPTH_PRE_PASS = 0;
+uint32 SHADER::MESH_PARTICLES = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -58,6 +59,7 @@ void SHADER::RegisterResources()
 	PARTICLES				= ResourceHandler::RegisterShader("forwardParticles.glsl", "forwardParticles.glsl");
 	ANIMATION				= ResourceHandler::RegisterShader("forwardAnimation.glsl", "forwardAnimation.glsl");
 	ANIMATION_DEPTH_PRE_PASS = ResourceHandler::RegisterShader("animatedDepthPrePass.glsl", "animatedDepthPrePass.glsl");
+	MESH_PARTICLES			= ResourceHandler::RegisterShader("forwardMeshParticles.glsl", "forwardMeshParticles.glsl");
 #endif
 
 	{

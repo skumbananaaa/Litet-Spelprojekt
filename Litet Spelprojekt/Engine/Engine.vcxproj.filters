@@ -60,7 +60,6 @@
     <ClCompile Include="Source\IO\R_SOUND.cpp" />
     <ClCompile Include="Source\IO\R_MUSIC.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
-    <ClCompile Include="Source\Graphics\Geometry\Joint.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
@@ -84,6 +83,8 @@
     <ClCompile Include="Source\World\LightManager.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
+    <ClCompile Include="Source\Graphics\Particles\MeshEmitter.cpp" />
+    <ClCompile Include="Source\Graphics\Geometry\MeshParticle.cpp" />
     <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
@@ -160,7 +161,6 @@
     <ClInclude Include="Include\Graphics\GUI\ProgressBar.h" />
     <ClInclude Include="Include\IO\SHADER.h" />
     <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
-    <ClInclude Include="Include\Graphics\Geometry\Joint.h" />
     <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
     <ClInclude Include="Include\Graphics\Materials\MaterialBase.h" />
     <ClInclude Include="Include\Graphics\Materials\WallMaterial.h" />
@@ -190,6 +190,8 @@
     <ClInclude Include="Include\Graphics\Materials\AnimatedSkeleton.h" />
     <ClInclude Include="Include\World\GameObjectDoor.h" />
     <ClInclude Include="Include\System\CPUProfiler.h" />
+    <ClInclude Include="Include\Graphics\Particles\MeshEmitter.h" />
+    <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

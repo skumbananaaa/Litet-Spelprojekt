@@ -2,6 +2,7 @@
 #include <System/Application.h>
 #include <Graphics/Renderers/ForwardRenderer.h>
 #include <Graphics/Renderers/GLContext.h>
+#include <Graphics/Geometry/MeshParticle.h>
 
 ForwardRenderer::ForwardRenderer()
 	: m_pLightBuffer(nullptr),
@@ -176,9 +177,9 @@ void ForwardRenderer::Create() noexcept
 	m_pAnimatedDepthPrePassProgram = ResourceHandler::GetShader(SHADER::ANIMATION_DEPTH_PRE_PASS);
 	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
 	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
+	m_pMeshParticleProgram = ResourceHandler::GetShader(SHADER::MESH_PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
-
 	//Camera
 	{
 		CameraBuffer buff = {};
@@ -291,7 +292,7 @@ void ForwardRenderer::CreateBatches(const Scene& scene, const World* const pWorl
 
 				InstanceData instance = {};
 				instance.Model = drawables[i]->GetTransform();
-				instance.InverseModel = drawables[i]->GetInverseTransform();
+				//instance.InverseModel = drawables[i]->GetInverseTransform();
 
 				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
 				{
@@ -635,6 +636,22 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	context.Enable(CULL_FACE);
 	context.Disable(BLEND);
 	context.SetBlendFunc(BLEND_FUNC_SRC_ALPHA, BLEND_FUNC_ONE_MINUS_SRC_ALPHA);
+	context.SetDepthMask(true);
+	context.SetDepthFunc(FUNC_LESS);
+
+	context.SetProgram(m_pMeshParticleProgram);
+
+	const std::vector<MeshEmitter*>& meshEmitters= scene.GetMeshEmitters();
+	for (size_t i = 0; i < meshEmitters.size(); i++)
+	{
+		const MeshParticle& mesh = (*meshEmitters[i]->GetMesh());
+
+		mesh.SetInstances(meshEmitters[i]->GetParticleInstances(), meshEmitters[i]->GetNumParticles());
+		context.DrawMeshParticle(mesh);
+	}
+
+	context.SetDepthMask(false);
+	context.SetDepthFunc(FUNC_LESS_EQUAL);
 }
 
 void ForwardRenderer::SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept

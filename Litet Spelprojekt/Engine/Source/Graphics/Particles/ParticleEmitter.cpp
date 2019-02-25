@@ -4,10 +4,7 @@
 #include <GLMHelper.inl>
 
 ParticleEmitter::ParticleEmitter()
-	: 
-	m_pTexture(nullptr),
-	m_pLivingParticles(nullptr),
-	m_pSortedParticles(nullptr),
+	: m_pTexture(nullptr),
 	m_BlendMode(PARTICLE_NORMAL),
 	m_BeginScale(1.0f),
 	m_EndScale(1.0f),
@@ -21,16 +18,15 @@ ParticleEmitter::ParticleEmitter()
 	m_ParticlesPerSecond(1),
 	m_Direction(UP_VECTOR),
 	m_ColorNodes(),
+	m_LivingParticles(),
+	m_SortedParticles(),
 	m_Particles(),
 	m_ParticleInstances()
 {
-	m_pLivingParticles = new uint32[MAX_PARTICLES];
-	m_pSortedParticles = new uint32[MAX_PARTICLES];
-
 	for (uint32 i = 0; i < MAX_PARTICLES; i++)
 	{
-		m_pLivingParticles[i] = i;
-		m_pSortedParticles[i] = i;
+		m_LivingParticles[i] = i;
+		m_SortedParticles[i] = i;
 
 		m_Particles[i].Position = glm::vec3(0.0f);
 		m_Particles[i].Direction = UP_VECTOR;
@@ -49,8 +45,6 @@ ParticleEmitter::ParticleEmitter()
 
 ParticleEmitter::~ParticleEmitter()
 {
-	DeleteArrSafe(m_pLivingParticles);
-	DeleteArrSafe(m_pSortedParticles);
 }
 
 void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
@@ -111,7 +105,7 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 		glm::vec2 diffScale = m_EndScale - m_BeginScale;
 		particle.Scale = m_BeginScale + (diffScale * particle.LifePercentage);
 
-		InsertSortedParticle(m_pLivingParticles[i]);
+		InsertSortedParticle(m_LivingParticles[i]);
 	}
 
 	//Fill instances
@@ -261,12 +255,12 @@ const ParticleInstance* ParticleEmitter::GetParticleInstances() const noexcept
 
 ParticleData& ParticleEmitter::GetLivingParticle(uint32 index) noexcept
 {
-	return m_Particles[m_pLivingParticles[index]];
+	return m_Particles[m_LivingParticles[index]];
 }
 
 ParticleData& ParticleEmitter::GetSortedParticle(uint32 index) noexcept
 {
-	return m_Particles[m_pSortedParticles[index]];
+	return m_Particles[m_SortedParticles[index]];
 }
 
 void ParticleEmitter::InsertSortedParticle(uint32 id) noexcept
@@ -279,12 +273,12 @@ void ParticleEmitter::InsertSortedParticle(uint32 id) noexcept
 		if (particle > GetSortedParticle(i))
 		{
 			index = i;
-			memcpy(&m_pSortedParticles[i + 1], &m_pSortedParticles[i], sizeof(uint32) * (m_NumSortedParticles - i));
+			memcpy(&m_SortedParticles[i + 1], &m_SortedParticles[i], sizeof(uint32) * (m_NumSortedParticles - i));
 			break;
 		}
 	}
 
-	m_pSortedParticles[index] = id;
+	m_SortedParticles[index] = id;
 	m_NumSortedParticles++;
 }
 
@@ -323,9 +317,9 @@ void ParticleEmitter::KillParticle(uint32 index)
 		return;
 	}
 
-	uint32 temp = m_pLivingParticles[index];
-	m_pLivingParticles[index] = m_pLivingParticles[m_NumParticles - 1];
-	m_pLivingParticles[m_NumParticles - 1] = temp;
+	uint32 temp = m_LivingParticles[index];
+	m_LivingParticles[index] = m_LivingParticles[m_NumParticles - 1];
+	m_LivingParticles[m_NumParticles - 1] = temp;
 
 	m_NumParticles--;
 }

@@ -46,8 +46,10 @@ public:
 	uint32 GetRoom() const noexcept;
 	bool IsHidden() const noexcept;
 
+	bool IsDirty() const noexcept;
 	bool IsReflectable() const noexcept;
 	bool IsVisible() const noexcept;
+	
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
 	bool HasMesh() const noexcept;
@@ -174,6 +176,11 @@ inline const glm::mat4& GameObject::GetTransform() const noexcept
 inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 {
 	return m_InverseTransform;
+}
+
+inline bool GameObject::IsDirty() const noexcept
+{
+	return m_IsDirty;
 }
 
 inline bool GameObject::IsReflectable() const noexcept

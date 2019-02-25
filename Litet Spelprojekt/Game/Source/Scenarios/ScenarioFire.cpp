@@ -118,7 +118,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
 
 		tileData.SmokeAmount += m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z].Temp * 2.0f;
-		tileData.SmokeAmount = std::min(tileData.SmokeAmount, 400.0f);
+		tileData.SmokeAmount = std::min(tileData.SmokeAmount, 1000.0f);
 
 		if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
 		{
@@ -129,8 +129,6 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 	}
 
 	uint32 max = m_Smoke.size();
-	if (max > 1)
-		bool hej = true;
 	float rateOfSpread = 1.0f;
 	for (uint32 j = 0; j < max; j++)
 	{
@@ -140,9 +138,8 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		float spread = data.SmokeAmount - data.SmokeLimit;
 		spread /= 4;
 		spread *= dtS * rateOfSpread;
-		dtS *= rateOfSpread;
 		uint32 rest = 0;
-		if (spread > 0.0f)
+		if (spread > 0.0001f)
 		{
 			glm::ivec3 smokeOriginPos = glm::ivec3(smoke) /*+ glm::ivec3(0.0, (smoke.y + 1) % 2, 0.0f)*/;
 
@@ -151,6 +148,10 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), smokeOriginPos, spread, scene);
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), smokeOriginPos, spread, scene);
 			data.SmokeAmount -= spread * rest;
+			if (data.SmokeAmount < data.SmokeLimit)
+			{
+				bool hej = false;
+			}
 		}
 	}
 #if defined(PRINT_CPU_DEBUG_DATA)
@@ -213,21 +214,27 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3& offset, const glm::iv
 	bool res = false;
 	TileData& tileData = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
 	TileData& lowerTileData = m_pWorld->GetLevel(origin.y - 1)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
-	bool filled = tileData.SmokeAmount >= tileData.SmokeLimit;
-	
-	//HasDoor and hasStairs never set?
-	if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || lowerTileData.HasDoor() || lowerTileData.HasStairs)
+	if (tileData.SmokeAmount * dtS < amount * 4)
 	{
-		tileData.SmokeAmount += amount;
-		if (!filled && tileData.SmokeAmount >= tileData.SmokeLimit)
+		bool filled = tileData.SmokeAmount >= tileData.SmokeLimit;
+		
+		//HasDoor and hasStairs never set?
+		if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z] || lowerTileData.HasDoor() || lowerTileData.HasStairs)
 		{
-			m_Smoke.push_back(origin + offset);
+			tileData.SmokeAmount += amount;
+			if (!filled && tileData.SmokeAmount >= tileData.SmokeLimit)
+			{
+				m_Smoke.push_back(origin + offset);
 
-			SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f));
+				SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f));
+			}
+
+			res = true;
 		}
-
-		res = true;
 	}
-
+	else
+	{
+		res = false;
+	}
 	return res;
 }

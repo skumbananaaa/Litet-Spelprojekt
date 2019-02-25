@@ -11,6 +11,7 @@ Texture2D* GUIObject::s_pDefaultTexture = nullptr;
 
 GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_Position(x, y),
+	m_Margin(0, 0, 0, 0),
 	m_pFramebuffer(nullptr),
 	m_pBackgroundTexture(nullptr),
 	m_pParent(nullptr),
@@ -184,6 +185,26 @@ float GUIObject::GetHeight() const noexcept
 	return m_pFramebuffer->GetHeight();
 }
 
+float GUIObject::GetActualWidth() const noexcept
+{
+	return GetWidth() + m_Margin.x + m_Margin.z;
+}
+
+float GUIObject::GetActualHeight() const noexcept
+{
+	return GetHeight() + m_Margin.y + m_Margin.w;
+}
+
+float GUIObject::GetActualX() const noexcept
+{
+	return GetX() - m_Margin.x;
+}
+
+float GUIObject::GetActualY() const noexcept
+{
+	return GetY() - m_Margin.w;
+}
+
 float GUIObject::GetX() const noexcept
 {
 	return m_Position.x;
@@ -214,6 +235,11 @@ float GUIObject::GetYInWorld(const GUIObject* child) const noexcept
 	return value;
 }
 
+const glm::vec4& GUIObject::GetMargin() const noexcept
+{
+	return m_Margin;
+}
+
 void GUIObject::SetSize(float width, float height) noexcept
 {
 	if (GetWidth() != width || GetHeight() != height)
@@ -229,6 +255,21 @@ void GUIObject::SetPosition(float x, float y) noexcept
 	{
 		m_Position.x = x;
 		m_Position.y = y;
+		if (HasParent())
+		{
+			GetParent()->RequestRepaint();
+		}
+	}
+}
+
+void GUIObject::SetMargin(float left, float top, float right, float bottom) noexcept
+{
+	if (m_Margin.x != left || m_Margin.y != top || m_Margin.z != right || m_Margin.w != bottom)
+	{
+		m_Margin.x = left;
+		m_Margin.y = top;
+		m_Margin.z = right;
+		m_Margin.w = bottom;
 		if (HasParent())
 		{
 			GetParent()->RequestRepaint();

@@ -1,8 +1,7 @@
 #pragma once
-#include <EnginePch.h>
 #include <World/Scenarios/IScenario.h>
 
-class API ScenarioManager
+class ScenarioManager
 {
 public:
 	static uint32 RegisterScenario(IScenario* scenario) noexcept;

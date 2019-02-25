@@ -20,7 +20,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(false, 1920, 1080, "", true),
+	: Application(false, 1600, 900, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -99,8 +99,11 @@ void Game::OnResourcesLoaded()
 	m_PanelLog->Add(m_pTextViewLog);
 	m_PanelLog->Add(m_ListScrollableLog);
 
+	m_pUIScenario = new UIScenario((GetWindow().GetWidth() - 600) / 2, (GetWindow().GetHeight() - 450) / 2, 600, 450);
+
 	GetGUIManager().Add(m_pUICrewMember);
 	GetGUIManager().Add(m_PanelLog);
+	GetGUIManager().Add(m_pUIScenario);
 
 	//Set game TextViews
 	{
@@ -721,25 +724,38 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 
 void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
-	if (!cartesianCamera)
+	bool clickedOnGUI = false;
+	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		if (Input::IsKeyDown(KEY_LEFT_ALT))
+		if (pObject->OwnsPoint(position))
 		{
-			if (offset.y > 0.0f)
+			clickedOnGUI = true;
+			break;
+		}
+	}
+
+	if (!clickedOnGUI)
+	{
+		if (!cartesianCamera)
+		{
+			if (Input::IsKeyDown(KEY_LEFT_ALT))
 			{
-				m_Scenes[m_SceneId]->GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
+				if (offset.y > 0.0f)
+				{
+					m_Scenes[m_SceneId]->GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
+				}
+				else
+				{
+					m_Scenes[m_SceneId]->GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
+				}
+
+				SetClipPlanes(m_SceneId);
 			}
 			else
 			{
-				m_Scenes[m_SceneId]->GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
+				const float cameraZoomSensitivity = 0.1f;
+				m_Scenes[m_SceneId]->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
 			}
-
-			SetClipPlanes(m_SceneId);
-		}
-		else
-		{
-			const float cameraZoomSensitivity = 0.1f;
-			m_Scenes[m_SceneId]->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
 		}
 	}
 }
@@ -1056,6 +1072,11 @@ Crewmember* Game::GetCrewmember(uint32 shipNumber)
 UICrewMember* Game::GetUICrewMember() noexcept
 {
 	return m_pUICrewMember;
+}
+
+UIScenario* Game::GetUIScenario() noexcept
+{
+	return m_pUIScenario;
 }
 
 Scene* Game::GetScene()

@@ -3,6 +3,7 @@
 #include <World/LightManager.h>
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/Scene.h>
+#include <World/Logger.h>
 
 FireAlarm::FireAlarm(int32 source) : GameObject(),
 	m_FireDetected(false),
@@ -55,6 +56,8 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 
 void FireAlarm::OnSmokeDetected() noexcept
 {
+	Logger::LogEvent("Smoke Detected!", true);
+
 	glm::mat4 transformObject(1.0f);
 	const glm::vec4& rotation = GetRotation();
 	transformObject = glm::rotate(transformObject, rotation.w, glm::vec3(rotation.x, rotation.y, rotation.z));

@@ -21,14 +21,14 @@ void ListScrollable::Add(GUIObject* child) noexcept
 
 	for (int i = GetChildrenToAdd().size() - 1; i >= 0; i--)
 	{
-		y -= GetChildrenToAdd()[i]->GetHeight();
-		GetChildrenToAdd()[i]->SetPosition(0, y);
+		y -= GetChildrenToAdd()[i]->GetActualHeight();
+		GetChildrenToAdd()[i]->SetPosition(GetChildrenToAdd()[i]->GetMargin().x, y);
 	}
 
 	for (int i = GetChildren().size() - 1; i >= 0; i--)
 	{
-		y -= GetChildren()[i]->GetHeight();
-		GetChildren()[i]->SetPosition(0, y);
+		y -= GetChildren()[i]->GetActualHeight();
+		GetChildren()[i]->SetPosition(GetChildren()[i]->GetMargin().x, y);
 	}
 }
 
@@ -37,15 +37,15 @@ int32 ListScrollable::GetHeightOfChildren() noexcept
 	int height = 0;
 	for (GUIObject* object : GetChildren())
 	{
-		height += object->GetHeight();
+		height += object->GetActualHeight();
 	}
 	for (GUIObject* object : GetChildrenToAdd())
 	{
-		height += object->GetHeight();
+		height += object->GetActualHeight();
 	}
 	for (GUIObject* object : GetChildrenToRemove())
 	{
-		height -= object->GetHeight();
+		height -= object->GetActualHeight();
 	}
 	return height;
 }

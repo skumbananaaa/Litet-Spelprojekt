@@ -23,6 +23,7 @@
 #include <Graphics/GUI/ProgressBar.h>
 #include "GUI/UICrew.h"
 #include "GUI/UICrewMember.h"
+#include "GUI/UIScenario.h"
 #include <Graphics/GUI/ListScrollable.h>
 
 #include <Graphics/Materials/WallMaterial.h>
@@ -30,7 +31,7 @@
 #include <Graphics/Materials/WaterIndoorMaterial.h>
 
 #include <World/Logger.h>
-#include <World/Scenarios/ScenarioManager.h>
+#include "../Include/Scenarios/ScenarioManager.h"
 #include "../Include/Scenarios/ScenarioWater.h"
 #include "../Include/Scenarios/ScenarioFire.h"
 
@@ -73,6 +74,7 @@ public:
 
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	UICrewMember* GetUICrewMember() noexcept;
+	UIScenario* GetUIScenario() noexcept;
 
 	Scene* GetScene();
 	static Game* GetGame();
@@ -95,6 +97,8 @@ private:
 	ListScrollable* m_ListScrollableLog;
 	TextView* m_pTextViewLog;
 	Panel* m_PanelLog;
+
+	UIScenario* m_pUIScenario;
 	
 	Crew m_Crew;
 

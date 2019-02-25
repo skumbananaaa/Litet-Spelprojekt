@@ -108,7 +108,6 @@
     <ClInclude Include="Include\World\Scenarios\IScenario.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\World\Room.h" />
-    <ClInclude Include="Include\World\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\World\Tile.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\World.h" />
@@ -139,6 +138,7 @@
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
+    <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
     <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
@@ -217,7 +217,6 @@
     <ClCompile Include="Source\World\LightManager.cpp" />
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
-    <ClCompile Include="Source\World\Scenarios\ScenarioManager.cpp" />
     <ClCompile Include="Source\World\Tile.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\World.cpp" />

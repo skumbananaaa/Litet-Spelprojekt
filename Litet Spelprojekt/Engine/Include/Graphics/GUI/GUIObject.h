@@ -29,11 +29,17 @@ public:
 	virtual float GetHeight() const noexcept;
 	float GetX() const noexcept;
 	float GetY() const noexcept;
+	float GetActualWidth() const noexcept;
+	float GetActualHeight() const noexcept;
+	float GetActualX() const noexcept;
+	float GetActualY() const noexcept;
 	virtual float GetXInWorld(const GUIObject* child = nullptr) const noexcept;
 	virtual float GetYInWorld(const GUIObject* child = nullptr) const noexcept;
+	const glm::vec4& GetMargin() const noexcept;
 
 	virtual void SetSize(float width, float height) noexcept;
 	virtual void SetPosition(float x, float y) noexcept;
+	virtual void SetMargin(float left, float top, float right, float bottom) noexcept;
 
 	virtual void SetVisible(bool visible) noexcept;
 	virtual bool IsVisible() noexcept;
@@ -152,6 +158,7 @@ private:
 	std::vector<IExternalUIRenderer*> m_ExternalRenderers;
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_Position;
+	glm::vec4 m_Margin;
 	bool m_IsDirty;
 	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;

@@ -14,7 +14,7 @@ public:
 class API SelectionHandler : public ISelectableListener
 {
 public:
-	SelectionHandler(bool atLeastOne = true);
+	SelectionHandler(bool atLeastOne = true, bool multipleSelections = false);
 	~SelectionHandler();
 
 	void Release();
@@ -24,10 +24,23 @@ public:
 	bool AddSelectionListener(ISelectionListener* listener);
 	void RemoveSelectionListener(ISelectionListener* listener);
 
-	ISelectable* GetSelected();
+	void GetSelection(std::vector<ISelectable*>& selection);
 
 	virtual void OnSelected(ISelectable* selection) override;
 	virtual void OnDeselected(ISelectable* selection) override {};
+
+	template<class T>
+	static bool Contains(const std::vector<T*>& list, const T* object)
+	{
+		for (T* currentObject : list)
+		{
+			if (currentObject == object)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 private:
 	virtual void TriggerOnSelected(ISelectable* selection) const;
@@ -37,4 +50,5 @@ private:
 	std::vector<ISelectable*> m_Selectables;
 	std::vector<ISelectionListener*> m_SelectionListeners;
 	bool m_AtLeastOneSelected;
+	bool m_MultipleSelections;
 };

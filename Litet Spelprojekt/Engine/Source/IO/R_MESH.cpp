@@ -2,6 +2,7 @@
 #include <IO/MESH.h>
 #include <IO/ResourceHandler.h>
 #include <Graphics/Geometry/IndexedMesh.h>
+#include <Graphics/Geometry/WaterQuad.h>
 
 uint32 MESH::QUAD = 0;
 uint32 MESH::SHIP = 0;
@@ -47,5 +48,5 @@ void MESH::RegisterResources()
 	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("bob.dae");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
-	WATER_QUAD				= ResourceHandler::RegisterMesh("WaterQuad.obj");
+	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(25));
 }

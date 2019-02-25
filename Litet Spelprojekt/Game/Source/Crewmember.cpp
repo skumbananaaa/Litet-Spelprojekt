@@ -223,6 +223,27 @@ bool Crewmember::HasInjurySmoke() const noexcept
 	return m_HasInjurySmoke;
 }
 
+void Crewmember::UpdateDamage(const TileData*const* data)
+{
+	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	if (tileData.SmokeAmount - tileData.SmokeLimit > 100)
+	{
+		m_HasInjuryBurned = true;
+		m_IsVisible = true;
+
+		m_LastKnownPosition = GetPosition();
+	}
+
+	tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+
+	if (tileData.Temp > 100)
+	{
+		m_HasInjuryBurned = true;
+		m_IsVisible = true;
+		m_LastKnownPosition = GetPosition();
+	}
+}
+
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
 	m_ShipNumber = shipnumber;

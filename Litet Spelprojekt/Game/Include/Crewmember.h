@@ -69,6 +69,7 @@ public:
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
 
+	void UpdateDamage(const TileData*const* data);
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
 

@@ -193,11 +193,6 @@ inline bool GameObject::IsVisible() const noexcept
 	return m_IsVisible;
 }
 
-inline bool GameObject::IsDirty() const noexcept
-{
-	return m_IsDirty;
-}
-
 inline bool GameObject::HasMaterial() const noexcept
 {
 	return (m_pMaterial != nullptr);

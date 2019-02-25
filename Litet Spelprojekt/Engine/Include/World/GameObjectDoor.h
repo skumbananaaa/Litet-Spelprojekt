@@ -12,7 +12,7 @@ public:
 	bool IsOpen() const noexcept;
 	bool IsClosed() const noexcept;
 
-	virtual void Update(float deltaTime) noexcept override;
+	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	virtual void UpdateTransform() noexcept override;
 
 private:

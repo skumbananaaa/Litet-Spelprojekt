@@ -28,9 +28,9 @@ bool GameObjectDoor::IsClosed() const noexcept
 	return m_Percentage <= 0.0F;
 }
 
-void GameObjectDoor::Update(float deltaTime) noexcept
+void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept
 {
-	GameObject::Update(deltaTime);
+	GameObject::Update(camera, deltaTime);
 
 	//Test
 	/*if (IsOpen())
@@ -44,11 +44,12 @@ void GameObjectDoor::Update(float deltaTime) noexcept
 
 
 	const float lastPercentage = m_Percentage;
-	m_Percentage += deltaTime * (m_Open * 2 - 1);
+	m_Percentage -= deltaTime * (m_Open * 2 - 1);
 	m_Percentage = glm::clamp<float>(m_Percentage, 0.0F, 1.0F);
 	if (lastPercentage != m_Percentage)
 	{
 		m_IsDirty = true;
+		UpdateTransform();
 	}
 }
 

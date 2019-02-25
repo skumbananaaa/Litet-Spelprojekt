@@ -15,5 +15,5 @@ public:
 	WaterObject() noexcept;
 	~WaterObject() override;
 
-	void Update(float deltaTime) noexcept override;
+	void Update(const Camera& camera, float deltaTime) noexcept override;
 };

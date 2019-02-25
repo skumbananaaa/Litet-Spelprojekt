@@ -2,6 +2,7 @@
 #include <System/Application.h>
 #include <Graphics/Renderers/ForwardRenderer.h>
 #include <Graphics/Renderers/GLContext.h>
+#include <Graphics/Geometry/MeshParticle.h>
 
 ForwardRenderer::ForwardRenderer()
 	: m_pLightBuffer(nullptr),
@@ -138,7 +139,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	{
 		float fps = static_cast<float>(Application::GetInstance().GetFPS());
 
-		std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms) " << std::endl;
+		std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms, FPS: " << fps << ")" << std::endl;
 		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
 		std::cout << " DepthPrePass: " << m_FrameTimes.DepthPrePass / fps << "ms" << std::endl;
 		std::cout << " Lightpass: " << m_FrameTimes.LightPass / fps << "ms" << std::endl;
@@ -176,9 +177,9 @@ void ForwardRenderer::Create() noexcept
 	m_pAnimatedDepthPrePassProgram = ResourceHandler::GetShader(SHADER::ANIMATION_DEPTH_PRE_PASS);
 	m_pSkyBoxPassProgram = ResourceHandler::GetShader(SHADER::SKYBOX_PASS);
 	m_pParticleProgram = ResourceHandler::GetShader(SHADER::PARTICLES);
+	m_pMeshParticleProgram = ResourceHandler::GetShader(SHADER::MESH_PARTICLES);
 
 	//We can destroy object when uniformbuffer is created
-
 	//Camera
 	{
 		CameraBuffer buff = {};
@@ -291,7 +292,7 @@ void ForwardRenderer::CreateBatches(const Scene& scene, const World* const pWorl
 
 				InstanceData instance = {};
 				instance.Model = drawables[i]->GetTransform();
-				instance.InverseModel = drawables[i]->GetInverseTransform();
+				//instance.InverseModel = drawables[i]->GetInverseTransform();
 
 				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
 				{
@@ -608,14 +609,13 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 
 	context.Disable(CULL_FACE);
 	context.Enable(BLEND);
-	//context.SetDepthMask(true);
 
 	context.SetProgram(m_pParticleProgram);
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
-	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
 		if (particleSystems[i]->GetParticleBlendMode() == PARTICLE_ADDITIVE)
@@ -628,7 +628,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 		}
 
 		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
-
+		
 		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
 		context.DrawParticle(*m_pParticle);
 	}
@@ -636,6 +636,22 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	context.Enable(CULL_FACE);
 	context.Disable(BLEND);
 	context.SetBlendFunc(BLEND_FUNC_SRC_ALPHA, BLEND_FUNC_ONE_MINUS_SRC_ALPHA);
+	context.SetDepthMask(true);
+	context.SetDepthFunc(FUNC_LESS);
+
+	context.SetProgram(m_pMeshParticleProgram);
+
+	const std::vector<MeshEmitter*>& meshEmitters= scene.GetMeshEmitters();
+	for (size_t i = 0; i < meshEmitters.size(); i++)
+	{
+		const MeshParticle& mesh = (*meshEmitters[i]->GetMesh());
+
+		mesh.SetInstances(meshEmitters[i]->GetParticleInstances(), meshEmitters[i]->GetNumParticles());
+		context.DrawMeshParticle(mesh);
+	}
+
+	context.SetDepthMask(false);
+	context.SetDepthFunc(FUNC_LESS_EQUAL);
 }
 
 void ForwardRenderer::SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept

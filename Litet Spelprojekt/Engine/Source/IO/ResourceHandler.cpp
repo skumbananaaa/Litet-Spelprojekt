@@ -5,6 +5,7 @@
 #include <Audio/SoundEffect.h>
 #include <Graphics/Shaders/ShaderProgram.h>
 #include <Graphics/Geometry/IndexedMesh.h>
+#include <Graphics/Geometry/MeshParticle.h>
 #include <Graphics/Materials/Material.h>
 #include <Graphics/Materials/WaterOutdoorMaterial.h>
 #include <Graphics/Materials/WaterIndoorMaterial.h>
@@ -20,6 +21,11 @@ ResourceHandler::ANIMATED_MESH_DESC_INTERNAL ResourceHandler::m_pAnimatedMeshFil
 AnimatedMesh* ResourceHandler::m_pAnimatedMeshes[64];
 uint32 ResourceHandler::m_NrOfAnimatedMeshes = 0;
 uint32 ResourceHandler::m_NrOfAnimatedMeshesLoaded = 0;
+
+ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pMeshParticleFiles[64];
+MeshParticle* ResourceHandler::m_pMeshParticles[64];
+uint32 ResourceHandler::m_NrOfMeshParticles = 0;
+uint32 ResourceHandler::m_NrOfMeshParticlesLoaded = 0;
 
 ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[64];
 Texture2D* ResourceHandler::m_pTexture2Ds[64];
@@ -85,6 +91,19 @@ uint32 ResourceHandler::RegisterMesh(IndexedMesh* mesh)
 	m_pIndexedMeshFiles[m_NrOfMeshes] = { "" };
 	m_pIndexedMeshes[m_NrOfMeshes] = mesh;
 	return m_NrOfMeshes++;
+}
+
+uint32 ResourceHandler::RegisterMeshParticle(const std::string& filename)
+{
+	m_pMeshParticleFiles[m_NrOfMeshParticles] = { filename };
+	return m_NrOfMeshParticles++;
+}
+
+uint32 ResourceHandler::RegisterMeshParticle(MeshParticle* mesh)
+{
+	m_pMeshParticleFiles[m_NrOfMeshParticles] = { "" };
+	m_pMeshParticles[m_NrOfMeshParticles] = mesh;
+	return m_NrOfMeshParticles++;
 }
 
 uint32 ResourceHandler::RegisterAnimatedMesh(const std::string& filename)
@@ -220,6 +239,16 @@ AnimatedMesh* ResourceHandler::GetAnimatedMesh(int32 mesh)
 		return nullptr;
 	}
 	return m_pAnimatedMeshes[mesh];
+}
+
+MeshParticle* ResourceHandler::GetMeshParticle(int32 mesh)
+{
+	if (mesh == -1)
+	{
+		return nullptr;
+	}
+
+	return m_pMeshParticles[mesh];
 }
 
 int32 ResourceHandler::GetMesh(const IndexedMesh* mesh)
@@ -374,6 +403,27 @@ void ResourceHandler::Load()
 		}
 	}
 
+	//Counting MeshParticles
+	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
+		if (!desc.filename.empty())
+		{
+			nrOfFiles++;
+		}
+	}
+
+	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Loading MeshParticle: " << desc.filename << std::endl;
+			TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
+			m_pMeshParticles[i] = MeshParticle::CreateMeshParticleFromFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
+		}
+	}
+
 	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
 	{
 		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
@@ -426,6 +476,11 @@ void ResourceHandler::Construct()
 	for (int i = m_NrOfAnimatedMeshesLoaded; i < m_NrOfAnimatedMeshes; i++)
 	{
 		m_pAnimatedMeshes[i]->Construct();
+	}
+
+	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	{
+		m_pMeshParticles[i]->Construct();
 	}
 
 	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
@@ -506,6 +561,16 @@ void ResourceHandler::ReleaseResources()
 			std::cout << "Releasing Animated Mesh: " << desc.filename << std::endl;
 		}
 		Delete(m_pAnimatedMeshes[i]);
+	}
+
+	for (int i = 0; i < m_NrOfMeshParticles; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
+		if (!desc.filename.empty())
+		{
+			std::cout << "Releasing Mesh-Particle: " << desc.filename << std::endl;
+		}
+		Delete(m_pMeshParticles[i]);
 	}
 
 	for (int i = 0; i < m_NrOfTexture2D; i++)

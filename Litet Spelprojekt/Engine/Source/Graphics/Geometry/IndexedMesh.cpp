@@ -91,24 +91,24 @@ void IndexedMesh::Construct()
 	GL_CALL(glEnableVertexAttribArray(7));
 	GL_CALL(glVertexAttribDivisor(7, 1));
 
-	//Instance inversemodel matrix
-	GL_CALL(glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(4 * sizeof(glm::vec4))));
-	GL_CALL(glEnableVertexAttribArray(8));
-	GL_CALL(glVertexAttribDivisor(8, 1));
-	GL_CALL(glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(5 * sizeof(glm::vec4))));
-	GL_CALL(glEnableVertexAttribArray(9));
-	GL_CALL(glVertexAttribDivisor(9, 1));
-	GL_CALL(glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(6 * sizeof(glm::vec4))));
-	GL_CALL(glEnableVertexAttribArray(10));
-	GL_CALL(glVertexAttribDivisor(10, 1));
-	GL_CALL(glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(7 * sizeof(glm::vec4))));
-	GL_CALL(glEnableVertexAttribArray(11));
-	GL_CALL(glVertexAttribDivisor(11, 1));
+	////Instance inversemodel matrix
+	//GL_CALL(glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(4 * sizeof(glm::vec4))));
+	//GL_CALL(glEnableVertexAttribArray(8));
+	//GL_CALL(glVertexAttribDivisor(8, 1));
+	//GL_CALL(glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(5 * sizeof(glm::vec4))));
+	//GL_CALL(glEnableVertexAttribArray(9));
+	//GL_CALL(glVertexAttribDivisor(9, 1));
+	//GL_CALL(glVertexAttribPointer(10, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(6 * sizeof(glm::vec4))));
+	//GL_CALL(glEnableVertexAttribArray(10));
+	//GL_CALL(glVertexAttribDivisor(10, 1));
+	//GL_CALL(glVertexAttribPointer(11, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(7 * sizeof(glm::vec4))));
+	//GL_CALL(glEnableVertexAttribArray(11));
+	//GL_CALL(glVertexAttribDivisor(11, 1));
 
-	//Instance direction matrix
-	GL_CALL(glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(8 * sizeof(glm::vec4))));
-	GL_CALL(glEnableVertexAttribArray(12));
-	GL_CALL(glVertexAttribDivisor(12, 1));
+	////Instance direction vector
+	//GL_CALL(glVertexAttribPointer(12, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceData), (void*)(8 * sizeof(glm::vec4))));
+	//GL_CALL(glEnableVertexAttribArray(12));
+	//GL_CALL(glVertexAttribDivisor(12, 1));
 
 	GL_CALL(glBindVertexArray(0));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));

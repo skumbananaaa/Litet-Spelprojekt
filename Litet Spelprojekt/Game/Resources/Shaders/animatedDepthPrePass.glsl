@@ -1,4 +1,4 @@
-#define MAX_BONES 50
+#define MAX_BONES 60
 
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;

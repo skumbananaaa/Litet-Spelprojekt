@@ -24,6 +24,7 @@ public:
 	static uint32 ICON_SKILL_STRENGTH;
 	static uint32 ICON_CIRCLE;
 	static uint32 SMOKE;
+	static uint32 SJOFAN_DIFF;
 
 private:
 	static void RegisterResourcesPreLoading();

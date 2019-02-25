@@ -28,8 +28,8 @@ public:
 struct InstanceData
 {
 	glm::mat4 Model;
-	glm::mat4 InverseModel;
-	glm::vec3 Direction;
+	//glm::mat4 InverseModel;
+	//glm::vec3 Direction;
 };
 
 class API IndexedMesh : public IResource

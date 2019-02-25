@@ -20,7 +20,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept 
-	: Application(false, 1600, 900, "", true),
+	: Application(false, 1920, 1080, "", true),
 	m_pRenderer(nullptr),
 	m_pDebugRenderer(nullptr),
 	m_pSkyBoxTex(nullptr),
@@ -114,9 +114,6 @@ void Game::OnResourcesLoaded()
 
 	LightManager::Init(m_Scenes[0], 3);
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
-
 
 	//Create renderers
 #if defined(DEFERRED_RENDER_PATH)
@@ -140,7 +137,6 @@ void Game::OnResourcesLoaded()
 		m_pTestAudioSource->SetLooping(true);
 		//m_pTestAudioSource->Play();
 	}
-
 
 	//Camera
 	Camera* pCamera = new Camera(glm::vec3(-2.0f, 10.0f, 20.0f), glm::vec3(9.0f, 4.0f, 20.0f));
@@ -235,55 +231,9 @@ void Game::OnResourcesLoaded()
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	//Create particles
-	{
-		ParticleSystem* pFire = new ParticleSystem();
-		pFire->SetParticleBlendMode(PARTICLE_ADDITIVE);
-		pFire->SetTexture(TEXTURE::SMOKE);
-		pFire->SetTimeToLive(1.2f);
-		pFire->SetScale(glm::vec2(0.5f), glm::vec2(2.5f));
-		pFire->SetConeAngle(glm::radians<float>(30.0f));
-		pFire->SetSpeed(0.7f, 2.0f);
-		pFire->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
-		pFire->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
-		pFire->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		m_Scenes[0]->AddParticleSystem(pFire);
-
-		ParticleEmitter* pEmitter = new ParticleEmitter(pFire);
-		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 17.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		pEmitter = new ParticleEmitter(pFire);
-		pEmitter->SetPosition(glm::vec3(7.0f, 4.4f, 18.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		ParticleSystem* pSmoke = new ParticleSystem();
-		pSmoke->SetParticleBlendMode(PARTICLE_NORMAL);
-		pSmoke->SetTexture(TEXTURE::SMOKE);
-		pSmoke->SetTimeToLive(7.0f);
-		pSmoke->SetConeAngle(glm::radians<float>(40.0f));
-		pSmoke->SetSpeed(0.1f, 0.4f);
-		pSmoke->SetScale(glm::vec2(0.5f), glm::vec2(5.0f));
-		pSmoke->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
-		pSmoke->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-		m_Scenes[0]->AddParticleSystem(pSmoke);
-
-		pEmitter = new ParticleEmitter(pSmoke);
-		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 14.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-
-		pEmitter = new ParticleEmitter(pSmoke);
-		pEmitter->SetPosition(glm::vec3(3.0f, 4.4f, 15.0f));
-		pEmitter->SetParticlesPerFrame(1);
-		pEmitter->UpdateTransform();
-		m_Scenes[0]->AddGameObject(pEmitter);
-	}
+	//Create scenarios
+	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
+	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -300,39 +250,87 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetPosition(pos);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
+		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 		m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);
 	}
 
-	// Place Doors
-	float halfWidth = m_pWorld->GetLevel(0)->GetSizeX() / 2;
-	float halfHeight = m_pWorld->GetLevel(0)->GetSizeZ() / 2;
+	//Generate Door GameObjects
 	for (uint32 i = 0; i < m_pWorld->GetNumDoors(); i++)
 	{
 		glm::vec3 door1 = m_pWorld->GetDoor(i);
+		WorldLevel* level = m_pWorld->GetLevel(door1.y);
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+
 		for (uint32 j = i + 1; j < m_pWorld->GetNumDoors(); j++)
 		{
 			glm::vec3 door2 = m_pWorld->GetDoor(j);
 			glm::vec3 delta = door1 - door2;
 			if (glm::length(delta) <= 1.0)
 			{
+				glm::vec3 position = (door1 + door2) / 2.0F;
+
 				GameObject* pGameObject = new GameObject();
 				pGameObject->SetMaterial(MATERIAL::WHITE);
 				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition((door1 + door2) / 2.0F);
+				pGameObject->SetPosition(position);
 				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 				pGameObject->UpdateTransform();
 				m_Scenes[0]->AddGameObject(pGameObject);
 
 				pGameObject = new GameObjectDoor();
-				pGameObject->SetPosition((door1 + door2) / 2.0F);
+				pGameObject->SetPosition(position);
 				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 				pGameObject->UpdateTransform();
 				m_Scenes[0]->AddGameObject(pGameObject);
 
+				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+
 				break;
 			}
 		}
+	}
+
+	//Generate Ladder GameObjects
+	for (uint32 i = 0; i < m_pWorld->GetNumStairs(); i++)
+	{
+		glm::ivec3 stair = m_pWorld->GetStairs()[i];
+		WorldLevel* level = m_pWorld->GetLevel(stair.y);
+		float halfWidth = level->GetSizeX() / 2;
+		float halfHeight = level->GetSizeZ() / 2;
+
+		glm::vec3 position = ((glm::vec3)stair);
+
+		const uint32* const* grid = level->GetLevel();
+		uint32 myId = grid[stair.x][stair.z];
+		float rotation = 0;
+
+		if (grid[stair.x + 1][stair.z] != myId)
+		{
+			rotation = glm::half_pi<float>() * 2.0F;
+		}
+		else if (grid[stair.x - 1][stair.z] != myId)
+		{
+			rotation = 0.0F;
+		}
+		else if (grid[stair.x][stair.z + 1] != myId)
+		{
+			rotation = glm::half_pi<float>();
+		}
+		else if (grid[stair.x][stair.z - 1] != myId)
+		{
+			rotation = glm::half_pi<float>() * 3.0F;
+		}
+
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMesh(MESH::LADDER);
+		pGameObject->SetPosition(position);
+		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
+		pGameObject->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
 	//BOB
@@ -341,8 +339,8 @@ void Game::OnResourcesLoaded()
 		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
 		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
 		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
-		pGameObject->SetScale(glm::vec3(0.2f));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
@@ -396,7 +394,7 @@ void Game::OnResourcesLoaded()
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.7f, 0.7f, 0.7f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 		m_Scenes[0]->AddDirectionalLight(pDirectionalLight);
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
@@ -548,6 +546,36 @@ void Game::OnResourcesLoaded()
 		PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 		m_Scenes[1]->AddPlanarReflector(pReflector);
 	}
+
+	ParticleEmitter* pEmitter = new ParticleEmitter();
+	pEmitter->SetParticleBlendMode(PARTICLE_NORMAL);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(7.0f);
+	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
+	pEmitter->SetSpeed(0.1f, 0.4f);
+	pEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
+	pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+	pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+	pEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -4.0f));
+	pEmitter->SetParticlesPerSeconds(5);
+	pEmitter->UpdateTransform();
+	m_Scenes[1]->AddGameObject(pEmitter);
+
+	pEmitter = new ParticleEmitter();
+	pEmitter->SetPosition(glm::ivec3(-4.0f, 0.0f, -6.0f));
+	pEmitter->SetParticleBlendMode(PARTICLE_ADDITIVE);
+	pEmitter->SetTexture(TEXTURE::SMOKE);
+	pEmitter->SetTimeToLive(1.2f);
+	pEmitter->SetScale(glm::vec2(0.2f), glm::vec2(1.0f));
+	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
+	pEmitter->SetSpeed(0.7f, 2.0f);
+	pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+	pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pEmitter->SetParticlesPerSeconds(5);
+	pEmitter->UpdateTransform();
+	m_Scenes[1]->AddGameObject(pEmitter);
+
 	//((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
 	m_SceneId = 0;

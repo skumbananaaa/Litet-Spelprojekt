@@ -242,7 +242,7 @@ void DefferedRenderer::CreateBatches(const Scene& scene, const World* const pWor
 
 				InstanceData instance = {};
 				instance.Model = drawables[i]->GetTransform();
-				instance.InverseModel = drawables[i]->GetInverseTransform();
+				//instance.InverseModel = drawables[i]->GetInverseTransform();
 
 				for (size_t j = 0; j < m_DrawableBatches.size(); j++)
 				{
@@ -278,8 +278,8 @@ void DefferedRenderer::CreateBatches(const Scene& scene, const World* const pWor
 
 			InstanceData instance = {};
 			instance.Model = decals[i]->GetTransform();
-			instance.InverseModel = decals[i]->GetInverseTransform();
-			instance.Direction = instance.Model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+			//instance.InverseModel = decals[i]->GetInverseTransform();
+			//instance.Direction = instance.Model * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
 
 			for (size_t j = 0; j < m_DecalBatches.size(); j++)
 			{
@@ -622,7 +622,7 @@ void DefferedRenderer::ParticlePass(const Camera& camera, const Scene& scene) co
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 
-	const std::vector<ParticleSystem*>& particleSystems = scene.GetParticleSystem();
+	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
 		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());

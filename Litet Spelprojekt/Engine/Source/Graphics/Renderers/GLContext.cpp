@@ -1,6 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/Renderers/GLContext.h>
 #include <System/Window.h>
+#include "..\..\..\Include\Graphics\Renderers\GLContext.h"
 
 GLContext* GLContext::s_CurrentContext = nullptr;
 
@@ -337,8 +338,17 @@ void GLContext::DrawFullscreenTriangle(const FullscreenTri & triangle) const noe
 void GLContext::DrawParticle(const Particle& mesh) const noexcept
 {
 	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	
 	uint32 instanceCount = mesh.GetInstanceCount();
+
 	GL_CALL(glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instanceCount));
+	GL_CALL(glBindVertexArray(0));
+}
+
+void GLContext::DrawMeshParticle(const MeshParticle& mesh) const noexcept
+{
+	GL_CALL(glBindVertexArray(mesh.m_VAO));
+	GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, mesh.GetIndexCount(), GL_UNSIGNED_INT, nullptr, mesh.GetInstanceCount()));
 	GL_CALL(glBindVertexArray(0));
 }
 

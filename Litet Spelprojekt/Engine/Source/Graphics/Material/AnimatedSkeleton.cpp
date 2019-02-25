@@ -15,7 +15,8 @@ uint32 FindRotation(const aiNodeAnim* pNodeAnim, float animationTime);
 uint32 FindScaling(const aiNodeAnim* pNodeAnim, float animationTime);
 
 AnimatedSkeleton::AnimatedSkeleton() noexcept :
-	m_AnimationTime(0.0f)
+	m_AnimationTimeSeconds(0.0f),
+	m_AnimationTimeTicks(0.0f)
 {
 	for (uint32 i = 0; i < MAX_NUM_BONES; i++)
 	{
@@ -44,12 +45,12 @@ void AnimatedSkeleton::UpdateBoneTransforms(float dtS, const AnimatedMesh* mesh)
 	glm::mat4 identity(1.0);
 
 	const aiScene* scene = reinterpret_cast<const Assimp::Importer*>(mesh->m_pImporter)->GetScene();
-	float ticksPerSec = (float)scene->mAnimations[0]->mTicksPerSecond != 0 ? scene->mAnimations[0]->mTicksPerSecond : 25.0f;
-	float TimeInTicks = m_AnimationTime * ticksPerSec;
-	m_AnimationTime = fmod(TimeInTicks, (float)scene->mAnimations[0]->mDuration);
+	float ticksPerSec = (scene->mAnimations[0]->mTicksPerSecond != 0) ? (float)scene->mAnimations[0]->mTicksPerSecond : 25.0f;
+	float TimeInTicks = m_AnimationTimeSeconds * ticksPerSec;
+	m_AnimationTimeTicks = fmod(TimeInTicks, (float)scene->mAnimations[0]->mDuration);
 
 	ReadNodeHeirarchy(scene->mRootNode, scene, identity, mesh->m_GlobalInverseTransform, mesh->m_BoneMap, mesh->m_BoneOffsets);
-	m_AnimationTime += dtS;
+	m_AnimationTimeSeconds += dtS;
 }
 
 void CalcInterpolatedPosition(aiVector3D& positionVector, float animationTime, const aiNodeAnim* nodeAnim)
@@ -79,6 +80,7 @@ void CalcInterpolatedScaling(aiVector3D& scaleVector, float animationTime, const
 		scaleVector = nodeAnim->mScalingKeys[0].mValue;
 		return;
 	}
+
 	//scaling index for specific key? tror jag :|
 	uint32 ScalingIndex = FindScaling(nodeAnim, animationTime);
 	uint32 NextScalingIndex = (ScalingIndex + 1);
@@ -180,24 +182,23 @@ void AnimatedSkeleton::ReadNodeHeirarchy(const void* pNode,
 	glm::mat4 nodeTransformation = AssimpToGLMMat4(pCurrentNode->mTransformation);
 
 	const aiNodeAnim* pNodeAnim = reinterpret_cast<const aiNodeAnim*>(FindNodeAnim(pAnimation, NodeName));
-
 	if (pNodeAnim)
 	{
 		// Interpolate scaling and generate scaling transformation matrix
 		aiVector3D scalingVec;
-		CalcInterpolatedScaling(scalingVec, m_AnimationTime, pNodeAnim);
+		CalcInterpolatedScaling(scalingVec, m_AnimationTimeTicks, pNodeAnim);
 		glm::mat4 scalingMat4;
 		scalingMat4 = AssimpScaleMat4(scalingVec);
 
 		// Interpolate rotation and generate rotation transformation matrix
 		aiQuaternion RotationQ;
-		CalcInterpolatedRotation(RotationQ, m_AnimationTime, pNodeAnim);
+		CalcInterpolatedRotation(RotationQ, m_AnimationTimeTicks, pNodeAnim);
 		aiMatrix4x4 tempMat4(RotationQ.GetMatrix());
 		glm::mat4 rotationMat4 = AssimpToGLMMat4(tempMat4);
 
 		// Interpolate translation and generate translation transformation matrix
 		aiVector3D Translation;
-		CalcInterpolatedPosition(Translation, m_AnimationTime, pNodeAnim);
+		CalcInterpolatedPosition(Translation, m_AnimationTimeTicks, pNodeAnim);
 		glm::mat4 translationMat4;
 		translationMat4 = AssimpTranslateMat4(Translation);
 

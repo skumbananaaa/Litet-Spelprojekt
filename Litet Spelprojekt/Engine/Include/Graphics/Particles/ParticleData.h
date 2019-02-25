@@ -1,6 +1,22 @@
 #pragma once
 #include <EnginePch.h>
 
+#define MAX_PARTICLES 1000
+
+template<typename T>
+struct Node
+{
+	T Data;
+	float AtLifeTime;
+};
+
+struct ParticleInstance
+{
+	glm::vec3 Position;
+	glm::vec4 Color;
+	glm::vec2 Scale;
+};
+
 struct ParticleData
 {
 public:

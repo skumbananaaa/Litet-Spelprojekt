@@ -10,7 +10,7 @@ class ScenarioWater : public IScenario
 public:
 	ScenarioWater(bool waterAlwaysVisible = false);
 
-	virtual void OnStart() noexcept override;
+	virtual void OnStart(Scene* scene) noexcept override;
 	virtual void OnEnd()noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) override;
 	virtual bool Update(float dtS, World* pWorld, Scene* pScene,  const std::vector<uint32>& activeRooms) noexcept override;
@@ -45,7 +45,7 @@ inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const g
 		return 0;
 	}
 
-	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || (ppLevelData[tileFrom.x][tileFrom.y].HasDoor && ppLevelData[tileTo.x][tileTo.y].HasDoor))
+	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || (ppLevelData[tileFrom.x][tileFrom.y].HasDoor() && ppLevelData[tileTo.x][tileTo.y].HasDoor()))
 	{
 		return 1;
 	}

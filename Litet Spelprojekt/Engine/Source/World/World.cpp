@@ -128,7 +128,7 @@ void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 	for (int i = 0; i < nrOfDoors; i++)
 	{
 		m_Doors.push_back(doors[i]);
-		m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].HasDoor = true;
+		//m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = 
 	}
 }
 
@@ -161,7 +161,4 @@ uint32 World::GetNumDoors() const noexcept
 
 void World::Update(Scene* pScene, float dt)
 {
-	//m_ppLevels[2]->UpdateFire(dt);
-
-	
 }

@@ -40,11 +40,6 @@ Scene::~Scene()
 	{
 		DeleteSafe(m_PlanarReflectors[i]);
 	}
-
-	for (size_t i = 0; i < m_ParticleSystems.size(); i++)
-	{
-		DeleteSafe(m_ParticleSystems[i]);
-	}
 }
 
 void Scene::SetCamera(Camera* pCamera, uint32 index) noexcept
@@ -128,16 +123,23 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 		m_Reflectables.push_back(pGameObject);
 	}
 
+	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);
+	if (pEmitter != nullptr)
+	{
+		m_ParticleEmitters.push_back(pEmitter);
+	}
+
+	MeshEmitter* pMeshEmitter = dynamic_cast<MeshEmitter*>(pGameObject);
+	if (pMeshEmitter != nullptr)
+	{
+		m_MeshEmitters.push_back(pMeshEmitter);
+	}
+
 	const std::string& name = pGameObject->GetName();
 	if (name != "")
 	{
 		m_NamedObjects[name] = pGameObject;
 	}
-}
-
-void Scene::AddParticleSystem(ParticleSystem* pParticleSystem) noexcept
-{
-	m_ParticleSystems.push_back(pParticleSystem);
 }
 
 void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
@@ -195,21 +197,15 @@ void Scene::OnUpdate(float dtS) noexcept
 {
 	for (GameObject* pGameObject : m_GameObjects)
 	{
-		pGameObject->Update(dtS);
+		pGameObject->Update(*m_pCamera, dtS);
 	}
-
 	for (SpotLight* pSpotLight : m_SpotLights)
 	{
-		pSpotLight->Update(dtS);
+		pSpotLight->Update(*m_pCamera, dtS);
 	}
 	for (PointLight* pPointLight : m_PointLights)
 	{
-		pPointLight->Update(dtS);
-	}
-
-	for (ParticleSystem* pSystem : m_ParticleSystems)
-	{
-		pSystem->Update(*m_pCamera, dtS);
+		pPointLight->Update(*m_pCamera, dtS);
 	}
 
 	if (m_Extending)
@@ -227,4 +223,7 @@ void Scene::OnUpdate(float dtS) noexcept
 			m_Extension = 0.0f;
 		}
 	}
+
+	//Sort particleemitters so that the one furthest away gets rendered first
+	std::sort(m_ParticleEmitters.begin(), m_ParticleEmitters.end(), ParticleEmitter::DistGreater);
 }

@@ -170,14 +170,14 @@ void Game::OnResourcesLoaded()
 
 		//Ground
 		{
-			pGameObject = new GameObject();
+			/*pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::GROUND);
 			pGameObject->SetMesh(MESH::CLIFF_3_LOW);
 			pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
 			pGameObject->SetScale(glm::vec3(0.4f));
 			pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
 			pGameObject->UpdateTransform();
-			m_Scenes[0]->AddGameObject(pGameObject);
+			m_Scenes[0]->AddGameObject(pGameObject);*/
 		}
 
 		//Bottom floor
@@ -236,7 +236,7 @@ void Game::OnResourcesLoaded()
 
 	//Create scenarios
 	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
+	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();
@@ -351,11 +351,10 @@ void Game::OnResourcesLoaded()
 	//Water?? YAAAS
 	{
 		pGameObject = new GameObject();
-		pGameObject->SetIsReflectable(true);
-		pGameObject->SetMesh(MESH::QUAD);
+		pGameObject->SetMesh(MESH::WATER_QUAD);
 		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetScale(glm::vec3(200.0f));
-		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
 		pGameObject->UpdateTransform();
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
@@ -538,7 +537,6 @@ void Game::OnResourcesLoaded()
 	{
 		pGameObject = new GameObject();
 		pGameObject->SetMesh(MESH::QUAD);
-		pGameObject->SetIsReflectable(true);
 		pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 		pGameObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 		pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::radians<float>(90.0f)));
@@ -758,8 +756,14 @@ void Game::OnUpdate(float dtS)
 	}
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetDistortionFactor(dist);
 	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
+
+	static float waveX = 0.0f;
+	static float waveY = 0.0f;
+	waveX += 0.25f * dtS;
+	waveY += 0.5f * dtS;
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetWaveFactor(glm::vec2(waveX, waveY));
+
 
 	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
 	const std::vector<GameObject*>& drawables = m_Scenes[m_SceneId]->GetAnimatedDrawables();

@@ -137,21 +137,19 @@ uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, float specular,
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterWaterOutdoorMaterial(int32 distorionMap)
+uint32 ResourceHandler::RegisterWaterOutdoorMaterial()
 {
 	std::cout << "Creating Water Outdoor Material" << std::endl;
 	WaterOutdoorMaterial* material = new WaterOutdoorMaterial();
-	material->SetDistortionTexture(GetTexture2D(distorionMap));
 
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterWaterIndoorMaterial(int32 distorionMap)
+uint32 ResourceHandler::RegisterWaterIndoorMaterial()
 {
 	std::cout << "Creating Water Indoor Material" << std::endl;
 	WaterIndoorMaterial* material = new WaterIndoorMaterial();
-	material->SetDistortionTexture(GetTexture2D(distorionMap));
 
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;

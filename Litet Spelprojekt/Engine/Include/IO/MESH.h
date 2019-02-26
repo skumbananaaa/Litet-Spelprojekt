@@ -24,6 +24,7 @@ public:
 	static uint32 DOOR_FRAME;
 	static uint32 LADDER;
 	static uint32 MESH_PARTICLE;
+	static uint32 WATER_QUAD;
 
 private:
 	static void RegisterResourcesPreLoading();

@@ -45,6 +45,7 @@ inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const g
 		return 0;
 	}
 
+	//if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || ppLevelData[tileFrom.x][tileFrom.y].HasDoor() || ppLevelData[tileTo.x][tileTo.y].HasDoor())
 	if (ppLevel[tileFrom.x][tileFrom.y] == ppLevel[tileTo.x][tileTo.y] || (ppLevelData[tileFrom.x][tileFrom.y].HasDoor() && ppLevelData[tileTo.x][tileTo.y].HasDoor()))
 	{
 		return 1;
@@ -76,30 +77,30 @@ inline float ScenarioWater::CalculateFloodFactor(float waterLevelDifPosX, float 
 	bool difNegZNotZero = waterLevelDifNegZ > 0.0f;
 
 	float denominator = 1.0f;
-	float nominator = 0.0f;
+	float nominator = 2.0f;
 
 	if (difPosXNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::max<float>(waterLevelDifPosX, nominator);
+		nominator = glm::min<float>(waterLevelDifPosX, nominator);
 	}
 
 	if (difNegXNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::max<float>(waterLevelDifNegX, nominator);
+		nominator = glm::min<float>(waterLevelDifNegX, nominator);
 	}
 
 	if (difPosZNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::max<float>(waterLevelDifPosZ, nominator);
+		nominator = glm::min<float>(waterLevelDifPosZ, nominator);
 	}
 
 	if (difNegZNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::max<float>(waterLevelDifNegZ, nominator);
+		nominator = glm::min<float>(waterLevelDifNegZ, nominator);
 	}
 
 	if (!(denominator > 0.0f))
@@ -173,7 +174,7 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 			ppLevelData[tile.x][tile.y].WaterLevelLastUpdated = 0.0f;
 			ppLevelData[tile.x][tile.y].WaterLevelAge = 1.0f;
 			ppLevelData[tile.x][tile.y].AlreadyFlooded = false;
-			ppLevelData[tile.x][tile.y].GameObjects[0]->SetIsVisible(false);
+			ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetIsVisible(false);
 			toRemoveFloodingIDs.push_back(tile);
 		}
 	}

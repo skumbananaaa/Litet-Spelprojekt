@@ -16,26 +16,26 @@ public:
 	uint32 GetVertexCount() const noexcept;
 	uint32 GetInstanceCount() const noexcept;
 
-private:
+protected:
 	IndexedMesh(IndexedMesh&& other) = delete;
 	IndexedMesh(const IndexedMesh& other) = delete;
 	IndexedMesh& operator=(IndexedMesh&& other) = delete;
 	IndexedMesh& operator=(const IndexedMesh& other) = delete;
 
-	IndexedMesh(const BaseVertex* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept;
-	~IndexedMesh();
+	IndexedMesh(const void* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept;
+	virtual ~IndexedMesh();
 
 	virtual void Construct() override;
 
-private:
+protected:
 	uint32 m_VAO;
 	uint32 m_VBO;
 	uint32 m_IBO;
 	uint32 m_InstanceBuffer;
 	uint32 m_VertexCount;
 	uint32 m_IndexCount;
-	const BaseVertex* m_pVertices;
-	const uint32* m_pIndices;
+	void* m_pVertices;
+	uint32* m_pIndices;
 	mutable uint32 m_NumInstances;
 	mutable uint32 m_NumReservedInstances;
 

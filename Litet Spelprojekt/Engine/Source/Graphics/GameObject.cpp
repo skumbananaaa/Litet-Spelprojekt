@@ -11,7 +11,6 @@ GameObject::GameObject() noexcept
 	m_Rotation(1.0f, 0.0f, 0.0f, 0.0f),
 	m_Scale(1.0f),
 	m_IsDirty(true),
-	m_IsReflectable(false),
 	m_IsVisible(true),
 	m_TypeId(-1)
 {
@@ -26,11 +25,6 @@ GameObject::~GameObject()
 void GameObject::SetName(const std::string& name) noexcept
 {
 	m_Name = name;
-}
-
-void GameObject::SetIsReflectable(bool isReflectable) noexcept
-{
-	m_IsReflectable = isReflectable;
 }
 
 void GameObject::SetIsVisible(bool isVisible) noexcept

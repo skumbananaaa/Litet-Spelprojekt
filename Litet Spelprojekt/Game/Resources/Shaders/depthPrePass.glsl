@@ -1,9 +1,8 @@
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec3 g_Tangent;
-layout(location = 3) in vec2 g_TexCoords;
-layout(location = 4) in mat4 g_InstanceModel;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in mat4 g_InstanceModel;
 
 layout(std140, binding = 0) uniform CameraBuffer
 {

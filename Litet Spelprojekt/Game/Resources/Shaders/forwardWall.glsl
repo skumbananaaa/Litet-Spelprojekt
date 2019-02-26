@@ -16,7 +16,6 @@ layout(std140, binding = 2) uniform DefferedMaterialBuffer
 	vec4 g_ClipPlane;
 	float g_Specular;
 	float g_HasDiffuseMap;
-	float g_HasNormalMap;
 	float g_HasSpecularMap;
 };
 
@@ -29,9 +28,8 @@ layout(std140, binding = 3) uniform DissolveBuffer
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec3 g_Tangent;
-layout(location = 3) in vec2 g_TexCoords;
-layout(location = 4) in mat4 g_InstanceModel;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in mat4 g_InstanceModel;
 
 layout(binding = 5) uniform Extension
 {
@@ -42,8 +40,6 @@ out VS_OUT
 {
 	vec3 WorldPosition;
 	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
 	vec2 TexCoords;
 } vs_out;
 
@@ -66,7 +62,6 @@ void main()
 	gl_ClipDistance[0] = cutWalls;
 
 	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
-	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
 
 	//CLIPPING DEPENDING ON LEVEL
 	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
@@ -74,8 +69,6 @@ void main()
 
 	vs_out.WorldPosition = worldPos.xyz;
 	vs_out.Normal = normal;
-	vs_out.Tangent = tangent;
-	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
 	vs_out.TexCoords = g_TexCoords;
 
 	worldPos.x += extension * floor(g_InstanceModel[3].y / 2.0f);
@@ -94,18 +87,14 @@ void main()
 layout(early_fragment_tests) in;
 
 layout(location = 0) out vec4 g_OutColor;
-layout(location = 1) out vec4 g_Normal;
 
 layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform sampler2D g_NormalMap;
-layout(binding = 2) uniform sampler2D g_SpecularMap;
+layout(binding = 1) uniform sampler2D g_SpecularMap;
 
 in VS_OUT
 {
 	vec3 WorldPosition;
 	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
 	vec2 TexCoords;
 } fs_in;
 
@@ -168,8 +157,6 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 void main()
 {
 	//NORMALIZE
-	vec3 inTangent = normalize(fs_in.Tangent);
-	vec3 inBinormal = normalize(fs_in.Binormal);
 	vec3 inNormal = normalize(fs_in.Normal);
 
 	vec3 worldPos = vec3(fs_in.WorldPosition);
@@ -185,13 +172,6 @@ void main()
 	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
 	vec3 color = mappedColor + uniformColor;
-
-	//NORMAL
-	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
-
-	mat3 tbn = mat3(inTangent, inBinormal, inNormal);
-	mappedNormal = tbn * mappedNormal;
-	vec3 normal = (inNormal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
 
 	ivec3 mapPos = ivec3(round(fs_in.WorldPosition.x), fs_in.WorldPosition.y, round(fs_in.WorldPosition.z));
 	mapPos.x = clamp(mapPos.x, 0, 11);
@@ -213,9 +193,9 @@ void main()
 		{
 			vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
 			vec3 lightColor = g_DirLights[i].Color.rgb * 10.0f;
-			float cosTheta = dot(normal, lightDir);
+			float cosTheta = dot(inNormal, lightDir);
 
-			c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+			c += CalcLight(lightDir, lightColor, viewDir, inNormal, color, specular, 1.0f);
 		}
 	}
 
@@ -244,9 +224,9 @@ void main()
 			float attenuation = 1.0f / (dist);
 			vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
 			lightDir = normalize(lightDir);
-			float cosTheta = dot(normal, lightDir);
+			float cosTheta = dot(inNormal, lightDir);
 	
-			c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+			c += CalcLight(lightDir, lightColor, viewDir, inNormal, color, specular, 1.0f);
 		}
 	}
 
@@ -285,7 +265,7 @@ void main()
 	
 			if(theta > g_SpotLights[i].OuterAngle)
 			{
-				c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, specular, intensity);
+				c += CalcLight(normalize(lightDir), lightColor, viewDir, inNormal, color, specular, intensity);
 			}
 		}
 	}

@@ -56,7 +56,6 @@ struct MaterialBuffer
 	glm::vec4 ClipPlane;
 	float Specular;
 	float HasDiffuseMap;
-	float HasNormalMap;
 	float HasSpecularMap;
 };
 

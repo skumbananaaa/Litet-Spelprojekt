@@ -191,6 +191,7 @@
     <ClInclude Include="Include\System\CPUProfiler.h" />
     <ClInclude Include="Include\Graphics\Particles\MeshEmitter.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
+    <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

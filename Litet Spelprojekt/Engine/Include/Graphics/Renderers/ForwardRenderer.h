@@ -10,6 +10,7 @@ struct ForwardFrameTimes
 	float ParticlePass = 0.0f;
 	float LightPass = 0.0f;
 	float DepthPrePass = 0.0f;
+	float AnimationPass = 0.0f;
 };
 
 class API ForwardRenderer : public IRenderer

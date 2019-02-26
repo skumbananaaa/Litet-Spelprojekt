@@ -11,7 +11,7 @@ public:
 	Mesh& operator=(Mesh&& other) = delete;
 	Mesh& operator=(const Mesh& other) = delete;
 
-	Mesh(const Vertex* const vertices, uint32 numVertices) noexcept;
+	Mesh(const BaseVertex* const pVertices, uint32 numVertices) noexcept;
 	~Mesh();
 
 	uint32 GetVertexCount() const noexcept;

@@ -22,7 +22,7 @@ protected:
 	IndexedMesh& operator=(IndexedMesh&& other) = delete;
 	IndexedMesh& operator=(const IndexedMesh& other) = delete;
 
-	IndexedMesh(const void* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
+	IndexedMesh(const void* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept;
 	virtual ~IndexedMesh();
 
 	virtual void Construct() override;
@@ -34,8 +34,8 @@ protected:
 	uint32 m_InstanceBuffer;
 	uint32 m_VertexCount;
 	uint32 m_IndexCount;
-	void* m_Vertices;
-	uint32* m_Indices;
+	void* m_pVertices;
+	uint32* m_pIndices;
 	mutable uint32 m_NumInstances;
 	mutable uint32 m_NumReservedInstances;
 

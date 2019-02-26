@@ -36,7 +36,7 @@ private:
 	WaterQuad& operator=(WaterQuad&& other) = delete;
 	WaterQuad& operator=(const WaterQuad& other) = delete;
 
-	WaterQuad(const void* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept;
+	WaterQuad(const void* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept;
 	virtual ~WaterQuad();
 
 	virtual void Construct() override;

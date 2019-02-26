@@ -467,7 +467,6 @@ void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 			perBatch.ClipPlane = material.GetLevelClipPlane();
 			perBatch.Specular = material.GetSpecular();
 			perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
-			perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
 			perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
 			m_pMaterialBuffer->UpdateData(&perBatch);
 

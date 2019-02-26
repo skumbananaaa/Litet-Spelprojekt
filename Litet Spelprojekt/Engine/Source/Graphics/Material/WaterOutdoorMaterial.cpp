@@ -5,8 +5,6 @@
 
 WaterOutdoorMaterial::WaterOutdoorMaterial() : Material(SHADER::WATER_OUTDOOR_MATERIAL),
 	m_pReflector(nullptr),
-	m_pDistortion(nullptr),
-	m_pDepthMap(nullptr),
 	m_pWaterBuffer(nullptr),
 	m_Buffer()
 {
@@ -26,9 +24,6 @@ void WaterOutdoorMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 	GLContext& context = GLContext::GetCurrentContext();
 
 	context.SetUniformBuffer(m_pWaterBuffer, 6);
-
-	context.SetTexture(m_pDistortion, 3);
-	context.SetTexture(m_pDisplacementMap, 6);
 
 	if (m_pReflector)
 	{
@@ -51,10 +46,7 @@ void WaterOutdoorMaterial::Unbind() const noexcept
 
 	context.SetUniformBuffer(nullptr, 6);
 
-	context.SetTexture(nullptr, 3);
 	context.SetTexture(nullptr, 4);
-	context.SetTexture(nullptr, 5);
-	context.SetTexture(nullptr, 6);
 
 	context.SetDepthMask(m_LastDepthMask);
 	context.SetDepthFunc(m_LastDepthFunc);
@@ -65,16 +57,6 @@ void WaterOutdoorMaterial::SetPlanarReflector(PlanarReflector* pReflector) const
 {
 	assert(pReflector != nullptr);
 	m_pReflector = pReflector;
-}
-
-void WaterOutdoorMaterial::SetDistortionTexture(Texture2D* pDistortion)
-{
-	m_pDistortion = pDistortion;
-}
-
-void WaterOutdoorMaterial::SetDisplacementMap(Texture2D* pDisplacementMap)
-{
-	m_pDisplacementMap = pDisplacementMap;
 }
 
 void WaterOutdoorMaterial::SetWaveFactor(const glm::vec2& waveFactor) const

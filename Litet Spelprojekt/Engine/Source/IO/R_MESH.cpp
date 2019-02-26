@@ -53,5 +53,5 @@ void MESH::RegisterResources()
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
-	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(0.0f), 2.5f, 75));
+	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(0.0f), 2.5f, 100));
 }

@@ -2,8 +2,8 @@
 #include <Graphics/Geometry/WaterQuad.h>
 #include <Graphics/Renderers/GLContext.h>
 
-WaterQuad::WaterQuad(const void* const vertices, const uint32* const indices, uint32 numVertices, uint32 numIndices) noexcept :
-	IndexedMesh(vertices, indices, numVertices, numIndices)
+WaterQuad::WaterQuad(const void* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept :
+	IndexedMesh(pVertices, pIndices, numVertices, numIndices)
 {
 }
 
@@ -21,10 +21,10 @@ void WaterQuad::Construct()
 	GL_CALL(glBindVertexArray(m_VAO));
 
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_VertexCount * sizeof(WaterVertex), m_Vertices, GL_STATIC_DRAW));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_VertexCount * sizeof(WaterVertex), m_pVertices, GL_STATIC_DRAW));
 
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO));
-	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexCount * sizeof(uint32), m_Indices, GL_STATIC_DRAW));
+	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexCount * sizeof(uint32), m_pIndices, GL_STATIC_DRAW));
 
 	//Position
 	GL_CALL(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(WaterVertex), (void*)0));
@@ -74,9 +74,9 @@ void WaterQuad::Construct()
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
-	free(m_Vertices);
-	m_Vertices = nullptr;
-	DeleteArrSafe(m_Indices);
+	free(m_pVertices);
+	m_pVertices = nullptr;
+	DeleteArrSafe(m_pIndices);
 }
 
 WaterQuad* WaterQuad::CreateWaterQuad(glm::vec2& pos, float scale, uint32 gridDiameter) noexcept

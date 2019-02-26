@@ -66,5 +66,5 @@ void ScenarioManager::SetAsNonActive(int id)
 {
 	IScenario* scenario = s_Scenarios[id];
 	s_NonActiveScenarios.push_back(id);
-	scenario->SetTimeOfNextOutBreak(10.0f);// Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetMaxTimeBeforeOutbreak()));
+	scenario->SetTimeOfNextOutBreak(0.0f);// Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetMaxTimeBeforeOutbreak()));
 }

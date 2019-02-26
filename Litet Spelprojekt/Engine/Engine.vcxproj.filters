@@ -89,6 +89,7 @@
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\WaterQuad.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\TextField.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
     <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
+    <ClInclude Include="Include\Graphics\GUI\TextField.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

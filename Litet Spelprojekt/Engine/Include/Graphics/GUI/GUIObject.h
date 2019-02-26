@@ -85,6 +85,7 @@ protected:
 
 	virtual void OnKeyUp(KEY keycode) {};
 	virtual void OnKeyDown(KEY keycode) {};
+	virtual void OnCharFromKey(char c) {};
 
 	virtual void RenderBackgroundTexture(GUIContext* context);
 	virtual void RenderChildrensFrameBuffers(GUIContext* context);
@@ -121,12 +122,16 @@ protected:
 	static void AddMouseListener(GUIObject* listener);
 	static void RemoveMouseListener(GUIObject* listener);
 
+	static void AddKeyboardListener(GUIObject* listener);
+	static void RemoveKeyboardListener(GUIObject* listener);
+
 	void AddRealTimeRenderer();
 	void RemoveRealTimeRenderer();
 
 	void InternalRootOnMouseMove(const glm::vec2& position);
 
 	static std::vector<GUIObject*> s_MouseListeners;
+	static std::vector<GUIObject*> s_KeyboardListeners;
 
 private:
 	void InternalOnUpdate(float dtS);
@@ -138,6 +143,10 @@ private:
 	void InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton);
 	void InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton);
 	void InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset);
+
+	void InternalRootOnKeyUp(KEY keycode);
+	void InternalRootOnKeyDown(KEY keycode);
+	void InternalRootOnCharFromKey(char c);
 
 	void RerenderChildren(GUIContext* context);
 

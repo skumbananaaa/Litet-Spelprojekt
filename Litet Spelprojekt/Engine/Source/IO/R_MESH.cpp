@@ -22,6 +22,8 @@ uint32 MESH::DOOR = 0;
 uint32 MESH::DOOR_FRAME = 0;
 uint32 MESH::LADDER = 0;
 uint32 MESH::MESH_PARTICLE = 0;
+uint32 MESH::CUBOARD = 0;
+
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -51,4 +53,5 @@ void MESH::RegisterResources()
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
+	CUBOARD					= ResourceHandler::RegisterMesh("Cuboard.obj");
 }

@@ -20,6 +20,11 @@ uint32 MATERIAL::WALL_STANDARD = 0;
 uint32 MATERIAL::CREW_STANDARD = 0;
 uint32 MATERIAL::SINGLE_BED = 0;
 uint32 MATERIAL::BUNK_BED = 0;
+uint32 MATERIAL::INSTRUMENT_1 = 0;
+uint32 MATERIAL::INSTRUMENT_2 = 0;
+uint32 MATERIAL::LAMP = 0;
+uint32 MATERIAL::CHAIR = 0;
+uint32 MATERIAL::CUBOARD = 0;
 uint32 MATERIAL::ANIMATED_MODEL = 0;
 
 /*
@@ -45,10 +50,15 @@ void MATERIAL::RegisterResources()
 	BOAT				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	CHAIR				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
+	LAMP				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)		, 256.0f, -1, SHADER::STANDARD_MATERIAL);
 	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, -1);
 	WATER_OUTDOOR		= ResourceHandler::RegisterWaterOutdoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
 	WATER_INDOOR		= ResourceHandler::RegisterWaterIndoorMaterial(TEXTURE::WATER_DISTORTION, TEXTURE::WATER_NORMAL);
+	INSTRUMENT_1		= ResourceHandler::RegisterMaterial(TEXTURE::INSTRUMENT_1, -1, SHADER::STANDARD_MATERIAL);
+	INSTRUMENT_2		= ResourceHandler::RegisterMaterial(TEXTURE::INSTRUMENT_2, -1, SHADER::STANDARD_MATERIAL);
 	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, SHADER::STANDARD_MATERIAL);
 	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, SHADER::STANDARD_MATERIAL);
+	CUBOARD				= ResourceHandler::RegisterMaterial(TEXTURE::CUBOARD, -1, SHADER::STANDARD_MATERIAL);
 	ANIMATED_MODEL		= ResourceHandler::RegisterMaterial(TEXTURE::SJOFAN_DIFF, -1, SHADER::ANIMATION);
 }

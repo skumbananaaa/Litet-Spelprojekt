@@ -86,7 +86,6 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 
 	pScene = importer->ReadFile(daeFile, aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType | aiProcess_ConvertToLeftHanded);
 	pRootNode = pScene->mRootNode;
-
 	if (!pScene)
 	{
 		std::cout << "Dae file couldn't be loaded" << std::endl;
@@ -94,6 +93,13 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 	}
 	else
 	{
+
+		if (pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
+		{
+			std::cout << "Error: Scene incomplete." << std::endl;
+			return nullptr;
+		}
+
 		if (!pScene->HasMeshes())
 		{
 			std::cout << "Error: Scene does not contain any meshes." << std::endl;
@@ -116,6 +122,21 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* daeFile)
 		else
 		{
 			std::cout << "Scene has " << pMesh->mNumBones << " bones." << std::endl;
+		}
+
+
+		if (pScene->mRootNode->mMetaData)
+		{
+			aiMetadata* pMetaData = pScene->mRootNode->mMetaData;
+			std::cout << "Metadata: " << std::endl;
+			for (uint32 i = 0; i < pMetaData->mNumProperties; i++)
+			{
+				std::cout << pMetaData->mKeys->C_Str() << std::endl;
+			}
+		}
+		else
+		{
+			std::cout << "No metadata" << std::endl;
 		}
 		
 		const aiBone* paiBones = pMesh->mBones[0];

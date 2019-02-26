@@ -348,6 +348,18 @@ void Game::OnResourcesLoaded()
 		m_Scenes[0]->AddGameObject(pGameObject);
 	}
 
+	//Instrument
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::INSTRUMENT_1);
+		pGameObject->SetMesh(MESH::INSTRUMENT_1);
+		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->UpdateTransform();
+		m_Scenes[0]->AddGameObject(pGameObject);
+	}
+
 	//Water?? YAAAS
 	{
 		pGameObject = new GameObject();

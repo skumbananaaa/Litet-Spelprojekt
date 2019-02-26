@@ -115,7 +115,7 @@ void Game::OnResourcesLoaded()
 	//Create Scene
 	m_Scenes.push_back(new Scene());
 
-	LightManager::Init(m_Scenes[0], 3);
+	LightManager::Init(m_Scenes[0], NUM_SPOT_LIGHTS);
 
 
 	//Create renderers

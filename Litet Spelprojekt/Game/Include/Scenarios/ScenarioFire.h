@@ -19,6 +19,7 @@ public:
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 
+	void ShowInRoom(uint32 roomID) noexcept;
 private:
 	World* m_pWorld;
 

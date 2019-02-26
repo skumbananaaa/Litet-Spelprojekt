@@ -3,10 +3,9 @@
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec3 g_Tangent;
-layout(location = 3) in vec2 g_TexCoords;
-layout(location = 4) in ivec4 g_BonesIDs;
-layout(location = 5) in vec4 g_Weights;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in ivec4 g_BonesIDs;
+layout(location = 4) in vec4 g_Weights;
 
 layout(std140, binding = 0) uniform CameraBuffer
 {

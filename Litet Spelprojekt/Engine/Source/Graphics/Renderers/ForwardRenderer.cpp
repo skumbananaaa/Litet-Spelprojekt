@@ -71,13 +71,16 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
 
 	MaterialBuffer perBatch = {};
-
+	
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
-		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
-		const Material& material = *animatedGameObjects[i]->GetMaterial();
+		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		{
+			const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+			const Material& material = *animatedGameObjects[i]->GetMaterial();
 
-		skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
+			skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
+		}
 	}
 
 	//Update lights
@@ -105,18 +108,19 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	//Render scene
 	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
 	context.SetDepthFunc(FUNC_LESS);
-	DepthPrePass(mainCamera, scene);
+	DepthPrePass(mainCamera, scene, pWorld);
 
 	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
 	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
 	MainPass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
-	SkyBoxPass(mainCamera, scene);
+	AnimationPass(dtS, scene, pWorld);
 	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
 	ParticlePass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[6], GL_TIMESTAMP);
-	AnimationPass(dtS, scene);
+	SkyBoxPass(mainCamera, scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[7], GL_TIMESTAMP);
 
 	//Get query results
 	uint64 startTime = 0;
@@ -131,9 +135,11 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[4], GL_QUERY_RESULT, &startTime);
 	m_FrameTimes.LightPass += static_cast<float>(startTime - stopTime) / 1000000.0f;
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[5], GL_QUERY_RESULT, &stopTime);
-	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	m_FrameTimes.AnimationPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[6], GL_QUERY_RESULT, &startTime);
 	m_FrameTimes.ParticlePass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[7], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
 
 	if (timer >= 1.0f)
 	{
@@ -143,18 +149,19 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
 		std::cout << " DepthPrePass: " << m_FrameTimes.DepthPrePass / fps << "ms" << std::endl;
 		std::cout << " Lightpass: " << m_FrameTimes.LightPass / fps << "ms" << std::endl;
-		std::cout << " Skyboxpass: " << m_FrameTimes.SkyboxPass / fps << "ms" << std::endl;
+		std::cout << " AnimationPass: " << m_FrameTimes.AnimationPass / fps << "ms" << std::endl;
 		std::cout << " Particlepass: " << m_FrameTimes.ParticlePass / fps << "ms" << std::endl;
+		std::cout << " Skyboxpass: " << m_FrameTimes.SkyboxPass / fps << "ms" << std::endl;
 		std::cout << "-----------" << std::endl;
 
 		frametime = 0.0f;
+		timer = 0.0f;
 		m_FrameTimes.ReflectionPass = 0.0f;
 		m_FrameTimes.SkyboxPass = 0.0f;
 		m_FrameTimes.ParticlePass = 0.0f;
 		m_FrameTimes.LightPass = 0.0f;
 		m_FrameTimes.DepthPrePass = 0.0f;
-
-		timer = 0.0f;
+		m_FrameTimes.AnimationPass = 0.0f;
 	}
 
 	m_FrameCounter++;
@@ -165,8 +172,8 @@ void ForwardRenderer::Create() noexcept
 	std::cout << "Creating forward renderer" << std::endl;
 
 	//CREATE QUERIES
-	m_pQueries[0] = new TimerQuery(7);
-	m_pQueries[1] = new TimerQuery(7);
+	m_pQueries[0] = new TimerQuery(8);
+	m_pQueries[1] = new TimerQuery(8);
 
 	//CREATE MESHES NEEDED
 	{
@@ -278,8 +285,8 @@ void ForwardRenderer::Create() noexcept
 void ForwardRenderer::CreateBatches(const Scene& scene, const World* const pWorld) const noexcept
 {
 	//Create batches for drawables
-	//Dahlsson är detta verkligen det mest optimierade du kan göra?
-	//-Nej men får duga tills vidare
+	//Dahlsson ï¿½r detta verkligen det mest optimierade du kan gï¿½ra?
+	//-Nej men fï¿½r duga tills vidare
 	{
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
@@ -441,7 +448,7 @@ void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 	context.Disable(CLIP_DISTANCE1);
 }
 
-void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) const noexcept
+void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, const World* pWorld) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -505,9 +512,10 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene) con
 
 		buff.ClipPlane = material.GetLevelClipPlane();
 		m_pPlaneBuffer->UpdateData(&buff);
-
-		m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
-
+		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		{
+			m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
+		}
 		if (material.GetCullMode() != CULL_MODE_NONE)
 		{
 			context.Enable(CULL_FACE);
@@ -547,7 +555,6 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 		perBatch.ClipPlane = material.GetLevelClipPlane();
 		perBatch.Specular = material.GetSpecular();
 		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
-		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
 		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
 		m_pMaterialBuffer->UpdateData(&perBatch);
 
@@ -567,7 +574,7 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 	}
 }
 
-void ForwardRenderer::AnimationPass(float dtS, const Scene& scene) const noexcept
+void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* const pWorld) const noexcept
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
 
@@ -578,28 +585,29 @@ void ForwardRenderer::AnimationPass(float dtS, const Scene& scene) const noexcep
 	MaterialBuffer perBatch = {};
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
-		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
-		const Material& material = *animatedGameObjects[i]->GetMaterial();
+		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		{
+			const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+			const Material& material = *animatedGameObjects[i]->GetMaterial();
+			m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
 
-		m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
+			perBatch.Color = material.GetColor();
+			perBatch.ClipPlane = material.GetLevelClipPlane();
+			perBatch.Specular = material.GetSpecular();
+			perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
+			perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
+			m_pMaterialBuffer->UpdateData(&perBatch);
 
-		perBatch.Color = material.GetColor();
-		perBatch.ClipPlane = material.GetLevelClipPlane();
-		perBatch.Specular = material.GetSpecular();
-		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
-		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
-		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
-		m_pMaterialBuffer->UpdateData(&perBatch);
+			material.SetCameraBuffer(m_pCameraBuffer);
+			material.SetLightBuffer(m_pLightBuffer);
+			material.SetMaterialBuffer(m_pMaterialBuffer);
 
-		material.SetCameraBuffer(m_pCameraBuffer);
-		material.SetLightBuffer(m_pLightBuffer);
-		material.SetMaterialBuffer(m_pMaterialBuffer);
+			material.Bind(nullptr);
 
-		material.Bind(nullptr);
+			context.DrawAnimatedMesh(*animatedGameObjects[i]->GetAnimatedMesh());
 
-		context.DrawAnimatedMesh(*animatedGameObjects[i]->GetAnimatedMesh());
-
-		material.Unbind();
+			material.Unbind();
+		}
 	}
 }
 

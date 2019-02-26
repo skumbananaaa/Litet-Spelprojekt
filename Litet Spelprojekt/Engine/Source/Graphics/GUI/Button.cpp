@@ -6,17 +6,17 @@ Button::Button(float x, float y, float width, float height, const std::string& t
 	m_pFramebufferText(nullptr),
 	m_IsPressed(false),
 	m_IsTextBuffered(false),
-	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
-	m_HoverColor(0.6F, 0.6F, 0.6F, 1.0F),
-	m_SelectedColor(0.553F, 0.824F, 0.541F, 1.0F),
-	m_PressedTextColor(0.0F, 0.0F, 0.0F, 1.0F),
-	m_HoverTextColor(1.0F, 1.0F, 1.0F, 1.0F),
-	m_SelectedTextColor(0.0F, 0.0F, 0.0F, 1.0F),
+	m_PressedColor(GUIContext::COLOR_PRESSED),
+	m_HoverColor(GUIContext::COLOR_HOVER),
+	m_SelectedColor(GUIContext::COLOR_SELECTED),
+	m_PressedTextColor(GUIContext::COLOR_TEXT_PRESSED),
+	m_HoverTextColor(GUIContext::COLOR_TEXT_HOVER),
+	m_SelectedTextColor(GUIContext::COLOR_TEXT_SELECTED),
 	m_OnPressedCallback(onPressedCallback),
 	m_OnReleasedCallback(onReleasedCallback)
 {
 	RecreateFrameBuffer(width, height);
-	SetBackgroundColor(glm::vec4(0.408F, 0.408F, 0.408F, 1.0F));
+	SetBackgroundColor(GUIContext::COLOR_BUTTON_BACKGROUND);
 }
 
 Button::~Button()

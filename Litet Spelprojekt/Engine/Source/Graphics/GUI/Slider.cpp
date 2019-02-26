@@ -8,9 +8,9 @@ Slider::Slider(float x, float y, float width, float height, void(*onChangedCallb
 	m_SliderPos(0),
 	m_SliderVel(0),
 	m_Ratio(1),
-	m_SliderColor(0.408F, 0.408F, 0.408F, 1.0F),
-	m_PressedColor(0.8F, 0.8F, 0.8F, 1.0F),
-	m_HoverColor(0.6F, 0.6F, 0.6F, 1.0F)
+	m_SliderColor(GUIContext::COLOR_BUTTON_BACKGROUND),
+	m_PressedColor(GUIContext::COLOR_PRESSED),
+	m_HoverColor(GUIContext::COLOR_HOVER)
 {
 	m_OnChangedCallback = onChangedCallback;
 	SetBackgroundColor(glm::vec4(0.243F, 0.243F, 0.259F, 1.0F));

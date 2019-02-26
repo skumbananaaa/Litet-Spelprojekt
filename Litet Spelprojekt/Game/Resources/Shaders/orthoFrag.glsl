@@ -1,19 +1,16 @@
 in VS_OUT
 {
 	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
 	vec2 TexCoords;
 } fs_in;
 
 layout(binding = 0) uniform sampler2D g_Texture;
-layout(binding = 1) uniform sampler2D g_NormalMap;
 
 layout(std140, binding = 0) uniform VSPerFrame
 {
 	mat4 g_ViewProjection;
 	vec3 g_CameraPosition;
-	float vafan;
+	float pad1;
 	vec3 g_CameraFront;
 };
 

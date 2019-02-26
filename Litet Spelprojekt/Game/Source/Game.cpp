@@ -750,9 +750,11 @@ void Game::OnUpdate(float dtS)
 	dist += 0.02f * dtS;
 	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
 
-	static float wave = 0.0f;
-	wave += 0.25f * dtS;
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetWaveFactor(wave);
+	static float waveX = 0.0f;
+	static float waveY = 0.0f;
+	waveX += 0.25f * dtS;
+	waveY += 0.5f * dtS;
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetWaveFactor(glm::vec2(waveX, waveY));
 
 
 	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();

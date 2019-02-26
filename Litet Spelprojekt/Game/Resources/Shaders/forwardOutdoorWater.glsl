@@ -63,14 +63,13 @@ layout(std140, binding = 3) uniform WorldBuffer
 
 layout(std140, binding = 6) uniform WaterBuffer
 {
-	float g_WaveFactor;
+	vec2 g_WaveFactor;
 };
 
 //OUT
 out VS_OUT
 {
 	vec4 ClipSpaceGrid;
-	vec4 ClipSpaceReal;
 	vec3 Normal;
 	vec3 ToCameraVector;
 	vec3 Specular;
@@ -78,17 +77,72 @@ out VS_OUT
 } vs_out;
 
 //CONSTS
-const float PI = 3.1415926535897932384626433832795f;
-
-const float waveLength = 4.0f;
-const float waveAmplitude = 0.2f;
-const float specularReflectivity = 0.4f;
-const float shineDamper = 20.0f;
 const float specularStrength = 256.0f;//0.6;
-const float yScalingFactor = 2.5f;
+const float waveScalingFactor = 0.75f;
 
-const vec3 lightColour = vec3(1.0f, 1.0f, 1.0f);
-const vec3 lightBias = vec3(1.0f, 1.0f, 1.0f);
+vec3 mod289(vec3 x)
+{
+	return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec2 mod289(vec2 x) 
+{
+	return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec3 permute(vec3 x) 
+{
+	return mod289(((x*34.0)+1.0)*x);
+}
+
+float snoise(vec2 v)
+{
+	const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
+						0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
+						-0.577350269189626,  // -1.0 + 2.0 * C.x
+						0.024390243902439); // 1.0 / 41.0
+	// First corner
+	vec2 i  = floor(v + dot(v, C.yy) );
+	vec2 x0 = v -   i + dot(i, C.xx);
+
+	// Other corners
+	vec2 i1;
+	//i1.x = step( x0.y, x0.x ); // x0.x > x0.y ? 1.0 : 0.0
+	//i1.y = 1.0 - i1.x;
+	i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+	// x0 = x0 - 0.0 + 0.0 * C.xx ;
+	// x1 = x0 - i1 + 1.0 * C.xx ;
+	// x2 = x0 - 1.0 + 2.0 * C.xx ;
+	vec4 x12 = x0.xyxy + C.xxzz;
+	x12.xy -= i1;
+
+	// Permutations
+	i = mod289(i); // Avoid truncation effects in permutation
+	vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+		+ i.x + vec3(0.0, i1.x, 1.0 ));
+
+	vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+	m = m*m ;
+	m = m*m ;
+
+	// Gradients: 41 points uniformly over a line, mapped onto a diamond.
+	// The ring size 17*17 = 289 is close to a multiple of 41 (41*7 = 287)
+
+	vec3 x = 2.0 * fract(p * C.www) - 1.0;
+	vec3 h = abs(x) - 0.5;
+	vec3 ox = floor(x + 0.5);
+	vec3 a0 = x - ox;
+
+	// Normalise gradients implicitly by scaling m
+	// Approximation of: m *= inversesqrt( a0*a0 + h*h );
+	m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+
+	// Compute final noise value at P
+	vec3 g;
+	g.x  = a0.x  * x0.x  + h.x  * x0.y;
+	g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+	return 130.0 * dot(m, g);
+}
 
 vec3 CalculateDiffuseLighting(vec3 toLightVector, vec3 normal, vec3 lightColor, float intensity)
 {
@@ -110,39 +164,21 @@ vec3 calcNormal(vec3 vertex0, vec3 vertex1, vec3 vertex2)
 	return normalize(cross(tangent, bitangent));
 }
 
-float generateOffset(float x, float z, float val1, float val2)
-{
-	float radiansX = ((mod(x + z * x * val1, waveLength) / waveLength) + g_WaveFactor * mod(x * 0.8f + z, 1.5f)) * 2.0f * PI;
-	float radiansZ = ((mod(val2 * (z * x + x * z), waveLength) / waveLength) + g_WaveFactor * 2.0f * mod(x , 2.0f)) * 2.0f * PI;
-	return waveAmplitude * 0.5f * (sin(radiansZ) + cos(radiansX));
-}
-
-vec3 applyDistortion(vec3 vertex)
-{
-	float xDistortion = generateOffset(vertex.x, vertex.z, 0.2f, 0.1f);
-	float yDistortion = yScalingFactor * generateOffset(vertex.x, vertex.z, 0.1f, 0.3f);
-	float zDistortion = generateOffset(vertex.x, vertex.z, 0.15f, 0.2f);
-	return vertex + vec3(xDistortion, yDistortion, zDistortion);
-}
-
 void main()
 {
-	//vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-
-	//get the grid position of all 3 vertices in the triangle
+	//Get the grid position of all 3 vertices in the triangle
 	vec3 currentVertex = vec3(g_Position.x, 0.0f, g_Position.y);
 	vec3 vertex1 = currentVertex + vec3(g_Indicators.x, 0.0f, g_Indicators.y);
 	vec3 vertex2 = currentVertex + vec3(g_Indicators.z, 0.0f, g_Indicators.w);
 	
 	vs_out.ClipSpaceGrid = g_ProjectionView * vec4(currentVertex, 1.0f);
 	
-	//apply distortion to all 3 vertices
-	currentVertex = applyDistortion(currentVertex);
-	vertex1 = applyDistortion(vertex1);
-	vertex2 = applyDistortion(vertex2);
+	//Apply distortion to all 3 vertices
+	currentVertex.y += waveScalingFactor * snoise(currentVertex.xz + g_WaveFactor);
+	vertex1 += waveScalingFactor * snoise(vertex1.xz + g_WaveFactor);
+	vertex2 += waveScalingFactor * snoise(vertex2.xz + g_WaveFactor);
 	
 	vs_out.Normal = calcNormal(currentVertex, vertex1, vertex2);
-	vs_out.ClipSpaceReal = g_ProjectionView * vec4(currentVertex, 1.0f);
 	vs_out.ToCameraVector = normalize(g_CameraPosition - currentVertex);
 	
 	ivec3 mapPos = ivec3(round(currentVertex.x), currentVertex.y, round(currentVertex.z));
@@ -237,7 +273,7 @@ void main()
 		}
 	}
 
-	gl_Position = vs_out.ClipSpaceReal;
+	gl_Position = g_ProjectionView * vec4(currentVertex, 1.0f);
 }
 
 #elif defined(FRAGMENT_SHADER)
@@ -248,7 +284,6 @@ layout(early_fragment_tests) in;
 in VS_OUT
 {
 	in vec4 ClipSpaceGrid;
-	in vec4 ClipSpaceReal;
 	in vec3 Normal;
 	in vec3 ToCameraVector;
 	in vec3 Specular;
@@ -264,35 +299,14 @@ layout(binding = 4) uniform sampler2D reflectionTexture;
 layout(location = 0) out vec4 g_OutColor;
 
 //CONSTS
-const float distortionStrength = 0.005;
-const float specularStrength = 256.0f;//0.6;
-const float shininess = 20.0;
-const float refractionExp = 1.5;
-const float normalYSmoothness = 4.0;
-const float depthOfFullOpaque = 0.7;
-const float depthOfFullDistortion = 0.9;
-const float depthOfFullSpecular = 0.7;
-
 const vec3 waterColour = vec3(0.604, 0.867, 0.851);
 const float fresnelReflective = 0.5;
-const float edgeSoftness = 1;
 const float minBlueness = 0.4;
-const float maxBlueness = 0.8;
-const float murkyDepth = 14;
 
 const float fogDensity = 0.075;
 const float fogGradient = 5.0;
 
-const vec2 nearFarPlanes = vec2(0.1f, 100.0f);
-
 //FUNCTIONS
-float toLinearDepth(float zDepth)
-{
-	float near = nearFarPlanes.x;
-	float far = nearFarPlanes.y;
-	return 2.0 * near * far / (far + near - (2.0 * zDepth - 1.0) * (far - near));
-}
-
 float calculateFresnel()
 {
 	vec3 viewVector = normalize(fs_in.ToCameraVector);
@@ -311,7 +325,6 @@ vec2 clipSpaceToTexCoords(vec4 clipSpace)
 
 void main()
 {
-	vec2 texCoordsReal = clipSpaceToTexCoords(fs_in.ClipSpaceReal);
 	vec2 texCoordsGrid = clipSpaceToTexCoords(fs_in.ClipSpaceGrid);
 	
 	vec2 refractionTexCoords = texCoordsGrid;

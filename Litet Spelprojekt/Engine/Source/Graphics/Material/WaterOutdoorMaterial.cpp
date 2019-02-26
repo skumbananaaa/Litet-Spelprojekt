@@ -10,7 +10,7 @@ WaterOutdoorMaterial::WaterOutdoorMaterial() : Material(SHADER::WATER_OUTDOOR_MA
 	m_pWaterBuffer(nullptr),
 	m_Buffer()
 {
-	m_Buffer.WaveFactor = 0.0f;
+	m_Buffer.WaveFactor = glm::vec2(0.0f);
 	m_pWaterBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(WaterOutdoorBuffer));
 	SetIncludeInDepthPrePass(false);
 	SetIsReflectable(true);
@@ -77,7 +77,7 @@ void WaterOutdoorMaterial::SetDisplacementMap(Texture2D* pDisplacementMap)
 	m_pDisplacementMap = pDisplacementMap;
 }
 
-void WaterOutdoorMaterial::SetWaveFactor(float waveFactor) const
+void WaterOutdoorMaterial::SetWaveFactor(const glm::vec2& waveFactor) const
 {
 	m_Buffer.WaveFactor = waveFactor;
 	m_pWaterBuffer->UpdateData(&m_Buffer);

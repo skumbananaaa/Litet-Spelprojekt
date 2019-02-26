@@ -12,6 +12,8 @@ uint32 GAMEOBJECT::INSTRUMENT_2 = 0;
 uint32 GAMEOBJECT::LAMP = 0;
 uint32 GAMEOBJECT::FIREALARM = 0;
 uint32 GAMEOBJECT::CUBOARD = 0;
+uint32 GAMEOBJECT::TABLE = 0;
+uint32 GAMEOBJECT::TOILET = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -31,6 +33,8 @@ void GAMEOBJECT::RegisterResources()
 	LAMP						= ResourceHandler::RegisterGameObject("Lamp", MESH::LAMP, MATERIAL::LAMP);
 	FIREALARM					= ResourceHandler::RegisterGameObject("Firealarm", MESH::LAMP, MATERIAL::RED);
 	CUBOARD						= ResourceHandler::RegisterGameObject("Cuboard", MESH::CUBOARD, MATERIAL::CUBOARD);
+	TABLE						= ResourceHandler::RegisterGameObject("Table", MESH::TABLE, MATERIAL::TABLE);
+	TOILET						= ResourceHandler::RegisterGameObject("Toilet", MESH::TOILET, MATERIAL::TOILET);
 }
 
 GameObject* GAMEOBJECT::CreateGameObject(uint32 gameObject) noexcept

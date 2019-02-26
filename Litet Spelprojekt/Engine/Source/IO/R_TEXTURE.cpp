@@ -13,6 +13,8 @@ uint32 TEXTURE::HDR = 0;
 uint32 TEXTURE::SINGLE_BED = 0;
 uint32 TEXTURE::BUNK_BED = 0;
 uint32 TEXTURE::CUBOARD = 0;
+uint32 TEXTURE::TABLE = 0;
+uint32 TEXTURE::TOILET = 0;
 uint32 TEXTURE::INSTRUMENT_1 = 0;
 uint32 TEXTURE::INSTRUMENT_2 = 0;
 uint32 TEXTURE::ICON_INJURY_BONE = 0;
@@ -49,6 +51,8 @@ void TEXTURE::RegisterResources()
 	INSTRUMENT_2		= ResourceHandler::RegisterTexture2D("uv_Instrument2.jpg", TEX_FORMAT_RGBA);
 	BUNK_BED			= ResourceHandler::RegisterTexture2D("uv_bunk_Bed_Texture.jpg", TEX_FORMAT_RGBA);
 	CUBOARD				= ResourceHandler::RegisterTexture2D("uv_Cuboard.jpg", TEX_FORMAT_RGBA);
+	TABLE				= ResourceHandler::RegisterTexture2D("uv_Table.jpg", TEX_FORMAT_RGBA);
+	TOILET				= ResourceHandler::RegisterTexture2D("uv_Toilet.jpg", TEX_FORMAT_RGBA);
 	WATER_DISTORTION	= ResourceHandler::RegisterTexture2D("waterDUDV.png", TEX_FORMAT_RGBA, true, false, params);
 	WATER_NORMAL		= ResourceHandler::RegisterTexture2D("waterNormalMap.png", TEX_FORMAT_RGBA, true, false, params);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);

@@ -29,6 +29,8 @@ public:
 	static uint32 LAMP;
 	static uint32 CHAIR;
 	static uint32 CUBOARD;
+	static uint32 TABLE;
+	static uint32 TOILET;
 	static uint32 ANIMATED_MODEL;
 
 private:

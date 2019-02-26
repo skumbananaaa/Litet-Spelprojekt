@@ -16,6 +16,8 @@ public:
 	static uint32 LAMP;
 	static uint32 FIREALARM;
 	static uint32 CUBOARD;
+	static uint32 TABLE;
+	static uint32 TOILET;
 private:
 	static void RegisterResourcesPreLoading();
 	static void RegisterResources();

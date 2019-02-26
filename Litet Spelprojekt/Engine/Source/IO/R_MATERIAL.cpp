@@ -25,6 +25,8 @@ uint32 MATERIAL::INSTRUMENT_2 = 0;
 uint32 MATERIAL::LAMP = 0;
 uint32 MATERIAL::CHAIR = 0;
 uint32 MATERIAL::CUBOARD = 0;
+uint32 MATERIAL::TABLE = 0;
+uint32 MATERIAL::TOILET = 0;
 uint32 MATERIAL::ANIMATED_MODEL = 0;
 
 /*
@@ -60,5 +62,8 @@ void MATERIAL::RegisterResources()
 	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, -1, SHADER::STANDARD_MATERIAL);
 	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, -1, SHADER::STANDARD_MATERIAL);
 	CUBOARD				= ResourceHandler::RegisterMaterial(TEXTURE::CUBOARD, -1, SHADER::STANDARD_MATERIAL);
+	TABLE				= ResourceHandler::RegisterMaterial(TEXTURE::TABLE, -1, SHADER::STANDARD_MATERIAL);
+	TOILET				= ResourceHandler::RegisterMaterial(TEXTURE::TOILET, -1, SHADER::STANDARD_MATERIAL);
+	
 	ANIMATED_MODEL		= ResourceHandler::RegisterMaterial(TEXTURE::SJOFAN_DIFF, -1, SHADER::ANIMATION);
 }

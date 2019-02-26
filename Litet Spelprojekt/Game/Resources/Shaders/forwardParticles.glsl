@@ -24,7 +24,6 @@ layout(binding = 5) uniform Extension
 
 out VS_OUT
 {
-	vec3 Normal;
 	vec2 TexCoords;
 	vec4 Color;
 } vs_out;
@@ -34,7 +33,6 @@ void main()
 	vec3 cameraRight = vec3(g_View[0][0], g_View[1][0], g_View[2][0]);
 	vec3 cameraUp = vec3(g_View[0][1], g_View[1][1], g_View[2][1]);
 
-	vs_out.Normal = g_CameraLookAt - g_CameraPosition;
 	vs_out.TexCoords = g_TexCoord;
 	vs_out.Color = g_InstanceColor;
 
@@ -51,7 +49,6 @@ layout(location = 0) out vec4 g_OutColor;
 
 in VS_OUT
 {
-	vec3 Normal;
 	vec2 TexCoords;
 	vec4 Color;
 } fs_in;

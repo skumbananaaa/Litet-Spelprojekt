@@ -13,9 +13,8 @@ layout(std140, binding = 0) uniform CameraBuffer
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec3 g_Tangent;
-layout(location = 3) in vec2 g_TexCoords;
-layout(location = 4) in mat4 g_InstanceModel;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in mat4 g_InstanceModel;
 
 layout(binding = 5) uniform Extension
 {
@@ -71,7 +70,6 @@ in VS_OUT
 
 const float specularStrength = 256.0f;
 const float shininess = 20.0;
-const float normalYSmoothness = 8.0;
 
 struct DirectionalLight
 {
@@ -141,12 +139,6 @@ void main()
 	vec3 worldPos = vec3(fs_in.Position);
 	worldPos.x += extension * floor(worldPos.y / 2.0f);
 
-	//NORMAL
-	vec3 normal = texture(normalMap, distortionTexCoords).xyz;
-	normal = normalize(vec3(normal.x * 2.0 - 1.0, normal.y * normalYSmoothness, normal.z * 2.0 - 1.0));
-	float useNormalMap = abs(inNormal.y);
-	normal = normal * useNormalMap + inNormal * (1.0f - useNormalMap);
-
 	//VIEWDIR
 	vec3 viewDir = g_CameraPosition - worldPos;
 	float distFromCamera = length(viewDir);
@@ -170,9 +162,9 @@ void main()
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
 		vec3 lightColor = g_DirLights[i].Color.rgb;
-		float cosTheta = dot(normal, lightDir);
+		float cosTheta = dot(inNormal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, inNormal, col.rgb, specularStrength, 1.0f);
 	}
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
@@ -200,9 +192,9 @@ void main()
 			float attenuation = 1.0f / (dist * dist);
 			vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
 			lightDir = normalize(lightDir);
-			float cosTheta = dot(normal, lightDir);
+			float cosTheta = dot(inNormal, lightDir);
 
-			c += CalcLight(lightDir, lightColor, viewDir, normal, col.rgb, specularStrength, 1.0f);
+			c += CalcLight(lightDir, lightColor, viewDir, inNormal, col.rgb, specularStrength, 1.0f);
 		}
 	}
 
@@ -241,7 +233,7 @@ void main()
 	
 			if(theta > g_SpotLights[i].OuterAngle)
 			{
-				c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, col.rgb, specularStrength, intensity);
+				c += CalcLight(normalize(lightDir), lightColor, viewDir, inNormal, col.rgb, specularStrength, intensity);
 			}
 		}
 	}

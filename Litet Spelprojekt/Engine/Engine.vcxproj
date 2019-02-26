@@ -31,6 +31,7 @@
     <ClInclude Include="Include\Graphics\Buffers\UniformBuffer.h" />
     <ClInclude Include="Include\Graphics\Camera.h" />
     <ClInclude Include="Include\Graphics\Geometry\AnimatedMesh.h" />
+    <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
     <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
     <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />

@@ -581,16 +581,6 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 			perBatch.HasDiffuseMap = 0.0f;
 		}
 
-		if (decal.HasNormalMap())
-		{
-			perBatch.HasNormalMap = 1.0f;
-			context.SetTexture(decal.GetNormalMap(), NORMAL_MAP_BINDING_SLOT);
-		}
-		else
-		{
-			perBatch.HasNormalMap = 0.0f;
-		}
-
 		m_pMaterialBuffer->UpdateData(&perBatch);
 
 		m_pDecalMesh->SetInstances(m_DecalBatches[i].Instances.data(), m_DecalBatches[i].Instances.size());
@@ -602,7 +592,6 @@ void DefferedRenderer::DecalPass(const Camera& camera, const Scene& scene) const
 	context.SetUniformBuffer(nullptr, MATERIAL_BUFFER_BINDING_SLOT);
 
 	context.SetTexture(nullptr, DIFFUSE_MAP_BINDING_SLOT);
-	context.SetTexture(nullptr, NORMAL_MAP_BINDING_SLOT);
 	context.SetTexture(nullptr, 3);
 
 	context.SetDepthMask(true);
@@ -625,10 +614,13 @@ void DefferedRenderer::ParticlePass(const Camera& camera, const Scene& scene) co
 	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
-		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
-		
-		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
-		context.DrawParticle(*m_pParticle);
+		if (particleSystems[i]->IsVisible())
+		{
+			m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
+
+			context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
+			context.DrawParticle(*m_pParticle);
+		}
 	}
 
 	context.Enable(CULL_FACE);
@@ -704,7 +696,6 @@ void DefferedRenderer::GeometryPass(const Camera& camera, const Scene& scene) co
 		perBatch.ClipPlane = material.GetLevelClipPlane();
 		perBatch.Specular = material.GetSpecular();
 		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
-		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
 		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
 		m_pMaterialBuffer->UpdateData(&perBatch);
 
@@ -759,16 +750,6 @@ void DefferedRenderer::ForwardPass(const Camera& camera, const Scene& scene) con
 		else
 		{
 			matBuffer.HasDiffuseMap = 0.0f;
-		}
-		
-		if (material.HasNormalMap())
-		{
-			context.SetTexture(material.GetNormalMap(), 1);
-			matBuffer.HasNormalMap = 1.0f;
-		}
-		else
-		{
-			matBuffer.HasNormalMap = 0.0f;
 		}
 		
 		if (material.HasSpecularMap())

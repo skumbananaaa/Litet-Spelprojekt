@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-Mesh::Mesh(const Vertex* const vertices, uint32 numVertices) noexcept
+Mesh::Mesh(const BaseVertex* const pVertices, uint32 numVertices) noexcept
 {
 	m_VertexCount = numVertices;
 
@@ -15,16 +15,17 @@ Mesh::Mesh(const Vertex* const vertices, uint32 numVertices) noexcept
 	GL_CALL(glBindVertexArray(m_VAO));
 
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, m_VBO));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_VertexCount * sizeof(Vertex), vertices, GL_STATIC_DRAW));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, m_VertexCount * sizeof(BaseVertex), pVertices, GL_STATIC_DRAW));
 
-	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0)); //Position
+	//Position
+	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)0));
 	GL_CALL(glEnableVertexAttribArray(0));
-	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(3 * sizeof(float)))); //Normal 
+	//Normal 
+	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(BaseVertex), (void*)(3 * sizeof(float))));
 	GL_CALL(glEnableVertexAttribArray(1));
-	GL_CALL(glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(6 * sizeof(float)))); //Tangent 
+	//TexCoords
+	GL_CALL(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(BaseVertex), (void*)(6 * sizeof(float))));
 	GL_CALL(glEnableVertexAttribArray(2));
-	GL_CALL(glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(9 * sizeof(float)))); //TexCoords
-	GL_CALL(glEnableVertexAttribArray(3));
 
 	GL_CALL(glBindVertexArray(0));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
@@ -63,13 +64,12 @@ Mesh* Mesh::CreateMeshFromFile(const char* pFilename)
 	}
 
 	const aiMesh* pMesh = pScene->mMeshes[0];
-	std::vector<Vertex> vertices(pMesh->mNumVertices);
+	std::vector<BaseVertex> vertices(pMesh->mNumVertices);
 	for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
 	{
-		vertices[i].position = glm::vec3(pMesh->mVertices[i].x, pMesh->mVertices[i].y, pMesh->mVertices[i].z);
-		vertices[i].normal = (pMesh->HasNormals()) ? glm::vec3(pMesh->mNormals[i].x, pMesh->mNormals[i].y, pMesh->mNormals[i].z) : glm::vec3();
-		vertices[i].texCoords = (pMesh->HasTextureCoords(0)) ? glm::vec2(pMesh->mTextureCoords[0][i].x, pMesh->mTextureCoords[0][i].y) : glm::vec2();
-		vertices[i].tangent = (pMesh->HasTangentsAndBitangents()) ? glm::vec3(pMesh->mTangents[i].x, pMesh->mTangents[i].y, pMesh->mTangents[i].z) : glm::vec3();
+		vertices[i].Position = glm::vec3(pMesh->mVertices[i].x, pMesh->mVertices[i].y, pMesh->mVertices[i].z);
+		vertices[i].Normal = (pMesh->HasNormals()) ? glm::vec3(pMesh->mNormals[i].x, pMesh->mNormals[i].y, pMesh->mNormals[i].z) : glm::vec3();
+		vertices[i].TexCoord = (pMesh->HasTextureCoords(0)) ? glm::vec2(pMesh->mTextureCoords[0][i].x, pMesh->mTextureCoords[0][i].y) : glm::vec2();
 	}
 
 	return new Mesh(vertices.data(), static_cast<unsigned int>(vertices.size()));
@@ -77,43 +77,43 @@ Mesh* Mesh::CreateMeshFromFile(const char* pFilename)
 
 Mesh* Mesh::CreateCube()
 {
-	Vertex triangleVertices[] =
+	BaseVertex triangleVertices[] =
 	{
 		// Front (Seen from front)
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
+		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F,  0.0F,  1.0F),	glm::vec2(0.0F, 0.0F) },
 
 		// Top (Seen from above)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
+		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(0.0F,  1.0F,  0.0F),	glm::vec2(0.0F, 0.0F) },
 
 		// Back (Seen from front)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
+		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F,  0.0F, -1.0F),	glm::vec2(0.0F, 0.0F) },
 
 		// Bottom (Seen from above)
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	 glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) },
+		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(0.0F, -1.0F,  0.0F),	glm::vec2(0.0F, 0.0F) },
 
 		// Left (Seen from left)
-		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 0.0F) },
+		{ glm::vec3(-1.0F,  1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(-1.0F,  1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(-1.0F, -1.0F,  1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(-1.0F, -1.0F, -1.0F),	glm::vec3(-1.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 0.0F) },
 
 		// Right (Seen from left)
-		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 1.0F) },
-		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 1.0F) },
-		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(1.0F, 0.0F) },
-		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  1.0F),	 glm::vec2(0.0F, 0.0F) }
+		{ glm::vec3(1.0F,  1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 1.0F) },
+		{ glm::vec3(1.0F,  1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	glm::vec2(1.0F, 1.0F) },
+		{ glm::vec3(1.0F, -1.0F,  1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	glm::vec2(1.0F, 0.0F) },
+		{ glm::vec3(1.0F, -1.0F, -1.0F),	glm::vec3(1.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 0.0F) }
 	};
 
 	return new Mesh(triangleVertices, 24);
@@ -122,15 +122,15 @@ Mesh* Mesh::CreateCube()
 Mesh* Mesh::CreateGrid(int32 width, int32 height, int32 depth)
 {
 	int nrOfVertices = ((width + 1) * (height + 1) + (height + 1) * (depth + 1) + (width + 1) * (depth + 1)) * 2;
-	Vertex* pVertices = new Vertex[nrOfVertices];
+	BaseVertex* pVertices = new BaseVertex[nrOfVertices];
 	int counter = 0;
 
 	for (int y = -height / 2; y <= height / 2; y++)
 	{
 		for (int x = -width / 2; x <= width / 2; x++)
 		{
-			pVertices[counter++] = { glm::vec3(x, y, -depth / 2),	glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
-			pVertices[counter++] = { glm::vec3(x, y, depth / 2), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, y, -depth / 2),	glm::vec3(0.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, y, depth / 2), glm::vec3(0.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 0.0F) };
 		}
 	}
 
@@ -138,8 +138,8 @@ Mesh* Mesh::CreateGrid(int32 width, int32 height, int32 depth)
 	{
 		for (int z = -depth / 2; z <= depth / 2; z++)
 		{
-			pVertices[counter++] = { glm::vec3(-width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
-			pVertices[counter++] = { glm::vec3(width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(-width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(width / 2, y, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
 		}
 	}
 
@@ -147,8 +147,8 @@ Mesh* Mesh::CreateGrid(int32 width, int32 height, int32 depth)
 	{
 		for (int z = -depth / 2; z <= depth / 2; z++)
 		{
-			pVertices[counter++] = { glm::vec3(x, -height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
-			pVertices[counter++] = { glm::vec3(x, height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec3(0.0F,  0.0F,  0.0F),	 glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, -height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 0.0F) };
+			pVertices[counter++] = { glm::vec3(x, height / 2, z), glm::vec3(0.0F,  0.0F,  0.0F),	glm::vec2(0.0F, 0.0F) };
 		}
 	}
 

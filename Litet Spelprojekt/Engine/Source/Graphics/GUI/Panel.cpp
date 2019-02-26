@@ -3,7 +3,7 @@
 
 Panel::Panel(float x, float y, float width, float height) : GUIObject(x, y, width, height)
 {
-	SetBackgroundColor(glm::vec4(0.118F, 0.118F, 0.118F, 1.0F));
+	SetBackgroundColor(GUIContext::COLOR_PANEL_BACKGROUND);
 }
 
 Panel::~Panel()

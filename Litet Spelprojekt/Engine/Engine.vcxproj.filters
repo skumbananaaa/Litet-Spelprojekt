@@ -193,6 +193,7 @@
     <ClInclude Include="Include\System\CPUProfiler.h" />
     <ClInclude Include="Include\Graphics\Particles\MeshEmitter.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
+    <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
     <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
   </ItemGroup>
   <ItemGroup>

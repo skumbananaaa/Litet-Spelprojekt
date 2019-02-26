@@ -5,7 +5,8 @@ UICrewMember::UICrewMember(float width, float height) : Panel(0, 0, width, heigh
 	m_Crewmember(nullptr)
 {
 	m_TextViewName = new TextView(0, height - 25, width, 25, "Name", true);
-	m_TextViewName->SetBackgroundColor(glm::vec4(0.08F, 0.08F, 0.08F, 1.0F));
+	m_TextViewName->SetBackgroundColor(GUIContext::COLOR_HOVER);
+	m_TextViewName->SetTextColor(GUIContext::COLOR_BLACK);
 
 	Add(m_TextViewName);
 	Add(new TextView(5, 85, 100, 40, "Färdigheter"));

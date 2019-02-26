@@ -13,10 +13,10 @@ Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, f
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 	SetDirection(glm::vec3(1.0f, 0.0f, 0.0f));
 	m_pTorch = new SpotLight(position, glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(25.0f)), glm::vec3(m_Direction.x, 0.0, m_Direction.z), glm::vec4(0.0f));
-	SetMaterial(MATERIAL::CREW_STANDARD);
-	SetMesh(MESH::CUBE);
+	SetMaterial(MATERIAL::ANIMATED_MODEL);
+	SetAnimatedMesh(MESH::ANIMATED_MODEL);
 	SetPosition(position);
-	SetScale(glm::vec3(0.2, 1.8, 0.5));
+	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
 
 	m_LastKnownPosition = position;
@@ -215,12 +215,30 @@ bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned;
+	return m_HasInjuryBurned > 1.0;
 }
 
 bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke;
+	return m_HasInjurySmoke > 1.0;
+}
+
+void Crewmember::UpdateDamage(const TileData*const* data)
+{
+	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	if (tileData.SmokeAmount - tileData.SmokeLimit > 1.0 && m_HasInjurySmoke < 1.0f)
+	{
+		m_HasInjurySmoke += tileData.SmokeAmount/tileData.SmokeLimit;
+		Logger::LogEvent("Crewmember " + GetName() + "got smoked" + std::to_string(m_HasInjurySmoke));
+	}
+
+	tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+
+	if (tileData.Temp > 100 && m_HasInjuryBurned < 1.0f)
+	{
+		m_HasInjuryBurned += tileData.Temp/100;
+		Logger::LogEvent("Crewmember " + GetName() + "got burned" + std::to_string(m_HasInjurySmoke));
+	}
 }
 
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept

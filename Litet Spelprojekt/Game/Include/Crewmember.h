@@ -68,7 +68,8 @@ public:
 	bool HasInjuryBoneBroken() const noexcept;
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
-
+	///<summary>Updates the damage on the crewmember based on what smoke and/or fire is on this members tile..</summary>
+	void UpdateDamage(const TileData*const* data);
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
 
@@ -92,8 +93,8 @@ private:
 	int8 m_SkillMedic;
 	int8 m_SkillStrength;
 	bool m_HasInjuryBoneBroken;
-	bool m_HasInjuryBurned;
-	bool m_HasInjurySmoke;
+	float m_HasInjuryBurned;
+	float m_HasInjurySmoke;
 };
 
 #endif

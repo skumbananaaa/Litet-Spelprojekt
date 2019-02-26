@@ -34,8 +34,10 @@ Game::Game() noexcept
 	m_pTextViewFile = new TextView((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
 	m_pLoadingBar = new ProgressBar((GetWindow().GetWidth() - 300) / 2, (GetWindow().GetHeight() - 50) / 2, 300, 50);
 
+
 	GetGUIManager().Add(m_pTextViewFile);
 	GetGUIManager().Add(m_pLoadingBar);
+
 }
 
 Game::~Game()
@@ -78,6 +80,7 @@ void Game::OnResourceLoading(const std::string& file, float percentage)
 {
 	m_pTextViewFile->SetText("Loading: " + file);
 	m_pLoadingBar->SetPercentage(percentage);
+
 }
 
 void Game::OnResourcesLoaded()
@@ -581,7 +584,7 @@ void Game::OnResourcesLoaded()
 
 void Game::OnUpdateLoading(float dtS)
 {
-	
+
 }
 
 void Game::OnRenderLoading(float dtS)
@@ -745,7 +748,12 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 void Game::OnUpdate(float dtS)
 {
 	ScenarioManager::Update(dtS, m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
-
+	for (uint32 i = 0; i < NUM_CREW; i++)
+	{
+		Crewmember* member = m_Crew.GetMember(i);
+		member->UpdateDamage(m_pWorld->GetLevel(member->GetPosition().y)->GetLevelData());
+		member->UpdateDamage(m_pWorld->GetLevel(member->GetPosition().y + 1)->GetLevelData());
+	}
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
@@ -758,11 +766,12 @@ void Game::OnUpdate(float dtS)
 
 
 	std::vector<PointLight*>& roomLights = m_Scenes[m_SceneId]->GetRoomLights();
-
+	const std::vector<GameObject*>& drawables = m_Scenes[m_SceneId]->GetAnimatedDrawables();
 	for (uint32 i = 0; i < roomLights.size(); i++)
 	{
+	
 		m_RoomLightsTimers[i] += dtS;
-		if (m_RoomLightsTimers[i] >= 5.0f)
+		if (m_RoomLightsTimers[i] >= 5.0f )
 		{
 			roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 			m_RoomLightsTimers[i] = 0.0f;

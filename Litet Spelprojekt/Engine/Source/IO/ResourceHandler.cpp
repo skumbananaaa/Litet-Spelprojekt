@@ -118,66 +118,51 @@ uint32 ResourceHandler::RegisterTexture2D(const std::string& filename, TEX_FORMA
 	return m_NrOfTexture2D++;
 }
 
-uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 normalMap, int32 shader)
+uint32 ResourceHandler::RegisterMaterial(int32 texture, int32 shader)
 {
 	std::cout << "Creating Material" << std::endl;
 	Material* material = new Material(shader);
 	material->SetDiffuseMap(GetTexture2D(texture));
-	if (normalMap >= 0)
-	{
-		material->SetNormalMap(GetTexture2D(normalMap));
-	}
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, float specular, int32 normalMap, int32 shader)
+uint32 ResourceHandler::RegisterMaterial(const glm::vec4& color, float specular, int32 shader)
 {
 	std::cout << "Creating Material" << std::endl;
 	Material* material = new Material(shader);
 	material->SetColor(color);
 	material->SetSpecular(specular);
-	if (normalMap >= 0)
-	{
-		material->SetNormalMap(GetTexture2D(normalMap));
-	}
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterWaterOutdoorMaterial(int32 distorionMap, int32 normalMap, int32 displacementMap)
+uint32 ResourceHandler::RegisterWaterOutdoorMaterial(int32 distorionMap)
 {
 	std::cout << "Creating Water Outdoor Material" << std::endl;
 	WaterOutdoorMaterial* material = new WaterOutdoorMaterial();
 	material->SetDistortionTexture(GetTexture2D(distorionMap));
-	material->SetNormalMap(GetTexture2D(normalMap));
-	material->SetDisplacementMap(GetTexture2D(displacementMap));
 
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterWaterIndoorMaterial(int32 distorionMap, int32 normalMap)
+uint32 ResourceHandler::RegisterWaterIndoorMaterial(int32 distorionMap)
 {
 	std::cout << "Creating Water Indoor Material" << std::endl;
 	WaterIndoorMaterial* material = new WaterIndoorMaterial();
 	material->SetDistortionTexture(GetTexture2D(distorionMap));
-	material->SetNormalMap(GetTexture2D(normalMap));
 
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterWallMaterial(const glm::vec4& color, float specular, int32 normalMap)
+uint32 ResourceHandler::RegisterWallMaterial(const glm::vec4& color, float specular)
 {
 	std::cout << "Creating Wall Material" << std::endl;
 	Material* material = new WallMaterial();
 	material->SetColor(color);
 	material->SetSpecular(specular);
-	if (normalMap >= 0)
-	{
-		material->SetNormalMap(GetTexture2D(normalMap));
-	}
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;
 }

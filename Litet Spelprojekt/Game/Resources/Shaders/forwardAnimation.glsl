@@ -1,15 +1,5 @@
 #define MAX_BONES 60
 
-vec3 EncodeNormals(vec3 normal)
-{
-	return (normalize(normal) + vec3(1.0f)) * 0.5f;
-}
-
-float EncodeSpecular(float specular)
-{
-	return specular / 256.0f;
-}
-
 layout(std140, binding = 0) uniform CameraBuffer
 {
 	mat4 g_ProjectionView;
@@ -28,7 +18,6 @@ layout(std140, binding = 2) uniform MaterialBuffer
 	vec4 g_ClipPlane;
 	float g_Specular;
 	float g_HasDiffuseMap;
-	float g_HasNormalMap;
 	float g_HasSpecularMap;
 };
 
@@ -38,21 +27,17 @@ layout(std140, binding = 7) uniform BoneBuffer
 	mat4 g_Model;
 };
 
-
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec3 g_Tangent;
-layout(location = 3) in vec2 g_TexCoords;
-layout(location = 4) in ivec4 g_BonesIDs;
-layout(location = 5) in vec4 g_Weights;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in ivec4 g_BonesIDs;
+layout(location = 4) in vec4 g_Weights;
 
 out VS_OUT
 {
 	vec3 WorldPosition;
 	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
 	vec2 TexCoords;
 } vs_out;
 
@@ -69,12 +54,9 @@ void main()
 	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
 	
 	vec3 normal = (finalModel * vec4(g_Normal, 0.0f)).xyz;
-	vec3 tangent = (finalModel * vec4(g_Tangent, 0.0f)).xyz;
 	
 	vs_out.WorldPosition = worldPos.xyz;
 	vs_out.Normal = normal;
-	vs_out.Tangent = tangent;
-	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
 	vs_out.TexCoords = g_TexCoords;
 
 	gl_Position = g_ProjectionView * worldPos;
@@ -91,15 +73,12 @@ layout(early_fragment_tests) in;
 layout(location = 0) out vec4 g_OutColor;
 
 layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform sampler2D g_NormalMap;
-layout(binding = 2) uniform sampler2D g_SpecularMap;
+layout(binding = 1) uniform sampler2D g_SpecularMap;
 
 in VS_OUT
 {
 	vec3 WorldPosition;
 	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
 	vec2 TexCoords;
 } fs_in;
 
@@ -151,8 +130,6 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 void main()
 {
 	//NORMALIZE
-	vec3 inTangent = normalize(fs_in.Tangent);
-	vec3 inBinormal = normalize(fs_in.Binormal);
 	vec3 inNormal = normalize(fs_in.Normal);
 
 	//VIEWDIR
@@ -160,12 +137,6 @@ void main()
 
 	//SPECULAR
 	float specular = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + ((g_Specular) * (1.0f - g_HasSpecularMap));
-
-	//NORMAL
-	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
-	mat3 tbn = mat3(inTangent, inBinormal, inNormal);
-	mappedNormal = tbn * mappedNormal;
-	vec3 normal = (inNormal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
 
 	//COLOR
 	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
@@ -178,9 +149,9 @@ void main()
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
 		vec3 lightColor = g_DirLights[i].Color.rgb;
-		float cosTheta = dot(normal, lightDir);
+		float cosTheta = dot(inNormal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, inNormal, color, specular, 1.0f);
 	}
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
@@ -191,9 +162,9 @@ void main()
 		float attenuation = 1.0f / (dist * dist);
 		vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
 		lightDir = normalize(lightDir);
-		float cosTheta = dot(normal, lightDir);
+		float cosTheta = dot(inNormal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, inNormal, color, specular, 1.0f);
 	}
 
 	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
@@ -203,7 +174,7 @@ void main()
 		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
 		float dist = length(lightDir);
 		lightDir = normalize(lightDir);
-		float cosTheta = dot(normal, lightDir);
+		float cosTheta = dot(inNormal, lightDir);
 
 		float lightToSurfaceAngle = degrees(acos(dot(-lightDir, targetDir)));
 		float coneAngle = degrees(acos(g_SpotLights[i].Angle));
@@ -221,7 +192,7 @@ void main()
 
 		if(theta > g_SpotLights[i].OuterAngle)
 		{
-			c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, specular, intensity);
+			c += CalcLight(normalize(lightDir), lightColor, viewDir, inNormal, color, specular, intensity);
 		}
 	}
 

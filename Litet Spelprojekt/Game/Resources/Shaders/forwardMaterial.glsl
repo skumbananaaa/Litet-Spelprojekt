@@ -1,99 +1,8 @@
-layout(std140, binding = 0) uniform CameraBuffer
-{
-	mat4 g_ProjectionView;
-	mat4 g_View;
-	mat4 g_Projection;
-	mat4 g_InverseView;
-	mat4 g_InverseProjection;
-	vec3 g_CameraLookAt;
-	float pad1;
-	vec3 g_CameraPosition;
-};
-
-layout(std140, binding = 2) uniform MaterialBuffer
-{
-	vec4 g_Color;
-	vec4 g_ClipPlane;
-	float g_Specular;
-	float g_HasDiffuseMap;
-	float g_HasNormalMap;
-	float g_HasSpecularMap;
-};
-
-#if defined(VERTEX_SHADER)
-layout(location = 0) in vec3 g_Position;
-layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec3 g_Tangent;
-layout(location = 3) in vec2 g_TexCoords;
-layout(location = 4) in mat4 g_InstanceModel;
-
-layout(std140, binding = 4) uniform PlaneBuffer
-{
-	vec4 g_ReflectionClipPlane;
-};
-
-layout(binding = 5) uniform Extension
-{
-	float extension;
-};
-
-out VS_OUT
-{
-	vec3 WorldPosition;
-	vec3 ObjectPosition;
-	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
-	vec2 TexCoords;
-} vs_out;
-
-void main()
-{
-	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
-
-	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
-	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
-
-	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
-	vec3 tangent = (g_InstanceModel * vec4(g_Tangent, 0.0f)).xyz;
-
-	vs_out.WorldPosition = worldPos.xyz;
-	vs_out.ObjectPosition = g_InstanceModel[3].xyz;
-	vs_out.Normal = normal;
-	vs_out.Tangent = tangent;
-	vs_out.Binormal = cross(vs_out.Normal, vs_out.Tangent);
-	vs_out.TexCoords = g_TexCoords;
-
-	worldPos.x += extension * floor(g_InstanceModel[3].y / 2.0f);
-
-	gl_Position = g_ProjectionView * worldPos;
-}
-
-
-#elif defined(FRAGMENT_SHADER)
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 3
 #define NUM_SPOT_LIGHTS 2
 
 #define LEVEL_SIZE 756
-
-layout(early_fragment_tests) in;
-
-layout(location = 0) out vec4 g_OutColor;
-
-layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform sampler2D g_NormalMap;
-layout(binding = 2) uniform sampler2D g_SpecularMap;
-
-in VS_OUT
-{
-	vec3 WorldPosition;
-	vec3 ObjectPosition;
-	vec3 Normal;
-	vec3 Tangent;
-	vec3 Binormal;
-	vec2 TexCoords;
-} fs_in;
 
 struct DirectionalLight
 {
@@ -116,11 +25,32 @@ struct SpotLight
 	float OuterAngle;
 };
 
+layout(std140, binding = 0) uniform CameraBuffer
+{
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
+	vec3 g_CameraLookAt;
+	float pad1;
+	vec3 g_CameraPosition;
+};
+
 layout(std140, binding = 1) uniform LightBuffer
 {
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+layout(std140, binding = 2) uniform MaterialBuffer
+{
+	vec4 g_Color;
+	vec4 g_ClipPlane;
+	float g_Specular;
+	float g_HasDiffuseMap;
+	float g_HasSpecularMap;
 };
 
 layout(std140, binding = 3) uniform WorldBuffer
@@ -150,11 +80,62 @@ vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 c
 	return ((ambient + diffuse) * color * lightColor) + specular;
 }
 
+#if defined(VERTEX_SHADER)
+layout(location = 0) in vec3 g_Position;
+layout(location = 1) in vec3 g_Normal;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in mat4 g_InstanceModel;
+
+layout(std140, binding = 4) uniform PlaneBuffer
+{
+	vec4 g_ReflectionClipPlane;
+};
+
+out VS_OUT
+{
+	vec3 WorldPosition;
+	vec3 ObjectPosition;
+	vec3 Normal;
+	vec2 TexCoords;
+} vs_out;
+
+void main()
+{
+	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
+	worldPos.x += extension * floor(g_InstanceModel[3].y / 2.0f);
+
+	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
+	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
+
+	vs_out.WorldPosition = worldPos.xyz;
+	vs_out.ObjectPosition = g_InstanceModel[3].xyz;
+	vs_out.Normal = normal;
+	vs_out.TexCoords = g_TexCoords;
+
+	gl_Position = g_ProjectionView * worldPos;
+}
+
+
+#elif defined(FRAGMENT_SHADER)
+layout(early_fragment_tests) in;
+
+layout(location = 0) out vec4 g_OutColor;
+
+layout(binding = 0) uniform sampler2D g_DiffuseMap;
+layout(binding = 1) uniform sampler2D g_SpecularMap;
+
+in VS_OUT
+{
+	vec3 WorldPosition;
+	vec3 ObjectPosition;
+	vec3 Normal;
+	vec2 TexCoords;
+} fs_in;
+
 void main()
 {
 	//NORMALIZE
-	vec3 inTangent = normalize(fs_in.Tangent);
-	vec3 inBinormal = normalize(fs_in.Binormal);
 	vec3 inNormal = normalize(fs_in.Normal);
 
 	vec3 worldPos = vec3(fs_in.WorldPosition);
@@ -165,12 +146,6 @@ void main()
 
 	//SPECULAR
 	float specular = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + ((g_Specular) * (1.0f - g_HasSpecularMap));
-
-	//NORMAL
-	vec3 mappedNormal = (texture(g_NormalMap, fs_in.TexCoords).xyz * 2.0f) - vec3(1.0f);
-	mat3 tbn = mat3(inTangent, inBinormal, inNormal);
-	mappedNormal = tbn * mappedNormal;
-	vec3 normal = (inNormal * (1.0f - g_HasNormalMap)) + (mappedNormal * g_HasNormalMap);
 
 	//COLOR
 	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
@@ -196,9 +171,9 @@ void main()
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
 		vec3 lightColor = g_DirLights[i].Color.rgb;
-		float cosTheta = dot(normal, lightDir);
+		float cosTheta = dot(inNormal, lightDir);
 
-		c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+		c += CalcLight(lightDir, lightColor, viewDir, inNormal, color, specular, 1.0f);
 	}
 
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
@@ -226,9 +201,9 @@ void main()
 			float attenuation = 1.0f / (dist);
 			vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
 			lightDir = normalize(lightDir);
-			float cosTheta = dot(normal, lightDir);
+			float cosTheta = dot(inNormal, lightDir);
 
-			c += CalcLight(lightDir, lightColor, viewDir, normal, color, specular, 1.0f);
+			c += CalcLight(lightDir, lightColor, viewDir, inNormal, color, specular, 1.0f);
 		}
 	}
 
@@ -267,7 +242,7 @@ void main()
 	
 			if(theta > g_SpotLights[i].OuterAngle)
 			{
-				c += CalcLight(normalize(lightDir), lightColor, viewDir, normal, color, specular, intensity);
+				c += CalcLight(normalize(lightDir), lightColor, viewDir, inNormal, color, specular, intensity);
 			}
 		}
 	}

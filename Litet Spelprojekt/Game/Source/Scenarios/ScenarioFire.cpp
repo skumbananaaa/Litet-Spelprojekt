@@ -6,7 +6,7 @@ void SpawnFire(Scene* pScene, const glm::vec3& position)
 	MeshEmitter* pEmitter = new MeshEmitter();
 	pEmitter->SetPosition(position);
 	pEmitter->SetMesh(MESH::MESH_PARTICLE);
-	pEmitter->SetTimeToLive(1.2f);
+	pEmitter->SetTimeToLive(1.0f);
 	pEmitter->SetScale(glm::vec2(0.05f), glm::vec2(0.15f));
 	pEmitter->SetConeAngle(glm::radians<float>(30.0f));
 	pEmitter->SetSpeed(0.7f, 2.0f);
@@ -23,7 +23,7 @@ void SpawnSmoke(Scene* pScene, const glm::vec3& position)
 {
 	MeshEmitter* pEmitter = new MeshEmitter();
 	pEmitter->SetMesh(MESH::MESH_PARTICLE);
-	pEmitter->SetTimeToLive(7.0f);
+	pEmitter->SetTimeToLive(2.5f);
 	pEmitter->SetConeAngle(glm::radians<float>(40.0f));
 	pEmitter->SetSpeed(0.1f, 0.4f);
 	pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.3f));
@@ -129,14 +129,14 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 	}
 
 	uint32 max = m_Smoke.size();
-	float rateOfSpread = 1.0f;
+	float rateOfSpread = 0.1f;
 	for (uint32 j = 0; j < max; j++)
 	{
 		glm::ivec3& smoke = m_Smoke[j];
 		TileData& data = m_pWorld->GetLevel((int32)smoke.y)->GetLevelData()[smoke.x][smoke.z];
 
 		float spread = data.SmokeAmount - data.SmokeLimit;
-		spread /= 4;
+		//spread /= 4;
 		spread *= dtS * rateOfSpread;
 		uint32 rest = 0;
 		if (spread > 0.0001f)
@@ -148,10 +148,6 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, 1), smokeOriginPos, spread, scene);
 			rest += CheckSmoke(dtS, glm::ivec3(0, 0, -1), smokeOriginPos, spread, scene);
 			data.SmokeAmount -= spread * rest;
-			if (data.SmokeAmount < data.SmokeLimit)
-			{
-				bool hej = false;
-			}
 		}
 	}
 #if defined(PRINT_CPU_DEBUG_DATA)
@@ -179,7 +175,7 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 {
 	TileData& originTile = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x][origin.z];
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
-	float rateOfSpread = 0.01f;
+	float rateOfSpread = 0.1f;
 	float rateOfWallSpread = 0.02;
 	float rateOfFloorSpread = 0.001;
 

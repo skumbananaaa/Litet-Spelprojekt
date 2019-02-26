@@ -154,7 +154,6 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
 			pGameObject = new WaterObject();
-			pGameObject->SetIsReflectable(true);
 			pGameObject->SetIsVisible(false);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetMaterial(MATERIAL::WATER_INDOOR);
@@ -162,7 +161,7 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
 			pGameObject->UpdateTransform();
 			pScene->AddGameObject(pGameObject);
-			m_ppLevelData[x][z].GameObjects[0] = pGameObject;
+			m_ppLevelData[x][z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER] = pGameObject;
 		}
 	}
 }

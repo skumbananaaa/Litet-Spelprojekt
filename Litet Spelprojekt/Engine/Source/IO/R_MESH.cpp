@@ -3,6 +3,7 @@
 #include <IO/ResourceHandler.h>
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Geometry/MeshParticle.h>
+#include <Graphics/Geometry/WaterQuad.h>
 
 uint32 MESH::QUAD = 0;
 uint32 MESH::SHIP = 0;
@@ -22,6 +23,7 @@ uint32 MESH::DOOR = 0;
 uint32 MESH::DOOR_FRAME = 0;
 uint32 MESH::LADDER = 0;
 uint32 MESH::MESH_PARTICLE = 0;
+uint32 MESH::WATER_QUAD = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -50,4 +52,5 @@ void MESH::RegisterResources()
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
+	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(0.0f), 2.5f, 100));
 }

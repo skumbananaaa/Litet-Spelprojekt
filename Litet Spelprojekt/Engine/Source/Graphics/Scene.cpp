@@ -118,9 +118,12 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 		m_Decals.push_back(pGameObject);
 	}
 
-	if (pGameObject->IsReflectable())
+	if (pGameObject->HasMaterial())
 	{
-		m_Reflectables.push_back(pGameObject);
+		if (pGameObject->GetMaterial()->IsReflectable())
+		{
+			m_Reflectables.push_back(pGameObject);
+		}
 	}
 
 	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);

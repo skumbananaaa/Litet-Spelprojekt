@@ -20,7 +20,6 @@ public:
 	virtual void UpdateTransform() noexcept;
 	
 	virtual void SetName(const std::string& name) noexcept;
-	virtual void SetIsReflectable(bool isReflectable) noexcept;
 	virtual void SetIsVisible(bool isVisible) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
 	virtual void SetAnimatedMesh(int32 mesh) noexcept;
@@ -47,7 +46,6 @@ public:
 	bool IsHidden() const noexcept;
 
 	bool IsDirty() const noexcept;
-	bool IsReflectable() const noexcept;
 	bool IsVisible() const noexcept;
 	
 	bool HasMaterial() const noexcept;
@@ -81,7 +79,6 @@ private:
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
 	float m_ExtendPosX;
-	bool m_IsReflectable;
 	int32 m_TypeId;
 	int32 m_Room = 1;
 	bool m_IsHidden = false;
@@ -181,11 +178,6 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 inline bool GameObject::IsDirty() const noexcept
 {
 	return m_IsDirty;
-}
-
-inline bool GameObject::IsReflectable() const noexcept
-{
-	return m_IsReflectable;
 }
 
 inline bool GameObject::IsVisible() const noexcept

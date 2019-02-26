@@ -198,8 +198,9 @@
     <None Include="Resources\Shaders\forwardIndoorWater.glsl" />
     <None Include="Resources\Shaders\forwardMaterial.glsl" />
     <None Include="Resources\Shaders\forwardMeshParticles.glsl" />
-    <None Include="Resources\Shaders\forwardWall.glsl" />
     <None Include="Resources\Shaders\forwardOutdoorWater.glsl" />
+    <None Include="Resources\Shaders\forwardWall.glsl" />
+    <None Include="Resources\Shaders\forwardOutdoorWaterBAK.glsl" />
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />

@@ -17,6 +17,8 @@ struct WorldObject
 
 class API World
 {
+	friend class WorldSerializer;
+
 public:
 	World(World&& other) = delete;
 	World(const World& other) = delete;

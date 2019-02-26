@@ -15,6 +15,7 @@ void SpawnFire(Scene* pScene, const glm::vec3& position)
 	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	pEmitter->SetParticlesPerSeconds(20);
 	pEmitter->UpdateTransform();
+	pEmitter->SetIsVisible(false);
 
 	pScene->AddGameObject(pEmitter);
 }
@@ -32,6 +33,7 @@ void SpawnSmoke(Scene* pScene, const glm::vec3& position)
 	pEmitter->SetPosition(position);
 	pEmitter->SetParticlesPerSeconds(2);
 	pEmitter->UpdateTransform();
+	pEmitter->SetIsVisible(false);
 	pScene->AddGameObject(pEmitter);
 }
 

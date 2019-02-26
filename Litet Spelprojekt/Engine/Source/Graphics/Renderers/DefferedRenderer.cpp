@@ -614,10 +614,13 @@ void DefferedRenderer::ParticlePass(const Camera& camera, const Scene& scene) co
 	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
-		m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
-		
-		context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
-		context.DrawParticle(*m_pParticle);
+		if (particleSystems[i]->IsVisible())
+		{
+			m_pParticle->SetInstances(particleSystems[i]->GetParticleInstances(), particleSystems[i]->GetNumParticles());
+
+			context.SetTexture(particleSystems[i]->GetTexture(), DIFFUSE_MAP_BINDING_SLOT);
+			context.DrawParticle(*m_pParticle);
+		}
 	}
 
 	context.Enable(CULL_FACE);

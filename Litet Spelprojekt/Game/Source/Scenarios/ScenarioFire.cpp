@@ -127,6 +127,12 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 			m_Smoke.push_back(pos + glm::ivec3(0.0, (pos.y + 1) % 2, 0.0f));
 
 			SpawnSmoke(scene, pos + glm::ivec3(0.0f, ((int32)pos.y + 1) % 2, 0.0f));
+			TileData& lowerTileData = m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z];
+
+			for (uint32 i = 1; i < lowerTileData.GameObjects.size(); i++)
+			{
+				lowerTileData.GameObjects[i]->OnSmokeDetected();
+			}
 		}
 	}
 
@@ -193,6 +199,11 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 		tileData.Burning = true;
 
 		SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f));
+
+		for (uint32 i = 1; i < tileData.GameObjects.size(); i++)
+		{
+			tileData.GameObjects[i]->OnFireDetected();
+		}
 	}
 	else if (tileData.Temp < tileData.BurnsAt && tileData.Burning)
 	{
@@ -226,8 +237,12 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3& offset, const glm::iv
 
 				SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f));
 			}
-
 			res = true;
+
+			for (uint32 i = 1; i < lowerTileData.GameObjects.size(); i++)
+			{
+				lowerTileData.GameObjects[i]->OnSmokeDetected();
+			}
 		}
 	}
 	else

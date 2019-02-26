@@ -11,7 +11,7 @@ uint32 ScenarioManager::RegisterScenario(IScenario* scenario) noexcept
 {
 	int32 id = s_Scenarios.size();
 	s_Scenarios.push_back(scenario);
-	Game::GetGame()->GetUIScenario()->CreateScenario(scenario, id);
+	//Game::GetGame()->GetUIScenario()->CreateScenario(scenario, id);
 	return id;
 }
 

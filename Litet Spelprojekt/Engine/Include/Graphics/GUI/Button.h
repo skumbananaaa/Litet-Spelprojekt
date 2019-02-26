@@ -75,6 +75,7 @@ protected:
 	virtual void RecreateFrameBuffer(float width, float height) override;
 
 private:
+
 	Texture2D* m_pOnPressedTexture;
 	Framebuffer* m_pFramebufferText;
 	bool m_IsPressed;

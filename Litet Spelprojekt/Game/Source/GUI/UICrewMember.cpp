@@ -1,4 +1,5 @@
 #include "..\..\Include\GUI\UICrewMember.h"
+#include "..\..\Include/Scenes/SceneGame.h"
 #include "..\..\Include/Game.h"
 
 UICrewMember::UICrewMember(float width, float height) : Panel(0, 0, width, height),
@@ -11,8 +12,6 @@ UICrewMember::UICrewMember(float width, float height) : Panel(0, 0, width, heigh
 	Add(m_TextViewName);
 	Add(new TextView(5, 85, 100, 40, "Färdigheter"));
 	Add(new TextView(5, 20, 100, 40, "Skador"));
-
-	SetDeleteAllChildrenOnDestruction(true);
 
 	SetVisible(false);
 }
@@ -30,14 +29,13 @@ void UICrewMember::SetCrewMember(const Crewmember* crewmember)
 		if(m_Crewmember)
 		{
 			m_TextViewName->SetText(crewmember->GetName());
-			Game* game = Game::GetGame();
-			Camera& camera = game->GetScene()->GetCamera();
+			Camera& camera = SceneGame::GetInstance()->GetCamera();
 			glm::vec3 crewWorldPos = crewmember->GetLastKnownPosition();
-			crewWorldPos.x += game->GetScene()->GetExtension() * glm::floor(crewWorldPos.y / 2.0f);
+			crewWorldPos.x += SceneGame::GetInstance()->GetExtension() * glm::floor(crewWorldPos.y / 2.0f);
 			glm::vec4 pos = camera.GetCombinedMatrix() * glm::vec4(crewWorldPos, 1);
 			pos = pos / pos.w;
-			float halfWidth = game->GetWindow().GetWidth() / 2;
-			float halfHeight = game->GetWindow().GetHeight() / 2;
+			float halfWidth = Game::GetGame()->GetWindow().GetWidth() / 2;
+			float halfHeight = Game::GetGame()->GetWindow().GetHeight() / 2;
 			SetPosition(pos.x * halfWidth + halfWidth - GetWidth() / 2, pos.y * halfHeight + halfHeight + GetHeight() / 2);
 		}
 		SetVisible(m_Crewmember);

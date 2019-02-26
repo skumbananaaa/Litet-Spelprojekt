@@ -5,7 +5,6 @@
 #include <World/GameObjectDoor.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 #include <Graphics/Camera.h>
-#include <Graphics/Scene.h>
 #include <Graphics/Renderers/IRenderer.h>
 #include <Graphics/Textures/Framebuffer.h>
 #include <Graphics/Textures/Texture2D.h>
@@ -30,10 +29,11 @@
 #include <Graphics/Materials/WaterOutdoorMaterial.h>
 #include <Graphics/Materials/WaterIndoorMaterial.h>
 
-#include <World/Logger.h>
 #include "../Include/Scenarios/ScenarioManager.h"
 #include "../Include/Scenarios/ScenarioWater.h"
 #include "../Include/Scenarios/ScenarioFire.h"
+
+#include "Scenes/SceneInternal.h"
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
@@ -42,18 +42,14 @@
 #define NUM_CREW 15
 #define MAX_ROOMS_VISIBLE 3
 
-class Game : public Application, public ILogListener
+class Game : public Application
 {
 public:
 	Game() noexcept;
 	~Game();
 
-	void OnLogged(const std::string& text) noexcept override;
-
 	void OnResourceLoading(const std::string&, float percentage) override;
 	void OnResourcesLoaded() override;
-	void OnUpdateLoading(float dtS) override;
-	void OnRenderLoading(float dtS) override;
 
 	void OnKeyUp(KEY keycode) override;
 	void OnKeyDown(KEY keycode) override;
@@ -62,55 +58,17 @@ public:
 	void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) override;
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
-	void PickPosition();
-	void PickCrew(bool hover);
-	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
-
-	void ShowCrewmember(uint32 crewmember);
-
-	Crewmember* RayTestCrewmembers();
-
-	void SetClipPlanes(uint32 scene);
-
-	void StartGame();
-
-	Crewmember* GetCrewmember(uint32 shipNumber);
-	UICrewMember* GetUICrewMember() noexcept;
+	
 	UIScenario* GetUIScenario() noexcept;
 
-	Scene* GetScene();
+	void SetScene(SceneInternal* scene) noexcept;
+
 	static Game* GetGame();
 
 private:
-	UICrewMember* m_pUICrewMember;
-	IRenderer* m_pRenderer;
-	DebugRenderer* m_pDebugRenderer;
-	std::vector<Scene*> m_Scenes;
-	uint32 m_SceneId = 0;
-	World* m_pWorld;
-
-	TextureCube* m_pSkyBoxTex;
-	UICrew* m_pUICrew;
-
-	TextView* m_pTextViewScene;
-	TextView* m_pTextViewFile;
-	ProgressBar* m_pLoadingBar;
-
-	ListScrollable* m_ListScrollableLog;
-	TextView* m_pTextViewLog;
-	Panel* m_PanelLog;
+	SceneInternal* m_pScene;
+	SceneInternal* m_pSceneLast;
+	
 
 	UIScenario* m_pUIScenario;
-	
-	Crew m_Crew;
-
-	bool cartesianCamera;
-	int32 m_CurrentElevation;
-
-	std::vector<uint32> m_ActiveRooms;
-	std::vector<float> m_RoomLightsTimers;
-	uint32 m_CurrentLight = 0;
-
-	//Sound
-	AudioSource* m_pTestAudioSource;
 };

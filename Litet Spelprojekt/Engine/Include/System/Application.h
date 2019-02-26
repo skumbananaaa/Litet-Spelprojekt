@@ -25,6 +25,8 @@ public:
 	virtual void OnLoading(const std::string&, float percentage) override;
 	virtual void OnResourceLoadingFinished() override;
 
+	void Exit() noexcept;
+
 	int32_t Run();
 
 	Window& GetWindow();
@@ -38,9 +40,7 @@ protected:
 	virtual void OnResourceLoading(const std::string& file, float percentage) {};
 	virtual void OnResourcesLoaded() {};
 	virtual void OnUpdate(float dtS) {};
-	virtual void OnUpdateLoading(float dtS) {};
 	virtual void OnRender(float dtS) {};
-	virtual void OnRenderLoading(float dtS) {};
 	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) {};
 	virtual void OnMouseScroll(const glm::vec2& offset, const glm::vec2& position) {};
 	virtual void OnMousePressed(MouseButton mousebutton, const glm::vec2& position) {};
@@ -88,14 +88,7 @@ private:
 
 inline void Application::InternalOnRender(float dtS)
 {
-	if (m_ResourceMode == RESOURCE_MODE::DONE)
-	{
-		OnRender(dtS);
-	}
-	else
-	{
-		OnRenderLoading(dtS);
-	}
+	OnRender(dtS);
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_6);
@@ -108,14 +101,7 @@ inline void Application::InternalOnRender(float dtS)
 
 inline void Application::InternalOnUpdate(float dtS)
 {
-	if (m_ResourceMode == RESOURCE_MODE::DONE)
-	{
-		OnUpdate(dtS);
-	}
-	else
-	{
-		OnUpdateLoading(dtS);
-	}
+	OnUpdate(dtS);
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_5);

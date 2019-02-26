@@ -22,8 +22,6 @@ UIScenario::UIScenario(float x, float y, float width, float height) : Panel(x, y
 	Add(m_pButtonStart);
 	Add(m_pTextViewTitle);
 	Add(m_pListScrollable);
-
-	SetDeleteAllChildrenOnDestruction(true);
 }
 
 UIScenario::~UIScenario()
@@ -74,7 +72,7 @@ void UIScenario::OnButtonReleased(Button* button)
 			ids.push_back(reinterpret_cast<int32>(button->GetUserData()));
 		}
 		ScenarioManager::SetEnabledScenarios(ids);
-		Game::GetGame()->StartGame();
+		//Game::GetGame()->StartGame();
 	}
 }
 

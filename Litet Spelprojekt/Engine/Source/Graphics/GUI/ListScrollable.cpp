@@ -43,10 +43,6 @@ int32 ListScrollable::GetHeightOfChildren() noexcept
 	{
 		height += object->GetActualHeight();
 	}
-	for (GUIObject* object : GetChildrenToRemove())
-	{
-		height -= object->GetActualHeight();
-	}
 	return height;
 }
 

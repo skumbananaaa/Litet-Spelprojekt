@@ -87,6 +87,11 @@ void Application::OnResourceLoadingFinished()
 	std::cout << "OnResourceLoadingFinished()" << std::endl;
 }
 
+void Application::Exit() noexcept
+{
+	m_ShouldRun = false;
+}
+
 int32_t Application::Run()
 {
 	using namespace std;

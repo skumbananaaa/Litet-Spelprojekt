@@ -1,5 +1,6 @@
 #include "..\..\Include\GUI\UICrew.h"
 #include "../../Include/Game.h"
+#include "../../Include/Scenes/SceneGame.h"
 #include <System/Random.h>
 
 UICrew::UICrew(float x, float y, float width, float height, const std::vector<Crewmember*>& crewmembers) :
@@ -55,10 +56,6 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 	m_Medics->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_MEDIC));
 	m_Strengths->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_STRENGTH));
 
-	m_Fires->SetDeleteAllChildrenOnDestruction(true);
-	m_Medics->SetDeleteAllChildrenOnDestruction(true);
-	m_Strengths->SetDeleteAllChildrenOnDestruction(true);
-
 	m_Fires->AddExpandableListener(this);
 	m_Medics->AddExpandableListener(this);
 	m_Strengths->AddExpandableListener(this);
@@ -108,9 +105,9 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 
 UICrew::~UICrew()
 {
-	DeleteSafe(m_Fires);
-	DeleteSafe(m_Medics);
-	DeleteSafe(m_Strengths);
+	Game::GetGame()->GetGUIManager().Remove(m_Fires);
+	Game::GetGame()->GetGUIManager().Remove(m_Medics);
+	Game::GetGame()->GetGUIManager().Remove(m_Strengths);
 }
 
 void UICrew::OnExpanding(PanelExpandable* panel, float percentage)
@@ -151,14 +148,12 @@ void UICrew::OnDeselected(const SelectionHandler* handler, ISelectable* selectio
 
 void UICrew::OnHovered(const HoveringHandler* handler, IHoverable* selection)
 {
-	Game* game = Game::GetGame();
-	game->GetUICrewMember()->SetCrewMember(game->GetCrewmember(reinterpret_cast<uint32>(((Button*)selection)->GetUserData())));
+	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(SceneGame::GetInstance()->GetCrewmember(reinterpret_cast<uint32>(((Button*)selection)->GetUserData())));
 }
 
 void UICrew::OnDehovered(const HoveringHandler* handler, IHoverable* selection)
 {
-	Game* game = Game::GetGame();
-	game->GetUICrewMember()->SetCrewMember(nullptr);
+	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(nullptr);
 }
 
 void UICrew::OnRenderGUIObject(GUIContext* context, GUIObject* object)
@@ -193,10 +188,9 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 {
 	progressButton->SetPercentage(0.0);
 	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
-	Game* game = Game::GetGame();
 	int32 shipnumber = reinterpret_cast<uint32>(progressButton->GetUserData());
-	game->ShowCrewmember(shipnumber);
-	Crewmember* crewmember = game->GetCrewmember(shipnumber);
+	SceneGame::GetInstance()->ShowCrewmember(shipnumber);
+	Crewmember* crewmember = SceneGame::GetInstance()->GetCrewmember(shipnumber);
 	progressButton->SetText(crewmember->GetName());
 	crewmember->UpdateLastKnownPosition();
 }

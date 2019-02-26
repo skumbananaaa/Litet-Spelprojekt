@@ -77,6 +77,7 @@ Path::Path(const World * world)
 	m_pWorld = world;
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels() / 2];
 	m_pSize = new glm::ivec2[m_pWorld->GetNumLevels() / 2];
+	m_GetNumLevels = m_pWorld->GetNumLevels();
 	
 	int totalSize = 0;
 	for (int i = 0; i < (m_pWorld->GetNumLevels() / 2); i++)
@@ -117,7 +118,7 @@ Path::~Path()
 {
 	for (int i = 0; i < m_LargestX; i++)
 	{
-		for (int j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
+		for (int j = 0; j < m_GetNumLevels / 2; j++)
 		{
 			DeleteArrSafe(m_pppTiles[i][j]);
 		}

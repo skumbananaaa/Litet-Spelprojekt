@@ -28,13 +28,12 @@ uint32 MESH::MESH_PARTICLE = 0;
 */
 void MESH::RegisterResourcesPreLoading()
 {
-
+	QUAD = ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
+	CUBE = ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
 }
 
 void MESH::RegisterResources()
 {
-	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
-	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
 	CUBE_INV_NORMALS		= ResourceHandler::RegisterMesh(IndexedMesh::CreateCubeInvNormals());
 	SHIP					= ResourceHandler::RegisterMesh("ship1.obj");
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj");

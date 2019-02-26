@@ -750,7 +750,12 @@ void Game::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 void Game::OnUpdate(float dtS)
 {
 	ScenarioManager::Update(dtS, m_pWorld, m_Scenes[m_SceneId], m_ActiveRooms);
-
+	for (uint32 i = 0; i < NUM_CREW; i++)
+	{
+		Crewmember* member = m_Crew.GetMember(i);
+		member->UpdateDamage(m_pWorld->GetLevel(member->GetPosition().y)->GetLevelData());
+		member->UpdateDamage(m_pWorld->GetLevel(member->GetPosition().y + 1)->GetLevelData());
+	}
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetDistortionFactor(dist);

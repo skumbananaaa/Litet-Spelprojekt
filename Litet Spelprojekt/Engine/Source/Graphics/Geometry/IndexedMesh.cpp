@@ -2,7 +2,7 @@
 #include <Graphics/Geometry/IndexedMesh.h>
 #include <Graphics/Renderers/GLContext.h>
 
-IndexedMesh::IndexedMesh(const BaseVertex* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept
+IndexedMesh::IndexedMesh(const void* const pVertices, const uint32* const pIndices, uint32 numVertices, uint32 numIndices) noexcept
 	: m_VAO(0),
 	m_VBO(0),
 	m_IBO(0),
@@ -14,8 +14,8 @@ IndexedMesh::IndexedMesh(const BaseVertex* const pVertices, const uint32* const 
 {
 	m_VertexCount = numVertices;
 	m_IndexCount = numIndices;
-	m_pVertices = pVertices;
-	m_pIndices = pIndices;
+	m_pVertices = const_cast<void*>(pVertices);
+	m_pIndices = const_cast<uint32*>(pIndices);
 }
 
 IndexedMesh::~IndexedMesh()
@@ -92,7 +92,8 @@ void IndexedMesh::Construct()
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
-	DeleteArrSafe(m_pVertices);
+	free(m_pVertices);
+	m_pVertices = nullptr;
 	DeleteArrSafe(m_pIndices);
 }
 

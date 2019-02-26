@@ -7,8 +7,6 @@ uint32 TEXTURE::BLOOD = 0;
 uint32 TEXTURE::BLOOD_NORMAL = 0;
 uint32 TEXTURE::SHIP = 0;
 uint32 TEXTURE::SHIP_NORMAL = 0;
-uint32 TEXTURE::WATER_DISTORTION = 0;
-uint32 TEXTURE::WATER_NORMAL = 0;
 uint32 TEXTURE::HDR = 0;
 uint32 TEXTURE::SINGLE_BED = 0;
 uint32 TEXTURE::BUNK_BED = 0;
@@ -43,8 +41,6 @@ void TEXTURE::RegisterResources()
 	SHIP_NORMAL			= ResourceHandler::RegisterTexture2D("shipNormalMap.png", TEX_FORMAT_RGBA);
 	SINGLE_BED			= ResourceHandler::RegisterTexture2D("uv_Single_Bed_Texture_Map.jpg", TEX_FORMAT_RGBA);
 	BUNK_BED			= ResourceHandler::RegisterTexture2D("uv_bunk_Bed_Texture.jpg", TEX_FORMAT_RGBA);
-	WATER_DISTORTION	= ResourceHandler::RegisterTexture2D("waterDUDV.png", TEX_FORMAT_RGBA, true, false, params);
-	WATER_NORMAL		= ResourceHandler::RegisterTexture2D("waterNormalMap.png", TEX_FORMAT_RGBA, true, false, params);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("sjofan_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
 

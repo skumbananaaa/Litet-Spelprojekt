@@ -441,7 +441,49 @@ void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 		context.SetFramebuffer(pFramebuffer);
 		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
-		MainPass(reflectionCam, scene);
+		//MAIN PASS
+		if (m_DrawableBatches.size() < 1)
+		{
+#if defined(_DEBUG)
+			//std::cout << "No drawables, skipping geomtrypass" << std::endl;
+#endif
+			return;
+		}
+
+		GLContext& context = GLContext::GetCurrentContext();
+
+		MaterialBuffer perBatch = {};
+		for (size_t i = 0; i < m_DrawableBatches.size(); i++)
+		{
+			const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
+			const Material& material = *m_DrawableBatches[i].pMaterial;
+
+			if (material.IsReflectable())
+			{
+				continue;
+			}
+
+			perBatch.Color = material.GetColor();
+			perBatch.ClipPlane = material.GetLevelClipPlane();
+			perBatch.Specular = material.GetSpecular();
+			perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
+			perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
+			m_pMaterialBuffer->UpdateData(&perBatch);
+
+			material.SetCameraBuffer(m_pCameraBuffer);
+			material.SetLightBuffer(m_pLightBuffer);
+			material.SetMaterialBuffer(m_pMaterialBuffer);
+			material.SetWorldBuffer(m_pWorldBuffer);
+			material.SetExtensionBuffer(m_pExtensionBuffer);
+			material.Bind(nullptr);
+
+			mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+			context.DrawIndexedMeshInstanced(mesh);
+
+			context.Enable(CULL_FACE);
+
+			material.Unbind();
+		}
 	}
 
 	context.SetUniformBuffer(nullptr, PLANE_BUFFER_BINDING_SLOT);

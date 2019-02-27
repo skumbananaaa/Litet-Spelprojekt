@@ -35,12 +35,12 @@ Editor::~Editor()
 	DeleteArr(m_ppScenes);
 	DeleteArr(m_ppGrids);
 
-	Delete(m_pPanelTop);
+	/*Delete(m_pPanelTop);
 	Delete(m_pPanelFloor);
-	Delete(m_pPanelEditor);
+	Delete(m_pPanelEditor);*/
 
-	Delete(m_pTextViewFile);
-	Delete(m_pLoadingBar);
+	/*Delete(m_pTextViewFile);
+	Delete(m_pLoadingBar);*/
 }
 
 void Editor::OnResourceLoading(const std::string& file, float percentage)
@@ -366,6 +366,21 @@ void Editor::CreateWalls()
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(wall.x - halfWidth, 1.0f, wall.y - halfHeight));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
+			pGameObject->UpdateTransform();
+			m_ppScenes[level / 2]->AddGameObject(pGameObject);
+			m_Walls[level / 2].push_back(pGameObject);
+		}
+
+		glm::vec4 bulkhead;
+
+		for (int i = 0; i < ppWorldLevels[level]->GetNrOfBulkheads(); i++)
+		{
+			bulkhead = ppWorldLevels[level]->GetBulkhead(i);
+			GameObject* pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::RED);
+			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetPosition(glm::vec3(bulkhead.x - halfWidth, 1.0f, bulkhead.y - halfHeight));
+			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.0f, bulkhead.w + 0.2f));
 			pGameObject->UpdateTransform();
 			m_ppScenes[level / 2]->AddGameObject(pGameObject);
 			m_Walls[level / 2].push_back(pGameObject);

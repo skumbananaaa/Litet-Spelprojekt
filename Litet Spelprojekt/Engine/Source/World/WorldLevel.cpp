@@ -87,12 +87,23 @@ uint32 WorldLevel::GetNrOfWalls() const noexcept
 	return static_cast<uint32>(m_Walls.size());
 }
 
+const glm::vec4& WorldLevel::GetBulkhead(uint32 index) const noexcept
+{
+	assert(index < m_Bulkheads.size());
+	return m_Bulkheads[index];
+}
+
+uint32 WorldLevel::GetNrOfBulkheads() const noexcept
+{
+	return m_Bulkheads.size();
+}
+
 const std::vector<glm::uvec4>& WorldLevel::GetRooms() const noexcept
 {
 	return m_RoomBounds;
 }
 
-void WorldLevel::GenerateRooms()
+void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 {
 	bool wallH = false;
 	bool wallV = false;
@@ -104,6 +115,7 @@ void WorldLevel::GenerateRooms()
 
 	uint32 maxRoomNum = 0;
 
+	//Generate walls along the Z Axis
 	for (uint32 i = 0; i < m_SizeX - 1; i++) 
 	{
 		for (uint32 j = 0; j < m_SizeZ; j++) 
@@ -113,14 +125,14 @@ void WorldLevel::GenerateRooms()
 			wallH = (m_ppLevel[i][j] != m_ppLevel[i + 1][j]);
 			if ((!wallH || (m_ppLevelData[i][j].HasDoor() && m_ppLevelData[i + 1][j].HasDoor()) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0))
 			{
-				endWallH = glm::vec2(i + 0.5, j - 0.5);
+				endWallH = glm::vec2(i + 0.5f, j - 0.5f);
 				m_Walls.push_back(glm::vec4((startWallH + endWallH) / 2.0f, endWallH - startWallH));
 				startWallH = glm::vec2(0, 0);
 			}
 
 			if (wallH && startWallH == glm::vec2(0, 0) && (!m_ppLevelData[i][j].HasDoor() || !m_ppLevelData[i + 1][j].HasDoor()))
 			{
-				startWallH = glm::vec2(i + 0.5, j - 0.5);
+				startWallH = glm::vec2(i + 0.5f, j - 0.5f);
 			}
 		}
 	}
@@ -130,6 +142,7 @@ void WorldLevel::GenerateRooms()
 		m_RoomBounds.push_back(glm::uvec4(11, 0, 41, 0));
 	}
 
+	//Generate walls along the X Axis
 	for (uint32 i = 0; i < m_SizeZ - 1; i++) 
 	{
 		for (uint32 j = 0; j < m_SizeX; j++) 
@@ -142,17 +155,54 @@ void WorldLevel::GenerateRooms()
 			wallV = (m_ppLevel[j][i] != m_ppLevel[j][i + 1]);
 			if ((!wallV || (m_ppLevelData[j][i].HasDoor() && m_ppLevelData[j][i + 1].HasDoor()) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
 			{
-				endWallV = glm::vec2(j - 0.5, i + 0.5);
-				m_Walls.push_back(glm::vec4((startWallV + endWallV) / 2.0f, endWallV - startWallV));
+				endWallV = glm::vec2(j - 0.5f, i + 0.5f);
+
+				if (((uint32)(startWallV.y - 0.5f)) % tilesBetweenBulkheads != 0)
+				{
+					m_Walls.push_back(glm::vec4((startWallV + endWallV) / 2.0f, endWallV - startWallV));
+				}
+
 				startWallV = glm::vec2(0, 0);
 			}
 			if (wallV && startWallV == glm::vec2(0, 0) && (!m_ppLevelData[j][i].HasDoor() || !m_ppLevelData[j][i + 1].HasDoor()))
 			{
-				startWallV = glm::vec2(j - 0.5, i + 0.5);
+				startWallV = glm::vec2(j - 0.5f, i + 0.5f);
 			}
 		}
 	}
+
+	//Generate Bulkheads
+	assert((m_SizeZ - 2) % tilesBetweenBulkheads == 0);
+	uint32 nrOfBulkheads = (m_SizeZ - 2) / tilesBetweenBulkheads;
+	uint32 currentBulkheadX = 0;
+
+	bool bulkhead = false;
+	glm::vec2 startBulkhead(0, 0);
+	glm::vec2 endBulkhead(0, 0);
+
+	for (uint32 i = 0; i < nrOfBulkheads; i++)
+	{
+		for (uint32 j = 0; j < m_SizeX; j++)
+		{
+			bulkhead = (m_ppLevel[j][currentBulkheadX] != m_ppLevel[j][currentBulkheadX + 1]);
+
+			if ((!bulkhead || (m_ppLevelData[j][currentBulkheadX].HasDoor() && m_ppLevelData[j][currentBulkheadX + 1].HasDoor()) || m_ppLevel[j][currentBulkheadX] != m_ppLevel[j - 1][currentBulkheadX] || (m_ppLevel[j][currentBulkheadX + 1] != m_ppLevel[j - 1][currentBulkheadX + 1])) && startBulkhead != glm::vec2(0, 0))
+			{
+				endBulkhead = glm::vec2(j - 0.5f, currentBulkheadX + 0.5f);
+				m_Bulkheads.push_back(glm::vec4((startBulkhead + endBulkhead) / 2.0f, endBulkhead - startBulkhead));
+				startBulkhead = glm::vec2(0, 0);
+			}
+			if (bulkhead && startBulkhead == glm::vec2(0, 0) && (!m_ppLevelData[j][currentBulkheadX].HasDoor() || !m_ppLevelData[j][currentBulkheadX + 1].HasDoor()))
+			{
+				startBulkhead = glm::vec2(j - 0.5f, currentBulkheadX + 0.5f);
+			}
+		}
+
+		//m_Bulkheads.push_back(glm::vec4((m_SizeX - 1.0f) / 2.0f, currentBulkheadX + 0.5f, m_SizeX - 2.0f, 0.0f));
+		currentBulkheadX += tilesBetweenBulkheads;
+	}
 }
+
 void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 {
 	WaterObject* pGameObject = nullptr;

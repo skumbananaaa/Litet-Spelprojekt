@@ -48,11 +48,16 @@ SceneInternal::~SceneInternal()
 void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) noexcept
 {
 	m_pRenderer = renderer;
-	if (lastScene)
+	if (lastScene != Game::GetGame()->m_pSceneGame)
 	{
 		GetCamera().SetPos(lastScene->GetCamera().GetPosition());
 		GetCamera().SetYaw(lastScene->GetCamera().GetYaw());
 		GetCamera().SetPitch(lastScene->GetCamera().GetPitch());
+	}
+	else
+	{
+		GetCamera().SetPos(glm::vec3(10.0f, 10.0f, 0.0f));
+		GetCamera().SetLookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 	}
 }
 

@@ -221,7 +221,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 
 std::string ScenarioWater::GetName() noexcept
 {
-	return "Översvämning";
+	return "Vattenläcka";
 }
 
 int32 ScenarioWater::GetCooldownTime() noexcept

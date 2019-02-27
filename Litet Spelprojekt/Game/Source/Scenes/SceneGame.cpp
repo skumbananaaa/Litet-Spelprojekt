@@ -8,19 +8,19 @@ SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(false),
-	m_CurrentElevation(2)
+	m_CurrentElevation(2),
+	m_pUIPause(nullptr),
+	m_IsPaused(false)
 {
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
-
-	LightManager::Init(this, 2);
-	Logger::SetListener(this);
 
 	CreateAudio();
 	CreateGameObjects();
 	CreateWorld();
 	CreateCrew();
 
+	LightManager::Init(this, 2);
 	ScenarioManager::Init(m_pWorld);
 
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
@@ -75,16 +75,12 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	GetRenderer()->SetWorldBuffer(*this, m_pWorld);
 
 	m_pUICrewMember = new UICrewMember(330, 170);
-
-	m_PanelLog = new Panel(window->GetWidth() - 350, window->GetHeight() - 450, 350, 450);
-	m_pTextViewLog = new TextView(0, m_PanelLog->GetHeight() - 50, m_PanelLog->GetWidth(), 50, "Loggbok", true);
-	m_ListScrollableLog = new ListScrollable(0, 0, m_PanelLog->GetWidth(), m_PanelLog->GetHeight() - m_pTextViewLog->GetHeight());
-	m_ListScrollableLog->SetBackgroundColor(glm::vec4(0.15F, 0.15F, 0.15F, 1.0F));
-	m_PanelLog->Add(m_pTextViewLog);
-	m_PanelLog->Add(m_ListScrollableLog);
-
+	m_pUILog = new UILog(window->GetWidth() - 350, window->GetHeight() - 450, 350, 450);
+	
 	game->GetGUIManager().Add(m_pUICrewMember);
-	game->GetGUIManager().Add(m_PanelLog);
+	game->GetGUIManager().Add(m_pUILog);
+
+	Logger::SetListener(m_pUILog);
 
 	std::vector<Crewmember*> members;
 	for (int i = 0; i < m_Crew.GetCount(); i++)
@@ -106,62 +102,79 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 
 void SceneGame::OnUpdate(float dtS) noexcept
 {
-	SceneInternal::OnUpdate(dtS);
-	ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
-	UpdateCamera(dtS);
-
-	static float dist = 0.0f;
-	dist += 0.02f * dtS;
-	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
-
-	std::vector<PointLight*>& roomLights = GetRoomLights();
-	const std::vector<GameObject*>& drawables = GetAnimatedDrawables();
-	for (uint32 i = 0; i < roomLights.size(); i++)
+	if (m_IsPaused && !IsPaused())
 	{
-		m_RoomLightsTimers[i] += dtS;
-		if (m_RoomLightsTimers[i] >= 5.0f)
-		{
-			roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-			m_RoomLightsTimers[i] = 0.0f;
-			m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
-			m_ActiveRooms[i] = 1;
-			ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
-		}
+		Game* game = Game::GetGame();
+		Window* window = &game->GetWindow();
+		m_pUIPause = new UIPause((window->GetWidth() - 600) / 2, (window->GetHeight() - 600) / 2, 600, 600);
+		game->GetGUIManager().Add(m_pUIPause);
 	}
+	else if (IsPaused() && !m_IsPaused)
+	{
+		Game* game = Game::GetGame();
+		game->GetGUIManager().Remove(m_pUIPause);
+		m_pUIPause = nullptr;
+	}
+
+	if (!IsPaused())
+	{
+		SceneInternal::OnUpdate(dtS);
+		ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
+		UpdateCamera(dtS);
+
+		static float dist = 0.0f;
+		dist += 0.02f * dtS;
+		((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
+
+		std::vector<PointLight*>& roomLights = GetRoomLights();
+		const std::vector<GameObject*>& drawables = GetAnimatedDrawables();
+		for (uint32 i = 0; i < roomLights.size(); i++)
+		{
+			m_RoomLightsTimers[i] += dtS;
+			if (m_RoomLightsTimers[i] >= 5.0f)
+			{
+				roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+				m_RoomLightsTimers[i] = 0.0f;
+				m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+				m_ActiveRooms[i] = 1;
+				ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
+			}
+		}
 
 #if defined(PRINT_CPU_DEBUG_DATA)
-	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_0);
+		CPUProfiler::StartTimer(CPU_PROFILER_SLOT_0);
 #endif
-	m_pWorld->Update(this, dtS);
+		m_pWorld->Update(this, dtS);
 #if defined(PRINT_CPU_DEBUG_DATA)
-	CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
+		CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
 #endif
 
-	GameObject* pCameraLookAt = GetGameObject("cameraLookAt");
-	if (pCameraLookAt)
-	{
-		pCameraLookAt->SetPosition(GetCamera().GetLookAt());
-	}
-
-	AudioListener::SetPosition(GetCamera().GetPosition());
-	AudioListener::SetOrientation(GetCamera().GetFront(), GetCamera().GetUp());
-
-	if (Input::IsKeyPressed(KEY_NUMPAD_2))
-	{
-		if (m_CurrentElevation > 0)
+		GameObject* pCameraLookAt = GetGameObject("cameraLookAt");
+		if (pCameraLookAt)
 		{
-			m_CurrentElevation--;
+			pCameraLookAt->SetPosition(GetCamera().GetLookAt());
 		}
-		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
-	}
 
-	if (Input::IsKeyPressed(KEY_NUMPAD_8))
-	{
-		if (m_CurrentElevation < 2)
+		AudioListener::SetPosition(GetCamera().GetPosition());
+		AudioListener::SetOrientation(GetCamera().GetFront(), GetCamera().GetUp());
+
+		if (Input::IsKeyPressed(KEY_NUMPAD_2))
 		{
-			m_CurrentElevation++;
+			if (m_CurrentElevation > 0)
+			{
+				m_CurrentElevation--;
+			}
+			std::cout << "Elevation: " << m_CurrentElevation << std::endl;
 		}
-		std::cout << "Elevation: " << m_CurrentElevation << std::endl;
+
+		if (Input::IsKeyPressed(KEY_NUMPAD_8))
+		{
+			if (m_CurrentElevation < 2)
+			{
+				m_CurrentElevation++;
+			}
+			std::cout << "Elevation: " << m_CurrentElevation << std::endl;
+		}
 	}
 }
 
@@ -176,61 +189,67 @@ void SceneGame::OnRender(float dtS) noexcept
 
 void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	if (Input::IsKeyDown(KEY_LEFT_ALT))
+	if (!IsPaused())
 	{
-		if (!cartesianCamera)
+		if (Input::IsKeyDown(KEY_LEFT_ALT))
 		{
-			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
+			if (!cartesianCamera)
 			{
-				const float cameraRotationSensitivity = 0.005f;
-				glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
+				if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
+				{
+					const float cameraRotationSensitivity = 0.005f;
+					glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
 
-				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
-				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
+					GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
+					GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
 
-				m_pUICrewMember->SetCrewMember(nullptr);
-			}
+					m_pUICrewMember->SetCrewMember(nullptr);
+				}
 
-			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
-			{
-				const float cameraMoveSensitivityX = 0.5f;
-				const float cameraMoveSensitivityY = 0.025f;
-				glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
-				glm::vec3 forward(0.0f);
-				forward.x = GetCamera().GetFront().x;
-				forward.z = GetCamera().GetFront().z;
-				GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
-				GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
+				if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
+				{
+					const float cameraMoveSensitivityX = 0.5f;
+					const float cameraMoveSensitivityY = 0.025f;
+					glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
+					glm::vec3 forward(0.0f);
+					forward.x = GetCamera().GetFront().x;
+					forward.z = GetCamera().GetFront().z;
+					GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
+					GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
 
-				m_pUICrewMember->SetCrewMember(nullptr);
+					m_pUICrewMember->SetCrewMember(nullptr);
+				}
 			}
 		}
-	}
-	else
-	{
-		PickCrew(true);
+		else
+		{
+			PickCrew(true);
+		}
 	}
 }
 
 void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & position)
 {
-	if (!cartesianCamera)
+	if (!IsPaused())
 	{
-		if (Input::IsKeyDown(KEY_LEFT_ALT))
+		if (!cartesianCamera)
 		{
-			if (offset.y > 0.0f)
+			if (Input::IsKeyDown(KEY_LEFT_ALT))
 			{
-				GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
+				if (offset.y > 0.0f)
+				{
+					GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
+				}
+				else
+				{
+					GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
+				}
 			}
 			else
 			{
-				GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
+				const float cameraZoomSensitivity = 0.1f;
+				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
 			}
-		}
-		else
-		{
-			const float cameraZoomSensitivity = 0.1f;
-			GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
 		}
 	}
 }
@@ -241,23 +260,26 @@ void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2 & positi
 
 void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
 {
-	switch (mousebutton)
+	if (!IsPaused())
 	{
-		case MOUSE_BUTTON_LEFT:
+		switch (mousebutton)
 		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+			case MOUSE_BUTTON_LEFT:
 			{
-				PickPosition();
+				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+				{
+					PickPosition();
+				}
+				break;
 			}
-			break;
-		}
-		case MOUSE_BUTTON_RIGHT:
-		{
-			if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+			case MOUSE_BUTTON_RIGHT:
 			{
-				PickCrew(false);
+				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+				{
+					PickCrew(false);
+				}
+				break;
 			}
-			break;
 		}
 	}
 }
@@ -268,36 +290,43 @@ void SceneGame::OnKeyUp(KEY keycode)
 
 void SceneGame::OnKeyDown(KEY keycode)
 {
-	switch (keycode)
+	if (keycode == KEY_ESCAPE)
 	{
-		case KEY_O:
+		SetPaused(!IsPaused());
+	}
+	else if (!IsPaused())
+	{
+		switch (keycode)
 		{
-			cartesianCamera = !cartesianCamera;
-			break;
-		}
-		case KEY_P:
-		{
-			m_pTestAudioSource->TogglePause();
-			break;
-		}
-		case KEY_SPACE:
-		{
-			ExtendScene();
-			break;
-		}
-		case KEY_L:
-		{
-			for (int i = 0; i < m_Crew.GetCount(); i++)
+			case KEY_O:
 			{
-				m_Crew.GetMember(i)->SwitchLight();
+				cartesianCamera = !cartesianCamera;
+				break;
 			}
-			break;
-		}
-		case KEY_R:
-		{
-			ShowCrewmember(0);
-			ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
-			break;
+			case KEY_P:
+			{
+				m_pTestAudioSource->TogglePause();
+				break;
+			}
+			case KEY_SPACE:
+			{
+				ExtendScene();
+				break;
+			}
+			case KEY_L:
+			{
+				for (int i = 0; i < m_Crew.GetCount(); i++)
+				{
+					m_Crew.GetMember(i)->SwitchLight();
+				}
+				break;
+			}
+			case KEY_R:
+			{
+				ShowCrewmember(0);
+				ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
+				break;
+			}
 		}
 	}
 }
@@ -306,15 +335,6 @@ void SceneGame::OnResize(uint32 width, uint32 height)
 {
 
 }
-
-void SceneGame::OnLogged(const std::string & text) noexcept
-{
-	glm::vec4 color = m_ListScrollableLog->GetNrOfChildren() % 2 == 0 ? glm::vec4(0.2F, 0.2F, 0.2F, 1.0F) : glm::vec4(0.3F, 0.3F, 0.3F, 1.0F);
-	TextView* textView = new TextView(0, 0, m_ListScrollableLog->GetClientWidth(), 40, text);
-	textView->SetBackgroundColor(color);
-	m_ListScrollableLog->Add(textView);
-}
-
 
 void SceneGame::CreateAudio() noexcept
 {
@@ -752,4 +772,14 @@ void SceneGame::UpdateCamera(float dtS) noexcept
 	{
 		GetCamera().UpdateFromLookAt();
 	}
+}
+
+void SceneGame::SetPaused(bool paused) noexcept
+{
+	m_IsPaused = paused;
+}
+
+bool SceneGame::IsPaused() const noexcept
+{
+	return m_pUIPause;
 }

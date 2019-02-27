@@ -66,6 +66,12 @@
     <ClCompile Include="Source\Scenes\SceneInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUI\UILog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GUI\UIPause.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game.h">
@@ -92,9 +98,6 @@
     <ClInclude Include="Include\Scenarios\ScenarioWater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GUI\UIScenario.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Scenarios\ScenarioManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -117,6 +120,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scenes\SceneCredits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UILog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UIPause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

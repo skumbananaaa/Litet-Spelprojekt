@@ -1,10 +1,9 @@
 #pragma once
 #include "SceneInternal.h"
-#include <Graphics/GUI/TextView.h>
-#include <Graphics/GUI/Panel.h>
-#include <Graphics/GUI/ListScrollable.h>
 #include "../GUI/UICrew.h"
+#include "../GUI/UILog.h"
 #include "../GUI/UICrewMember.h"
+#include "../GUI/UIPause.h"
 #include <Audio/Listeners/AudioListener.h>
 #include <Audio/Sources/AudioSource.h>
 #include <Audio/SoundEffect.h>
@@ -18,7 +17,7 @@
 #include <Graphics/Materials/WaterIndoorMaterial.h>
 #include <World/Logger.h>
 
-class SceneGame : public SceneInternal, public ILogListener
+class SceneGame : public SceneInternal
 {
 	friend class Game;
 
@@ -36,7 +35,6 @@ public:
 	virtual void OnKeyUp(KEY keycode) override;
 	virtual void OnKeyDown(KEY keycode) override;
 	virtual void OnResize(uint32 width, uint32 height) override;
-	virtual void OnLogged(const std::string& text) noexcept override;
 
 	void PickPosition();
 	void PickCrew(bool hover);
@@ -45,6 +43,9 @@ public:
 	Crewmember* RayTestCrewmembers();
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	UICrewMember* GetUICrewMember() noexcept;
+
+	void SetPaused(bool paused) noexcept;
+	bool IsPaused() const noexcept;
 
 protected:
 	SceneGame();
@@ -58,12 +59,13 @@ protected:
 
 private:
 	UICrewMember* m_pUICrewMember;
-	World* m_pWorld;
 	UICrew* m_pUICrew;
-	ListScrollable* m_ListScrollableLog;
-	TextView* m_pTextViewLog;
-	Panel* m_PanelLog;
+	UILog* m_pUILog;
+	UIPause* m_pUIPause;
+
+	World* m_pWorld;
 	Crew m_Crew;
+	bool m_IsPaused;
 	bool cartesianCamera;
 	int32 m_CurrentElevation;
 	std::vector<uint32> m_ActiveRooms;

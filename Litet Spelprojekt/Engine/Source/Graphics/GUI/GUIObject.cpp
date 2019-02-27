@@ -41,13 +41,13 @@ GUIObject::~GUIObject()
 	RemoveKeyboardListener(this);
 	RemoveRealTimeRenderer();
 
+	m_ChildrenToAdd.clear();
+	m_ChildrenDirty.clear();
+
 	for (int i = m_Children.size() - 1; i >= 0; i--)
 	{
 		Remove(m_Children[i]);
 	}
-
-	m_ChildrenToAdd.clear();
-	m_ChildrenDirty.clear();
 }
 
 bool GUIObject::HasParent() const noexcept
@@ -71,19 +71,46 @@ void GUIObject::Add(GUIObject* object) noexcept
 void GUIObject::Remove(GUIObject* objectToRemove) noexcept
 {
 	int32 counter = 0;
+	bool found = false;
 	for (GUIObject* object : m_Children)
 	{
 		if (objectToRemove == object)
 		{
 			m_Children.erase(m_Children.begin() + counter);
-			objectToRemove->OnRemoved(this);
-			objectToRemove->RemoveRealTimeRenderer();
-			objectToRemove->RemoveMouseListener(this);
-			objectToRemove->m_pParent = nullptr;
-			DeleteSafe(objectToRemove);
+			found = true;
+			break;
+		}
+		counter++;
+	}
+	counter = 0;
+	for (GUIObject* object : m_ChildrenToAdd)
+	{
+		if (objectToRemove == object)
+		{
+			m_ChildrenToAdd.erase(m_ChildrenToAdd.begin() + counter);
+			found = true;
+			break;
+		}
+		counter++;
+	}
+	counter = 0;
+	for (GUIObject* object : m_ChildrenDirty)
+	{
+		if (objectToRemove == object)
+		{
+			m_ChildrenDirty.erase(m_ChildrenDirty.begin() + counter);
 			return;
 		}
 		counter++;
+	}
+
+	if (found)
+	{
+		objectToRemove->OnRemoved(this);
+		objectToRemove->RemoveRealTimeRenderer();
+		objectToRemove->RemoveMouseListener(this);
+		objectToRemove->m_pParent = nullptr;
+		DeleteSafe(objectToRemove);
 	}
 }
 

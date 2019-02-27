@@ -593,10 +593,6 @@ void Game::OnRenderLoading(float dtS)
 
 void Game::OnKeyUp(KEY keycode)
 {
-	switch (keycode)
-	{
-	}
-
 	Application::OnKeyUp(keycode);
 }
 

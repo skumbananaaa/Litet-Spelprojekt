@@ -24,6 +24,7 @@ public:
 
 	void InternalRootOnKeyUp(KEY keycode);
 	void InternalRootOnKeyDown(KEY keycode);
+	void InternalRootOnCharFromKey(char c);
 
 protected:
 	virtual void PrintName() const override;

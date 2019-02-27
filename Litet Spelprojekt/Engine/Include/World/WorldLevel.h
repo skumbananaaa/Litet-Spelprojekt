@@ -56,6 +56,9 @@ struct TileData
 
 class API WorldLevel
 {
+	friend class WorldSerializer;
+	friend class Editor;
+
 public:
 	WorldLevel(WorldLevel&& other) = delete;
 	WorldLevel(const WorldLevel& other) = delete;

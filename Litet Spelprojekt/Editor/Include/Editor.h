@@ -10,6 +10,7 @@
 #include <Graphics\Scene.h>
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
+#include <Graphics/GUI/TextField.h>
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Slider.h>
 #include <Graphics/GUI/PanelScrollable.h>
@@ -52,7 +53,8 @@ enum EditingMode : uint32
 	ADD_DOOR,
 	REMOVE_DOOR,
 	ADD_STAIRS,
-	REMOVE_STAIRS
+	REMOVE_STAIRS,
+	SET_BURN_TEMP
 };
 
 class Editor : public Application, public ISelectionListener
@@ -127,6 +129,7 @@ private:
 	Button* m_pButtonLoad;
 	Button* m_pButtonRoom;
 	Button* m_pButtonMesh;
+	TextField* m_pTextFieldBurnTemp;
 	Panel* m_pPanelTop;
 
 	SelectionHandler m_SelectionHandlerFloor;
@@ -145,6 +148,7 @@ private:
 	Button* m_pButtonRemoveDoor;
 	Button* m_pButtonAddStairs;
 	Button* m_pButtonRemoveStairs;
+	Button* m_pSetRoomBurnTemperature;
 	Panel* m_pPanelEditor;
 
 	SelectionHandler m_SelectionHandlerMesh;

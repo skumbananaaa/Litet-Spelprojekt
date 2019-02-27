@@ -56,10 +56,11 @@ public:
 	static Shader* Create(const char* const path, ShaderType type, const std::string& = "") noexcept;
 
 private:
-	Shader(const std::string& shaderCode, ShaderType type) noexcept;
+	Shader(const std::string& shaderCode, const std::string& path, ShaderType type) noexcept;
 	~Shader();
 
 	uint32 m_Shader;
 	ShaderType m_Type;
 	std::string m_ShaderCode;
+	std::string m_Path;
 };

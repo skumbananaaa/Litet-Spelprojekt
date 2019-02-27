@@ -199,11 +199,9 @@
     <None Include="Resources\Shaders\forwardMeshParticles.glsl" />
     <None Include="Resources\Shaders\forwardOutdoorWater.glsl" />
     <None Include="Resources\Shaders\forwardWall.glsl" />
-    <None Include="Resources\Shaders\forwardOutdoorWaterBAK.glsl" />
     <None Include="Resources\Shaders\FShaderEquirecToCubemap.glsl" />
     <None Include="Resources\Shaders\FShaderSkyBox.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
-    <None Include="Resources\Shaders\forwardFrag.glsl" />
     <None Include="Resources\Shaders\FShader.glsl" />
     <None Include="Resources\Shaders\FShaderFont.glsl" />
     <None Include="Resources\Shaders\FShaderGUI.glsl" />
@@ -241,7 +239,6 @@
     <Text Include="Resources\Shaders\deferredDecals.glsl" />
     <Text Include="Resources\Shaders\forwardParticles.glsl" />
     <Text Include="Resources\Shaders\skybox.glsl" />
-    <Text Include="Resources\Shaders\forwardVert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

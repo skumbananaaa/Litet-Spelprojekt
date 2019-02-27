@@ -32,7 +32,7 @@ SceneInternal::SceneInternal() :
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
 	//Skybox
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
+	m_pSkyBoxTex = TextureCube::CreateTextureCubeFromPanorama(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	SetSkyBox(new SkyBox(m_pSkyBoxTex));
 
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));

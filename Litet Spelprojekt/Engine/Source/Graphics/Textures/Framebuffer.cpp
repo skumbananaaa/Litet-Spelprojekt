@@ -21,7 +21,7 @@ Framebuffer::Framebuffer(const FramebufferDesc& desc)
 	Create(desc);
 }
 
-Framebuffer::Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil)
+Framebuffer::Framebuffer(Texture** ppColor, uint32 numTextures, Texture* pDepthStencil)
 	: m_ppColor(),
 	m_pDepthStencil(nullptr),
 	m_NumColorAttachments(0),
@@ -89,7 +89,7 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 	CreateFramebuffer();
 }
 
-void Framebuffer::Create(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil)
+void Framebuffer::Create(Texture** ppColor, uint32 numTextures, Texture* pDepthStencil)
 {
 	if (numTextures > 8)
 	{

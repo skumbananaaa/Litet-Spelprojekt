@@ -3,8 +3,9 @@
 #include <Graphics/Renderers/GLContext.h>
 
 Texture::Texture() noexcept
-	: m_Format(TEX_FORMAT_UNKNOWN),
-	m_Texture(0)
+	: m_Texture(0),
+	m_Desc(),
+	m_Params()
 {
 }
 
@@ -38,6 +39,8 @@ void Texture::SetParameters(const TextureParams& params) noexcept
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_R, TexParamToGL(params.Wrap)));
 		GL_CALL(glBindTexture(m_Type, 0));
 	}
+
+	m_Params = params;
 }
 
 uint32 Texture::TexParamToGL(TEX_PARAM param) noexcept

@@ -1,6 +1,7 @@
 #include "..\..\Include\Scenes\SceneGame.h"
 #include "../../Include/Game.h"
 #include <World/LightManager.h>
+#include <Graphics/Textures/ShadowMapsCube.h>
 
 SceneGame* SceneGame::s_pInstance = nullptr;
 
@@ -30,6 +31,9 @@ SceneGame::SceneGame() :
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_PanelLog);
 
+
+	StaticShadowCube* pShadow = new StaticShadowCube();
+	DeleteSafe(pShadow);
 
 	//Audio
 	{

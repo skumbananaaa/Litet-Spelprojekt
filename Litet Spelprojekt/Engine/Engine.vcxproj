@@ -88,6 +88,7 @@
     <ClInclude Include="Include\Graphics\SkyBox.h" />
     <ClInclude Include="Include\Graphics\Textures\Framebuffer.h" />
     <ClInclude Include="Include\Graphics\Textures\PlanarReflector.h" />
+    <ClInclude Include="Include\Graphics\Textures\ShadowMapsCube.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture.h" />
     <ClInclude Include="Include\Graphics\Textures\Texture2D.h" />
     <ClInclude Include="Include\Graphics\Textures\TextureCube.h" />
@@ -147,6 +148,7 @@
     <ClCompile Include="Source\Graphics\Particles\ParticleEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\ForwardRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\ShadowMapCube.cpp" />
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />

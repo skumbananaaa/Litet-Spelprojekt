@@ -26,7 +26,7 @@ public:
 	Framebuffer& operator=(const Framebuffer& other) = delete;
 
 	Framebuffer(const FramebufferDesc& desc);
-	Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil);
+	Framebuffer(Texture** ppColor, uint32 numTextures, Texture* pDepthStencil);
 	~Framebuffer();
 
 	Texture* GetColorAttachment(uint32 index) const;
@@ -37,7 +37,7 @@ public:
 
 private:
 	void Create(const FramebufferDesc& desc);
-	void Create(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil);
+	void Create(Texture** ppColor, uint32 numTextures, Texture* pDepthStencil);
 	void CreateFramebuffer();
 
 private:

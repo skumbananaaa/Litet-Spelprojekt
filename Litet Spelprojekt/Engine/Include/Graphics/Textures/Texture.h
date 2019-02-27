@@ -63,15 +63,21 @@ public:
 	virtual ~Texture();
 
 	void SetParameters(const TextureParams& params) noexcept;
+
+	const TextureParams& GetTextureParams() const noexcept;
 	TEX_FORMAT GetFormat() const noexcept;
+	uint32 GetWidth() const noexcept;
+	uint32 GetHeight() const noexcept;
+	uint32 GetSamples() const noexcept;
 
 private:
 	uint32 GetType() const noexcept;
 
 protected:
-	TEX_FORMAT m_Format;
 	uint32 m_Texture;
 	uint32 m_Type;
+	TextureDesc m_Desc;
+	TextureParams m_Params;
 
 public:
 	static uint32 TexParamToGL(TEX_PARAM param) noexcept;
@@ -81,9 +87,29 @@ public:
 	static uint32 FormatToNrChannels(TEX_FORMAT format) noexcept;
 };
 
+inline const TextureParams& Texture::GetTextureParams() const noexcept
+{
+	return m_Params;
+}
+
 inline TEX_FORMAT Texture::GetFormat() const noexcept
 {
-	return m_Format;
+	return m_Desc.Format;
+}
+
+inline uint32 Texture::GetWidth() const noexcept
+{
+	return m_Desc.Width;
+}
+
+inline uint32 Texture::GetHeight() const noexcept
+{
+	return m_Desc.Height;
+}
+
+inline uint32 Texture::GetSamples() const noexcept
+{
+	return m_Desc.Samples;
 }
 
 inline uint32 Texture::GetType() const noexcept

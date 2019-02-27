@@ -34,7 +34,7 @@ uint32 MATERIAL::ANIMATED_MODEL = 0;
 */
 void MATERIAL::RegisterResourcesPreLoading()
 {
-
+	WATER_OUTDOOR = ResourceHandler::RegisterWaterOutdoorMaterial();
 }
 
 void MATERIAL::RegisterResources()
@@ -53,7 +53,6 @@ void MATERIAL::RegisterResources()
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f);
-	WATER_OUTDOOR		= ResourceHandler::RegisterWaterOutdoorMaterial();
 	WATER_INDOOR		= ResourceHandler::RegisterWaterIndoorMaterial();
 	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, SHADER::STANDARD_MATERIAL);
 	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, SHADER::STANDARD_MATERIAL);

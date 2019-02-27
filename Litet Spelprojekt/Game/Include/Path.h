@@ -46,5 +46,6 @@ private:
 	int m_LargestX = 0;
 	int m_LargestZ = 0;
 	bool m_GoalSet;
+	int32 m_GetNumLevels;
 };
 

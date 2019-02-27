@@ -778,8 +778,21 @@ glm::ivec2 Editor::CalculateLowestCorner(const glm::ivec2& firstCorner, const gl
 
 void Editor::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
-	const float cameraZoomSensitivity = 0.1f;
-	GetCurrentScene()->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+	bool clickedOnGUI = false;
+	for (GUIObject* pObject : GetGUIManager().GetChildren())
+	{
+		if (pObject->OwnsPoint(position))
+		{
+			clickedOnGUI = true;
+			break;
+		}
+	}
+
+	if (!clickedOnGUI)
+	{
+		const float cameraZoomSensitivity = 0.1f;
+		GetCurrentScene()->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+	}
 }
 
 void Editor::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)

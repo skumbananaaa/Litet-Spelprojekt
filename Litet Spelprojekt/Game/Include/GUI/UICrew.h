@@ -1,5 +1,4 @@
 #pragma once
-#include <EnginePch.h>
 #include <Graphics/GUI/PanelExpandable.h>
 #include "../Crewmember.h"
 #include <Graphics/GUI/SelectionHandler.h>

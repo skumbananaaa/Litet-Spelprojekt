@@ -56,20 +56,18 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 
 void FireAlarm::OnSmokeDetected() noexcept
 {
-	if (!m_FireDetected)
-	{
-		glm::mat4 transformObject(1.0f);
-		const glm::vec4& rotation = GetRotation();
-		transformObject = glm::rotate(transformObject, rotation.w, glm::vec3(rotation.x, rotation.y, rotation.z));
-		transformObject = glm::translate(transformObject, glm::vec3(-0.4F, 1.64, 0));
-		glm::vec4 pos = transformObject * glm::vec4(0, 0, 0, 1);
-		pos += glm::vec4(GetPosition(), 1);
+	Logger::LogEvent("Smoke Detected!", true);
 
-		m_pSpotlight = LightManager::AcquireSpotlight(pos, glm::cos(glm::radians(20.5f)), glm::cos(glm::radians(40.5f)), glm::vec3(1, 0, 0), glm::vec4(1.0, 0.25, 0.0, 1.0));
+	glm::mat4 transformObject(1.0f);
+	const glm::vec4& rotation = GetRotation();
+	transformObject = glm::rotate(transformObject, rotation.w, glm::vec3(rotation.x, rotation.y, rotation.z));
+	transformObject = glm::translate(transformObject, glm::vec3(-0.4F, 1.64, 0));
+	glm::vec4 pos = transformObject * glm::vec4(0, 0, 0, 1);
+	pos += glm::vec4(GetPosition(), 1);
 
-		m_FireDetected = true;
-		m_Rotation = 0;
-		m_pAudioSrc->Play();
-		Logger::LogEvent("Fire detected!", true);
-	}
+	m_pSpotlight = LightManager::AcquireSpotlight(pos, glm::cos(glm::radians(20.5f)), glm::cos(glm::radians(40.5f)), glm::vec3(1, 0, 0), glm::vec4(1.0, 0.25, 0.0, 1.0));
+
+	m_FireDetected = true;
+	m_Rotation = 0;
+	m_pAudioSrc->Play();
 }

@@ -146,15 +146,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Include\Scenes\SceneInternal.cpp" />
     <ClCompile Include="Source\Crew.cpp" />
     <ClCompile Include="Source\Crewmember.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\GUI\UICrew.cpp" />
     <ClCompile Include="Source\GUI\UICrewMember.cpp" />
+    <ClCompile Include="Source\GUI\UIScenario.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Path.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioFire.cpp" />
+    <ClCompile Include="Source\Scenarios\ScenarioManager.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioWater.cpp" />
+    <ClCompile Include="Source\Scenes\SceneCredits.cpp" />
+    <ClCompile Include="Source\Scenes\SceneGame.cpp" />
+    <ClCompile Include="Source\Scenes\SceneLoading.cpp" />
+    <ClCompile Include="Source\Scenes\SceneMenu.cpp" />
+    <ClCompile Include="Source\Scenes\SceneOptions.cpp" />
+    <ClCompile Include="Source\Scenes\SceneScenario.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Crew.h" />
@@ -162,9 +171,18 @@
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />
     <ClInclude Include="Include\GUI\UICrewMember.h" />
+    <ClInclude Include="Include\GUI\UIScenario.h" />
     <ClInclude Include="Include\Path.h" />
     <ClInclude Include="Include\Scenarios\ScenarioFire.h" />
+    <ClInclude Include="Include\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\Scenarios\ScenarioWater.h" />
+    <ClInclude Include="Include\Scenes\SceneCredits.h" />
+    <ClInclude Include="Include\Scenes\SceneGame.h" />
+    <ClInclude Include="Include\Scenes\SceneInternal.h" />
+    <ClInclude Include="Include\Scenes\SceneLoading.h" />
+    <ClInclude Include="Include\Scenes\SceneMenu.h" />
+    <ClInclude Include="Include\Scenes\SceneOptions.h" />
+    <ClInclude Include="Include\Scenes\SceneScenario.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\animatedDepthPrePass.glsl" />

@@ -9,7 +9,6 @@ uint32 MESH::QUAD = 0;
 uint32 MESH::SHIP = 0;
 uint32 MESH::CLIFF_3_LOW = 0;
 uint32 MESH::CUBE = 0;
-uint32 MESH::CUBE_INV_NORMALS = 0;
 uint32 MESH::CUBE_OBJ = 0;
 uint32 MESH::CHAIR = 0;
 uint32 MESH::SPHERE = 0;
@@ -34,14 +33,13 @@ uint32 MESH::TOILET = 0;
 */
 void MESH::RegisterResourcesPreLoading()
 {
-
+	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
+	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
+	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(0.0f), 2.5f, 100));
 }
 
 void MESH::RegisterResources()
 {
-	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
-	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
-	CUBE_INV_NORMALS		= ResourceHandler::RegisterMesh(IndexedMesh::CreateCubeInvNormals());
 	SHIP					= ResourceHandler::RegisterMesh("ship1.obj");
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj");
 	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj");
@@ -57,7 +55,6 @@ void MESH::RegisterResources()
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
-	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(0.0f), 2.5f, 100));
 	CUBOARD					= ResourceHandler::RegisterMesh("Cuboard.obj");
 	TABLE					= ResourceHandler::RegisterMesh("Table.obj");
 	TOILET					= ResourceHandler::RegisterMesh("Toilet.obj");

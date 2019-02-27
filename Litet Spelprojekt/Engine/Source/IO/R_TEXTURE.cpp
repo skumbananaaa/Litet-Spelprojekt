@@ -30,7 +30,11 @@ uint32 TEXTURE::SJOFAN_DIFF = 0;
 */
 void TEXTURE::RegisterResourcesPreLoading()
 {
-	
+	TextureParams params = {};
+	params.MinFilter = TEX_PARAM_LINEAR;
+	params.MagFilter = TEX_PARAM_LINEAR;
+	params.Wrap = TEX_PARAM_EDGECLAMP;
+	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, true, false, params);
 }
 
 void TEXTURE::RegisterResources()
@@ -61,7 +65,4 @@ void TEXTURE::RegisterResources()
 	ICON_SKILL_MEDIC	= ResourceHandler::RegisterTexture2D("Icons/SkillMedic.png", TEX_FORMAT_RGBA, false, true);
 	ICON_SKILL_STRENGTH = ResourceHandler::RegisterTexture2D("Icons/SkillStrength.png", TEX_FORMAT_RGBA, false, true);
 	ICON_CIRCLE			= ResourceHandler::RegisterTexture2D("Icons/Circle.png", TEX_FORMAT_RGBA, false, true);
-
-	params.Wrap = TEX_PARAM_EDGECLAMP;
-	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, true, false, params);
 }

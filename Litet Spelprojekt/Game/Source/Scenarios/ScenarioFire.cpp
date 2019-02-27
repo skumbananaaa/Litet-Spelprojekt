@@ -121,11 +121,6 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 
 	}
 
-	if (m_OnFire.size() > 100)
-	{
-		bool stop = true;
-	}
-
 	for (uint32 i = 0; i < m_OnFire.size(); i++)
 	{
 		glm::ivec3& pos = m_OnFire[i];
@@ -175,8 +170,17 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		if (smoke.y + 1 < m_pWorld->GetNumLevels())
 		{
 			TileData& aboveData = m_pWorld->GetLevel((int32)smoke.y + 1)->GetLevelData()[smoke.x][smoke.z];
-			aboveData.Temp += (data.SmokeAmount - data.SmokeLimit);
+			// TWEAK HERE
+ 			aboveData.Temp += (data.SmokeAmount - data.SmokeLimit) * dtS * 3 / aboveData.BurnsAt;
+			if (aboveData.Temp > aboveData.BurnsAt && !aboveData.Burning)
+			{
+				glm::ivec3 pos = smoke + glm::ivec3(0.0f, 1.0f, 0.0f);
+				SpawnFire(scene, pos, aboveData);
+				aboveData.Burning = true;
+				m_OnFire.push_back(pos);
+			}
 		}
+		//TWEAK HERE!
 		float spread = data.SmokeAmount - data.SmokeLimit;
 		//spread /= 4;
 		spread *= dtS * rateOfSpread;
@@ -253,6 +257,7 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 {
 	TileData& originTile = m_pWorld->GetLevel(origin.y)->GetLevelData()[origin.x][origin.z];
 	TileData& tileData = m_pWorld->GetLevel(origin.y + offset.y)->GetLevelData()[origin.x + offset.x][origin.z + offset.z];
+	//TWEAK HERE
 	float rateOfSpread = 1.0f;
 	float rateOfWallSpread = 0.0002f;
 	float rateOfFloorSpread = 0.0003f;

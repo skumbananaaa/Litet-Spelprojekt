@@ -75,6 +75,7 @@ public:
 
 	const std::vector<GUIObject*>& GetChildren() noexcept;
 	int32 GetNrOfChildren() const noexcept;
+	Texture2D* GetDefaultTexture() const;
 
 protected:
 	GUIObject(float x, float y, float width, float height);
@@ -100,7 +101,6 @@ protected:
 	virtual void RecreateFrameBuffer(float width, float height);
 
 	virtual void PrintName() const = 0;
-	Texture2D* GetDefaultTexture() const;
 	virtual const glm::vec4& GetClearColor() const;
 	virtual Texture2D* GetClearTexture() const;
 

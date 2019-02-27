@@ -15,7 +15,7 @@ SceneGame::SceneGame() :
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	LightManager::Init(this, 3);
+	LightManager::Init(this, 2);
 	Logger::SetListener(this);
 
 	m_pUICrewMember = new UICrewMember(330, 170);
@@ -30,15 +30,6 @@ SceneGame::SceneGame() :
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_PanelLog);
 
-	//Create renderers
-#if defined(DEFERRED_RENDER_PATH)
-	m_pRenderer = new DefferedRenderer();
-#elif defined(FORWARD_RENDER_PATH)
-#else
-#error "No renderpath defined. Check 'Defines.h'."
-#endif
-
-	//m_pRenderer = new OrthographicRenderer();
 
 	//Audio
 	{
@@ -94,9 +85,7 @@ SceneGame::SceneGame() :
 	//Create world
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	//Create scenarios
-	ScenarioManager::RegisterScenario(new ScenarioFire(m_pWorld));
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
+	ScenarioManager::Init(m_pWorld);
 
 	//Place objects in scene
 	int gameObjects = m_pWorld->GetNumWorldObjects();

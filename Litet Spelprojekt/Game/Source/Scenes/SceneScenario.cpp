@@ -3,7 +3,8 @@
 #include "..\..\Include\Scenes\SceneMenu.h"
 #include "../../Include/Game.h"
 
-SceneScenario::SceneScenario()
+SceneScenario::SceneScenario() : 
+	m_SelectionHandler(false, true)
 {
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -12,6 +13,7 @@ SceneScenario::SceneScenario()
 	m_pButtonBack = new Button(0, m_pPanel->GetHeight() - 50, 100, 50, "Tillbaka");
 	m_pButtonStart = new Button(m_pPanel->GetWidth() - m_pButtonBack->GetWidth(), m_pPanel->GetHeight() - 50, 100, 50, "Nästa");
 	m_pTextViewTitle = new TextView(0, m_pPanel->GetHeight() - 50, m_pPanel->GetWidth(), 50, "Välj Scenarion", true);
+	m_pListScrollable = new ListScrollable(0, 0, m_pPanel->GetWidth(), m_pPanel->GetHeight() - m_pButtonBack->GetHeight());
 
 	m_pButtonBack->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	m_pButtonStart->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
@@ -22,6 +24,18 @@ SceneScenario::SceneScenario()
 	m_pPanel->Add(m_pButtonBack);
 	m_pPanel->Add(m_pButtonStart);
 	m_pPanel->Add(m_pTextViewTitle);
+	m_pPanel->Add(m_pListScrollable);
+
+	const std::vector<IScenario*>& scenarios = ScenarioManager::GetScenarios();
+	for (int i = 0; i < scenarios.size(); i++)
+	{
+		Button* button = new Button(0, 0, m_pListScrollable->GetWidth() - 20, 100, scenarios[i]->GetName());
+		button->SetMargin(10, 5, 10, 5);
+		button->SetSelected(true);
+		button->SetUserData(reinterpret_cast<void*>(i));
+		m_pListScrollable->Add(button);
+		m_SelectionHandler.AddSelectable(button);
+	}
 
 	game->GetGUIManager().Add(m_pPanel);
 }
@@ -29,16 +43,6 @@ SceneScenario::SceneScenario()
 SceneScenario::~SceneScenario()
 {
 	Game::GetGame()->GetGUIManager().DeleteChildren();
-}
-
-void SceneScenario::CreateScenario(IScenario* scenario, int32 id) noexcept
-{
-	Button* button = new Button(0, 0, m_pListScrollable->GetWidth() - 20, 100, scenario->GetName());
-	button->SetMargin(10, 5, 10, 5);
-	button->SetSelected(true);
-	button->SetUserData(reinterpret_cast<void*>(id));
-	m_pListScrollable->Add(button);
-	m_SelectionHandler.AddSelectable(button);
 }
 
 void SceneScenario::OnSelected(const SelectionHandler* handler, ISelectable* selection)

@@ -1,7 +1,6 @@
 #include "..\..\Include\Scenarios\ScenarioManager.h"
 #include <System/Random.h>
 #include <World/Logger.h>
-#include "..\..\Include\Game.h"
 
 std::vector<IScenario*> ScenarioManager::s_Scenarios;
 std::vector<int32> ScenarioManager::s_ActiveScenarios;
@@ -11,7 +10,6 @@ uint32 ScenarioManager::RegisterScenario(IScenario* scenario) noexcept
 {
 	int32 id = s_Scenarios.size();
 	s_Scenarios.push_back(scenario);
-	//Game::GetGame()->GetUIScenario()->CreateScenario(scenario, id);
 	return id;
 }
 
@@ -67,6 +65,19 @@ void ScenarioManager::SetEnabledScenarios(const std::vector<int32> ids) noexcept
 {
 	s_NonActiveScenarios = ids;
 	s_ActiveScenarios.clear();
+}
+
+void ScenarioManager::Init(World* pWorld)
+{
+	for (IScenario* scenario : s_Scenarios)
+	{
+		scenario->Init(pWorld);
+	}
+}
+
+const std::vector<IScenario*> ScenarioManager::GetScenarios() noexcept
+{
+	return s_Scenarios;
 }
 
 void ScenarioManager::SetAsNonActive(int id)

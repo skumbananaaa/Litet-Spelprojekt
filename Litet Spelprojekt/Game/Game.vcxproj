@@ -152,7 +152,6 @@
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\GUI\UICrew.cpp" />
     <ClCompile Include="Source\GUI\UICrewMember.cpp" />
-    <ClCompile Include="Source\GUI\UIScenario.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Path.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioFire.cpp" />

@@ -8,9 +8,10 @@
 class ScenarioFire : public IScenario
 {
 public:
-	ScenarioFire(World* world);
+	ScenarioFire();
 	virtual ~ScenarioFire();
 
+	virtual void Init(World* pWorld) noexcept override;
 	virtual void OnStart(Scene* scene) noexcept override;
 	virtual void OnEnd()noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept override;

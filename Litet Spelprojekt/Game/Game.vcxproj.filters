@@ -42,9 +42,6 @@
     <ClCompile Include="Source\Scenarios\ScenarioWater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GUI\UIScenario.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scenarios\ScenarioManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

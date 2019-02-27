@@ -26,6 +26,9 @@ Game::Game() noexcept
 	m_pScene(nullptr)
 {
 	SetScene(new SceneLoading());
+
+	ScenarioManager::RegisterScenario(new ScenarioFire());
+	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 }
 
 Game::~Game()
@@ -45,8 +48,6 @@ void Game::OnResourcesLoaded()
 #endif
 
 	m_pScene->OnResourcesLoaded();
-
-	//m_pUIScenario = new UIScenario((GetWindow().GetWidth() - 600) / 2, (GetWindow().GetHeight() - 450) / 2, 600, 450);
 }
 
 void Game::OnKeyUp(KEY keycode)

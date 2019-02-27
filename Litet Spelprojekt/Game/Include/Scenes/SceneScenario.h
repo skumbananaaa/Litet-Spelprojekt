@@ -12,8 +12,6 @@ public:
 	SceneScenario();
 	virtual ~SceneScenario();
 
-	void CreateScenario(IScenario* scenario, int32 id) noexcept;
-
 	virtual void OnSelected(const SelectionHandler* handler, ISelectable* selection) override;
 	virtual void OnDeselected(const SelectionHandler* handler, ISelectable* selection) override;
 

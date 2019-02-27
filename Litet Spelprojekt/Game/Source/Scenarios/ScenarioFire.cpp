@@ -217,6 +217,7 @@ void ScenarioFire::ShowInRoom(uint32 roomID) noexcept
 				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(data.GameObjects[j]);
 				if(emitter != nullptr)
 					emitter->SetIsVisible(true);
+				}
 			}
 		}
 	}
@@ -230,7 +231,9 @@ void ScenarioFire::ShowInRoom(uint32 roomID) noexcept
 			{
 				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(data.GameObjects[j]);
 				if (emitter != nullptr)
+				{
 					emitter->SetIsVisible(true);
+				}
 			}
 		}
 	}

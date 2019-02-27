@@ -1,75 +1,7 @@
-layout(std140, binding = 0) uniform CameraBuffer
-{
-	mat4 g_ProjectionView;
-	mat4 g_View;
-	mat4 g_Projection;
-	mat4 g_InverseView;
-	mat4 g_InverseProjection;
-	vec3 g_CameraLookAt;
-	float pad1;
-	vec3 g_CameraPosition;
-};
-
-#if defined(VERTEX_SHADER)
-layout(location = 0) in vec3 g_Position;
-layout(location = 1) in vec3 g_Normal;
-layout(location = 2) in vec2 g_TexCoords;
-layout(location = 3) in mat4 g_InstanceModel;
-
-layout(binding = 5) uniform Extension
-{
-	float extension;
-};
-
-out VS_OUT
-{
-	vec3 Position;
-	vec3 Normal;
-	vec2 TexCoords;
-	vec4 ClipSpacePosition;
-} vs_out;
-
-void main()
-{
-	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	vs_out.Position = worldPos.xyz;
-	vs_out.Normal = (g_InstanceModel * vec4(g_Normal, 0.0)).xyz;
-	vs_out.TexCoords = g_TexCoords;
-	worldPos.x += extension * floor(g_InstanceModel[3].y / 2.0f);
-	vs_out.ClipSpacePosition = g_ProjectionView * worldPos;
-
-	gl_Position = vs_out.ClipSpacePosition;
-}
-
-#elif defined(FRAGMENT_SHADER)
 #define NUM_DIRECTIONAL_LIGHTS 1
 #define NUM_POINT_LIGHTS 3
 #define NUM_SPOT_LIGHTS 2
-
 #define LEVEL_SIZE 756
-
-layout(early_fragment_tests) in;
-
-layout(location = 0) out vec4 g_OutColor;
-
-layout(binding = 1) uniform sampler2D normalMap;
-layout(binding = 3) uniform sampler2D dudvMap;
-
-layout(std140, binding = 6) uniform WaterBuffer
-{
-	float g_DistortionFactor;
-};
-
-in VS_OUT
-{
-	vec3 Position;
-	vec3 Normal;
-	vec2 TexCoords;
-	vec4 ClipSpacePosition;
-} fs_in;
-
-const float specularStrength = 256.0f;
-const float shininess = 20.0;
 
 struct DirectionalLight
 {
@@ -92,7 +24,19 @@ struct SpotLight
 	float OuterAngle;
 };
 
-layout(binding = 1) uniform LightBuffer
+layout(std140, binding = 0) uniform CameraBuffer
+{
+	mat4 g_ProjectionView;
+	mat4 g_View;
+	mat4 g_Projection;
+	mat4 g_InverseView;
+	mat4 g_InverseProjection;
+	vec3 g_CameraLookAt;
+	float pad1;
+	vec3 g_CameraPosition;
+};
+
+layout(std140, binding = 1) uniform LightBuffer
 {
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
@@ -104,10 +48,60 @@ layout(std140, binding = 3) uniform WorldBuffer
 	ivec4 map[LEVEL_SIZE];
 };
 
-layout(binding = 5) uniform Extension
+layout(std140, binding = 5) uniform Extension
 {
-	float extension;
+	float g_Extension;
 };
+
+#if defined(VERTEX_SHADER)
+layout(location = 0) in vec3 g_Position;
+layout(location = 1) in vec3 g_Normal;
+layout(location = 2) in vec2 g_TexCoords;
+layout(location = 3) in mat4 g_InstanceModel;
+
+out VS_OUT
+{
+	vec3 Position;
+	vec3 Normal;
+	vec2 TexCoords;
+	vec4 ClipSpacePosition;
+} vs_out;
+
+void main()
+{
+	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	vs_out.Position = worldPos.xyz;
+	vs_out.Normal = (g_InstanceModel * vec4(g_Normal, 0.0)).xyz;
+	vs_out.TexCoords = g_TexCoords;
+	worldPos.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
+	vs_out.ClipSpacePosition = g_ProjectionView * worldPos;
+
+	gl_Position = vs_out.ClipSpacePosition;
+}
+
+#elif defined(FRAGMENT_SHADER)
+layout(early_fragment_tests) in;
+
+layout(location = 0) out vec4 g_OutColor;
+
+layout(binding = 1) uniform sampler2D normalMap;
+layout(binding = 3) uniform sampler2D dudvMap;
+
+layout(std140, binding = 6) uniform WaterBuffer
+{
+	float g_DistortionFactor;
+};
+
+in VS_OUT
+{
+	vec3 Position;
+	vec3 Normal;
+	vec2 TexCoords;
+	vec4 ClipSpacePosition;
+} fs_in;
+
+const float specularStrength = 256.0f;
+const float shininess = 20.0;
 
 vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)
 {

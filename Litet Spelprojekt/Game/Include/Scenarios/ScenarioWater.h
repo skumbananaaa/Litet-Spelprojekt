@@ -10,6 +10,7 @@ class ScenarioWater : public IScenario
 public:
 	ScenarioWater(bool waterAlwaysVisible = false);
 
+	virtual void Init(World* pWorld) noexcept override;
 	virtual void OnStart(Scene* scene) noexcept override;
 	virtual void OnEnd()noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) override;

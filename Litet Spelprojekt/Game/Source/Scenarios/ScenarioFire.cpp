@@ -40,9 +40,19 @@ void SpawnSmoke(Scene* pScene, const glm::vec3& position, TileData& data, bool v
 	data.GameObjects[2] = pEmitter;
 }
 
-ScenarioFire::ScenarioFire(World* world)
+ScenarioFire::ScenarioFire()
 {
-	m_pWorld = world;
+	
+}
+
+ScenarioFire::~ScenarioFire()
+{
+	DeleteArrSafe(m_pppMap);
+}
+
+void ScenarioFire::Init(World* pWorld) noexcept
+{
+	m_pWorld = pWorld;
 
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels()];
 
@@ -50,11 +60,6 @@ ScenarioFire::ScenarioFire(World* world)
 	{
 		m_pppMap[i] = m_pWorld->GetLevel(i)->GetLevel();
 	}
-}
-
-ScenarioFire::~ScenarioFire()
-{
-	DeleteArrSafe(m_pppMap);
 }
 
 void ScenarioFire::OnStart(Scene* scene) noexcept

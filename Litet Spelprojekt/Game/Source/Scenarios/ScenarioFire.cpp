@@ -19,7 +19,7 @@ void SpawnFire(Scene* pScene, const glm::vec3& position, TileData& data, bool vi
 	pEmitter->SetIsVisible(visible);
 
 	pScene->AddGameObject(pEmitter);
-	data.GameObjects.push_back(pEmitter);
+	data.GameObjects[3] = pEmitter;
 }
 
 void SpawnSmoke(Scene* pScene, const glm::vec3& position, TileData& data, bool visible = false)
@@ -37,7 +37,7 @@ void SpawnSmoke(Scene* pScene, const glm::vec3& position, TileData& data, bool v
 	pEmitter->UpdateTransform();
 	pEmitter->SetIsVisible(visible);
 	pScene->AddGameObject(pEmitter);
-	data.GameObjects.push_back(pEmitter);
+	data.GameObjects[2] = pEmitter;
 }
 
 ScenarioFire::ScenarioFire(World* world)
@@ -72,7 +72,7 @@ void ScenarioFire::OnStart(Scene* scene) noexcept
 	m_OnFire.push_back(pos);
 
 	TileData& tileData = m_pWorld->GetLevel(lvl)->GetLevelData()[x][z];
-	tileData.Temp = 100.1f;
+	tileData.Temp = tileData.BurnsAt + 0.1f;
 	tileData.Burning = true;
 
 	SpawnFire(scene, pos, tileData);
@@ -134,14 +134,22 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		{
 			m_Smoke.push_back(pos + glm::ivec3(0.0, (pos.y + 1) % 2, 0.0f));
 
-			if(tileData.GameObjects.size() > 2)
+			if (tileData.GameObjects[2] != nullptr)
+			{
 				SpawnSmoke(scene, pos + glm::ivec3(0.0f, ((int32)pos.y + 1) % 2, 0.0f), tileData, tileData.GameObjects[2]->IsVisible());
+			}
+			else if (tileData.GameObjects[3] != nullptr)
+			{
+				SpawnSmoke(scene, pos + glm::ivec3(0.0f, ((int32)pos.y + 1) % 2, 0.0f), tileData, tileData.GameObjects[3]->IsVisible());
+			}
 			else
+			{
 				SpawnSmoke(scene, pos + glm::ivec3(0.0f, ((int32)pos.y + 1) % 2, 0.0f), tileData);
+			}
 
 			TileData& lowerTileData = m_pWorld->GetLevel((int32)pos.y)->GetLevelData()[(int32)pos.x][(int32)pos.z];
 
-			for (uint32 i = 2; i < lowerTileData.GameObjects.size(); i++)
+			for (uint32 i = tileData.nrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
 			{
 				FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
 				if (alarm != nullptr)
@@ -203,10 +211,10 @@ void ScenarioFire::ShowInRoom(uint32 roomID) noexcept
 		glm::ivec3 pos = m_Smoke[i];
 		if (m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z] == roomID)
 		{
-			uint32 max = m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.size();
-			for (uint32 j = 2; j < max; j++)
+			TileData& data = m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z];
+			for (uint32 j = 2; j < data.nrOfBaseGameObjects; j++)
 			{
-				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects[j]);
+				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(data.GameObjects[j]);
 				if(emitter != nullptr)
 					emitter->SetIsVisible(true);
 			}
@@ -217,10 +225,10 @@ void ScenarioFire::ShowInRoom(uint32 roomID) noexcept
 		glm::ivec3 pos = m_OnFire[i];
 		if (m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z] == roomID)
 		{
-			uint32 max = m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.size();
-			for (uint32 j = 2; j < max; j++)
+			TileData& data = m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z];
+			for (uint32 j = 2; j < data.nrOfBaseGameObjects; j++)
 			{
-				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects[j]);
+				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(data.GameObjects[j]);
 				if (emitter != nullptr)
 					emitter->SetIsVisible(true);
 			}
@@ -250,14 +258,17 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 
 		if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z])
 		{
-			SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f), tileData, originTile.GameObjects[2]->IsVisible());
+			if(originTile.GameObjects[2] != nullptr)
+				SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f), tileData, originTile.GameObjects[2]->IsVisible());
+			else if(originTile.GameObjects[3] != nullptr)
+				SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f), tileData, originTile.GameObjects[3]->IsVisible());
 		}
 		else
 		{
 			SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f), tileData, false);
 		}
 
-		for (uint32 i = 2; i < tileData.GameObjects.size(); i++)
+		for (uint32 i = tileData.nrOfBaseGameObjects; i < tileData.GameObjects.size(); i++)
 		{
 			FireAlarm* alarm = dynamic_cast<FireAlarm*>(tileData.GameObjects[i]);
 			if (alarm != nullptr)
@@ -299,7 +310,14 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3& offset, const glm::iv
 				m_Smoke.push_back(origin + offset);
 				if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z])
 				{
-					SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f), tileData, originTile.GameObjects[2]->IsVisible());
+					if (originTile.GameObjects[2] != nullptr)
+					{
+						SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f), tileData, originTile.GameObjects[2]->IsVisible());
+					}
+					else if (originTile.GameObjects[3] != nullptr)
+					{
+						SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f), tileData, originTile.GameObjects[3]->IsVisible());
+					}
 				}
 				else
 				{
@@ -308,7 +326,7 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3& offset, const glm::iv
 			}
 			res = true;
 
-			for (uint32 i = 2; i < lowerTileData.GameObjects.size(); i++)
+			for (uint32 i = tileData.nrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
 			{
 				FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
 				if (alarm != nullptr)

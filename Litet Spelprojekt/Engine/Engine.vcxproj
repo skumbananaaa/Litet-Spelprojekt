@@ -49,6 +49,7 @@
     <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
     <ClInclude Include="Include\Graphics\GUI\SelectionHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
+    <ClInclude Include="Include\Graphics\GUI\TextField.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\TextField.cpp" />
     <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
     <ClCompile Include="Source\Graphics\Material\WallMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />

@@ -7,6 +7,7 @@
 #include <GLM/gtc/type_ptr.hpp>
 
 std::vector<GUIObject*> GUIObject::s_MouseListeners;
+std::vector<GUIObject*> GUIObject::s_KeyboardListeners;
 Texture2D* GUIObject::s_pDefaultTexture = nullptr;
 
 GUIObject::GUIObject(float x, float y, float width, float height) :
@@ -35,6 +36,7 @@ GUIObject::~GUIObject()
 	}
 
 	RemoveMouseListener(this);
+	RemoveKeyboardListener(this);
 	RemoveRealTimeRenderer();
 
 	for (int i = m_Children.size() - 1; i >= 0; i--)
@@ -121,6 +123,32 @@ void GUIObject::RemoveMouseListener(GUIObject* listener)
 		if (object == listener)
 		{
 			s_MouseListeners.erase(s_MouseListeners.begin() + counter);
+			return;
+		}
+		counter++;
+	}
+}
+
+void GUIObject::AddKeyboardListener(GUIObject* listener)
+{
+	if (!Contains<GUIObject>(s_KeyboardListeners, listener))
+	{
+		s_KeyboardListeners.push_back(listener);
+	}
+	else
+	{
+		std::cout << "CharFromKeyListener already added" << std::endl;
+	}
+}
+
+void GUIObject::RemoveKeyboardListener(GUIObject* listener)
+{
+	int32 counter = 0;
+	for (GUIObject* object : s_KeyboardListeners)
+	{
+		if (object == listener)
+		{
+			s_KeyboardListeners.erase(s_KeyboardListeners.begin() + counter);
 			return;
 		}
 		counter++;
@@ -636,4 +664,37 @@ void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::
 		}
 	}
 	InternalRootOnMouseMove(position);
+}
+
+void GUIObject::InternalRootOnKeyUp(KEY keycode)
+{
+	for (int i = s_KeyboardListeners.size() - 1; i >= 0; i--)
+	{
+		if (s_KeyboardListeners[i]->IsVisible())
+		{
+			s_KeyboardListeners[i]->OnKeyUp(keycode);
+		}
+	}
+}
+
+void GUIObject::InternalRootOnKeyDown(KEY keycode)
+{
+	for (int i = s_KeyboardListeners.size() - 1; i >= 0; i--)
+	{
+		if (s_KeyboardListeners[i]->IsVisible())
+		{
+			s_KeyboardListeners[i]->OnKeyDown(keycode);
+		}
+	}
+}
+
+void GUIObject::InternalRootOnCharFromKey(char c)
+{
+	for (int i = s_KeyboardListeners.size() - 1; i >= 0; i--)
+	{
+		if (s_KeyboardListeners[i]->IsVisible())
+		{
+			s_KeyboardListeners[i]->OnCharFromKey(c);
+		}
+	}
 }

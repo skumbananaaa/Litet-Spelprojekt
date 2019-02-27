@@ -321,7 +321,10 @@ void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelect
 	{
 		Button* pButton = (Button*)pSelection;
 		GameObject* pGameObject = (GameObject*)pButton->GetUserData();
-		pGameObject->SetMaterial(ResourceHandler::GetMaterial(m_pOriginalMaterial));
+		if (pGameObject)
+		{
+			pGameObject->SetMaterial(ResourceHandler::GetMaterial(m_pOriginalMaterial));
+		}
 	}
 }
 

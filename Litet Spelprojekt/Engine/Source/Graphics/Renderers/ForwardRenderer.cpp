@@ -72,6 +72,10 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 
 	MaterialBuffer perBatch = {};
 	
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_5);
+#endif
+
 	bool roomIsActive = false;
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
@@ -88,6 +92,9 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 			skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
 		}
 	}
+#if defined(PRINT_CPU_DEBUG_DATA)
+	CPUProfiler::EndTimer("Animation Bone Update took %.3f ms", CPU_PROFILER_SLOT_5);
+#endif
 
 	//Update lights
 	UpdateLightBuffer(scene);

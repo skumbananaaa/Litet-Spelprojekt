@@ -10,6 +10,11 @@ uint32 TEXTURE::SHIP_NORMAL = 0;
 uint32 TEXTURE::HDR = 0;
 uint32 TEXTURE::SINGLE_BED = 0;
 uint32 TEXTURE::BUNK_BED = 0;
+uint32 TEXTURE::CUBOARD = 0;
+uint32 TEXTURE::TABLE = 0;
+uint32 TEXTURE::TOILET = 0;
+uint32 TEXTURE::INSTRUMENT_1 = 0;
+uint32 TEXTURE::INSTRUMENT_2 = 0;
 uint32 TEXTURE::ICON_INJURY_BONE = 0;
 uint32 TEXTURE::ICON_INJURY_BURN = 0;
 uint32 TEXTURE::ICON_INJURY_SMOKE = 0;
@@ -44,9 +49,14 @@ void TEXTURE::RegisterResources()
 	SHIP				= ResourceHandler::RegisterTexture2D("ship.jpg", TEX_FORMAT_RGBA);
 	SHIP_NORMAL			= ResourceHandler::RegisterTexture2D("shipNormalMap.png", TEX_FORMAT_RGBA);
 	SINGLE_BED			= ResourceHandler::RegisterTexture2D("uv_Single_Bed_Texture_Map.jpg", TEX_FORMAT_RGBA);
+	INSTRUMENT_1		= ResourceHandler::RegisterTexture2D("uv_Instrument1.jpg", TEX_FORMAT_RGBA);
+	INSTRUMENT_2		= ResourceHandler::RegisterTexture2D("uv_Instrument2.jpg", TEX_FORMAT_RGBA);
 	BUNK_BED			= ResourceHandler::RegisterTexture2D("uv_bunk_Bed_Texture.jpg", TEX_FORMAT_RGBA);
+	CUBOARD				= ResourceHandler::RegisterTexture2D("uv_Cuboard.jpg", TEX_FORMAT_RGBA);
+	TABLE				= ResourceHandler::RegisterTexture2D("uv_Table.jpg", TEX_FORMAT_RGBA);
+	TOILET				= ResourceHandler::RegisterTexture2D("uv_Toilet.jpg", TEX_FORMAT_RGBA);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
-	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("sjofan_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
+	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
 
 	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BURN	= ResourceHandler::RegisterTexture2D("Icons/InjuryBurn.png", TEX_FORMAT_RGBA, false, true);

@@ -13,6 +13,11 @@ public:
 	static uint32 HDR;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
+	static uint32 CUBOARD;
+	static uint32 TABLE;
+	static uint32 TOILET;
+	static uint32 INSTRUMENT_1;
+	static uint32 INSTRUMENT_2;
 	static uint32 ICON_INJURY_BONE;
 	static uint32 ICON_INJURY_BURN;
 	static uint32 ICON_INJURY_SMOKE;

@@ -1,8 +1,4 @@
-#define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 3
-#define NUM_SPOT_LIGHTS 2
-
-#define LEVEL_SIZE 756
+#define LEVEL_SIZE LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z
 
 struct DirectionalLight
 {
@@ -63,22 +59,22 @@ layout(std140, binding = 5) uniform Extension
 	float g_Extension;
 };
 
-vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)
-{
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-
-	//AMBIENT
-	vec3 ambient = vec3(0.2f);
-
-	//DIFFUSE
-	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
-
-	//SPECULAR
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), specularIntensity);
-	vec3 specular = vec3(spec) * lightColor * intensity;
-
-	return ((ambient + diffuse) * color * lightColor) + specular;
-}
+//vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)
+//{
+//	vec3 halfwayDir = normalize(lightDir + viewDir);
+//
+//	//AMBIENT
+//	vec3 ambient = vec3(0.2f);
+//
+//	//DIFFUSE
+//	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
+//
+//	//SPECULAR
+//	float spec = pow(max(dot(normal, halfwayDir), 0.0), specularIntensity);
+//	vec3 specular = vec3(spec) * lightColor * intensity;
+//
+//	return ((ambient + diffuse) * color * lightColor) + specular;
+//}
 
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
@@ -133,8 +129,8 @@ uvec4 CalcRoomIndex(ivec3 mapPos)
 
 void main()
 {
+	//Setup
 	vec3 normal = normalize((g_InstanceModel * vec4(g_Normal, 0.0f)).xyz);
-	
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
 	
 	//Calculate position in tiles
@@ -149,7 +145,6 @@ void main()
 
 	//Viewdir
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);
-
 
 	//Calculate light
 	vec3 specular = vec3(0.0f);

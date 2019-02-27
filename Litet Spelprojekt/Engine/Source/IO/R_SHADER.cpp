@@ -34,12 +34,36 @@ void SHADER::RegisterResourcesPreLoading()
 	ANIMATION_DEPTH_PRE_PASS	= ResourceHandler::RegisterShader("animatedDepthPrePass.glsl", "animatedDepthPrePass.glsl");
 	PARTICLES					= ResourceHandler::RegisterShader("forwardParticles.glsl", "forwardParticles.glsl");
 	MESH_PARTICLES				= ResourceHandler::RegisterShader("forwardMeshParticles.glsl", "forwardMeshParticles.glsl");
-	WATER_OUTDOOR_MATERIAL		= ResourceHandler::RegisterShader("forwardOutdoorWater.glsl", "forwardOutdoorWater.glsl");
+	
+	{
+		//Strings for defines
+		std::string numDirLights = (TO_STRING(NUM_DIRECTIONAL_LIGHTS)) + std::string(" ") + std::to_string(NUM_DIRECTIONAL_LIGHTS);
+		std::string numSpotlights = (TO_STRING(NUM_SPOT_LIGHTS)) + std::string(" ") + std::to_string(NUM_SPOT_LIGHTS);
+		std::string numPointLights = (TO_STRING(NUM_POINT_LIGHTS)) + std::string(" ") + std::to_string(NUM_POINT_LIGHTS);
+		std::string levelY = (TO_STRING(LEVEL_SIZE_Y)) + std::string(" ") + std::to_string(LEVEL_SIZE_Y);
+		std::string levelX = (TO_STRING(LEVEL_SIZE_X)) + std::string(" ") + std::to_string(LEVEL_SIZE_X);
+		std::string levelZ = (TO_STRING(LEVEL_SIZE_Z)) + std::string(" ") + std::to_string(LEVEL_SIZE_Z);
+
+		const char* pDefines[] =
+		{
+			numDirLights.c_str(),
+			numPointLights.c_str(),
+			numSpotlights.c_str(),
+			levelX.c_str(),
+			levelY.c_str(),
+			levelZ.c_str(),
+		};
+
+		ShaderDefines defines = {};
+		defines.ppDefines = pDefines;
+		defines.NumDefines = _countof(pDefines);
+
+		WATER_OUTDOOR_MATERIAL		= ResourceHandler::RegisterShader("forwardOutdoorWater.glsl", "forwardOutdoorWater.glsl", defines);
+	}
 }
 
 void SHADER::RegisterResources()
 {
-	//Strings for defines
 	std::string numDirLights = (TO_STRING(NUM_DIRECTIONAL_LIGHTS)) + std::string(" ") + std::to_string(NUM_DIRECTIONAL_LIGHTS);
 	std::string numSpotlights = (TO_STRING(NUM_SPOT_LIGHTS)) + std::string(" ") + std::to_string(NUM_SPOT_LIGHTS);
 	std::string numPointLights = (TO_STRING(NUM_POINT_LIGHTS)) + std::string(" ") + std::to_string(NUM_POINT_LIGHTS);
@@ -70,11 +94,14 @@ void SHADER::RegisterResources()
 		defines.NumDefines = _countof(pDefines);
 
 		STANDARD_MATERIAL = ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl", defines);
+		WATER_INDOOR_MATERIAL = ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl", defines);
 	}
 
 	{
+		std::string maxBones = (TO_STRING(MAX_NUM_BONES)) + std::string(" ") + std::to_string(MAX_NUM_BONES);
 		const char* pDefines[] =
 		{
+			maxBones.c_str(),
 			numDirLights.c_str(),
 			numPointLights.c_str(),
 			numSpotlights.c_str(),
@@ -89,8 +116,6 @@ void SHADER::RegisterResources()
 
 		ANIMATION = ResourceHandler::RegisterShader("forwardAnimation.glsl", "forwardAnimation.glsl", defines);
 	}
-
-	WATER_INDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl");
 #endif
 
 	{

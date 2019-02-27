@@ -59,10 +59,9 @@ SceneGame::~SceneGame()
 {
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
+	DeleteSafe(m_pTestAudioSource);
 
 	Logger::Save();
-
-	ScenarioManager::Release();
 	LightManager::Release();
 }
 
@@ -108,8 +107,8 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 void SceneGame::OnUpdate(float dtS) noexcept
 {
 	SceneInternal::OnUpdate(dtS);
-
 	ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
+	UpdateCamera(dtS);
 
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
@@ -137,8 +136,6 @@ void SceneGame::OnUpdate(float dtS) noexcept
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
 #endif
-
-	UpdateCamera(dtS);
 
 	GameObject* pCameraLookAt = GetGameObject("cameraLookAt");
 	if (pCameraLookAt)

@@ -15,7 +15,13 @@ Game::Game() noexcept
 	m_pSceneNext(nullptr),
 	m_pScene(nullptr),
 	m_pRenderer(nullptr),
-	m_pSkyBoxTex(nullptr)
+	m_pSkyBoxTex(nullptr),
+	m_pSceneLoading(nullptr),
+	m_pSceneMenu(nullptr),
+	m_pSceneCredits(nullptr),
+	m_pSceneOptions(nullptr),
+	m_pSceneScenario(nullptr),
+	m_pSceneGame(nullptr)
 {
 	m_pSceneLoading = new SceneLoading();
 
@@ -41,6 +47,8 @@ Game::~Game()
 
 	DeleteSafe(m_pRenderer);
 	DeleteSafe(m_pSkyBoxTex);
+
+	ScenarioManager::Release();
 }
 
 void Game::OnResourceLoading(const std::string& file, float percentage)

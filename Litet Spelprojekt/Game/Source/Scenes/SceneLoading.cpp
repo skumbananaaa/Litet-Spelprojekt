@@ -2,7 +2,9 @@
 #include "../../Include/Game.h"
 #include "../../Include/Scenes/SceneMenu.h"
 
-SceneLoading::SceneLoading()
+SceneLoading::SceneLoading() :
+	m_pTextViewFile(nullptr),
+	m_pLoadingBar(nullptr)
 {
 	
 }

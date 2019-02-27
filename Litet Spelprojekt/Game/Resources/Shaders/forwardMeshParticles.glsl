@@ -17,9 +17,9 @@ layout(location = 2) in vec3 g_InstancePosition;
 layout(location = 3) in vec4 g_InstanceColor;
 layout(location = 4) in vec2 g_InstanceScale;
 
-layout(binding = 5) uniform Extension
+layout(std140, binding = 5) uniform Extension
 {
-	float extension;
+	float g_Extension;
 };
 
 out VS_OUT
@@ -34,7 +34,7 @@ void main()
 	vs_out.Color = g_InstanceColor;
 
 	vec3 position = g_InstancePosition + (g_Position * g_InstanceScale.x);
-	position.x += extension * floor(clamp(g_InstancePosition.y, 0.0f, 5.9f) / 2.0f);
+	position.x += g_Extension * floor(clamp(g_InstancePosition.y, 0.0f, 5.9f) / 2.0f);
 
 	gl_Position = g_ProjectionView * vec4(position, 1.0f);
 }

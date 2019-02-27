@@ -328,18 +328,19 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3& offset, const glm::iv
 				{
 					SpawnSmoke(scene, origin + offset + glm::ivec3(0.0f, ((int32)(origin + offset).y + 1) % 2, 0.0f), tileData, false);
 				}
+
+				for (uint32 i = tileData.nrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
+				{
+					FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
+					if (alarm != nullptr)
+					{
+						lowerTileData.GameObjects[i]->OnSmokeDetected();
+						ShowInRoom(m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z]);
+					}
+				}
+
 			}
 			res = true;
-
-			for (uint32 i = tileData.nrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
-			{
-				FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
-				if (alarm != nullptr)
-				{
-					lowerTileData.GameObjects[i]->OnSmokeDetected();
-					ShowInRoom(m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z]);
-				}
-			}
 		}
 	}
 	else

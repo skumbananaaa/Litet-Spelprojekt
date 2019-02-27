@@ -23,6 +23,10 @@ uint32 MESH::DOOR_FRAME = 0;
 uint32 MESH::LADDER = 0;
 uint32 MESH::MESH_PARTICLE = 0;
 uint32 MESH::WATER_QUAD = 0;
+uint32 MESH::CUBOARD = 0;
+uint32 MESH::TABLE = 0;
+uint32 MESH::TOILET = 0;
+
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -47,8 +51,11 @@ void MESH::RegisterResources()
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
 	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
 	MESH_PARTICLE			= ResourceHandler::RegisterMeshParticle(MeshParticle::CreateCube());
-	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("sjofanDance.fbx");
+	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("CrewMemberRunning7.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
+	CUBOARD					= ResourceHandler::RegisterMesh("Cuboard.obj");
+	TABLE					= ResourceHandler::RegisterMesh("Table.obj");
+	TOILET					= ResourceHandler::RegisterMesh("Toilet.obj");
 }

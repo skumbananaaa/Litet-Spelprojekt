@@ -24,6 +24,13 @@ public:
 	static uint32 CREW_STANDARD;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
+	static uint32 INSTRUMENT_1;
+	static uint32 INSTRUMENT_2;
+	static uint32 LAMP;
+	static uint32 CHAIR;
+	static uint32 CUBOARD;
+	static uint32 TABLE;
+	static uint32 TOILET;
 	static uint32 ANIMATED_MODEL;
 
 private:

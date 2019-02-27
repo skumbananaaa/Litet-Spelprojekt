@@ -69,15 +69,16 @@ public:
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
 	///<summary>Updates the damage on the crewmember based on what smoke and/or fire is on this members tile..</summary>
-	void UpdateDamage(const TileData*const* data);
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
-
+	void CheckSmokeDamage(const TileData*const* data) noexcept;
+	void CheckFireDamage(const TileData*const* data) noexcept;
 	float m_ActionCap;
 	float m_DeltaTime;
 	SpotLight* m_pTorch;
 	PointLight* m_pLight;
 	Path* m_pPathFinder;
+	//const World* m_pWorld;
 	glm::ivec3 m_PlayerTile;
 	glm::ivec3 m_TargetTile;
 	glm::ivec3 m_GoalTile;

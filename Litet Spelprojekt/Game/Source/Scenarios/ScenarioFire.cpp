@@ -109,7 +109,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		CheckFire(dtS, glm::ivec3(0, 0, 1), pos, scene);
 		CheckFire(dtS, glm::ivec3(0, 0, -1), pos, scene);
 
-		if (pos.y < m_pWorld->GetNumLevels() - 1)
+		/*if (pos.y < m_pWorld->GetNumLevels() - 1)
 		{
 			CheckFire(dtS, glm::ivec3(0, 1, 0), pos, scene);
 		}
@@ -117,7 +117,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 		if (pos.y - 1 > 0)
 		{
 			CheckFire(dtS, glm::ivec3(0, -1, 0), pos, scene);
-		}
+		}*/
 
 	}
 
@@ -172,7 +172,11 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 	{
 		glm::ivec3& smoke = m_Smoke[j];
 		TileData& data = m_pWorld->GetLevel((int32)smoke.y)->GetLevelData()[smoke.x][smoke.z];
-
+		if (smoke.y + 1 < m_pWorld->GetNumLevels())
+		{
+			TileData& aboveData = m_pWorld->GetLevel((int32)smoke.y + 1)->GetLevelData()[smoke.x][smoke.z];
+			aboveData.Temp += (data.SmokeAmount - data.SmokeLimit);
+		}
 		float spread = data.SmokeAmount - data.SmokeLimit;
 		//spread /= 4;
 		spread *= dtS * rateOfSpread;

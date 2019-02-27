@@ -320,12 +320,12 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 	ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
 
-	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+	/*for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
 		Crewmember* member = m_Crew.GetMember(i);
 		member->UpdateDamage(m_pWorld->GetLevel(member->GetPosition().y)->GetLevelData());
 		member->UpdateDamage(m_pWorld->GetLevel(member->GetPosition().y + 1)->GetLevelData());
-	}
+	}*/
 	static float dist = 0.0f;
 	dist += 0.02f * dtS;
 	((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);

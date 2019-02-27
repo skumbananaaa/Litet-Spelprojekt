@@ -70,7 +70,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	GameObject::Update(camera, deltaTime);
 	UpdateTransform();
-	
+	//CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
+	//CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
@@ -224,27 +225,29 @@ bool Crewmember::HasInjurySmoke() const noexcept
 	return m_HasInjurySmoke > 1.0;
 }
 
-void Crewmember::UpdateDamage(const TileData*const* data)
-{
-	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
-	if (tileData.SmokeAmount - tileData.SmokeLimit > 1.0 && m_HasInjurySmoke < 1.0f)
-	{
-		m_HasInjurySmoke += tileData.SmokeAmount/tileData.SmokeLimit;
-		Logger::LogEvent("Crewmember " + GetName() + "got smoked" + std::to_string(m_HasInjurySmoke));
-	}
-
-	tileData = data[m_PlayerTile.x][m_PlayerTile.z];
-
-	if (tileData.Temp > 100 && m_HasInjuryBurned < 1.0f)
-	{
-		m_HasInjuryBurned += tileData.Temp/100;
-		Logger::LogEvent("Crewmember " + GetName() + "got burned" + std::to_string(m_HasInjurySmoke));
-	}
-}
-
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
 	m_ShipNumber = shipnumber;
+}
+
+void Crewmember::CheckSmokeDamage(const TileData*const* data) noexcept
+{
+	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0 && m_HasInjurySmoke <= 1.0f)
+	{
+		m_HasInjurySmoke += tileData.SmokeAmount / tileData.SmokeLimit;
+		Logger::LogEvent("Crewmember " + GetName() + "got smoked" + std::to_string(m_HasInjurySmoke));
+	}
+}
+
+void Crewmember::CheckFireDamage(const TileData * const * data) noexcept
+{
+	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	if (tileData.Temp >= 100 && m_HasInjuryBurned <= 1.0f)
+	{
+		m_HasInjuryBurned += tileData.Temp / 100;
+		Logger::LogEvent("Crewmember " + GetName() + "got burned" + std::to_string(m_HasInjurySmoke));
+	}
 }
 
 void Crewmember::Move(const glm::vec3 & dir)
@@ -355,4 +358,5 @@ void Crewmember::SetActionCapacity(const float actionCap)
 void Crewmember::SetPath(const World* world)
 {
 	m_pPathFinder = new Path(world);
+	//m_pWorld = world;
 }

@@ -7,7 +7,8 @@ Editor::Editor() noexcept : Application(false, 1600, 900, "../Game/"),
 	m_SelectionHandlerRoom(false),
 	m_SelectionHandlerMesh(true),
 	m_SelectionHandlerMeshEdit(false),
-	m_pOriginalMaterial(nullptr)
+	m_pOriginalMaterial(nullptr),
+	m_pPanelTop(nullptr)
 {
 	std::cout << "Editor" << std::endl;
 	m_MouseMaterial = MATERIAL::WHITE;
@@ -92,7 +93,6 @@ void Editor::OnResourcesLoaded()
 	m_pPanelTop->Add(m_pButtonRoom);
 	m_pPanelTop->Add(m_pButtonMesh);
 	m_pPanelTop->Add(m_pTextFieldBurnTemp);
-	m_pPanelTop->SetDeleteAllChildrenOnDestruction(true);
 
 
 	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
@@ -122,7 +122,6 @@ void Editor::OnResourcesLoaded()
 	m_pPanelEditor->Add(m_pButtonAddStairs);
 	m_pPanelEditor->Add(m_pButtonRemoveStairs);
 	m_pPanelEditor->Add(m_pSetRoomBurnTemperature);
-	m_pPanelEditor->SetDeleteAllChildrenOnDestruction(true);
 	m_SelectionHandlerRoom.AddSelectionListener(this);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddRoom);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonEditRoom);
@@ -147,7 +146,6 @@ void Editor::OnResourcesLoaded()
 	m_pPanelMesh->Add(m_pPanelScrollableEditMesh);
 	m_pPanelScrollableAddMesh->SetVisible(false);
 	m_pPanelMesh->SetVisible(false);
-	m_pPanelMesh->SetDeleteAllChildrenOnDestruction(true);
 	m_SelectionHandlerMesh.AddSelectionListener(this);
 	m_SelectionHandlerMesh.AddSelectable(m_pButtonAddMesh);
 	m_SelectionHandlerMesh.AddSelectable(m_pButtonEditMesh);
@@ -167,7 +165,6 @@ void Editor::OnResourcesLoaded()
 	m_pPanelFloor->Add(m_pButtonFloor1);
 	m_pPanelFloor->Add(m_pButtonFloor2);
 	m_pPanelFloor->Add(m_pButtonFloor3);
-	m_pPanelFloor->SetDeleteAllChildrenOnDestruction(true);
 	m_SelectionHandlerFloor.AddSelectionListener(this);
 	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor1);
 	m_SelectionHandlerFloor.AddSelectable(m_pButtonFloor2);
@@ -1267,10 +1264,11 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_UP:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-			if (selectable)
+			std::vector<ISelectable*> selection;
+			m_SelectionHandlerMeshEdit.GetSelection(selection);
+			if (!selection.empty())
 			{
-				Button* button = (Button*)selectable;
+				Button* button = (Button*)selection[0];
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(FORWARD));
 				object->UpdateTransform();
@@ -1279,10 +1277,11 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_DOWN:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-			if (selectable)
+			std::vector<ISelectable*> selection;
+			m_SelectionHandlerMeshEdit.GetSelection(selection);
+			if (!selection.empty())
 			{
-				Button* button = (Button*)selectable;
+				Button* button = (Button*)selection[0];
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(BACKWARD));
 				object->UpdateTransform();
@@ -1291,10 +1290,11 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_LEFT:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-			if (selectable)
+			std::vector<ISelectable*> selection;
+			m_SelectionHandlerMeshEdit.GetSelection(selection);
+			if (!selection.empty())
 			{
-				Button* button = (Button*)selectable;
+				Button* button = (Button*)selection[0];
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(LEFT));
 				object->UpdateTransform();
@@ -1303,10 +1303,11 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_RIGHT:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-			if (selectable)
+			std::vector<ISelectable*> selection;
+			m_SelectionHandlerMeshEdit.GetSelection(selection);
+			if (!selection.empty())
 			{
-				Button* button = (Button*)selectable;
+				Button* button = (Button*)selection[0];
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetPosition(object->GetPosition() + GetDirectionBasedOnCamera(RIGHT));
 				object->UpdateTransform();
@@ -1315,10 +1316,11 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_SPACE:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-			if (selectable)
+			std::vector<ISelectable*> selection;
+			m_SelectionHandlerMeshEdit.GetSelection(selection);
+			if (!selection.empty())
 			{
-				Button* button = (Button*)selectable;
+				Button* button = (Button*)selection[0];
 				GameObject* object = (GameObject*)button->GetUserData();
 				object->SetRotation(glm::vec4(0, 1, 0, object->GetRotation().w + glm::half_pi<float>()));
 				object->UpdateTransform();
@@ -1327,10 +1329,11 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_DELETE:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-			if (selectable)
+			std::vector<ISelectable*> selection;
+			m_SelectionHandlerMeshEdit.GetSelection(selection);
+			if (!selection.empty())
 			{
-				Button* button = (Button*)selectable;
+				Button* button = (Button*)selection[0];
 				if (button->GetUserData())
 				{
 					GameObject* object = (GameObject*)button->GetUserData();
@@ -1368,10 +1371,11 @@ void Editor::OnKeyDown(KEY keycode)
 		}
 		case KEY_ENTER:
 		{
-			ISelectable* selectable = m_SelectionHandlerMeshEdit.GetSelected();
-			if (selectable)
+			std::vector<ISelectable*> selection;
+			m_SelectionHandlerMeshEdit.GetSelection(selection);
+			if (!selection.empty())
 			{
-				Button* button = (Button*)selectable;
+				Button* button = (Button*)selection[0];
 				GameObject* original = (GameObject*)button->GetUserData();
 				int32 id = original->GetTypeId();
 				GameObject* pGameObject = ResourceHandler::CreateGameObject(id);
@@ -1605,58 +1609,64 @@ Editor* Editor::GetEditor()
 
 void Editor::OnUpdate(float dtS)
 {
-	static float tempRotation = 0.0f;
-	tempRotation += 1.0f * dtS;
-
-	static float cameraSpeed = 5.0f;
-	static float cameraAngularSpeed = 1.5f;
-	static float cameraZoomSpeed = 0.2f;
-
-	if (m_pPanelEditor->IsVisible())
+	if (m_pPanelTop)
 	{
-		if (Input::IsKeyDown(KEY_W))
-		{
-			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(0.0f, cameraSpeed * dtS, 0.0f));
-		}
-		else if (Input::IsKeyDown(KEY_S))
-		{
-			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(0.0f, -cameraSpeed * dtS, 0.0f));
-		}
+		static float tempRotation = 0.0f;
+		tempRotation += 1.0f * dtS;
 
-		if (Input::IsKeyDown(KEY_A))
-		{
-			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(cameraSpeed * dtS, 0.0f, 0.0f));
-		}
-		else if (Input::IsKeyDown(KEY_D))
-		{
-			GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(-cameraSpeed * dtS, 0.0f, 0.0f));
-		}
+		static float cameraSpeed = 5.0f;
+		static float cameraAngularSpeed = 1.5f;
+		static float cameraZoomSpeed = 0.2f;
 
-		if (Input::IsKeyDown(KEY_E))
+		if (m_pPanelEditor->IsVisible())
 		{
-			m_CameraZoom -= cameraZoomSpeed * dtS;
-			m_CameraZoom = glm::max(m_CameraZoom, 0.01f);
-			Camera& camera = GetCurrentScene()->GetCamera();
-			camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+			if (Input::IsKeyDown(KEY_W))
+			{
+				GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(0.0f, cameraSpeed * dtS, 0.0f));
+			}
+			else if (Input::IsKeyDown(KEY_S))
+			{
+				GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(0.0f, -cameraSpeed * dtS, 0.0f));
+			}
+
+			if (Input::IsKeyDown(KEY_A))
+			{
+				GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(cameraSpeed * dtS, 0.0f, 0.0f));
+			}
+			else if (Input::IsKeyDown(KEY_D))
+			{
+				GetCurrentScene()->GetCamera().MoveLocalCoords(glm::vec3(-cameraSpeed * dtS, 0.0f, 0.0f));
+			}
+
+			if (Input::IsKeyDown(KEY_E))
+			{
+				m_CameraZoom -= cameraZoomSpeed * dtS;
+				m_CameraZoom = glm::max(m_CameraZoom, 0.01f);
+				Camera& camera = GetCurrentScene()->GetCamera();
+				camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+			}
+			else if (Input::IsKeyDown(KEY_Q))
+			{
+				m_CameraZoom += cameraZoomSpeed * dtS;
+				Camera& camera = GetCurrentScene()->GetCamera();
+				camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+			}
+			GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
 		}
-		else if (Input::IsKeyDown(KEY_Q))
+		else
 		{
-			m_CameraZoom += cameraZoomSpeed * dtS;
-			Camera& camera = GetCurrentScene()->GetCamera();
-			camera.CreateOrthographic(30.0f * GetWindow().GetAspectRatio() * m_CameraZoom, 30.0f * m_CameraZoom, 0.01f, 100.0f);
+			GetCurrentScene()->GetCamera().UpdateFromLookAt();
 		}
-		GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
+		GetCurrentScene()->OnUpdate(dtS);
+
+		//GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
 	}
-	else
-	{
-		GetCurrentScene()->GetCamera().UpdateFromLookAt();
-	}
-	GetCurrentScene()->OnUpdate(dtS);
-
-	//GetCurrentScene()->GetCamera().UpdateFromPitchYaw();
 }
 
 void Editor::OnRender(float dtS)
 {
-	m_pRenderer->DrawScene(*GetCurrentScene(), nullptr, dtS);
+	if (m_pPanelTop)
+	{
+		m_pRenderer->DrawScene(*GetCurrentScene(), nullptr, dtS);
+	}
 }

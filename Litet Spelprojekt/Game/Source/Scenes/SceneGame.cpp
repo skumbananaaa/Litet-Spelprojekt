@@ -57,9 +57,6 @@ SceneGame::SceneGame() : SceneInternal(false),
 
 SceneGame::~SceneGame()
 {
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
-
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
 

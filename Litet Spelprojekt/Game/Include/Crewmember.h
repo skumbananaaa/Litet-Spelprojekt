@@ -78,7 +78,7 @@ private:
 	SpotLight* m_pTorch;
 	PointLight* m_pLight;
 	Path* m_pPathFinder;
-	//const World* m_pWorld;
+	const World* m_pWorld;
 	glm::ivec3 m_PlayerTile;
 	glm::ivec3 m_TargetTile;
 	glm::ivec3 m_GoalTile;

@@ -70,8 +70,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	GameObject::Update(camera, deltaTime);
 	UpdateTransform();
-	//CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
-	//CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
+	CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
+	CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));

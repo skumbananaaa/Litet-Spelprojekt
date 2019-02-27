@@ -94,14 +94,20 @@ const std::vector<glm::uvec4>& WorldLevel::GetRooms() const noexcept
 
 void WorldLevel::GenerateRooms()
 {
-	bool wallH = false, wallV = false;
-	glm::vec2 startWallH(0, 0), endWallH(0, 0);
-	glm::vec2 startWallV(0, 0), endWallV(0, 0);
+	bool wallH = false;
+	bool wallV = false;
+	glm::vec2 startWallH(0, 0);
+	glm::vec2 endWallH(0, 0);
+
+	glm::vec2 startWallV(0, 0);
+	glm::vec2 endWallV(0, 0);
 
 	uint32 maxRoomNum = 0;
 
-	for (uint32 i = 0; i < m_SizeX - 1; i++) {
-		for (uint32 j = 0; j < m_SizeZ; j++) {
+	for (uint32 i = 0; i < m_SizeX - 1; i++) 
+	{
+		for (uint32 j = 0; j < m_SizeZ; j++) 
+		{
 			maxRoomNum = glm::max(maxRoomNum, m_ppLevel[i][j]);
 
 			wallH = (m_ppLevel[i][j] != m_ppLevel[i + 1][j]);
@@ -111,6 +117,7 @@ void WorldLevel::GenerateRooms()
 				m_Walls.push_back(glm::vec4((startWallH + endWallH) / 2.0f, endWallH - startWallH));
 				startWallH = glm::vec2(0, 0);
 			}
+
 			if (wallH && startWallH == glm::vec2(0, 0) && (!m_ppLevelData[i][j].HasDoor() || !m_ppLevelData[i + 1][j].HasDoor()))
 			{
 				startWallH = glm::vec2(i + 0.5, j - 0.5);
@@ -123,9 +130,10 @@ void WorldLevel::GenerateRooms()
 		m_RoomBounds.push_back(glm::uvec4(11, 0, 41, 0));
 	}
 
-	for (uint32 i = 0; i < m_SizeZ - 1; i++) {
-		for (uint32 j = 0; j < m_SizeX; j++) {
-
+	for (uint32 i = 0; i < m_SizeZ - 1; i++) 
+	{
+		for (uint32 j = 0; j < m_SizeX; j++) 
+		{
 			m_RoomBounds[m_ppLevel[j][i]].x = glm::min(m_RoomBounds[m_ppLevel[j][i]].x, j);
 			m_RoomBounds[m_ppLevel[j][i]].y = glm::max(m_RoomBounds[m_ppLevel[j][i]].y, j);
 			m_RoomBounds[m_ppLevel[j][i]].z = glm::min(m_RoomBounds[m_ppLevel[j][i]].z, i);

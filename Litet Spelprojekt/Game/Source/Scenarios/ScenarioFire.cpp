@@ -221,7 +221,9 @@ void ScenarioFire::ShowInRoom(uint32 roomID) noexcept
 			{
 				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(data.GameObjects[j]);
 				if(emitter != nullptr)
+				{
 					emitter->SetIsVisible(true);
+				}
 			}
 		}
 	}
@@ -235,7 +237,9 @@ void ScenarioFire::ShowInRoom(uint32 roomID) noexcept
 			{
 				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(data.GameObjects[j]);
 				if (emitter != nullptr)
+				{
 					emitter->SetIsVisible(true);
+				}
 			}
 		}
 	}
@@ -263,10 +267,14 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 
 		if (m_pppMap[origin.y + offset.y][origin.x + offset.x][origin.z + offset.z] == m_pppMap[origin.y][origin.x][origin.z])
 		{
-			if(originTile.GameObjects[2] != nullptr)
+			if (originTile.GameObjects[2] != nullptr)
+			{
 				SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f), tileData, originTile.GameObjects[2]->IsVisible());
-			else if(originTile.GameObjects[3] != nullptr)
+			}
+			else if (originTile.GameObjects[3] != nullptr)
+			{
 				SpawnFire(scene, glm::vec3(origin) + glm::vec3(offset) + glm::vec3(0.0f, 0.5f, 0.0f), tileData, originTile.GameObjects[3]->IsVisible());
+			}
 		}
 		else
 		{

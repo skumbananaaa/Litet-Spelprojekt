@@ -81,12 +81,11 @@ public:
 	uint32 GetNrOfWalls() const noexcept;
 	const glm::vec4& GetBulkhead(uint32 index) const noexcept;
 	uint32 GetNrOfBulkheads() const noexcept;
+	uint32 GetTilesBetweenBulkheads() const noexcept;
 	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
 	void GenerateRooms(uint32 tilesBetweenBulkheads = 8);
 	void GenerateWater(Scene* pScene, uint32 levelHeight);
-	void UpdateFire(float dt);
-	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 
 private:
 	TileData** m_ppLevelData;
@@ -95,9 +94,9 @@ private:
 	std::vector<glm::ivec2> m_FloodingIDs;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
-	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
 	std::vector<glm::vec4> m_Bulkheads;
+	uint32 m_TilesBetweenBulkheads;
 
 	std::vector<glm::uvec4> m_RoomBounds;
 };

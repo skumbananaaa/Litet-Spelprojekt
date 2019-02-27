@@ -1,7 +1,8 @@
 #include <EnginePch.h>
 #include <World/WorldLevel.h>
 
-WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept
+WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept :
+	m_TilesBetweenBulkheads(0)
 {
 	m_SizeX = sizeX;
 	m_SizeZ = sizeZ;
@@ -98,6 +99,11 @@ uint32 WorldLevel::GetNrOfBulkheads() const noexcept
 	return m_Bulkheads.size();
 }
 
+uint32 WorldLevel::GetTilesBetweenBulkheads() const noexcept
+{
+	return m_TilesBetweenBulkheads;
+}
+
 const std::vector<glm::uvec4>& WorldLevel::GetRooms() const noexcept
 {
 	return m_RoomBounds;
@@ -155,7 +161,17 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 			wallV = (m_ppLevel[j][i] != m_ppLevel[j][i + 1]);
 			if ((!wallV || (m_ppLevelData[j][i].HasDoor() && m_ppLevelData[j][i + 1].HasDoor()) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
 			{
-				endWallV = glm::vec2(j - 0.5f, i + 0.5f);
+				float endXOffset = -0.6f;
+				
+				if (j < m_SizeX - 1)
+				{
+					if (m_ppLevelData[j][i].HasDoor() && m_ppLevelData[j][i + 1].HasDoor())
+					{
+						endXOffset = -0.5f;
+					} 
+				}
+
+				endWallV = glm::vec2(j + endXOffset, i + 0.5f);
 
 				if (((uint32)(startWallV.y - 0.5f)) % tilesBetweenBulkheads != 0)
 				{
@@ -166,41 +182,73 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 			}
 			if (wallV && startWallV == glm::vec2(0, 0) && (!m_ppLevelData[j][i].HasDoor() || !m_ppLevelData[j][i + 1].HasDoor()))
 			{
-				startWallV = glm::vec2(j - 0.5f, i + 0.5f);
+				float startXOffset = -0.4f;
+
+				if (j > 0)
+				{
+					if (m_ppLevelData[j - 1][i].HasDoor() && m_ppLevelData[j - 1][i + 1].HasDoor())
+					{
+						startXOffset = -0.5f;
+					}
+				}
+
+				startWallV = glm::vec2(j + startXOffset, i + 0.5f);
 			}
 		}
 	}
 
 	//Generate Bulkheads
+	m_TilesBetweenBulkheads = tilesBetweenBulkheads;
 	assert((m_SizeZ - 2) % tilesBetweenBulkheads == 0);
-	uint32 nrOfBulkheads = (m_SizeZ - 2) / tilesBetweenBulkheads;
+	uint32 nrOfBulkheads = 1 + (m_SizeZ - 2) / tilesBetweenBulkheads;
 	uint32 currentBulkheadX = 0;
 
-	bool bulkhead = false;
+	bool createBulkhead = true;
 	glm::vec2 startBulkhead(0, 0);
 	glm::vec2 endBulkhead(0, 0);
 
 	for (uint32 i = 0; i < nrOfBulkheads; i++)
 	{
-		for (uint32 j = 0; j < m_SizeX; j++)
+		for (uint32 j = 1; j < m_SizeX; j++)
 		{
-			bulkhead = (m_ppLevel[j][currentBulkheadX] != m_ppLevel[j][currentBulkheadX + 1]);
-
-			if ((!bulkhead || (m_ppLevelData[j][currentBulkheadX].HasDoor() && m_ppLevelData[j][currentBulkheadX + 1].HasDoor())) && startBulkhead != glm::vec2(0, 0))
+			if (!createBulkhead && (j == m_SizeX - 1 || (m_ppLevelData[j][currentBulkheadX].HasDoor() && m_ppLevelData[j][currentBulkheadX + 1].HasDoor())))
 			{
-				endBulkhead = glm::vec2(j - 0.5f, currentBulkheadX + 0.5f);
+				float endXOffset = -0.6f;
+					
+				if (j < m_SizeX - 1)
+				{
+					if (m_ppLevelData[j][currentBulkheadX].HasDoor() && m_ppLevelData[j][currentBulkheadX + 1].HasDoor())
+					{
+						endXOffset = -0.5f;
+					}
+				}
+
+				endBulkhead = glm::vec2(j + endXOffset, currentBulkheadX + 0.5f);
 				m_Bulkheads.push_back(glm::vec4((startBulkhead + endBulkhead) / 2.0f, endBulkhead - startBulkhead));
-				startBulkhead = glm::vec2(0, 0);
+
+				createBulkhead = true;
 			}
 
-			if (bulkhead && startBulkhead == glm::vec2(0, 0) && (!m_ppLevelData[j][currentBulkheadX].HasDoor() || !m_ppLevelData[j][currentBulkheadX + 1].HasDoor()))
+			if (createBulkhead && (!m_ppLevelData[j][currentBulkheadX].HasDoor() || !m_ppLevelData[j][currentBulkheadX + 1].HasDoor()))
 			{
-				startBulkhead = glm::vec2(j - 0.5f, currentBulkheadX + 0.5f);
+
+				float startXOffset = -0.4f;
+
+				if (j > 0)
+				{
+					if (m_ppLevelData[j - 1][currentBulkheadX].HasDoor() && m_ppLevelData[j - 1][currentBulkheadX + 1].HasDoor())
+					{
+						startXOffset = -0.5f;
+					}
+				}
+
+				startBulkhead = glm::vec2(j + startXOffset, currentBulkheadX + 0.5f);
+				createBulkhead = false;
 			}
 		}
 
-		//m_Bulkheads.push_back(glm::vec4((m_SizeX - 1.0f) / 2.0f, currentBulkheadX + 0.5f, m_SizeX - 2.0f, 0.0f));
 		currentBulkheadX += tilesBetweenBulkheads;
+		createBulkhead = true;
 	}
 }
 

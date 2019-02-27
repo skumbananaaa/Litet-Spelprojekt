@@ -42,7 +42,13 @@ void main()
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasTexture);
 	vec3 c = uniformColor + mappedColor;
 
-	vec3 lightDir = -normalize(g_CameraFront);
-	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	g_OutColor = vec4(CalcLight(lightDir, lightColor, fs_in.Normal, c, 1.0f), 0.4);
+	vec3 lightDir;
+	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+	vec3 outColor = vec3(0.0f);
+
+	lightDir = -normalize(g_CameraFront);
+	outColor += CalcLight(lightDir, lightColor, fs_in.Normal, c, 1.0f);
+	lightDir = -vec3(0.0f, 1.0f, 0.0f);
+	outColor += CalcLight(lightDir, lightColor, fs_in.Normal, c, 1.0f);
+	g_OutColor = vec4(outColor, 1.0f);
 }

@@ -121,26 +121,29 @@ SceneGame::SceneGame() :
 			glm::vec3 delta = door1 - door2;
 			if (glm::length(delta) <= 1.0)
 			{
-				glm::vec3 position = (door1 + door2) / 2.0F;
+				if (level->GetLevel()[(uint32)door1.x][(uint32)door1.z] != level->GetLevel()[(uint32)door2.x][(uint32)door2.z])
+				{
+					glm::vec3 position = (door1 + door2) / 2.0F;
 
-				GameObject* pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				AddGameObject(pGameObject);
+					GameObject* pGameObject = new GameObject();
+					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMesh(MESH::DOOR_FRAME);
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					AddGameObject(pGameObject);
 
-				pGameObject = new GameObjectDoor();
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				AddGameObject(pGameObject);
+					pGameObject = new GameObjectDoor();
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					AddGameObject(pGameObject);
 
-				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+					level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+					level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 
-				break;
+					break;
+				}
 			}
 		}
 	}
@@ -199,6 +202,7 @@ SceneGame::SceneGame() :
 
 	////Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
+	ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
 	//SetClipPlanes(0);
 
@@ -216,6 +220,21 @@ SceneGame::SceneGame() :
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
+			pGameObject->UpdateTransform();
+
+			AddGameObject(pGameObject);
+		}
+
+		glm::vec4 bulkhead;
+
+		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfBulkheads(); i++)
+		{
+			bulkhead = m_pWorld->GetLevel(level)->GetBulkhead(i);
+			pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
+			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
+			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
 			pGameObject->UpdateTransform();
 
 			AddGameObject(pGameObject);

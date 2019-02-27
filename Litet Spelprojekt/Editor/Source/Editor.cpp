@@ -222,6 +222,8 @@ void Editor::OnResourcesLoaded()
 		}
 	}
 
+	CreateWalls();
+
 	std::cout << "Resources Loaded!" << std::endl;
 }
 
@@ -258,7 +260,7 @@ void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelectio
 	else if (pHandler == &m_SelectionHandlerRoom)
 	{
 		Button* pButton = (Button*)pSelection;
-		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
+		RoomEditingMode newMode = (RoomEditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "New Editing Mode: " << newMode << std::endl;
 
 		m_CurrentEditingMode = newMode;
@@ -307,7 +309,7 @@ void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelect
 	else if (pHandler == &m_SelectionHandlerRoom)
 	{
 		Button* pButton = (Button*)pSelection;
-		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
+		RoomEditingMode newMode = (RoomEditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "Last Editing Mode: " << newMode << std::endl;
 		m_CurrentEditingMode = NONE;
 
@@ -344,7 +346,9 @@ void Editor::CreateWalls()
 			}
 			delete m_Walls[i][j];
 		}
+
 		m_Walls[i].clear();
+		m_Bulkheads[i].clear();
 	}
 
 	std::vector<glm::ivec3> stairs;
@@ -380,10 +384,11 @@ void Editor::CreateWalls()
 			pGameObject->SetMaterial(MATERIAL::RED);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(bulkhead.x - halfWidth, 1.0f, bulkhead.y - halfHeight));
-			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.0f, bulkhead.w + 0.2f));
+			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
 			pGameObject->UpdateTransform();
 			m_ppScenes[level / 2]->AddGameObject(pGameObject);
 			m_Walls[level / 2].push_back(pGameObject);
+			m_Bulkheads[level / 2].push_back(pGameObject);
 		}
 	}
 }
@@ -460,26 +465,29 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 
 			if (glm::length(delta) <= 1.0)
 			{
-				glm::vec3 position = (door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight);
-				position.y = 0;
+				if (level->GetLevel()[(uint32)door1.x][(uint32)door1.z] != level->GetLevel()[(uint32)door2.x][(uint32)door2.z])
+				{
+					glm::vec3 position = (door1 + door2) / 2.0F - glm::vec3(halfWidth, 0, halfHeight);
+					position.y = 0;
 
-				GameObject* pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
+					GameObject* pGameObject = new GameObject();
+					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMesh(MESH::DOOR_FRAME);
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
 
-				pGameObject = new GameObjectDoor();
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
+					pGameObject = new GameObjectDoor();
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
 
-				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-				break;
+					level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+					level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+					break;
+				}
 			}
 		}
 	}
@@ -576,6 +584,7 @@ void Editor::ClearLevels()
 	for (uint32 i = 0; i < NUM_BOAT_LEVELS; i++)
 	{
 		m_Walls[i].clear();
+		m_Bulkheads[i].clear();
 
 		if (i > 0)
 		{
@@ -800,7 +809,7 @@ void Editor::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 		}
 	}
 
-	if (!clickedOnGUI)
+	if (!clickedOnGUI && m_pPanelMesh->IsVisible())
 	{
 		const float cameraZoomSensitivity = 0.1f;
 		GetCurrentScene()->GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
@@ -1581,9 +1590,18 @@ void Editor::OnButtonReleased(Button* button)
 			editor->CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(worldObject.GameObject), i, gameObjects);
 		}
 
+		editor->m_pPanelEditor->SetVisible(true);
+		editor->m_pPanelMesh->SetVisible(false);
+		for (int i = 0; i < NUM_BOAT_LEVELS; i++)
+		{
+			editor->m_ppScenes[i]->SelectCamera(1);
+		}
+
 		editor->m_RoomBeingEdited = -1;
 		editor->m_LargestIndexUsed = largestUsedTileId;
 		editor->m_MouseMaterial = MATERIAL::WHITE;
+
+		editor->CreateWalls();
 
 		Delete(pWorld);
 	}
@@ -1686,5 +1704,11 @@ void Editor::OnRender(float dtS)
 	if (m_pPanelTop)
 	{
 		m_pRenderer->DrawScene(*GetCurrentScene(), nullptr, dtS);
+
+		//If not visible, we are in room editor
+		if (!m_pPanelMesh->IsVisible())
+		{
+			reinterpret_cast<OrthographicRenderer*>(m_pRenderer)->DrawBulkheads(*GetCurrentScene(), m_Bulkheads[GetCurrentBoatLevel()], dtS);
+		}
 	}
 }

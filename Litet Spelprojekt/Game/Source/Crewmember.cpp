@@ -1,6 +1,7 @@
 #include "..\Include\Crewmember.h"
 #include "..\Include\Game.h"
 #include <System/Random.h>
+#include "..\Include\Scenes\SceneGame.h"
 
 Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name) 
 	: m_pLight(new PointLight(position, lightColor))
@@ -98,13 +99,13 @@ void Crewmember::OnPicked()
 void Crewmember::OnHovered()
 {
 	m_IsHovered = true;
-	Game::GetGame()->GetUICrewMember()->SetCrewMember(this);
+	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(this);
 }
 
 void Crewmember::OnNotHovered()
 {
 	m_IsHovered = false;
-	Game::GetGame()->GetUICrewMember()->SetCrewMember(nullptr);
+	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(nullptr);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept

@@ -63,13 +63,19 @@
     <ClInclude Include="Include\Graphics\Particles\MeshEmitter.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleData.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
-    <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\DebugRenderer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Include\Graphics\Renderers\FontRenderer.h" />
     <ClInclude Include="Include\Graphics\GameObject.h" />
     <ClInclude Include="Include\Graphics\Geometry\FullscreenTri.h" />
     <ClInclude Include="Include\Graphics\Geometry\IndexedMesh.h" />
     <ClInclude Include="Include\Graphics\Geometry\Mesh.h" />
-    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
+    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Renderers\IRenderer.h" />
@@ -111,7 +117,6 @@
     <ClInclude Include="Include\World\Scenarios\IScenario.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\World\Room.h" />
-    <ClInclude Include="Include\World\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\World\Tile.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\World.h" />
@@ -144,6 +149,7 @@
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
+    <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
     <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
@@ -175,7 +181,10 @@
     <ClCompile Include="Source\Graphics\Lights\PointLight.cpp" />
     <ClCompile Include="Source\Graphics\Lights\Spotlight.cpp" />
     <ClCompile Include="Source\Graphics\Material\Decal.cpp" />
-    <ClCompile Include="Source\Graphics\Renderers\DebugRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\DebugRenderer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\Graphics\Renderers\FontRenderer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -183,7 +192,10 @@
     <ClCompile Include="Source\Graphics\Geometry\FullscreenTri.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Mesh.cpp" />
     <ClCompile Include="Source\Graphics\Material\Material.cpp" />
-    <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\Graphics\GUI\GUIManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -222,7 +234,6 @@
     <ClCompile Include="Source\World\LightManager.cpp" />
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
-    <ClCompile Include="Source\World\Scenarios\ScenarioManager.cpp" />
     <ClCompile Include="Source\World\Tile.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\World.cpp" />

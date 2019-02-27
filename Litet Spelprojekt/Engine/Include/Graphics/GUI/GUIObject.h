@@ -17,23 +17,28 @@ class API GUIObject
 	friend class GUIManager;
 
 public:
-	virtual ~GUIObject();
 
 	bool HasParent() const noexcept;
 	GUIObject* GetParent() const noexcept;
 
 	virtual void Add(GUIObject* parent) noexcept;
-	void Remove(GUIObject* parent) noexcept;
+	virtual void Remove(GUIObject* parent) noexcept;
 
 	virtual float GetWidth() const noexcept;
 	virtual float GetHeight() const noexcept;
 	float GetX() const noexcept;
 	float GetY() const noexcept;
+	float GetActualWidth() const noexcept;
+	float GetActualHeight() const noexcept;
+	float GetActualX() const noexcept;
+	float GetActualY() const noexcept;
 	virtual float GetXInWorld(const GUIObject* child = nullptr) const noexcept;
 	virtual float GetYInWorld(const GUIObject* child = nullptr) const noexcept;
+	const glm::vec4& GetMargin() const noexcept;
 
 	virtual void SetSize(float width, float height) noexcept;
 	virtual void SetPosition(float x, float y) noexcept;
+	virtual void SetMargin(float left, float top, float right, float bottom) noexcept;
 
 	virtual void SetVisible(bool visible) noexcept;
 	virtual bool IsVisible() noexcept;
@@ -56,8 +61,6 @@ public:
 	bool OwnsPoint(const glm::vec2& position) const noexcept;
 
 	virtual void DeleteChildren();
-	virtual void SetDeleteAllChildrenOnDestruction(bool deleteAll);
-	virtual bool WillDeleteAllChildrenOnDestruction() const noexcept;
 
 	void AddExternalRenderer(IExternalUIRenderer* renderer);
 	void RemoveExternalRenderer(IExternalUIRenderer* renderer);
@@ -75,6 +78,7 @@ public:
 
 protected:
 	GUIObject(float x, float y, float width, float height);
+	virtual ~GUIObject();
 
 	virtual void OnAdded(GUIObject* parent) {};
 	virtual void OnRemoved(GUIObject* parent) {};
@@ -117,7 +121,6 @@ protected:
 	void RequestRepaint();
 
 	const std::vector<GUIObject*>& GetChildrenToAdd() noexcept;
-	const std::vector<GUIObject*>& GetChildrenToRemove() noexcept;
 
 	static void AddMouseListener(GUIObject* listener);
 	static void RemoveMouseListener(GUIObject* listener);
@@ -155,17 +158,16 @@ private:
 
 	GUIObject* m_pParent;
 	std::vector<GUIObject*> m_Children;
-	std::vector<GUIObject*> m_ChildrenToRemove;
 	std::vector<GUIObject*> m_ChildrenToAdd;
 	std::vector<GUIObject*> m_ChildrenDirty;
 	std::vector<IExternalUIRenderer*> m_ExternalRenderers;
 	Framebuffer* m_pFramebuffer;
 	glm::vec2 m_Position;
+	glm::vec4 m_Margin;
 	bool m_IsDirty;
 	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;
 	glm::vec4 m_BackgroundColor;
-	bool m_DeleteAll;
 	bool m_IsRealtime;
 	void* m_pUserData;
 

@@ -1,9 +1,10 @@
 #include <EnginePch.h>
 #include <Graphics\GUI\SelectionHandler.h>
 
-SelectionHandler::SelectionHandler(bool atLeastOne)
+SelectionHandler::SelectionHandler(bool atLeastOne, bool multipleSelections)
 {
 	m_AtLeastOneSelected = atLeastOne;
+	m_MultipleSelections = multipleSelections;
 }
 
 SelectionHandler::~SelectionHandler()
@@ -48,27 +49,31 @@ void SelectionHandler::RemoveSelectable(ISelectable* selectable)
 	}
 }
 
-void SelectionHandler::OnSelected(ISelectable* selection)
+void SelectionHandler::OnSelected(ISelectable* selected)
 {
-	ISelectable* lastObject = GetSelected();
+	std::vector<ISelectable*> selection;
+	GetSelection(selection);
 
-	if (lastObject != selection)
+	if (!Contains<ISelectable>(selection, selected))  //We Clicked on a non selected Object
 	{
-		if (lastObject != nullptr)
+		if (!m_MultipleSelections && !selection.empty())
 		{
-			lastObject->SetSelected(false);
-			TriggerOnDeselected(lastObject);
+			selection[0]->SetSelected(false);
+			TriggerOnDeselected(selection[0]);
 		}
-		if (selection != nullptr)
+		if (selected != nullptr)
 		{
-			selection->SetSelected(true);
-			TriggerOnSelected(selection);
+			selected->SetSelected(true);
+			TriggerOnSelected(selected);
 		}
 	}
-	else if (!m_AtLeastOneSelected && lastObject != nullptr)
+	else //We Clicked on an already selected Object
 	{
-		lastObject->SetSelected(false);
-		TriggerOnDeselected(lastObject);
+		if ((!selection.empty() && !m_AtLeastOneSelected) || (!selection.size() > 1 && m_MultipleSelections))
+		{
+			selected->SetSelected(false);
+			TriggerOnDeselected(selected);
+		}
 	}
 }
 
@@ -100,16 +105,15 @@ void SelectionHandler::RemoveSelectionListener(ISelectionListener* listener)
 	}
 }
 
-ISelectable* SelectionHandler::GetSelected()
+void SelectionHandler::GetSelection(std::vector<ISelectable*>& selection)
 {
 	for (ISelectable* object : m_Selectables)
 	{
 		if (object->IsSelected())
 		{
-			return object;
+			selection.push_back(object);
 		}
 	}
-	return nullptr;
 }
 
 void SelectionHandler::TriggerOnSelected(ISelectable* selection) const

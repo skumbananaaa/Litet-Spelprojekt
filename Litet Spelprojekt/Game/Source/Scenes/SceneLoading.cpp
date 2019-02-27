@@ -28,14 +28,6 @@ void SceneLoading::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer)
 	game->GetGUIManager().Add(m_pLoadingBar);
 }
 
-void SceneLoading::OnDeactivated(SceneInternal* newScene) noexcept
-{
-	SceneInternal::OnDeactivated(newScene);
-
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
-}
-
 void SceneLoading::OnUpdate(float dtS) noexcept
 {
 	SceneInternal::OnUpdate(dtS);
@@ -48,7 +40,7 @@ void SceneLoading::OnRender(float dtS) noexcept
 
 void SceneLoading::OnResourceLoading(const std::string& file, float percentage)
 {
-	m_pTextViewFile->SetText("Loading: " + file);
+	m_pTextViewFile->SetText("Laddar: " + file);
 	m_pLoadingBar->SetPercentage(percentage);
 }
 

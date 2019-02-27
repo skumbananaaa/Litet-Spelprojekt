@@ -60,12 +60,9 @@ void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer
 
 void SceneScenario::OnDeactivated(SceneInternal* newScene) noexcept
 {
-	SceneInternal::OnDeactivated(newScene);
-
 	m_SelectionHandler.Release();
 
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
+	SceneInternal::OnDeactivated(newScene);
 }
 
 void SceneScenario::OnSelected(const SelectionHandler* handler, ISelectable* selection)

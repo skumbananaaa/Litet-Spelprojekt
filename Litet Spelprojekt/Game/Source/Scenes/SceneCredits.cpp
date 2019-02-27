@@ -48,14 +48,6 @@ void SceneCredits::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer)
 	game->GetGUIManager().Add(m_pPanel);
 }
 
-void SceneCredits::OnDeactivated(SceneInternal* newScene) noexcept
-{
-	SceneInternal::OnDeactivated(newScene);
-
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
-}
-
 void SceneCredits::OnUpdate(float dtS) noexcept
 {
 	SceneInternal::OnUpdate(dtS);

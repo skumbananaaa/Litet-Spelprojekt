@@ -58,6 +58,8 @@ void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) n
 
 void SceneInternal::OnDeactivated(SceneInternal* newScene) noexcept
 {
+	Game* game = Game::GetGame();
+	game->GetGUIManager().DeleteChildren();
 }
 
 void SceneInternal::OnUpdate(float dtS) noexcept

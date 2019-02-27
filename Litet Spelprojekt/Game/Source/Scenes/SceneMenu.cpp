@@ -62,14 +62,6 @@ void SceneMenu::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	game->GetGUIManager().Add(m_pPanel);
 }
 
-void SceneMenu::OnDeactivated(SceneInternal* newScene) noexcept
-{
-	SceneInternal::OnDeactivated(newScene);
-
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
-}
-
 void SceneMenu::OnUpdate(float dtS) noexcept
 {
 	SceneInternal::OnUpdate(dtS);

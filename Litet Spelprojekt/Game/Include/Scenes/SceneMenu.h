@@ -11,7 +11,6 @@ public:
 	virtual ~SceneMenu();
 
 	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
-	virtual void OnDeactivated(SceneInternal* newScene) noexcept override;
 
 	virtual void OnUpdate(float dtS) noexcept override;
 	virtual void OnRender(float dtS) noexcept override;

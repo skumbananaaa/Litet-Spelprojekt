@@ -320,6 +320,7 @@ void Crewmember::FollowPath(float dtS)
 	{
 		if (m_PlayerTile == m_TargetTile)
 		{
+			m_directionTile = m_pPath[m_NrOfPathTiles - 1];
 			m_TargetTile = m_pPath[--m_NrOfPathTiles];
 			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
 		}

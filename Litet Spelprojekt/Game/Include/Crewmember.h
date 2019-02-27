@@ -79,6 +79,7 @@ private:
 	PointLight* m_pLight;
 	Path* m_pPathFinder;
 	glm::ivec3 m_PlayerTile;
+	glm::vec3 m_directionTile;
 	glm::ivec3 m_TargetTile;
 	glm::ivec3 m_GoalTile;
 	glm::ivec3* m_pPath;

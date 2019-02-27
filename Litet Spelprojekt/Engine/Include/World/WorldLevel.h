@@ -21,6 +21,8 @@ struct TileData
 	float WaterLevelAge;
 	bool AlreadyFlooded;
 	bool Burning;
+
+	uint32 nrOfBaseGameObjects;
 	
 	std::vector<GameObject*> GameObjects;
 
@@ -28,6 +30,10 @@ struct TileData
 	{
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
+		GameObjects.push_back(nullptr);
+		GameObjects.push_back(nullptr);
+
+		nrOfBaseGameObjects = GameObjects.size();
 	}
 
 	void RemoveGameObject(GameObject* gameObject) noexcept

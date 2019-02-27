@@ -39,23 +39,71 @@ void SHADER::RegisterResourcesPreLoading()
 
 void SHADER::RegisterResources()
 {
+	//Strings for defines
+	std::string numDirLights = (TO_STRING(NUM_DIRECTIONAL_LIGHTS)) + std::string(" ") + std::to_string(NUM_DIRECTIONAL_LIGHTS);
+	std::string numSpotlights = (TO_STRING(NUM_SPOT_LIGHTS)) + std::string(" ") + std::to_string(NUM_SPOT_LIGHTS);
+	std::string numPointLights = (TO_STRING(NUM_POINT_LIGHTS)) + std::string(" ") + std::to_string(NUM_POINT_LIGHTS);
+	std::string levelY = (TO_STRING(LEVEL_SIZE_Y)) + std::string(" ") + std::to_string(LEVEL_SIZE_Y);
+	std::string levelX = (TO_STRING(LEVEL_SIZE_X)) + std::string(" ") + std::to_string(LEVEL_SIZE_X);
+	std::string levelZ = (TO_STRING(LEVEL_SIZE_Z)) + std::string(" ") + std::to_string(LEVEL_SIZE_Z);
+
 	ORTHOGRAPHIC			= ResourceHandler::RegisterShader("orthoVert.glsl", "orthoFrag.glsl");
 #if defined(DEFERRED_RENDER_PATH)
 	DEFERRED_DECALS			= ResourceHandler::RegisterShader("deferredDecals.glsl", "deferredDecals.glsl");
 	STANDARD_MATERIAL		= ResourceHandler::RegisterShader("deferredMaterial.glsl", "deferredMaterial.glsl");
 	WATER_MATERIAL			= ResourceHandler::RegisterShader("deferredWater.glsl", "deferredWater.glsl");
 	PARTICLES				= ResourceHandler::RegisterShader("deferredParticles.glsl", "deferredParticles.glsl");
-#elif defined(FORWARD_RENDER_PATH)
-	STANDARD_MATERIAL		= ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl");
+#elif defined(FORWARD_RENDER_PATH)	
+	{
+		const char* pDefines[] =
+		{
+			numDirLights.c_str(),
+			numPointLights.c_str(),
+			numSpotlights.c_str(),
+			levelX.c_str(),
+			levelY.c_str(),
+			levelZ.c_str(),
+		};
+
+		ShaderDefines defines = {};
+		defines.ppDefines = pDefines;
+		defines.NumDefines = _countof(pDefines);
+
+		STANDARD_MATERIAL = ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl", defines);
+	}
+
+	{
+		const char* pDefines[] =
+		{
+			numDirLights.c_str(),
+			numPointLights.c_str(),
+			numSpotlights.c_str(),
+			levelX.c_str(),
+			levelY.c_str(),
+			levelZ.c_str(),
+		};
+
+		ShaderDefines defines = {};
+		defines.ppDefines = pDefines;
+		defines.NumDefines = _countof(pDefines);
+
+		ANIMATION = ResourceHandler::RegisterShader("forwardAnimation.glsl", "forwardAnimation.glsl", defines);
+	}
+
 	WATER_INDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl");
-	ANIMATION				= ResourceHandler::RegisterShader("forwardAnimation.glsl", "forwardAnimation.glsl");
 #endif
 
 	{
 		std::string str = (TO_STRING(WALL_STUMP_FROM_CENTER)) + std::string(" ") + std::to_string(WALL_STUMP_FROM_CENTER);
 		const char* pDefines[] =
 		{
-			str.c_str()
+			str.c_str(),
+			numDirLights.c_str(),
+			numPointLights.c_str(),
+			numSpotlights.c_str(),
+			levelX.c_str(),
+			levelY.c_str(),
+			levelZ.c_str(),
 		};
 
 		ShaderDefines defines = {};

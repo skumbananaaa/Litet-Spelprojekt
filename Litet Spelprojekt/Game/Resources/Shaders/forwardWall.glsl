@@ -1,3 +1,26 @@
+#define LEVEL_SIZE LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z
+
+struct DirectionalLight
+{
+	vec4 Color;
+	vec4 Direction;
+};
+
+struct PointLight
+{
+	vec4 Color;
+	vec4 Position;
+};
+
+struct SpotLight
+{
+	vec4 Color;
+	vec3 Position;
+	float Angle;
+	vec3 TargetDirection;
+	float OuterAngle;
+};
+
 layout(std140, binding = 0) uniform CameraBuffer
 {
 	mat4 g_ProjectionView;
@@ -25,16 +48,28 @@ layout(std140, binding = 3) uniform DissolveBuffer
 	float g_DissolvePercentage;
 };
 
+layout(std140, binding = 1) uniform LightBuffer
+{
+	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
+	PointLight g_PointLights[NUM_POINT_LIGHTS];
+	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+layout(std140, binding = 3) uniform WorldBuffer
+{
+	ivec4 map[LEVEL_SIZE];
+};
+
+layout(std140, binding = 5) uniform Extension
+{
+	float g_Extension;
+};
+
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
 layout(location = 2) in vec2 g_TexCoords;
 layout(location = 3) in mat4 g_InstanceModel;
-
-layout(binding = 5) uniform Extension
-{
-	float extension;
-};
 
 out VS_OUT
 {
@@ -48,7 +83,7 @@ void main()
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
 
 	//CLIPPING WALLS
-	vec3 toLookAt = normalize(g_CameraLookAt - (g_InstanceModel[3].xyz + vec3(extension * floor(g_InstanceModel[3].y / 2.0f), 0.0f, 0.0f)));
+	vec3 toLookAt = normalize(g_CameraLookAt - (g_InstanceModel[3].xyz + vec3(g_Extension * floor(g_InstanceModel[3].y / 2.0f), 0.0f, 0.0f)));
 	vec3 cameraForward = normalize(g_CameraLookAt - g_CameraPosition);
 	float dotToLookAtForward = dot(vec3(cameraForward.x, 0.0f, cameraForward.z), vec3(toLookAt.x, 0.0f, toLookAt.z));
 	float cutWalls = 1.0f;
@@ -71,19 +106,13 @@ void main()
 	vs_out.Normal = normal;
 	vs_out.TexCoords = g_TexCoords;
 
-	worldPos.x += extension * floor(g_InstanceModel[3].y / 2.0f);
+	worldPos.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
 
 	gl_Position = g_ProjectionView * worldPos;
 }
 
 
 #elif defined(FRAGMENT_SHADER)
-#define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 3
-#define NUM_SPOT_LIGHTS 2
-
-#define LEVEL_SIZE 756
-
 layout(early_fragment_tests) in;
 
 layout(location = 0) out vec4 g_OutColor;
@@ -97,45 +126,6 @@ in VS_OUT
 	vec3 Normal;
 	vec2 TexCoords;
 } fs_in;
-
-
-struct DirectionalLight
-{
-	vec4 Color;
-	vec4 Direction;
-};
-
-struct PointLight
-{
-	vec4 Color;
-	vec4 Position;
-};
-
-struct SpotLight
-{
-	vec4 Color;
-	vec3 Position;
-	float Angle;
-	vec3 TargetDirection;
-	float OuterAngle;
-};
-
-layout(std140, binding = 1) uniform LightBuffer
-{
-	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
-	PointLight g_PointLights[NUM_POINT_LIGHTS];
-	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
-};
-
-layout(std140, binding = 3) uniform WorldBuffer
-{
-	ivec4 map[LEVEL_SIZE];
-};
-
-layout(binding = 5) uniform Extension
-{
-	float extension;
-};
 
 vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)
 {
@@ -160,7 +150,7 @@ void main()
 	vec3 inNormal = normalize(fs_in.Normal);
 
 	vec3 worldPos = vec3(fs_in.WorldPosition);
-	worldPos.x += extension * floor(worldPos.y / 2.0f);
+	worldPos.x += g_Extension * floor(worldPos.y / 2.0f);
 
 	//VIEWDIR
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos);
@@ -214,7 +204,7 @@ void main()
 		};
 
 		vec3 lightPos = vec3(g_PointLights[i].Position.xyz);
-		lightPos.x += extension * floor(lightPos.y / 2.0f);
+		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
 
 		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
 		{
@@ -245,7 +235,7 @@ void main()
 		};
 		
 		vec3 lightPos = vec3(g_SpotLights[i].Position.xyz);
-		lightPos.x += extension * floor(lightPos.y / 2.0f);
+		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
 
 		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
 		{

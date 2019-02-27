@@ -9,6 +9,16 @@ SceneOptions::~SceneOptions()
 {
 }
 
+void SceneOptions::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+{
+	SceneInternal::OnActivated(lastScene, m_pRenderer);
+}
+
+void SceneOptions::OnDeactivated(SceneInternal* newScene) noexcept
+{
+	SceneInternal::OnDeactivated(newScene);
+}
+
 void SceneOptions::OnUpdate(float dtS) noexcept
 {
 	SceneInternal::OnUpdate(dtS);

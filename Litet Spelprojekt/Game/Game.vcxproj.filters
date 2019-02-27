@@ -63,7 +63,7 @@
     <ClCompile Include="Source\Scenes\SceneCredits.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Include\Scenes\SceneInternal.cpp">
+    <ClCompile Include="Source\Scenes\SceneInternal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

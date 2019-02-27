@@ -146,7 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Include\Scenes\SceneInternal.cpp" />
+    <ClCompile Include="Source\Scenes\SceneInternal.cpp" />
     <ClCompile Include="Source\Crew.cpp" />
     <ClCompile Include="Source\Crewmember.cpp" />
     <ClCompile Include="Source\Game.cpp" />

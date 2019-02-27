@@ -148,12 +148,12 @@ void UICrew::OnDeselected(const SelectionHandler* handler, ISelectable* selectio
 
 void UICrew::OnHovered(const HoveringHandler* handler, IHoverable* selection)
 {
-	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(SceneGame::GetInstance()->GetCrewmember(reinterpret_cast<uint32>(((Button*)selection)->GetUserData())));
+	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(Game::GetGame()->m_pSceneGame->GetCrewmember(reinterpret_cast<uint32>(((Button*)selection)->GetUserData())));
 }
 
 void UICrew::OnDehovered(const HoveringHandler* handler, IHoverable* selection)
 {
-	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(nullptr);
+	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
 }
 
 void UICrew::OnRenderGUIObject(GUIContext* context, GUIObject* object)
@@ -189,8 +189,8 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	progressButton->SetPercentage(0.0);
 	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
 	int32 shipnumber = reinterpret_cast<uint32>(progressButton->GetUserData());
-	SceneGame::GetInstance()->ShowCrewmember(shipnumber);
-	Crewmember* crewmember = SceneGame::GetInstance()->GetCrewmember(shipnumber);
+	Game::GetGame()->m_pSceneGame->ShowCrewmember(shipnumber);
+	Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipnumber);
 	progressButton->SetText(crewmember->GetName());
 	crewmember->UpdateLastKnownPosition();
 }

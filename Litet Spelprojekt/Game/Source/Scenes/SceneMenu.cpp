@@ -6,6 +6,18 @@
 
 SceneMenu::SceneMenu()
 {
+	
+}
+
+SceneMenu::~SceneMenu()
+{
+	
+}
+
+void SceneMenu::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+{
+	SceneInternal::OnActivated(lastScene, m_pRenderer);
+
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
@@ -17,30 +29,25 @@ SceneMenu::SceneMenu()
 
 	m_pPanel->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 
-	m_pButtonPlay->SetBackgroundColor(glm::vec4(0.0F, 1.0F, 1.0F, 0.9F));
-	m_pButtonOptions->SetBackgroundColor(glm::vec4(0.0F, 1.0F, 1.0F, 0.9F));
-	m_pButtonCredits->SetBackgroundColor(glm::vec4(0.0F, 1.0F, 1.0F, 0.9F));
-	m_pButtonQuit->SetBackgroundColor(glm::vec4(0.0F, 1.0F, 1.0F, 0.9F));
+	m_pButtonPlay->SetBackgroundColor(GUIContext::COLOR_PANEL_BACKGROUND);
+	m_pButtonOptions->SetBackgroundColor(GUIContext::COLOR_PANEL_BACKGROUND);
+	m_pButtonCredits->SetBackgroundColor(GUIContext::COLOR_PANEL_BACKGROUND);
+	m_pButtonQuit->SetBackgroundColor(GUIContext::COLOR_PANEL_BACKGROUND);
 
-	m_pButtonPlay->SetOnHoverColor(glm::vec4(0.5F, 1.0F, 1.0F, 1.0F));
-	m_pButtonOptions->SetOnHoverColor(glm::vec4(0.5F, 1.0F, 1.0F, 1.0F));
-	m_pButtonCredits->SetOnHoverColor(glm::vec4(0.5F, 1.0F, 1.0F, 1.0F));
-	m_pButtonQuit->SetOnHoverColor(glm::vec4(0.5F, 1.0F, 1.0F, 1.0F));
+	m_pButtonPlay->SetOnHoverColor(GUIContext::COLOR_PANEL_MIDGROUND);
+	m_pButtonOptions->SetOnHoverColor(GUIContext::COLOR_PANEL_MIDGROUND);
+	m_pButtonCredits->SetOnHoverColor(GUIContext::COLOR_PANEL_MIDGROUND);
+	m_pButtonQuit->SetOnHoverColor(GUIContext::COLOR_PANEL_MIDGROUND);
 
-	m_pButtonPlay->SetOnHoverTextColor(GUIContext::COLOR_BLACK);
-	m_pButtonOptions->SetOnHoverTextColor(GUIContext::COLOR_BLACK);
-	m_pButtonCredits->SetOnHoverTextColor(GUIContext::COLOR_BLACK);
-	m_pButtonQuit->SetOnHoverTextColor(GUIContext::COLOR_BLACK);
+	m_pButtonPlay->SetBorderColor(GUIContext::COLOR_BLACK);
+	m_pButtonOptions->SetBorderColor(GUIContext::COLOR_BLACK);
+	m_pButtonCredits->SetBorderColor(GUIContext::COLOR_BLACK);
+	m_pButtonQuit->SetBorderColor(GUIContext::COLOR_BLACK);
 
-	m_pButtonPlay->SetTextColor(GUIContext::COLOR_BLACK);
-	m_pButtonOptions->SetTextColor(GUIContext::COLOR_BLACK);
-	m_pButtonCredits->SetTextColor(GUIContext::COLOR_BLACK);
-	m_pButtonQuit->SetTextColor(GUIContext::COLOR_BLACK);
-
-	m_pButtonPlay->AddExternalRenderer(this);
-	m_pButtonOptions->AddExternalRenderer(this);
-	m_pButtonCredits->AddExternalRenderer(this);
-	m_pButtonQuit->AddExternalRenderer(this);
+	m_pButtonPlay->SetBoderThickness(3);
+	m_pButtonOptions->SetBoderThickness(3);
+	m_pButtonCredits->SetBoderThickness(3);
+	m_pButtonQuit->SetBoderThickness(3);
 
 	m_pButtonPlay->AddButtonListener(this);
 	m_pButtonOptions->AddButtonListener(this);
@@ -55,8 +62,10 @@ SceneMenu::SceneMenu()
 	game->GetGUIManager().Add(m_pPanel);
 }
 
-SceneMenu::~SceneMenu()
+void SceneMenu::OnDeactivated(SceneInternal* newScene) noexcept
 {
+	SceneInternal::OnDeactivated(newScene);
+
 	Game* game = Game::GetGame();
 	game->GetGUIManager().DeleteChildren();
 }
@@ -79,15 +88,15 @@ void SceneMenu::OnButtonReleased(Button* button)
 {
 	if (button == m_pButtonPlay)
 	{
-		Game::GetGame()->SetScene(new SceneScenario());
+		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneScenario);
 	}
 	else if (button == m_pButtonOptions)
 	{
-		Game::GetGame()->SetScene(new SceneOptions());
+		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneOptions);
 	}
 	else if (button == m_pButtonCredits)
 	{
-		Game::GetGame()->SetScene(new SceneCredits());
+		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneCredits);
 	}
 	else if (button == m_pButtonQuit)
 	{
@@ -101,15 +110,4 @@ void SceneMenu::OnButtonHovered(Button* button)
 
 void SceneMenu::OnButtonNotHovered(Button* button)
 {
-}
-
-void SceneMenu::OnRenderGUIObject(GUIContext* context, GUIObject* object)
-{
-	static int32 thickness = 3;
-
-	context->RenderTexture(object->GetDefaultTexture(), 0, 0, thickness, object->GetHeight(), GUIContext::COLOR_BLACK);
-	context->RenderTexture(object->GetDefaultTexture(), object->GetWidth() - thickness, 0, thickness, object->GetHeight(), GUIContext::COLOR_BLACK);
-
-	context->RenderTexture(object->GetDefaultTexture(), 0, object->GetHeight() - thickness, object->GetWidth(), thickness, GUIContext::COLOR_BLACK);
-	context->RenderTexture(object->GetDefaultTexture(), 0, 0, object->GetWidth(), thickness, GUIContext::COLOR_BLACK);
 }

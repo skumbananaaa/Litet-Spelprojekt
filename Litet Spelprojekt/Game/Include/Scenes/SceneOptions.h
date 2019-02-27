@@ -5,14 +5,19 @@
 
 class SceneOptions : public SceneInternal
 {
+	friend class Game;
+
 public:
-	SceneOptions();
 	virtual ~SceneOptions();
+
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
+	virtual void OnDeactivated(SceneInternal* newScene) noexcept override;
 
 	virtual void OnUpdate(float dtS) noexcept override;
 	virtual void OnRender(float dtS) noexcept override;
 
-
+protected:
+	SceneOptions();
 
 private:
 	Panel* m_pPanel;

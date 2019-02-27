@@ -1,39 +1,13 @@
 #pragma once
-
 #include <System/Application.h>
-#include <Graphics/GameObject.h>
-#include <World/GameObjectDoor.h>
-#include <Graphics/Buffers/UniformBuffer.h>
-#include <Graphics/Camera.h>
-#include <Graphics/Renderers/IRenderer.h>
-#include <Graphics/Textures/Framebuffer.h>
-#include <Graphics/Textures/Texture2D.h>
-#include <Graphics/Textures/TextureCube.h>
-#include <Graphics/GUI/TextView.h>
-#include <Graphics/Materials/Decal.h>
-#include <Audio/Listeners/AudioListener.h>
-#include <Audio/Sources/AudioSource.h>
-#include <Audio/SoundEffect.h>
-#include <Audio/Music.h>
-#include <IO/WorldSerializer.h>
-#include <IO/ResourceHandler.h>
-#include "..\Include\Crew.h"
-#include "..\Include\Path.h"
-#include <Graphics/GUI/ProgressBar.h>
-#include "GUI/UICrew.h"
-#include "GUI/UICrewMember.h"
-#include "GUI/UIScenario.h"
-#include <Graphics/GUI/ListScrollable.h>
-
-#include <Graphics/Materials/WallMaterial.h>
-#include <Graphics/Materials/WaterOutdoorMaterial.h>
-#include <Graphics/Materials/WaterIndoorMaterial.h>
-
-#include "../Include/Scenarios/ScenarioManager.h"
-#include "../Include/Scenarios/ScenarioWater.h"
-#include "../Include/Scenarios/ScenarioFire.h"
-
 #include "Scenes/SceneInternal.h"
+#include "Scenes/SceneGame.h"
+#include "Scenes/SceneMenu.h"
+#include "Scenes/SceneLoading.h"
+#include "Scenes/SceneCredits.h"
+#include "Scenes/SceneOptions.h"
+#include "Scenes/SceneScenario.h"
+#include <Graphics/Renderers/ForwardRenderer.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
@@ -59,16 +33,23 @@ public:
 	void OnUpdate(float dtS) override;
 	void OnRender(float dtS) override;
 	
-	UIScenario* GetUIScenario() noexcept;
-
 	void SetScene(SceneInternal* scene) noexcept;
 
 	static Game* GetGame();
 
+public:
+	SceneLoading* m_pSceneLoading;
+	SceneMenu* m_pSceneMenu;
+	SceneCredits* m_pSceneCredits;
+	SceneOptions* m_pSceneOptions;
+	SceneScenario* m_pSceneScenario;
+	SceneGame* m_pSceneGame;
+
 private:
 	SceneInternal* m_pScene;
-	SceneInternal* m_pSceneLast;
-	
+	SceneInternal* m_pSceneNext;
 
-	UIScenario* m_pUIScenario;
+	TextureCube* m_pSkyBoxTex;
+	SkyBox* m_pSkyBox;
+	IRenderer* m_pRenderer;
 };

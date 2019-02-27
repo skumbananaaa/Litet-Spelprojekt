@@ -20,10 +20,13 @@
 
 class SceneGame : public SceneInternal, public ILogListener
 {
+	friend class Game;
+
 public:
-	SceneGame();
 	virtual ~SceneGame();
 
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
+	virtual void OnDeactivated(SceneInternal* newScene) noexcept override;
 	virtual void OnUpdate(float dtS) noexcept override;
 	virtual void OnRender(float dtS) noexcept override;
 	virtual void OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position) override;
@@ -43,7 +46,15 @@ public:
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	UICrewMember* GetUICrewMember() noexcept;
 
-	static SceneGame* GetInstance() noexcept;
+protected:
+	SceneGame();
+
+	void CreateAudio() noexcept;
+	void CreateGameObjects() noexcept;
+	void CreateWorld() noexcept;
+	void CreateCrew() noexcept;
+
+	void UpdateCamera(float dtS) noexcept;
 
 private:
 	UICrewMember* m_pUICrewMember;
@@ -59,6 +70,4 @@ private:
 	std::vector<float> m_RoomLightsTimers;
 	uint32 m_CurrentLight = 0;
 	AudioSource* m_pTestAudioSource;
-
-	static SceneGame* s_pInstance;
 };

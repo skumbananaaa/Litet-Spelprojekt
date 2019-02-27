@@ -29,9 +29,9 @@ void UICrewMember::SetCrewMember(const Crewmember* crewmember)
 		if(m_Crewmember)
 		{
 			m_TextViewName->SetText(crewmember->GetName());
-			Camera& camera = SceneGame::GetInstance()->GetCamera();
+			Camera& camera = Game::GetGame()->m_pSceneGame->GetCamera();
 			glm::vec3 crewWorldPos = crewmember->GetLastKnownPosition();
-			crewWorldPos.x += SceneGame::GetInstance()->GetExtension() * glm::floor(crewWorldPos.y / 2.0f);
+			crewWorldPos.x += Game::GetGame()->m_pSceneGame->GetExtension() * glm::floor(crewWorldPos.y / 2.0f);
 			glm::vec4 pos = camera.GetCombinedMatrix() * glm::vec4(crewWorldPos, 1);
 			pos = pos / pos.w;
 			float halfWidth = Game::GetGame()->GetWindow().GetWidth() / 2;

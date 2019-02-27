@@ -90,7 +90,7 @@ void SHADER::RegisterResources()
 		ANIMATION = ResourceHandler::RegisterShader("forwardAnimation.glsl", "forwardAnimation.glsl", defines);
 	}
 
-	WATER_INDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl");
+	//WATER_INDOOR_MATERIAL	= ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl");
 #endif
 
 	{

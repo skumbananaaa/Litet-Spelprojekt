@@ -54,11 +54,17 @@ public:
 	const glm::vec4& GetBackgroundColor() const noexcept;
 	virtual void SetBackgroundColor(const glm::vec4& color) noexcept;
 
+	const glm::vec4& GetBorderColor() const noexcept;
+	virtual void SetBorderColor(const glm::vec4& color) noexcept;
+
 	virtual bool ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept;
 	bool ContainsPoint(const glm::vec2& position) const noexcept;
 
 	virtual bool OwnsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept;
 	bool OwnsPoint(const glm::vec2& position) const noexcept;
+
+	void SetBoderThickness(int32 thickness) noexcept;
+	int32 GetBoderThickness() const noexcept;
 
 	virtual void DeleteChildren();
 
@@ -93,6 +99,7 @@ protected:
 	virtual void OnCharFromKey(char c) {};
 
 	virtual void RenderBackgroundTexture(GUIContext* context);
+	virtual void RenderBorder(GUIContext* context);
 	virtual void RenderChildrensFrameBuffers(GUIContext* context);
 	virtual void RenderRealTimePre(GUIContext* context, float x = 0, float y = 0) {};
 	virtual void RenderRealTime(GUIContext* context, float x = 0, float y = 0);
@@ -168,6 +175,8 @@ private:
 	bool m_IsVisible;
 	Texture2D* m_pBackgroundTexture;
 	glm::vec4 m_BackgroundColor;
+	glm::vec4 m_BorderColor;
+	int32 m_BorderThickness;
 	bool m_IsRealtime;
 	void* m_pUserData;
 

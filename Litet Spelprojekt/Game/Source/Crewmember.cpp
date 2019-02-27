@@ -1,13 +1,14 @@
 #include "..\Include\Crewmember.h"
 #include "..\Include\Game.h"
 #include <System/Random.h>
-#include "..\Include\Scenes\SceneGame.h"
+#include "..\Include\Game.h"
 
-Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name) 
+Crewmember::Crewmember(const World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 	: m_pLight(new PointLight(position, lightColor))
 {
 	m_ActionCap = actionCap;
 	SetName(name);
+	m_pWorld = world;
 	m_NrOfPathTiles = 0;
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
 	m_TargetTile = m_PlayerTile;
@@ -70,8 +71,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	GameObject::Update(camera, deltaTime);
 	UpdateTransform();
-	//CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
-	//CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
+	CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
+	CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
@@ -100,13 +101,13 @@ void Crewmember::OnPicked()
 void Crewmember::OnHovered()
 {
 	m_IsHovered = true;
-	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(this);
+	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(this);
 }
 
 void Crewmember::OnNotHovered()
 {
 	m_IsHovered = false;
-	SceneGame::GetInstance()->GetUICrewMember()->SetCrewMember(nullptr);
+	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -355,8 +356,7 @@ void Crewmember::SetActionCapacity(const float actionCap)
 	m_ActionCap = actionCap;
 }
 
-void Crewmember::SetPath(const World* world)
+void Crewmember::SetPath()
 {
-	m_pPathFinder = new Path(world);
-	//m_pWorld = world;
+	m_pPathFinder = new Path(m_pWorld);
 }

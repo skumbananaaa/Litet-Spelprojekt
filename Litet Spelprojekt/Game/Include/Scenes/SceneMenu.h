@@ -3,11 +3,15 @@
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Button.h>
 
-class SceneMenu : public SceneInternal, public IButtonListener, public IExternalUIRenderer
+class SceneMenu : public SceneInternal, public IButtonListener
 {
+	friend class Game;
+
 public:
-	SceneMenu();
 	virtual ~SceneMenu();
+
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
+	virtual void OnDeactivated(SceneInternal* newScene) noexcept override;
 
 	virtual void OnUpdate(float dtS) noexcept override;
 	virtual void OnRender(float dtS) noexcept override;
@@ -17,7 +21,8 @@ public:
 	virtual void OnButtonHovered(Button* button) override;
 	virtual void OnButtonNotHovered(Button* button) override;
 
-	virtual void OnRenderGUIObject(GUIContext* context, GUIObject* object) override;
+protected:
+	SceneMenu();
 
 private:
 	Panel* m_pPanel;

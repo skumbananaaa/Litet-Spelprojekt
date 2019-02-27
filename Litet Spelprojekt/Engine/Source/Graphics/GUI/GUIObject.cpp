@@ -20,7 +20,9 @@ GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_pUserData(nullptr),
 	m_IsDirty(false),
 	m_IsRealtime(false),
-	m_BackgroundColor(1.0, 1.0, 1.0, 1.0)
+	m_BackgroundColor(1.0, 1.0, 1.0, 1.0),
+	m_BorderColor(GUIContext::COLOR_TRANSPARENT),
+	m_BorderThickness(1)
 {
 	if (width > 0 && height > 0)
 	{
@@ -199,6 +201,20 @@ void GUIObject::SetBackgroundColor(const glm::vec4& color) noexcept
 	if (m_BackgroundColor != color)
 	{
 		m_BackgroundColor = color;
+		RequestRepaint();
+	}
+}
+
+const glm::vec4& GUIObject::GetBorderColor() const noexcept
+{
+	return m_BorderColor;
+}
+
+void GUIObject::SetBorderColor(const glm::vec4& color) noexcept
+{
+	if (m_BorderColor != color)
+	{
+		m_BorderColor = color;
 		RequestRepaint();
 	}
 }
@@ -506,6 +522,7 @@ void GUIObject::RenderRealTime(GUIContext* context, float x, float y)
 void GUIObject::OnRender(GUIContext* context)
 {
 	RenderBackgroundTexture(context);
+	RenderBorder(context);
 }
 
 void GUIObject::RenderBackgroundTexture(GUIContext* context)
@@ -515,6 +532,14 @@ void GUIObject::RenderBackgroundTexture(GUIContext* context)
 	{
 		context->RenderTexture(texture, 0, 0, GetWidth(), GetHeight(), GUIContext::COLOR_WHITE);
 	}
+}
+
+void GUIObject::RenderBorder(GUIContext* context)
+{
+	context->RenderTexture(GetDefaultTexture(), 0, 0, m_BorderThickness, GetHeight(), m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), GetWidth() - m_BorderThickness, 0, m_BorderThickness, GetHeight(), m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), 0, GetHeight() - m_BorderThickness, GetWidth(), m_BorderThickness, m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), 0, 0, GetWidth(), m_BorderThickness, m_BorderColor);
 }
 
 bool GUIObject::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
@@ -549,6 +574,20 @@ bool GUIObject::OwnsPoint(const glm::vec2& position, const GUIObject* caller) co
 bool GUIObject::OwnsPoint(const glm::vec2& position) const noexcept
 {
 	return OwnsPoint(position, this);
+}
+
+void GUIObject::SetBoderThickness(int32 thickness) noexcept
+{
+	if (m_BorderThickness != thickness)
+	{
+		m_BorderThickness = thickness;
+		RequestRepaint();
+	}
+}
+
+int32 GUIObject::GetBoderThickness() const noexcept
+{
+	return m_BorderThickness;
 }
 
 void GUIObject::DeleteChildren()

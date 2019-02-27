@@ -4,6 +4,18 @@
 
 SceneLoading::SceneLoading()
 {
+	
+}
+
+SceneLoading::~SceneLoading()
+{
+	
+}
+
+void SceneLoading::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+{
+	SceneInternal::OnActivated(lastScene, m_pRenderer);
+
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
@@ -14,8 +26,10 @@ SceneLoading::SceneLoading()
 	game->GetGUIManager().Add(m_pLoadingBar);
 }
 
-SceneLoading::~SceneLoading()
+void SceneLoading::OnDeactivated(SceneInternal* newScene) noexcept
 {
+	SceneInternal::OnDeactivated(newScene);
+
 	Game* game = Game::GetGame();
 	game->GetGUIManager().DeleteChildren();
 }
@@ -38,5 +52,5 @@ void SceneLoading::OnResourceLoading(const std::string& file, float percentage)
 
 void SceneLoading::OnResourcesLoaded()
 {
-	Game::GetGame()->SetScene(new SceneMenu());
+	Game::GetGame()->SetScene(Game::GetGame()->m_pSceneMenu);
 }

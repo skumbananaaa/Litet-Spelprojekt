@@ -8,9 +8,13 @@
 
 class SceneScenario : public SceneInternal, public ISelectionListener, public IButtonListener
 {
+	friend class Game;
+
 public:
-	SceneScenario();
 	virtual ~SceneScenario();
+
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
+	virtual void OnDeactivated(SceneInternal* newScene) noexcept override;
 
 	virtual void OnSelected(const SelectionHandler* handler, ISelectable* selection) override;
 	virtual void OnDeselected(const SelectionHandler* handler, ISelectable* selection) override;
@@ -19,6 +23,9 @@ public:
 	virtual void OnButtonReleased(Button* button) override;
 	virtual void OnButtonHovered(Button* button) override;
 	virtual void OnButtonNotHovered(Button* button) override;
+
+protected:
+	SceneScenario();
 
 private:
 	Panel* m_pPanel;

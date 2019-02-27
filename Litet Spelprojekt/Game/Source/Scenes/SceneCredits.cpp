@@ -4,6 +4,18 @@
 
 SceneCredits::SceneCredits()
 {
+	
+}
+
+SceneCredits::~SceneCredits()
+{
+	Game::GetGame()->GetGUIManager().DeleteChildren();
+}
+
+void SceneCredits::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+{
+	SceneInternal::OnActivated(lastScene, m_pRenderer);
+
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
@@ -21,6 +33,9 @@ SceneCredits::SceneCredits()
 	m_pButtonBack->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	m_pButtonBack->AddButtonListener(this);
 
+	m_pPanel->SetBorderColor(GUIContext::COLOR_BLACK);
+	m_pPanel->SetBoderThickness(3);
+
 	m_pPanel->Add(m_pButtonBack);
 	m_pPanel->Add(m_pTextViewTitle);
 	m_pPanel->Add(m_pTextViewChristoffer);
@@ -33,9 +48,12 @@ SceneCredits::SceneCredits()
 	game->GetGUIManager().Add(m_pPanel);
 }
 
-SceneCredits::~SceneCredits()
+void SceneCredits::OnDeactivated(SceneInternal* newScene) noexcept
 {
-	Game::GetGame()->GetGUIManager().DeleteChildren();
+	SceneInternal::OnDeactivated(newScene);
+
+	Game* game = Game::GetGame();
+	game->GetGUIManager().DeleteChildren();
 }
 
 void SceneCredits::OnUpdate(float dtS) noexcept
@@ -54,7 +72,7 @@ void SceneCredits::OnButtonPressed(Button* button)
 
 void SceneCredits::OnButtonReleased(Button* button)
 {
-	Game::GetGame()->SetScene(new SceneMenu());
+	Game::GetGame()->SetScene(Game::GetGame()->m_pSceneMenu);
 }
 
 void SceneCredits::OnButtonHovered(Button* button)

@@ -5,15 +5,22 @@
 
 class SceneLoading : public SceneInternal
 {
+	friend class Game;
+
 public:
-	SceneLoading();
 	virtual ~SceneLoading();
+
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
+	virtual void OnDeactivated(SceneInternal* newScene) noexcept override;
 
 	virtual void OnUpdate(float dtS) noexcept override;
 	virtual void OnRender(float dtS) noexcept override;
 
 	virtual void OnResourceLoading(const std::string& file, float percentage) override;
 	virtual void OnResourcesLoaded() override;
+
+protected:
+	SceneLoading();
 
 private:
 	TextView* m_pTextViewFile;

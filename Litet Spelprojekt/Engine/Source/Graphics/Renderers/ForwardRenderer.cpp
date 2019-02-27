@@ -655,6 +655,8 @@ void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* 
 			material.SetCameraBuffer(m_pCameraBuffer);
 			material.SetLightBuffer(m_pLightBuffer);
 			material.SetMaterialBuffer(m_pMaterialBuffer);
+			material.SetWorldBuffer(m_pWorldBuffer);
+			material.SetExtensionBuffer(m_pExtensionBuffer);
 
 			material.Bind(nullptr);
 

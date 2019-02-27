@@ -24,6 +24,11 @@ layout(std140, binding = 4) uniform PlaneBuffer
 	vec4 g_ClipPlane;
 };
 
+layout(std140, binding = 5) uniform Extension
+{
+	float g_Extension;
+};
+
 layout(std140, binding = 7) uniform BoneBuffer
 {
 	mat4 g_Bones[MAX_BONES];
@@ -39,16 +44,14 @@ void main()
 
 	mat4 finalModel = g_Model * BoneTransform;
 	vec4 worldPos = finalModel * vec4(g_Position, 1.0);
+	worldPos.x += g_Extension * floor(g_Model[3].y / 2.0f);
 
 	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
-
 	gl_Position = g_ProjectionView * worldPos;
 }
 
 #elif defined(FRAGMENT_SHADER)
-
 void main()
 {
 }
-
 #endif

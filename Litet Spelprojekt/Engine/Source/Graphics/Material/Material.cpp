@@ -58,7 +58,6 @@ void Material::Bind(const Framebuffer* pGBuffer) const noexcept
 	context.SetUniformBuffer(m_Data.pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
 	context.SetTexture(m_Data.pDiffuseMap, DIFFUSE_MAP_BINDING_SLOT);
-	context.SetTexture(m_Data.pSpecularMap, SPECULAR_MAP_BINDING_SLOT);
 }
 
 void Material::Unbind() const noexcept
@@ -75,7 +74,6 @@ void Material::Unbind() const noexcept
 	context.SetUniformBuffer(nullptr, EXTENSION_BUFFER_BINDING_SLOT);
 
 	context.SetTexture(nullptr, DIFFUSE_MAP_BINDING_SLOT);
-	context.SetTexture(nullptr, SPECULAR_MAP_BINDING_SLOT);
 }
 
 void Material::SetLightBuffer(const UniformBuffer* pLightBuffer) const noexcept

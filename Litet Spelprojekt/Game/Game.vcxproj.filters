@@ -132,7 +132,6 @@
     <None Include="Resources\Shaders\FShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderFont.glsl" />
     <None Include="Resources\Shaders\VShaderGUI.glsl" />
-    <None Include="Resources\Shaders\forwardFrag.glsl" />
     <None Include="Resources\Shaders\fullscreenTriVert.glsl" />
     <None Include="Resources\Shaders\cbrResolveFrag.glsl" />
     <None Include="Resources\Shaders\cbrReconstructionFrag.glsl" />
@@ -159,7 +158,6 @@
     <None Include="Resources\Shaders\animatedDepthPrePass.glsl" />
     <None Include="Resources\Shaders\forwardAnimation.glsl" />
     <None Include="Resources\Shaders\forwardMeshParticles.glsl" />
-    <None Include="Resources\Shaders\forwardOutdoorWaterBAK.glsl" />
     <None Include="Resources\Shaders\forwardOutdoorWater.glsl" />
   </ItemGroup>
   <ItemGroup>
@@ -192,7 +190,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\Shaders\forwardVert.glsl" />
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl">
       <Filter>Source Files</Filter>
     </Text>

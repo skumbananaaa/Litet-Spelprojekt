@@ -21,7 +21,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept
-	: Application(false, 1600, 900, "", true),
+	: Application(false, 1920, 1017, "", true),
 	m_pSceneLast(nullptr),
 	m_pScene(nullptr)
 {

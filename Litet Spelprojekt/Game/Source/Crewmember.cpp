@@ -12,7 +12,7 @@ Crewmember::Crewmember(const glm::vec4& lightColor, const glm::vec3& position, f
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
 	m_TargetTile = m_PlayerTile;
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
-	SetDirection(glm::vec3(1.0f, 0.0f, 0.0f));
+	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	m_pTorch = new SpotLight(position, glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(25.0f)), glm::vec3(m_Direction.x, 0.0, m_Direction.z), glm::vec4(0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
 	SetAnimatedMesh(MESH::ANIMATED_MODEL);
@@ -292,7 +292,7 @@ const glm::vec3& Crewmember::GetDirection() const noexcept
 void Crewmember::SetDirection(const glm::vec3 & direction) noexcept
 {
 	m_Direction = glm::normalize(direction);
-	float angle = std::atan2f(1.0f * m_Direction.z - 0.0f * m_Direction.x, 1.0f * m_Direction.x + 0.0f * m_Direction.z);
+	float angle = std::atan2f(1.0f * m_Direction.x, -1.0f * m_Direction.z);
 	SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, -angle));
 }
 

@@ -115,11 +115,12 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
 	MainPass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
-	SkyBoxPass(mainCamera, scene);
+	AnimationPass(dtS, scene, pWorld);
 	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
 	ParticlePass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[6], GL_TIMESTAMP);
-	AnimationPass(dtS, scene, pWorld);
+	SkyBoxPass(mainCamera, scene);
+	glQueryCounter(m_pCurrentQuery->pQueries[7], GL_TIMESTAMP);
 
 	//Get query results
 	uint64 startTime = 0;
@@ -134,9 +135,11 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[4], GL_QUERY_RESULT, &startTime);
 	m_FrameTimes.LightPass += static_cast<float>(startTime - stopTime) / 1000000.0f;
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[5], GL_QUERY_RESULT, &stopTime);
-	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	m_FrameTimes.AnimationPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[6], GL_QUERY_RESULT, &startTime);
 	m_FrameTimes.ParticlePass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[7], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
 
 	if (timer >= 1.0f)
 	{
@@ -146,18 +149,19 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
 		std::cout << " DepthPrePass: " << m_FrameTimes.DepthPrePass / fps << "ms" << std::endl;
 		std::cout << " Lightpass: " << m_FrameTimes.LightPass / fps << "ms" << std::endl;
-		std::cout << " Skyboxpass: " << m_FrameTimes.SkyboxPass / fps << "ms" << std::endl;
+		std::cout << " AnimationPass: " << m_FrameTimes.AnimationPass / fps << "ms" << std::endl;
 		std::cout << " Particlepass: " << m_FrameTimes.ParticlePass / fps << "ms" << std::endl;
+		std::cout << " Skyboxpass: " << m_FrameTimes.SkyboxPass / fps << "ms" << std::endl;
 		std::cout << "-----------" << std::endl;
 
 		frametime = 0.0f;
+		timer = 0.0f;
 		m_FrameTimes.ReflectionPass = 0.0f;
 		m_FrameTimes.SkyboxPass = 0.0f;
 		m_FrameTimes.ParticlePass = 0.0f;
 		m_FrameTimes.LightPass = 0.0f;
 		m_FrameTimes.DepthPrePass = 0.0f;
-
-		timer = 0.0f;
+		m_FrameTimes.AnimationPass = 0.0f;
 	}
 
 	m_FrameCounter++;
@@ -168,8 +172,8 @@ void ForwardRenderer::Create() noexcept
 	std::cout << "Creating forward renderer" << std::endl;
 
 	//CREATE QUERIES
-	m_pQueries[0] = new TimerQuery(7);
-	m_pQueries[1] = new TimerQuery(7);
+	m_pQueries[0] = new TimerQuery(8);
+	m_pQueries[1] = new TimerQuery(8);
 
 	//CREATE MESHES NEEDED
 	{
@@ -281,8 +285,8 @@ void ForwardRenderer::Create() noexcept
 void ForwardRenderer::CreateBatches(const Scene& scene, const World* const pWorld) const noexcept
 {
 	//Create batches for drawables
-	//Dahlsson är detta verkligen det mest optimierade du kan göra?
-	//-Nej men får duga tills vidare
+	//Dahlsson ï¿½r detta verkligen det mest optimierade du kan gï¿½ra?
+	//-Nej men fï¿½r duga tills vidare
 	{
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
 		for (size_t i = 0; i < drawables.size(); i++)
@@ -437,7 +441,49 @@ void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
 		context.SetFramebuffer(pFramebuffer);
 		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
-		MainPass(reflectionCam, scene);
+		//MAIN PASS
+		if (m_DrawableBatches.size() < 1)
+		{
+#if defined(_DEBUG)
+			//std::cout << "No drawables, skipping geomtrypass" << std::endl;
+#endif
+			return;
+		}
+
+		GLContext& context = GLContext::GetCurrentContext();
+
+		MaterialBuffer perBatch = {};
+		for (size_t i = 0; i < m_DrawableBatches.size(); i++)
+		{
+			const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
+			const Material& material = *m_DrawableBatches[i].pMaterial;
+
+			if (material.IsReflectable())
+			{
+				continue;
+			}
+
+			perBatch.Color = material.GetColor();
+			perBatch.ClipPlane = material.GetLevelClipPlane();
+			perBatch.Specular = material.GetSpecular();
+			perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
+			perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
+			m_pMaterialBuffer->UpdateData(&perBatch);
+
+			material.SetCameraBuffer(m_pCameraBuffer);
+			material.SetLightBuffer(m_pLightBuffer);
+			material.SetMaterialBuffer(m_pMaterialBuffer);
+			material.SetWorldBuffer(m_pWorldBuffer);
+			material.SetExtensionBuffer(m_pExtensionBuffer);
+			material.Bind(nullptr);
+
+			mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+			context.DrawIndexedMeshInstanced(mesh);
+
+			context.Enable(CULL_FACE);
+
+			material.Unbind();
+		}
 	}
 
 	context.SetUniformBuffer(nullptr, PLANE_BUFFER_BINDING_SLOT);
@@ -551,7 +597,6 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 		perBatch.ClipPlane = material.GetLevelClipPlane();
 		perBatch.Specular = material.GetSpecular();
 		perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
-		perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
 		perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
 		m_pMaterialBuffer->UpdateData(&perBatch);
 
@@ -592,7 +637,6 @@ void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* 
 			perBatch.ClipPlane = material.GetLevelClipPlane();
 			perBatch.Specular = material.GetSpecular();
 			perBatch.HasDiffuseMap = material.HasDiffuseMap() ? 1.0f : 0.0f;
-			perBatch.HasNormalMap = material.HasNormalMap() ? 1.0f : 0.0f;
 			perBatch.HasSpecularMap = material.HasSpecularMap() ? 1.0f : 0.0f;
 			m_pMaterialBuffer->UpdateData(&perBatch);
 
@@ -650,10 +694,13 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	const std::vector<MeshEmitter*>& meshEmitters= scene.GetMeshEmitters();
 	for (size_t i = 0; i < meshEmitters.size(); i++)
 	{
-		const MeshParticle& mesh = (*meshEmitters[i]->GetMesh());
+		if (meshEmitters[i]->IsVisible())
+		{
+			const MeshParticle& mesh = (*meshEmitters[i]->GetMesh());
 
-		mesh.SetInstances(meshEmitters[i]->GetParticleInstances(), meshEmitters[i]->GetNumParticles());
-		context.DrawMeshParticle(mesh);
+			mesh.SetInstances(meshEmitters[i]->GetParticleInstances(), meshEmitters[i]->GetNumParticles());
+			context.DrawMeshParticle(mesh);
+		}
 	}
 
 	context.SetDepthMask(false);

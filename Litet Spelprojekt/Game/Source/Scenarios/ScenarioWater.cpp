@@ -32,7 +32,7 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::
 
 			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL))
 			{
-				GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[0];
+				GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
 
 				if (waterIsVisible)
@@ -72,7 +72,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 			ppLevelData[10][10].WaterLevel = 2.0f;
 			ppLevelData[10][10].WaterLevelAge = 0.0f;
 			ppLevelData[10][10].AlreadyFlooded = true;
-			GameObject* pGameObject = ppLevelData[10][10].GameObjects[0];
+			GameObject* pGameObject = ppLevelData[10][10].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 			pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevelLastUpdated, 0.0f));
 			//pGameObject->UpdateTransform();
 			//pGameObject->SetIsVisible(true);
@@ -164,9 +164,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 
 			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
 
-			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[0];
-
-			
+			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 
 			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel - ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated) > WATER_UPDATE_LEVEL_INTERVAL)
 			{
@@ -201,7 +199,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].WaterLevelLastUpdated = 0.0f;
 			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].WaterLevelAge = 1.0f;
 			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].AlreadyFlooded = false;
-			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].GameObjects[0]->SetIsVisible(false);
+			ppLevelData[toRemoveFloodingIDs[i].x][toRemoveFloodingIDs[i].y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetIsVisible(false);
 			floodingIDs.erase(std::remove(floodingIDs.begin(), floodingIDs.end(), toRemoveFloodingIDs[i]));
 		}
 

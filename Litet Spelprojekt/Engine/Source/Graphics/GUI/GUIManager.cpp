@@ -67,12 +67,17 @@ void GUIManager::InternalRootOnMouseScroll(const glm::vec2& position, const glm:
 
 void GUIManager::InternalRootOnKeyUp(KEY keycode)
 {
-
+	GUIObject::InternalRootOnKeyUp(keycode);
 }
 
 void GUIManager::InternalRootOnKeyDown(KEY keycode)
 {
-	
+	GUIObject::InternalRootOnKeyDown(keycode);
+}
+
+void GUIManager::InternalRootOnCharFromKey(char c)
+{
+	GUIObject::InternalRootOnCharFromKey(c);
 }
 
 void GUIManager::PrintName() const

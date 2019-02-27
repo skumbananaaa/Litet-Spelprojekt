@@ -47,6 +47,7 @@ protected:
 	virtual void OnMouseReleased(MouseButton mousebutton, const glm::vec2& position) {};
 	virtual void OnKeyUp(KEY keycode) {};
 	virtual void OnKeyDown(KEY keycode) {};
+	virtual void OnCharFromKey(char c) {};
 	virtual void OnResize(uint32 width, uint32 height) {};
 
 private:
@@ -76,6 +77,7 @@ private:
 	void InternalOnMouseButton(MouseButton mousebutton, bool down, const glm::vec2& position);
 	void InternalOnKeyUp(KEY keycode);
 	void InternalOnKeyDown(KEY keycode);
+	void InternalOnCharFromKey(char c);
 	void InternalOnResize(uint32 width, uint32 height);
 
 public:
@@ -173,6 +175,7 @@ inline void Application::InternalOnKeyUp(KEY keycode)
 	if (m_ResourceMode == RESOURCE_MODE::DONE)
 	{
 		OnKeyUp(keycode);
+		m_pGUIManager->InternalRootOnKeyUp(keycode);
 	}
 }
 
@@ -187,6 +190,16 @@ inline void Application::InternalOnKeyDown(KEY keycode)
 	if (m_ResourceMode == RESOURCE_MODE::DONE)
 	{
 		OnKeyDown(keycode);
+		m_pGUIManager->InternalRootOnKeyDown(keycode);
+	}
+}
+
+inline void Application::InternalOnCharFromKey(char c)
+{
+	if (m_ResourceMode == RESOURCE_MODE::DONE)
+	{
+		OnCharFromKey(c);
+		m_pGUIManager->InternalRootOnCharFromKey(c);
 	}
 }
 

@@ -27,6 +27,7 @@ public:
 	static uint32 CUBOARD;
 	static uint32 TABLE;
 	static uint32 TOILET;
+	static uint32 WATER_QUAD;
 
 private:
 	static void RegisterResourcesPreLoading();

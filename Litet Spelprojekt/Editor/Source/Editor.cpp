@@ -85,10 +85,13 @@ void Editor::OnResourcesLoaded()
 	m_pButtonLoad = new Button(160, 10, 140, 50, "Load", nullptr, OnButtonReleased);
 	m_pButtonRoom = new Button(310, 10, 140, 50, "Room Editor", nullptr, OnButtonReleased);
 	m_pButtonMesh = new Button(460, 10, 140, 50, "Mesh Editor", nullptr, OnButtonReleased);
+	m_pTextFieldBurnTemp = new TextField(610, 10, 140, 50, TextFieldType::NUMBERS_ONLY, "100");
+	m_pTextFieldBurnTemp->SetVisible(false);
 	m_pPanelTop->Add(m_pButtonSave);
 	m_pPanelTop->Add(m_pButtonLoad);
 	m_pPanelTop->Add(m_pButtonRoom);
 	m_pPanelTop->Add(m_pButtonMesh);
+	m_pPanelTop->Add(m_pTextFieldBurnTemp);
 	m_pPanelTop->SetDeleteAllChildrenOnDestruction(true);
 
 
@@ -101,6 +104,7 @@ void Editor::OnResourcesLoaded()
 	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, m_pPanelEditor->GetWidth() - 20, 50, "Remove Door");
 	m_pButtonAddStairs = new Button(10, m_pPanelEditor->GetHeight() - 400, m_pPanelEditor->GetWidth() - 20, 50, "Add Stairs");
 	m_pButtonRemoveStairs = new Button(10, m_pPanelEditor->GetHeight() - 460, m_pPanelEditor->GetWidth() - 20, 50, "Remove Stairs");
+	m_pSetRoomBurnTemperature = new Button(10, m_pPanelEditor->GetHeight() - 520, m_pPanelEditor->GetWidth() - 20, 50, "Set Burn Temp");
 	m_pButtonAddRoom->SetUserData(reinterpret_cast<void*>(ADD_ROOM));
 	m_pButtonEditRoom->SetUserData(reinterpret_cast<void*>(EDIT_ROOM));
 	m_pButtonRemoveRoom->SetUserData(reinterpret_cast<void*>(DELETE_ROOM));
@@ -108,6 +112,7 @@ void Editor::OnResourcesLoaded()
 	m_pButtonRemoveDoor->SetUserData(reinterpret_cast<void*>(REMOVE_DOOR));
 	m_pButtonAddStairs->SetUserData(reinterpret_cast<void*>(ADD_STAIRS));
 	m_pButtonRemoveStairs->SetUserData(reinterpret_cast<void*>(REMOVE_STAIRS));
+	m_pSetRoomBurnTemperature->SetUserData(reinterpret_cast<void*>(SET_BURN_TEMP));
 	m_pPanelEditor->Add(m_pTextViewEditor);
 	m_pPanelEditor->Add(m_pButtonAddRoom);
 	m_pPanelEditor->Add(m_pButtonEditRoom);
@@ -116,6 +121,7 @@ void Editor::OnResourcesLoaded()
 	m_pPanelEditor->Add(m_pButtonRemoveDoor);
 	m_pPanelEditor->Add(m_pButtonAddStairs);
 	m_pPanelEditor->Add(m_pButtonRemoveStairs);
+	m_pPanelEditor->Add(m_pSetRoomBurnTemperature);
 	m_pPanelEditor->SetDeleteAllChildrenOnDestruction(true);
 	m_SelectionHandlerRoom.AddSelectionListener(this);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddRoom);
@@ -125,6 +131,7 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveDoor);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddStairs);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveStairs);
+	m_SelectionHandlerRoom.AddSelectable(m_pSetRoomBurnTemperature);
 
 
 	std::vector<std::string> gameObjects;
@@ -261,6 +268,13 @@ void Editor::OnSelected(const SelectionHandler* pHandler, ISelectable* pSelectio
 		m_Dragging = false;
 		m_RoomBeingEdited = -1;
 		m_MouseMaterial = MATERIAL::WHITE;
+
+		if (pButton == m_pSetRoomBurnTemperature)
+		{
+			m_pTextFieldBurnTemp->SetSelected(false);
+			m_pTextFieldBurnTemp->SetVisible(true);
+			m_pTextFieldBurnTemp->SetText("100");
+		}
 	}
 	else if (pHandler == &m_SelectionHandlerMesh)
 	{
@@ -299,6 +313,12 @@ void Editor::OnDeselected(const SelectionHandler* pHandler, ISelectable* pSelect
 		EditingMode newMode = (EditingMode)reinterpret_cast<uint32>(pButton->GetUserData());
 		std::cout << "Last Editing Mode: " << newMode << std::endl;
 		m_CurrentEditingMode = NONE;
+
+		if (pButton == m_pSetRoomBurnTemperature)
+		{
+			m_pTextFieldBurnTemp->SetSelected(false);
+			m_pTextFieldBurnTemp->SetVisible(false);
+		}
 	}
 	else if (pHandler == &m_SelectionHandlerMeshEdit)
 	{
@@ -392,6 +412,20 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 		}
 
 		ppWorldLevels[gridId] = new WorldLevel(gridId, pLevel, levelSizeX, levelSizeY);
+
+		for (uint32 x = 0; x < levelSizeX; x++)
+		{
+			for (uint32 y = 0; y < levelSizeY; y++)
+			{
+				if (x == 0 || x == levelSizeX - 1 || y == 0 || y == levelSizeY - 1)
+				{
+					continue;
+				}
+
+				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x - 1, y - 1));
+				ppWorldLevels[gridId]->m_ppLevelData[x][y].BurnsAt = pTile->GetBurnTemperature();
+			}
+		}
 
 
 		/*for (uint32 doorId = 0; doorId < doors.size(); doorId++)
@@ -997,6 +1031,38 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 						}
 					}
 				}
+				else if (m_CurrentEditingMode == SET_BURN_TEMP)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+						float burnTemperature = (float)m_pTextFieldBurnTemp->GetTextAsUInt();
+						m_pTextFieldBurnTemp->SetSelected(false);
+
+						if (tileId >= TILE_SMALLEST_FREE)
+						{
+							for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
+							{
+								for (uint32 x = 0; x < m_ppGrids[gridId]->GetSize().x; x++)
+								{
+									for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
+									{
+										Tile* pCurrentTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
+
+										if (pCurrentTile->GetID() == tileId)
+										{
+											pCurrentTile->SetBurnTemperature(burnTemperature);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		else if (mousebutton == MouseButton::MOUSE_BUTTON_RIGHT)
@@ -1005,6 +1071,21 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 			{
 				m_RoomBeingEdited = -1;
 				m_Dragging = false;
+			}
+			else if (m_CurrentEditingMode == SET_BURN_TEMP)
+			{
+				glm::ivec2 currentPos = CalculateGridPosition(position);
+
+				if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+					currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+				{
+					Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+
+					std::stringstream ss;
+					ss << (uint32)pTile->GetBurnTemperature();
+					m_pTextFieldBurnTemp->SetText(ss.str());
+					m_pTextFieldBurnTemp->SetSelected(false);
+				}
 			}
 		}
 	}
@@ -1427,6 +1508,8 @@ void Editor::OnButtonReleased(Button* button)
 
 					pTile->SetID(tileId);
 					editor->m_ppScenes[gridId / 2]->AddGameObject(pTile);
+
+					pTile->SetBurnTemperature(pWorldLevel->GetLevelData()[x][y].BurnsAt);
 				}
 			}
 

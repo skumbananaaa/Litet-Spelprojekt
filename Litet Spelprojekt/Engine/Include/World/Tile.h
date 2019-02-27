@@ -16,18 +16,21 @@ public:
 	void ResetMaterial() noexcept;
 	void SetHasStairs(bool value) noexcept;
 	void SetHasDoor(bool value) noexcept;
+	void SetBurnTemperature(float value) noexcept;
 
 	///<summary>Returns the id of the tile.</summary>
 	uint32 GetID() const;
 	///<summary>Returns the id of the tile.</summary>
 	bool HasStairs() const;
 	bool HasDoor() const;
+	float GetBurnTemperature() const;
 
 private:
 	uint32 m_Id;
 	uint32 m_DefaultMaterial;
 	bool m_HasStairs;
 	bool m_HasDoor;
+	float m_BurnTemperature;
 };
 
 inline uint32 Tile::GetID() const
@@ -43,4 +46,9 @@ inline bool Tile::HasStairs() const
 inline bool Tile::HasDoor() const
 {
 	return m_HasDoor;
+}
+
+inline float Tile::GetBurnTemperature() const
+{
+	return m_BurnTemperature;
 }

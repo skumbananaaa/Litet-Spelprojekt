@@ -28,12 +28,32 @@ World* WorldSerializer::Read(const char* const path)
 			const Value& x = level[xId];
 			for (uint32 zId = 0; zId < zSize; zId++)
 			{
-				pLevelIndexes[xId *  zSize + zId] = x[zId].GetUint();
+				pLevelIndexes[xId * zSize + zId] = x[zId].GetUint();
 			}
 		}
 
 		pWorldLevels[levelId] = new WorldLevel(levelId, pLevelIndexes, xSize, zSize);
 		DeleteArrSafe(pLevelIndexes);
+	}
+
+	if (jsonObject.HasMember("levelsData"))
+	{
+		const Value& levelsData = jsonObject["levelsData"];
+		for (uint32 levelId = 0; levelId < levels.Size(); levelId++)
+		{
+			const Value& levelData = levelsData[levelId];
+			uint32 xSize = levelData.Size();
+			uint32 zSize = levelData[0].Size();
+
+			for (uint32 xId = 0; xId < xSize; xId++)
+			{
+				const Value& x = levelData[xId];
+				for (uint32 zId = 0; zId < zSize; zId++)
+				{
+					pWorldLevels[levelId]->m_ppLevelData[xId][zId].BurnsAt = x[zId].GetFloat();
+				}
+			}
+		}
 	}
 
 	const Value& objects = jsonObject["objects"];
@@ -101,6 +121,29 @@ void WorldSerializer::Write(const char* const path, const World& world)
 			for (uint32 z = 0; z < level->GetSizeZ(); z++)
 			{
 				writer.Uint(level->GetLevel()[x][z]);
+			}
+
+			writer.EndArray();
+		}
+
+		writer.EndArray();
+	}
+	writer.EndArray();
+
+	writer.String("levelsData");
+	writer.StartArray();
+	for (uint32 levelId = 0; levelId < world.GetNumLevels(); levelId++)
+	{
+		const WorldLevel* level = world.GetLevel(levelId);
+		writer.StartArray();
+
+		for (uint32 x = 0; x < level->GetSizeX(); x++)
+		{
+			writer.StartArray();
+
+			for (uint32 z = 0; z < level->GetSizeZ(); z++)
+			{
+				writer.Double(level->GetLevelData()[x][z].BurnsAt);
 			}
 
 			writer.EndArray();

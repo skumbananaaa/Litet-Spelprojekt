@@ -65,16 +65,6 @@ void OrthographicRenderer::DrawScene(const Scene& scene, const World* pWorld, fl
 				perObject.HasTexture = 0.0f;
 			}
 
-			if (pMaterial->HasNormalMap())
-			{
-				perObject.HasNormalMap = 1.0f;
-				context.SetTexture(pMaterial->GetNormalMap(), 1);
-			}
-			else
-			{
-				perObject.HasNormalMap = 0.0f;
-			}
-
 			m_pOrthoPerObject->UpdateData(&perObject);
 			context.DrawIndexedMesh(*gameobject.GetMesh());
 		}

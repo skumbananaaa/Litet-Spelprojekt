@@ -1,6 +1,8 @@
 #include <EnginePch.h>
 #include <System/Window.h>
 #include <System/Application.h>
+#include <locale>
+#include <codecvt>
 
 Window* Window::s_pMainWindow = nullptr;
 
@@ -367,6 +369,12 @@ void ErrorCallback(int32 error, const char* description)
 	std::cout << "GLFW Error: " << description << std::endl;
 }
 
+void Window::CharCallback(GLFWwindow* pWindow, uint32 codepoint)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	Application::GetInstance().InternalOnCharFromKey(converter.to_bytes(wchar_t(codepoint))[0]);
+}
+
 void Window::KeyCallback(GLFWwindow* pWindow, int32 key, int32 scancode, int32 action, int32 mods)
 {
 	if (action == GLFW_PRESS)
@@ -464,6 +472,7 @@ Window::Window(const char* pTitle, int32 width, int32 height, bool fullscreen) n
 	glfwSetMouseButtonCallback(m_pWindow, MouseButtonCallback);
 	glfwSetWindowSizeCallback(m_pWindow, ResizeCallback);
 	glfwSetScrollCallback(m_pWindow, MouseScrollCallback);
+	glfwSetCharCallback(m_pWindow, CharCallback);
 
 	glfwSetWindowUserPointer(m_pWindow, this);
 }

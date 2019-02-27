@@ -52,7 +52,7 @@ void TEXTURE::RegisterResources()
 	TABLE				= ResourceHandler::RegisterTexture2D("uv_Table.jpg", TEX_FORMAT_RGBA);
 	TOILET				= ResourceHandler::RegisterTexture2D("uv_Toilet.jpg", TEX_FORMAT_RGBA);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
-	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("sjofan_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
+	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
 
 	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BURN	= ResourceHandler::RegisterTexture2D("Icons/InjuryBurn.png", TEX_FORMAT_RGBA, false, true);

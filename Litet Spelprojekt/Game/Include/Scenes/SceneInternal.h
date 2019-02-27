@@ -24,8 +24,9 @@ public:
 protected:
 	SceneInternal();
 
-	IRenderer* m_pRenderer;
+	IRenderer* GetRenderer() noexcept;
 
 private:
 	TextureCube* m_pSkyBoxTex;
+	IRenderer* m_pRenderer;
 };

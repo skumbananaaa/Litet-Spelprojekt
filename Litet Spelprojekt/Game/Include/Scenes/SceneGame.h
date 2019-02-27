@@ -13,7 +13,6 @@
 #include <IO/ResourceHandler.h>
 #include "../Crew.h"
 #include "../Path.h"
-#include <Graphics/Renderers/DebugRenderer.h>
 #include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/WaterOutdoorMaterial.h>
 #include <Graphics/Materials/WaterIndoorMaterial.h>
@@ -48,7 +47,6 @@ public:
 
 private:
 	UICrewMember* m_pUICrewMember;
-	DebugRenderer* m_pDebugRenderer;
 	World* m_pWorld;
 	UICrew* m_pUICrew;
 	ListScrollable* m_ListScrollableLog;

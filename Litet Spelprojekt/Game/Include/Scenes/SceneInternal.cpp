@@ -20,12 +20,8 @@ SceneInternal::SceneInternal() :
 	SetCamera(pCamera);
 
 	GameObject* pGameObject = new GameObject();
-	pGameObject->SetIsReflectable(true);
-	pGameObject->SetMesh(MESH::QUAD);
+	pGameObject->SetMesh(MESH::WATER_QUAD);
 	pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
-	pGameObject->SetScale(glm::vec3(200.0f));
-	pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, -glm::half_pi<float>()));
-	pGameObject->UpdateTransform();
 	AddGameObject(pGameObject);
 
 	//Reflector for water
@@ -38,6 +34,14 @@ SceneInternal::SceneInternal() :
 	//Skybox
 	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	SetSkyBox(new SkyBox(m_pSkyBoxTex));
+
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+	AddDirectionalLight(pDirectionalLight);
+}
+
+IRenderer* SceneInternal::GetRenderer() noexcept
+{
+	return m_pRenderer;
 }
 
 SceneInternal::~SceneInternal() 
@@ -50,9 +54,11 @@ void SceneInternal::OnUpdate(float dtS) noexcept
 {
 	Scene::OnUpdate(dtS);
 
-	static float dist = 0.0f;
-	dist += 0.02f * dtS;
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetDistortionFactor(dist);
+	static float waveX = 0.0f;
+	static float waveY = 0.0f;
+	waveX += 0.25f * dtS;
+	waveY += 0.5f * dtS;
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetWaveFactor(glm::vec2(waveX, waveY));
 }
 
 void SceneInternal::OnRender(float dtS) noexcept

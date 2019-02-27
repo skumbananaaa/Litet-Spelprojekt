@@ -5,7 +5,6 @@
 SceneGame* SceneGame::s_pInstance = nullptr;
 
 SceneGame::SceneGame() :
-	m_pDebugRenderer(nullptr),
 	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
 	cartesianCamera(false),
@@ -39,9 +38,6 @@ SceneGame::SceneGame() :
 #error "No renderpath defined. Check 'Defines.h'."
 #endif
 
-#if defined(_DEBUG)
-	m_pDebugRenderer = new DebugRenderer();
-#endif
 	//m_pRenderer = new OrthographicRenderer();
 
 	//Audio
@@ -56,29 +52,6 @@ SceneGame::SceneGame() :
 	//Create GameObjects
 	GameObject* pGameObject = nullptr;
 	{
-		//Blood decal
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetDecal(DECAL::BLOOD);
-			pGameObject->SetPosition(glm::vec3(-6.0f, 2.0f, 0.0f));
-			pGameObject->SetScale(glm::vec3(3.0f, 4.0f, 3.0f));
-			pGameObject->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
-
-		//Ground
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::GROUND);
-			pGameObject->SetMesh(MESH::CLIFF_3_LOW);
-			pGameObject->SetPosition(glm::vec3(0.0f, -1.4f, 0.0f));
-			pGameObject->SetScale(glm::vec3(0.4f));
-			pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::half_pi<float>()));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
-
 		//Bottom floor
 		{
 			pGameObject = new GameObject();
@@ -235,8 +208,6 @@ SceneGame::SceneGame() :
 		AddGameObject(pGameObject);
 	}
 
-
-	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetCullMode(CULL_MODE_NONE);
 	////Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
@@ -267,8 +238,7 @@ SceneGame::SceneGame() :
 
 	//Lights
 	{
-		DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
-		AddDirectionalLight(pDirectionalLight);
+		
 
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
 		{
@@ -333,7 +303,7 @@ SceneGame::SceneGame() :
 
 	m_pUICrew = new UICrew(0, window->GetHeight() - 150, 200, 500, members);
 
-	m_pRenderer->SetWorldBuffer(*this, m_pWorld);
+	GetRenderer()->SetWorldBuffer(*this, m_pWorld);
 }
 
 SceneGame::~SceneGame()
@@ -341,7 +311,6 @@ SceneGame::~SceneGame()
 	Game* game = Game::GetGame();
 	game->GetGUIManager().DeleteChildren();
 
-	DeleteSafe(m_pDebugRenderer);
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
 
@@ -362,7 +331,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 	ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
 
-	for (uint32 i = 0; i < NUM_CREW; i++)
+	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
 		Crewmember* member = m_Crew.GetMember(i);
 		member->UpdateDamage(m_pWorld->GetLevel(member->GetPosition().y)->GetLevelData());
@@ -496,7 +465,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 void SceneGame::OnRender(float dtS) noexcept
 {
-	m_pRenderer->DrawScene(*this, m_pWorld, dtS);
+	GetRenderer()->DrawScene(*this, m_pWorld, dtS);
 
 #if defined(DRAW_DEBUG_BOXES)
 	m_pDebugRenderer->DrawScene(*m_Scenes[m_SceneId]);

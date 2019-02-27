@@ -51,7 +51,7 @@ void MESH::RegisterResources()
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
 	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
 	MESH_PARTICLE			= ResourceHandler::RegisterMeshParticle(MeshParticle::CreateCube());
-	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("sjofanDance.fbx");
+	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("CrewMemberRunning5.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");

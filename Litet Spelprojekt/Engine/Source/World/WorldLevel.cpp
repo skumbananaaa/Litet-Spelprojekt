@@ -186,12 +186,13 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 		{
 			bulkhead = (m_ppLevel[j][currentBulkheadX] != m_ppLevel[j][currentBulkheadX + 1]);
 
-			if ((!bulkhead || (m_ppLevelData[j][currentBulkheadX].HasDoor() && m_ppLevelData[j][currentBulkheadX + 1].HasDoor()) || m_ppLevel[j][currentBulkheadX] != m_ppLevel[j - 1][currentBulkheadX] || (m_ppLevel[j][currentBulkheadX + 1] != m_ppLevel[j - 1][currentBulkheadX + 1])) && startBulkhead != glm::vec2(0, 0))
+			if ((!bulkhead || (m_ppLevelData[j][currentBulkheadX].HasDoor() && m_ppLevelData[j][currentBulkheadX + 1].HasDoor())) && startBulkhead != glm::vec2(0, 0))
 			{
 				endBulkhead = glm::vec2(j - 0.5f, currentBulkheadX + 0.5f);
 				m_Bulkheads.push_back(glm::vec4((startBulkhead + endBulkhead) / 2.0f, endBulkhead - startBulkhead));
 				startBulkhead = glm::vec2(0, 0);
 			}
+
 			if (bulkhead && startBulkhead == glm::vec2(0, 0) && (!m_ppLevelData[j][currentBulkheadX].HasDoor() || !m_ppLevelData[j][currentBulkheadX + 1].HasDoor()))
 			{
 				startBulkhead = glm::vec2(j - 0.5f, currentBulkheadX + 0.5f);

@@ -57,7 +57,7 @@ layout(std140, binding = 1) uniform LightBuffer
 
 layout(std140, binding = 3) uniform WorldBuffer
 {
-	ivec4 map[LEVEL_SIZE];
+	ivec4 g_Map[LEVEL_SIZE];
 };
 
 layout(std140, binding = 5) uniform Extension
@@ -122,7 +122,10 @@ void main()
 	uvec4 roomIndex = CalcRoomIndex(mapPos);
 
 	//Do extension
-	worldPos.x += g_Extension * floor(g_Model[3].y / 2.0f);
+	worldPos.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
+
+	//Viewdir
+	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);
 
 	//CLIPPING WALLS
 	vec3 toLookAt = normalize(g_CameraLookAt - (g_InstanceModel[3].xyz + vec3(g_Extension * floor(g_InstanceModel[3].y / 2.0f), 0.0f, 0.0f)));
@@ -136,15 +139,10 @@ void main()
 		cutWalls = dot(worldPos, wallClipPlane);
 	}
 
-	//Do extension
-	worldPos.x += g_Extension * floor(g_Model[3].y / 2.0f);
-
+	//CLIPPING
 	gl_ClipDistance[0] = cutWalls;
-
-
-	//CLIPPING DEPENDING ON LEVEL
-	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]);
-	gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]);
+	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]); //DEPENDING ON LEVEL
+	gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]); //DEPENDING ON LEVEL
 
 	//Calculate light
 	vec3 specular = vec3(0.0f);

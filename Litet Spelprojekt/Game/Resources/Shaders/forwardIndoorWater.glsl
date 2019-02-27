@@ -109,6 +109,9 @@ void main()
 
 	worldPos.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
 
+	//Viewdir
+	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);
+
 	//Calculate light
 	vec3 specular = vec3(0.0f);
 	vec3 lightColor = vec3(0.0f);
@@ -318,7 +321,7 @@ void main()
 //	}
 
 	//Color
-	vec3 color = vec4(0.09f, 0.34f, 0.49f, 1.0f);
+	vec3 color = vec3(0.09f, 0.34f, 0.49f);
 
 	//Final lightcalculation
 	vec3 ambient = color * vec3(0.2f);

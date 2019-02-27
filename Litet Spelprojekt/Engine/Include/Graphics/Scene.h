@@ -16,7 +16,7 @@ public:
 	Scene() noexcept;
 	~Scene();
 
-	void OnUpdate(float dtS) noexcept;
+	virtual void OnUpdate(float dtS) noexcept;
 	
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
 	void SetCamera(Camera* pCamera, uint32 index = 0) noexcept;

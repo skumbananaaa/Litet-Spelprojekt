@@ -6,10 +6,10 @@
 class API IScenario
 {
 protected:
-	IScenario() : m_TimeOfNextOutBreak(0) {};
+	IScenario();
 
 public:
-	virtual ~IScenario() {};
+	virtual ~IScenario();
 	virtual void OnStart(Scene* scene) noexcept = 0;
 	virtual void OnEnd()noexcept = 0;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) = 0;
@@ -18,15 +18,8 @@ public:
 	virtual int32 GetCooldownTime() noexcept = 0;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept = 0;
 
-	float GetTimeOfNextOutBreak() const noexcept
-	{
-		return m_TimeOfNextOutBreak;
-	};
-
-	void SetTimeOfNextOutBreak(float time) noexcept
-	{
-		m_TimeOfNextOutBreak = time;
-	};
+	float GetTimeOfNextOutBreak() const noexcept;
+	void SetTimeOfNextOutBreak(float time) noexcept;
 
 private:
 	float m_TimeOfNextOutBreak;

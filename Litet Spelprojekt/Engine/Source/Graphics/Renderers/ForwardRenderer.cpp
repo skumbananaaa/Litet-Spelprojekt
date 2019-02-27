@@ -72,9 +72,15 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 
 	MaterialBuffer perBatch = {};
 	
+	bool roomIsActive = false;
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
-		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		if (pWorld != nullptr)
+		{
+			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive();
+		}
+
+		if (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()))
 		{
 			const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
 			const Material& material = *animatedGameObjects[i]->GetMaterial();
@@ -242,16 +248,7 @@ void ForwardRenderer::Create() noexcept
 
 	//World
 	{
-		for (uint32 x = 0; x < LEVEL_SIZE_X; x++)
-		{
-			for (uint32 y = 0; y < LEVEL_SIZE_Y; y++)
-			{
-				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
-				{
-					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = 1;
-				}
-			}
-		}
+		memset(&m_LocalWorldBuff, 1, sizeof(m_LocalWorldBuff));
 		m_pWorldBuffer = new UniformBuffer(&m_LocalWorldBuff, 1, sizeof(WorldBuffer));
 	}
 
@@ -289,9 +286,15 @@ void ForwardRenderer::CreateBatches(const Scene& scene, const World* const pWorl
 	//-Nej men f�r duga tills vidare
 	{
 		const std::vector<GameObject*>& drawables = scene.GetDrawables();
+		bool roomIsActive = false;
 		for (size_t i = 0; i < drawables.size(); i++)
 		{
-			if (drawables[i]->IsVisible() && (pWorld->GetRoom(drawables[i]->GetRoom())->IsActive() || !drawables[i]->IsHidden()))
+			if (pWorld)
+			{
+				roomIsActive = pWorld->GetRoom(drawables[i]->GetRoom())->IsActive();
+			}
+
+			if (drawables[i]->IsVisible() && (roomIsActive || !drawables[i]->IsHidden()))
 			{
 				bool batchFound = false;
 				const Material* pMaterial = drawables[i]->GetMaterial();
@@ -504,6 +507,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 
 	MaterialBuffer perBatch = {};
+	PlaneBuffer buff = {};
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
 		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
@@ -514,7 +518,6 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 			continue;
 		}
 
-		PlaneBuffer buff = {};
 		buff.ClipPlane = material.GetLevelClipPlane();
 		m_pPlaneBuffer->UpdateData(&buff);
 
@@ -538,12 +541,15 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pBoneBuffer, ANIMATION_BUFFER_BINDING_SLOT);
 
+	bool roomIsActive = false;
 	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
-
-	PlaneBuffer buff = {};
-
 	for (size_t i = 0; i < animatedGameObjects.size(); i++)
 	{
+		if (pWorld)
+		{
+			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive();
+		}
+
 		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
 		const Material& material = *animatedGameObjects[i]->GetMaterial();
 
@@ -554,7 +560,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 
 		buff.ClipPlane = material.GetLevelClipPlane();
 		m_pPlaneBuffer->UpdateData(&buff);
-		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		if (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()))
 		{
 			m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
 		}
@@ -625,9 +631,15 @@ void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* 
 	context.SetUniformBuffer(m_pBoneBuffer, ANIMATION_BUFFER_BINDING_SLOT);
 
 	MaterialBuffer perBatch = {};
+	bool roomIsActive = false;
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
-		if (animatedGameObjects[i]->IsVisible() && (pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive() || !animatedGameObjects[i]->IsHidden()))
+		if (pWorld)
+		{
+			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive();
+		}
+
+		if (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()))
 		{
 			const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
 			const Material& material = *animatedGameObjects[i]->GetMaterial();

@@ -327,6 +327,11 @@ void SceneGame::OnKeyDown(KEY keycode)
 				ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
 				break;
 			}
+			case KEY_K:
+			{
+				RequestDoorClosed();
+				break;
+			}
 		}
 	}
 }
@@ -602,6 +607,49 @@ void SceneGame::PickPosition()
 			}
 		}
 	}
+}
+
+void SceneGame::RequestDoorClosed()
+{
+
+	m_Crew.RequestCloseDoor();
+	//std::vector<uint32> crewRoomIndexArray;
+	//std::vector<uint32> doorRoomIndexArray;
+	//std::vector<glm::ivec2> roomInCommon;
+	//for (int i = 0; i < m_Crew.GetCount(); i++)
+	//{
+	//	glm::ivec3 crewTile = m_Crew.GetMember(i)->GetTile();
+	//	uint32 crewRoomIndex = m_pWorld->GetLevel(crewTile.y * 2)->GetLevel()[crewTile.x][crewTile.z];
+	//	crewRoomIndexArray.push_back(crewRoomIndex);
+	//	for (int j = 0; j < m_pWorld->GetNumDoors(); j++)
+	//	{
+	//		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
+	//		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+	//		//doorRoomIndexArray.push_back(doorRoomIndex);
+
+	//		if (doorRoomIndex == crewRoomIndex)
+	//		{
+	//			roomInCommon.push_back(glm::ivec2(crewRoomIndex, doorRoomIndex));
+	//			m_Crew.GetMember(i)->FindPath(doorTile);
+	//		}
+	//	}
+	//}
+
+	//for (int i = 0; i < m_pWorld->GetNumDoors(); i++)
+	//{
+	//	glm::ivec3 doorTile = m_pWorld->GetDoor(i);
+	//	uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+	//	doorRoomIndexArray.push_back(doorRoomIndex);
+
+	//}
+
+	//
+
+	//if (doorRoomIndex == crewRoomIndex)
+	//{
+	//	roomInCommon.push_back(glm::ivec2(crewRoomIndex, doorRoomIndex));
+	//	m_Crew.GetMember(i)->FindPath(doorTile);
+	//}
 }
 
 void SceneGame::PickCrew(bool hover)

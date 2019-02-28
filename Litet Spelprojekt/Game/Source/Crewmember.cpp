@@ -277,7 +277,7 @@ const bool Crewmember::IsMoving() const
 	return (bool)m_NrOfPathTiles || m_pPathFinder->IsGoalSet();
 }
 
-void Crewmember::SetPosition(const glm::vec3 & position) noexcept
+void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
 	if (m_NrOfPathTiles <= 0)
@@ -293,7 +293,7 @@ const glm::vec3& Crewmember::GetDirection() const noexcept
 	return m_Direction;
 }
 
-void Crewmember::SetDirection(const glm::vec3 & direction) noexcept
+void Crewmember::SetDirection(const glm::vec3& direction) noexcept
 {
 	m_Direction = glm::normalize(direction);
 	float angle = std::atan2f(1.0f * m_Direction.x, -1.0f * m_Direction.z);
@@ -316,6 +316,35 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
 	m_GoalTile = glm::ivec3(goalPos.x, goalPos.y / 2, goalPos.z);
 	ThreadHandler::RequestExecution(this);
+}
+
+void Crewmember::LookForDoor()
+{
+	std::vector<uint32> crewRoomIndexArray;
+	std::vector<uint32> doorRoomIndexArray;
+	std::vector<glm::ivec2> roomInCommon;
+	uint32 crewRoomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
+	crewRoomIndexArray.push_back(crewRoomIndex);
+
+	for (int i = 0; i < m_pWorld->GetNumDoors(); i++)
+	{
+		glm::ivec3 doorTile = m_pWorld->GetDoor(i);
+		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+		//doorRoomIndexArray.push_back(doorRoomIndex);
+
+		if (doorRoomIndex == crewRoomIndex)
+		{
+			//här vill jag pusha till orderPool.
+			roomInCommon.push_back(glm::ivec2(crewRoomIndex, doorRoomIndex));
+
+		}
+		
+	}
+}
+
+void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
+{
+	FindPath(doorTile);
 }
 
 void Crewmember::FollowPath(float dtS)

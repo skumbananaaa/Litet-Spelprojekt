@@ -9,6 +9,7 @@
 
 #define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
 #define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
+#define MAX_NR_OF_ORDERS 10
 
 class Crewmember : public GameObject, public IRunnable
 {
@@ -23,6 +24,10 @@ public:
 	void Move(const glm::vec3 & dir);
 	///<summary>Finds a path to the goal position.</summary>
 	void FindPath(const glm::ivec3& goalPos);
+
+	void LookForDoor();
+	void CloseDoorOrder(glm::ivec3 doorTile);
+
 	///<summary>Moves along the path towards the goal position.</summary>
 	void FollowPath(float dtS);
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
@@ -90,6 +95,8 @@ private:
 	int m_NrOfPathTiles;
 	bool m_IsHovered;
 	int32 m_ShipNumber;
+
+	void (Crewmember::* m_pOrderPool[MAX_NR_OF_ORDERS])(glm::ivec3) = { CloseDoorOrder };
 
 	int8 m_SkillFire;
 	int8 m_SkillMedic;

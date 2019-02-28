@@ -22,6 +22,14 @@ void Crew::Expand()
 	}
 }
 
+void Crew::RequestCloseDoor()
+{
+	for (int i = 0; i < m_NrOf; i++)
+	{
+		m_ppMembers[i]->LookForDoor();
+	}
+}
+
 Crew::Crew(int cap)
 {
 	m_Cap = cap;

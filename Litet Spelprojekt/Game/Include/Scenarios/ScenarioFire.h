@@ -32,6 +32,8 @@ private:
 	float CalculateDoorSpreadFactor(const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, bool spreadingThroughBulkhead, float rateOfNormalDoorSpread, float rateOfBulkheadDoorSpreadFactor, float rateOfBulkheadSpreadFactor) const noexcept;
 	float CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept;
 
+	void EvaporateWater(TileData * const * ppLevelData, const glm::ivec2& tile, float dtS) const noexcept;
+
 	// x, y, z = x, level, z
 	std::vector<glm::ivec3> m_OnFire;
 	std::vector<glm::ivec3> m_Smoke;
@@ -63,4 +65,12 @@ inline float ScenarioFire::CalculateDoorSpreadFactor(
 inline float ScenarioFire::CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept
 {
 	return spreadingThroughBulkhead ? rateOfBulkheadSpreadFactor : 1.0f;
+}
+
+inline void ScenarioFire::EvaporateWater(TileData * const * ppLevelData, const glm::ivec2& tile, float dtS) const noexcept
+{
+	if (ppLevelData[tile.x][tile.y].AlreadyFlooded)
+	{
+		ppLevelData[tile.x][tile.y].WaterLevelChange -= 10.0f * WATER_EVAPORATION_RATE * dtS;
+	}
 }

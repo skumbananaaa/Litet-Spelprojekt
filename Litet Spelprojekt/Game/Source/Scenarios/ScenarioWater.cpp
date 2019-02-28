@@ -71,7 +71,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
-		static glm::uvec2 spawnTile(7, 12);
+		static glm::uvec2 spawnTile(10, 18);
 
 		//TEMP
 		if (levelIndex == 4 && Input::IsKeyDown(KEY_I))

@@ -26,7 +26,13 @@ public:
 	Framebuffer& operator=(const Framebuffer& other) = delete;
 
 	Framebuffer(const FramebufferDesc& desc);
-	Framebuffer(Texture** ppColor, uint32 numTextures, Texture* pDepthStencil);
+	///<summary>Creates a framebuffer from already existing texures.
+	///ppColor is he color attachments.
+	///pColorFaces is the face index of the colorattchments (Only used with texturecubes).
+	///numTextures is the number of elements in the arrays.
+	///pDepthStencil is the depth attachment
+	///depthFace is the face index of the depthstencil(Only used with texturecubes).</summary>
+	Framebuffer(Texture** ppColor, uint32* pColorFaces, uint32 numTextures, Texture* pDepthStencil, uint32 depthFace);
 	~Framebuffer();
 
 	Texture* GetColorAttachment(uint32 index) const;
@@ -37,13 +43,15 @@ public:
 
 private:
 	void Create(const FramebufferDesc& desc);
-	void Create(Texture** ppColor, uint32 numTextures, Texture* pDepthStencil);
+	void Create(Texture** ppColor, uint32* pColorFaces, uint32 numTextures, Texture* pDepthStencil, uint32 depthFace);
 	void CreateFramebuffer();
 
 private:
 	Texture* m_ppColor[8];
 	Texture* m_pDepthStencil;
 	uint32 m_NumColorAttachments;
+	uint32 m_ColorFaces[8];
+	uint32 m_DepthFace;
 	uint32 m_Framebuffer;
 	uint32 m_Width;
 	uint32 m_Height;

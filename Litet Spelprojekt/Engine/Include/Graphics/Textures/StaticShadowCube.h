@@ -2,6 +2,9 @@
 #include "TextureCube.h"
 #include "Framebuffer.h"
 
+class PointLight;
+class Scene;
+
 class API StaticShadowCube
 {
 public:
@@ -10,11 +13,11 @@ public:
 	StaticShadowCube& operator=(StaticShadowCube&& other) = delete;
 	StaticShadowCube& operator=(const StaticShadowCube& other) = delete;
 
-	StaticShadowCube();
+	StaticShadowCube(const PointLight& light, const Scene& scene);
 	~StaticShadowCube();
 
 private:
-	void Create();
+	void Create(const PointLight& light, const Scene& scene);
 
 private:
 	TextureCube* m_pCube;

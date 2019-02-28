@@ -91,19 +91,19 @@ void TextureCube::CreateFromPanorama(const Texture2D* pPanorama)
 	m_Desc.Height = m_Desc.Width;
 
 	uint32 captureFBO, captureRBO;
-	glGenFramebuffers(1, &captureFBO);
-	glGenRenderbuffers(1, &captureRBO);
+	GL_CALL(glGenFramebuffers(1, &captureFBO));
+	GL_CALL(glGenRenderbuffers(1, &captureRBO));
 
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_Desc.Width, m_Desc.Format);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+	GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, captureFBO));
+	GL_CALL(glBindRenderbuffer(GL_RENDERBUFFER, captureRBO));
+	GL_CALL(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_Desc.Width, m_Desc.Format));
+	GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO));
 
 	GL_CALL(glGenTextures(1, &m_Texture));
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_Texture);
+	GL_CALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_Texture));
 	for (uint32 i = 0; i < 6; i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_Desc.Width, m_Desc.Format, 0, GL_RGB, GL_FLOAT, nullptr);
+		GL_CALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_Desc.Width, m_Desc.Height, 0, GL_RGB, GL_FLOAT, nullptr));
 	}
 
 	TextureParams params;
@@ -145,18 +145,18 @@ void TextureCube::CreateFromPanorama(const Texture2D* pPanorama)
 		buff.view = captureViews[i];
 		pBuff->UpdateData(&buff);
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_Texture, 0);
+		GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_Texture, 0));
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 		context.DrawIndexedMesh(*ResourceHandler::GetMesh(MESH::CUBE));
 	}
 
 	delete pBuff;
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDeleteFramebuffers(1, &captureFBO);
-	glDeleteRenderbuffers(1, &captureRBO);
+	GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	GL_CALL(glDeleteFramebuffers(1, &captureFBO));
+	GL_CALL(glDeleteRenderbuffers(1, &captureRBO));
 }
 
 TextureCube* TextureCube::CreateTextureCubeFromMemory(const void* ppInitalData[6], const TextureDesc& desc, const TextureParams& params)

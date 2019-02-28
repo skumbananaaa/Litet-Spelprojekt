@@ -1,7 +1,7 @@
 #include "..\..\Include\Scenes\SceneGame.h"
 #include "../../Include/Game.h"
 #include <World/LightManager.h>
-#include <Graphics/Textures/ShadowMapsCube.h>
+#include <Graphics/Textures/StaticShadowCube.h>
 
 SceneGame* SceneGame::s_pInstance = nullptr;
 
@@ -30,10 +30,6 @@ SceneGame::SceneGame() :
 
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_PanelLog);
-
-
-	StaticShadowCube* pShadow = new StaticShadowCube();
-	DeleteSafe(pShadow);
 
 	//Audio
 	{
@@ -297,6 +293,9 @@ SceneGame::SceneGame() :
 	m_pUICrew = new UICrew(0, window->GetHeight() - 150, 200, 500, members);
 
 	GetRenderer()->SetWorldBuffer(*this, m_pWorld);
+
+	StaticShadowCube* pShadow = new StaticShadowCube(*(GetPointLights()[0]), *this);
+	DeleteSafe(pShadow);
 }
 
 SceneGame::~SceneGame()

@@ -16,11 +16,6 @@ PanelScrollable::PanelScrollable(float x, float y, float width, float height, fl
 
 PanelScrollable::~PanelScrollable()
 {
-	if (HasParent())
-	{
-		GetParent()->Remove(m_pSliderVertical);
-		GetParent()->Remove(m_pSliderHorizontal);
-	}
 	delete m_pFrameBufferClientArea;
 }
 
@@ -137,11 +132,11 @@ float PanelScrollable::GetYInWorld(const GUIObject* child) const noexcept
 
 void PanelScrollable::OnAdded(GUIObject* parent)
 {
-	m_pSliderVertical->AddSliderListener(this);
-	m_pSliderHorizontal->AddSliderListener(this);
-
 	parent->Add(m_pSliderVertical);
 	parent->Add(m_pSliderHorizontal);
+
+	m_pSliderVertical->AddSliderListener(this);
+	m_pSliderHorizontal->AddSliderListener(this);
 
 	AddRealTimeRenderer();
 	AddMouseListener(this);
@@ -151,9 +146,6 @@ void PanelScrollable::OnRemoved(GUIObject* parent)
 {
 	m_pSliderVertical->RemoveSliderListener(this);
 	m_pSliderHorizontal->RemoveSliderListener(this);
-
-	parent->Remove(m_pSliderVertical);
-	parent->Remove(m_pSliderHorizontal);
 
 	RemoveRealTimeRenderer();
 	RemoveMouseListener(this);

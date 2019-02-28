@@ -88,14 +88,13 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 		members.push_back(m_Crew.GetMember(i));
 	}
 	m_pUICrew = new UICrew(0, window->GetHeight() - 150, 200, 500, members);
+
+	SetPaused(false);
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 {
 	SceneInternal::OnDeactivated(newScene);
-
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
 
 	DeleteSafe(m_pUICrew);
 }

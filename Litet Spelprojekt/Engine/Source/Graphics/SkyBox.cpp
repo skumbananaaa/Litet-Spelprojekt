@@ -1,7 +1,7 @@
 #include <EnginePch.h>
 #include <Graphics/SkyBox.h>
 
-SkyBox::SkyBox(TextureCube* texture)
+SkyBox::SkyBox(const TextureCube* texture)
 {
 	m_pMesh = ResourceHandler::GetMesh(MESH::CUBE);
 	m_pTextureCube = texture;

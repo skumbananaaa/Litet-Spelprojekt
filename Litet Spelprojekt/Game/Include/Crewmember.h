@@ -15,7 +15,7 @@ class Crewmember : public GameObject, public IRunnable
 	friend class Crew;
 
 public:
-	Crewmember(const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
+	Crewmember(const World* world, const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
 	Crewmember(Crewmember& other);
 	~Crewmember();
 	
@@ -28,7 +28,7 @@ public:
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
 	void SetActionCapacity(float actionCap);
 	///<summary>Sets a grid for the path finding algorithm.</summary>
-	void SetPath(const World* world);
+	void SetPath();
 	///<summary>Returns a reference to the PointLight object.</summary>
 	PointLight* GetLight() const;
 	///<summary>Returns a reference to the SpotLight object.</summary>

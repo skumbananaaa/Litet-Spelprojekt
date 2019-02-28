@@ -1,5 +1,6 @@
 #pragma once
 #include <EnginePch.h>
+#include <Graphics/IGLObject.h>
 
 enum TEX_PARAM : uint32
 {
@@ -48,7 +49,7 @@ struct TextureDesc
 	bool GenerateMips = true;
 };
 
-class API Texture
+class API Texture : public IGLObject
 {
 	friend class GLContext;
 	friend class Framebuffer;
@@ -62,6 +63,7 @@ public:
 	Texture() noexcept;
 	virtual ~Texture();
 
+	virtual void SetDebugName(const char* pName) override;
 	void SetParameters(const TextureParams& params) noexcept;
 
 	const TextureParams& GetTextureParams() const noexcept;

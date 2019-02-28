@@ -51,6 +51,7 @@
     <ClInclude Include="Include\Graphics\GUI\Slider.h" />
     <ClInclude Include="Include\Graphics\GUI\TextField.h" />
     <ClInclude Include="Include\Graphics\GUI\TextView.h" />
+    <ClInclude Include="Include\Graphics\IGLObject.h" />
     <ClInclude Include="Include\Graphics\Lights\DirectionalLight.h" />
     <ClInclude Include="Include\Graphics\Lights\PointLight.h" />
     <ClInclude Include="Include\Graphics\Lights\SpotLight.h" />

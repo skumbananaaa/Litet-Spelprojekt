@@ -20,6 +20,7 @@ uint32 SHADER::PARTICLES = 0;
 uint32 SHADER::ANIMATION = 0;
 uint32 SHADER::ANIMATION_DEPTH_PRE_PASS = 0;
 uint32 SHADER::MESH_PARTICLES = 0;
+uint32 SHADER::SHADOW = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -34,7 +35,8 @@ void SHADER::RegisterResourcesPreLoading()
 	ANIMATION_DEPTH_PRE_PASS	= ResourceHandler::RegisterShader("animatedDepthPrePass.glsl", "animatedDepthPrePass.glsl");
 	PARTICLES					= ResourceHandler::RegisterShader("forwardParticles.glsl", "forwardParticles.glsl");
 	MESH_PARTICLES				= ResourceHandler::RegisterShader("forwardMeshParticles.glsl", "forwardMeshParticles.glsl");
-	
+	SHADOW						= ResourceHandler::RegisterShader("shadow.glsl", "shadow.glsl");
+
 	{
 		//Strings for defines
 		std::string numDirLights = (TO_STRING(NUM_DIRECTIONAL_LIGHTS)) + std::string(" ") + std::to_string(NUM_DIRECTIONAL_LIGHTS);

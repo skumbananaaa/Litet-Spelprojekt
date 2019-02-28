@@ -167,10 +167,6 @@ inline void Application::InternalOnKeyUp(KEY keycode)
 
 inline void Application::InternalOnKeyDown(KEY keycode)
 {
-	if (keycode == KEY_ESCAPE)
-	{
-		m_ShouldRun = false;
-	}
 	Input::KeyState(keycode, true);
 
 	if (m_ResourceMode == RESOURCE_MODE::DONE)

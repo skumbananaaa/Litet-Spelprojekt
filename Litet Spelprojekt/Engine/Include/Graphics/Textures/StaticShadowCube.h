@@ -13,12 +13,19 @@ public:
 	StaticShadowCube& operator=(StaticShadowCube&& other) = delete;
 	StaticShadowCube& operator=(const StaticShadowCube& other) = delete;
 
-	StaticShadowCube(const PointLight& light, const Scene& scene);
+	StaticShadowCube(const glm::vec3& position, const Scene& scene);
 	~StaticShadowCube();
 
+	const TextureCube* GetCubeTexture() const;
+
 private:
-	void Create(const PointLight& light, const Scene& scene);
+	void Create(const glm::vec3& position, const Scene& scene);
 
 private:
 	TextureCube* m_pCube;
 };
+
+inline const TextureCube* StaticShadowCube::GetCubeTexture() const
+{
+	return m_pCube;
+}

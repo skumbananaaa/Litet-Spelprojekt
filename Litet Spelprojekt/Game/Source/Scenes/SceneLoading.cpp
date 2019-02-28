@@ -2,8 +2,22 @@
 #include "../../Include/Game.h"
 #include "../../Include/Scenes/SceneMenu.h"
 
-SceneLoading::SceneLoading()
+SceneLoading::SceneLoading() :
+	m_pTextViewFile(nullptr),
+	m_pLoadingBar(nullptr)
 {
+	
+}
+
+SceneLoading::~SceneLoading()
+{
+	
+}
+
+void SceneLoading::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+{
+	SceneInternal::OnActivated(lastScene, m_pRenderer);
+
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
@@ -12,12 +26,6 @@ SceneLoading::SceneLoading()
 
 	game->GetGUIManager().Add(m_pTextViewFile);
 	game->GetGUIManager().Add(m_pLoadingBar);
-}
-
-SceneLoading::~SceneLoading()
-{
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
 }
 
 void SceneLoading::OnUpdate(float dtS) noexcept
@@ -32,11 +40,11 @@ void SceneLoading::OnRender(float dtS) noexcept
 
 void SceneLoading::OnResourceLoading(const std::string& file, float percentage)
 {
-	m_pTextViewFile->SetText("Loading: " + file);
+	m_pTextViewFile->SetText("Laddar: " + file);
 	m_pLoadingBar->SetPercentage(percentage);
 }
 
 void SceneLoading::OnResourcesLoaded()
 {
-	Game::GetGame()->SetScene(new SceneMenu());
+	Game::GetGame()->SetScene(Game::GetGame()->m_pSceneMenu);
 }

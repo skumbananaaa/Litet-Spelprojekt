@@ -146,7 +146,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Include\Scenes\SceneInternal.cpp" />
+    <ClCompile Include="Source\GUI\UILog.cpp" />
+    <ClCompile Include="Source\GUI\UIPause.cpp" />
+    <ClCompile Include="Source\Scenes\SceneInternal.cpp" />
     <ClCompile Include="Source\Crew.cpp" />
     <ClCompile Include="Source\Crewmember.cpp" />
     <ClCompile Include="Source\Game.cpp" />
@@ -170,7 +172,8 @@
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />
     <ClInclude Include="Include\GUI\UICrewMember.h" />
-    <ClInclude Include="Include\GUI\UIScenario.h" />
+    <ClInclude Include="Include\GUI\UILog.h" />
+    <ClInclude Include="Include\GUI\UIPause.h" />
     <ClInclude Include="Include\Path.h" />
     <ClInclude Include="Include\Scenarios\ScenarioFire.h" />
     <ClInclude Include="Include\Scenarios\ScenarioManager.h" />
@@ -238,6 +241,7 @@
     <Text Include="Resources\Shaders\cbrFilterFrag.glsl" />
     <Text Include="Resources\Shaders\deferredDecals.glsl" />
     <Text Include="Resources\Shaders\forwardParticles.glsl" />
+    <Text Include="Resources\Shaders\shadow.glsl" />
     <Text Include="Resources\Shaders\skybox.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

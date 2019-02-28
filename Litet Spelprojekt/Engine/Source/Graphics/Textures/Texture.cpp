@@ -18,6 +18,16 @@ Texture::~Texture()
 	}
 }
 
+void Texture::SetDebugName(const char* pName)
+{
+	if (m_Texture == 0)
+	{
+		return;
+	}
+
+	GL_CALL(glObjectLabel(GL_TEXTURE, m_Texture, -1, pName));
+}
+
 void Texture::SetParameters(const TextureParams& params) noexcept
 {
 	if (m_Type == GL_TEXTURE_2D)

@@ -245,11 +245,12 @@ void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 
 void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 {
+	float smokeDmgSpeed = 0.1f;
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
 		bool isSmoked = HasInjurySmoke();
-		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit)*dt;
+		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt;
 
 		if (isSmoked != HasInjurySmoke())
 		{
@@ -260,11 +261,12 @@ void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 
 void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
+	float burnSpeed = 0.1f;
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.Temp >= tileData.BurnsAt)
 	{
 		bool isBurned = HasInjuryBurned();
-		m_HasInjuryBurned += (tileData.Temp / tileData.BurnsAt)*dt;
+		m_HasInjuryBurned += (tileData.Temp / tileData.BurnsAt) * burnSpeed * dt;
 		if (isBurned != HasInjuryBurned())
 		{
 			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));
@@ -274,13 +276,16 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 
 void Crewmember::UpdateHealth(float dt)
 {
+	//Tweak here!
+	float smokeDmgSpeed = 1.0f;
+	float burnDmgSpeed = 1.0f;
 	if (HasInjurySmoke())
 	{
-		m_Health -= (std::log10(m_HasInjurySmoke)) * dt;
+		m_Health -= (std::log10(m_HasInjurySmoke)) * smokeDmgSpeed * dt;
 	}
 	if (HasInjuryBurned())
 	{
-		m_Health -= (std::log10(m_HasInjuryBurned)) * dt;
+		m_Health -= (std::log10(m_HasInjuryBurned)) * burnDmgSpeed * dt;
 	}
 	if (HasInjuryBoneBroken())
 	{

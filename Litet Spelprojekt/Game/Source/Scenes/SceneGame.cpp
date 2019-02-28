@@ -88,14 +88,24 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 		members.push_back(m_Crew.GetMember(i));
 	}
 	m_pUICrew = new UICrew(0, window->GetHeight() - 150, 200, 500, members);
+
+	SetPaused(false);
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 {
 	SceneInternal::OnDeactivated(newScene);
 
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+	const std::vector<PlanarReflector*>& reflectors = GetPlanarReflectors();
+	for (size_t i = 0; i < reflectors.size(); i++)
+	{
+		const Framebuffer* pFramebuffer = reflectors[i]->GetFramebuffer();
+
+		context.SetViewport(pFramebuffer->GetWidth(), pFramebuffer->GetHeight(), 0, 0);
+		context.SetFramebuffer(pFramebuffer);
+		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
+	}
 
 	DeleteSafe(m_pUICrew);
 }
@@ -424,26 +434,28 @@ void SceneGame::CreateWorld() noexcept
 			glm::vec3 delta = door1 - door2;
 			if (glm::length(delta) <= 1.0)
 			{
-				glm::vec3 position = (door1 + door2) / 2.0F;
+				if (level->GetLevel()[(uint32)door1.x][(uint32)door1.z] != level->GetLevel()[(uint32)door2.x][(uint32)door2.z])
+				{
+					glm::vec3 position = (door1 + door2) / 2.0F;
 
-				pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				AddGameObject(pGameObject);
+					pGameObject = new GameObject();
+					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMesh(MESH::DOOR_FRAME);
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					AddGameObject(pGameObject);
 
-				pGameObject = new GameObjectDoor();
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				AddGameObject(pGameObject);
+					pGameObject = new GameObjectDoor();
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					//reinterpret_cast<GameObjectDoor*>(pGameObject)->SetOpen(false);
+					AddGameObject(pGameObject);
 
-				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-
-				break;
+					level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+					level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				}
 			}
 		}
 	}
@@ -488,6 +500,24 @@ void SceneGame::CreateWorld() noexcept
 		AddGameObject(pGameObject);
 	}
 
+	//BOB
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
+		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
+		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->UpdateTransform();
+		AddGameObject(pGameObject);
+	}
+
+	////Enable clipplane for wallmaterial
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
+	ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)->SetCullMode(CULL_MODE_NONE);
+
+	//SetClipPlanes(0);
+
 	// Generate rooms
 	m_pWorld->GenerateRooms();
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2)
@@ -502,6 +532,21 @@ void SceneGame::CreateWorld() noexcept
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
+			pGameObject->UpdateTransform();
+
+			AddGameObject(pGameObject);
+		}
+
+		glm::vec4 bulkhead;
+
+		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfBulkheads(); i++)
+		{
+			bulkhead = m_pWorld->GetLevel(level)->GetBulkhead(i);
+			pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
+			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
+			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
 			pGameObject->UpdateTransform();
 
 			AddGameObject(pGameObject);

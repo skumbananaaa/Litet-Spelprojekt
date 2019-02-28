@@ -1,5 +1,6 @@
 #pragma once
 #include <World/Scenarios/IScenario.h>
+#include <World/GameObjectDoor.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
@@ -27,7 +28,8 @@ private:
 	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept;
 
 	//Water Scenario Helper Functions
-	float CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept;
+	float CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept;
+	float CalculateDoorFloodFactor(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 tilesBetweenBulkheads, uint32 canSpreadTo) const noexcept;
 	float CalculateFloodFactor(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept;
 
 	void UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept;
@@ -55,7 +57,7 @@ inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const g
 	return 0;
 }
 
-inline float ScenarioWater::CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept
+inline float ScenarioWater::CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept
 {
 	if (canSpreadTo == 0)
 	{
@@ -70,7 +72,40 @@ inline float ScenarioWater::CanFloodTo(const uint32 * const * ppLevel, const Til
 	return 0.0f;
 }
 
-inline float ScenarioWater::CalculateFloodFactor(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept
+inline float ScenarioWater::CalculateDoorFloodFactor(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 tilesBetweenBulkheads, uint32 canSpreadTo) const noexcept
+{
+	if (canSpreadTo == 0)
+	{
+		return 0.0f;
+	}
+
+	if (!ppLevelData[tileTo.x][tileTo.y].HasDoor())
+	{
+		return 1.0f;
+	}
+
+	//Water is trying to flood to a different room
+	if (ppLevel[tileFrom.x][tileFrom.y] != ppLevel[tileTo.x][tileTo.y])
+	{
+		bool doorIsOpen = !reinterpret_cast<GameObjectDoor*>(ppLevelData[tileTo.x][tileTo.y].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR])->IsClosed();
+
+		//If the smallest of the tiles x coordinates is a multiple of "tilesBetweenBulkheads", the water is trying to flood over a bulkhead.
+		//Since CanSpreadTo returns 0 if there isnt a door when the water is trying to flood to a different room we know its trying to flood over a door.
+		if (glm::min(tileFrom.y, tileTo.y) % tilesBetweenBulkheads == 0)
+		{
+			return doorIsOpen ? 1.0f : 0.0f;
+		}
+
+		//If the water is trying to flood over a door that is not in a bulkhead, reduce the flood factor to half.
+		return doorIsOpen ? 1.0f : 0.5f;
+	}
+
+	//Water is not trying to flood to a different room but tileTo has a door.
+	return 1.0f;
+}
+
+inline float ScenarioWater::CalculateFloodFactor(
+	float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept
 {
 	bool difPosXNotZero = waterLevelDifPosX > 0.0f;
 	bool difNegXNotZero = waterLevelDifNegX > 0.0f;

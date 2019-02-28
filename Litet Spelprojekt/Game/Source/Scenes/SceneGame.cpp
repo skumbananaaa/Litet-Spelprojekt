@@ -97,6 +97,17 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	Game* game = Game::GetGame();
 	game->GetGUIManager().DeleteChildren();
 
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+	const std::vector<PlanarReflector*>& reflectors = GetPlanarReflectors();
+	for (size_t i = 0; i < reflectors.size(); i++)
+	{
+		const Framebuffer* pFramebuffer = reflectors[i]->GetFramebuffer();
+
+		context.SetViewport(pFramebuffer->GetWidth(), pFramebuffer->GetHeight(), 0, 0);
+		context.SetFramebuffer(pFramebuffer);
+		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
+	}
+
 	DeleteSafe(m_pUICrew);
 }
 
@@ -428,24 +439,23 @@ void SceneGame::CreateWorld() noexcept
 				{
 					glm::vec3 position = (door1 + door2) / 2.0F;
 
-				pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				AddGameObject(pGameObject);
-
-					pGameObject = new GameObjectDoor();
+					pGameObject = new GameObject();
+					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMesh(MESH::DOOR_FRAME);
 					pGameObject->SetPosition(position);
 					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 					pGameObject->UpdateTransform();
 					AddGameObject(pGameObject);
 
+					pGameObject = new GameObjectDoor();
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					reinterpret_cast<GameObjectDoor*>(pGameObject)->SetOpen(false);
+					AddGameObject(pGameObject);
+
 					level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 					level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-
-					break;
 				}
 			}
 		}

@@ -2,7 +2,7 @@
 #define CREW_H
 #include "Crewmember.h"
 
-#define NR_OF_ORDERS 1
+
 
 class Crew
 {

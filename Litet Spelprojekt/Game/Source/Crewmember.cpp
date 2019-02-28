@@ -74,11 +74,12 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	GameObject::Update(camera, deltaTime);
 	UpdateTransform();
 
-	CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
-	CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
-
-	UpdateHealth(deltaTime);
-
+	if (isAlive())
+	{
+		CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData(), deltaTime);
+		CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData(), deltaTime);
+		UpdateHealth(deltaTime);
+	}
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
@@ -242,23 +243,32 @@ void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 	m_ShipNumber = shipnumber;
 }
 
-void Crewmember::CheckSmokeDamage(const TileData*const* data) noexcept
+void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 {
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
-	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0 && m_HasInjurySmoke <= 1.0f)
+	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
-		m_HasInjurySmoke += tileData.SmokeAmount / tileData.SmokeLimit;
-		Logger::LogEvent("Crewmember " + GetName() + "got smoked" + std::to_string(m_HasInjurySmoke));
+		bool isSmoked = HasInjurySmoke();
+		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit)*dt;
+
+		if (isSmoked != HasInjurySmoke())
+		{
+			Logger::LogEvent(GetName() + " got smoked!" + std::to_string(m_HasInjurySmoke));
+		}
 	}
 }
 
-void Crewmember::CheckFireDamage(const TileData * const * data) noexcept
+void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
-	if (tileData.Temp >= 100 && m_HasInjuryBurned <= 1.0f)
+	if (tileData.Temp >= tileData.BurnsAt)
 	{
-		m_HasInjuryBurned += tileData.Temp / 100;
-		Logger::LogEvent("Crewmember " + GetName() + "got burned" + std::to_string(m_HasInjurySmoke));
+		bool isBurned = HasInjuryBurned();
+		m_HasInjuryBurned += (tileData.Temp / tileData.BurnsAt)*dt;
+		if (isBurned != HasInjuryBurned())
+		{
+			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));
+		}
 	}
 }
 
@@ -266,19 +276,19 @@ void Crewmember::UpdateHealth(float dt)
 {
 	if (HasInjurySmoke())
 	{
-		m_Health -= m_HasInjurySmoke * dt;
+		m_Health -= (std::log10(m_HasInjurySmoke)) * dt;
 	}
 	if (HasInjuryBurned())
 	{
-		m_Health -= m_HasInjuryBurned * dt;
+		m_Health -= (std::log10(m_HasInjuryBurned)) * dt;
 	}
 	if (HasInjuryBoneBroken())
 	{
-		m_Health -= m_HasInjuryBoneBroken * dt;
+		//m_Health -= m_HasInjuryBoneBroken * dt;
 	}
 	if (m_Health <= 0.0f)
 	{
-		Logger::LogEvent("Crewmember " + GetName() + " has died!", true);
+		Logger::LogEvent(GetName() + " has fainted!", false);
 	}
 }
 

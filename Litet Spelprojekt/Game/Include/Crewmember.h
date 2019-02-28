@@ -72,9 +72,9 @@ public:
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
 	///<summary>Updates the damage on the crewmember based on what level of smoke is on this members tile..</summary>
-	void CheckSmokeDamage(const TileData*const* data) noexcept;
+	void CheckSmokeDamage(const TileData*const* data, float dt) noexcept;
 	///<summary>Updates the damage on the crewmember based on what level of fire is on this members tile..</summary>
-	void CheckFireDamage(const TileData*const* data) noexcept;
+	void CheckFireDamage(const TileData*const* data, float dt) noexcept;
 	void UpdateHealth(float dt);
 	float m_ActionCap;
 	float m_DeltaTime;

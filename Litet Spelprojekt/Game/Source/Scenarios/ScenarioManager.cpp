@@ -54,7 +54,7 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene, const std::v
 		if (scenario->Update(dtS, world, scene, activeRooms))
 		{
 			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Ended!");
-			scenario->OnEnd();
+			scenario->OnEnd(scene);
 			SetAsNonActive(s_ActiveScenarios[i]);
 			s_ActiveScenarios.erase(s_ActiveScenarios.begin() + i);
 		}

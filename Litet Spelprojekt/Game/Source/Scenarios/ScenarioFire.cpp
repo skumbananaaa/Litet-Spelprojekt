@@ -83,7 +83,7 @@ void ScenarioFire::OnStart(Scene* scene) noexcept
 	SpawnFire(scene, pos, tileData);
 }
 
-void ScenarioFire::OnEnd() noexcept
+void ScenarioFire::OnEnd(Scene* scene) noexcept
 {
 
 }

@@ -12,7 +12,7 @@ public:
 
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void OnStart(Scene* scene) noexcept override;
-	virtual void OnEnd()noexcept override;
+	virtual void OnEnd(Scene* scene)noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) override;
 	virtual bool Update(float dtS, World* pWorld, Scene* pScene,  const std::vector<uint32>& activeRooms) noexcept override;
 	virtual std::string GetName() noexcept override;

@@ -185,9 +185,67 @@ void Scene::AddPlanarReflector(PlanarReflector* pReflector) noexcept
 	m_PlanarReflectors.push_back(pReflector);
 }
 
-void Scene::RemoveGameObject(uint32 index) noexcept
+void Scene::RemoveGameObject(GameObject* pGameObject) noexcept
 {
-	m_GameObjects.erase(m_GameObjects.begin() + index);
+	for (int i = 0; i < m_GameObjects.size(); i++)
+	{
+		if (m_GameObjects[i] == pGameObject)
+		{
+			m_GameObjects.erase(m_GameObjects.begin() + i);
+			break;
+		}
+	}
+
+	if (pGameObject->HasMaterial() && pGameObject->HasMesh())
+	{
+		for (int i = 0; i < m_Drawables.size(); i++)
+		{
+			if (m_Drawables[i] == pGameObject)
+			{
+				m_Drawables.erase(m_Drawables.begin() + i);
+				break;
+			}
+		}
+	}
+
+	if (pGameObject->HasAnimatedMesh() && pGameObject->HasMaterial())
+	{
+		for (int i = 0; i < m_AnimatedDrawables.size(); i++)
+		{
+			if (m_AnimatedDrawables[i] == pGameObject)
+			{
+				m_AnimatedDrawables.erase(m_AnimatedDrawables.begin() + i);
+				break;
+			}
+		}
+	}
+
+	if (pGameObject->HasDecal())
+	{
+		for (int i = 0; i < m_Decals.size(); i++)
+		{
+			if (m_Decals[i] == pGameObject)
+			{
+				m_Decals.erase(m_Decals.begin() + i);
+				break;
+			}
+		}
+	}
+
+	if (pGameObject->HasMaterial())
+	{
+		if (pGameObject->GetMaterial()->IsReflectable())
+		{
+			for (int i = 0; i < m_Reflectables.size(); i++)
+			{
+				if (m_Reflectables[i] == pGameObject)
+				{
+					m_Reflectables.erase(m_Reflectables.begin() + i);
+					break;
+				}
+			}
+		}
+	}
 }
 
 void Scene::ExtendScene() noexcept

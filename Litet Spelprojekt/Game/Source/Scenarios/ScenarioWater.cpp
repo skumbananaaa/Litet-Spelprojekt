@@ -14,7 +14,7 @@ void ScenarioWater::OnStart(Scene* scene) noexcept
 
 }
 
-void ScenarioWater::OnEnd() noexcept
+void ScenarioWater::OnEnd(Scene* scene) noexcept
 {
 
 }

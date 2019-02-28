@@ -5,7 +5,6 @@
 #include <IO/ResourceHandler.h>
 
 #define DIFFUSE_MAP_BINDING_SLOT 0
-#define SPECULAR_MAP_BINDING_SLOT 1
 
 #define CAMERA_BUFFER_BINDING_SLOT 0
 #define LIGHT_BUFFER_BINDING_SLOT 1
@@ -47,14 +46,12 @@ public:
 	void SetIsReflectable(bool isReflectable) noexcept;
 
 	const Texture2D* GetDiffuseMap() const noexcept;
-	const Texture2D* GetSpecularMap() const noexcept;
 	const glm::vec4& GetColor() const noexcept;
 	const glm::vec4& GetLevelClipPlane() const noexcept;
 	float GetSpecular() const noexcept;
 	CULL_MODE GetCullMode() const noexcept;
 
 	bool HasDiffuseMap() const noexcept;
-	bool HasSpecularMap() const noexcept;
 	bool IncludeInDepthPrePass() const noexcept;
 	bool IsReflectable() const noexcept;
 
@@ -68,7 +65,6 @@ protected:
 
 private:
 	void SetDiffuseMap(const Texture2D* const pTexture) noexcept;
-	void SetSpecularMap(const Texture2D* const pNormalMap) noexcept;
 	void SetColor(const glm::vec4& color) noexcept;
 	void SetSpecular(float specular) noexcept;
 
@@ -109,11 +105,6 @@ inline bool Material::HasDiffuseMap() const noexcept
 	return m_Data.pDiffuseMap != nullptr;
 }
 
-inline bool Material::HasSpecularMap() const noexcept
-{
-	return m_Data.pSpecularMap != nullptr;
-}
-
 inline bool Material::IncludeInDepthPrePass() const noexcept
 {
 	return m_PipelineState.DepthPrePass;
@@ -137,11 +128,6 @@ inline void Material::SetIncludeInDepthPrePass(bool include) noexcept
 inline void Material::SetDiffuseMap(const Texture2D* const pTexture) noexcept
 {
 	m_Data.pDiffuseMap = pTexture;
-}
-
-inline void Material::SetSpecularMap(const Texture2D* const pSpecularMap) noexcept
-{
-	m_Data.pSpecularMap = pSpecularMap;
 }
 
 inline void Material::SetStencilTest(bool enable, Func func, uint8 mask, uint8 ref, uint8 value) const noexcept
@@ -198,11 +184,6 @@ inline CULL_MODE Material::GetCullMode() const noexcept
 inline const Texture2D* Material::GetDiffuseMap() const noexcept
 {
 	return m_Data.pDiffuseMap;
-}
-
-inline const Texture2D* Material::GetSpecularMap() const noexcept
-{
-	return m_Data.pSpecularMap;
 }
 
 inline void Material::SetColor(const glm::vec4& color) noexcept

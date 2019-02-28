@@ -20,7 +20,9 @@ GUIObject::GUIObject(float x, float y, float width, float height) :
 	m_pUserData(nullptr),
 	m_IsDirty(false),
 	m_IsRealtime(false),
-	m_BackgroundColor(1.0, 1.0, 1.0, 1.0)
+	m_BackgroundColor(1.0, 1.0, 1.0, 1.0),
+	m_BorderColor(GUIContext::COLOR_TRANSPARENT),
+	m_BorderThickness(1)
 {
 	if (width > 0 && height > 0)
 	{
@@ -39,13 +41,13 @@ GUIObject::~GUIObject()
 	RemoveKeyboardListener(this);
 	RemoveRealTimeRenderer();
 
+	m_ChildrenToAdd.clear();
+	m_ChildrenDirty.clear();
+
 	for (int i = m_Children.size() - 1; i >= 0; i--)
 	{
 		Remove(m_Children[i]);
 	}
-
-	m_ChildrenToAdd.clear();
-	m_ChildrenDirty.clear();
 }
 
 bool GUIObject::HasParent() const noexcept
@@ -69,19 +71,46 @@ void GUIObject::Add(GUIObject* object) noexcept
 void GUIObject::Remove(GUIObject* objectToRemove) noexcept
 {
 	int32 counter = 0;
+	bool found = false;
 	for (GUIObject* object : m_Children)
 	{
 		if (objectToRemove == object)
 		{
 			m_Children.erase(m_Children.begin() + counter);
-			objectToRemove->OnRemoved(this);
-			objectToRemove->RemoveRealTimeRenderer();
-			objectToRemove->RemoveMouseListener(this);
-			objectToRemove->m_pParent = nullptr;
-			DeleteSafe(objectToRemove);
+			found = true;
+			break;
+		}
+		counter++;
+	}
+	counter = 0;
+	for (GUIObject* object : m_ChildrenToAdd)
+	{
+		if (objectToRemove == object)
+		{
+			m_ChildrenToAdd.erase(m_ChildrenToAdd.begin() + counter);
+			found = true;
+			break;
+		}
+		counter++;
+	}
+	counter = 0;
+	for (GUIObject* object : m_ChildrenDirty)
+	{
+		if (objectToRemove == object)
+		{
+			m_ChildrenDirty.erase(m_ChildrenDirty.begin() + counter);
 			return;
 		}
 		counter++;
+	}
+
+	if (found)
+	{
+		objectToRemove->OnRemoved(this);
+		objectToRemove->RemoveRealTimeRenderer();
+		objectToRemove->RemoveMouseListener(this);
+		objectToRemove->m_pParent = nullptr;
+		DeleteSafe(objectToRemove);
 	}
 }
 
@@ -199,6 +228,20 @@ void GUIObject::SetBackgroundColor(const glm::vec4& color) noexcept
 	if (m_BackgroundColor != color)
 	{
 		m_BackgroundColor = color;
+		RequestRepaint();
+	}
+}
+
+const glm::vec4& GUIObject::GetBorderColor() const noexcept
+{
+	return m_BorderColor;
+}
+
+void GUIObject::SetBorderColor(const glm::vec4& color) noexcept
+{
+	if (m_BorderColor != color)
+	{
+		m_BorderColor = color;
 		RequestRepaint();
 	}
 }
@@ -506,6 +549,7 @@ void GUIObject::RenderRealTime(GUIContext* context, float x, float y)
 void GUIObject::OnRender(GUIContext* context)
 {
 	RenderBackgroundTexture(context);
+	RenderBorder(context);
 }
 
 void GUIObject::RenderBackgroundTexture(GUIContext* context)
@@ -515,6 +559,14 @@ void GUIObject::RenderBackgroundTexture(GUIContext* context)
 	{
 		context->RenderTexture(texture, 0, 0, GetWidth(), GetHeight(), GUIContext::COLOR_WHITE);
 	}
+}
+
+void GUIObject::RenderBorder(GUIContext* context)
+{
+	context->RenderTexture(GetDefaultTexture(), 0, 0, m_BorderThickness, GetHeight(), m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), GetWidth() - m_BorderThickness, 0, m_BorderThickness, GetHeight(), m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), 0, GetHeight() - m_BorderThickness, GetWidth(), m_BorderThickness, m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), 0, 0, GetWidth(), m_BorderThickness, m_BorderColor);
 }
 
 bool GUIObject::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
@@ -549,6 +601,20 @@ bool GUIObject::OwnsPoint(const glm::vec2& position, const GUIObject* caller) co
 bool GUIObject::OwnsPoint(const glm::vec2& position) const noexcept
 {
 	return OwnsPoint(position, this);
+}
+
+void GUIObject::SetBoderThickness(int32 thickness) noexcept
+{
+	if (m_BorderThickness != thickness)
+	{
+		m_BorderThickness = thickness;
+		RequestRepaint();
+	}
+}
+
+int32 GUIObject::GetBoderThickness() const noexcept
+{
+	return m_BorderThickness;
 }
 
 void GUIObject::DeleteChildren()

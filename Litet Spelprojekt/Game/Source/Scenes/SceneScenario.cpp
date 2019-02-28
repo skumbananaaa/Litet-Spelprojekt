@@ -2,10 +2,23 @@
 #include "..\..\Include\Scenes\SceneGame.h"
 #include "..\..\Include\Scenes\SceneMenu.h"
 #include "../../Include/Game.h"
+#include "../../Include/Scenarios/ScenarioManager.h"
 
 SceneScenario::SceneScenario() : 
 	m_SelectionHandler(false, true)
 {
+	
+}
+
+SceneScenario::~SceneScenario()
+{
+	Game::GetGame()->GetGUIManager().DeleteChildren();
+}
+
+void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+{
+	SceneInternal::OnActivated(lastScene, m_pRenderer);
+
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
@@ -20,6 +33,11 @@ SceneScenario::SceneScenario() :
 
 	m_pButtonBack->AddButtonListener(this);
 	m_pButtonStart->AddButtonListener(this);
+
+	m_pPanel->SetBorderColor(GUIContext::COLOR_BLACK);
+	m_pPanel->SetBoderThickness(3);
+
+	m_pListScrollable->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 
 	m_pPanel->Add(m_pButtonBack);
 	m_pPanel->Add(m_pButtonStart);
@@ -40,9 +58,11 @@ SceneScenario::SceneScenario() :
 	game->GetGUIManager().Add(m_pPanel);
 }
 
-SceneScenario::~SceneScenario()
+void SceneScenario::OnDeactivated(SceneInternal* newScene) noexcept
 {
-	Game::GetGame()->GetGUIManager().DeleteChildren();
+	m_SelectionHandler.Release();
+
+	SceneInternal::OnDeactivated(newScene);
 }
 
 void SceneScenario::OnSelected(const SelectionHandler* handler, ISelectable* selection)
@@ -64,7 +84,7 @@ void SceneScenario::OnButtonReleased(Button* button)
 {
 	if (button == m_pButtonBack)
 	{
-		Game::GetGame()->SetScene(new SceneMenu());
+		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneMenu);
 	}
 	else if (button == m_pButtonStart)
 	{
@@ -78,7 +98,7 @@ void SceneScenario::OnButtonReleased(Button* button)
 			ids.push_back(reinterpret_cast<int32>(button->GetUserData()));
 		}
 		ScenarioManager::SetEnabledScenarios(ids);
-		Game::GetGame()->SetScene(new SceneGame());
+		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneGame);
 	}
 }
 

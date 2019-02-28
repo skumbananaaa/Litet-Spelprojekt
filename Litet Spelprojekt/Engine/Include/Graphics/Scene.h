@@ -14,7 +14,7 @@ class API Scene
 {
 public:
 	Scene() noexcept;
-	~Scene();
+	virtual ~Scene();
 
 	virtual void OnUpdate(float dtS) noexcept;
 	

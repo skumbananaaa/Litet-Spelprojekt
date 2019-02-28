@@ -1,22 +1,21 @@
-#include "SceneInternal.h"
+#include "../../Include/Scenes/SceneInternal.h"
 #include <Graphics/Materials/WaterOutdoorMaterial.h>
-#include <Graphics/Renderers/ForwardRenderer.h>
 #include <Graphics/GameObject.h>
 #include "../../Include/Game.h"
 
-SceneInternal::SceneInternal() :
-	m_pRenderer(nullptr),
-	m_pSkyBoxTex(nullptr)
+float SceneInternal::s_WaveX = 0.0F;
+float SceneInternal::s_WaveY = 0.0F;
+
+SceneInternal::SceneInternal(bool autoRotateCamera) :
+	m_AutoRotateCamera(autoRotateCamera)
 {
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pRenderer = new ForwardRenderer();
-
-	Camera* pCamera = new Camera(glm::vec3(-2.0f, 10.0f, 20.0f), glm::vec3(9.0f, 4.0f, 20.0f));
+	Camera* pCamera = new Camera(glm::vec3(10.0f, 10.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
-	pCamera->UpdateFromPitchYaw();
+	pCamera->UpdateFromLookAt();
 	SetCamera(pCamera);
 
 	GameObject* pGameObject = new GameObject();
@@ -31,10 +30,6 @@ SceneInternal::SceneInternal() :
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
-	//Skybox
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
-	SetSkyBox(new SkyBox(m_pSkyBoxTex));
-
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 	AddDirectionalLight(pDirectionalLight);
 }
@@ -46,19 +41,45 @@ IRenderer* SceneInternal::GetRenderer() noexcept
 
 SceneInternal::~SceneInternal() 
 {
-	DeleteSafe(m_pRenderer);
-	DeleteSafe(m_pSkyBoxTex);
+	Game* game = Game::GetGame();
+	game->GetGUIManager().DeleteChildren();
+}
+
+void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) noexcept
+{
+	m_pRenderer = renderer;
+	if (lastScene != Game::GetGame()->m_pSceneGame)
+	{
+		GetCamera().SetPos(lastScene->GetCamera().GetPosition());
+		GetCamera().SetYaw(lastScene->GetCamera().GetYaw());
+		GetCamera().SetPitch(lastScene->GetCamera().GetPitch());
+	}
+	else
+	{
+		GetCamera().SetPos(glm::vec3(10.0f, 10.0f, 0.0f));
+		GetCamera().SetLookAt(glm::vec3(0.0f, 0.0f, 0.0f));
+	}
+}
+
+void SceneInternal::OnDeactivated(SceneInternal* newScene) noexcept
+{
+	Game* game = Game::GetGame();
+	game->GetGUIManager().DeleteChildren();
 }
 
 void SceneInternal::OnUpdate(float dtS) noexcept
 {
 	Scene::OnUpdate(dtS);
 
-	static float waveX = 0.0f;
-	static float waveY = 0.0f;
-	waveX += 0.25f * dtS;
-	waveY += 0.5f * dtS;
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetWaveFactor(glm::vec2(waveX, waveY));
+	if (m_AutoRotateCamera)
+	{
+		GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, dtS * 0.1F);
+		GetCamera().UpdateFromLookAt();
+	}
+
+	s_WaveX += 0.25f * dtS;
+	s_WaveY += 0.5f * dtS;
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetWaveFactor(glm::vec2(s_WaveX, s_WaveY));
 }
 
 void SceneInternal::OnRender(float dtS) noexcept

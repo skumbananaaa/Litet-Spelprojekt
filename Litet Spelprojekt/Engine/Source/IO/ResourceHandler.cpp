@@ -350,6 +350,7 @@ void ResourceHandler::Load()
 		(m_NrOfTexture2D - m_NrOfTexture2DLoaded) + 
 		(m_NrOfSounds - m_NrOfSoundsLoaded) + 
 		(m_NrOfMusic - m_NrOfMusicLoaded) +
+		(m_NrOfAnimatedMeshes - m_NrOfAnimatedMeshesLoaded) +
 		(m_NrOfShaders - m_NrOfShadersLoaded);
 
 	int32 currentFile = 1;
@@ -358,6 +359,16 @@ void ResourceHandler::Load()
 	for (int i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
 	{
 		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
+		if (!desc.filename.empty())
+		{
+			nrOfFiles++;
+		}
+	}
+
+	//Counting MeshParticles
+	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	{
+		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
 		if (!desc.filename.empty())
 		{
 			nrOfFiles++;
@@ -383,16 +394,6 @@ void ResourceHandler::Load()
 			std::cout << "Loading Animated Mesh: " << desc.filename << std::endl;
 			TriggerOnLoading(desc.filename, currentFile++ / (float)nrOfFiles);
 			m_pAnimatedMeshes[i] = AnimatedMesh::ReadColladaFile((m_PrePath + "Resources/Meshes/" + desc.filename).c_str());
-		}
-	}
-
-	//Counting MeshParticles
-	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
-	{
-		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
-		if (!desc.filename.empty())
-		{
-			nrOfFiles++;
 		}
 	}
 

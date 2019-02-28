@@ -16,7 +16,7 @@ void SpawnFire(Scene* pScene, const glm::vec3& position, TileData& data, bool vi
 	pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	pEmitter->SetParticlesPerSeconds(20);
 	pEmitter->UpdateTransform();
-	pEmitter->SetIsVisible(true);
+	pEmitter->SetIsVisible(visible);
 
 	pScene->AddGameObject(pEmitter);
 	data.GameObjects[3] = pEmitter;
@@ -35,7 +35,7 @@ void SpawnSmoke(Scene* pScene, const glm::vec3& position, TileData& data, bool v
 	pEmitter->SetPosition(position);
 	pEmitter->SetParticlesPerSeconds(2);
 	pEmitter->UpdateTransform();
-	pEmitter->SetIsVisible(true);
+	pEmitter->SetIsVisible(visible);
 	pScene->AddGameObject(pEmitter);
 	data.GameObjects[2] = pEmitter;
 }

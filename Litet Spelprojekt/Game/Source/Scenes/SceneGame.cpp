@@ -450,7 +450,7 @@ void SceneGame::CreateWorld() noexcept
 					pGameObject->SetPosition(position);
 					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 					pGameObject->UpdateTransform();
-					reinterpret_cast<GameObjectDoor*>(pGameObject)->SetOpen(false);
+					//reinterpret_cast<GameObjectDoor*>(pGameObject)->SetOpen(false);
 					AddGameObject(pGameObject);
 
 					level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;

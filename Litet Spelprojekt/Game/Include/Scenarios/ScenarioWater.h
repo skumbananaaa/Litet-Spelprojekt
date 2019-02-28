@@ -6,6 +6,13 @@
 #include <System/CPUProfiler.h>
 #endif
 
+constexpr float WATER_UPDATE_LEVEL_INTERVAL = 0.02f;
+constexpr float WATER_ROUNDING_FACTOR = 50.0f;
+constexpr float WATER_EVAPORATION_RATE = 1.0f / 1000.0f;
+constexpr float WATER_AGING_DENOMINATOR = 1.0f;
+constexpr float WATER_INV_TIME_FOR_WATER_TO_LEVEL = 30.0f;
+constexpr float WATER_MAX_LEVEL = 2.0f;
+
 class ScenarioWater : public IScenario
 {
 public:
@@ -30,7 +37,7 @@ private:
 	//Water Scenario Helper Functions
 	float CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept;
 	float CalculateDoorFloodFactor(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 tilesBetweenBulkheads, uint32 canSpreadTo) const noexcept;
-	float CalculateFloodFactor(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept;
+	glm::vec4 CalculateFloodFactors(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept;
 
 	void UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept;
 	void UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept;
@@ -96,15 +103,15 @@ inline float ScenarioWater::CalculateDoorFloodFactor(const uint32 * const * ppLe
 			return doorIsOpen ? 1.0f : 0.0f;
 		}
 
-		//If the water is trying to flood over a door that is not in a bulkhead, reduce the flood factor to half.
-		return doorIsOpen ? 1.0f : 0.5f;
+		//If the water is trying to flood over a door that is not in a bulkhead, reduce the flood factor.
+		return doorIsOpen ? 1.0f : 0.25f;
 	}
 
 	//Water is not trying to flood to a different room but tileTo has a door.
 	return 1.0f;
 }
 
-inline float ScenarioWater::CalculateFloodFactor(
+inline glm::vec4 ScenarioWater::CalculateFloodFactors(
 	float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept
 {
 	bool difPosXNotZero = waterLevelDifPosX > 0.0f;
@@ -113,40 +120,38 @@ inline float ScenarioWater::CalculateFloodFactor(
 	bool difNegZNotZero = waterLevelDifNegZ > 0.0f;
 
 	float denominator = 1.0f;
-	float nominator = 2.0f;
+	glm::vec4 result(0.0f);
 
 	if (difPosXNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifPosX, nominator);
+		result.x = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifPosX;
 	}
 
 	if (difNegXNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifNegX, nominator);
+		result.y = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifNegX;
 	}
 
 	if (difPosZNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifPosZ, nominator);
+		result.z = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifPosZ;
 	}
 
 	if (difNegZNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifNegZ, nominator);
+		result.w = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifNegZ;
 	}
 
 	if (!(denominator > 0.0f))
 	{
-		return 0.0f;
+		return glm::vec4(0.0f);
 	}
 
-	float result = nominator / denominator;
-
-	return glm::min(WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * result, result);
+	return result / denominator;
 }
 
 inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept
@@ -163,7 +168,7 @@ inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std
 
 inline void ScenarioWater::UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept
 {
-	if (waterLevelDif > 0.0f)
+	//if (waterLevelDif > 0.0f)
 	{
 		ppLevelData[tileFrom.x][tileFrom.y].WaterLevelChange -= floodFactor;
 		ppLevelData[tileTo.x][tileTo.y].WaterLevelChange += floodFactor;

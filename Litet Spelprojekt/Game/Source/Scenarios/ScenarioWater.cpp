@@ -71,30 +71,34 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
+		static glm::uvec2 spawnTile(7, 12);
+
 		//TEMP
 		if (levelIndex == 4 && Input::IsKeyDown(KEY_I))
 		{
-			ppLevelData[10][10].WaterLevel = 2.0f;
-			ppLevelData[10][10].WaterLevelAge = 0.0f;
-			ppLevelData[10][10].AlreadyFlooded = true;
-			GameObject* pGameObject = ppLevelData[10][10].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
-			pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevelLastUpdated, 0.0f));
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevel = 2.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelChange = 0.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelLastUpdated = 0.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelAge = 0.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].AlreadyFlooded = true;
+			GameObject* pGameObject = ppLevelData[spawnTile.x][spawnTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
+			//pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevelLastUpdated, 0.0f));
 			//pGameObject->UpdateTransform();
 			//pGameObject->SetIsVisible(true);
 
-			bool contains1010 = false;
+			bool containsSpawnTile = false;
 			for (uint32 i = 0; i < floodingIDs.size(); i++)
 			{
-				if (floodingIDs[i].x == 10 && floodingIDs[i].y == 10)
+				if (floodingIDs[i].x == spawnTile.x && floodingIDs[i].y == spawnTile.y)
 				{
-					contains1010 = true;
+					containsSpawnTile = true;
 					break;
 				}
 			}
 
-			if (!contains1010)
+			if (!containsSpawnTile)
 			{
-				floodingIDs.push_back(glm::ivec2(10, 10));
+				floodingIDs.push_back(glm::ivec2(spawnTile.x, spawnTile.y));
 			}
 		}
 
@@ -104,24 +108,24 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 		for (uint32 i = 0; i < floodingIDs.size(); i++)
 		{
 			glm::ivec2 currentTile = glm::ivec2(floodingIDs[i].x, floodingIDs[i].y);
-			bool canFlowDown = false;
 
-			if (levelIndex > 0)
+			if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > ppLevelData[currentTile.x][currentTile.y].WaterLevelAge)
 			{
-				if (pWorld->GetLevel(levelIndex - 2)->GetLevelData()[currentTile.x][currentTile.y].HasStairs)
+				bool canFlowDown = false;
+				if (levelIndex > 0)
 				{
-					if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+					if (pWorld->GetLevel(levelIndex - 2)->GetLevelData()[currentTile.x][currentTile.y].HasStairs)
 					{
-						UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), currentTile);
-						canFlowDown = UpdateWaterLevelBelow(pWorld->GetLevel(levelIndex), pWorld->GetLevel(levelIndex - 2), currentTile);
+						if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+						{
+							UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), currentTile);
+							canFlowDown = UpdateWaterLevelBelow(pWorld->GetLevel(levelIndex), pWorld->GetLevel(levelIndex - 2), currentTile);
+						}
 					}
 				}
-			}
 
-			//IF CANT FLOW DOWN, FLOW TO SIDE
-			if (!canFlowDown)
-			{
-				if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > ppLevelData[currentTile.x][currentTile.y].WaterLevelAge)
+				//IF CANT FLOW DOWN, FLOW TO SIDE
+				if (!canFlowDown)
 				{
 					ppLevelData[currentTile.x][currentTile.y].WaterLevelAge += ppLevelData[currentTile.x][currentTile.y].WaterLevel / WATER_AGING_DENOMINATOR;
 
@@ -155,28 +159,27 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 					waterLevelDifPosZ *= floodDoorFactorPosZ;
 					waterLevelDifNegZ *= floodDoorFactorNegZ;
 
-					float floodFactor = CalculateFloodFactor(
+					glm::vec4 floodFactor = CalculateFloodFactors(
 						waterLevelDifPosX,
 						waterLevelDifNegX,
 						waterLevelDifPosZ,
 						waterLevelDifNegZ,
 						dtS);
 
-
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tilePosX, canSpreadToPosX);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tileNegX, canSpreadToNegX);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tilePosZ, canSpreadToPosZ);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tileNegZ, canSpreadToNegZ);
 
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor, waterLevelDifPosX);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor, waterLevelDifNegX);
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor, waterLevelDifPosZ);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor, waterLevelDifNegZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor.x, waterLevelDifPosX);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor.y, waterLevelDifNegX);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor.z, waterLevelDifPosZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor.w, waterLevelDifNegZ);
 				}
-				else
-				{
-					ppLevelData[currentTile.x][currentTile.y].WaterLevelAge /= 2.0f;
-				}
+			}
+			else
+			{
+				ppLevelData[currentTile.x][currentTile.y].WaterLevelAge /= 2.0f;
 			}
 		}
 
@@ -196,15 +199,10 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 			{
 				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = glm::floor(WATER_ROUNDING_FACTOR * ppLevelData[currentTile.x][currentTile.y].WaterLevel) / WATER_ROUNDING_FACTOR;
 
-				float yScale = glm::max(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f);
+				float yScale = glm::clamp(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f, 1.90f);
 
 				pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + 0.05f + yScale / 2.0f, currentTile.y));
 				pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
-
-				if (currentTile.x == 10 && currentTile.y == 10)
-				{
-					std::cout << yScale << std::endl;
-				}
 
 				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
 

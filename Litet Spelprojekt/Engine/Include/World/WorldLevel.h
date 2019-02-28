@@ -1,7 +1,6 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Scene.h>
-#include <World/Scenarios/Water/WaterObject.h>
 
 #define GAMEOBJECT_CONST_INDEX_WATER 0
 #define GAMEOBJECT_CONST_INDEX_DOOR 1

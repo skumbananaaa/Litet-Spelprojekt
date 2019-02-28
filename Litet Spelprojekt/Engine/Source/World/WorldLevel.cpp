@@ -254,13 +254,13 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 
 void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 {
-	WaterObject* pGameObject = nullptr;
+	GameObject* pGameObject = nullptr;
 
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
-			pGameObject = new WaterObject();
+			pGameObject = new GameObject();
 			pGameObject->SetIsVisible(false);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetMaterial(MATERIAL::WATER_INDOOR);

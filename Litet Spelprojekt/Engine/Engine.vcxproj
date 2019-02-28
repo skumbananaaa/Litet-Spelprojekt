@@ -150,7 +150,6 @@
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
-    <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />
@@ -160,7 +159,6 @@
     <ClCompile Include="Source\IO\R_SHADER.cpp" />
     <ClCompile Include="Source\IO\R_SOUND.cpp" />
     <ClCompile Include="Source\IO\R_TEXTURE.cpp" />
-    <ClInclude Include="Include\World\Scenarios\Water\WaterObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Audio\ALContext.cpp" />

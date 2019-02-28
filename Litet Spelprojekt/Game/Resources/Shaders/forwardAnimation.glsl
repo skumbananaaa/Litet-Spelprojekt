@@ -1,5 +1,3 @@
-
-#define MAX_BONES 60
 #define LEVEL_SIZE LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z
 
 struct DirectionalLight
@@ -48,7 +46,6 @@ layout(std140, binding = 2) uniform MaterialBuffer
 	vec4 g_ClipPlane;
 	float g_Specular;
 	float g_HasDiffuseMap;
-	float g_HasSpecularMap;
 };
 
 layout(std140, binding = 3) uniform WorldBuffer
@@ -63,7 +60,7 @@ layout(std140, binding = 5) uniform Extension
 
 layout(std140, binding = 7) uniform BoneBuffer
 {
-	mat4 g_Bones[MAX_BONES];
+	mat4 g_Bones[MAX_NUM_BONES];
 	mat4 g_Model;
 };
 
@@ -121,17 +118,16 @@ uvec4 CalcRoomIndex(ivec3 mapPos)
 
 void main()
 {
+	//Animate
 	mat4 BoneTransform = g_Bones[g_BonesIDs[0]] * g_Weights[0];
 	BoneTransform += g_Bones[g_BonesIDs[1]] * g_Weights[1];
 	BoneTransform += g_Bones[g_BonesIDs[2]] * g_Weights[2];
 	BoneTransform += g_Bones[g_BonesIDs[3]] * g_Weights[3];
 
+	//Setup
 	mat4 finalModel = g_Model * BoneTransform;
 	vec3 normal = normalize((finalModel * vec4(g_Normal, 0.0f)).xyz);
 	vec4 worldPos = finalModel * vec4(g_Position, 1.0f);
-
-	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
-	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
 
 	//Viewdir
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);
@@ -142,6 +138,9 @@ void main()
 
 	//Do extension
 	worldPos.x += g_Extension * floor(g_Model[3].y / 2.0f);
+
+	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
+	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
 
 	//Calculate light
 	vec3 specular = vec3(0.0f);
@@ -215,6 +214,7 @@ void main()
 	vs_out.Specular = specular;
 	vs_out.LightColor = lightColor;
 	vs_out.TexCoords = g_TexCoords;
+
 	gl_Position = g_ProjectionView * worldPos;
 }
 
@@ -225,7 +225,6 @@ layout(early_fragment_tests) in;
 layout(location = 0) out vec4 g_OutColor;
 
 layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform sampler2D g_SpecularMap;
 
 in VS_OUT
 {
@@ -240,9 +239,6 @@ void main()
 	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
 	vec3 color = mappedColor + uniformColor;
-
-	//Specular
-	float specularIntensity = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + ((g_Specular) * (1.0f - g_HasSpecularMap));
 
 	//Final lightcalculation
 	vec3 ambient = color * vec3(0.2f);

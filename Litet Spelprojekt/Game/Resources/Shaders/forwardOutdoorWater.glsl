@@ -1,3 +1,5 @@
+#define LEVEL_SIZE LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z
+
 layout(std140, binding = 0) uniform CameraBuffer
 {
 	mat4 g_ProjectionView;
@@ -11,13 +13,6 @@ layout(std140, binding = 0) uniform CameraBuffer
 };
 
 #if defined(VERTEX_SHADER)
-
-//DEFINES
-#define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 3
-#define NUM_SPOT_LIGHTS 2
-
-#define LEVEL_SIZE 756
 
 //DEFINE STRUCTS
 struct DirectionalLight

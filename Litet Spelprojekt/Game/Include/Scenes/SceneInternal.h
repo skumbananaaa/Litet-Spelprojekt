@@ -8,6 +8,9 @@ class SceneInternal : public Scene
 public:
 	virtual ~SceneInternal();
 
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept;
+	virtual void OnDeactivated(SceneInternal* newScene) noexcept;
+
 	virtual void OnUpdate(float dtS) noexcept override;
 	virtual void OnRender(float dtS) noexcept;
 
@@ -22,11 +25,14 @@ public:
 	virtual void OnResize(uint32 width, uint32 height);
 
 protected:
-	SceneInternal();
+	SceneInternal(bool autoRotateCamera = true);
 
 	IRenderer* GetRenderer() noexcept;
 
 private:
-	TextureCube* m_pSkyBoxTex;
 	IRenderer* m_pRenderer;
+	bool m_AutoRotateCamera;
+
+	static float s_WaveX;
+	static float s_WaveY;
 };

@@ -5,9 +5,12 @@
 
 class SceneCredits : public SceneInternal, public IButtonListener
 {
+	friend class Game;
+
 public:
-	SceneCredits();
 	virtual ~SceneCredits();
+
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
 
 	virtual void OnUpdate(float dtS) noexcept override;
 	virtual void OnRender(float dtS) noexcept override;
@@ -16,6 +19,9 @@ public:
 	virtual void OnButtonReleased(Button* button) override;
 	virtual void OnButtonHovered(Button* button) override;
 	virtual void OnButtonNotHovered(Button* button) override;
+
+protected:
+	SceneCredits();
 
 private:
 	Panel* m_pPanel;

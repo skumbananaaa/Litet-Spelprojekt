@@ -1,10 +1,11 @@
 #include <EnginePch.h>
 #include <Graphics\Shaders\Shader.h>
 
-Shader::Shader(const std::string& shaderCode, ShaderType type) noexcept 
+Shader::Shader(const std::string& shaderCode, const std::string& path, ShaderType type) noexcept 
 	: m_Shader(0),
 	m_Type(type),
-	m_ShaderCode(shaderCode)
+	m_ShaderCode(shaderCode),
+	m_Path(path)
 {
 	
 }
@@ -69,7 +70,8 @@ void Shader::Construct()
 			}
 		}
 
-		std::cout << "\nERROR COMPILING SHADER OF TYPE " << GetShaderTypeAsString(m_Type) << infoLog << std::endl;
+		std::cout << "\nERROR COMPILING SHADER '" << m_Path << "' OF TYPE " << GetShaderTypeAsString(m_Type) << infoLog;
+		std::cout << std::endl;
 	};
 }
 
@@ -99,5 +101,5 @@ Shader* Shader::Create(const char* const path, ShaderType type, const std::strin
 		return nullptr;
 	}
 
-	return new Shader("#version 420\n#define " + shaderTypeStr + defines + shaderCodeString, type);
+	return new Shader("#version 420\n#define " + shaderTypeStr + defines + shaderCodeString, path, type);
 }

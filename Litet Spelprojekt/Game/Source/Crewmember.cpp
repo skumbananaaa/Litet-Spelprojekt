@@ -30,6 +30,8 @@ Crewmember::Crewmember(const World* world, const glm::vec4& lightColor, const gl
 	m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);
+
+	m_Health = m_SkillStrength * 100.0f;
 }
 
 Crewmember::Crewmember(Crewmember& other)
@@ -71,8 +73,12 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	GameObject::Update(camera, deltaTime);
 	UpdateTransform();
+
 	CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
 	CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
+
+	UpdateHealth(deltaTime);
+
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
@@ -226,6 +232,11 @@ bool Crewmember::HasInjurySmoke() const noexcept
 	return m_HasInjurySmoke > 1.0;
 }
 
+bool Crewmember::isAlive() const noexcept
+{
+	return m_Health > 0.0f;
+}
+
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
 	m_ShipNumber = shipnumber;
@@ -248,6 +259,26 @@ void Crewmember::CheckFireDamage(const TileData * const * data) noexcept
 	{
 		m_HasInjuryBurned += tileData.Temp / 100;
 		Logger::LogEvent("Crewmember " + GetName() + "got burned" + std::to_string(m_HasInjurySmoke));
+	}
+}
+
+void Crewmember::UpdateHealth(float dt)
+{
+	if (HasInjurySmoke())
+	{
+		m_Health -= m_HasInjurySmoke * dt;
+	}
+	if (HasInjuryBurned())
+	{
+		m_Health -= m_HasInjuryBurned * dt;
+	}
+	if (HasInjuryBoneBroken())
+	{
+		m_Health -= m_HasInjuryBoneBroken * dt;
+	}
+	if (m_Health <= 0.0f)
+	{
+		Logger::LogEvent("Crewmember " + GetName() + " has died!", true);
 	}
 }
 

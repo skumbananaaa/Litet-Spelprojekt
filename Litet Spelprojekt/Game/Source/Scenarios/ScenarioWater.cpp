@@ -192,7 +192,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 			ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = glm::max<float>(newActualWaterLevel - WATER_MAX_LEVEL, 0.0f);
 
 			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
-			ExtinguishFire(ppLevelData, currentTile, dtS);
+			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1)->GetLevelData(), currentTile, dtS);
 
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 

@@ -46,6 +46,7 @@ public:
 	uint32 GetNumDoors() const noexcept;
 	uint32 GetNumRooms() const noexcept;
 	void GenerateRooms();
+	void GenerateFloor(Scene* pScene) noexcept;
 	void GenerateWater(Scene* pScene) noexcept;
 
 	void Update(Scene* pScene, float dt);

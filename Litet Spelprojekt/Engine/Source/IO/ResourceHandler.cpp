@@ -155,11 +155,11 @@ uint32 ResourceHandler::RegisterWaterIndoorMaterial()
 	return m_NrOfMaterials++;
 }
 
-uint32 ResourceHandler::RegisterWallMaterial(const glm::vec4& color, float specular)
+uint32 ResourceHandler::RegisterWallMaterial(int32 texture, float specular)
 {
 	std::cout << "Creating Wall Material" << std::endl;
 	Material* material = new WallMaterial();
-	material->SetColor(color);
+	material->SetDiffuseMap(GetTexture2D(texture));
 	material->SetSpecular(specular);
 	m_pMaterials[m_NrOfMaterials] = material;
 	return m_NrOfMaterials++;

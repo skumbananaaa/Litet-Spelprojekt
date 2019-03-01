@@ -201,6 +201,7 @@
     <None Include="Resources\Shaders\deferredWall.glsl" />
     <None Include="Resources\Shaders\depthPrePass.glsl" />
     <None Include="Resources\Shaders\forwardAnimation.glsl" />
+    <None Include="Resources\Shaders\forwardFloor.glsl" />
     <None Include="Resources\Shaders\forwardIndoorWater.glsl" />
     <None Include="Resources\Shaders\forwardMaterial.glsl" />
     <None Include="Resources\Shaders\forwardMeshParticles.glsl" />

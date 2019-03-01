@@ -73,11 +73,14 @@ public:
 	bool HasInjuryBoneBroken() const noexcept;
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
-	///<summary>Updates the damage on the crewmember based on what smoke and/or fire is on this members tile..</summary>
+	bool isAlive() const noexcept;
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
-	void CheckSmokeDamage(const TileData*const* data) noexcept;
-	void CheckFireDamage(const TileData*const* data) noexcept;
+	///<summary>Updates the damage on the crewmember based on what level of smoke is on this members tile..</summary>
+	void CheckSmokeDamage(const TileData*const* data, float dt) noexcept;
+	///<summary>Updates the damage on the crewmember based on what level of fire is on this members tile..</summary>
+	void CheckFireDamage(const TileData*const* data, float dt) noexcept;
+	void UpdateHealth(float dt);
 	float m_ActionCap;
 	float m_DeltaTime;
 	SpotLight* m_pTorch;
@@ -104,6 +107,7 @@ private:
 	bool m_HasInjuryBoneBroken;
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
+	float m_Health;
 };
 
 #endif

@@ -101,7 +101,7 @@ uvec4 CalcRoomIndex(ivec3 mapPos)
 void main()
 {
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
-	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0)).xyz;
+	vec3 normal = normalize((g_InstanceModel * vec4(g_Normal, 0.0)).xyz);
 	
 	//Calculate position in tiles
 	ivec3 mapPos = CalcMapPos(worldPos.xyz);

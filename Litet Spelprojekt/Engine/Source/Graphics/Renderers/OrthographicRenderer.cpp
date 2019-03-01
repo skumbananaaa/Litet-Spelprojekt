@@ -71,6 +71,51 @@ void OrthographicRenderer::DrawScene(const Scene& scene, const World* pWorld, fl
 	}
 }
 
+void OrthographicRenderer::DrawBulkheads(const Scene& scene, const std::vector<GameObject*>& bulkheads, float dtS) const
+{
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+
+	context.Disable(DEPTH_TEST);
+	context.Disable(CULL_FACE);
+	context.Disable(BLEND);
+
+	context.SetProgram(m_pOrthographicProgram);
+
+	context.SetUniformBuffer(m_pOrthoPerFrame, 0);
+	context.SetUniformBuffer(m_pOrthoPerObject, 1);
+
+	OrthoPerFrame perFrame = {};
+	perFrame.ViewProjection = scene.GetCamera().GetCombinedMatrix();
+	perFrame.CameraPosition = scene.GetCamera().GetPosition();
+	perFrame.CameraFront = scene.GetCamera().GetFront();
+	m_pOrthoPerFrame->UpdateData(&perFrame);
+
+	OrthoPerObject perObject = {};
+	for (uint32 i = 0; i < bulkheads.size(); i++)
+	{
+		GameObject& gameobject = *bulkheads[i];
+		if (gameobject.HasMaterial() && gameobject.HasMesh())
+		{
+			const Material* pMaterial = gameobject.GetMaterial();
+			perObject.Model = gameobject.GetTransform();
+			perObject.Color = pMaterial->GetColor();
+
+			if (pMaterial->HasDiffuseMap())
+			{
+				perObject.HasTexture = 1.0f;
+				context.SetTexture(pMaterial->GetDiffuseMap(), 0);
+			}
+			else
+			{
+				perObject.HasTexture = 0.0f;
+			}
+
+			m_pOrthoPerObject->UpdateData(&perObject);
+			context.DrawIndexedMesh(*gameobject.GetMesh());
+		}
+	}
+}
+
 void OrthographicRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) const
 {
 }

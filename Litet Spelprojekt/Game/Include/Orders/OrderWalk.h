@@ -22,8 +22,9 @@ public:
 	virtual bool ReadyToAbort() noexcept override;
 	virtual void RunParallel() override;
 
+protected:
 	bool FollowPath(float dtS) noexcept;
-private:
+protected:
 	glm::ivec3 m_GoalTile;
 	glm::vec3 m_directionTile;
 	glm::ivec3 m_TargetTile;

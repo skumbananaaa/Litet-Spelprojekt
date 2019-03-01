@@ -283,13 +283,13 @@ void WorldLevel::GenerateScenarioObjects(Scene* pScene, uint32 levelHeight)
 				pEmitter = new MeshEmitter();
 				pEmitter->SetMesh(MESH::MESH_PARTICLE);
 				pEmitter->SetTimeToLive(2.4f);
-				pEmitter->SetConeAngle(glm::radians<float>(40.0f));
+				pEmitter->SetConeAngle(glm::radians<float>(50.0f));
 				pEmitter->SetSpeed(0.1f, 0.4f);
 				pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.3f));
 				pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
 				pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
 				pEmitter->SetPosition(glm::vec3(x, levelHeight, z));
-				pEmitter->SetParticlesPerSeconds(2);
+				pEmitter->SetParticlesPerSeconds(4);
 				pEmitter->UpdateTransform();
 				pEmitter->SetIsVisible(false);
 				pScene->AddGameObject(pEmitter);
@@ -301,15 +301,15 @@ void WorldLevel::GenerateScenarioObjects(Scene* pScene, uint32 levelHeight)
 				//Fire
 				pEmitter = new MeshEmitter();
 				pEmitter->SetMesh(MESH::MESH_PARTICLE);
-				pEmitter->SetTimeToLive(0.2f);
+				pEmitter->SetTimeToLive(0.7f);
 				pEmitter->SetConeAngle(glm::radians<float>(30.0f));
 				pEmitter->SetSpeed(0.7f, 2.0f);
-				pEmitter->SetScale(glm::vec2(0.05f), glm::vec2(0.15f));
+				pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.2f));
 				pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
 				pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
 				pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 				pEmitter->SetPosition(glm::vec3(x, levelHeight, z));
-				pEmitter->SetParticlesPerSeconds(20);
+				pEmitter->SetParticlesPerSeconds(16);
 				pEmitter->UpdateTransform();
 				pEmitter->SetIsVisible(false);
 				pScene->AddGameObject(pEmitter);

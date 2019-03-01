@@ -6,7 +6,7 @@
 #include <System/CPUProfiler.h>
 #endif
 
-constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 100.0f;
+constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 10000.0f;
 
 class ScenarioFire : public IScenario
 {
@@ -77,7 +77,7 @@ inline void ScenarioFire::EvaporateWater(TileData& tile, float dtS) const noexce
 {
 	if (tile.AlreadyFlooded)
 	{
-		tile.WaterLevelChange -= WATER_EVAPORATION_BY_FIRE_RATE * dtS;
+		tile.WaterLevelChange -= tile.Temp * WATER_EVAPORATION_BY_FIRE_RATE * dtS;
 	}
 }
 

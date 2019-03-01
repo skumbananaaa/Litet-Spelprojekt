@@ -44,7 +44,7 @@ public:
 	Room* GetRoom(uint32 room) const noexcept;
 	const glm::ivec3& GetDoor(uint32 index) const noexcept;
 	uint32 GetNumDoors() const noexcept;
-
+	uint32 GetNumRooms() const noexcept;
 	void GenerateRooms();
 	void GenerateWater(Scene* pScene) noexcept;
 

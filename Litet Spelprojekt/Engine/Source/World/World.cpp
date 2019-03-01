@@ -159,6 +159,11 @@ uint32 World::GetNumDoors() const noexcept
 	return m_Doors.size();
 }
 
+uint32 World::GetNumRooms() const noexcept
+{
+	return m_Rooms.size();
+}
+
 void World::Update(Scene* pScene, float dt)
 {
 }

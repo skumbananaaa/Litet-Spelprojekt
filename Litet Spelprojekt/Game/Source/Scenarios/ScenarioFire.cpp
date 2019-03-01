@@ -154,8 +154,11 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 				FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
 				if (alarm != nullptr)
 				{
-					lowerTileData.GameObjects[i]->OnSmokeDetected();
-					ShowInRoom(m_pWorld->GetLevel((int32)pos.y + ((int32)pos.y + 1) % 2)->GetLevel()[pos.x][pos.z]);
+					if (!alarm->HasDetected())
+					{
+						lowerTileData.GameObjects[i]->OnSmokeDetected();
+						ShowInRoom(m_pWorld->GetLevel((int32)pos.y + ((int32)pos.y + 1) % 2)->GetLevel()[pos.x][pos.z]);
+					}
 				}
 			}
 		}
@@ -307,8 +310,11 @@ void ScenarioFire::CheckFire(float dtS, const glm::ivec3& offset, const glm::ive
 			FireAlarm* alarm = dynamic_cast<FireAlarm*>(tileData.GameObjects[i]);
 			if (alarm != nullptr)
 			{
-				tileData.GameObjects[i]->OnFireDetected();
-				ShowInRoom(m_pppMap[origin.y][origin.x][origin.z]);
+				if (!alarm->HasDetected())
+				{
+					//tileData.GameObjects[i]->OnFireDetected();
+					//ShowInRoom(m_pppMap[origin.y][origin.x][origin.z]);
+				}
 			}
 		}
 	}
@@ -364,8 +370,11 @@ bool ScenarioFire::CheckSmoke(float dtS, const glm::ivec3& offset, const glm::iv
 					FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
 					if (alarm != nullptr)
 					{
-						lowerTileData.GameObjects[i]->OnSmokeDetected();
-						ShowInRoom(m_pppMap[tileTo.y][tileTo.x][tileTo.z]);
+						if (!alarm->HasDetected())
+						{
+							lowerTileData.GameObjects[i]->OnSmokeDetected();
+							ShowInRoom(m_pppMap[tileTo.y][tileTo.x][tileTo.z]);
+						}
 					}
 				}
 

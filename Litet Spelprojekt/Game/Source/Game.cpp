@@ -33,19 +33,9 @@ Game::Game() noexcept
 
 	SetScene(m_pSceneLoading);
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
 	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioMissile());
+	ScenarioManager::RegisterScenario(new ScenarioFire(false));
+	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 }
 
 Game::~Game()

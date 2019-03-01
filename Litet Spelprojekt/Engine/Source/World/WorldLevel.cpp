@@ -252,23 +252,69 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 	}
 }
 
-void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
+void WorldLevel::GenerateScenarioObjects(Scene* pScene, uint32 levelHeight)
 {
 	GameObject* pGameObject = nullptr;
+	MeshEmitter* pEmitter = nullptr;
+	bool evenLevel = levelHeight % 2 == 0;
+	bool oddLevel = levelHeight % 2 == 1;
 
 	for (uint32 x = 0; x < m_SizeX; x++)
 	{
 		for (uint32 z = 0; z < m_SizeZ; z++)
 		{
-			pGameObject = new GameObject();
-			pGameObject->SetIsVisible(false);
-			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetMaterial(MATERIAL::WATER_INDOOR);
-			pGameObject->SetScale(glm::vec3(1.0f));
-			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
-			pGameObject->UpdateTransform();
-			pScene->AddGameObject(pGameObject);
-			m_ppLevelData[x][z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER] = pGameObject;
+			if (evenLevel)
+			{
+				//Water
+				pGameObject = new GameObject();
+				pGameObject->SetMesh(MESH::CUBE);
+				pGameObject->SetMaterial(MATERIAL::WATER_INDOOR);
+				pGameObject->SetScale(glm::vec3(1.0f));
+				pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
+				pGameObject->UpdateTransform();
+				pGameObject->SetIsVisible(false);
+				pScene->AddGameObject(pGameObject);
+				m_ppLevelData[x][z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER] = pGameObject;
+			}
+
+			if (oddLevel)
+			{
+				//Smoke
+				pEmitter = new MeshEmitter();
+				pEmitter->SetMesh(MESH::MESH_PARTICLE);
+				pEmitter->SetTimeToLive(2.4f);
+				pEmitter->SetConeAngle(glm::radians<float>(50.0f));
+				pEmitter->SetSpeed(0.1f, 0.4f);
+				pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.3f));
+				pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
+				pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
+				pEmitter->SetPosition(glm::vec3(x, levelHeight, z));
+				pEmitter->SetParticlesPerSeconds(4);
+				pEmitter->UpdateTransform();
+				pEmitter->SetIsVisible(false);
+				pScene->AddGameObject(pEmitter);
+				m_ppLevelData[x][z].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE] = pEmitter;
+			}
+
+			if (evenLevel)
+			{
+				//Fire
+				pEmitter = new MeshEmitter();
+				pEmitter->SetMesh(MESH::MESH_PARTICLE);
+				pEmitter->SetTimeToLive(0.7f);
+				pEmitter->SetConeAngle(glm::radians<float>(30.0f));
+				pEmitter->SetSpeed(0.7f, 2.0f);
+				pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.2f));
+				pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
+				pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
+				pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+				pEmitter->SetPosition(glm::vec3(x, levelHeight, z));
+				pEmitter->SetParticlesPerSeconds(16);
+				pEmitter->UpdateTransform();
+				pEmitter->SetIsVisible(false);
+				pScene->AddGameObject(pEmitter);
+				m_ppLevelData[x][z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE] = pEmitter;
+			}
 		}
 	}
 }

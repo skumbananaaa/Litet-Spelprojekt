@@ -71,7 +71,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
-		static glm::uvec2 spawnTile(7, 12);
+		static glm::uvec2 spawnTile(10, 18);
 
 		//TEMP
 		if (levelIndex == 4 && Input::IsKeyDown(KEY_I))
@@ -192,6 +192,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 			ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = glm::max<float>(newActualWaterLevel - WATER_MAX_LEVEL, 0.0f);
 
 			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
+			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1)->GetLevelData(), currentTile, dtS);
 
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 

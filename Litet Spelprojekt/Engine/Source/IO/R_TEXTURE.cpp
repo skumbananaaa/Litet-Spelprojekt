@@ -26,6 +26,8 @@ uint32 TEXTURE::ICON_CHECKED = 0;
 uint32 TEXTURE::ICON_CROSSED = 0;
 uint32 TEXTURE::SMOKE = 0;
 uint32 TEXTURE::SJOFAN_DIFF = 0;
+uint32 TEXTURE::WALL1 = 0;
+uint32 TEXTURE::FLOOR1 = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -59,6 +61,8 @@ void TEXTURE::RegisterResources()
 	TOILET				= ResourceHandler::RegisterTexture2D("uv_Toilet.jpg", TEX_FORMAT_RGBA);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
+	WALL1				= ResourceHandler::RegisterTexture2D("wallTexture.jpg", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR1				= ResourceHandler::RegisterTexture2D("floorTexture.jpg", TEX_FORMAT_RGBA, true, false, params);
 
 	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BURN	= ResourceHandler::RegisterTexture2D("Icons/InjuryBurn.png", TEX_FORMAT_RGBA, false, true);

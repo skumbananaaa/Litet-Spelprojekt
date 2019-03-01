@@ -306,17 +306,17 @@ IndexedMesh* IndexedMesh::CreateQuad()
 {
 	BaseVertex* pVertices = new BaseVertex[4]
 	{
-		BaseVertex(glm::vec3(-0.5F,  0.5F,  0.0F), glm::vec3(0.0F,  0.0F,  1.0F), glm::vec2(0.0F, 1.0F)),
-		BaseVertex(glm::vec3(0.5F,  0.5F,  0.0F),  glm::vec3(0.0F,  0.0F,  1.0F), glm::vec2(1.0F, 1.0F)),
-		BaseVertex(glm::vec3(0.5F, -0.5F,  0.0F),  glm::vec3(0.0F,  0.0F,  1.0F), glm::vec2(1.0F, 0.0F)),
-		BaseVertex(glm::vec3(-0.5F, -0.5F,  0.0F), glm::vec3(0.0F,  0.0F,  1.0F), glm::vec2(0.0F, 0.0F))
+		BaseVertex(glm::vec3(-0.5F, 0.0F,  0.5F),   glm::vec3(0.0F, 1.0F, 0.0F), glm::vec2(0.0F, 1.0F)),
+		BaseVertex(glm::vec3( 0.5F, 0.0F,  0.5F),   glm::vec3(0.0F, 1.0F, 0.0F), glm::vec2(1.0F, 1.0F)),
+		BaseVertex(glm::vec3( 0.5F, 0.0F, -0.5F),   glm::vec3(0.0F, 1.0F, 0.0F), glm::vec2(1.0F, 0.0F)),
+		BaseVertex(glm::vec3(-0.5F, 0.0F, -0.5F),   glm::vec3(0.0F, 1.0F, 0.0F), glm::vec2(0.0F, 0.0F))
 	};
 
 	uint32* pIndices = new uint32[6]
 	{
 		// Front (Seen from front)
-		0, 2, 1,
-		2, 0, 3
+		0, 1, 2,
+		3, 0, 2
 	};
 
 	return new IndexedMesh(pVertices, pIndices, 4, 6);

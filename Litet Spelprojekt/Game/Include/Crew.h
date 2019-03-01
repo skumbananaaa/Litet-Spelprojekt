@@ -13,7 +13,7 @@ public:
 	void AddMember(const World* world, const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
 	Crewmember* GetMember(int index);
 	const int GetCount() const;
-	void RequestCloseDoor();
+	void RequestCloseDoor(World* pWorld, Scene* pScene);
 
 private:
 	void Expand();

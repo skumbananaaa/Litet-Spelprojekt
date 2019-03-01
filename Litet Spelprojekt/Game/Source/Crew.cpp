@@ -1,4 +1,5 @@
 #include "..\Include\Crew.h"
+#include "../Include/Orders/OrderHandler.h"
 
 void Crew::Expand()
 {
@@ -22,11 +23,11 @@ void Crew::Expand()
 	}
 }
 
-void Crew::RequestCloseDoor()
+void Crew::RequestCloseDoor(World* pWorld, Scene* pScene)
 {
 	for (int i = 0; i < m_NrOf; i++)
 	{
-		m_ppMembers[i]->LookForDoor();
+		//OrderHandler::GiveOrder(new OrderCloseDoor(), m_ppMembers[i]);
 	}
 }
 

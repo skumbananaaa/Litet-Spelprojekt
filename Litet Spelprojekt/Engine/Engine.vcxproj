@@ -114,7 +114,6 @@
     <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
     <ClInclude Include="Include\World\Grid.h" />
     <ClInclude Include="Include\World\LightManager.h" />
-    <ClInclude Include="Include\World\Scenarios\IOrder.h" />
     <ClInclude Include="Include\World\Scenarios\IScenario.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\World\Room.h" />

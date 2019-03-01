@@ -3,6 +3,8 @@
 #include <World/LightManager.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include <World/GameObjectDoor.h>
+#include "../../Include/Orders/OrderHandler.h"
+
 
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
@@ -108,6 +110,7 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	}
 
 	DeleteSafe(m_pUICrew);
+	OrderHandler::Release();
 }
 
 void SceneGame::OnUpdate(float dtS) noexcept
@@ -130,6 +133,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	{
 		SceneInternal::OnUpdate(dtS);
 		ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
+		OrderHandler::Update(this, m_pWorld, &m_Crew, dtS);
 		UpdateCamera(dtS);
 
 		static float dist = 0.0f;
@@ -321,14 +325,6 @@ void SceneGame::OnKeyDown(KEY keycode)
 			case KEY_SPACE:
 			{
 				ExtendScene();
-				break;
-			}
-			case KEY_L:
-			{
-				for (int i = 0; i < m_Crew.GetCount(); i++)
-				{
-					m_Crew.GetMember(i)->SwitchLight();
-				}
 				break;
 			}
 			case KEY_R:
@@ -646,7 +642,7 @@ void SceneGame::PickPosition()
 	{
 		for (int i = 0; i < m_Crew.GetCount(); i++)
 		{
-			if (m_Crew.GetMember(i)->GetLight()->GetColor() == CHOSEN_LIGHT || m_Crew.GetMember(i)->GetTorch()->GetColor() == CHOSEN_LIGHT)
+			if (m_Crew.GetMember(i)->IsPicked())
 			{
 				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
 			}
@@ -656,8 +652,7 @@ void SceneGame::PickPosition()
 
 void SceneGame::RequestDoorClosed()
 {
-
-	m_Crew.RequestCloseDoor();
+	m_Crew.RequestCloseDoor(m_pWorld, this);
 	//std::vector<uint32> crewRoomIndexArray;
 	//std::vector<uint32> doorRoomIndexArray;
 	//std::vector<glm::ivec2> roomInCommon;
@@ -788,9 +783,19 @@ Crewmember* SceneGame::GetCrewmember(uint32 shipNumber)
 	return m_Crew.GetMember(shipNumber);
 }
 
+Crew * SceneGame::GetCrew() noexcept
+{
+	return &m_Crew;
+}
+
 UICrewMember* SceneGame::GetUICrewMember() noexcept
 {
 	return m_pUICrewMember;
+}
+
+World * SceneGame::GetWorld() noexcept
+{
+	return m_pWorld;
 }
 
 void SceneGame::UpdateCamera(float dtS) noexcept

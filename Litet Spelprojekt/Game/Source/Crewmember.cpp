@@ -2,19 +2,20 @@
 #include "..\Include\Game.h"
 #include <System/Random.h>
 #include "..\Include\Game.h"
+#include "../Include/Orders/OrderHandler.h"
+#include "../Include/Orders/OrderWalk.h"
 
 Crewmember::Crewmember(const World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
-	: m_pLight(new PointLight(position, lightColor))
 {
 	m_ActionCap = actionCap;
 	SetName(name);
 	m_pWorld = world;
-	m_NrOfPathTiles = 0;
+	m_IsPicked = false;
+	//m_NrOfPathTiles = 0;
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
-	m_TargetTile = m_PlayerTile;
-	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	/*m_TargetTile = m_PlayerTile;
+	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);*/
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
-	m_pTorch = new SpotLight(position, glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(25.0f)), glm::vec3(m_Direction.x, 0.0, m_Direction.z), glm::vec4(0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
 	SetAnimatedMesh(MESH::ANIMATED_MODEL);
 	SetPosition(position);
@@ -35,16 +36,13 @@ Crewmember::Crewmember(const World* world, const glm::vec4& lightColor, const gl
 }
 
 Crewmember::Crewmember(Crewmember& other)
-	: m_pLight(new PointLight(other.GetPosition(), other.m_pLight->GetColor()))
 {
 	m_ActionCap = other.m_ActionCap;
 	SetName(other.GetName());
-	m_NrOfPathTiles = 0;
 	m_PlayerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y - 0.9) / 2),std::round(other.GetPosition().z));
-	m_TargetTile = m_PlayerTile;
-	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	/*m_TargetTile = m_PlayerTile;
+	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);*/
 	SetDirection(other.GetDirection());
-	m_pTorch = new SpotLight(other.GetPosition(), glm::cos(glm::radians(15.0f)), glm::cos(glm::radians(25.0f)), glm::vec3(m_Direction.x, 0.0, m_Direction.z), other.m_pTorch->GetColor());
 	SetMaterial(MATERIAL::CREW_STANDARD);
 	SetMesh(MESH::CUBE);
 	SetPosition(other.GetPosition());
@@ -54,16 +52,16 @@ Crewmember::Crewmember(Crewmember& other)
 
 Crewmember::~Crewmember()
 {
-	DeleteSafe(m_pPathFinder);
+	/*DeleteSafe(m_pPathFinder);
 	DeleteSafe(m_pLight);
-	DeleteSafe(m_pTorch);
+	DeleteSafe(m_pTorch);*/
 }
 
 void Crewmember::RunParallel()
 {
 	//if (!m_pPathFinder->IsGoalSet() && m_NrOfPathTiles == 0) {
-		m_pPath = m_pPathFinder->FindPath(m_PlayerTile, m_GoalTile);
-		m_NrOfPathTiles = m_pPathFinder->GetNrOfPathTiles();
+		/*m_pPath = m_pPathFinder->FindPath(m_PlayerTile, m_GoalTile);
+		m_NrOfPathTiles = m_pPathFinder->GetNrOfPathTiles();*/
 	//}
 }
 
@@ -80,29 +78,11 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
 	}
-	m_pLight->SetPosition(GetPosition());
-	m_pTorch->SetPosition(GetPosition());
-	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
 }
 
 void Crewmember::OnPicked()
 {
-	if (m_pLight->GetColor() == CHOSEN_LIGHT)
-	{
-		m_pLight->SetColor(DEFAULT_LIGHT);
-	}
-	else if (m_pTorch->GetColor() == CHOSEN_LIGHT)
-	{
-		m_pTorch->SetColor(DEFAULT_LIGHT);
-	}
-	else if (m_pLight->GetColor() == DEFAULT_LIGHT)
-	{
-		m_pLight->SetColor(CHOSEN_LIGHT);
-	}
-	else if (m_pTorch->GetColor() == DEFAULT_LIGHT)
-	{
-		m_pTorch->SetColor(CHOSEN_LIGHT);
-	}
+	m_IsPicked = true;
 }
 
 void Crewmember::OnHovered()
@@ -201,6 +181,11 @@ int32 Crewmember::GetShipNumber() const noexcept
 bool Crewmember::IsHovered() const noexcept
 {
 	return m_IsHovered;
+}
+
+bool Crewmember::IsPicked() const noexcept
+{
+	return m_IsPicked;
 }
 
 int8 Crewmember::GetSkillFire() const noexcept
@@ -303,34 +288,30 @@ void Crewmember::Move(const glm::vec3 & dir)
 	SetPosition(res);
 }
 
-SpotLight* Crewmember::GetTorch() const
-{
-	return m_pTorch;
-}
-
-PointLight* Crewmember::GetLight() const
-{
-	return m_pLight;
-}
-
 const float Crewmember::GetActionCapacity() const
 {
 	return m_ActionCap;
 }
-
+/*
 const bool Crewmember::IsMoving() const
 {
 	return (bool)m_NrOfPathTiles || m_pPathFinder->IsGoalSet();
-}
+}*/
 
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
-	if (m_NrOfPathTiles <= 0)
+	/*if (m_NrOfPathTiles <= 0)
 	{
 		m_TargetTile = m_PlayerTile;
 	}
-	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);*/
+
+	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
+	{
+		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+	}
+
 	GameObject::SetPosition(position);
 }
 
@@ -346,13 +327,6 @@ void Crewmember::SetDirection(const glm::vec3& direction) noexcept
 	SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, -angle));
 }
 
-void Crewmember::SwitchLight() noexcept
-{
-	glm::vec4 temp = m_pTorch->GetColor();
-	m_pTorch->SetColor(m_pLight->GetColor());
-	m_pLight->SetColor(temp);
-}
-
 glm::ivec3 Crewmember::GetTile() const noexcept
 {
 	return m_PlayerTile;
@@ -360,32 +334,14 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	m_GoalTile = glm::ivec3(goalPos.x, goalPos.y / 2, goalPos.z);
-	ThreadHandler::RequestExecution(this);
+	OrderHandler::GiveOrder(new OrderWalk(goalPos), this);
+	/*m_GoalTile = glm::ivec3(goalPos.x, goalPos.y / 2, goalPos.z);
+	ThreadHandler::RequestExecution(this);*/
 }
 
-void Crewmember::LookForDoor()
+void Crewmember::LookForDoor(World* pWorld, Scene* pScene)
 {
-	std::vector<uint32> crewRoomIndexArray;
-	std::vector<uint32> doorRoomIndexArray;
-	std::vector<glm::ivec2> roomInCommon;
-	uint32 crewRoomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
-	crewRoomIndexArray.push_back(crewRoomIndex);
-
-	for (int i = 0; i < m_pWorld->GetNumDoors(); i++)
-	{
-		glm::ivec3 doorTile = m_pWorld->GetDoor(i);
-		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
-		//doorRoomIndexArray.push_back(doorRoomIndex);
-
-		if (doorRoomIndex == crewRoomIndex)
-		{
-			//här vill jag pusha till orderPool.
-			roomInCommon.push_back(glm::ivec2(crewRoomIndex, doorRoomIndex));
-
-		}
-		
-	}
+	//StartOrder(pScene, pWorld, this);
 }
 
 void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
@@ -395,7 +351,7 @@ void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
 
 void Crewmember::FollowPath(float dtS)
 {
-	if (m_NrOfPathTiles > 0)
+	/*if (m_NrOfPathTiles > 0)
 	{
 		if (m_PlayerTile == m_TargetTile)
 		{
@@ -419,12 +375,12 @@ void Crewmember::FollowPath(float dtS)
 			SetDirection(glm::vec3(move.x, 0, move.z));
 			GameObject::SetPosition(GetPosition() + m_Direction * dtS);
 		}
-		m_PlayerTile = glm::ivec3(std::round(GetPosition().x), std::round((GetPosition().y - 0.9) / 2), std::round(GetPosition().z));
+		m_PlayerTile = glm::ivec3(std::round(GetPosition().x), std::round((GetPosition().y - 0.9F) / 2), std::round(GetPosition().z));
 		if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 		{
 			SetRoom(m_pPathFinder->GetWorld()->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 		}
-	}
+	}*/
 }
 
 void Crewmember::SetActionCapacity(const float actionCap)
@@ -434,5 +390,5 @@ void Crewmember::SetActionCapacity(const float actionCap)
 
 void Crewmember::SetPath()
 {
-	m_pPathFinder = new Path(m_pWorld);
+	//m_pPathFinder = new Path(m_pWorld);
 }

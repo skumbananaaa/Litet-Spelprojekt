@@ -43,7 +43,9 @@ public:
 	void ShowCrewmember(uint32 crewmember);
 	Crewmember* RayTestCrewmembers();
 	Crewmember* GetCrewmember(uint32 shipNumber);
+	Crew* GetCrew() noexcept;
 	UICrewMember* GetUICrewMember() noexcept;
+	World* GetWorld() noexcept;
 
 	void SetPaused(bool paused) noexcept;
 	bool IsPaused() const noexcept;

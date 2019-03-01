@@ -50,7 +50,7 @@ void ScenarioFire::OnStart(Scene* scene) noexcept
 	tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(m_FireAlwaysVisible);
 }
 
-void ScenarioFire::OnEnd() noexcept
+void ScenarioFire::OnEnd(Scene* scene) noexcept
 {
 
 }

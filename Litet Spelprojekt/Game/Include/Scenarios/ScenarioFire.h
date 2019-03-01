@@ -6,10 +6,12 @@
 #include <System/CPUProfiler.h>
 #endif
 
+constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 100.0f;
+
 class ScenarioFire : public IScenario
 {
 public:
-	ScenarioFire();
+	ScenarioFire(bool fireAlwaysVisible = false);
 	virtual ~ScenarioFire();
 
 	virtual void Init(World* pWorld) noexcept override;
@@ -24,15 +26,16 @@ public:
 	void ShowInRoom(uint32 roomID) noexcept;
 private:
 	World* m_pWorld;
+	bool m_FireAlwaysVisible;
 
 	const uint32* const** m_pppMap;
 
-	void CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
-	bool CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
+	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
+	bool SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
 	float CalculateDoorSpreadFactor(const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, bool spreadingThroughBulkhead, float rateOfNormalDoorSpread, float rateOfBulkheadDoorSpreadFactor, float rateOfBulkheadSpreadFactor) const noexcept;
 	float CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept;
 
-	void EvaporateWater(TileData * const * ppLevelData, const glm::ivec2& tile, float dtS) const noexcept;
+	void EvaporateWater(TileData& tile, float dtS) const noexcept;
 
 	// x, y, z = x, level, z
 	std::vector<glm::ivec3> m_OnFire;
@@ -67,10 +70,10 @@ inline float ScenarioFire::CalculateBulkheadSpreadFactor(bool spreadingThroughBu
 	return spreadingThroughBulkhead ? rateOfBulkheadSpreadFactor : 1.0f;
 }
 
-inline void ScenarioFire::EvaporateWater(TileData * const * ppLevelData, const glm::ivec2& tile, float dtS) const noexcept
+inline void ScenarioFire::EvaporateWater(TileData& tile, float dtS) const noexcept
 {
-	if (ppLevelData[tile.x][tile.y].AlreadyFlooded)
+	if (tile.AlreadyFlooded)
 	{
-		ppLevelData[tile.x][tile.y].WaterLevelChange -= 10.0f * WATER_EVAPORATION_RATE * dtS;
+		tile.WaterLevelChange -= WATER_EVAPORATION_BY_FIRE_RATE * dtS;
 	}
 }

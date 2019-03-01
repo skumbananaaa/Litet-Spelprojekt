@@ -6,6 +6,14 @@
 #include <System/CPUProfiler.h>
 #endif
 
+constexpr float WATER_UPDATE_LEVEL_INTERVAL = 0.02f;
+constexpr float WATER_ROUNDING_FACTOR = 50.0f;
+constexpr float WATER_EVAPORATION_RATE = 1.0f / 1000.0f;
+constexpr float WATER_AGING_DENOMINATOR = 1.0f;
+constexpr float WATER_INV_TIME_FOR_WATER_TO_LEVEL = 30.0f;
+constexpr float WATER_MAX_LEVEL = 2.0f;
+constexpr float FIRE_EXTINGUISH_BY_WATER_RATE = 100.0f;
+
 class ScenarioWater : public IScenario
 {
 public:
@@ -39,6 +47,7 @@ private:
 	bool UpdateWaterLevelBelow(WorldLevel* pWorldLevel, WorldLevel* pWorldLevelBelow, const glm::ivec2& tile) const noexcept;
 
 	void Evaporate(Scene* pScene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
+	void ExtinguishFire(TileData * const * ppLevelData, const glm::ivec2& currentTile, float dtS) const noexcept;
 };
 
 inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept
@@ -211,5 +220,13 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 			ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetIsVisible(false);
 			toRemoveFloodingIDs.push_back(tile);
 		}
+	}
+}
+
+inline void ScenarioWater::ExtinguishFire(TileData * const * ppLevelData, const glm::ivec2& currentTile, float dtS) const noexcept
+{
+	if (ppLevelData[currentTile.x][currentTile.y].Burning)
+	{
+		ppLevelData[currentTile.x][currentTile.y].Temp -= FIRE_EXTINGUISH_BY_WATER_RATE * dtS;
 	}
 }

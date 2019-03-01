@@ -4,6 +4,8 @@
 
 #define GAMEOBJECT_CONST_INDEX_WATER 0
 #define GAMEOBJECT_CONST_INDEX_DOOR 1
+#define GAMEOBJECT_CONST_INDEX_SMOKE 2
+#define GAMEOBJECT_CONST_INDEX_FIRE 3
 
 struct TileData 
 {
@@ -21,7 +23,7 @@ struct TileData
 	bool AlreadyFlooded;
 	bool Burning;
 
-	uint32 nrOfBaseGameObjects;
+	uint32 NrOfBaseGameObjects;
 	
 	std::vector<GameObject*> GameObjects;
 
@@ -32,7 +34,7 @@ struct TileData
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
 
-		nrOfBaseGameObjects = GameObjects.size();
+		NrOfBaseGameObjects = GameObjects.size();
 	}
 
 	void RemoveGameObject(GameObject* gameObject) noexcept
@@ -84,7 +86,7 @@ public:
 	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
 	void GenerateRooms(uint32 tilesBetweenBulkheads = 8);
-	void GenerateWater(Scene* pScene, uint32 levelHeight);
+	void GenerateScenarioObjects(Scene* pScene, uint32 levelHeight);
 
 private:
 	TileData** m_ppLevelData;

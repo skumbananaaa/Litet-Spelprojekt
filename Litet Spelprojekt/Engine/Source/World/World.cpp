@@ -104,9 +104,9 @@ void World::GenerateRooms()
 
 void World::GenerateWater(Scene* pScene) noexcept
 {
-	for (int level = 0; level < m_NumLevels; level += 2)
+	for (int level = 0; level < m_NumLevels; level++)
 	{
-		m_ppLevels[level]->GenerateWater(pScene, level);
+		m_ppLevels[level]->GenerateScenarioObjects(pScene, level);
 	}
 }
 

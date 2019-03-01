@@ -45,6 +45,11 @@ MeshEmitter::~MeshEmitter()
 
 void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 {
+	if (!m_IsVisible)
+	{
+		return;
+	}
+
 	GameObject::Update(camera, deltaTime);
 
 	//Spawn particles

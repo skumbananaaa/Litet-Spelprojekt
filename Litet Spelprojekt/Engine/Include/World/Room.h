@@ -8,6 +8,7 @@ public:
 	Room(glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f)) noexcept;
 	~Room();
 
+	const StaticShadowCube* GetShadowMap() const noexcept;
 	const glm::vec3& GetCenter() const noexcept;
 	const bool IsActive() const noexcept;
 

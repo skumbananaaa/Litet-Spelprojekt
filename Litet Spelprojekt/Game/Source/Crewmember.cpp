@@ -70,9 +70,11 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	FollowPath(deltaTime);
 	
 	GameObject::Update(camera, deltaTime);
+	
 	UpdateTransform();
-	CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData());
-	CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData());
+	CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1).GetLevelData());
+	CheckFireDamage(m_pWorld->GetLevel(GetPosition().y).GetLevelData());
+
 	m_pLight->SetPosition(GetPosition());
 	m_pTorch->SetPosition(GetPosition());
 	m_pTorch->SetDirection(glm::vec3(m_Direction.x, -0.5, m_Direction.z));
@@ -346,7 +348,7 @@ void Crewmember::FollowPath(float dtS)
 		m_PlayerTile = glm::ivec3(std::round(GetPosition().x), std::round((GetPosition().y - 0.9) / 2), std::round(GetPosition().z));
 		if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 		{
-			SetRoom(m_pPathFinder->GetWorld()->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+			SetRoom(m_pPathFinder->GetWorld()->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 		}
 	}
 }

@@ -12,6 +12,11 @@ Room::~Room()
 	DeleteSafe(m_pShadowMap);
 }
 
+const StaticShadowCube* Room::GetShadowMap() const noexcept
+{
+	return m_pShadowMap;
+}
+
 const glm::vec3& Room::GetCenter() const noexcept
 {
 	return m_Center;

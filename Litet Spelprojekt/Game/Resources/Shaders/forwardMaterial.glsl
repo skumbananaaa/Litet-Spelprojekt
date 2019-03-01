@@ -59,23 +59,6 @@ layout(std140, binding = 5) uniform Extension
 	float g_Extension;
 };
 
-//vec3 CalcLight(vec3 lightDir, vec3 lightColor, vec3 viewDir, vec3 normal, vec3 color, float specularIntensity, float intensity)
-//{
-//	vec3 halfwayDir = normalize(lightDir + viewDir);
-//
-//	//AMBIENT
-//	vec3 ambient = vec3(0.2f);
-//
-//	//DIFFUSE
-//	vec3 diffuse = vec3(max(dot(normal, lightDir), 0.0f)) * intensity;
-//
-//	//SPECULAR
-//	float spec = pow(max(dot(normal, halfwayDir), 0.0), specularIntensity);
-//	vec3 specular = vec3(spec) * lightColor * intensity;
-//
-//	return ((ambient + diffuse) * color * lightColor) + specular;
-//}
-
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
@@ -89,6 +72,7 @@ layout(std140, binding = 4) uniform PlaneBuffer
 
 out VS_OUT
 {
+	vec3 FragPosition;
 	vec3 LightColor;
 	vec3 Specular;
 	vec2 TexCoords;
@@ -228,14 +212,31 @@ layout(early_fragment_tests) in;
 layout(location = 0) out vec4 g_OutColor;
 
 layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform sampler2D g_SpecularMap;
+layout(binding = 1) uniform samplerCube g_ShadowMap;
 
 in VS_OUT
 {
+	vec3 FragPosition;
 	vec3 LightColor;
 	vec3 Specular;
 	vec2 TexCoords;
 } fs_in;
+
+layout(std140, binding = 6) uniform ShadowBuffer
+{
+	vec3 g_LightPos;
+	float g_FarPlane;
+};
+
+float ShadowCalc(vec3 fragPos)
+{
+	vec3 toLight = fragPos - g_LightPos;
+	float closestDepth = texture(g_ShadowMap, toLight).r * g_FarPlane;
+	float currentDepth = length(toLight);
+
+	float bias = 0.05f;
+	return ((currentDepth - bias) > closestDepth) ? 1.0f : 0.0f;
+}
 
 void main()
 {
@@ -244,13 +245,12 @@ void main()
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
 	vec3 color = mappedColor + uniformColor;
 
-	//Specular
-	float specularIntensity = (texture(g_SpecularMap, fs_in.TexCoords).r * g_HasSpecularMap) + ((g_Specular) * (1.0f - g_HasSpecularMap));
-
 	//Final lightcalculation
 	vec3 ambient = color * vec3(0.2f);
 	vec3 diffuse = color * fs_in.LightColor;
 	vec3 specular = fs_in.Specular;
-	g_OutColor = vec4(min(ambient + diffuse + specular, vec3(1.0f)), 1.0f);
+
+	float shadow = ShadowCalc(fs_in.FragPosition);
+	g_OutColor = vec4(min(ambient + ((1.0f - shadow) * (diffuse + specular)), vec3(1.0f)), 1.0f);
 }
 #endif

@@ -19,16 +19,18 @@ void ScenarioWater::OnEnd() noexcept
 
 }
 
-void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms)
+void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene)
 {
+	const std::vector<uint32>& activeRooms = pWorld->GetActiveRooms();
+
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_2);
 #endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
-		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
-		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex)->GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex)->GetFloodingIDs();
+		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
+		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
+		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
 
 		for (uint32 i = 0; i < floodingIDs.size(); i++)
 		{
@@ -56,17 +58,19 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::
 #endif
 }
 
-bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept
+bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 {
+	const std::vector<uint32>& activeRooms = pWorld->GetActiveRooms();
+
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_3);
 #endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
-		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
-		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex)->GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex)->GetFloodingIDs();
-		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex)->GetSizeX(), pWorld->GetLevel(levelIndex)->GetSizeZ());
+		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
+		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
+		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
+		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex).GetSizeX(), pWorld->GetLevel(levelIndex).GetSizeZ());
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
@@ -107,7 +111,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 
 			if (levelIndex > 0)
 			{
-				if (pWorld->GetLevel(levelIndex - 2)->GetLevelData()[currentTile.x][currentTile.y].HasStairs)
+				if (pWorld->GetLevel(levelIndex - 2).GetLevelData()[currentTile.x][currentTile.y].HasStairs)
 				{
 					if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
 					{

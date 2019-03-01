@@ -17,6 +17,7 @@ public:
 	~StaticShadowCube();
 
 	const TextureCube* GetCubeTexture() const;
+	constexpr float GetFarPlane() const;
 
 private:
 	void Create(const glm::vec3& position, const Scene& scene);
@@ -28,4 +29,9 @@ private:
 inline const TextureCube* StaticShadowCube::GetCubeTexture() const
 {
 	return m_pCube;
+}
+
+inline constexpr float StaticShadowCube::GetFarPlane() const
+{
+	return 50.0f;
 }

@@ -25,6 +25,7 @@ public:
 	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
 	void SetWorldBuffer(const UniformBuffer* pWorldBuffer) const noexcept;
 	void SetExtensionBuffer(const UniformBuffer* pExtensionBuffer) const noexcept;
+	void SetShadowBuffer(const UniformBuffer* pShadowBuffer) const noexcept;
 
 	void SetStencilTest(bool enable, Func func = FUNC_ALWAYS, uint8 mask = 0xff, uint8 ref = 1, uint8 value = 0xff) const noexcept;
 	void SetStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
@@ -67,6 +68,7 @@ private:
 		mutable const UniformBuffer* pMaterialBuffer = nullptr;
 		mutable const UniformBuffer* pWorldBuffer = nullptr;
 		mutable const UniformBuffer* pExtensionBuffer = nullptr;
+		mutable const UniformBuffer* pShadowBuffer = nullptr;
 		const Texture2D* pDiffuseMap = nullptr;
 		const Texture2D* pSpecularMap = nullptr;
 		glm::vec4 Color = glm::vec4(0.0f);

@@ -60,10 +60,17 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 		glm::mat4 Model = glm::mat4(1.0f);
 	} modelBuff;
 
+	struct ShadowBuffer
+	{
+		glm::vec3 LightPosition;
+		float FarPlane;
+	} shadowBuff = { position, GetFarPlane() };
+
 	UniformBuffer* pCameraBuffer = new UniformBuffer(&cameraBuff, 1, sizeof(CameraBuffer));
 	UniformBuffer* pModelBuffer = new UniformBuffer(&modelBuff, 1, sizeof(ModelBuffer));
+	UniformBuffer* pShadowBuffer = new UniformBuffer(&shadowBuff, 1, sizeof(ShadowBuffer));
 
-	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
+	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, GetFarPlane());
 	glm::mat4 cameraMatrices[6] =
 	{
 		proj * glm::lookAt(position, position + glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -84,6 +91,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	context.SetProgram(ResourceHandler::GetShader(SHADER::SHADOW));
 	context.SetUniformBuffer(pCameraBuffer, 0);
 	context.SetUniformBuffer(pModelBuffer, 1);
+	context.SetUniformBuffer(pShadowBuffer, 2);
 
 	const std::vector<GameObject*> drawables = scene.GetDrawables();
 	for (uint32 i = 0; i < drawables.size(); i++)
@@ -113,6 +121,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 
 	DeleteSafe(pCameraBuffer);
 	DeleteSafe(pModelBuffer);
+	DeleteSafe(pShadowBuffer);
 
 	std::cout << "Created ShadowCube" << std::endl;
 }

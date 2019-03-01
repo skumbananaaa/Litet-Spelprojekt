@@ -40,6 +40,7 @@ ForwardRenderer::~ForwardRenderer()
 	DeleteSafe(m_pWorldBuffer);
 	DeleteSafe(m_pExtensionBuffer);
 	DeleteSafe(m_pBoneBuffer);
+	DeleteSafe(m_pShadowBuffer);
 	DeleteSafe(m_pSkyBoxPassPerFrame);
 	DeleteSafe(m_pSkyBoxPassPerObject);
 	DeleteSafe(m_pParticle);
@@ -102,10 +103,13 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	//Update WorldBuffer
 	UpdateExtensionBuffer(scene);
 
+	//Update shadows
+	UpdateShadowBuffer(pWorld);
+
 	//Reflections
 	glQueryCounter(m_pCurrentQuery->pQueries[0], GL_TIMESTAMP);
 	context.SetDepthMask(true);
-	ReflectionPass(scene);
+	ReflectionPass(scene, pWorld);
 	glQueryCounter(m_pCurrentQuery->pQueries[1], GL_TIMESTAMP);
 
 	//Update camrerabuffer to main camera
@@ -126,7 +130,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
 	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
-	MainPass(mainCamera, scene);
+	MainPass(mainCamera, scene, pWorld);
 	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
 	AnimationPass(dtS, scene, pWorld);
 	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
@@ -224,6 +228,15 @@ void ForwardRenderer::Create() noexcept
 		buff.ClipPlane = glm::vec4(0.0f);
 
 		m_pPlaneBuffer = new UniformBuffer(&buff, 1, sizeof(PlaneBuffer));
+	}
+
+	//Shadow
+	{
+		ShadowBuffer buff = {};
+		buff.LightPosition = glm::vec3();
+		buff.FarPlane = 0.0f;
+
+		m_pShadowBuffer = new UniformBuffer(&buff, 1, sizeof(ShadowBuffer));
 	}
 
 	//Light
@@ -382,7 +395,7 @@ void ForwardRenderer::SetWorldBuffer(const Scene& scene, const World* pWorld) co
 			{
 				for (uint32 z = 0; z < LEVEL_SIZE_Z; z++)
 				{
-					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y)->GetLevel()[x][z]);
+					m_LocalWorldBuff.map[x * 252 + y * 42 + z] = (float)(pWorld->GetLevel(y).GetLevel()[x][z]);
 				}
 			}
 		}
@@ -407,14 +420,31 @@ void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 	}
 }
 
-void ForwardRenderer::UpdateExtensionBuffer(const Scene & scene) const noexcept
+void ForwardRenderer::UpdateExtensionBuffer(const Scene& scene) const noexcept
 {
 	float extension = scene.GetExtension();
 
 	m_pExtensionBuffer->UpdateData(&extension);
 }
 
-void ForwardRenderer::ReflectionPass(const Scene& scene) const noexcept
+void ForwardRenderer::UpdateShadowBuffer(const World* const pWorld) const noexcept
+{
+	if (pWorld != nullptr)
+	{
+		if (pWorld->GetActiveRooms().size() > 0)
+		{
+			uint32 roomIndex = pWorld->GetActiveRooms()[0];
+
+			ShadowBuffer buff = {};
+			buff.FarPlane = pWorld->GetRoom(roomIndex).GetShadowMap()->GetFarPlane();
+			buff.LightPosition = pWorld->GetRoom(roomIndex).GetCenter();
+
+			m_pShadowBuffer->UpdateData(&buff);
+		}
+	}
+}
+
+void ForwardRenderer::ReflectionPass(const Scene& scene, const World* const pWorld) const noexcept
 {
 	if (scene.GetReflectables().size() < 1 || scene.GetPlanarReflectors().size() < 1)
 	{
@@ -587,7 +617,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 	context.SetColorMask(1, 1, 1, 1);
 }
 
-void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const noexcept
+void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene, const World* const pWorld) const noexcept
 {
 	if (m_DrawableBatches.size() < 1)
 	{
@@ -600,6 +630,11 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene) const n
 	GLContext& context = GLContext::GetCurrentContext();
 
 	MaterialBuffer perBatch = {};
+	if (pWorld != nullptr)
+	{
+		context.SetTexture(pWorld->GetRoom(0).GetShadowMap()->GetCubeTexture(), SHADOW_MAP_1_BINDING_SLOT);
+	}
+
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
 	{
 		const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;

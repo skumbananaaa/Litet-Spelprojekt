@@ -16,9 +16,9 @@ private:
 	void Expand();
 
 private:
-	Crewmember** m_ppMembers;
 	int m_NrOf;
 	int m_Cap;
+	Crewmember** m_ppMembers;
 };
 
 #endif

@@ -69,7 +69,6 @@ private:
 	std::vector<DirectionalLight*> m_DirectionalLights;
 	std::vector<PointLight*> m_PointLights;
 	std::vector<SpotLight*> m_SpotLights;
-	std::vector<PointLight*> m_RoomLights;
 	SkyBox* m_pSkyBox;
 
 	float m_Extension = 0.0f;

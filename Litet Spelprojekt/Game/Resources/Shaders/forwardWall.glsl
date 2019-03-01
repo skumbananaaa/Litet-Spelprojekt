@@ -136,8 +136,8 @@ void main()
 
 	//CLIPPING
 	gl_ClipDistance[0] = cutWalls;
-	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]); //DEPENDING ON LEVEL
-	gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]); //DEPENDING ON LEVEL
+	//gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]); //DEPENDING ON LEVEL
+	//gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]); //DEPENDING ON LEVEL
 
 	//Calculate light
 	vec3 specular = vec3(0.0f);

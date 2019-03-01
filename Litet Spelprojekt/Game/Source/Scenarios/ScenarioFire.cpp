@@ -203,7 +203,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 
 std::string ScenarioFire::GetName() noexcept
 {
-	return "Eldsvåda";
+	return "Eldsvï¿½da";
 }
 
 int32 ScenarioFire::GetCooldownTime() noexcept

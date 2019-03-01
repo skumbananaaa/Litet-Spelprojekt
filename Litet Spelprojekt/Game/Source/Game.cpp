@@ -32,8 +32,8 @@ Game::Game() noexcept
 
 	SetScene(m_pSceneLoading);
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
+	ScenarioManager::RegisterScenario(new ScenarioFire(true));
+	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 }
 
 Game::~Game()

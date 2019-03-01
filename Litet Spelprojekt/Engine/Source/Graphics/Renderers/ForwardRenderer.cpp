@@ -81,7 +81,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	{
 		if (pWorld != nullptr)
 		{
-			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive();
+			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
 		}
 
 		if (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()))
@@ -298,7 +298,7 @@ void ForwardRenderer::CreateBatches(const Scene& scene, const World* const pWorl
 		{
 			if (pWorld)
 			{
-				roomIsActive = pWorld->GetRoom(drawables[i]->GetRoom())->IsActive();
+				roomIsActive = pWorld->GetRoom(drawables[i]->GetRoom()).IsActive();
 			}
 
 			if (drawables[i]->IsVisible() && (roomIsActive || !drawables[i]->IsHidden()))
@@ -553,7 +553,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 	{
 		if (pWorld)
 		{
-			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive();
+			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
 		}
 
 		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
@@ -641,7 +641,7 @@ void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* 
 	{
 		if (pWorld)
 		{
-			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom())->IsActive();
+			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
 		}
 
 		if (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()))

@@ -5,7 +5,6 @@ World::World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects, 
 {
 	m_NumLevels = numLevels;
 	m_ppLevels = new WorldLevel*[m_NumLevels];
-
 	for (uint32 i = 0; i < m_NumLevels; i++)
 	{
 		m_ppLevels[i] = worldLevels[i];
@@ -30,10 +29,10 @@ World::~World()
 	DeleteArrSafe(m_ppLevels);
 	DeleteArrSafe(m_pStairs);
 
-	for (size_t i = 0; i < m_Rooms.size(); i++)
-	{
-		DeleteSafe(m_Rooms[i]);
-	}
+	//for (size_t i = 0; i < m_Rooms.size(); i++)
+	//{
+	//	DeleteSafe(m_Rooms[i]);
+	//}
 }
 
 void World::AddWorldObject(const WorldObject& object) noexcept
@@ -69,11 +68,10 @@ uint32 World::GetNumWorldObjects() const noexcept
 	return static_cast<uint32>(m_Objects.size());
 }
 
-void World::GenerateRooms()
+void World::GenerateRooms() noexcept
 {
 	std::vector<glm::uvec4> m_RoomBounds;
 	std::vector<glm::uvec4> temp;
-
 	std::vector<glm::vec3> center;
 
 	for (int level = 0; level < m_NumLevels; level += 2)
@@ -94,11 +92,19 @@ void World::GenerateRooms()
 		}
 	}
 	
-	m_Rooms.push_back(new Room());
-	m_Rooms.push_back(new Room());
+	m_Rooms.push_back(Room());
+	m_Rooms.push_back(Room());
 	for (size_t i = 2; i < center.size(); i++)
 	{
-		m_Rooms.push_back(new Room(center[i]));
+		m_Rooms.push_back(Room(center[i]));
+	}
+}
+
+void World::GenereateRoomShadows(const Scene& scene) noexcept
+{
+	for (size_t i = 0; i < m_Rooms.size(); i++)
+	{
+		m_Rooms[i].GenerateShadows(scene);
 	}
 }
 
@@ -142,7 +148,13 @@ uint32 World::GetNumStairs() const noexcept
 	return m_NumStairs;
 }
 
-Room* World::GetRoom(uint32 room) const noexcept
+Room& World::GetRoom(uint32 room) noexcept
+{
+	assert(room < m_Rooms.size());
+	return m_Rooms[room];
+}
+
+const Room& World::GetRoom(uint32 room) const noexcept
 {
 	assert(room < m_Rooms.size());
 	return m_Rooms[room];

@@ -1,5 +1,6 @@
 #pragma once
 #include <EnginePch.h>
+#include <Graphics/Textures/StaticShadowCube.h>
 
 class API Room
 {
@@ -11,9 +12,10 @@ public:
 	const bool IsActive() const noexcept;
 
 	void SetActive(bool active) noexcept;
+	void GenerateShadows(const Scene& scene) noexcept;
 
 private:
 	glm::vec3 m_Center;
 	bool m_Active = false;
-
+	StaticShadowCube* m_pShadowMap;
 };

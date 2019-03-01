@@ -27,7 +27,7 @@ Game::Game() noexcept
 
 	m_pRenderer = new ForwardRenderer();
 
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
+	m_pSkyBoxTex = TextureCube::CreateTextureCubeFromPanorama(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pSkyBox = new SkyBox(m_pSkyBoxTex);
 
 	SetScene(m_pSceneLoading);

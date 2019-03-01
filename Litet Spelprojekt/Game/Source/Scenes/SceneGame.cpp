@@ -48,7 +48,7 @@ SceneGame::SceneGame() : SceneInternal(false),
 	{
 		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
 		{
-			AddRoomLight(new PointLight(m_pWorld->GetRoom(0)->GetCenter(), glm::vec4(2.0f, 2.0f, 2.0f, 2.0f)));
+			AddRoomLight(new PointLight(m_pWorld->GetRoom(0).GetCenter(), glm::vec4(2.0f, 2.0f, 2.0f, 2.0f)));
 			m_RoomLightsTimers.push_back(0.0f);
 			m_ActiveRooms.push_back(0);
 		}
@@ -135,7 +135,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 			{
 				roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 				m_RoomLightsTimers[i] = 0.0f;
-				m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
+				m_pWorld->GetRoom(m_ActiveRooms[i]).SetActive(false);
 				m_ActiveRooms[i] = 1;
 				ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
 			}
@@ -180,7 +180,6 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 void SceneGame::OnRender(float dtS) noexcept
 {
-	SetSkyBox(m_pSkybox);
 	GetRenderer()->DrawScene(*this, m_pWorld, dtS);
 
 #if defined(DRAW_DEBUG_BOXES)
@@ -652,15 +651,15 @@ void SceneGame::ShowCrewmember(uint32 crewmember)
 	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
 
-	if (!m_pWorld->GetRoom(roomIndex)->IsActive())
+	if (!m_pWorld->GetRoom(roomIndex).IsActive())
 	{
-		const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
+		const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex).GetCenter();
 		std::vector<PointLight*>& roomLights = GetRoomLights();
 
 		roomLights[m_CurrentLight]->SetPosition(roomCenter);
 		m_RoomLightsTimers[m_CurrentLight] = 0.0f;
 		m_ActiveRooms[m_CurrentLight] = roomIndex;
-		m_pWorld->GetRoom(roomIndex)->SetActive(true);
+		m_pWorld->GetRoom(roomIndex).SetActive(true);
 		m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
 	}
 }

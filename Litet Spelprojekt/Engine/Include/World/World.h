@@ -41,11 +41,13 @@ public:
 
 	const glm::ivec3* GetStairs() const noexcept;
 	uint32 GetNumStairs() const noexcept;
-	Room* GetRoom(uint32 room) const noexcept;
+	Room& GetRoom(uint32 room) noexcept;
+	const Room& GetRoom(uint32 room) const noexcept;
 	const glm::ivec3& GetDoor(uint32 index) const noexcept;
 	uint32 GetNumDoors() const noexcept;
 
-	void GenerateRooms();
+	void GenerateRooms() noexcept;
+	void GenereateRoomShadows(const Scene& scene) noexcept;
 	void GenerateWater(Scene* pScene) noexcept;
 
 	void Update(Scene* pScene, float dt);
@@ -53,12 +55,10 @@ public:
 private:
 	WorldLevel** m_ppLevels;
 	uint32 m_NumLevels;
-	std::vector<WorldObject> m_Objects;
-
 	glm::ivec3* m_pStairs;
 	uint32 m_NumStairs;
 
+	std::vector<WorldObject> m_Objects;
 	std::vector<glm::ivec3> m_Doors;
-
-	std::vector<Room*> m_Rooms;
+	std::vector<Room> m_Rooms;
 };

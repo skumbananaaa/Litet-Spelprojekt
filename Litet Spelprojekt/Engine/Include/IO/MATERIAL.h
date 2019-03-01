@@ -21,6 +21,7 @@ public:
 	static uint32 WATER_OUTDOOR;
 	static uint32 WATER_INDOOR;
 	static uint32 WALL_STANDARD;
+	static uint32 BULKHEADS_STANDARD;
 	static uint32 CREW_STANDARD;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;

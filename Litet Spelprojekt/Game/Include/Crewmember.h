@@ -96,7 +96,7 @@ private:
 	bool m_IsHovered;
 	int32 m_ShipNumber;
 
-	void (Crewmember::* m_pOrderPool[MAX_NR_OF_ORDERS])(glm::ivec3) = { CloseDoorOrder };
+	//void (Crewmember::* m_pOrderPool[MAX_NR_OF_ORDERS])(glm::ivec3) = { CloseDoorOrder };
 
 	int8 m_SkillFire;
 	int8 m_SkillMedic;

@@ -111,16 +111,16 @@ void WorldSerializer::Write(const char* const path, const World& world)
 	writer.StartArray();
 	for (uint32 levelId = 0; levelId < world.GetNumLevels(); levelId++)
 	{
-		const WorldLevel* level = world.GetLevel(levelId);
+		const WorldLevel& level = world.GetLevel(levelId);
 		writer.StartArray();
 
-		for (uint32 x = 0; x < level->GetSizeX(); x++)
+		for (uint32 x = 0; x < level.GetSizeX(); x++)
 		{
 			writer.StartArray();
 
-			for (uint32 z = 0; z < level->GetSizeZ(); z++)
+			for (uint32 z = 0; z < level.GetSizeZ(); z++)
 			{
-				writer.Uint(level->GetLevel()[x][z]);
+				writer.Uint(level.GetLevel()[x][z]);
 			}
 
 			writer.EndArray();
@@ -134,16 +134,16 @@ void WorldSerializer::Write(const char* const path, const World& world)
 	writer.StartArray();
 	for (uint32 levelId = 0; levelId < world.GetNumLevels(); levelId++)
 	{
-		const WorldLevel* level = world.GetLevel(levelId);
+		const WorldLevel& level = world.GetLevel(levelId);
 		writer.StartArray();
 
-		for (uint32 x = 0; x < level->GetSizeX(); x++)
+		for (uint32 x = 0; x < level.GetSizeX(); x++)
 		{
 			writer.StartArray();
 
-			for (uint32 z = 0; z < level->GetSizeZ(); z++)
+			for (uint32 z = 0; z < level.GetSizeZ(); z++)
 			{
-				writer.Double(level->GetLevelData()[x][z].BurnsAt);
+				writer.Double(level.GetLevelData()[x][z].BurnsAt);
 			}
 
 			writer.EndArray();
@@ -177,9 +177,9 @@ void WorldSerializer::Write(const char* const path, const World& world)
 
 	writer.String("stairs");
 	writer.StartArray();
-	for (uint32 stairId = 0; stairId < world.GetNumStairs(); stairId++)
+	for (uint32 stairId = 0; stairId < world.GetStairs().size(); stairId++)
 	{
-		const glm::ivec3* stairs = world.GetStairs();
+		const std::vector<glm::ivec3>& stairs = world.GetStairs();
 		writer.StartArray();
 
 		writer.Uint(stairs[stairId].x);
@@ -192,7 +192,7 @@ void WorldSerializer::Write(const char* const path, const World& world)
 
 	writer.String("doors");
 	writer.StartArray();
-	for (uint32 doorId = 0; doorId < world.GetNumDoors(); doorId++)
+	for (uint32 doorId = 0; doorId < world.GetDoors().size(); doorId++)
 	{
 		const glm::ivec3& door = world.GetDoor(doorId);
 		writer.StartArray();

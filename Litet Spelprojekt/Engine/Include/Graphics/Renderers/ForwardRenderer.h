@@ -34,9 +34,10 @@ private:
 	void UpdateLightBuffer(const Scene& scene) const noexcept;
 	void UpdateCameraBuffer(const Camera& camera) const noexcept;
 	void UpdateExtensionBuffer(const Scene& scene) const noexcept;
-	void ReflectionPass(const Scene& scene) const noexcept;
+	void UpdateShadowBuffer(const World* const pWorld) const noexcept;
+	void ReflectionPass(const Scene& scene, const World* const pWorld) const noexcept;
 	void DepthPrePass(const Camera& camera, const Scene& scene, const World* pWorld) const noexcept;
-	void MainPass(const Camera& camera, const Scene& scene) const noexcept;
+	void MainPass(const Camera& camera, const Scene& scene, const World* const pWorld) const noexcept;
 	void AnimationPass(float dtS, const Scene& scene, const World* const pWorld) const noexcept;
 	void ParticlePass(const Camera& camera, const Scene& scene) const noexcept;
 	void SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept;
@@ -50,6 +51,7 @@ private:
 	UniformBuffer* m_pWorldBuffer;
 	UniformBuffer* m_pExtensionBuffer;
 	UniformBuffer* m_pBoneBuffer;
+	UniformBuffer* m_pShadowBuffer;
 
 	UniformBuffer* m_pSkyBoxPassPerFrame;
 	UniformBuffer* m_pSkyBoxPassPerObject;

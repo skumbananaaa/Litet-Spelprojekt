@@ -21,13 +21,28 @@ layout(std140, binding = 1) uniform ModelBuffer
 	mat4 g_Model;
 };
 
+out vec4 g_FragPosition;
+
 void main()
 {
-	gl_Position = g_ProjectionView * g_Model * vec4(g_Position, 1.0f);
+	g_FragPosition = g_ProjectionView * g_Model * vec4(g_Position, 1.0f);
+	gl_Position = g_FragPosition;
 }
 
 #elif defined(FRAGMENT_SHADER)
+layout(early_fragment_tests) in;
+
+in vec4 g_FragPosition;
+
+layout(std140, binding = 2) uniform ModelBuffer
+{
+	vec3 g_LightPosition;
+	float g_FarPlane;
+};
+
 void main()
 {
+	float dist = length(g_FragPosition.xyz - g_LightPosition);
+	gl_FragDepth = dist / g_FarPlane;
 }
 #endif

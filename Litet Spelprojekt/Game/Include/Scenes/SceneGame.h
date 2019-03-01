@@ -58,20 +58,19 @@ protected:
 	void UpdateCamera(float dtS) noexcept;
 
 private:
+	bool m_IsPaused;
+	bool cartesianCamera;
+	
+	int32 m_CurrentElevation;
+	uint32 m_CurrentLight = 0;
+
 	UICrewMember* m_pUICrewMember;
 	UICrew* m_pUICrew;
 	UILog* m_pUILog;
 	UIPause* m_pUIPause;
 
-	SkyBox* m_pSkybox;
-
-	World* m_pWorld;
-	Crew m_Crew;
-	bool m_IsPaused;
-	bool cartesianCamera;
-	int32 m_CurrentElevation;
-	std::vector<uint32> m_ActiveRooms;
-	std::vector<float> m_RoomLightsTimers;
-	uint32 m_CurrentLight = 0;
 	AudioSource* m_pTestAudioSource;
+	World* m_pWorld;
+
+	Crew m_Crew;
 };

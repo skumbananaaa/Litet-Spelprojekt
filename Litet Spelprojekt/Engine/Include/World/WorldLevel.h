@@ -60,11 +60,11 @@ class API WorldLevel
 	friend class Editor;
 
 public:
-	WorldLevel(WorldLevel&& other) = delete;
-	WorldLevel(const WorldLevel& other) = delete;
 	WorldLevel& operator=(WorldLevel&& other) = delete;
 	WorldLevel& operator=(const WorldLevel& other) = delete;
 
+	WorldLevel(WorldLevel&& other);
+	WorldLevel(const WorldLevel& other);
 	WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept;
 	~WorldLevel();
 
@@ -82,7 +82,7 @@ public:
 	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
 	void GenerateRooms();
-	void GenerateWater(Scene* pScene, uint32 levelHeight);
+	void GenerateWater(Scene& scene, uint32 levelHeight);
 	void UpdateFire(float dt);
 	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
 
@@ -95,6 +95,5 @@ private:
 	uint32 m_SizeZ;
 	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
-
 	std::vector<glm::uvec4> m_RoomBounds;
 };

@@ -1,6 +1,54 @@
 #include <EnginePch.h>
 #include <World/WorldLevel.h>
 
+WorldLevel::WorldLevel(WorldLevel&& other)
+{
+	m_SizeX = other.m_SizeX;
+	m_SizeZ = other.m_SizeZ;
+	m_ppLevel = other.m_ppLevel;
+	m_ppLevelData = other.m_ppLevelData;
+
+	m_NrOfWalls = other.m_NrOfWalls;
+
+	m_BurningIDs.swap(other.m_BurningIDs);
+	m_FloodingIDs.swap(other.m_FloodingIDs);
+	m_RoomBounds.swap(m_RoomBounds);
+}
+
+WorldLevel::WorldLevel(const WorldLevel& other)
+{
+	m_NrOfWalls = other.m_NrOfWalls;
+
+	m_BurningIDs = other.m_BurningIDs;
+	m_FloodingIDs = other.m_FloodingIDs;
+	m_RoomBounds = other.m_RoomBounds;
+
+	m_SizeX = other.m_SizeX;
+	m_SizeZ = other.m_SizeZ;
+	m_ppLevelData = new TileData*[m_SizeX];
+	m_ppLevel = new uint32*[m_SizeX];
+	for (uint32 x = 0; x < m_SizeX; x++)
+	{
+		m_ppLevel[x] = new uint32[m_SizeZ];
+		m_ppLevelData[x] = new TileData[m_SizeZ];
+		for (uint32 z = 0; z < m_SizeZ; z++)
+		{
+			m_ppLevel[x][z] = other.m_ppLevel[x][z];
+			m_ppLevelData[x][z].HasStairs = other.m_ppLevelData[x][z].HasStairs;
+			m_ppLevelData[x][z].BurnsAt = other.m_ppLevelData[x][z].BurnsAt;
+			m_ppLevelData[x][z].Temp = other.m_ppLevelData[x][z].Temp;
+			m_ppLevelData[x][z].SmokeAmount = other.m_ppLevelData[x][z].SmokeAmount;
+			m_ppLevelData[x][z].SmokeLimit = other.m_ppLevelData[x][z].SmokeLimit;
+			m_ppLevelData[x][z].WaterLevel = other.m_ppLevelData[x][z].WaterLevel;
+			m_ppLevelData[x][z].WaterLevelChange = other.m_ppLevelData[x][z].WaterLevelChange;
+			m_ppLevelData[x][z].WaterLevelLastUpdated = other.m_ppLevelData[x][z].WaterLevelLastUpdated;
+			m_ppLevelData[x][z].WaterLevelAge = other.m_ppLevelData[x][z].WaterLevelAge;
+			m_ppLevelData[x][z].AlreadyFlooded = other.m_ppLevelData[x][z].AlreadyFlooded;
+			m_ppLevelData[x][z].Burning = other.m_ppLevelData[x][z].Burning;
+		}
+	}
+}
+
 WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept
 {
 	m_SizeX = sizeX;
@@ -153,7 +201,8 @@ void WorldLevel::GenerateRooms()
 		}
 	}
 }
-void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
+
+void WorldLevel::GenerateWater(Scene& scene, uint32 levelHeight)
 {
 	WaterObject* pGameObject = nullptr;
 
@@ -168,7 +217,8 @@ void WorldLevel::GenerateWater(Scene* pScene, uint32 levelHeight)
 			pGameObject->SetScale(glm::vec3(1.0f));
 			pGameObject->SetPosition(glm::vec3(x, levelHeight, z));
 			pGameObject->UpdateTransform();
-			pScene->AddGameObject(pGameObject);
+
+			scene.AddGameObject(pGameObject);
 			m_ppLevelData[x][z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER] = pGameObject;
 		}
 	}

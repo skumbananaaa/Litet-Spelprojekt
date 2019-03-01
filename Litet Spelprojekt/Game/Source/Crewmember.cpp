@@ -3,6 +3,7 @@
 #include <System/Random.h>
 #include "..\Include\Game.h"
 #include "../Include/Orders/OrderWalk.h"
+#include <World/WorldLevel.h>
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 {

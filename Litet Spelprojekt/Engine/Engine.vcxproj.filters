@@ -194,6 +194,7 @@
     <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
     <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
     <ClInclude Include="Include\Graphics\GUI\TextField.h" />
+    <ClInclude Include="Include\World\Scenarios\IOrder.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

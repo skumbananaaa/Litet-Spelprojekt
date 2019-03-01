@@ -220,10 +220,10 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 			ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetIsVisible(false);
 			toRemoveFloodingIDs.push_back(tile);
 
-			if (ppLevelData[tile.x][tile.y].Burning)
-			{
-				ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(true);
-			}
+			//if (ppLevelData[tile.x][tile.y].Burning)
+			//{
+			//	ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(true);
+			//}
 		}
 	}
 }

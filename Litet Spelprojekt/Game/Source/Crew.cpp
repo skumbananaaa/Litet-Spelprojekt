@@ -1,4 +1,5 @@
 #include "..\Include\Crew.h"
+#include "../Include/Orders/OrderHandler.h"
 
 void Crew::Expand()
 {
@@ -22,6 +23,14 @@ void Crew::Expand()
 	}
 }
 
+void Crew::RequestCloseDoor(World* pWorld, Scene* pScene)
+{
+	for (int i = 0; i < m_NrOf; i++)
+	{
+		//OrderHandler::GiveOrder(new OrderCloseDoor(), m_ppMembers[i]);
+	}
+}
+
 Crew::Crew(int cap)
 {
 	m_Cap = cap;
@@ -39,7 +48,7 @@ Crew::~Crew()
 	DeleteArrSafe(m_ppMembers);
 }
 
-void Crew::AddMember(const World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
+void Crew::AddMember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 {
 	Expand();
 	Crewmember* member = new Crewmember(world, lightColor, position, actionCap, name);

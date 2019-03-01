@@ -122,23 +122,6 @@ void main()
 	//Viewdir
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);
 
-	//CLIPPING WALLS
-	vec3 toLookAt = normalize(g_CameraLookAt - (g_InstanceModel[3].xyz + vec3(g_Extension * floor(g_InstanceModel[3].y / 2.0f), 0.0f, 0.0f)));
-	vec3 cameraForward = normalize(g_CameraLookAt - g_CameraPosition);
-	float dotToLookAtForward = dot(vec3(cameraForward.x, 0.0f, cameraForward.z), vec3(toLookAt.x, 0.0f, toLookAt.z));
-	float cutWalls = 1.0f;
-
-	if (dotToLookAtForward > 0.0f)
-	{
-		vec4 wallClipPlane = vec4(0.0f, -1.0f, 0.0f, g_InstanceModel[3].y - WALL_STUMP_FROM_CENTER);
-		cutWalls = dot(worldPos, wallClipPlane);
-	}
-
-	//CLIPPING
-	gl_ClipDistance[0] = cutWalls;
-	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]); //DEPENDING ON LEVEL
-	gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]); //DEPENDING ON LEVEL
-
 	//Calculate light
 	vec3 specular = vec3(0.0f);
 	vec3 lightColor = vec3(0.0f);
@@ -211,9 +194,7 @@ void main()
 	vs_out.Specular = specular;
 	vs_out.LightColor = lightColor;
 
-	vec2 texCoords = g_TexCoords;
-	texCoords.x *= max(scale.x, scale.z) / 2.0f;
-	vs_out.TexCoords = texCoords;
+	vs_out.TexCoords = g_TexCoords;
 
 	gl_Position = g_ProjectionView * worldPos;
 }

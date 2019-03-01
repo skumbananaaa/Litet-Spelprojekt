@@ -43,7 +43,7 @@ public:
 	static uint32 RegisterMaterial(const glm::vec4& color, float specular, int32 shader = -1);
 	static uint32 RegisterWaterOutdoorMaterial();
 	static uint32 RegisterWaterIndoorMaterial();
-	static uint32 RegisterWallMaterial(const glm::vec4& color, float specular);
+	static uint32 RegisterWallMaterial(int32 texture, float specular);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
 	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);

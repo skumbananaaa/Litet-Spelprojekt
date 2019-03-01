@@ -357,38 +357,38 @@ void SceneGame::CreateGameObjects() noexcept
 {
 	GameObject* pGameObject = nullptr;
 	{
-		//Bottom floor
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::RED);
-			pGameObject->SetMesh(MESH::CUBE_OBJ);
-			pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
-			pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
+		////Bottom floor
+		//{
+		//	pGameObject = new GameObject();
+		//	pGameObject->SetMaterial(MATERIAL::RED);
+		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
+		//	pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
+		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
+		//	pGameObject->UpdateTransform();
+		//	AddGameObject(pGameObject);
+		//}
 
-		//Middle floor
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::GREEN);
-			pGameObject->SetMesh(MESH::CUBE_OBJ);
-			pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
-			pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
+		////Middle floor
+		//{
+		//	pGameObject = new GameObject();
+		//	pGameObject->SetMaterial(MATERIAL::GREEN);
+		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
+		//	pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
+		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
+		//	pGameObject->UpdateTransform();
+		//	AddGameObject(pGameObject);
+		//}
 
-		//Top floor
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::BLUE);
-			pGameObject->SetMesh(MESH::CUBE_OBJ);
-			pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
-			pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
+		////Top floor
+		//{
+		//	pGameObject = new GameObject();
+		//	pGameObject->SetMaterial(MATERIAL::BLUE);
+		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
+		//	pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
+		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
+		//	pGameObject->UpdateTransform();
+		//	AddGameObject(pGameObject);
+		//}
 	}
 }
 
@@ -550,6 +550,9 @@ void SceneGame::CreateWorld() noexcept
 			AddGameObject(pGameObject);
 		}
 	}
+
+	//Generate floor
+	m_pWorld->GenerateFloor(this);
 
 	//Generate water
 	m_pWorld->GenerateWater(this);

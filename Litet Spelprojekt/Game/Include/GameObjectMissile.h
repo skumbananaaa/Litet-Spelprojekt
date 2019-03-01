@@ -1,5 +1,6 @@
 #pragma once
 #include <Graphics/GameObject.h>
+#include <Graphics/Particles/MeshEmitter.h>
 
 class GameObjectMissile : public GameObject
 {
@@ -12,7 +13,11 @@ public:
 
 	bool HasHitTarget() const noexcept;
 
+	virtual void OnAddedToScene(Scene* scene) noexcept override;
+	virtual void OnRemovedFromScene(Scene* scene) noexcept override;
+
 private:
+	MeshEmitter* m_pMeshEmitter;
 	glm::vec3 m_Direction;
 	float m_Velocity;
 	float m_TotalDistance;

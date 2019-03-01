@@ -19,7 +19,7 @@ void ScenarioMissile::Init(World* pWorld) noexcept
 
 void ScenarioMissile::OnStart(Scene* scene) noexcept
 {
-	glm::vec3 pos = glm::vec3(Random::GenerateInt(-50, 50), 200, Random::GenerateInt(-50, 50));
+	glm::vec3 pos = glm::vec3(Random::GenerateInt(-200, 200), 200, Random::GenerateInt(-200, 200));
 	glm::vec3 target = glm::vec3(Random::GenerateInt(1, 10), 0, Random::GenerateInt(1, 40));
 	m_pGameObjectMissile = new GameObjectMissile(pos, target);
 

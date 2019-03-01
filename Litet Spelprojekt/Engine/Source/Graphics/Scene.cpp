@@ -246,6 +246,41 @@ void Scene::RemoveGameObject(GameObject* pGameObject) noexcept
 			}
 		}
 	}
+
+	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);
+	if (pEmitter != nullptr)
+	{
+		for (int i = 0; i < m_ParticleEmitters.size(); i++)
+		{
+			if (m_ParticleEmitters[i] == pGameObject)
+			{
+				m_ParticleEmitters.erase(m_ParticleEmitters.begin() + i);
+				break;
+			}
+		}
+	}
+
+	MeshEmitter* pMeshEmitter = dynamic_cast<MeshEmitter*>(pGameObject);
+	if (pMeshEmitter != nullptr)
+	{
+		for (int i = 0; i < m_MeshEmitters.size(); i++)
+		{
+			if (m_MeshEmitters[i] == pGameObject)
+			{
+				m_MeshEmitters.erase(m_MeshEmitters.begin() + i);
+				break;
+			}
+		}
+	}
+
+	const std::string& name = pGameObject->GetName();
+	if (name != "")
+	{
+		m_NamedObjects[name] = nullptr;
+	}
+
+
+	pGameObject->OnRemovedFromScene(this);
 }
 
 void Scene::ExtendScene() noexcept

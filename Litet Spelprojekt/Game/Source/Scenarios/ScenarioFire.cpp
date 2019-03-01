@@ -19,7 +19,7 @@ void SpawnFire(Scene* pScene, const glm::vec3& position, TileData& data, bool vi
 	pEmitter->SetIsVisible(visible);
 
 	pScene->AddGameObject(pEmitter);
-	data.GameObjects[3] = pEmitter;
+	data.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE] = pEmitter;
 }
 
 void SpawnSmoke(Scene* pScene, const glm::vec3& position, TileData& data, bool visible = false)
@@ -37,7 +37,7 @@ void SpawnSmoke(Scene* pScene, const glm::vec3& position, TileData& data, bool v
 	pEmitter->UpdateTransform();
 	pEmitter->SetIsVisible(visible);
 	pScene->AddGameObject(pEmitter);
-	data.GameObjects[2] = pEmitter;
+	data.GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE] = pEmitter;
 }
 
 ScenarioFire::ScenarioFire()

@@ -48,7 +48,7 @@ Crew::~Crew()
 	DeleteArrSafe(m_ppMembers);
 }
 
-void Crew::AddMember(const World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
+void Crew::AddMember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 {
 	Expand();
 	Crewmember* member = new Crewmember(world, lightColor, position, actionCap, name);

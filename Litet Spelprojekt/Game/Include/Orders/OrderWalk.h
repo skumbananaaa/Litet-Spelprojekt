@@ -1,6 +1,9 @@
 #pragma once
 #include "IOrder.h"
 #include <System/ThreadHandler.h>
+#include <GLM/glm.hpp>
+
+class Path;
 
 class OrderWalk : public IOrder, public IRunnable
 {
@@ -13,6 +16,10 @@ public:
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
 	virtual void EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual void AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual bool AllowsMultipleOrders() noexcept override;
+	virtual std::string GetName() noexcept override;
+	virtual bool ReadyToAbort() noexcept override;
 	virtual void RunParallel() override;
 
 	bool FollowPath(float dtS) noexcept;

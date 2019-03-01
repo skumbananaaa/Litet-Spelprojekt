@@ -2,19 +2,18 @@
 #define CREWMEMBER_H
 
 #include <Graphics/GameObject.h>
-#include <System/ThreadHandler.h>
-#include "..\Include\Path.h"
+#include "../Include/Orders/OrderHandler.h"
 
 #define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
 #define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
 #define MAX_NR_OF_ORDERS 10
 
-class Crewmember : public GameObject, public IRunnable
+class Crewmember : public GameObject
 {
 	friend class Crew;
 
 public:
-	Crewmember(const World* world, const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
+	Crewmember(World* world, const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
 	Crewmember(Crewmember& other);
 	~Crewmember();
 	
@@ -26,16 +25,10 @@ public:
 	void LookForDoor(World* pWorld, Scene* pScene);
 	void CloseDoorOrder(glm::ivec3 doorTile);
 
-	///<summary>Moves along the path towards the goal position.</summary>
-	void FollowPath(float dtS);
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
 	void SetActionCapacity(float actionCap);
-	///<summary>Sets a grid for the path finding algorithm.</summary>
-	void SetPath();
 	///<summary>returns the current action capacity of the crewmember.</summary>
 	const float GetActionCapacity() const;
-	///<summary>Returns true if the object is currently moving. Otherwise returns false.</summary>
-	//const bool IsMoving() const;
 	///<summary>Sets a new position for the object.</summary>
 	void SetPosition(const glm::vec3& position) noexcept;
 	///<summary>Gets the current direction that the crewmember is facing.</summary>
@@ -44,8 +37,6 @@ public:
 	void SetDirection(const glm::vec3& direction) noexcept;
 	///<summary>>Switches between point light and spotlight for the crewmember.</summary>
 	glm::ivec3 GetTile() const noexcept;
-	///<summary>Used to determine path of crewmember to an already selected target. Function made to run on multiple threads.</summary>
-	virtual void RunParallel() override;
 	///<summary>Updates matrix of the object.</summary>
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 
@@ -77,22 +68,14 @@ private:
 	void UpdateHealth(float dt);
 	float m_ActionCap;
 	float m_DeltaTime;
-	//Path* m_pPathFinder;
-	const World* m_pWorld;
+	World* m_pWorld;
 	glm::ivec3 m_PlayerTile;
-	/*glm::vec3 m_directionTile;
-	glm::ivec3 m_TargetTile;
-	glm::ivec3 m_GoalTile;
-	glm::ivec3* m_pPath;
-	glm::vec3 m_TargetPos;*/
 	glm::vec3 m_Direction;
 	glm::vec3 m_LastKnownPosition;
-	//int m_NrOfPathTiles;
 	bool m_IsPicked;
 	bool m_IsHovered;
 	int32 m_ShipNumber;
-
-	//void (Crewmember::* m_pOrderPool[MAX_NR_OF_ORDERS])(glm::ivec3) = { CloseDoorOrder };
+	OrderHandler m_OrderHandler;
 
 	int8 m_SkillFire;
 	int8 m_SkillMedic;

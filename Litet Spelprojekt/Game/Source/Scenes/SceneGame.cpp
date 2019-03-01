@@ -3,7 +3,6 @@
 #include <World/LightManager.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include <World/GameObjectDoor.h>
-#include "../../Include/Orders/OrderHandler.h"
 
 
 SceneGame::SceneGame() : SceneInternal(false),
@@ -110,7 +109,6 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	}
 
 	DeleteSafe(m_pUICrew);
-	OrderHandler::Release();
 }
 
 void SceneGame::OnUpdate(float dtS) noexcept
@@ -133,7 +131,6 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	{
 		SceneInternal::OnUpdate(dtS);
 		ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
-		OrderHandler::Update(this, m_pWorld, &m_Crew, dtS);
 		UpdateCamera(dtS);
 
 		static float dist = 0.0f;
@@ -582,7 +579,6 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(10.0f, 0.9f + 4.0f, 10.0f), 100, names[0]);
 	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
-	m_Crew.GetMember(0)->SetPath();
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
 	m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
@@ -597,7 +593,6 @@ void SceneGame::CreateCrew() noexcept
 		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
-		m_Crew.GetMember(i)->SetPath();
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
 		m_Crew.GetMember(i)->SetHidden(true);
 		m_Crew.GetMember(i)->UpdateTransform();

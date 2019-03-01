@@ -1,13 +1,16 @@
 #pragma once
 #include "IOrder.h"
+#include <vector>
 
 class OrderHandler
 {
 public:
-	static void GiveOrder(IOrder* order, Crewmember* crewMember) noexcept;
-	static void Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept;
-	static void Release() noexcept;
+	OrderHandler();
+	~OrderHandler();
+
+	void GiveOrder(IOrder* order, Crewmember* crewMember) noexcept;
+	void Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept;
+
 private:
-	OrderHandler(); 
-	static std::vector<IOrder*> s_OrderQueue;
+	std::vector<IOrder*> s_OrderQueue;
 };

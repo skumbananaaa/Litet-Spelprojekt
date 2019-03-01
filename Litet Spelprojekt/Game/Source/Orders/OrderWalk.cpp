@@ -1,6 +1,8 @@
 #include <EnginePch.h>
 #include "../../Include/Orders/OrderWalk.h"
-
+#include <World/World.h>
+#include <Graphics/Scene.h>
+#include "../../Include/Crew.h"
 
 OrderWalk::OrderWalk(glm::ivec3 goalTile):
 	m_pPathFinder(nullptr),
@@ -34,6 +36,26 @@ void OrderWalk::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexc
 	DeleteSafe(m_pPathFinder);
 }
 
+void OrderWalk::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+{
+	DeleteSafe(m_pPathFinder);
+}
+
+bool OrderWalk::AllowsMultipleOrders() noexcept
+{
+	return false;
+}
+
+std::string OrderWalk::GetName() noexcept
+{
+	return "Walk";
+}
+
+bool OrderWalk::ReadyToAbort() noexcept
+{
+	return m_IsPathReady;
+}
+
 void OrderWalk::RunParallel()
 {
 	m_pPath = m_pPathFinder->FindPath(GetCrewMember()->GetTile(), m_GoalTile);
@@ -53,7 +75,6 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 			m_directionTile = m_pPath[m_NrOfTilesLeft - 1];
 			m_TargetTile = m_pPath[--m_NrOfTilesLeft];
 			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
-			std::cout << "Entered new Tile" << std::endl;
 		}
 	}
 	else

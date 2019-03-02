@@ -8,6 +8,7 @@
 #include "Scenes/SceneOptions.h"
 #include "Scenes/SceneScenario.h"
 #include <Graphics/Renderers/ForwardRenderer.h>
+#include <Audio/Sources/AudioSource.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
@@ -52,4 +53,5 @@ private:
 	TextureCube* m_pSkyBoxTex;
 	SkyBox* m_pSkyBox;
 	IRenderer* m_pRenderer;
+	AudioSource* m_pAudioSourceMenu;
 };

@@ -82,7 +82,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 
 		EvaporateWater(originTile, dtS);
 
-		if (originTile.Temp < originTile.BurnsAt && originTile.Burning)
+		if (originTile.Temp < originTile.BurnsAt && originTile.Burning && originTile.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE] != nullptr)
 		{
 			toRemoveOnFireIDs.push_back(pos);
 		}
@@ -140,7 +140,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 
 		int32 aboveIndex = smokePos.y + 1;
 
-		if (tile.SmokeAmount < tile.SmokeLimit)
+		if (tile.SmokeAmount < tile.SmokeLimit && tile.GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE] != nullptr)
 		{
 			toRemoveSmokeIDs.push_back(smokePos);
 		}

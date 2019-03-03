@@ -27,7 +27,6 @@ public:
 	void AddDirectionalLight(DirectionalLight* pLight) noexcept;
 	void AddPointLight(PointLight* pLight) noexcept;
 	void AddSpotLight(SpotLight* pLight) noexcept;
-	void AddRoomLight(PointLight* pLight) noexcept;
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void RemoveGameObject(GameObject* pGameObject) noexcept;
@@ -50,8 +49,6 @@ public:
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
-	const std::vector<PointLight*>& GetRoomLights() const noexcept;
-	std::vector<PointLight*>& GetRoomLights() noexcept;
 	const float GetExtension() const noexcept;
 
 private:
@@ -146,16 +143,6 @@ inline const std::vector<PointLight*>& Scene::GetPointLights() const noexcept
 inline const std::vector<SpotLight*>& Scene::GetSpotLights() const noexcept
 {
 	return m_SpotLights;
-}
-
-inline const std::vector<PointLight*>& Scene::GetRoomLights() const noexcept
-{
-	return m_RoomLights;
-}
-
-inline std::vector<PointLight*>& Scene::GetRoomLights() noexcept
-{
-	return m_RoomLights;
 }
 
 inline const float Scene::GetExtension() const noexcept

@@ -5,26 +5,30 @@ WorldLevel::WorldLevel(WorldLevel&& other)
 {
 	m_SizeX = other.m_SizeX;
 	m_SizeZ = other.m_SizeZ;
+	m_TilesBetweenBulkheads = other.m_TilesBetweenBulkheads;
+
 	m_ppLevel = other.m_ppLevel;
 	m_ppLevelData = other.m_ppLevelData;
 
-	m_NrOfWalls = other.m_NrOfWalls;
-
 	m_BurningIDs.swap(other.m_BurningIDs);
 	m_FloodingIDs.swap(other.m_FloodingIDs);
-	m_RoomBounds.swap(m_RoomBounds);
+	m_RoomBounds.swap(other.m_RoomBounds);
+	m_Walls.swap(other.m_Walls);
+	m_Bulkheads.swap(other.m_Bulkheads);
 }
 
 WorldLevel::WorldLevel(const WorldLevel& other)
 {
-	m_NrOfWalls = other.m_NrOfWalls;
-
 	m_BurningIDs = other.m_BurningIDs;
 	m_FloodingIDs = other.m_FloodingIDs;
 	m_RoomBounds = other.m_RoomBounds;
+	m_Walls = other.m_Walls;
+	m_Bulkheads = other.m_Bulkheads;
 
 	m_SizeX = other.m_SizeX;
 	m_SizeZ = other.m_SizeZ;
+	m_TilesBetweenBulkheads = other.m_TilesBetweenBulkheads;
+
 	m_ppLevelData = new TileData*[m_SizeX];
 	m_ppLevel = new uint32*[m_SizeX];
 	for (uint32 x = 0; x < m_SizeX; x++)
@@ -49,8 +53,10 @@ WorldLevel::WorldLevel(const WorldLevel& other)
 	}
 }
 
-WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept :
-	m_TilesBetweenBulkheads(0)
+WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept 
+	: m_TilesBetweenBulkheads(0),
+	m_ppLevel(nullptr),
+	m_ppLevelData(nullptr)
 {
 	m_SizeX = sizeX;
 	m_SizeZ = sizeZ;

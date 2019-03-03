@@ -43,7 +43,16 @@ void ShaderProgram::Construct()
 	if (!success)
 	{
 		glGetProgramInfoLog(m_Program, 512, NULL, infoLog);
-		std::cout << "ERROR LINKING SHADERS\n" << infoLog << std::endl;
+		std::cout << "ERROR LINKING SHADERS:\n";
+		if (m_VShader != nullptr)
+		{
+			std::cout << " VertexShader   : " << m_VShader->m_Path << std::endl;
+		}
+		if (m_FShader != nullptr)
+		{
+			std::cout << " FragmentShader : " << m_FShader->m_Path << std::endl;
+		}
+		std::cout << infoLog << std::endl;
 	}
 	else
 	{

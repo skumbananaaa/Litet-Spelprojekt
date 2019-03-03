@@ -353,28 +353,58 @@ void ForwardRenderer::UpdateLightBuffer(const Scene& scene) const noexcept
 	{
 		LightBuffer buff = {};
 
+		int32 directionalLightsIndex = 0;
 		const std::vector<DirectionalLight*>& directionalLights = scene.GetDirectionalLights();
 		for (size_t i = 0; i < directionalLights.size(); i++)
 		{
-			buff.DirectionalLights[i].Color = directionalLights[i]->GetColor();
-			buff.DirectionalLights[i].Direction = directionalLights[i]->GetDirection();
+			if (directionalLightsIndex >= NUM_DIRECTIONAL_LIGHTS)
+			{
+				break;
+			}
+
+			if (directionalLights[i]->IsVisible())
+			{
+				buff.DirectionalLights[directionalLightsIndex].Color = directionalLights[i]->GetColor();
+				buff.DirectionalLights[directionalLightsIndex].Direction = directionalLights[i]->GetDirection();
+				directionalLightsIndex++;
+			}
 		}
 
+		int32 pointlightIndex = 0;
 		const std::vector<PointLight*>& pointLights = scene.GetPointLights();
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
-			buff.PointLights[i].Color = pointLights[i]->GetColor();
-			buff.PointLights[i].Position = pointLights[i]->GetPosition();
+			if (pointlightIndex >= NUM_POINT_LIGHTS)
+			{
+				break;
+			}
+
+			if (pointLights[i]->IsVisible())
+			{
+				buff.PointLights[pointlightIndex].Color = pointLights[i]->GetColor();
+				buff.PointLights[pointlightIndex].Position = pointLights[i]->GetPosition();
+				pointlightIndex++;
+			}
 		}
 
+		int32 spotlightIndex = 0;
 		const std::vector<SpotLight*>& spotLights = scene.GetSpotLights();
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
-			buff.SpotLights[i].Color = spotLights[i]->GetColor();
-			buff.SpotLights[i].Position = spotLights[i]->GetPosition();
-			buff.SpotLights[i].Direction = spotLights[i]->GetDirection();
-			buff.SpotLights[i].CutOffAngle = spotLights[i]->GetCutOffAngle();
-			buff.SpotLights[i].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
+			if (spotlightIndex >= NUM_SPOT_LIGHTS)
+			{
+				break;
+			}
+
+			if (pointLights[i]->IsVisible())
+			{
+				buff.SpotLights[spotlightIndex].Color = spotLights[i]->GetColor();
+				buff.SpotLights[spotlightIndex].Position = spotLights[i]->GetPosition();
+				buff.SpotLights[spotlightIndex].Direction = spotLights[i]->GetDirection();
+				buff.SpotLights[spotlightIndex].CutOffAngle = spotLights[i]->GetCutOffAngle();
+				buff.SpotLights[spotlightIndex].OuterCutOffAngle = spotLights[i]->GetOuterCutOffAngle();
+				spotlightIndex++;
+			}
 		}
 
 		m_pLightBuffer->UpdateData(&buff);

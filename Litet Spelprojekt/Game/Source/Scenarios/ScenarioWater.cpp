@@ -67,11 +67,11 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 #endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
-		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
-		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex)->GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex)->GetFloodingIDs();
-		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex)->GetSizeX(), pWorld->GetLevel(levelIndex)->GetSizeZ());
-		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex)->GetTilesBetweenBulkheads();
+		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
+		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
+		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
+		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex).GetSizeX(), pWorld->GetLevel(levelIndex).GetSizeZ());
+		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex).GetTilesBetweenBulkheads();
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
@@ -118,7 +118,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 				bool canFlowDown = false;
 				if (levelIndex > 0)
 				{
-					if (pWorld->GetLevel(levelIndex - 2)->GetLevelData()[currentTile.x][currentTile.y].HasStairs)
+					if (pWorld->GetLevel(levelIndex - 2).GetLevelData()[currentTile.x][currentTile.y].HasStairs)
 					{
 						if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
 						{
@@ -196,7 +196,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 			ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = glm::max<float>(newActualWaterLevel - WATER_MAX_LEVEL, 0.0f);
 
 			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
-			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1)->GetLevelData(), currentTile, dtS);
+			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1).GetLevelData(), currentTile, dtS);
 
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 
@@ -252,7 +252,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 
 std::string ScenarioWater::GetName() noexcept
 {
-	return "Vattenl�cka";
+	return "Vattenläcka";
 }
 
 int32 ScenarioWater::GetCooldownTime() noexcept

@@ -55,6 +55,11 @@ WorldLevel& const World::GetLevel(uint32 level) noexcept
 	return m_Levels[level];
 }
 
+uint32 World::GetNumRooms() const noexcept
+{
+	return m_Rooms.size();
+}
+
 uint32 World::GetNumLevels() const noexcept
 {
 	return m_Levels.size();
@@ -103,25 +108,21 @@ void World::GenerateRooms(Scene& scene) noexcept
 	{
 		m_Rooms.push_back(Room(center[i]));
 	}
-
-	//Generarate walls and shadows
-	GenerateWalls(scene);
-	GenerateRoomShadows(scene);
 }
 
-void World::GenerateFloor(Scene* pScene) noexcept
+void World::GenerateFloor(Scene& scene) noexcept
 {
 	GameObject* pGameObject = nullptr;
 
-	for (int level = 0; level < m_NumLevels; level += 2)
+	for (size_t level = 0; level < m_Levels.size(); level += 2)
 	{
-		for (uint32 x = 1; x < m_ppLevels[level]->GetSizeX() - 1; x++)
+		for (uint32 x = 1; x < m_Levels[level].GetSizeX() - 1; x++)
 		{
-			for (uint32 z = 1; z < m_ppLevels[level]->GetSizeZ() - 1; z++)
+			for (uint32 z = 1; z < m_Levels[level].GetSizeZ() - 1; z++)
 			{
 				if (level > 0)
 				{
-					if (m_ppLevels[level - 2]->GetLevelData()[x][z].HasStairs)
+					if (m_Levels[level - 2].GetLevelData()[x][z].HasStairs)
 					{
 						continue;
 					}
@@ -132,7 +133,7 @@ void World::GenerateFloor(Scene* pScene) noexcept
 				pGameObject->SetMaterial(MATERIAL::FLOOR);
 				pGameObject->SetPosition(glm::vec3(x, level, z));
 				pGameObject->UpdateTransform();
-				pScene->AddGameObject(pGameObject);
+				scene.AddGameObject(pGameObject);
 			}
 		}
 	}
@@ -140,7 +141,7 @@ void World::GenerateFloor(Scene* pScene) noexcept
 
 void World::PlaceGameObjects(Scene& scene) noexcept
 {
-    	//Place objects in scene
+	//Place objects in scene
 	for (size_t i = 0; i < m_Objects.size(); i++)
 	{
 	    const WorldObject& worldObject = m_Objects[i];
@@ -162,14 +163,6 @@ void World::PlaceGameObjects(Scene& scene) noexcept
 	}
 }
 
-void World::GenerateWater(Scene* pScene) noexcept
-{
-	for (int level = 0; level < m_NumLevels; level++)
-	{
-		m_ppLevels[level]->GenerateScenarioObjects(pScene, level);
-    }
-}
-	
 void World::PlaceDoors(Scene& scene) noexcept
 {
 	//Generate Door GameObjects
@@ -268,18 +261,24 @@ void World::GenerateRoomShadows(const Scene& scene) noexcept
 void World::Generate(Scene& scene) noexcept
 {
 	GenerateRooms(scene);
+	GenerateFloor(scene);
+	GenerateLevelObject(scene);
+
+	//Place game objects, doors and stairs
 	PlaceGameObjects(scene);
 	PlaceDoors(scene);
 	PlaceStairs(scene);
-	GenerateWalls(scene);
-	GenerateRoomShadows(scene);
-}
 
-void World::GenerateWater(Scene& scene) noexcept
-{
-	for (int32 level = 0; level < m_Levels.size(); level += 2)
+	GenerateRoomShadows(scene);
+
+	//Generate lights for rooms
+	for (size_t i = 0; i < m_Rooms.size(); i++)
 	{
-		m_Levels[level].GenerateWater(scene, level);
+		PointLight* pLight = new PointLight(m_Rooms[i].GetCenter());
+		m_RoomLights.push_back(pLight);
+		scene.AddPointLight(pLight);
+
+		m_RoomLightsTimers.push_back(0.0f);
 	}
 }
 
@@ -299,6 +298,17 @@ void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 	{
 		m_Doors.push_back(doors[i]);
 		//m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = 
+	}
+}
+
+void World::SetActiveRoom(uint32 roomID) noexcept
+{
+	if (!m_Rooms[roomID].IsActive())
+	{
+		m_Rooms[roomID].SetActive(true);
+		m_RoomLights[roomID]->SetIsVisible(true);
+		m_RoomLightsTimers[roomID] = 0.0f;
+		m_ActiveRooms.emplace_back(roomID);
 	}
 }
 
@@ -334,36 +344,6 @@ const std::vector<float>& World::GetRoomLightTimers() const noexcept
 	return m_RoomLightsTimers;
 }
 
-void World::PushRoomLightTimer(float timer)
-{
-	m_RoomLightsTimers.push_back(timer);
-}
-
-void World::RemoveRoomLightTimer(float timer)
-{
-	m_RoomLightsTimers.pop_back();
-}
-
-void World::PopRoomLightTimer()
-{
-	m_RoomLightsTimers.pop_back();
-}
-
-void World::PushActiveRoom(uint32 roomID)
-{
-	m_ActiveRooms.push_back(roomID);
-}
-
-void World::RemoveActiveRoom(uint32 roomID)
-{
-	m_ActiveRooms.pop_back();
-}
-
-void World::PopActiveRoom()
-{
-	m_ActiveRooms.pop_back();
-}
-
 const glm::ivec3& World::GetDoor(uint32 index) const noexcept
 {
 	assert(index < m_Doors.size());
@@ -375,13 +355,15 @@ bool World::UpdateVisibility(Scene& pScene, float dt)
 	bool result = false;
 	for (uint32 i = 0; i < m_ActiveRooms.size(); i++)
 	{
-		m_RoomLightsTimers[i] += dt;
-		if (m_RoomLightsTimers[i] >= 5.0f)
+		m_RoomLightsTimers[m_ActiveRooms[i]] += dt;
+		if (m_RoomLightsTimers[m_ActiveRooms[i]] >= 5.0f)
 		{
-			m_RoomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-			m_RoomLightsTimers[i] = 0.0f;
+			m_RoomLights[m_ActiveRooms[i]]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+			m_RoomLightsTimers[m_ActiveRooms[i]] = 0.0f;
 			m_Rooms[m_ActiveRooms[i]].SetActive(false);
-			m_ActiveRooms[i] = 1;
+			
+			m_ActiveRooms.erase(m_ActiveRooms.begin() + i);
+			i--;
 
 			result = true;
 		}
@@ -390,21 +372,18 @@ bool World::UpdateVisibility(Scene& pScene, float dt)
 	return result;
 }
 
-uint32 World::GetNumRooms() const noexcept
-{
-	return m_Rooms.size();
-}
-
+void World::GenerateLevelObject(Scene& scene) noexcept
 {
 	for (int32 level = 0; level < m_Levels.size(); level += 2)
 	{
 		glm::vec4 wall;
+		GameObject* pGameObject = nullptr;
 
-		for (int i = 0; i < m_Levels[i].GetNrOfWalls(); i++)
+		for (int i = 0; i < m_Levels[level].GetNrOfWalls(); i++)
 		{
-			wall = m_Levels[i].GetWall(i);
+			wall = m_Levels[level].GetWall(i);
 
-			GameObject* pGameObject = new GameObject();
+			pGameObject = new GameObject();
 			pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
@@ -413,5 +392,21 @@ uint32 World::GetNumRooms() const noexcept
 
 			scene.AddGameObject(pGameObject);
 		}
+
+		glm::vec4 bulkhead;
+		for (int i = 0; i < m_Levels[level].GetNrOfBulkheads(); i++)
+		{
+			bulkhead = m_Levels[level].GetBulkhead(i);
+			
+			pGameObject = new GameObject();
+			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
+			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
+			pGameObject->UpdateTransform();
+			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
+			scene.AddGameObject(pGameObject);
+		}
+
+		m_Levels[level].GenerateScenarioObjects(&scene, level);
 	}
 }

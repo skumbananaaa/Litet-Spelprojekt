@@ -1,7 +1,8 @@
 #pragma once
 #include <EnginePch.h>
+#include <Graphics/GameObject.h>
 
-class API DirectionalLight
+class API DirectionalLight : public GameObject
 {
 public:
 	DirectionalLight(const glm::vec4& color, const glm::vec3& direction);

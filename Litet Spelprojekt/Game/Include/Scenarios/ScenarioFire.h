@@ -24,6 +24,7 @@ public:
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 
 	void ShowInRoom(uint32 roomID) noexcept;
+
 private:
 	World* m_pWorld;
 	bool m_FireAlwaysVisible;
@@ -86,10 +87,14 @@ inline void ScenarioFire::SetFireVisible(uint32 roomId, bool show) noexcept
 	for (uint32 i = 0; i < m_OnFire.size(); i++)
 	{
 		glm::ivec3 pos = m_OnFire[i];
-		uint32 tileID = m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z];
+		uint32 tileID = m_pWorld->GetLevel(pos.y).GetLevel()[pos.x][pos.z];
 		if (roomId == tileID)
 		{
-			m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(show);
+			GameObject* pObject = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE];
+			if (pObject)
+			{
+				pObject->SetIsVisible(show);
+			}
 		}
 	}
 }
@@ -99,10 +104,14 @@ inline void ScenarioFire::SetSmokeVisible(uint32 roomId, bool show) noexcept
 	for (uint32 i = 0; i < m_Smoke.size(); i++)
 	{
 		glm::ivec3 pos = m_Smoke[i];
-
-		if (roomId == m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z])
+		
+		if (roomId == m_pWorld->GetLevel(pos.y).GetLevel()[pos.x][pos.z])
 		{
-			m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->SetIsVisible(show);
+			GameObject* pObject = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE];
+			if (pObject)
+			{
+				pObject->SetIsVisible(show);
+			}
 		}
 	}
 }

@@ -32,41 +32,35 @@ public:
 	void AddWorldObject(const WorldObject& object) noexcept;
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	void SetDoors(const glm::ivec3* doors, uint32 nrOfDoors);
+	void SetActiveRoom(uint32 roomID) noexcept;
 
 	WorldLevel& GetLevel(uint32 level) noexcept;
 	const WorldLevel& GetLevel(uint32 level) const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
+	uint32 GetNumRooms() const noexcept;
 	uint32 GetNumLevels() const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
 	Room& GetRoom(uint32 room) noexcept;
 	const Room& GetRoom(uint32 room) const noexcept;
+	const glm::ivec3& GetDoor(uint32 index) const noexcept;
+
 	const std::vector<uint32>& GetActiveRooms() const noexcept;
 	const std::vector<float>& GetRoomLightTimers() const noexcept;
 	const std::vector<glm::ivec3>& GetStairs() const noexcept;
 	const std::vector<glm::ivec3>& GetDoors() const noexcept;
-	const glm::ivec3& GetDoor(uint32 index) const noexcept;
-	void GenerateFloor(Scene* pScene) noexcept;
-
-	void PushRoomLightTimer(float timer);
-	void RemoveRoomLightTimer(float timer);
-	void PopRoomLightTimer();
-
-	void PushActiveRoom(uint32 roomID);
-	void RemoveActiveRoom(uint32 roomID);
-	void PopActiveRoom();
 
 	void Generate(Scene& scene) noexcept;
-	void GenerateWater(Scene& scene) noexcept;
 
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
 
 private:
 	void GenerateRooms(Scene& scene) noexcept;
+	void GenerateFloor(Scene& scene) noexcept;
+	void GenerateLevelObject(Scene& scene) noexcept;
 	void PlaceGameObjects(Scene& scene) noexcept;
 	void PlaceDoors(Scene& scene) noexcept;
 	void PlaceStairs(Scene& scene) noexcept;
-	void GenerateWalls(Scene& scene) noexcept;
 	void GenerateRoomShadows(const Scene& scene) noexcept;
 
 private:

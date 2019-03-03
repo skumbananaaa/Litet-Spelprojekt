@@ -34,7 +34,7 @@ layout(early_fragment_tests) in;
 
 in vec4 g_FragPosition;
 
-layout(std140, binding = 2) uniform ModelBuffer
+layout(std140, binding = 2) uniform LightBuffer
 {
 	vec3 g_LightPosition;
 	float g_FarPlane;

@@ -89,15 +89,14 @@ public:
 	void GenerateScenarioObjects(Scene* pScene, uint32 levelHeight);
 
 private:
+	uint32 m_SizeX;
+	uint32 m_SizeZ;
+	uint32 m_TilesBetweenBulkheads;
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
 	std::vector<glm::ivec2> m_BurningIDs;
 	std::vector<glm::ivec2> m_FloodingIDs;
-	uint32 m_SizeX;
-	uint32 m_SizeZ;
 	std::vector<glm::vec4> m_Walls;
 	std::vector<glm::vec4> m_Bulkheads;
-	uint32 m_TilesBetweenBulkheads;
-
 	std::vector<glm::uvec4> m_RoomBounds;
 };

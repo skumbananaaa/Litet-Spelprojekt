@@ -78,7 +78,6 @@
     <ClCompile Include="Source\Graphics\GUI\HoveringHandler.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
     <ClCompile Include="Source\World\Scenarios\Fire\FireAlarm.cpp" />
-    <ClCompile Include="Source\World\Scenarios\Water\WaterObject.cpp" />
     <ClCompile Include="Source\World\LightManager.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterOutdoorMaterial.cpp" />
     <ClCompile Include="Source\Graphics\Material\WaterIndoorMaterial.cpp" />
@@ -90,6 +89,8 @@
     <ClCompile Include="Source\Graphics\Geometry\WaterQuad.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextField.cpp" />
     <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
+    <ClCompile Include="Source\World\Scenarios\Orders\OrderCloseDoor.cpp" />
+    <ClCompile Include="Source\World\Scenarios\Orders\OrderHandler.cpp" />
     <ClCompile Include="Source\Graphics\Textures\StaticShadowCube.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -185,7 +186,6 @@
     <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
     <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
     <ClInclude Include="Include\World\Scenarios\IScenario.h" />
-    <ClInclude Include="Include\World\Scenarios\Water\WaterObject.h" />
     <ClInclude Include="Include\World\LightManager.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
@@ -197,6 +197,8 @@
     <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
     <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
     <ClInclude Include="Include\Graphics\GUI\TextField.h" />
+    <ClInclude Include="Include\World\Scenarios\Orders\OrderCloseDoor.h" />
+    <ClInclude Include="Include\World\Scenarios\Orders\OrderHandler.h" />
     <ClInclude Include="Include\Graphics\Textures\StaticShadowCube.h" />
     <ClInclude Include="Include\Graphics\IGLObject.h" />
   </ItemGroup>

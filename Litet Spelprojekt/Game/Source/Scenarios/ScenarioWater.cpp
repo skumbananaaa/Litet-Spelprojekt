@@ -14,7 +14,7 @@ void ScenarioWater::OnStart(Scene* scene) noexcept
 
 }
 
-void ScenarioWater::OnEnd() noexcept
+void ScenarioWater::OnEnd(Scene* scene) noexcept
 {
 
 }
@@ -67,37 +67,42 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 #endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
-		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
-		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
-		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex).GetSizeX(), pWorld->GetLevel(levelIndex).GetSizeZ());
+		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
+		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex)->GetLevelData();
+		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex)->GetFloodingIDs();
+		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex)->GetSizeX(), pWorld->GetLevel(levelIndex)->GetSizeZ());
+		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex)->GetTilesBetweenBulkheads();
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
+
+		static glm::uvec2 spawnTile(10, 18);
 
 		//TEMP
 		if (levelIndex == 4 && Input::IsKeyDown(KEY_I))
 		{
-			ppLevelData[10][10].WaterLevel = 2.0f;
-			ppLevelData[10][10].WaterLevelAge = 0.0f;
-			ppLevelData[10][10].AlreadyFlooded = true;
-			GameObject* pGameObject = ppLevelData[10][10].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
-			pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevelLastUpdated, 0.0f));
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevel = 2.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelChange = 0.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelLastUpdated = 0.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelAge = 0.0f;
+			ppLevelData[spawnTile.x][spawnTile.y].AlreadyFlooded = true;
+			GameObject* pGameObject = ppLevelData[spawnTile.x][spawnTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
+			//pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevelLastUpdated, 0.0f));
 			//pGameObject->UpdateTransform();
 			//pGameObject->SetIsVisible(true);
 
-			bool contains1010 = false;
+			bool containsSpawnTile = false;
 			for (uint32 i = 0; i < floodingIDs.size(); i++)
 			{
-				if (floodingIDs[i].x == 10 && floodingIDs[i].y == 10)
+				if (floodingIDs[i].x == spawnTile.x && floodingIDs[i].y == spawnTile.y)
 				{
-					contains1010 = true;
+					containsSpawnTile = true;
 					break;
 				}
 			}
 
-			if (!contains1010)
+			if (!containsSpawnTile)
 			{
-				floodingIDs.push_back(glm::ivec2(10, 10));
+				floodingIDs.push_back(glm::ivec2(spawnTile.x, spawnTile.y));
 			}
 		}
 
@@ -107,24 +112,24 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 		for (uint32 i = 0; i < floodingIDs.size(); i++)
 		{
 			glm::ivec2 currentTile = glm::ivec2(floodingIDs[i].x, floodingIDs[i].y);
-			bool canFlowDown = false;
 
-			if (levelIndex > 0)
+			if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > ppLevelData[currentTile.x][currentTile.y].WaterLevelAge)
 			{
-				if (pWorld->GetLevel(levelIndex - 2).GetLevelData()[currentTile.x][currentTile.y].HasStairs)
+				bool canFlowDown = false;
+				if (levelIndex > 0)
 				{
-					if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+					if (pWorld->GetLevel(levelIndex - 2)->GetLevelData()[currentTile.x][currentTile.y].HasStairs)
 					{
-						UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), currentTile);
-						canFlowDown = UpdateWaterLevelBelow(pWorld->GetLevel(levelIndex), pWorld->GetLevel(levelIndex - 2), currentTile);
+						if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+						{
+							UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), currentTile);
+							canFlowDown = UpdateWaterLevelBelow(pWorld->GetLevel(levelIndex), pWorld->GetLevel(levelIndex - 2), currentTile);
+						}
 					}
 				}
-			}
 
-			//IF CANT FLOW DOWN, FLOW TO SIDE
-			if (!canFlowDown)
-			{
-				if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > ppLevelData[currentTile.x][currentTile.y].WaterLevelAge)
+				//IF CANT FLOW DOWN, FLOW TO SIDE
+				if (!canFlowDown)
 				{
 					ppLevelData[currentTile.x][currentTile.y].WaterLevelAge += ppLevelData[currentTile.x][currentTile.y].WaterLevel / WATER_AGING_DENOMINATOR;
 
@@ -138,27 +143,47 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 					uint32 canSpreadToPosZ = CanSpreadTo(ppLevel, levelSize, currentTile, tilePosZ, ppLevelData);
 					uint32 canSpreadToNegZ = CanSpreadTo(ppLevel, levelSize, currentTile, tileNegZ, ppLevelData);
 
-					float waterLevelDifPosX = CanFloodTo(ppLevel, ppLevelData, levelSize, currentTile, tilePosX, canSpreadToPosX);
-					float waterLevelDifNegX = CanFloodTo(ppLevel, ppLevelData, levelSize, currentTile, tileNegX, canSpreadToNegX);
-					float waterLevelDifPosZ = CanFloodTo(ppLevel, ppLevelData, levelSize, currentTile, tilePosZ, canSpreadToPosZ);
-					float waterLevelDifNegZ = CanFloodTo(ppLevel, ppLevelData, levelSize, currentTile, tileNegZ, canSpreadToNegZ);
+					float waterLevelDifPosX = CanFloodTo(ppLevel, ppLevelData, currentTile, tilePosX, canSpreadToPosX);
+					float waterLevelDifNegX = CanFloodTo(ppLevel, ppLevelData, currentTile, tileNegX, canSpreadToNegX);
+					float waterLevelDifPosZ = CanFloodTo(ppLevel, ppLevelData, currentTile, tilePosZ, canSpreadToPosZ);
+					float waterLevelDifNegZ = CanFloodTo(ppLevel, ppLevelData, currentTile, tileNegZ, canSpreadToNegZ);
 
-					float floodFactor = CalculateFloodFactor(waterLevelDifPosX, waterLevelDifNegX, waterLevelDifPosZ, waterLevelDifNegZ, dtS);
+					float floodDoorFactorPosX = CalculateDoorFloodFactor(ppLevel, ppLevelData, currentTile, tilePosX, tilesBetweenBulkheads, canSpreadToPosX);
+					float floodDoorFactorNegX = CalculateDoorFloodFactor(ppLevel, ppLevelData, currentTile, tileNegX, tilesBetweenBulkheads, canSpreadToNegX);
+					float floodDoorFactorPosZ = CalculateDoorFloodFactor(ppLevel, ppLevelData, currentTile, tilePosZ, tilesBetweenBulkheads, canSpreadToPosZ);
+					float floodDoorFactorNegZ = CalculateDoorFloodFactor(ppLevel, ppLevelData, currentTile, tileNegZ, tilesBetweenBulkheads, canSpreadToNegZ);
+
+					canSpreadToPosX *= (uint32)glm::ceil(floodDoorFactorPosX);
+					canSpreadToNegX *= (uint32)glm::ceil(floodDoorFactorNegX);
+					canSpreadToPosZ *= (uint32)glm::ceil(floodDoorFactorPosZ);
+					canSpreadToNegZ *= (uint32)glm::ceil(floodDoorFactorNegZ);
+
+					waterLevelDifPosX *= floodDoorFactorPosX;
+					waterLevelDifNegX *= floodDoorFactorNegX;
+					waterLevelDifPosZ *= floodDoorFactorPosZ;
+					waterLevelDifNegZ *= floodDoorFactorNegZ;
+
+					glm::vec4 floodFactor = CalculateFloodFactors(
+						waterLevelDifPosX,
+						waterLevelDifNegX,
+						waterLevelDifPosZ,
+						waterLevelDifNegZ,
+						dtS);
 
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tilePosX, canSpreadToPosX);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tileNegX, canSpreadToNegX);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tilePosZ, canSpreadToPosZ);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tileNegZ, canSpreadToNegZ);
 
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor, waterLevelDifPosX);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor, waterLevelDifNegX);
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor, waterLevelDifPosZ);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor, waterLevelDifNegZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor.x, waterLevelDifPosX);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor.y, waterLevelDifNegX);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor.z, waterLevelDifPosZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor.w, waterLevelDifNegZ);
 				}
-				else
-				{
-					ppLevelData[currentTile.x][currentTile.y].WaterLevelAge /= 2.0f;
-				}
+			}
+			else
+			{
+				ppLevelData[currentTile.x][currentTile.y].WaterLevelAge /= 2.0f;
 			}
 		}
 
@@ -171,14 +196,16 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 			ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = glm::max<float>(newActualWaterLevel - WATER_MAX_LEVEL, 0.0f);
 
 			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
+			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1)->GetLevelData(), currentTile, dtS);
 
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 
 			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel - ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated) > WATER_UPDATE_LEVEL_INTERVAL)
 			{
-				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = (float)((uint32)(WATER_ROUNDING_FACTOR * ppLevelData[currentTile.x][currentTile.y].WaterLevel)) / WATER_ROUNDING_FACTOR;
+				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = glm::floor(WATER_ROUNDING_FACTOR * ppLevelData[currentTile.x][currentTile.y].WaterLevel) / WATER_ROUNDING_FACTOR;
 
-				float yScale = glm::max(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f);
+				float yScale = glm::clamp(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f, 1.90f);
+
 				pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + 0.05f + yScale / 2.0f, currentTile.y));
 				pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
 
@@ -225,7 +252,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 
 std::string ScenarioWater::GetName() noexcept
 {
-	return "Vattenläcka";
+	return "Vattenlï¿½cka";
 }
 
 int32 ScenarioWater::GetCooldownTime() noexcept

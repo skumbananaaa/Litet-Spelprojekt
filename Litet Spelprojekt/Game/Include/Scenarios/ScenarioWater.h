@@ -1,9 +1,16 @@
 #pragma once
 #include <World/Scenarios/IScenario.h>
+#include <World/GameObjectDoor.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
 #endif
+
+constexpr float WATER_EVAPORATION_RATE = 1.0f / 1000.0f;
+constexpr float WATER_AGING_DENOMINATOR = 1.0f;
+constexpr float WATER_INV_TIME_FOR_WATER_TO_LEVEL = 30.0f;
+constexpr float FIRE_EXTINGUISH_BY_WATER_RATE = 500.0f;
+constexpr float SMOKE_EXTINGUISH_BY_WATER_RATE = 1000.0f;
 
 class ScenarioWater : public IScenario
 {
@@ -12,7 +19,7 @@ public:
 
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void OnStart(Scene* scene) noexcept override;
-	virtual void OnEnd()noexcept override;
+	virtual void OnEnd(Scene* scene)noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene) override;
 	virtual bool Update(float dtS, World* pWorld, Scene* pScene) noexcept override;
 	virtual std::string GetName() noexcept override;
@@ -27,8 +34,9 @@ private:
 	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept;
 
 	//Water Scenario Helper Functions
-	float CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept;
-	float CalculateFloodFactor(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept;
+	float CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept;
+	float CalculateDoorFloodFactor(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 tilesBetweenBulkheads, uint32 canSpreadTo) const noexcept;
+	glm::vec4 CalculateFloodFactors(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept;
 
 	void UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept;
 	void UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept;
@@ -37,6 +45,7 @@ private:
 	bool UpdateWaterLevelBelow(WorldLevel& worldLevel, WorldLevel& pWorldLevelBelow, const glm::ivec2& tile) const noexcept;
 
 	void Evaporate(Scene* pScene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
+	void ExtinguishFire(TileData * const * ppLevelData, TileData * const * ppLevelDataAbove, const glm::ivec2& currentTile, float dtS) const noexcept;
 };
 
 inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept
@@ -55,7 +64,7 @@ inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const g
 	return 0;
 }
 
-inline float ScenarioWater::CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept
+inline float ScenarioWater::CanFloodTo(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 canSpreadTo) const noexcept
 {
 	if (canSpreadTo == 0)
 	{
@@ -70,7 +79,40 @@ inline float ScenarioWater::CanFloodTo(const uint32 * const * ppLevel, const Til
 	return 0.0f;
 }
 
-inline float ScenarioWater::CalculateFloodFactor(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept
+inline float ScenarioWater::CalculateDoorFloodFactor(const uint32 * const * ppLevel, const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, uint32 tilesBetweenBulkheads, uint32 canSpreadTo) const noexcept
+{
+	if (canSpreadTo == 0)
+	{
+		return 0.0f;
+	}
+
+	if (!ppLevelData[tileTo.x][tileTo.y].HasDoor())
+	{
+		return 1.0f;
+	}
+
+	//Water is trying to flood to a different room
+	if (ppLevel[tileFrom.x][tileFrom.y] != ppLevel[tileTo.x][tileTo.y])
+	{
+		bool doorIsOpen = !reinterpret_cast<GameObjectDoor*>(ppLevelData[tileTo.x][tileTo.y].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR])->IsClosed();
+
+		//If the smallest of the tiles x coordinates is a multiple of "tilesBetweenBulkheads", the water is trying to flood over a bulkhead.
+		//Since CanSpreadTo returns 0 if there isnt a door when the water is trying to flood to a different room we know its trying to flood over a door.
+		if (glm::min(tileFrom.y, tileTo.y) % tilesBetweenBulkheads == 0)
+		{
+			return doorIsOpen ? 1.0f : 0.0f;
+		}
+
+		//If the water is trying to flood over a door that is not in a bulkhead, reduce the flood factor.
+		return doorIsOpen ? 1.0f : 0.25f;
+	}
+
+	//Water is not trying to flood to a different room but tileTo has a door.
+	return 1.0f;
+}
+
+inline glm::vec4 ScenarioWater::CalculateFloodFactors(
+	float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept
 {
 	bool difPosXNotZero = waterLevelDifPosX > 0.0f;
 	bool difNegXNotZero = waterLevelDifNegX > 0.0f;
@@ -78,40 +120,38 @@ inline float ScenarioWater::CalculateFloodFactor(float waterLevelDifPosX, float 
 	bool difNegZNotZero = waterLevelDifNegZ > 0.0f;
 
 	float denominator = 1.0f;
-	float nominator = 2.0f;
+	glm::vec4 result(0.0f);
 
 	if (difPosXNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifPosX, nominator);
+		result.x = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifPosX;
 	}
 
 	if (difNegXNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifNegX, nominator);
+		result.y = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifNegX;
 	}
 
 	if (difPosZNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifPosZ, nominator);
+		result.z = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifPosZ;
 	}
 
 	if (difNegZNotZero)
 	{
 		denominator += 1.0f;
-		nominator = glm::min<float>(waterLevelDifNegZ, nominator);
+		result.w = WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * waterLevelDifNegZ;
 	}
 
 	if (!(denominator > 0.0f))
 	{
-		return 0.0f;
+		return glm::vec4(0.0f);
 	}
 
-	float result = nominator / denominator;
-
-	return glm::min(WATER_INV_TIME_FOR_WATER_TO_LEVEL * dtS * result, result);
+	return result / denominator;
 }
 
 inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept
@@ -128,7 +168,7 @@ inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std
 
 inline void ScenarioWater::UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept
 {
-	if (waterLevelDif > 0.0f)
+	//if (waterLevelDif > 0.0f)
 	{
 		ppLevelData[tileFrom.x][tileFrom.y].WaterLevelChange -= floodFactor;
 		ppLevelData[tileTo.x][tileTo.y].WaterLevelChange += floodFactor;
@@ -164,7 +204,9 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 {
 	if (ppLevelData[tile.x][tile.y].WaterLevelAge < 0.01f)
 	{
-		ppLevelData[tile.x][tile.y].WaterLevel -= WATER_EVAPORATION_RATE * dtS;
+		float tileTemp = ppLevelData[tile.x][tile.y].Temp - 29.0f;
+
+		ppLevelData[tile.x][tile.y].WaterLevel -= WATER_EVAPORATION_RATE * tileTemp * dtS;
 
 		//std::cout << std::to_string(ppLevelData[tile.x][tile.y].WaterLevel) << std::endl;
 
@@ -177,6 +219,29 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 			ppLevelData[tile.x][tile.y].AlreadyFlooded = false;
 			ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetIsVisible(false);
 			toRemoveFloodingIDs.push_back(tile);
+
+			//if (ppLevelData[tile.x][tile.y].Burning)
+			//{
+			//	ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(true);
+			//}
+		}
+	}
+}
+
+inline void ScenarioWater::ExtinguishFire(TileData * const * ppLevelData, TileData * const * ppLevelDataAbove, const glm::ivec2& currentTile, float dtS) const noexcept
+{
+	if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+	{
+		if (ppLevelData[currentTile.x][currentTile.y].Burning)
+		{
+			ppLevelData[currentTile.x][currentTile.y].Temp -= FIRE_EXTINGUISH_BY_WATER_RATE * dtS;
+			ppLevelData[currentTile.x][currentTile.y].Temp = glm::max(ppLevelData[currentTile.x][currentTile.y].Temp, 30.0f);
+		}
+
+		if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > 0.5f * WATER_MAX_LEVEL)
+		{
+			ppLevelDataAbove[currentTile.x][currentTile.y].SmokeAmount -= SMOKE_EXTINGUISH_BY_WATER_RATE * dtS;
+			ppLevelDataAbove[currentTile.x][currentTile.y].SmokeAmount = glm::max(ppLevelDataAbove[currentTile.x][currentTile.y].SmokeAmount, 0.0f);
 		}
 	}
 }

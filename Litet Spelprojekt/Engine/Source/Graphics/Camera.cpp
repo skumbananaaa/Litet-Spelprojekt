@@ -28,7 +28,7 @@ Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& u
 	m_Front = glm::normalize(m_Position - m_LookAt);
 	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 	m_WorldUp = upVector;
-	m_Pitch = asinf(m_Front.y);
+	m_Pitch = -asinf(m_Front.y);
 	m_Yaw = atan2(m_Front.x, m_Front.z) - 3.0f * glm::half_pi<float>();
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, m_WorldUp);
 

@@ -41,13 +41,13 @@ GUIObject::~GUIObject()
 	RemoveKeyboardListener(this);
 	RemoveRealTimeRenderer();
 
-	m_ChildrenToAdd.clear();
-	m_ChildrenDirty.clear();
-
 	for (int i = m_Children.size() - 1; i >= 0; i--)
 	{
 		Remove(m_Children[i]);
 	}
+
+	m_ChildrenToAdd.clear();
+	m_ChildrenDirty.clear();
 }
 
 bool GUIObject::HasParent() const noexcept
@@ -72,6 +72,17 @@ void GUIObject::Remove(GUIObject* objectToRemove) noexcept
 {
 	int32 counter = 0;
 	bool found = false;
+	for (GUIObject* object : m_ChildrenDirty)
+	{
+		if (objectToRemove == object)
+		{
+			m_ChildrenDirty.erase(m_ChildrenDirty.begin() + counter);
+			found = true;
+			break;
+		}
+		counter++;
+	}
+	counter = 0;
 	for (GUIObject* object : m_Children)
 	{
 		if (objectToRemove == object)
@@ -93,16 +104,6 @@ void GUIObject::Remove(GUIObject* objectToRemove) noexcept
 		}
 		counter++;
 	}
-	counter = 0;
-	for (GUIObject* object : m_ChildrenDirty)
-	{
-		if (objectToRemove == object)
-		{
-			m_ChildrenDirty.erase(m_ChildrenDirty.begin() + counter);
-			return;
-		}
-		counter++;
-	}
 
 	if (found)
 	{
@@ -110,7 +111,18 @@ void GUIObject::Remove(GUIObject* objectToRemove) noexcept
 		objectToRemove->RemoveRealTimeRenderer();
 		objectToRemove->RemoveMouseListener(this);
 		objectToRemove->m_pParent = nullptr;
+
+		std::cout << "Deleting: ";
+		objectToRemove->PrintName();
+		std::cout << std::endl << objectToRemove << std::endl;
+
 		DeleteSafe(objectToRemove);
+	}
+	else
+	{
+		std::cout << "GUIObject Not Found\n" << objectToRemove << " Parent ";
+		PrintName();
+		std::cout << std::endl;
 	}
 }
 
@@ -619,9 +631,9 @@ int32 GUIObject::GetBoderThickness() const noexcept
 
 void GUIObject::DeleteChildren()
 {
-	for (GUIObject* object : m_Children)
+	for (int i = m_Children.size() - 1; i >= 0; i--)
 	{
-		Remove(object);
+		Remove(m_Children[i]);
 	}
 	m_ChildrenDirty.clear();
 }

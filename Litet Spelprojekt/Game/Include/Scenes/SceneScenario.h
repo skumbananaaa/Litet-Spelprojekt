@@ -6,7 +6,7 @@
 #include <Graphics/GUI/SelectionHandler.h>
 #include <World/Scenarios/IScenario.h>
 
-class SceneScenario : public SceneInternal, public ISelectionListener, public IButtonListener
+class SceneScenario : public SceneInternal, public ISelectionListener, public IButtonListener, public IExternalUIRenderer
 {
 	friend class Game;
 
@@ -23,6 +23,8 @@ public:
 	virtual void OnButtonReleased(Button* button) override;
 	virtual void OnButtonHovered(Button* button) override;
 	virtual void OnButtonNotHovered(Button* button) override;
+
+	virtual void OnRenderGUIObject(GUIContext* context, GUIObject* object) override;
 
 protected:
 	SceneScenario();

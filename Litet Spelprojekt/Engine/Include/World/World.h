@@ -45,6 +45,7 @@ public:
 	const std::vector<glm::ivec3>& GetStairs() const noexcept;
 	const std::vector<glm::ivec3>& GetDoors() const noexcept;
 	const glm::ivec3& GetDoor(uint32 index) const noexcept;
+	void GenerateFloor(Scene* pScene) noexcept;
 
 	void PushRoomLightTimer(float timer);
 	void RemoveRoomLightTimer(float timer);

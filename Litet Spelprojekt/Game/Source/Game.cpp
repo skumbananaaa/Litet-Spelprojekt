@@ -3,6 +3,7 @@
 #include "../Include/Scenarios/ScenarioManager.h"
 #include "../Include/Scenarios/ScenarioFire.h"
 #include "../Include/Scenarios/ScenarioWater.h"
+#include "../Include/Scenarios/ScenarioMissile.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -32,8 +33,9 @@ Game::Game() noexcept
 
 	SetScene(m_pSceneLoading);
 
-	ScenarioManager::RegisterScenario(new ScenarioFire());
-	ScenarioManager::RegisterScenario(new ScenarioWater(false));
+	ScenarioManager::RegisterScenario(new ScenarioMissile());
+	ScenarioManager::RegisterScenario(new ScenarioFire(false));
+	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 }
 
 Game::~Game()

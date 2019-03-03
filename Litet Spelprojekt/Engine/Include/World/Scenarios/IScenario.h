@@ -12,7 +12,7 @@ public:
 	virtual ~IScenario();
 	virtual void Init(World* pWorld) noexcept = 0;
 	virtual void OnStart(Scene* scene) noexcept = 0;
-	virtual void OnEnd()noexcept = 0;
+	virtual void OnEnd(Scene* scene)noexcept = 0;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene) = 0;
 	virtual bool Update(float dtS, World* pWorld, Scene* pScene) noexcept = 0;
 	virtual std::string GetName() noexcept = 0;

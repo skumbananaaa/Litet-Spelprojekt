@@ -26,6 +26,7 @@ uint32 MESH::WATER_QUAD = 0;
 uint32 MESH::CUBOARD = 0;
 uint32 MESH::TABLE = 0;
 uint32 MESH::TOILET = 0;
+uint32 MESH::MISSILE = 0;
 
 
 /*
@@ -51,11 +52,12 @@ void MESH::RegisterResources()
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
 	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
 	MESH_PARTICLE			= ResourceHandler::RegisterMeshParticle(MeshParticle::CreateCube());
-	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("CrewMemberRunning7.fbx");
+	ANIMATED_MODEL			= ResourceHandler::RegisterAnimatedMesh("CrewMemberRunning8.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
 	CUBOARD					= ResourceHandler::RegisterMesh("Cuboard.obj");
 	TABLE					= ResourceHandler::RegisterMesh("Table.obj");
 	TOILET					= ResourceHandler::RegisterMesh("Toilet.obj");
+	MISSILE					= ResourceHandler::RegisterMesh("Missile.obj");
 }

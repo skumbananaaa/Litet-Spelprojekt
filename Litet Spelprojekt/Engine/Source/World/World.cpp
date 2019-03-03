@@ -109,12 +109,41 @@ void World::GenerateRooms(Scene& scene) noexcept
 	GenerateRoomShadows(scene);
 }
 
+void World::GenerateFloor(Scene* pScene) noexcept
+{
+	GameObject* pGameObject = nullptr;
+
+	for (int level = 0; level < m_NumLevels; level += 2)
+	{
+		for (uint32 x = 1; x < m_ppLevels[level]->GetSizeX() - 1; x++)
+		{
+			for (uint32 z = 1; z < m_ppLevels[level]->GetSizeZ() - 1; z++)
+			{
+				if (level > 0)
+				{
+					if (m_ppLevels[level - 2]->GetLevelData()[x][z].HasStairs)
+					{
+						continue;
+					}
+				}
+
+				pGameObject = new GameObject();
+				pGameObject->SetMesh(MESH::QUAD);
+				pGameObject->SetMaterial(MATERIAL::FLOOR);
+				pGameObject->SetPosition(glm::vec3(x, level, z));
+				pGameObject->UpdateTransform();
+				pScene->AddGameObject(pGameObject);
+			}
+		}
+	}
+}
+
 void World::PlaceGameObjects(Scene& scene) noexcept
 {
-	//Place objects in scene
+    	//Place objects in scene
 	for (size_t i = 0; i < m_Objects.size(); i++)
 	{
-		const WorldObject& worldObject = m_Objects[i];
+	    const WorldObject& worldObject = m_Objects[i];
 		int32 width = m_Levels[worldObject.TileId.y].GetSizeX();
 		int32 height = m_Levels[worldObject.TileId.y].GetSizeZ();
 		int floorLevel = worldObject.TileId.y / 2;
@@ -133,6 +162,14 @@ void World::PlaceGameObjects(Scene& scene) noexcept
 	}
 }
 
+void World::GenerateWater(Scene* pScene) noexcept
+{
+	for (int level = 0; level < m_NumLevels; level++)
+	{
+		m_ppLevels[level]->GenerateScenarioObjects(pScene, level);
+    }
+}
+	
 void World::PlaceDoors(Scene& scene) noexcept
 {
 	//Generate Door GameObjects
@@ -353,7 +390,11 @@ bool World::UpdateVisibility(Scene& pScene, float dt)
 	return result;
 }
 
-void World::GenerateWalls(Scene& scene) noexcept
+uint32 World::GetNumRooms() const noexcept
+{
+	return m_Rooms.size();
+}
+
 {
 	for (int32 level = 0; level < m_Levels.size(); level += 2)
 	{

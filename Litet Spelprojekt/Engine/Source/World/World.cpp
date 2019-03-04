@@ -275,6 +275,7 @@ void World::Generate(Scene& scene) noexcept
 	for (size_t i = 0; i < m_Rooms.size(); i++)
 	{
 		PointLight* pLight = new PointLight(m_Rooms[i].GetCenter());
+		pLight->SetIsVisible(false);
 		m_RoomLights.push_back(pLight);
 		scene.AddPointLight(pLight);
 
@@ -358,9 +359,9 @@ bool World::UpdateVisibility(Scene& pScene, float dt)
 		m_RoomLightsTimers[m_ActiveRooms[i]] += dt;
 		if (m_RoomLightsTimers[m_ActiveRooms[i]] >= 5.0f)
 		{
-			m_RoomLights[m_ActiveRooms[i]]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-			m_RoomLightsTimers[m_ActiveRooms[i]] = 0.0f;
+			m_RoomLights[m_ActiveRooms[i]]->SetIsVisible(false);
 			m_Rooms[m_ActiveRooms[i]].SetActive(false);
+			m_RoomLightsTimers[m_ActiveRooms[i]] = 0.0f;
 			
 			m_ActiveRooms.erase(m_ActiveRooms.begin() + i);
 			i--;

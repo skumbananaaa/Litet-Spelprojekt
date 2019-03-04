@@ -402,8 +402,9 @@ void World::GenerateLevelObject(Scene& scene) noexcept
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
 			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
-			pGameObject->UpdateTransform();
 			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
+			pGameObject->UpdateTransform();
+
 			scene.AddGameObject(pGameObject);
 		}
 

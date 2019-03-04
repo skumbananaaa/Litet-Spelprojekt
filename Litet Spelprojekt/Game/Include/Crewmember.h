@@ -24,7 +24,7 @@ public:
 	///<summary>Finds a path to the goal position.</summary>
 	void FindPath(const glm::ivec3& goalPos);
 
-	void LookForDoor(World* pWorld, Scene* pScene);
+	void LookForDoor() noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
 
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>

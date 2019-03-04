@@ -52,8 +52,6 @@ Crewmember::~Crewmember()
 
 }
 
-
-
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 {
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
@@ -71,6 +69,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 void Crewmember::OnPicked()
 {
+	int32 testNrOfEqualDoors = 0;
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2)->GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetNumDoors(); j++)
 	{
@@ -78,11 +77,16 @@ void Crewmember::OnPicked()
 		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
 		if (doorRoomIndex == crewRoomIndex)
 		{
+			testNrOfEqualDoors++;
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y)->GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			if (door->IsOpen())
+			while (testNrOfEqualDoors > 0)
 			{
-				m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
-				break;
+				if (door->IsOpen())
+				{
+					m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
+					break;
+					testNrOfEqualDoors--;
+				}
 			}
 		}
 	}
@@ -333,8 +337,29 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 	m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 }
 
-void Crewmember::LookForDoor(World* pWorld, Scene* pScene)
+void Crewmember::LookForDoor() noexcept
 {
+	int32 testNrOfEqualDoors = 0;
+	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2)->GetLevel()[GetTile().x][GetTile().z];
+	for (int j = 0; j < m_pWorld->GetNumDoors(); j++)
+	{
+		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
+		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+		if (doorRoomIndex == crewRoomIndex)
+		{
+			testNrOfEqualDoors++;
+			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y)->GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+			while (testNrOfEqualDoors > 0)
+			{
+				if (door->IsOpen())
+				{
+					m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
+					break;
+					testNrOfEqualDoors--;
+				}
+			}
+		}
+	}
 	//StartOrder(pScene, pWorld, this);
 }
 

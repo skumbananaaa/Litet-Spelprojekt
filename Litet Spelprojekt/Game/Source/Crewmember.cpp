@@ -235,6 +235,28 @@ void Crewmember::SetAssisting(Crewmember* inNeed)
 	m_pAssisting = inNeed;
 }
 
+bool Crewmember::Heal(int8 skillLevel)
+{
+	bool res = false;
+	if (HasInjuryBoneBroken())
+	{
+		m_HasInjuryBoneBroken /= skillLevel;
+	}
+	else if (HasInjuryBurned())
+	{
+		m_HasInjuryBurned /= skillLevel;
+	}
+	else if (HasInjurySmoke())
+	{
+		m_HasInjurySmoke /= skillLevel;
+	}
+	else
+	{
+		res = true;
+	}
+	return res;
+}
+
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
 	m_ShipNumber = shipnumber;

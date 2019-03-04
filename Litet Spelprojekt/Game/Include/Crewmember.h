@@ -8,6 +8,13 @@
 #define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
 #define MAX_NR_OF_ORDERS 10
 
+#define CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED 2.5f
+#define CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED 1.8f
+#define CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED 0.8f
+#define CREWMEMBER_DEAD_MOVEMENT_SPEED 0.0f
+#define CREWMEMBER_IN_WATER_MOVEMENT_SPEED_MULTIPLIER 0.5f;
+
+
 class TileData;
 
 class Crewmember : public GameObject
@@ -20,7 +27,7 @@ public:
 	~Crewmember();
 	
 	///<summary>Moves the objects position in the given direction, use update to apply.</summary>
-	void Move(const glm::vec3 & dir);
+	void Move(const glm::vec3& dir, float dtS);
 	///<summary>Finds a path to the goal position.</summary>
 	void FindPath(const glm::ivec3& goalPos);
 
@@ -29,27 +36,29 @@ public:
 
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
 	void SetActionCapacity(float actionCap);
-	///<summary>returns the current action capacity of the crewmember.</summary>
-	const float GetActionCapacity() const;
 	///<summary>Sets a new position for the object.</summary>
 	void SetPosition(const glm::vec3& position) noexcept;
-	///<summary>Gets the current direction that the crewmember is facing.</summary>
-	const glm::vec3& GetDirection() const noexcept;
 	///<summary>Sets the current direction that the crewmember is facing. Use .Update() to apply visual changes.</summary>
 	void SetDirection(const glm::vec3& direction) noexcept;
-	///<summary>>Switches between point light and spotlight for the crewmember.</summary>
-	glm::ivec3 GetTile() const noexcept;
-	///<summary>Updates matrix of the object.</summary>
-	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
+	void SetAssisting(Crewmember* inNeed);
 
 	virtual void OnPicked();
 	virtual void OnHovered();
 	virtual void OnNotHovered();
 	void UpdateLastKnownPosition() noexcept;
-	const glm::vec3& GetLastKnownPosition() const noexcept;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
 
+	///<summary>Updates matrix of the object.</summary>
+	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
+
 	int32 GetShipNumber() const noexcept;
+	///<summary>returns the current action capacity of the crewmember.</summary>
+	const float GetActionCapacity() const;
+	const glm::vec3& GetLastKnownPosition() const noexcept;
+	///<summary>Gets the current direction that the crewmember is facing.</summary>
+	const glm::vec3& GetDirection() const noexcept;
+	float GetMovementSpeed() const noexcept;
+	glm::ivec3 GetTile() const noexcept;
 
 	bool IsHovered() const noexcept;
 	bool IsPicked() const noexcept;
@@ -62,7 +71,6 @@ public:
 	bool HasInjurySmoke() const noexcept;
 	bool isAlive() const noexcept;
 
-	void SetAssisting(Crewmember* inNeed);
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
 	///<summary>Updates the damage on the crewmember based on what level of smoke is on this members tile..</summary>
@@ -87,7 +95,10 @@ private:
 	bool m_HasInjuryBoneBroken;
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
+	float m_MaxHealth;
 	float m_Health;
+	float m_MovementSpeedMultiplier;
+	float m_MovementSpeed;
 
 	Crewmember* m_pAssisting;
 };

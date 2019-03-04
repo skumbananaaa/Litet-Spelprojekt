@@ -4,6 +4,7 @@
 #include "../Include/Scenarios/ScenarioFire.h"
 #include "../Include/Scenarios/ScenarioWater.h"
 #include "../Include/Scenarios/ScenarioMissile.h"
+#include "../Include/Scenarios/ScenarioTorpedo.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -38,6 +39,7 @@ Game::Game() noexcept
 	m_pAudioSourceMenu->Play();
 
 	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioMissile());
+	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioTorpedo());
 	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(true));
 	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(true));
 

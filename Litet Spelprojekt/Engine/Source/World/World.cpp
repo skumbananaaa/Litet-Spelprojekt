@@ -92,11 +92,11 @@ void World::GenerateRooms(Scene& scene) noexcept
 			if (i >= m_RoomBounds.size())
 			{
 				m_RoomBounds.push_back(temp[i]);
-				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.9, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
+				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.85f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
 			}
 			else if (temp[i].x != 11)
 			{
-				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.9, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
+				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.85f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
 			}
 		}
 	}
@@ -276,9 +276,9 @@ void World::Generate(Scene& scene) noexcept
 	{
 		PointLight* pLight = new PointLight(m_Rooms[i].GetCenter());
 		pLight->SetIsVisible(false);
-		m_RoomLights.push_back(pLight);
 		scene.AddPointLight(pLight);
 
+		m_RoomLights.push_back(pLight);
 		m_RoomLightsTimers.push_back(0.0f);
 	}
 }

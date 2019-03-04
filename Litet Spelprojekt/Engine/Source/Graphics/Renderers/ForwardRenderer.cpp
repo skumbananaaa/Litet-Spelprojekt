@@ -658,11 +658,14 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene, const W
 	}
 
 	GLContext& context = GLContext::GetCurrentContext();
-
 	MaterialBuffer perBatch = {};
 	if (pWorld != nullptr)
 	{
-		context.SetTexture(pWorld->GetRoom(0).GetShadowMap()->GetCubeTexture(), SHADOW_MAP_1_BINDING_SLOT);
+		if (pWorld->GetActiveRooms().size() > 0)
+		{
+			uint32 roomIndex = pWorld->GetActiveRooms()[0];
+			context.SetTexture(pWorld->GetRoom(roomIndex).GetShadowMap()->GetCubeTexture(), SHADOW_MAP_1_BINDING_SLOT);
+		}
 	}
 
 	for (size_t i = 0; i < m_DrawableBatches.size(); i++)
@@ -681,6 +684,7 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene, const W
 		material.SetMaterialBuffer(m_pMaterialBuffer);
 		material.SetWorldBuffer(m_pWorldBuffer);
 		material.SetExtensionBuffer(m_pExtensionBuffer);
+		material.SetShadowBuffer(m_pShadowBuffer);
 		material.Bind(nullptr);
 
 		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
@@ -690,6 +694,8 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene, const W
 
 		material.Unbind();
 	}
+
+	context.SetTexture(nullptr, SHADOW_MAP_1_BINDING_SLOT);
 }
 
 void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* const pWorld) const noexcept

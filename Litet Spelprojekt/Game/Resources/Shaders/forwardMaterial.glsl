@@ -72,6 +72,7 @@ layout(std140, binding = 4) uniform PlaneBuffer
 
 out VS_OUT
 {
+	vec3 Normal;
 	vec3 FragPosition;
 	vec3 LightColor;
 	vec3 Specular;
@@ -116,7 +117,9 @@ void main()
 	//Setup
 	vec3 normal = normalize((g_InstanceModel * vec4(g_Normal, 0.0f)).xyz);
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
-	
+	vs_out.Normal = normal;
+	vs_out.FragPosition = worldPos.xyz;
+
 	//Calculate position in tiles
 	ivec3 mapPos = CalcMapPos(worldPos.xyz);
 	uvec4 roomIndex = CalcRoomIndex(mapPos);
@@ -216,25 +219,26 @@ layout(binding = 1) uniform samplerCube g_ShadowMap;
 
 in VS_OUT
 {
+	vec3 Normal;
 	vec3 FragPosition;
 	vec3 LightColor;
 	vec3 Specular;
 	vec2 TexCoords;
 } fs_in;
 
-layout(std140, binding = 6) uniform ShadowBuffer
+layout(std140, binding = 8) uniform ShadowBuffer
 {
 	vec3 g_LightPos;
 	float g_FarPlane;
 };
 
-float ShadowCalc(vec3 fragPos)
+float ShadowCalc(vec3 fragPos, vec3 normal)
 {
 	vec3 toLight = fragPos - g_LightPos;
 	float closestDepth = texture(g_ShadowMap, toLight).r * g_FarPlane;
 	float currentDepth = length(toLight);
 
-	float bias = 0.05f;
+	float bias = max(0.025f * (1.0f - dot(normal, toLight)), 0.0025f);  
 	return ((currentDepth - bias) > closestDepth) ? 1.0f : 0.0f;
 }
 
@@ -250,7 +254,7 @@ void main()
 	vec3 diffuse = color * fs_in.LightColor;
 	vec3 specular = fs_in.Specular;
 
-	float shadow = ShadowCalc(fs_in.FragPosition);
+	float shadow = ShadowCalc(fs_in.FragPosition, fs_in.Normal);
 	g_OutColor = vec4(min(ambient + ((1.0f - shadow) * (diffuse + specular)), vec3(1.0f)), 1.0f);
 }
 #endif

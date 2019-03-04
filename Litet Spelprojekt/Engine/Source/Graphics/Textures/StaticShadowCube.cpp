@@ -70,12 +70,12 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	UniformBuffer* pModelBuffer = new UniformBuffer(&modelBuff, 1, sizeof(ModelBuffer));
 	UniformBuffer* pShadowBuffer = new UniformBuffer(&shadowBuff, 1, sizeof(ShadowBuffer));
 
-	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, GetFarPlane());
+	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, GetFarPlane());
 	glm::mat4 cameraMatrices[6] =
 	{
 		proj * glm::lookAt(position, position + glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-		proj * glm::lookAt(position, position + glm::vec3(0.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f,  1.0f)),
+		proj * glm::lookAt(position, position + glm::vec3(0.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f,  1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -84,6 +84,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	context.SetColorMask(0, 0, 0, 0);
 	context.SetDepthMask(true);
 	context.Enable(DEPTH_TEST);
+	context.Disable(CULL_FACE);
 	context.SetDepthFunc(FUNC_LESS);
 	context.Disable(CLIP_DISTANCE0);
 	context.SetViewport(SHADOW_SIZE, SHADOW_SIZE, 0, 0);
@@ -110,9 +111,11 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 		}
 	}
 
+	context.SetCullMode(CULL_MODE_BACK);
 	context.SetColorMask(1, 1, 1, 1);
 	context.SetUniformBuffer(nullptr, 0);
 	context.SetUniformBuffer(nullptr, 1);
+	context.SetUniformBuffer(nullptr, 2);
 
 	for (uint32 i = 0; i < 6; i++)
 	{

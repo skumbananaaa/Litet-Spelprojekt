@@ -30,7 +30,7 @@ SceneInternal::SceneInternal(bool autoRotateCamera) :
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
 
-	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f), glm::vec3(1.0f, 1.0f, 0.0f));
 	AddDirectionalLight(pDirectionalLight);
 }
 

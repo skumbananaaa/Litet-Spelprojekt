@@ -25,12 +25,12 @@ out vec4 g_FragPosition;
 
 void main()
 {
-	g_FragPosition = g_ProjectionView * g_Model * vec4(g_Position, 1.0f);
-	gl_Position = g_FragPosition;
+	g_FragPosition = g_Model * vec4(g_Position, 1.0f);
+	gl_Position = g_ProjectionView * g_FragPosition;
 }
 
 #elif defined(FRAGMENT_SHADER)
-layout(early_fragment_tests) in;
+//layout(early_fragment_tests) in;
 
 in vec4 g_FragPosition;
 

@@ -5,7 +5,6 @@
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include <World/GameObjectDoor.h>
 
-
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
@@ -170,6 +169,12 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 void SceneGame::OnRender(float dtS) noexcept
 {
+	if (m_pWorld->GetActiveRooms().size() > 0)
+	{
+		uint32 roomIndex = m_pWorld->GetActiveRooms()[0];
+		SetSkyBox(new SkyBox(m_pWorld->GetRoom(roomIndex).GetShadowMap()->GetCubeTexture()));
+	}
+
 	GetRenderer()->DrawScene(*this, m_pWorld, dtS);
 
 #if defined(DRAW_DEBUG_BOXES)

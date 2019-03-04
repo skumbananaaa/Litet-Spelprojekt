@@ -1,4 +1,5 @@
 #include "..\..\Include\Scenarios\ScenarioManager.h"
+#include "..\..\Include\Game.h"
 #include <System/Random.h>
 #include <World/Logger.h>
 
@@ -21,7 +22,7 @@ void ScenarioManager::Release() noexcept
 	}
 }
 
-void ScenarioManager::OnVisibilityChange(World* pWorld, Scene* pScene) noexcept
+void ScenarioManager::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
 {
 	for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
 	{
@@ -29,7 +30,7 @@ void ScenarioManager::OnVisibilityChange(World* pWorld, Scene* pScene) noexcept
 	}
 }
 
-void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
+void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 {
 	for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
 	{
@@ -37,10 +38,7 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
 		float time = scenario->GetTimeOfNextOutBreak() - dtS;
 		if (time <= 0)
 		{
-			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Started!");
-			scenario->OnStart(scene);
-			s_ActiveScenarios.push_back(s_NonActiveScenarios[i]);
-			s_NonActiveScenarios.erase(s_NonActiveScenarios.begin() + i);
+			StartScenario(s_NonActiveScenarios[i]);
 		}
 		else
 		{
@@ -65,6 +63,41 @@ void ScenarioManager::SetEnabledScenarios(const std::vector<int32>& ids) noexcep
 {
 	s_NonActiveScenarios = ids;
 	s_ActiveScenarios.clear();
+}
+
+bool ScenarioManager::StartScenario(int32 index) noexcept
+{
+	for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
+	{
+		if (index == s_NonActiveScenarios[i])
+		{
+			Logger::LogEvent("Scenario [" + s_Scenarios[index]->GetName() + "] Started!");
+			s_Scenarios[index]->OnStart(Game::GetGame()->m_pSceneGame);
+			s_ActiveScenarios.push_back(index);
+			s_NonActiveScenarios.erase(s_NonActiveScenarios.begin() + i);
+			return true;
+		}
+	}
+	return false;
+}
+
+void ScenarioManager::Escalate(int32 index, const glm::ivec3& position) noexcept
+{
+	if (StartScenario(index))
+	{
+		s_Scenarios[index]->Escalate(position);
+	}
+	else
+	{
+		for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
+		{
+			if (index == s_ActiveScenarios[i])
+			{
+				s_Scenarios[index]->Escalate(position);
+				return;
+			}
+		}
+	}
 }
 
 void ScenarioManager::Init(World* pWorld)

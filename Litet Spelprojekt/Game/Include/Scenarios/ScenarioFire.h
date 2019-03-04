@@ -1,5 +1,5 @@
 #pragma once
-#include <World/Scenarios/IScenario.h>
+#include "IScenario.h"
 #include <World/GameObjectDoor.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
@@ -15,10 +15,11 @@ public:
 	virtual ~ScenarioFire();
 
 	virtual void Init(World* pWorld) noexcept override;
-	virtual void OnStart(Scene* scene) noexcept override;
-	virtual void OnEnd(Scene* scene)noexcept override;
-	virtual void OnVisibilityChange(World* pWorld, Scene* pScene) noexcept override;
-	virtual bool Update(float dtS, World* world, Scene* scene) noexcept override;
+	virtual void OnStart(SceneGame* scene) noexcept override;
+	virtual void OnEnd(SceneGame* scene)noexcept override;
+	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept override;
+	virtual bool Update(float dtS, World* world, SceneGame* scene) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;

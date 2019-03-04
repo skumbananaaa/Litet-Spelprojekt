@@ -9,17 +9,22 @@ void ScenarioWater::Init(World* pWorld) noexcept
 {
 }
 
-void ScenarioWater::OnStart(Scene* scene) noexcept
+void ScenarioWater::OnStart(SceneGame* scene) noexcept
+{
+	Escalate(glm::ivec3(10, 4, 10));
+}
+
+void ScenarioWater::OnEnd(SceneGame* scene) noexcept
 {
 
 }
 
-void ScenarioWater::OnEnd(Scene* scene) noexcept
+void ScenarioWater::Escalate(const glm::ivec3& position) noexcept
 {
-
+	m_InletTiles.push_back(position);
 }
 
-void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene)
+void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)
 {
 	const std::vector<uint32>& activeRooms = pWorld->GetActiveRooms();
 
@@ -58,13 +63,40 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene)
 #endif
 }
 
-bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
+bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 {
 	const std::vector<uint32>& activeRooms = pWorld->GetActiveRooms();
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_3);
 #endif
+
+	for (int i = 0; i < m_InletTiles.size(); i++)
+	{
+		TileData* const * ppLevelData = pWorld->GetLevel(m_InletTiles[i].y).GetLevelData();
+		ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z].WaterLevel = 2.0f;
+		ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z].WaterLevelChange = 0.0f;
+		ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z].WaterLevelLastUpdated = 0.0f;
+		ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z].WaterLevelAge = 0.0f;
+		ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z].AlreadyFlooded = true;
+		GameObject* pGameObject = ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
+
+		/*bool containsSpawnTile = false;
+		for (uint32 i = 0; i < floodingIDs.size(); i++)
+		{
+			if (floodingIDs[i].x == spawnTile.x && floodingIDs[i].y == spawnTile.y)
+			{
+				containsSpawnTile = true;
+				break;
+			}
+		}
+
+		if (!containsSpawnTile)
+		{
+			floodingIDs.push_back(glm::ivec2(spawnTile.x, spawnTile.y));
+		}*/
+	}
+
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
 		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
@@ -74,37 +106,6 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex).GetTilesBetweenBulkheads();
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
-
-		static glm::uvec2 spawnTile(10, 18);
-
-		//TEMP
-		if (levelIndex == 4 && Input::IsKeyDown(KEY_I))
-		{
-			ppLevelData[spawnTile.x][spawnTile.y].WaterLevel = 2.0f;
-			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelChange = 0.0f;
-			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelLastUpdated = 0.0f;
-			ppLevelData[spawnTile.x][spawnTile.y].WaterLevelAge = 0.0f;
-			ppLevelData[spawnTile.x][spawnTile.y].AlreadyFlooded = true;
-			GameObject* pGameObject = ppLevelData[spawnTile.x][spawnTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
-			//pGameObject->SetScale(glm::vec3(0.0f, ppLevelData[10][10].WaterLevelLastUpdated, 0.0f));
-			//pGameObject->UpdateTransform();
-			//pGameObject->SetIsVisible(true);
-
-			bool containsSpawnTile = false;
-			for (uint32 i = 0; i < floodingIDs.size(); i++)
-			{
-				if (floodingIDs[i].x == spawnTile.x && floodingIDs[i].y == spawnTile.y)
-				{
-					containsSpawnTile = true;
-					break;
-				}
-			}
-
-			if (!containsSpawnTile)
-			{
-				floodingIDs.push_back(glm::ivec2(spawnTile.x, spawnTile.y));
-			}
-		}
 
 		//We are on the upper grid level of a world level
 

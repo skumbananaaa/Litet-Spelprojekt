@@ -38,7 +38,7 @@ Game::Game() noexcept
 	m_pAudioSourceMenu->Play();
 
 	ScenarioManager::RegisterScenario(new ScenarioMissile());
-	ScenarioManager::RegisterScenario(new ScenarioFire(false));
+	ScenarioManager::RegisterScenario(new ScenarioFire(true));
 	ScenarioManager::RegisterScenario(new ScenarioWater(true));
 
 	SetScene(m_pSceneLoading);

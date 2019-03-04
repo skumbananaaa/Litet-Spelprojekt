@@ -32,7 +32,10 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);
 
-	m_Health = m_SkillStrength * 100.0f;
+	m_MaxHealth = m_SkillStrength * 100.0f;
+	m_Health = m_MaxHealth;
+	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
+	m_MovementSpeedMultiplier = 1.0f;
 }
 
 Crewmember::Crewmember(Crewmember& other)
@@ -46,6 +49,10 @@ Crewmember::Crewmember(Crewmember& other)
 	SetMesh(MESH::CUBE);
 	SetPosition(other.GetPosition());
 	SetScale(glm::vec3(0.2, 1.8, 0.5));
+	m_MaxHealth = other.m_MaxHealth;
+	m_Health = other.m_Health;
+	m_MovementSpeed = other.m_MovementSpeed;
+	m_MovementSpeedMultiplier = other.m_MovementSpeedMultiplier;
 	UpdateTransform();
 }
 
@@ -67,6 +74,14 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1).GetLevelData(), deltaTime);
 		CheckFireDamage(m_pWorld->GetLevel(GetPosition().y).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
+
+		//Multiply In MovementSpeed Multipliers;
+		m_MovementSpeedMultiplier = 1.0f;
+		const glm::ivec3& tilePos = GetTile();
+		if (m_pWorld->GetLevel(tilePos.y * 2).GetLevelData()[tilePos.x][tilePos.z].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+		{
+			m_MovementSpeedMultiplier *= CREWMEMBER_IN_WATER_MOVEMENT_SPEED_MULTIPLIER;
+		}
 	}
 }
 
@@ -298,27 +313,47 @@ void Crewmember::UpdateHealth(float dt)
 	//Tweak here!
 	float smokeDmgSpeed = 1.0f;
 	float burnDmgSpeed = 1.0f;
+
 	if (HasInjurySmoke())
 	{
 		m_Health -= (std::log10(m_HasInjurySmoke)) * smokeDmgSpeed * dt;
 	}
+
 	if (HasInjuryBurned())
 	{
 		m_Health -= (std::log10(m_HasInjuryBurned)) * burnDmgSpeed * dt;
 	}
+
 	if (HasInjuryBoneBroken())
 	{
 		//m_Health -= m_HasInjuryBoneBroken * dt;
 	}
+
 	if (m_Health <= 0.0f)
 	{
 		Logger::LogEvent(GetName() + " has fainted!", false);
+		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
+	}
+	else if (m_Health < m_MaxHealth)
+	{
+		if (m_Health > 0.5f * m_MaxHealth)
+		{
+			m_MovementSpeed = CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
+		}
+		else
+		{
+			m_MovementSpeed = CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
+		}
+	}
+	else
+	{
+		m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
 	}
 }
 
-void Crewmember::Move(const glm::vec3 & dir)
+void Crewmember::Move(const glm::vec3& dir, float dtS)
 {
-	glm::vec3 res = GetPosition() + dir;
+	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * dtS;
 	SetPosition(res);
 }
 
@@ -344,6 +379,11 @@ const glm::vec3& Crewmember::GetDirection() const noexcept
 	return m_Direction;
 }
 
+float Crewmember::GetMovementSpeed() const noexcept
+{
+	return m_MovementSpeed;
+}
+
 void Crewmember::SetDirection(const glm::vec3& direction) noexcept
 {
 	m_Direction = glm::normalize(direction);
@@ -358,7 +398,7 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (!m_HasInjurySmoke && !m_HasInjuryBurned)
+	if (!HasInjurySmoke() && !HasInjuryBurned())
 	{
 		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 	}

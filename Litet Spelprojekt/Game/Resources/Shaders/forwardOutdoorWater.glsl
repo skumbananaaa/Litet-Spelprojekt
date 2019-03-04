@@ -334,7 +334,7 @@ void main()
 	reflectColour = mix(reflectColour, waterColour, minBlueness);
 	
 	vec3 finalColour = mix(reflectColour, refractColour, calculateFresnel());
-	finalColour = mix(finalColour, vec3(1.0f), fs_in.FoamFactor);
+	finalColour = mix(finalColour, vec3(0.09f, 0.34f, 0.49f), fs_in.FoamFactor);
 	finalColour = finalColour * fs_in.Diffuse + fs_in.Specular;
 	
 	g_OutColor = vec4(finalColour, 1.0f);

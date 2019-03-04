@@ -1515,12 +1515,12 @@ void Editor::OnButtonReleased(Button* button)
 			}
 
 			//Create one grid for each grid level
-			const WorldLevel* pWorldLevel = pWorld->GetLevel(gridId);
-			const uint32* const * ppLevelIndexes = pWorldLevel->GetLevel();
-			uint32 levelWidth = pWorldLevel->GetSizeX();
-			uint32 levelHeight = pWorldLevel->GetSizeZ();
-			int32 gridWidth = pWorldLevel->GetSizeX() - 2;
-			int32 gridHeight = pWorldLevel->GetSizeZ() - 2;
+			const WorldLevel& worldLevel = pWorld->GetLevel(gridId);
+			const uint32* const * ppLevelIndexes = worldLevel.GetLevel();
+			uint32 levelWidth = worldLevel.GetSizeX();
+			uint32 levelHeight = worldLevel.GetSizeZ();
+			int32 gridWidth = worldLevel.GetSizeX() - 2;
+			int32 gridHeight = worldLevel.GetSizeZ() - 2;
 			Grid* pGrid = new Grid(MATERIAL::BLACK, glm::ivec2(gridWidth, gridHeight), glm::vec3(-gridWidth / 2.0f, 0.0f, -gridHeight / 2.0f));
 
 			for (uint32 x = 0; x < gridWidth; x++)
@@ -1551,24 +1551,23 @@ void Editor::OnButtonReleased(Button* button)
 					pTile->SetID(tileId);
 					editor->m_ppScenes[gridId / 2]->AddGameObject(pTile);
 
-					pTile->SetBurnTemperature(pWorldLevel->GetLevelData()[x][y].BurnsAt);
+					pTile->SetBurnTemperature(worldLevel.GetLevelData()[x][y].BurnsAt);
 				}
 			}
 
 			editor->m_ppGrids[gridId] = pGrid;
 		}
 
-		const glm::ivec3* pStairs = pWorld->GetStairs();
-
-		for (uint32 stairId = 0; stairId < pWorld->GetNumStairs(); stairId++)
+		const std::vector<glm::ivec3> stairs = pWorld->GetStairs();
+		for (uint32 stairId = 0; stairId < pWorld->GetStairs().size(); stairId++)
 		{
-			const glm::ivec3& stairs = pStairs[stairId];
-			Tile* pTile = editor->m_ppGrids[stairs.y]->GetTile(glm::ivec2(stairs.x - 1, stairs.z - 1));
+			const glm::ivec3& stair = stairs[stairId];
+			Tile* pTile = editor->m_ppGrids[stair.y]->GetTile(glm::ivec2(stair.x - 1, stair.z - 1));
 			pTile->SetHasStairs(true);
 			pTile->SetDefaultMaterial(MATERIAL::BLUE);
 		}
 
-		for (uint32 doorId = 0; doorId < pWorld->GetNumDoors(); doorId++)
+		for (uint32 doorId = 0; doorId < pWorld->GetDoors().size(); doorId++)
 		{
 			const glm::ivec3& door = pWorld->GetDoor(doorId);
 			Tile* pTile = editor->m_ppGrids[door.y]->GetTile(glm::ivec2(door.x - 1, door.z - 1));

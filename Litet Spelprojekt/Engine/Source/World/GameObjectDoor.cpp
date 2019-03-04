@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <World\GameObjectDoor.h>
+#include <Graphics/Scene.h>
 
 GameObjectDoor::GameObjectDoor() noexcept
 {
@@ -75,4 +76,14 @@ void GameObjectDoor::UpdateTransform() noexcept
 
 		m_IsDirty = false;
 	}
+}
+
+void GameObjectDoor::OnPicked() noexcept
+{
+	std::cout << "i am a picked door!" << std::endl;
+}
+
+void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept
+{
+	scene->RegisterPickableGameObject(this);
 }

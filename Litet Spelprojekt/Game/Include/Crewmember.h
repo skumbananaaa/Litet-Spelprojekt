@@ -25,6 +25,7 @@ public:
 	void FindPath(const glm::ivec3& goalPos);
 
 	void LookForDoor() noexcept;
+	virtual void OnAddedToScene(Scene* scene) noexcept override;
 	void CloseDoorOrder(glm::ivec3 doorTile);
 
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
@@ -36,23 +37,25 @@ public:
 	///<summary>Gets the current direction that the crewmember is facing.</summary>
 	const glm::vec3& GetDirection() const noexcept;
 	///<summary>Sets the current direction that the crewmember is facing. Use .Update() to apply visual changes.</summary>
-	void SetDirection(const glm::vec3& direction) noexcept;
+	void SetDirection(const glm::vec3& direction) noexcept override;
 	///<summary>>Switches between point light and spotlight for the crewmember.</summary>
 	glm::ivec3 GetTile() const noexcept;
 	///<summary>Updates matrix of the object.</summary>
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 
-	virtual void OnPicked();
-	virtual void OnHovered();
-	virtual void OnNotHovered();
+	void OnPicked() noexcept override;
+	void OnHovered() noexcept override;
+	void OnNotHovered() noexcept override;
+	bool IsHovered() const noexcept override;
+	bool IsPicked() const noexcept override;
+
 	void UpdateLastKnownPosition() noexcept;
 	const glm::vec3& GetLastKnownPosition() const noexcept;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
 
 	int32 GetShipNumber() const noexcept;
 
-	bool IsHovered() const noexcept;
-	bool IsPicked() const noexcept;
+
 
 	int8 GetSkillFire() const noexcept;
 	int8 GetSkillMedic() const noexcept;

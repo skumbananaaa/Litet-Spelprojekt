@@ -92,8 +92,6 @@ public:
 	const uint32* const* const GetLevel() const noexcept;
 	const TileData* const* const GetLevelData() const noexcept;
 	TileData* const* const GetLevelData() noexcept;
-	std::vector<glm::ivec2>& GetBurningIDs() noexcept;
-	std::vector<glm::ivec2>& GetFloodingIDs() noexcept;
 	uint32 GetSizeX() const noexcept;
 	uint32 GetSizeZ() const noexcept;
 
@@ -114,8 +112,6 @@ private:
 	uint32 m_TilesBetweenBulkheads;
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
-	std::vector<glm::ivec2> m_BurningIDs;
-	std::vector<glm::ivec2> m_FloodingIDs;
 	std::vector<glm::vec4> m_Walls;
 	std::vector<glm::vec4> m_Bulkheads;
 	std::vector<glm::uvec4> m_RoomBounds;

@@ -1,5 +1,4 @@
-#include <EnginePch.h>
-#include "../Scenarios/Fir"
+#include "../../Include/Scenarios/IScenario.h"
 
 IScenario::IScenario() : m_TimeOfNextOutBreak(0)
 {

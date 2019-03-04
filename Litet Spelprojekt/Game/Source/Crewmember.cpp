@@ -8,12 +8,13 @@
 #include <World/GameObjectDoor.h>
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
+	: m_pAssisting(nullptr)
 {
 	m_ActionCap = actionCap;
 	SetName(name);
 	m_pWorld = world;
 	m_IsPicked = false;
-	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
 	SetAnimatedMesh(MESH::ANIMATED_MODEL);
@@ -24,26 +25,32 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_LastKnownPosition = position;
 
 	//Test
-	m_HasInjuryBoneBroken = Random::GenerateBool();
-	m_HasInjuryBurned = Random::GenerateBool();
-	m_HasInjurySmoke = Random::GenerateBool();
+	m_HasInjuryBoneBroken = false; // Random::GenerateBool();
+	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
+	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);
 
-	m_Health = m_SkillStrength * 100.0f;
+	m_MaxHealth = m_SkillStrength * 100.0f;
+	m_Health = m_MaxHealth;
+	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 }
 
 Crewmember::Crewmember(Crewmember& other)
+	: m_pAssisting(nullptr)
 {
 	m_ActionCap = other.m_ActionCap;
 	SetName(other.GetName());
-	m_PlayerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y - 0.9) / 2),std::round(other.GetPosition().z));
+	m_PlayerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y) / 2),std::round(other.GetPosition().z));
 	SetDirection(other.GetDirection());
 	SetMaterial(MATERIAL::CREW_STANDARD);
 	SetMesh(MESH::CUBE);
 	SetPosition(other.GetPosition());
 	SetScale(glm::vec3(0.2, 1.8, 0.5));
+	m_MaxHealth = other.m_MaxHealth;
+	m_Health = other.m_Health;
+	m_MovementSpeed = other.m_MovementSpeed;
 	UpdateTransform();
 }
 
@@ -78,9 +85,14 @@ void Crewmember::OnPicked()
 		if (doorRoomIndex == crewRoomIndex)
 		{
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			if (door->IsOpen())
+			if (!door->IsOpen())
 			{
-				m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
+				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, true), this);
+				break;
+			}
+			else if (door->IsOpen())
+			{
+				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
 				break;
 			}
 		}
@@ -114,7 +126,7 @@ const glm::vec3& Crewmember::GetLastKnownPosition() const noexcept
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept
 {
-	glm::vec3 centre = GetPosition();
+	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
 	centre.x += extension * glm::floor(centre.y / 2.0f);
 
 	glm::vec3 normals[]{
@@ -215,17 +227,54 @@ bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 1.0;
+	return m_HasInjuryBurned > 1.0f;
 }
 
 bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 1.0;
+	return m_HasInjurySmoke > 1.0f;
 }
 
 bool Crewmember::isAlive() const noexcept
 {
 	return m_Health > 0.0f;
+}
+
+void Crewmember::ApplyBoneInjury()
+{
+	m_HasInjuryBoneBroken = true;
+}
+
+void Crewmember::ApplyBurnInjury(float burn)
+{
+	m_HasInjuryBurned += burn;
+}
+
+void Crewmember::SetAssisting(Crewmember* inNeed)
+{
+	m_pAssisting = inNeed;
+}
+
+bool Crewmember::Heal(int8 skillLevel)
+{
+	bool res = false;
+	if (HasInjuryBoneBroken())
+	{
+		m_HasInjuryBoneBroken /= skillLevel;
+	}
+	else if (HasInjuryBurned())
+	{
+		m_HasInjuryBurned /= skillLevel;
+	}
+	else if (HasInjurySmoke())
+	{
+		m_HasInjurySmoke /= skillLevel;
+	}
+	else
+	{
+		res = true;
+	}
+	return res;
 }
 
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
@@ -269,27 +318,62 @@ void Crewmember::UpdateHealth(float dt)
 	//Tweak here!
 	float smokeDmgSpeed = 1.0f;
 	float burnDmgSpeed = 1.0f;
+
 	if (HasInjurySmoke())
 	{
 		m_Health -= (std::log10(m_HasInjurySmoke)) * smokeDmgSpeed * dt;
 	}
+
 	if (HasInjuryBurned())
 	{
 		m_Health -= (std::log10(m_HasInjuryBurned)) * burnDmgSpeed * dt;
 	}
+
 	if (HasInjuryBoneBroken())
 	{
 		//m_Health -= m_HasInjuryBoneBroken * dt;
 	}
+
 	if (m_Health <= 0.0f)
 	{
 		Logger::LogEvent(GetName() + " has fainted!", false);
+		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED;
+	}
+	else if (m_Health < m_MaxHealth)
+	{
+		if (m_Health > 0.5f * m_MaxHealth)
+		{
+			m_MovementSpeed = CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED;
+		}
+		else
+		{
+			m_MovementSpeed = CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED;
+		}
+	}
+	else
+	{
+		m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 	}
 }
 
-void Crewmember::Move(const glm::vec3 & dir)
+void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 {
-	glm::vec3 res = GetPosition() + dir;
+	//Multiply In MovementSpeed Multipliers;
+	float movementSpeedMultiplier = 1.0f;
+
+	if (allowMult)
+	{
+		const glm::ivec3& tilePos = GetTile();
+		uint32 yPos = tilePos.y * 2;
+
+		//Water Modifier
+		if (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+		{
+			movementSpeedMultiplier *= glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel / WATER_MAX_LEVEL));
+		}
+	}
+
+	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
 	SetPosition(res);
 }
 
@@ -300,7 +384,7 @@ const float Crewmember::GetActionCapacity() const
 
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
-	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{
@@ -313,6 +397,11 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 const glm::vec3& Crewmember::GetDirection() const noexcept
 {
 	return m_Direction;
+}
+
+float Crewmember::GetMovementSpeed() const noexcept
+{
+	return m_MovementSpeed;
 }
 
 void Crewmember::SetDirection(const glm::vec3& direction) noexcept
@@ -329,7 +418,14 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
+	if (!HasInjurySmoke() && !HasInjuryBurned())
+	{
+		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
+	}
+	else
+	{
+		Logger::LogEvent(GetName() + " cannot move!", true);
+	}
 }
 
 void Crewmember::LookForDoor(World* pWorld, Scene* pScene)
@@ -341,7 +437,6 @@ void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
 {
 	FindPath(doorTile);
 }
-
 
 void Crewmember::SetActionCapacity(const float actionCap)
 {

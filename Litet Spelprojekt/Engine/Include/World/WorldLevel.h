@@ -1,6 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Scene.h>
+#include <World/GameObjectDoor.h>
 
 #define GAMEOBJECT_CONST_INDEX_WATER 0
 #define GAMEOBJECT_CONST_INDEX_DOOR 1
@@ -53,6 +54,25 @@ struct TileData
 	{
 		return GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 	}
+
+	bool IsOpen() const noexcept
+	{
+		if (HasDoor())
+		{
+			GameObjectDoor* const door = (GameObjectDoor* const)GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+			return door->IsOpen();
+		}
+		return true;
+	}
+
+	void OpenDoor()
+	{
+		if (HasDoor())
+		{
+			GameObjectDoor* const door = (GameObjectDoor* const)GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+			door->SetOpen(true);
+		}
+	}
 };
 
 class API WorldLevel
@@ -72,8 +92,6 @@ public:
 	const uint32* const* const GetLevel() const noexcept;
 	const TileData* const* const GetLevelData() const noexcept;
 	TileData* const* const GetLevelData() noexcept;
-	std::vector<glm::ivec2>& GetBurningIDs() noexcept;
-	std::vector<glm::ivec2>& GetFloodingIDs() noexcept;
 	uint32 GetSizeX() const noexcept;
 	uint32 GetSizeZ() const noexcept;
 
@@ -94,8 +112,6 @@ private:
 	uint32 m_TilesBetweenBulkheads;
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
-	std::vector<glm::ivec2> m_BurningIDs;
-	std::vector<glm::ivec2> m_FloodingIDs;
 	std::vector<glm::vec4> m_Walls;
 	std::vector<glm::vec4> m_Bulkheads;
 	std::vector<glm::uvec4> m_RoomBounds;

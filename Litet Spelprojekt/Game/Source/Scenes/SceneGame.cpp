@@ -31,18 +31,7 @@ SceneGame::SceneGame() : SceneInternal(false),
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
-	GameObject* pGameObject;
-	//BOB
-	{
-		pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
-		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
-		pGameObject->SetPosition(glm::vec3(6.0f, 1.0f, 6.0f));
-		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
-		pGameObject->SetScale(glm::vec3(1.0f));
-		pGameObject->UpdateTransform();
-		AddGameObject(pGameObject);
-	}
+	GetCamera().SetMaxPitch(0.0f);
 }
 
 SceneGame::~SceneGame()
@@ -96,6 +85,8 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 		context.SetFramebuffer(pFramebuffer);
 		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 	}
+
+	GetCamera().SetMaxPitch(1.55334303f);
 
 	DeleteSafe(m_pUICrew);
 }
@@ -209,7 +200,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 					glm::vec3 forward(0.0f);
 					forward.x = GetCamera().GetFront().x;
 					forward.z = GetCamera().GetFront().z;
-					GetCamera().MoveWorldCoords(-forward * deltaPosition.y, true);
+					GetCamera().MoveWorldCoords(-glm::normalize(forward) * deltaPosition.y, true);
 					GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
 
 					m_pUICrewMember->SetCrewMember(nullptr);
@@ -243,7 +234,9 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 			else
 			{
 				const float cameraZoomSensitivity = 0.1f;
-				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+				const glm::vec2& cNearFar = GetCamera().GetMinMaxDistToLookAt();
+				float distanceBoost = glm::max(15.0f * GetCamera().GetDistanceToLookAt() / cNearFar.y, 1.0f);
+				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
 			}
 		}
 	}
@@ -382,18 +375,6 @@ void SceneGame::CreateWorld() noexcept
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	//BOB
-	{
-		pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
-		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
-		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
-		pGameObject->SetScale(glm::vec3(1.0f));
-		pGameObject->UpdateTransform();
-		AddGameObject(pGameObject);
-	}
-
 	////Enable clipplane for wallmaterial
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 	ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)->SetCullMode(CULL_MODE_NONE);
@@ -425,11 +406,11 @@ void SceneGame::CreateCrew() noexcept
 		"Bert Karlsson"
 	};
 
-	m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(10.0f, 0.9f + 4.0f, 10.0f), 100, names[0]);
+	m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(10.0f, 4.0f, 10.0f), 100, names[0]);
 	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(0)->SetHidden(true);
+	//m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
 	AddGameObject(m_Crew.GetMember(0));
 
@@ -439,7 +420,7 @@ void SceneGame::CreateCrew() noexcept
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
-		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15]);
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);

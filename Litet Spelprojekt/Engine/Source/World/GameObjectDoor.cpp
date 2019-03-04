@@ -7,7 +7,7 @@ GameObjectDoor::GameObjectDoor() noexcept
 	SetMesh(MESH::DOOR);
 	UpdateTransform();
 	m_Percentage = 1.0f;
-	m_Open = true;
+	m_Open = false;
 
 }
 

@@ -46,6 +46,11 @@ public:
 	SceneScenario* m_pSceneScenario;
 	SceneGame* m_pSceneGame;
 
+	int32 m_ScenarioFire;
+	int32 m_ScenarioWater;
+	int32 m_ScenarioMissile;
+	int32 m_ScenarioTorpedo;
+
 private:
 	SceneInternal* m_pScene;
 	SceneInternal* m_pSceneNext;

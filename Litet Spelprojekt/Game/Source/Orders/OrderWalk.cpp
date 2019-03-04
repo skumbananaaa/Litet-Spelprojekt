@@ -29,6 +29,12 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	{
 		return false;
 	}
+	if (!pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].IsOpen() && !pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z].IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+	{
+		std::cout << "Door opened" << std::endl;
+		pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].OpenDoor();
+	}
+
 	return FollowPath(dtS);
 }
 
@@ -62,7 +68,7 @@ void OrderWalk::RunParallel()
 	m_pPath = m_pPathFinder->FindPath(GetCrewMember()->GetTile(), m_GoalTile);
 	m_NrOfTilesLeft = m_pPathFinder->GetNrOfPathTiles();
 	m_TargetTile = GetCrewMember()->GetTile();
-	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
 	m_IsPathReady = true;
 }
 
@@ -75,29 +81,31 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			m_directionTile = m_pPath[m_NrOfTilesLeft - 1];
 			m_TargetTile = m_pPath[--m_NrOfTilesLeft];
-			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
+		}
+	}
+
+	if ((std::abs(position.x - m_TargetPos.x) > 0.1 || std::abs(position.y - m_TargetPos.y) > 0.1 || std::abs(position.z - m_TargetPos.z) > 0.1))
+	{
+		glm::vec3 move = m_TargetPos - position;
+		move = glm::normalize(move);
+		if (std::abs(move.y) > 0.1)
+		{
+			move.y /= std::abs(move.y);
+			GetCrewMember()->SetDirection(glm::vec3(1, 0, 0));
+			//GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
+			GetCrewMember()->Move(glm::vec3(0, move.y, 0), false, dtS);
+		}
+		else
+		{
+			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
+			//GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
+			GetCrewMember()->Move(GetCrewMember()->GetDirection(), true, dtS);
 		}
 	}
 	else
 	{
 		return true;
-	}
-
-	if ((std::abs(position.x - m_TargetPos.x) > 0.01 || std::abs(position.y - m_TargetPos.y) > 0.01 || std::abs(position.z - m_TargetPos.z) > 0.01))
-	{
-		glm::vec3 move = m_TargetPos - position;
-		move = glm::normalize(move);
-		if (std::abs(move.y) > 0.01)
-		{
-			move.y /= std::abs(move.y);
-			GetCrewMember()->SetDirection(glm::vec3(0, 0, 1));
-			GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
-		}
-		else
-		{
-			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
-			GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
-		}
 	}
 	return false;
 }

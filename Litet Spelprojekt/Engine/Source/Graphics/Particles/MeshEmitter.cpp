@@ -2,8 +2,9 @@
 #include <Graphics/Particles/MeshEmitter.h>
 #include <System/Random.h>
 #include <GLMHelper.inl>
+#include <Graphics/Scene.h>
 
-MeshEmitter::MeshEmitter()
+MeshEmitter::MeshEmitter(float autoDeleteTimer, IMeshListener* listerner)
 	: GameObject(),
 	m_BeginScale(1.0f),
 	m_EndScale(1.0f),
@@ -18,7 +19,8 @@ MeshEmitter::MeshEmitter()
 	m_ColorNodes(),
 	m_LivingParticles(),
 	m_Particles(),
-	m_ParticleInstances()
+	m_ParticleInstances(),
+	m_pScene(nullptr)
 {
 	for (uint32 i = 0; i < MAX_PARTICLES; i++)
 	{
@@ -37,6 +39,9 @@ MeshEmitter::MeshEmitter()
 
 	Node<glm::vec4> beginColor = { glm::vec4(1.0f), 0.0f };
 	m_ColorNodes.push_back(beginColor);
+
+	m_AutoDeleteTimer = autoDeleteTimer;
+	m_pListener = listerner;
 }
 
 MeshEmitter::~MeshEmitter()
@@ -45,6 +50,15 @@ MeshEmitter::~MeshEmitter()
 
 void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 {
+	if (m_AutoDeleteTimer > 0.0F)
+	{
+		m_AutoDeleteTimer -= deltaTime;
+		if (m_AutoDeleteTimer < 0.0F)
+		{
+			m_AutoDeleteTimer = 0.0F;
+		}
+	}
+
 	if (!m_IsVisible)
 	{
 		return;
@@ -53,12 +67,25 @@ void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 	GameObject::Update(camera, deltaTime);
 
 	//Spawn particles
-	float particlesThisFrame = m_ParticleBacklog + (m_ParticlesPerSecond * deltaTime);
-	for (; particlesThisFrame >= 1.0f; particlesThisFrame -= 1.0f)
+	if (m_AutoDeleteTimer != 0.0F)
 	{
-		SpawnParticle();
+		float particlesThisFrame = m_ParticleBacklog + (m_ParticlesPerSecond * deltaTime);
+		for (; particlesThisFrame >= 1.0f; particlesThisFrame -= 1.0f)
+		{
+			SpawnParticle();
+		}
+		m_ParticleBacklog = particlesThisFrame;
 	}
-	m_ParticleBacklog = particlesThisFrame;
+	else if (GetNumParticles() == 0)
+	{
+		m_pScene->RemoveGameObject(this);
+		if (m_pListener)
+		{
+			m_pListener->OnMeshEmitterKilled(this);
+		}
+		delete this;
+		return;
+	}
 
 	//Update and sort particles
 	for (uint32 i = 0; i < GetNumParticles(); i++)
@@ -178,6 +205,11 @@ void MeshEmitter::AddColorNode(const glm::vec4& color, float atLifeTime) noexcep
 	}
 
 	m_ColorNodes.push_back(node);
+}
+
+void MeshEmitter::OnAddedToScene(Scene* scene) noexcept
+{
+	m_pScene = scene;
 }
 
 void MeshEmitter::SetBeginColor(const glm::vec4& color) noexcept

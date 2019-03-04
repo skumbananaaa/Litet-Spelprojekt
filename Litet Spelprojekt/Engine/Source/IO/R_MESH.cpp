@@ -36,7 +36,7 @@ void MESH::RegisterResourcesPreLoading()
 {
 	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
 	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
-	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(0.0f), 2.5f, 100));
+	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(21.0f, 6.0f), glm::vec2(40.0f, 10.0f), 2.0, 100));
 }
 
 void MESH::RegisterResources()

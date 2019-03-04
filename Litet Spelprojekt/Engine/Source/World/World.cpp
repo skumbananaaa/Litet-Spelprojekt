@@ -92,11 +92,11 @@ void World::GenerateRooms(Scene& scene) noexcept
 			if (i >= m_RoomBounds.size())
 			{
 				m_RoomBounds.push_back(temp[i]);
-				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.85f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
+				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.5f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
 			}
 			else if (temp[i].x != 11)
 			{
-				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.85f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
+				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.5f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
 			}
 		}
 	}
@@ -358,7 +358,7 @@ bool World::UpdateVisibility(Scene& pScene, float dt)
 	for (uint32 i = 0; i < m_ActiveRooms.size(); i++)
 	{
 		m_RoomLightsTimers[m_ActiveRooms[i]] += dt;
-		if (m_RoomLightsTimers[m_ActiveRooms[i]] >= 5.0f)
+		if (m_RoomLightsTimers[m_ActiveRooms[i]] >= 20.0f)
 		{
 			m_RoomLights[m_ActiveRooms[i]]->SetIsVisible(false);
 			m_Rooms[m_ActiveRooms[i]].SetActive(false);

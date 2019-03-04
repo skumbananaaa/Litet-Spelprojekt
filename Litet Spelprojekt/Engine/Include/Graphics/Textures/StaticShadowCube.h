@@ -33,5 +33,5 @@ inline const TextureCube* StaticShadowCube::GetCubeTexture() const
 
 inline constexpr float StaticShadowCube::GetFarPlane() const
 {
-	return 50.0f;
+	return 25.0f;
 }

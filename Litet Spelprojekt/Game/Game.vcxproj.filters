@@ -72,6 +72,21 @@
     <ClCompile Include="Source\GUI\UIPause.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scenarios\ScenarioMissile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GameObjectMissile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Orders\OrderHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Orders\OrderWalk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Orders\OrderCloseDoor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game.h">
@@ -128,6 +143,24 @@
     <ClInclude Include="Include\GUI\UIPause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Scenarios\ScenarioMissile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameObjectMissile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\IOrder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderWalk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderCloseDoor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\VShader.glsl" />
@@ -165,6 +198,7 @@
     <None Include="Resources\Shaders\forwardAnimation.glsl" />
     <None Include="Resources\Shaders\forwardMeshParticles.glsl" />
     <None Include="Resources\Shaders\forwardOutdoorWater.glsl" />
+    <None Include="Resources\Shaders\forwardFloor.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\Meshes\ship.obj" />

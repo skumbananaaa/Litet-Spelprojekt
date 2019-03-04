@@ -44,7 +44,7 @@ enum Direction : uint32
 	LEFT
 };
 
-enum EditingMode : uint32
+enum RoomEditingMode : uint32
 {
 	NONE,
 	ADD_ROOM,
@@ -102,7 +102,7 @@ private:
 	Scene** m_ppScenes;
 	float m_CameraZoom;
 
-	EditingMode m_CurrentEditingMode;
+	RoomEditingMode m_CurrentEditingMode;
 
 	uint32 m_TileTints[MAX_NUM_ROOMS];
 	uint32 m_TileColors[MAX_NUM_ROOMS];
@@ -121,6 +121,7 @@ private:
 
 	const Material* m_pOriginalMaterial;
 	std::vector<GameObject*> m_Walls[NUM_BOAT_LEVELS];
+	std::vector<GameObject*> m_Bulkheads[NUM_BOAT_LEVELS];
 
 	ProgressBar* m_pLoadingBar;
 	TextView* m_pTextViewFile;

@@ -105,9 +105,7 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 
 UICrew::~UICrew()
 {
-	Game::GetGame()->GetGUIManager().Remove(m_Fires);
-	Game::GetGame()->GetGUIManager().Remove(m_Medics);
-	Game::GetGame()->GetGUIManager().Remove(m_Strengths);
+
 }
 
 void UICrew::OnExpanding(PanelExpandable* panel, float percentage)

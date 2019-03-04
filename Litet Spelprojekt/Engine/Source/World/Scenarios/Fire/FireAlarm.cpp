@@ -27,6 +27,11 @@ void FireAlarm::SetPosition(const glm::vec3& position) noexcept
 	m_pAudioSrc->SetPosition(position);
 }
 
+bool FireAlarm::HasDetected() const noexcept
+{
+	return m_FireDetected;
+}
+
 void FireAlarm::TurnOff() noexcept
 {
 	m_FireDetected = false;

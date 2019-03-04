@@ -42,12 +42,6 @@ layout(std140, binding = 2) uniform DefferedMaterialBuffer
 	float g_HasSpecularMap;
 };
 
-layout(std140, binding = 3) uniform DissolveBuffer
-{
-	vec4 g_ClipDistances[3];
-	float g_DissolvePercentage;
-};
-
 layout(std140, binding = 1) uniform LightBuffer
 {
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
@@ -114,8 +108,9 @@ uvec4 CalcRoomIndex(ivec3 mapPos)
 void main()
 {
 	//Setup
-	vec3 normal = (g_InstanceModel * vec4(g_Normal, 0.0f)).xyz;
+	vec3 normal = normalize((g_InstanceModel * vec4(g_Normal, 0.0f)).xyz);
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0);
+	vec3 scale = vec3(length(g_InstanceModel[0].xyz), length(g_InstanceModel[1].xyz), length(g_InstanceModel[2].xyz));
 
 	//Calculate position in tiles
 	ivec3 mapPos = CalcMapPos(worldPos.xyz);
@@ -141,8 +136,8 @@ void main()
 
 	//CLIPPING
 	gl_ClipDistance[0] = cutWalls;
-	gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]); //DEPENDING ON LEVEL
-	gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]); //DEPENDING ON LEVEL
+	//gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]); //DEPENDING ON LEVEL
+	//gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]); //DEPENDING ON LEVEL
 
 	//Calculate light
 	vec3 specular = vec3(0.0f);
@@ -215,7 +210,10 @@ void main()
 
 	vs_out.Specular = specular;
 	vs_out.LightColor = lightColor;
-	vs_out.TexCoords = g_TexCoords;
+
+	vec2 texCoords = g_TexCoords;
+	texCoords.x *= max(scale.x, scale.z) / 2.0f;
+	vs_out.TexCoords = texCoords;
 
 	gl_Position = g_ProjectionView * worldPos;
 }

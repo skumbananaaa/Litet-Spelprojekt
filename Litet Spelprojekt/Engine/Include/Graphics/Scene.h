@@ -30,7 +30,7 @@ public:
 	void AddRoomLight(PointLight* pLight) noexcept;
 	void AddPlanarReflector(PlanarReflector* pReflector) noexcept;
 	void RemoveSpotLight(SpotLight* pLight) noexcept;
-	void RemoveGameObject(uint32 index) noexcept;
+	void RemoveGameObject(GameObject* pGameObject) noexcept;
 	void ExtendScene() noexcept;
 
 	Camera& GetCamera() noexcept;

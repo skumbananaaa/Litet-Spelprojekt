@@ -4,6 +4,7 @@
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include <World/GameObjectDoor.h>
 
+
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
@@ -88,14 +89,24 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 		members.push_back(m_Crew.GetMember(i));
 	}
 	m_pUICrew = new UICrew(0, window->GetHeight() - 150, 200, 500, members);
+
+	SetPaused(false);
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 {
 	SceneInternal::OnDeactivated(newScene);
 
-	Game* game = Game::GetGame();
-	game->GetGUIManager().DeleteChildren();
+	GLContext& context = Application::GetInstance().GetGraphicsContext();
+	const std::vector<PlanarReflector*>& reflectors = GetPlanarReflectors();
+	for (size_t i = 0; i < reflectors.size(); i++)
+	{
+		const Framebuffer* pFramebuffer = reflectors[i]->GetFramebuffer();
+
+		context.SetViewport(pFramebuffer->GetWidth(), pFramebuffer->GetHeight(), 0, 0);
+		context.SetFramebuffer(pFramebuffer);
+		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
+	}
 
 	DeleteSafe(m_pUICrew);
 }
@@ -313,18 +324,15 @@ void SceneGame::OnKeyDown(KEY keycode)
 				ExtendScene();
 				break;
 			}
-			case KEY_L:
-			{
-				for (int i = 0; i < m_Crew.GetCount(); i++)
-				{
-					m_Crew.GetMember(i)->SwitchLight();
-				}
-				break;
-			}
 			case KEY_R:
 			{
 				ShowCrewmember(0);
 				ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
+				break;
+			}
+			case KEY_K:
+			{
+				RequestDoorClosed();
 				break;
 			}
 		}
@@ -349,38 +357,38 @@ void SceneGame::CreateGameObjects() noexcept
 {
 	GameObject* pGameObject = nullptr;
 	{
-		//Bottom floor
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::RED);
-			pGameObject->SetMesh(MESH::CUBE_OBJ);
-			pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
-			pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
+		////Bottom floor
+		//{
+		//	pGameObject = new GameObject();
+		//	pGameObject->SetMaterial(MATERIAL::RED);
+		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
+		//	pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
+		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
+		//	pGameObject->UpdateTransform();
+		//	AddGameObject(pGameObject);
+		//}
 
-		//Middle floor
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::GREEN);
-			pGameObject->SetMesh(MESH::CUBE_OBJ);
-			pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
-			pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
+		////Middle floor
+		//{
+		//	pGameObject = new GameObject();
+		//	pGameObject->SetMaterial(MATERIAL::GREEN);
+		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
+		//	pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
+		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
+		//	pGameObject->UpdateTransform();
+		//	AddGameObject(pGameObject);
+		//}
 
-		//Top floor
-		{
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::BLUE);
-			pGameObject->SetMesh(MESH::CUBE_OBJ);
-			pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
-			pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-			pGameObject->UpdateTransform();
-			AddGameObject(pGameObject);
-		}
+		////Top floor
+		//{
+		//	pGameObject = new GameObject();
+		//	pGameObject->SetMaterial(MATERIAL::BLUE);
+		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
+		//	pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
+		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
+		//	pGameObject->UpdateTransform();
+		//	AddGameObject(pGameObject);
+		//}
 	}
 }
 
@@ -424,26 +432,28 @@ void SceneGame::CreateWorld() noexcept
 			glm::vec3 delta = door1 - door2;
 			if (glm::length(delta) <= 1.0)
 			{
-				glm::vec3 position = (door1 + door2) / 2.0F;
+				if (level->GetLevel()[(uint32)door1.x][(uint32)door1.z] != level->GetLevel()[(uint32)door2.x][(uint32)door2.z])
+				{
+					glm::vec3 position = (door1 + door2) / 2.0F;
 
-				pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				AddGameObject(pGameObject);
+					pGameObject = new GameObject();
+					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMesh(MESH::DOOR_FRAME);
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					AddGameObject(pGameObject);
 
-				pGameObject = new GameObjectDoor();
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->UpdateTransform();
-				AddGameObject(pGameObject);
+					pGameObject = new GameObjectDoor();
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->UpdateTransform();
+					//reinterpret_cast<GameObjectDoor*>(pGameObject)->SetOpen(false);
+					AddGameObject(pGameObject);
 
-				level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-				level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-
-				break;
+					level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+					level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+				}
 			}
 		}
 	}
@@ -488,6 +498,24 @@ void SceneGame::CreateWorld() noexcept
 		AddGameObject(pGameObject);
 	}
 
+	//BOB
+	{
+		pGameObject = new GameObject();
+		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
+		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
+		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->UpdateTransform();
+		AddGameObject(pGameObject);
+	}
+
+	////Enable clipplane for wallmaterial
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
+	ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)->SetCullMode(CULL_MODE_NONE);
+
+	//SetClipPlanes(0);
+
 	// Generate rooms
 	m_pWorld->GenerateRooms();
 	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2)
@@ -506,7 +534,25 @@ void SceneGame::CreateWorld() noexcept
 
 			AddGameObject(pGameObject);
 		}
+
+		glm::vec4 bulkhead;
+
+		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfBulkheads(); i++)
+		{
+			bulkhead = m_pWorld->GetLevel(level)->GetBulkhead(i);
+			pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
+			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
+			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
+			pGameObject->UpdateTransform();
+
+			AddGameObject(pGameObject);
+		}
 	}
+
+	//Generate floor
+	m_pWorld->GenerateFloor(this);
 
 	//Generate water
 	m_pWorld->GenerateWater(this);
@@ -536,7 +582,6 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(10.0f, 0.9f + 4.0f, 10.0f), 100, names[0]);
 	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
-	m_Crew.GetMember(0)->SetPath();
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
 	m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
@@ -551,7 +596,6 @@ void SceneGame::CreateCrew() noexcept
 		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
-		m_Crew.GetMember(i)->SetPath();
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
 		m_Crew.GetMember(i)->SetHidden(true);
 		m_Crew.GetMember(i)->UpdateTransform();
@@ -596,12 +640,54 @@ void SceneGame::PickPosition()
 	{
 		for (int i = 0; i < m_Crew.GetCount(); i++)
 		{
-			if (m_Crew.GetMember(i)->GetLight()->GetColor() == CHOSEN_LIGHT || m_Crew.GetMember(i)->GetTorch()->GetColor() == CHOSEN_LIGHT)
+			if (m_Crew.GetMember(i)->IsPicked())
 			{
 				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
 			}
 		}
 	}
+}
+
+void SceneGame::RequestDoorClosed()
+{
+	m_Crew.RequestCloseDoor(m_pWorld, this);
+	//std::vector<uint32> crewRoomIndexArray;
+	//std::vector<uint32> doorRoomIndexArray;
+	//std::vector<glm::ivec2> roomInCommon;
+	//for (int i = 0; i < m_Crew.GetCount(); i++)
+	//{
+	//	glm::ivec3 crewTile = m_Crew.GetMember(i)->GetTile();
+	//	uint32 crewRoomIndex = m_pWorld->GetLevel(crewTile.y * 2)->GetLevel()[crewTile.x][crewTile.z];
+	//	crewRoomIndexArray.push_back(crewRoomIndex);
+	//	for (int j = 0; j < m_pWorld->GetNumDoors(); j++)
+	//	{
+	//		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
+	//		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+	//		//doorRoomIndexArray.push_back(doorRoomIndex);
+
+	//		if (doorRoomIndex == crewRoomIndex)
+	//		{
+	//			roomInCommon.push_back(glm::ivec2(crewRoomIndex, doorRoomIndex));
+	//			m_Crew.GetMember(i)->FindPath(doorTile);
+	//		}
+	//	}
+	//}
+
+	//for (int i = 0; i < m_pWorld->GetNumDoors(); i++)
+	//{
+	//	glm::ivec3 doorTile = m_pWorld->GetDoor(i);
+	//	uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+	//	doorRoomIndexArray.push_back(doorRoomIndex);
+
+	//}
+
+	//
+
+	//if (doorRoomIndex == crewRoomIndex)
+	//{
+	//	roomInCommon.push_back(glm::ivec2(crewRoomIndex, doorRoomIndex));
+	//	m_Crew.GetMember(i)->FindPath(doorTile);
+	//}
 }
 
 void SceneGame::PickCrew(bool hover)
@@ -695,9 +781,19 @@ Crewmember* SceneGame::GetCrewmember(uint32 shipNumber)
 	return m_Crew.GetMember(shipNumber);
 }
 
+Crew * SceneGame::GetCrew() noexcept
+{
+	return &m_Crew;
+}
+
 UICrewMember* SceneGame::GetUICrewMember() noexcept
 {
 	return m_pUICrewMember;
+}
+
+World * SceneGame::GetWorld() noexcept
+{
+	return m_pWorld;
 }
 
 void SceneGame::UpdateCamera(float dtS) noexcept

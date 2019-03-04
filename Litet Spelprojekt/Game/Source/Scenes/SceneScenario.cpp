@@ -51,6 +51,7 @@ void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer
 		button->SetMargin(10, 5, 10, 5);
 		button->SetSelected(true);
 		button->SetUserData(reinterpret_cast<void*>(i));
+		button->AddExternalRenderer(this);
 		m_pListScrollable->Add(button);
 		m_SelectionHandler.AddSelectable(button);
 	}
@@ -108,4 +109,18 @@ void SceneScenario::OnButtonHovered(Button* button)
 
 void SceneScenario::OnButtonNotHovered(Button* button)
 {
+}
+
+void SceneScenario::OnRenderGUIObject(GUIContext* context, GUIObject* object)
+{
+	Button* button = (Button*)object;
+
+	if (button->IsSelected())
+	{
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CHECKED), object->GetWidth() - 70, 20, 50, 50, GUIContext::COLOR_WHITE);
+	}
+	else
+	{
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CROSSED), object->GetWidth() - 70, 20, 50, 50, GUIContext::COLOR_WHITE);
+	}
 }

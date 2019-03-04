@@ -146,6 +146,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GameObjectMissile.cpp" />
+    <ClCompile Include="Source\Orders\OrderCloseDoor.cpp" />
+    <ClCompile Include="Source\Orders\OrderHandler.cpp" />
+    <ClCompile Include="Source\Orders\OrderWalk.cpp" />
+    <ClCompile Include="Source\Scenarios\ScenarioMissile.cpp" />
     <ClCompile Include="Source\GUI\UILog.cpp" />
     <ClCompile Include="Source\GUI\UIPause.cpp" />
     <ClCompile Include="Source\Scenes\SceneInternal.cpp" />
@@ -170,13 +175,19 @@
     <ClInclude Include="Include\Crew.h" />
     <ClInclude Include="Include\Crewmember.h" />
     <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\GameObjectMissile.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />
     <ClInclude Include="Include\GUI\UICrewMember.h" />
     <ClInclude Include="Include\GUI\UILog.h" />
     <ClInclude Include="Include\GUI\UIPause.h" />
+    <ClInclude Include="Include\Orders\IOrder.h" />
+    <ClInclude Include="Include\Orders\OrderCloseDoor.h" />
+    <ClInclude Include="Include\Orders\OrderHandler.h" />
+    <ClInclude Include="Include\Orders\OrderWalk.h" />
     <ClInclude Include="Include\Path.h" />
     <ClInclude Include="Include\Scenarios\ScenarioFire.h" />
     <ClInclude Include="Include\Scenarios\ScenarioManager.h" />
+    <ClInclude Include="Include\Scenarios\ScenarioMissile.h" />
     <ClInclude Include="Include\Scenarios\ScenarioWater.h" />
     <ClInclude Include="Include\Scenes\SceneCredits.h" />
     <ClInclude Include="Include\Scenes\SceneGame.h" />
@@ -197,6 +208,7 @@
     <None Include="Resources\Shaders\deferredWall.glsl" />
     <None Include="Resources\Shaders\depthPrePass.glsl" />
     <None Include="Resources\Shaders\forwardAnimation.glsl" />
+    <None Include="Resources\Shaders\forwardFloor.glsl" />
     <None Include="Resources\Shaders\forwardIndoorWater.glsl" />
     <None Include="Resources\Shaders\forwardMaterial.glsl" />
     <None Include="Resources\Shaders\forwardMeshParticles.glsl" />

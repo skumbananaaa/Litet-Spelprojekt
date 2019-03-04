@@ -1,10 +1,11 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Scene.h>
-#include <World/Scenarios/Water/WaterObject.h>
 
 #define GAMEOBJECT_CONST_INDEX_WATER 0
 #define GAMEOBJECT_CONST_INDEX_DOOR 1
+#define GAMEOBJECT_CONST_INDEX_SMOKE 2
+#define GAMEOBJECT_CONST_INDEX_FIRE 3
 
 struct TileData 
 {
@@ -22,7 +23,7 @@ struct TileData
 	bool AlreadyFlooded;
 	bool Burning;
 
-	uint32 nrOfBaseGameObjects;
+	uint32 NrOfBaseGameObjects;
 	
 	std::vector<GameObject*> GameObjects;
 
@@ -33,7 +34,7 @@ struct TileData
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
 
-		nrOfBaseGameObjects = GameObjects.size();
+		NrOfBaseGameObjects = GameObjects.size();
 	}
 
 	void RemoveGameObject(GameObject* gameObject) noexcept
@@ -79,12 +80,13 @@ public:
 	///<summary>Returns a vec4. The first two values are the position of the wall (x, z), the second two are the dimensions of the wall (x, z)</summary>
 	const glm::vec4& GetWall(uint32 index) const noexcept;
 	uint32 GetNrOfWalls() const noexcept;
+	const glm::vec4& GetBulkhead(uint32 index) const noexcept;
+	uint32 GetNrOfBulkheads() const noexcept;
+	uint32 GetTilesBetweenBulkheads() const noexcept;
 	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
-	void GenerateRooms();
-	void GenerateWater(Scene* pScene, uint32 levelHeight);
-	void UpdateFire(float dt);
-	void UpdateSmoke(float dt, const TileData* const* fireLevel, WorldLevel* aboveLevel);
+	void GenerateRooms(uint32 tilesBetweenBulkheads = 8);
+	void GenerateScenarioObjects(Scene* pScene, uint32 levelHeight);
 
 private:
 	TileData** m_ppLevelData;
@@ -93,8 +95,9 @@ private:
 	std::vector<glm::ivec2> m_FloodingIDs;
 	uint32 m_SizeX;
 	uint32 m_SizeZ;
-	uint32 m_NrOfWalls;
 	std::vector<glm::vec4> m_Walls;
+	std::vector<glm::vec4> m_Bulkheads;
+	uint32 m_TilesBetweenBulkheads;
 
 	std::vector<glm::uvec4> m_RoomBounds;
 };

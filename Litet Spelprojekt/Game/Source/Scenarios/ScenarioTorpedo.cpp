@@ -22,15 +22,43 @@ void ScenarioTorpedo::Init(World* pWorld) noexcept
 
 void ScenarioTorpedo::OnStart(SceneGame* scene) noexcept
 {
-	float rotation = Random::GenerateFloat(0.0, glm::pi<float>());
+	float rotation = Random::GenerateFloat(0.0, glm::two_pi<float>());
 	glm::vec3 pos = glm::vec3(glm::cos(rotation) * 200, -1.0F, glm::sin(rotation) * 200);
 
+	float shortest = 100000;
 	for (int i = 2; i < 10; i++)
 	{
+		float distance = glm::distance(glm::vec3(i, 0, 1), pos);
+		if (distance < shortest)
+		{
+			shortest = distance;
+			m_Target = glm::vec3(i, 0, 1);
+		}
 
+		distance = glm::distance(glm::vec3(i, 0, 39), pos);
+		if (distance < shortest)
+		{
+			shortest = distance;
+			m_Target = glm::vec3(i, 0, 39);
+		}
+	}
+	for (int i = 2; i < 39; i++)
+	{
+		float distance = glm::distance(glm::vec3(1, 0, i), pos);
+		if (distance < shortest)
+		{
+			shortest = distance;
+			m_Target = glm::vec3(1, 0, i);
+		}
+
+		distance = glm::distance(glm::vec3(9, 0, i), pos);
+		if (distance < shortest)
+		{
+			shortest = distance;
+			m_Target = glm::vec3(9, 0, i);
+		}
 	}
 
-	m_Target = glm::vec3(Random::GenerateInt(2, 9), 0, Random::GenerateInt(2, 39));
 	m_pGameObjectTorpedo = new GameObjectTorpedo(pos, m_Target);
 
 	scene->AddGameObject(m_pGameObjectTorpedo);

@@ -18,6 +18,7 @@ void OrderCarry::StartOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers)
 
 void OrderCarry::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
+	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
 	GetCrewMember()->SetAssisting(nullptr);
 }
 

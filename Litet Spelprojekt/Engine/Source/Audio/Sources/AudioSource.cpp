@@ -29,7 +29,10 @@ AudioSource::~AudioSource()
 
 void AudioSource::Play() const noexcept
 {
-	alSourcePlay(m_SourceId);
+	if (!IsPlaying())
+	{
+		alSourcePlay(m_SourceId);
+	}
 }
 
 void AudioSource::Pause() const noexcept
@@ -91,6 +94,13 @@ void AudioSource::SetReferenceDistance(float value) const noexcept
 void AudioSource::SetMaxDistance(float value) const noexcept
 {
 	alSourcef(m_SourceId, AL_MAX_DISTANCE, value);
+}
+
+bool AudioSource::IsPlaying() const noexcept
+{
+	ALint result;
+	alGetSourcei(m_SourceId, AL_SOURCE_STATE, &result);
+	return result == AL_PLAYING;
 }
 
 AudioSource* AudioSource::CreateSoundSource(int32 sound, const glm::vec3& pos, const glm::vec3& vel)

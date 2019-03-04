@@ -3,6 +3,8 @@
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Button.h>
 
+class AudioSource;
+
 class SceneMenu : public SceneInternal, public IButtonListener
 {
 	friend class Game;
@@ -29,4 +31,6 @@ private:
 	Button* m_pButtonOptions;
 	Button* m_pButtonCredits;
 	Button* m_pButtonQuit;
+	AudioSource* m_pAudioSourceSelect;
+	AudioSource* m_pAudioSourceHover;
 };

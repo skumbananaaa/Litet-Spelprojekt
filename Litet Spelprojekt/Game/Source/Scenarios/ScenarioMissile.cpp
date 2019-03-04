@@ -100,7 +100,7 @@ void ScenarioMissile::OnMeshEmitterKilled(MeshEmitter* emitter)
 
 std::string ScenarioMissile::GetName() noexcept
 {
-	return "Missilträff�ff";
+	return "Missilträff";
 }
 
 int32 ScenarioMissile::GetCooldownTime() noexcept

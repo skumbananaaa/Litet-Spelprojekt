@@ -63,6 +63,9 @@ public:
 	bool isAlive() const noexcept;
 
 	void SetAssisting(Crewmember* inNeed);
+
+	bool Heal(int8 skillLevel);
+	
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
 	///<summary>Updates the damage on the crewmember based on what level of smoke is on this members tile..</summary>

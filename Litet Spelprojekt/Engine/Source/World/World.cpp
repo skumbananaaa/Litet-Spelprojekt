@@ -260,13 +260,14 @@ void World::GenerateRoomShadows(const Scene& scene) noexcept
 
 void World::Generate(Scene& scene) noexcept
 {
+	PlaceDoors(scene);
+
 	GenerateRooms(scene);
 	GenerateFloor(scene);
 	GenerateLevelObject(scene);
 
 	//Place game objects, doors and stairs
 	PlaceGameObjects(scene);
-	PlaceDoors(scene);
 	PlaceStairs(scene);
 
 	GenerateRoomShadows(scene);
@@ -384,11 +385,13 @@ void World::GenerateLevelObject(Scene& scene) noexcept
 			wall = m_Levels[level].GetWall(i);
 
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
 			pGameObject->SetMesh(MESH::CUBE);
+			pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
 			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
 			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 			pGameObject->UpdateTransform();
+
+			std::cout << "Wall: " << glm::to_string(wall) << std::endl;
 
 			scene.AddGameObject(pGameObject);
 		}
@@ -404,6 +407,8 @@ void World::GenerateLevelObject(Scene& scene) noexcept
 			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
 			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
 			pGameObject->UpdateTransform();
+
+			std::cout << "Bulkhead: " << glm::to_string(bulkhead) << std::endl;
 
 			scene.AddGameObject(pGameObject);
 		}

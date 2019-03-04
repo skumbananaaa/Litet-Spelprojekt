@@ -41,7 +41,6 @@ SceneGame::SceneGame() : SceneInternal(false),
 		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
 		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
 		pGameObject->SetPosition(glm::vec3(6.0f, 1.0f, 6.0f));
-		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
 		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		AddGameObject(pGameObject);
@@ -244,8 +243,6 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 				const float cameraZoomSensitivity = 0.1f;
 				const glm::vec2& cNearFar = GetCamera().GetMinMaxDistToLookAt();
 				float distanceBoost = glm::max(15.0f * GetCamera().GetDistanceToLookAt() / cNearFar.y, 1.0f);
-				std::cout << "Distance Boost: " << std::to_string(distanceBoost) << std::endl;
-				std::cout << "Camera Distance: " << std::to_string(GetCamera().GetDistanceToLookAt()) << std::endl;
 				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
 			}
 		}

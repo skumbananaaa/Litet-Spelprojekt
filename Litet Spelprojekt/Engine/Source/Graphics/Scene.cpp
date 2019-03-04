@@ -160,12 +160,6 @@ void Scene::AddSpotLight(SpotLight* pLight) noexcept
 	m_SpotLights.push_back(pLight);
 }
 
-void Scene::AddRoomLight(PointLight* pLight) noexcept
-{
-	m_RoomLights.push_back(pLight);
-	AddPointLight(pLight);
-}
-
 void Scene::RemoveSpotLight(SpotLight* pLight) noexcept
 {
 	int32 counter = 0;

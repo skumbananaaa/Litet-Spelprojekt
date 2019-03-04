@@ -28,14 +28,20 @@ Game::Game() noexcept
 
 	m_pRenderer = new ForwardRenderer();
 
-	m_pSkyBoxTex = new TextureCube(ResourceHandler::GetTexture2D(TEXTURE::HDR));
+	m_pSkyBoxTex = TextureCube::CreateTextureCubeFromPanorama(ResourceHandler::GetTexture2D(TEXTURE::HDR));
 	m_pSkyBox = new SkyBox(m_pSkyBoxTex);
 
-	SetScene(m_pSceneLoading);
+	AudioListener::SetPosition(glm::vec3(0.0f));
+	m_pAudioSourceMenu = AudioSource::CreateMusicSource(MUSIC::MENU);
+	m_pAudioSourceMenu->SetPitch(1.0f);
+	m_pAudioSourceMenu->SetLooping(true);
+	m_pAudioSourceMenu->Play();
 
 	ScenarioManager::RegisterScenario(new ScenarioMissile());
 	ScenarioManager::RegisterScenario(new ScenarioFire(false));
 	ScenarioManager::RegisterScenario(new ScenarioWater(true));
+
+	SetScene(m_pSceneLoading);
 }
 
 Game::~Game()
@@ -49,6 +55,7 @@ Game::~Game()
 
 	DeleteSafe(m_pRenderer);
 	DeleteSafe(m_pSkyBoxTex);
+	DeleteSafe(m_pAudioSourceMenu);
 
 	ScenarioManager::Release();
 }
@@ -182,6 +189,15 @@ void Game::OnRender(float dtS)
 void Game::SetScene(SceneInternal* scene) noexcept
 {
 	m_pSceneNext = scene;
+
+	if (m_pSceneNext == m_pSceneGame)
+	{
+		m_pAudioSourceMenu->Pause();
+	}
+	else
+	{
+		m_pAudioSourceMenu->Play();
+	}
 }
 
 Game* Game::GetGame()

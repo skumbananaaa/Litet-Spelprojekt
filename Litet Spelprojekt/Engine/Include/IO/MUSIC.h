@@ -7,6 +7,7 @@ class API MUSIC
 
 public:
 	static uint32 WAVES_AND_SEAGULLS;
+	static uint32 MENU;
 
 private:
 	static void RegisterResourcesPreLoading();

@@ -32,6 +32,8 @@ public:
 	///</summary>
 	void SetMaxDistance(float value) const noexcept;
 
+	bool IsPlaying() const noexcept;
+
 	static AudioSource* CreateSoundSource(int32 sound, const glm::vec3& pos = glm::vec3(0.0f), const glm::vec3& vel = glm::vec3(0.0f));
 	static AudioSource* CreateMusicSource(int32 music);
 

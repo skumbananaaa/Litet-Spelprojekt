@@ -37,7 +37,7 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 		float height = static_cast<float>(m_pWindow->GetHeight());
 
 		m_pGraphicsContext = new GLContext(width, height);
-
+		m_pAudioContext = IAudioContext::CreateContext();
 
 		/*FramebufferDesc desc;
 		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
@@ -52,8 +52,6 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 		ResourceHandler::LoadResources(this, prePath, useMultiThreading);
 		m_pGUIManager = new GUIManager(m_pGraphicsContext);
 	}
-
-	m_pAudioContext = IAudioContext::CreateContext();
 
 	std::cout << "Application Initalized" << std::endl;
 }

@@ -1,5 +1,6 @@
 #include <EnginePch.h>
-#include <Graphics\Shaders\Shader.h>
+#include <Graphics/Shaders/Shader.h>
+#include <Graphics/Renderers/GLContext.h>s
 
 Shader::Shader(const std::string& shaderCode, const std::string& path, ShaderType type) noexcept 
 	: m_Shader(0),
@@ -73,6 +74,16 @@ void Shader::Construct()
 		std::cout << "\nERROR COMPILING SHADER '" << m_Path << "' OF TYPE " << GetShaderTypeAsString(m_Type) << infoLog;
 		std::cout << std::endl;
 	};
+}
+
+void Shader::SetDebugName(const char* pName)
+{
+	if (m_Shader == 0)
+	{
+		return;
+	}
+
+	GL_CALL(glObjectLabel(GL_SHADER, m_Shader, -1, pName));
 }
 
 Shader* Shader::Create(const char* const path, ShaderType type, const std::string& defines) noexcept

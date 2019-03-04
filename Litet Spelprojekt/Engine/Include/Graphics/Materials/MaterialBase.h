@@ -9,6 +9,18 @@
 #define LEVEL_SIZE_Y 6
 #define LEVEL_SIZE_Z 42
 
+#define DIFFUSE_MAP_BINDING_SLOT 0
+#define SHADOW_MAP_1_BINDING_SLOT 1
+
+#define CAMERA_BUFFER_BINDING_SLOT 0
+#define LIGHT_BUFFER_BINDING_SLOT 1
+#define MATERIAL_BUFFER_BINDING_SLOT 2
+#define WORLD_BUFFER_BINDING_SLOT 3
+#define PLANE_BUFFER_BINDING_SLOT 4
+#define EXTENSION_BUFFER_BINDING_SLOT 5
+#define WATER_BUFFER_BINDING_SLOT 6
+#define ANIMATION_BUFFER_BINDING_SLOT 7
+#define SHADOW_BUFFER_BINDING_SLOT 8
 
 __declspec(align(16)) struct DirectionalLightBuffer
 {
@@ -61,4 +73,15 @@ struct MaterialBuffer
 struct WorldBuffer
 {
 	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
+};
+
+struct PlaneBuffer
+{
+	glm::vec4 ClipPlane;
+};
+
+struct ShadowBuffer
+{
+	glm::vec3 LightPosition;
+	float FarPlane;
 };

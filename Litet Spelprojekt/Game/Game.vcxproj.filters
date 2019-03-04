@@ -90,6 +90,9 @@
     <ClCompile Include="Source\Orders\OrderCarry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Orders\OrderGiveAid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Scenarios\IScenario.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -177,6 +180,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Orders\OrderCarry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderGiveAid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scenarios\ScenarioTorpedo.h">

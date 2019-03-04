@@ -12,7 +12,6 @@
 #define CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED 1.8f
 #define CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED 0.8f
 #define CREWMEMBER_DEAD_MOVEMENT_SPEED 0.0f
-#define CREWMEMBER_IN_WATER_MOVEMENT_SPEED_MULTIPLIER 0.5f;
 
 
 class TileData;
@@ -27,7 +26,7 @@ public:
 	~Crewmember();
 	
 	///<summary>Moves the objects position in the given direction, use update to apply.</summary>
-	void Move(const glm::vec3& dir, float dtS);
+	void Move(const glm::vec3& dir, bool allowMult, float dtS);
 	///<summary>Finds a path to the goal position.</summary>
 	void FindPath(const glm::ivec3& goalPos);
 
@@ -73,6 +72,8 @@ public:
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury();
 
+	bool Heal(int8 skillLevel);
+	
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
 	///<summary>Updates the damage on the crewmember based on what level of smoke is on this members tile..</summary>
@@ -99,7 +100,6 @@ private:
 	float m_HasInjurySmoke;
 	float m_MaxHealth;
 	float m_Health;
-	float m_MovementSpeedMultiplier;
 	float m_MovementSpeed;
 
 	Crewmember* m_pAssisting;

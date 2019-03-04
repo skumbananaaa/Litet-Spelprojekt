@@ -5,8 +5,14 @@ ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
 	m_WaterAlwaysVisible = waterAlwaysVisible;
 }
 
+ScenarioWater::~ScenarioWater()
+{
+	DeleteArrSafe(m_FloodingIDs);
+}
+
 void ScenarioWater::Init(World* pWorld) noexcept
 {
+	m_FloodingIDs = new std::vector<glm::ivec2>[pWorld->GetNumLevels() / 2];
 }
 
 void ScenarioWater::OnStart(SceneGame* scene) noexcept
@@ -16,12 +22,13 @@ void ScenarioWater::OnStart(SceneGame* scene) noexcept
 
 void ScenarioWater::OnEnd(SceneGame* scene) noexcept
 {
-
+	DeleteArrSafe(m_FloodingIDs);
 }
 
 void ScenarioWater::Escalate(const glm::ivec3& position) noexcept
 {
 	m_InletTiles.push_back(position);
+	m_FloodingIDs[position.y / 2].push_back(glm::ivec2(position.x, position.z));
 }
 
 void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)
@@ -35,7 +42,7 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)
 	{
 		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
 		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
+		std::vector<glm::ivec2>& floodingIDs = m_FloodingIDs[levelIndex / 2];
 
 		for (uint32 i = 0; i < floodingIDs.size(); i++)
 		{
@@ -101,7 +108,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 	{
 		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
 		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
+		std::vector<glm::ivec2>& floodingIDs = m_FloodingIDs[levelIndex / 2];
 		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex).GetSizeX(), pWorld->GetLevel(levelIndex).GetSizeZ());
 		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex).GetTilesBetweenBulkheads();
 		std::vector<glm::ivec2> newFloodingIDs;
@@ -123,7 +130,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 					{
 						if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
 						{
-							UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), currentTile);
+							UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), levelIndex - 2, currentTile);
 							canFlowDown = UpdateWaterLevelBelow(pWorld->GetLevel(levelIndex), pWorld->GetLevel(levelIndex - 2), currentTile);
 						}
 					}

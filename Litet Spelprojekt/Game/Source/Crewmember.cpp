@@ -8,6 +8,7 @@
 #include <World/GameObjectDoor.h>
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
+	: m_pAssisting(nullptr)
 {
 	m_ActionCap = actionCap;
 	SetName(name);
@@ -35,6 +36,7 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 }
 
 Crewmember::Crewmember(Crewmember& other)
+	: m_pAssisting(nullptr)
 {
 	m_ActionCap = other.m_ActionCap;
 	SetName(other.GetName());
@@ -229,6 +231,11 @@ bool Crewmember::isAlive() const noexcept
 	return m_Health > 0.0f;
 }
 
+void Crewmember::SetAssisting(Crewmember* inNeed)
+{
+	m_pAssisting = inNeed;
+}
+
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
 	m_ShipNumber = shipnumber;
@@ -330,7 +337,7 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 
 bool Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (!HasInjurySmoke())
+	if (!m_HasInjurySmoke && !m_HasInjuryBurned)
 	{
 		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 	}
@@ -349,7 +356,6 @@ void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
 {
 	FindPath(doorTile);
 }
-
 
 void Crewmember::SetActionCapacity(const float actionCap)
 {

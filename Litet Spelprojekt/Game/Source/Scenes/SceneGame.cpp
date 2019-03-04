@@ -32,6 +32,8 @@ SceneGame::SceneGame() : SceneInternal(false),
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
+	GetCamera().SetMaxPitch(0.0f);
+
 	GameObject* pGameObject;
 	//BOB
 	{
@@ -97,6 +99,8 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 		context.SetFramebuffer(pFramebuffer);
 		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 	}
+
+	GetCamera().SetMaxPitch(1.55334303f);
 
 	DeleteSafe(m_pUICrew);
 }
@@ -238,7 +242,11 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 			else
 			{
 				const float cameraZoomSensitivity = 0.1f;
-				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+				const glm::vec2& cNearFar = GetCamera().GetMinMaxDistToLookAt();
+				float distanceBoost = glm::max(15.0f * GetCamera().GetDistanceToLookAt() / cNearFar.y, 1.0f);
+				std::cout << "Distance Boost: " << std::to_string(distanceBoost) << std::endl;
+				std::cout << "Camera Distance: " << std::to_string(GetCamera().GetDistanceToLookAt()) << std::endl;
+				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
 			}
 		}
 	}

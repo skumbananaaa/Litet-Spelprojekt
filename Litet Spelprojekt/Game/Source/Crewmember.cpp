@@ -245,6 +245,16 @@ bool Crewmember::isAlive() const noexcept
 	return m_Health > 0.0f;
 }
 
+void Crewmember::ApplyBoneInjury()
+{
+	m_HasInjuryBoneBroken = true;
+}
+
+void Crewmember::ApplyBurnInjury(float burn)
+{
+	m_HasInjuryBurned += burn;
+}
+
 void Crewmember::SetAssisting(Crewmember* inNeed)
 {
 	m_pAssisting = inNeed;

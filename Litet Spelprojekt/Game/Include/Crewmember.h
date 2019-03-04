@@ -70,6 +70,8 @@ public:
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
 	bool isAlive() const noexcept;
+	void ApplyBurnInjury(float burn);
+	void ApplyBoneInjury();
 
 	bool Heal(int8 skillLevel);
 	

@@ -53,11 +53,8 @@ public:
 	bool IsPicked() const noexcept override;
 
 	void UpdateLastKnownPosition() noexcept;
-	const glm::vec3& GetLastKnownPosition() const noexcept;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 
-	///<summary>Updates matrix of the object.</summary>
-	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 
 	int32 GetShipNumber() const noexcept;
 	///<summary>returns the current action capacity of the crewmember.</summary>
@@ -66,7 +63,6 @@ public:
 	///<summary>Gets the current direction that the crewmember is facing.</summary>
 	const glm::vec3& GetDirection() const noexcept;
 	float GetMovementSpeed() const noexcept;
-	glm::ivec3 GetTile() const noexcept;
 
 
 

@@ -3,15 +3,27 @@
 #include "..\..\Include\Scenes\SceneScenario.h"
 #include "..\..\Include\Scenes\SceneCredits.h"
 #include "../../Include/Game.h"
+#include <Audio/Sources/AudioSource.h>
 
 SceneMenu::SceneMenu()
 {
-	
+	m_pAudioSourceSelect = AudioSource::CreateSoundSource(SOUND::UI_SELECT);
+	m_pAudioSourceSelect->SetRollOffFactor(10.0f);
+	m_pAudioSourceSelect->SetReferenceDistance(0.0f);
+	m_pAudioSourceSelect->SetMaxDistance(500.0f);
+	m_pAudioSourceSelect->SetLooping(false);
+
+	m_pAudioSourceHover = AudioSource::CreateSoundSource(SOUND::UI_HOVER);
+	m_pAudioSourceHover->SetRollOffFactor(10.0f);
+	m_pAudioSourceHover->SetReferenceDistance(0.0f);
+	m_pAudioSourceHover->SetMaxDistance(500.0f);
+	m_pAudioSourceHover->SetLooping(false);
 }
 
 SceneMenu::~SceneMenu()
 {
-	
+	DeleteSafe(m_pAudioSourceSelect);
+	DeleteSafe(m_pAudioSourceHover);
 }
 
 void SceneMenu::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
@@ -74,6 +86,7 @@ void SceneMenu::OnRender(float dtS) noexcept
 
 void SceneMenu::OnButtonPressed(Button* button)
 {
+	m_pAudioSourceSelect->Play();
 }
 
 void SceneMenu::OnButtonReleased(Button* button)
@@ -98,6 +111,7 @@ void SceneMenu::OnButtonReleased(Button* button)
 
 void SceneMenu::OnButtonHovered(Button* button)
 {
+	m_pAudioSourceHover->Play();
 }
 
 void SceneMenu::OnButtonNotHovered(Button* button)

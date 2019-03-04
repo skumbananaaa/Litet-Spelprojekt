@@ -3,6 +3,8 @@
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Button.h>
 
+class AudioSource;
+
 class SceneOptions : public SceneInternal, public IButtonListener
 {
 	friend class Game;
@@ -27,4 +29,6 @@ private:
 	Panel* m_pPanel;
 	Button* m_pButtonBack;
 	TextView* m_pTextViewTitle;
+	AudioSource* m_pAudioSourceSelect;
+	AudioSource* m_pAudioSourceHover;
 };

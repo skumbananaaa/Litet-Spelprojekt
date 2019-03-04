@@ -8,6 +8,9 @@ class API SOUND
 public:
 	static uint32 MONO_FART;
 	static uint32 MONO_FIREALARM;
+	static uint32 UI_SELECT;
+	static uint32 UI_DESELECT;
+	static uint32 UI_HOVER;
 
 private:
 	static void RegisterResourcesPreLoading();

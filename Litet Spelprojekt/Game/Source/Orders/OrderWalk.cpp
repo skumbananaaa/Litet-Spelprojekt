@@ -62,7 +62,7 @@ void OrderWalk::RunParallel()
 	m_pPath = m_pPathFinder->FindPath(GetCrewMember()->GetTile(), m_GoalTile);
 	m_NrOfTilesLeft = m_pPathFinder->GetNrOfPathTiles();
 	m_TargetTile = GetCrewMember()->GetTile();
-	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
 	m_IsPathReady = true;
 }
 
@@ -75,7 +75,7 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			m_directionTile = m_pPath[m_NrOfTilesLeft - 1];
 			m_TargetTile = m_pPath[--m_NrOfTilesLeft];
-			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2 + 0.9, m_TargetTile.z);
+			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
 		}
 	}
 	else

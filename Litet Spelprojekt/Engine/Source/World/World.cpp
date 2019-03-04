@@ -278,6 +278,7 @@ void World::Generate(Scene& scene) noexcept
 	for (size_t i = 0; i < m_Rooms.size(); i++)
 	{
 		PointLight* pLight = new PointLight(m_Rooms[i].GetCenter());
+		pLight->SetIsVisible(false);
 		m_RoomLights.push_back(pLight);
 		scene.AddPointLight(pLight);
 
@@ -361,9 +362,9 @@ bool World::UpdateVisibility(Scene& pScene, float dt)
 		m_RoomLightsTimers[m_ActiveRooms[i]] += dt;
 		if (m_RoomLightsTimers[m_ActiveRooms[i]] >= 5.0f)
 		{
-			m_RoomLights[m_ActiveRooms[i]]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-			m_RoomLightsTimers[m_ActiveRooms[i]] = 0.0f;
+			m_RoomLights[m_ActiveRooms[i]]->SetIsVisible(false);
 			m_Rooms[m_ActiveRooms[i]].SetActive(false);
+			m_RoomLightsTimers[m_ActiveRooms[i]] = 0.0f;
 			
 			m_ActiveRooms.erase(m_ActiveRooms.begin() + i);
 			i--;
@@ -377,38 +378,45 @@ bool World::UpdateVisibility(Scene& pScene, float dt)
 
 void World::GenerateLevelObject(Scene& scene) noexcept
 {
-	for (int32 level = 0; level < m_Levels.size(); level += 2)
+	for (int32 level = 0; level < m_Levels.size(); level++)
 	{
-		glm::vec4 wall;
-		GameObject* pGameObject = nullptr;
-
-		for (int i = 0; i < m_Levels[level].GetNrOfWalls(); i++)
+		if (level % 2 == 0)
 		{
-			wall = m_Levels[level].GetWall(i);
+			glm::vec4 wall;
+			GameObject* pGameObject = nullptr;
 
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
-			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
-			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
-			pGameObject->UpdateTransform();
+			for (int i = 0; i < m_Levels[level].GetNrOfWalls(); i++)
+			{
+				wall = m_Levels[level].GetWall(i);
 
-			scene.AddGameObject(pGameObject);
-		}
+				pGameObject = new GameObject();
+				pGameObject->SetMesh(MESH::CUBE);
+				pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
+				pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
+				pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
+				pGameObject->UpdateTransform();
 
-		glm::vec4 bulkhead;
-		for (int i = 0; i < m_Levels[level].GetNrOfBulkheads(); i++)
-		{
-			bulkhead = m_Levels[level].GetBulkhead(i);
-			
-			pGameObject = new GameObject();
-			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
-			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
-			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
-			pGameObject->UpdateTransform();
+				std::cout << "Wall: " << glm::to_string(wall) << std::endl;
 
-			scene.AddGameObject(pGameObject);
+				scene.AddGameObject(pGameObject);
+			}
+
+			glm::vec4 bulkhead;
+			for (int i = 0; i < m_Levels[level].GetNrOfBulkheads(); i++)
+			{
+				bulkhead = m_Levels[level].GetBulkhead(i);
+
+				pGameObject = new GameObject();
+				pGameObject->SetMesh(MESH::CUBE);
+				pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
+				pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
+				pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
+				pGameObject->UpdateTransform();
+
+				std::cout << "Bulkhead: " << glm::to_string(bulkhead) << std::endl;
+
+				scene.AddGameObject(pGameObject);
+			}
 		}
 
 		m_Levels[level].GenerateScenarioObjects(&scene, level);

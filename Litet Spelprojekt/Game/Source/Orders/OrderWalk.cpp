@@ -91,12 +91,14 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			move.y /= std::abs(move.y);
 			GetCrewMember()->SetDirection(glm::vec3(0, 0, 1));
-			GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
+			//GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
+			GetCrewMember()->Move(glm::vec3(0, move.y, 0), false, dtS);
 		}
 		else
 		{
 			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
-			GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
+			//GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
+			GetCrewMember()->Move(GetCrewMember()->GetDirection(), true, dtS);
 		}
 	}
 	return false;

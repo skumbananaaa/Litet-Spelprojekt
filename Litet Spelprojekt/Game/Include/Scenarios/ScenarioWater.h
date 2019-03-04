@@ -1,5 +1,5 @@
 #pragma once
-#include <World/Scenarios/IScenario.h>
+#include "IScenario.h"
 #include <World/GameObjectDoor.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
@@ -16,18 +16,22 @@ class ScenarioWater : public IScenario
 {
 public:
 	ScenarioWater(bool waterAlwaysVisible = false);
+	~ScenarioWater();
 
 	virtual void Init(World* pWorld) noexcept override;
-	virtual void OnStart(Scene* scene) noexcept override;
-	virtual void OnEnd(Scene* scene)noexcept override;
-	virtual void OnVisibilityChange(World* pWorld, Scene* pScene) override;
-	virtual bool Update(float dtS, World* pWorld, Scene* pScene) noexcept override;
+	virtual void OnStart(SceneGame* scene) noexcept override;
+	virtual void OnEnd(SceneGame* scene)noexcept override;
+	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) override;
+	virtual bool Update(float dtS, World* pWorld, SceneGame* pScene) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 
 private:
 	bool m_WaterAlwaysVisible;
+	std::vector<glm::ivec2>* m_FloodingIDs;
+	std::vector<glm::ivec3> m_InletTiles;
 
 private:
 	//Scenario Spread Helper Functions
@@ -41,7 +45,7 @@ private:
 	void UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept;
 	void UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept;
 
-	void UpdateFloodingIdsBelow(WorldLevel& worldLevel, const glm::ivec2& tile) const noexcept;
+	void UpdateFloodingIdsBelow(WorldLevel& worldLevel, uint32 waterLevelIndexBelow, const glm::ivec2& tile) const noexcept;
 	bool UpdateWaterLevelBelow(WorldLevel& worldLevel, WorldLevel& pWorldLevelBelow, const glm::ivec2& tile) const noexcept;
 
 	void Evaporate(Scene* pScene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
@@ -175,11 +179,11 @@ inline void ScenarioWater::UpdateWaterLevel(TileData * const * ppLevelData, cons
 	}
 }
 
-inline void ScenarioWater::UpdateFloodingIdsBelow(WorldLevel& worldLevelBelow, const glm::ivec2& tile) const noexcept
+inline void ScenarioWater::UpdateFloodingIdsBelow(WorldLevel& worldLevelBelow, uint32 waterLevelIndexBelow, const glm::ivec2& tile) const noexcept
 {
 	if (!worldLevelBelow.GetLevelData()[tile.x][tile.y].AlreadyFlooded)
 	{
-		worldLevelBelow.GetFloodingIDs().push_back(tile);
+		m_FloodingIDs[waterLevelIndexBelow].push_back(tile);
 		worldLevelBelow.GetLevelData()[tile.x][tile.y].AlreadyFlooded = true;
 	}
 }

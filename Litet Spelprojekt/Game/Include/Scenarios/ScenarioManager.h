@@ -1,14 +1,16 @@
 #pragma once
-#include <World/Scenarios/IScenario.h>
+#include "IScenario.h"
 
 class ScenarioManager
 {
 public:
 	static uint32 RegisterScenario(IScenario* scenario) noexcept;
 	static void Release() noexcept;
-	static void OnVisibilityChange(World* pWorld, Scene* pScene) noexcept;
-	static void Update(float dtS, World* world, Scene* scene) noexcept;
+	static void OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept;
+	static void Update(float dtS, World* world, SceneGame* scene) noexcept;
 	static void SetEnabledScenarios(const std::vector<int>& ids) noexcept;
+	static bool StartScenario(int32 index) noexcept;
+	static void Escalate(int32 index, const glm::ivec3& position) noexcept;
 	static void Init(World* pWorld);
 	static const std::vector<IScenario*>& GetScenarios() noexcept;
 

@@ -29,9 +29,9 @@ void ScenarioFire::Init(World* pWorld) noexcept
 	}
 }
 
-void ScenarioFire::OnStart(Scene* scene) noexcept
+void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
-	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
+	/*uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
 	lvl += lvl % 2;
 	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 1);
 	lvl = 0;
@@ -41,25 +41,30 @@ void ScenarioFire::OnStart(Scene* scene) noexcept
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl)->GetSizeZ() - 2);
 	z = m_pWorld->GetLevel(lvl)->GetSizeZ() / 2;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
-	m_OnFire.push_back(pos);
 
-	TileData& tileData = m_pWorld->GetLevel(lvl)->GetLevelData()[x][z];
+	Escalate(pos);*/
+}
+
+void ScenarioFire::OnEnd(SceneGame* scene) noexcept
+{
+
+}
+
+void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
+{
+	TileData& tileData = m_pWorld->GetLevel(position.y)->GetLevelData()[position.x][position.z];
 	tileData.Temp = tileData.BurnsAt + 0.1f;
 	tileData.Burning = true;
 
 	tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(m_FireAlwaysVisible);
+	m_OnFire.push_back(position);
 }
 
-void ScenarioFire::OnEnd(Scene* scene) noexcept
-{
-
-}
-
-void ScenarioFire::OnVisibilityChange(World * pWorld, Scene * pScene, const std::vector<uint32>& activeRooms) noexcept
+void ScenarioFire::OnVisibilityChange(World * pWorld, SceneGame * pScene, const std::vector<uint32>& activeRooms) noexcept
 {
 }
 
-bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vector<uint32>& activeRooms) noexcept
+bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene, const std::vector<uint32>& activeRooms) noexcept
 {
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_4);
@@ -206,6 +211,7 @@ bool ScenarioFire::Update(float dtS, World* world, Scene* scene, const std::vect
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::EndTimer("Fire Scenario Update took %.3f ms", CPU_PROFILER_SLOT_4);
 #endif
+	return false;
 	return m_OnFire.empty();
 }
 

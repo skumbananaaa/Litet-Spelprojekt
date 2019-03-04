@@ -114,7 +114,6 @@
     <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
     <ClInclude Include="Include\World\Grid.h" />
     <ClInclude Include="Include\World\LightManager.h" />
-    <ClInclude Include="Include\World\Scenarios\IScenario.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\World\Room.h" />
     <ClInclude Include="Include\World\Tile.h" />
@@ -149,7 +148,6 @@
     <ClCompile Include="Source\Graphics\Renderers\TimerQuery.cpp" />
     <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
-    <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
     <ClCompile Include="Source\Graphics\Textures\PlanarReflector.cpp" />
     <ClCompile Include="Source\IO\R_DECAL.cpp" />
     <ClCompile Include="Source\IO\R_GAMEOBJECT.cpp" />

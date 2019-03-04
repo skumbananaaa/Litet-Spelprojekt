@@ -1,5 +1,5 @@
 #pragma once
-#include <World/Scenarios/IScenario.h>
+#include "IScenario.h"
 #include <World/GameObjectDoor.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
@@ -18,16 +18,18 @@ public:
 	ScenarioWater(bool waterAlwaysVisible = false);
 
 	virtual void Init(World* pWorld) noexcept override;
-	virtual void OnStart(Scene* scene) noexcept override;
-	virtual void OnEnd(Scene* scene)noexcept override;
-	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) override;
-	virtual bool Update(float dtS, World* pWorld, Scene* pScene,  const std::vector<uint32>& activeRooms) noexcept override;
+	virtual void OnStart(SceneGame* scene) noexcept override;
+	virtual void OnEnd(SceneGame* scene)noexcept override;
+	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene, const std::vector<uint32>& activeRooms) override;
+	virtual bool Update(float dtS, World* pWorld, SceneGame* pScene,  const std::vector<uint32>& activeRooms) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 
 private:
 	bool m_WaterAlwaysVisible;
+	std::vector<glm::ivec3> m_InletTiles;
 
 private:
 	//Scenario Spread Helper Functions

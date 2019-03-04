@@ -229,6 +229,16 @@ bool Crewmember::isAlive() const noexcept
 	return m_Health > 0.0f;
 }
 
+void Crewmember::ApplyBoneInjury()
+{
+	m_HasInjuryBoneBroken = true;
+}
+
+void Crewmember::ApplyBurnInjury(float burn)
+{
+	m_HasInjuryBurned += burn;
+}
+
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
 	m_ShipNumber = shipnumber;

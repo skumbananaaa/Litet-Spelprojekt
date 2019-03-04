@@ -4,7 +4,7 @@
 #include <Graphics/GUI/Button.h>
 #include <Graphics/GUI/ListScrollable.h>
 #include <Graphics/GUI/SelectionHandler.h>
-#include <World/Scenarios/IScenario.h>
+#include "../Scenarios/IScenario.h"
 
 class AudioSource;
 

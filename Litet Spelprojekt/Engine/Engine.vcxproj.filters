@@ -88,9 +88,6 @@
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\WaterQuad.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextField.cpp" />
-    <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
-    <ClCompile Include="Source\World\Scenarios\Orders\OrderCloseDoor.cpp" />
-    <ClCompile Include="Source\World\Scenarios\Orders\OrderHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -184,7 +181,6 @@
     <ClInclude Include="Include\Graphics\GUI\IHoverable.h" />
     <ClInclude Include="Include\Graphics\GUI\ProgressButton.h" />
     <ClInclude Include="Include\World\Scenarios\Fire\FireAlarm.h" />
-    <ClInclude Include="Include\World\Scenarios\IScenario.h" />
     <ClInclude Include="Include\World\LightManager.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
@@ -196,8 +192,6 @@
     <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
     <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
     <ClInclude Include="Include\Graphics\GUI\TextField.h" />
-    <ClInclude Include="Include\World\Scenarios\Orders\OrderCloseDoor.h" />
-    <ClInclude Include="Include\World\Scenarios\Orders\OrderHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

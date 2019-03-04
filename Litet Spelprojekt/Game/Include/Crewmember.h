@@ -61,6 +61,9 @@ public:
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
 	bool isAlive() const noexcept;
+	void ApplyBurnInjury(float burn);
+	void ApplyBoneInjury();
+
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
 	///<summary>Updates the damage on the crewmember based on what level of smoke is on this members tile..</summary>

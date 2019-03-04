@@ -29,11 +29,13 @@ void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 		}
 	}
 
-	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	order->m_pCrewMember = crewMember;
-	order->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	s_OrderQueue.push_back(order);
-	std::cout << "[" << order->GetName() << "] Order Started" << std::endl;
+
+	if (s_OrderQueue.size() == 1)
+	{
+		StartOrder();
+	}
 }
 
 void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
@@ -58,5 +60,17 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 		std::cout << "[" << s_OrderQueue[0]->GetName() << "] Order Ended" << std::endl;
 		DeleteSafe(s_OrderQueue[0]);
 		s_OrderQueue.erase(s_OrderQueue.begin());
+
+		if (!s_OrderQueue.empty())
+		{
+			StartOrder();
+		}
 	}
+}
+
+void OrderHandler::StartOrder()
+{
+	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
+	s_OrderQueue[0]->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
+	std::cout << "[" << s_OrderQueue[0]->GetName() << "] Order Started" << std::endl;
 }

@@ -70,7 +70,6 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 void Crewmember::OnPicked()
 {
-	int32 testNrOfEqualDoors = 0;
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
 	{
@@ -79,17 +78,11 @@ void Crewmember::OnPicked()
 		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
 		if (doorRoomIndex == crewRoomIndex)
 		{
-			testNrOfEqualDoors++;
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			while (testNrOfEqualDoors > 0) // while there are unchecked doors, make sure they get closed
-			{
 				if (door->IsOpen())
 				{
 					m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
-					break;
-					testNrOfEqualDoors--;
 				}
-			}
 		}
 	}
 
@@ -341,7 +334,6 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 
 void Crewmember::LookForDoor() noexcept
 {
-	int32 testNrOfEqualDoors = 0;
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
 	{
@@ -349,17 +341,12 @@ void Crewmember::LookForDoor() noexcept
 		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
 		if (doorRoomIndex == crewRoomIndex)
 		{
-			testNrOfEqualDoors++;
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			while (testNrOfEqualDoors > 0)
-			{
+
 				if (door->IsOpen())
 				{
 					m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
-					break;
-					testNrOfEqualDoors--;
 				}
-			}
 		}
 	}
 	//StartOrder(pScene, pWorld, this);

@@ -12,5 +12,7 @@ public:
 	void Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept;
 
 private:
+	void StartOrder();
+
 	std::vector<IOrder*> s_OrderQueue;
 };

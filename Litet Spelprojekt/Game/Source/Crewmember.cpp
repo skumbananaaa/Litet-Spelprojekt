@@ -80,7 +80,7 @@ void Crewmember::OnPicked()
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 			if (door->IsOpen())
 			{
-				m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
+				m_OrderHandler.GiveOrder(new OrderCloseDoor(door, doorTile), this);
 				break;
 			}
 		}

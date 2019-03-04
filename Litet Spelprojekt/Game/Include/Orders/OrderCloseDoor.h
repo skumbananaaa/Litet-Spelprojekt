@@ -8,7 +8,7 @@ class GameObjectDoor;
 class OrderCloseDoor : public OrderWalk 
 {
 public:
-	OrderCloseDoor(GameObjectDoor* door);
+	OrderCloseDoor(GameObjectDoor* door, glm::ivec3 doorTile);
 	virtual ~OrderCloseDoor();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;

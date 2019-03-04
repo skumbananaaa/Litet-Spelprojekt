@@ -1,7 +1,7 @@
 #include "../../Include/Orders/OrderCloseDoor.h"
 #include <World/GameObjectDoor.h>
 
-OrderCloseDoor::OrderCloseDoor(GameObjectDoor* door) : OrderWalk(door->GetPosition())
+OrderCloseDoor::OrderCloseDoor(GameObjectDoor* door, glm::ivec3 doorTile) : OrderWalk(doorTile)
 {
 	m_pGameObjectDoor = door;
 }

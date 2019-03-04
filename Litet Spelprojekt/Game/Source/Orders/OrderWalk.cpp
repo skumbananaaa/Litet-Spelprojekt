@@ -78,19 +78,15 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
 		}
 	}
-	else
-	{
-		return true;
-	}
 
-	if ((std::abs(position.x - m_TargetPos.x) > 0.01 || std::abs(position.y - m_TargetPos.y) > 0.01 || std::abs(position.z - m_TargetPos.z) > 0.01))
+	if ((std::abs(position.x - m_TargetPos.x) > 0.1 || std::abs(position.y - m_TargetPos.y) > 0.1 || std::abs(position.z - m_TargetPos.z) > 0.1))
 	{
 		glm::vec3 move = m_TargetPos - position;
 		move = glm::normalize(move);
-		if (std::abs(move.y) > 0.01)
+		if (std::abs(move.y) > 0.1)
 		{
 			move.y /= std::abs(move.y);
-			GetCrewMember()->SetDirection(glm::vec3(0, 0, 1));
+			GetCrewMember()->SetDirection(glm::vec3(1, 0, 0));
 			GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
 		}
 		else
@@ -98,6 +94,10 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
 			GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
 		}
+	}
+	else
+	{
+		return true;
 	}
 	return false;
 }

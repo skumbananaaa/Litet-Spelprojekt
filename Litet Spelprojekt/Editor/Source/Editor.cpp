@@ -1391,6 +1391,7 @@ void Editor::OnKeyDown(KEY keycode)
 					}
 
 					Delete(object);
+					m_SelectionHandlerMeshEdit.RemoveSelectable(button);
 					m_pPanelScrollableEditMesh->Remove(button);
 				}	
 			}

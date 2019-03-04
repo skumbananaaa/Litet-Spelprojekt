@@ -8,6 +8,8 @@
 #define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
 #define MAX_NR_OF_ORDERS 10
 
+class TileData;
+
 class Crewmember : public GameObject
 {
 	friend class Crew;

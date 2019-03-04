@@ -25,8 +25,12 @@ public:
 	static uint32 ICON_SKILL_MEDIC;
 	static uint32 ICON_SKILL_STRENGTH;
 	static uint32 ICON_CIRCLE;
+	static uint32 ICON_CHECKED;
+	static uint32 ICON_CROSSED;
 	static uint32 SMOKE;
 	static uint32 SJOFAN_DIFF;
+	static uint32 WALL1;
+	static uint32 FLOOR1;
 
 private:
 	static void RegisterResourcesPreLoading();

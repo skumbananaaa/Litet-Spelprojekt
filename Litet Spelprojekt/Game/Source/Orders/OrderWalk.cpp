@@ -3,6 +3,7 @@
 #include <World/World.h>
 #include <Graphics/Scene.h>
 #include "../../Include/Crew.h"
+#include "../../Include/Path.h"
 
 OrderWalk::OrderWalk(glm::ivec3 goalTile):
 	m_pPathFinder(nullptr),

@@ -12,6 +12,7 @@ uint32 SHADER::FORWARD_PASS = 0;
 uint32 SHADER::SKYBOX_PASS = 0;
 uint32 SHADER::ORTHOGRAPHIC = 0;
 uint32 SHADER::WALL_MATERIAL = 0;
+uint32 SHADER::FLOOR = 0;
 uint32 SHADER::WATER_OUTDOOR_MATERIAL = 0;
 uint32 SHADER::WATER_INDOOR_MATERIAL = 0;
 uint32 SHADER::STANDARD_MATERIAL = 0;
@@ -139,6 +140,7 @@ void SHADER::RegisterResources()
 		WALL_MATERIAL		= ResourceHandler::RegisterShader("deferredWall.glsl", "deferredWall.glsl", defines);
 #elif defined(FORWARD_RENDER_PATH)
 		WALL_MATERIAL		= ResourceHandler::RegisterShader("forwardWall.glsl", "forwardWall.glsl", defines);
+		FLOOR				= ResourceHandler::RegisterShader("forwardFloor.glsl", "forwardFloor.glsl", defines);
 #endif
 	}
 }

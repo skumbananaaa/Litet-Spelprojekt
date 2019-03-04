@@ -6,15 +6,17 @@
 #include <System/CPUProfiler.h>
 #endif
 
+constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 10000.0f;
+
 class ScenarioFire : public IScenario
 {
 public:
-	ScenarioFire();
+	ScenarioFire(bool fireAlwaysVisible = false);
 	virtual ~ScenarioFire();
 
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void OnStart(Scene* scene) noexcept override;
-	virtual void OnEnd()noexcept override;
+	virtual void OnEnd(Scene* scene)noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept override;
 	virtual bool Update(float dtS, World* world, Scene* scene, const std::vector<uint32>& activeRooms) noexcept override;
 	virtual std::string GetName() noexcept override;
@@ -24,17 +26,23 @@ public:
 	void ShowInRoom(uint32 roomID) noexcept;
 private:
 	World* m_pWorld;
+	bool m_FireAlwaysVisible;
 
 	const uint32* const** m_pppMap;
 
-	void CheckFire(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
-	bool CheckSmoke(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
+	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
+	bool SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
 	float CalculateDoorSpreadFactor(const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, bool spreadingThroughBulkhead, float rateOfNormalDoorSpread, float rateOfBulkheadDoorSpreadFactor, float rateOfBulkheadSpreadFactor) const noexcept;
 	float CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept;
+
+	void EvaporateWater(TileData& tile, float dtS) const noexcept;
+	void SetFireVisible(uint32 roomId, bool show = true) noexcept;
+	void SetSmokeVisible(uint32 roomId, bool show = true) noexcept;
 
 	// x, y, z = x, level, z
 	std::vector<glm::ivec3> m_OnFire;
 	std::vector<glm::ivec3> m_Smoke;
+	std::vector<bool> m_DiscoveredRooms;
 };
 
 inline float ScenarioFire::CalculateDoorSpreadFactor(
@@ -63,4 +71,38 @@ inline float ScenarioFire::CalculateDoorSpreadFactor(
 inline float ScenarioFire::CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept
 {
 	return spreadingThroughBulkhead ? rateOfBulkheadSpreadFactor : 1.0f;
+}
+
+inline void ScenarioFire::EvaporateWater(TileData& tile, float dtS) const noexcept
+{
+	if (tile.AlreadyFlooded)
+	{
+		tile.WaterLevelChange -= tile.Temp * WATER_EVAPORATION_BY_FIRE_RATE * dtS;
+	}
+}
+
+inline void ScenarioFire::SetFireVisible(uint32 roomId, bool show) noexcept
+{
+	for (uint32 i = 0; i < m_OnFire.size(); i++)
+	{
+		glm::ivec3 pos = m_OnFire[i];
+		uint32 tileID = m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z];
+		if (roomId == tileID)
+		{
+			m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(show);
+		}
+	}
+}
+
+inline void ScenarioFire::SetSmokeVisible(uint32 roomId, bool show) noexcept
+{
+	for (uint32 i = 0; i < m_Smoke.size(); i++)
+	{
+		glm::ivec3 pos = m_Smoke[i];
+
+		if (roomId == m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z])
+		{
+			m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->SetIsVisible(show);
+		}
+	}
 }

@@ -3,6 +3,9 @@
 #include <System/Random.h>
 #include "..\Include\Game.h"
 #include "../Include/Orders/OrderWalk.h"
+#include "../Include/Orders/OrderCloseDoor.h"
+#include <World/WorldLevel.h>
+#include <World/GameObjectDoor.h>
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 {
@@ -68,6 +71,23 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 void Crewmember::OnPicked()
 {
+	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2)->GetLevel()[GetTile().x][GetTile().z];
+	for (int j = 0; j < m_pWorld->GetNumDoors(); j++)
+	{
+		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
+		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+		if (doorRoomIndex == crewRoomIndex)
+		{
+			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y)->GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+			if (door->IsOpen())
+			{
+				m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
+				break;
+			}
+		}
+	}
+
+
 	m_IsPicked = true;
 }
 

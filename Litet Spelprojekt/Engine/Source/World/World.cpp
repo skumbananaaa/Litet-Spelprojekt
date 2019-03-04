@@ -102,11 +102,40 @@ void World::GenerateRooms()
 	}
 }
 
-void World::GenerateWater(Scene* pScene) noexcept
+void World::GenerateFloor(Scene* pScene) noexcept
 {
+	GameObject* pGameObject = nullptr;
+
 	for (int level = 0; level < m_NumLevels; level += 2)
 	{
-		m_ppLevels[level]->GenerateWater(pScene, level);
+		for (uint32 x = 1; x < m_ppLevels[level]->GetSizeX() - 1; x++)
+		{
+			for (uint32 z = 1; z < m_ppLevels[level]->GetSizeZ() - 1; z++)
+			{
+				if (level > 0)
+				{
+					if (m_ppLevels[level - 2]->GetLevelData()[x][z].HasStairs)
+					{
+						continue;
+					}
+				}
+
+				pGameObject = new GameObject();
+				pGameObject->SetMesh(MESH::QUAD);
+				pGameObject->SetMaterial(MATERIAL::FLOOR);
+				pGameObject->SetPosition(glm::vec3(x, level, z));
+				pGameObject->UpdateTransform();
+				pScene->AddGameObject(pGameObject);
+			}
+		}
+	}
+}
+
+void World::GenerateWater(Scene* pScene) noexcept
+{
+	for (int level = 0; level < m_NumLevels; level++)
+	{
+		m_ppLevels[level]->GenerateScenarioObjects(pScene, level);
 	}
 }
 
@@ -157,6 +186,11 @@ const glm::ivec3& World::GetDoor(uint32 index) const noexcept
 uint32 World::GetNumDoors() const noexcept
 {
 	return m_Doors.size();
+}
+
+uint32 World::GetNumRooms() const noexcept
+{
+	return m_Rooms.size();
 }
 
 void World::Update(Scene* pScene, float dt)

@@ -17,7 +17,7 @@ void ScenarioWater::Init(World* pWorld) noexcept
 
 void ScenarioWater::OnStart(SceneGame* scene) noexcept
 {
-	Escalate(glm::ivec3(10, 4, 10));
+	
 }
 
 void ScenarioWater::OnEnd(SceneGame* scene) noexcept

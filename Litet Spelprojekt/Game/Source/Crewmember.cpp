@@ -26,8 +26,8 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 
 	//Test
 	m_HasInjuryBoneBroken = Random::GenerateBool();
-	m_HasInjuryBurned = Random::GenerateBool();
-	m_HasInjurySmoke = Random::GenerateBool();
+	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
+	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);
@@ -217,12 +217,12 @@ bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 1.0;
+	return m_HasInjuryBurned > 1.0f;
 }
 
 bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 1.0;
+	return m_HasInjurySmoke > 1.0f;
 }
 
 bool Crewmember::isAlive() const noexcept
@@ -336,7 +336,7 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (!m_HasInjurySmoke && !m_HasInjuryBurned)
+	if (!HasInjurySmoke() && !HasInjuryBurned())
 	{
 		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 	}

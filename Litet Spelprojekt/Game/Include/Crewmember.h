@@ -71,8 +71,6 @@ public:
 	bool HasInjurySmoke() const noexcept;
 	bool isAlive() const noexcept;
 
-	void SetAssisting(Crewmember* inNeed);
-
 	bool Heal(int8 skillLevel);
 	
 private:

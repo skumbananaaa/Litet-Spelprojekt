@@ -4,9 +4,6 @@
 
 Texture2D::Texture2D(const void* pInitalData, const TextureDesc& desc, const TextureParams& params)
 	: Texture(),
-	m_Width(0),
-	m_Height(0),
-	m_Samples(0),
 	m_pTextureData(nullptr)
 {
 	if (desc.Samples > 1)
@@ -21,9 +18,6 @@ Texture2D::Texture2D(const void* pInitalData, const TextureDesc& desc, const Tex
 
 Texture2D::Texture2D(const char* const path, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
 	: Texture(),
-	m_Width(0),
-	m_Height(0),
-	m_Samples(0),
 	m_pTextureData(nullptr)
 {
 	Create(path, format, generateMipmaps, flipVertically, params);
@@ -55,17 +49,14 @@ void Texture2D::Create(const void* pInitalData, const TextureDesc& desc, const T
 		//std::cout << "GenerateMipmaps turned off for Texture2D" << std::endl;
 	}
 
-	m_Width = desc.Width;
-	m_Height = desc.Height;
-	m_Format = desc.Format;
-	m_Samples = desc.Samples;
+	m_Desc = desc;
 	
 	//std::cout << "Created Texture2D" << std::endl;
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
+void Texture2D::CreateMS(const TextureDesc& desc, const TextureParams& params)
 {
 	GL_CALL(glGenTextures(1, &m_Texture));
 	m_Type = GL_TEXTURE_2D_MULTISAMPLE;
@@ -84,10 +75,7 @@ void Texture2D::CreateMS(const TextureDesc & desc, const TextureParams & params)
 		std::cout << "ERROR: GenerateMipmaps is not available for textures with MSAA" << std::endl;
 	}
 
-	m_Width = desc.Width;
-	m_Height = desc.Height;
-	m_Format = desc.Format;
-	m_Samples = desc.Samples;
+	m_Desc = desc;
 
 	std::cout << "Created Texture2D with " << desc.Samples << "X MSAA"<< std::endl;
 
@@ -107,23 +95,25 @@ Texture2D* Texture2D::CreateTextureFromMemory(const void* pInitalData, const Tex
 void Texture2D::Create(const char* const path, TEX_FORMAT format, bool generateMipmaps, bool flipVertically, const TextureParams& params)
 {
 	int nrChannels;
-	m_Format = format;
 	m_Params = params;
-	m_GenerateMipmaps = generateMipmaps;
 
 	stbi_set_flip_vertically_on_load(flipVertically);
 
+	int width, height;
 	if (Texture::TexFormatToGLType(format) == GL_FLOAT)
 	{
 		stbi_set_flip_vertically_on_load(true);
-		
-		int channels = FormatToNrChannels(format);
-		m_pTextureData = stbi_loadf(path, &m_Width, &m_Height, &nrChannels, channels);
+		m_pTextureData = stbi_loadf(path, &width, &height, &nrChannels, FormatToNrChannels(format));
 	}
 	else
 	{
-		m_pTextureData = stbi_load(path, &m_Width, &m_Height, &nrChannels, FormatToNrChannels(format));
+		m_pTextureData = stbi_load(path, &width, &height, &nrChannels, FormatToNrChannels(format));
 	}
+
+	m_Desc.Format = format;
+	m_Desc.Width = width;
+	m_Desc.Height = height;
+	m_Params = params;
 
 	if (m_pTextureData == nullptr)
 	{
@@ -143,11 +133,11 @@ void Texture2D::Construct()
 
 		GL_CALL(glBindTexture(GL_TEXTURE_2D, m_Texture));
 
-		uint32 glformat = Texture::TexFormatToGL(m_Format);
-		uint32 internalFormat = Texture::TexFormatToGLInternal(m_Format);
-		GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, glformat, Texture::TexFormatToGLType(m_Format), m_pTextureData));
+		uint32 glformat = Texture::TexFormatToGL(m_Desc.Format);
+		uint32 internalFormat = Texture::TexFormatToGLInternal(m_Desc.Format);
+		GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Desc.Width, m_Desc.Height, 0, glformat, Texture::TexFormatToGLType(m_Desc.Format), m_pTextureData));
 
-		if (m_GenerateMipmaps)
+		if (m_Desc.GenerateMips)
 		{
 			GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 		}

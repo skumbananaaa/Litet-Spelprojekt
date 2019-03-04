@@ -1,8 +1,6 @@
 #pragma once
 #include "Framebuffer.h"
 
-#define REFLECTION_SIZE 512
-
 class API PlanarReflector
 {
 public:

@@ -13,8 +13,8 @@ public:
 	virtual void Init(World* pWorld) noexcept = 0;
 	virtual void OnStart(Scene* scene) noexcept = 0;
 	virtual void OnEnd(Scene* scene)noexcept = 0;
-	virtual void OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) = 0;
-	virtual bool Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept = 0;
+	virtual void OnVisibilityChange(World* pWorld, Scene* pScene) = 0;
+	virtual bool Update(float dtS, World* pWorld, Scene* pScene) noexcept = 0;
 	virtual std::string GetName() noexcept = 0;
 	virtual int32 GetCooldownTime() noexcept = 0;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept = 0;

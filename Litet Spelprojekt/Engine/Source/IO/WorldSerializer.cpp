@@ -15,7 +15,7 @@ World* WorldSerializer::Read(const char* const path)
 	const Value& jsonObject = document.GetObjectA();
 	const Value& levels = jsonObject["levels"];
 	
-	WorldLevel** pWorldLevels = new WorldLevel*[levels.Size()];
+	WorldLevel** ppWorldLevels = new WorldLevel*[levels.Size()];
 	for (uint32 levelId = 0; levelId < levels.Size(); levelId++)
 	{
 		const Value& level = levels[levelId];
@@ -32,7 +32,7 @@ World* WorldSerializer::Read(const char* const path)
 			}
 		}
 
-		pWorldLevels[levelId] = new WorldLevel(levelId, pLevelIndexes, xSize, zSize);
+		ppWorldLevels[levelId] = new WorldLevel(levelId, pLevelIndexes, xSize, zSize);
 		DeleteArrSafe(pLevelIndexes);
 	}
 
@@ -50,7 +50,7 @@ World* WorldSerializer::Read(const char* const path)
 				const Value& x = levelData[xId];
 				for (uint32 zId = 0; zId < zSize; zId++)
 				{
-					pWorldLevels[levelId]->m_ppLevelData[xId][zId].BurnsAt = x[zId].GetFloat();
+					ppWorldLevels[levelId]->m_ppLevelData[xId][zId].BurnsAt = x[zId].GetFloat();
 				}
 			}
 		}
@@ -77,7 +77,7 @@ World* WorldSerializer::Read(const char* const path)
 		pWorldStairs[stairId] = glm::ivec3(stair[0].GetUint(), stair[1].GetUint(), stair[2].GetUint());
 	}
 
-	World* pWorld = new World(pWorldLevels, levels.Size(), pWorldObjects, objects.Size());
+	World* pWorld = new World(ppWorldLevels, levels.Size(), pWorldObjects, objects.Size());
 	pWorld->SetStairs(pWorldStairs, stairs.Size());
 
 	const Value& doors = jsonObject["doors"];
@@ -91,7 +91,13 @@ World* WorldSerializer::Read(const char* const path)
 
 	pWorld->SetDoors(pWorldDoors, doors.Size());
 
-	DeleteArrSafe(pWorldLevels);
+	//Remove the levels
+	for (uint32 i = 0; i < levels.Size(); i++)
+	{
+		DeleteSafe(ppWorldLevels[i]);
+	}
+	DeleteArrSafe(ppWorldLevels);
+
 	DeleteArrSafe(pWorldObjects);
 	DeleteArrSafe(pWorldStairs);
 	DeleteArrSafe(pWorldDoors);
@@ -111,16 +117,16 @@ void WorldSerializer::Write(const char* const path, const World& world)
 	writer.StartArray();
 	for (uint32 levelId = 0; levelId < world.GetNumLevels(); levelId++)
 	{
-		const WorldLevel* level = world.GetLevel(levelId);
+		const WorldLevel& level = world.GetLevel(levelId);
 		writer.StartArray();
 
-		for (uint32 x = 0; x < level->GetSizeX(); x++)
+		for (uint32 x = 0; x < level.GetSizeX(); x++)
 		{
 			writer.StartArray();
 
-			for (uint32 z = 0; z < level->GetSizeZ(); z++)
+			for (uint32 z = 0; z < level.GetSizeZ(); z++)
 			{
-				writer.Uint(level->GetLevel()[x][z]);
+				writer.Uint(level.GetLevel()[x][z]);
 			}
 
 			writer.EndArray();
@@ -134,16 +140,16 @@ void WorldSerializer::Write(const char* const path, const World& world)
 	writer.StartArray();
 	for (uint32 levelId = 0; levelId < world.GetNumLevels(); levelId++)
 	{
-		const WorldLevel* level = world.GetLevel(levelId);
+		const WorldLevel& level = world.GetLevel(levelId);
 		writer.StartArray();
 
-		for (uint32 x = 0; x < level->GetSizeX(); x++)
+		for (uint32 x = 0; x < level.GetSizeX(); x++)
 		{
 			writer.StartArray();
 
-			for (uint32 z = 0; z < level->GetSizeZ(); z++)
+			for (uint32 z = 0; z < level.GetSizeZ(); z++)
 			{
-				writer.Double(level->GetLevelData()[x][z].BurnsAt);
+				writer.Double(level.GetLevelData()[x][z].BurnsAt);
 			}
 
 			writer.EndArray();
@@ -177,9 +183,9 @@ void WorldSerializer::Write(const char* const path, const World& world)
 
 	writer.String("stairs");
 	writer.StartArray();
-	for (uint32 stairId = 0; stairId < world.GetNumStairs(); stairId++)
+	for (uint32 stairId = 0; stairId < world.GetStairs().size(); stairId++)
 	{
-		const glm::ivec3* stairs = world.GetStairs();
+		const std::vector<glm::ivec3>& stairs = world.GetStairs();
 		writer.StartArray();
 
 		writer.Uint(stairs[stairId].x);
@@ -192,7 +198,7 @@ void WorldSerializer::Write(const char* const path, const World& world)
 
 	writer.String("doors");
 	writer.StartArray();
-	for (uint32 doorId = 0; doorId < world.GetNumDoors(); doorId++)
+	for (uint32 doorId = 0; doorId < world.GetDoors().size(); doorId++)
 	{
 		const glm::ivec3& door = world.GetDoor(doorId);
 		writer.StartArray();

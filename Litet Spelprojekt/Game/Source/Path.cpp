@@ -12,7 +12,7 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 		{
 			if (m_pppTiles[newX][newY][newZ].g == 0 || m_pppTiles[newX][newY][newZ].g > m_pppTiles[x][y][z].g)
 			{
-				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || (m_pWorld->GetLevel(y * 2)->GetLevelData()[x][z].HasDoor() && m_pWorld->GetLevel(newY * 2)->GetLevelData()[newX][newZ].HasDoor()) || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
+				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || (m_pWorld->GetLevel(y * 2).GetLevelData()[x][z].HasDoor() && m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].HasDoor()) || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
 				{
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);
@@ -82,9 +82,9 @@ Path::Path(const World * world)
 	int totalSize = 0;
 	for (int i = 0; i < (m_pWorld->GetNumLevels() / 2); i++)
 	{
-		m_pSize[i].x = m_pWorld->GetLevel(i * 2)->GetSizeX();
-		m_pSize[i].y = m_pWorld->GetLevel(i * 2)->GetSizeZ();
-		m_pppMap[i] = m_pWorld->GetLevel(i * 2)->GetLevel();
+		m_pSize[i].x = m_pWorld->GetLevel(i * 2).GetSizeX();
+		m_pSize[i].y = m_pWorld->GetLevel(i * 2).GetSizeZ();
+		m_pppMap[i] = m_pWorld->GetLevel(i * 2).GetLevel();
 		totalSize += m_pSize[i].x * m_pSize[i].y;
 		m_LargestX = std::max(m_LargestX, m_pSize[i].x);
 		m_LargestZ = std::max(m_LargestZ, m_pSize[i].y);
@@ -104,7 +104,7 @@ Path::Path(const World * world)
 	}
 
 	int x, y, z;
-	for (uint32 i = 0; i < m_pWorld->GetNumStairs(); i++)
+	for (uint32 i = 0; i < m_pWorld->GetStairs().size(); i++)
 	{
 		x = m_pWorld->GetStairs()[i].x;
 		y = m_pWorld->GetStairs()[i].y / 2;

@@ -2,7 +2,7 @@
 #include <EnginePch.h>
 #include <Graphics\Shaders\Shader.h>
 
-class API ShaderProgram : IResource
+class API ShaderProgram : public IResource, public IGLObject
 {
 	friend class GLContext;
 	friend class ResourceHandler;
@@ -11,6 +11,7 @@ public:
 	int32 GetUniformLocation(const char* name) noexcept;
 
 	virtual void Construct() override;
+	virtual void SetDebugName(const char* pName) override;
 
 private:
 	ShaderProgram(Shader* vShader, Shader* fShader) noexcept;

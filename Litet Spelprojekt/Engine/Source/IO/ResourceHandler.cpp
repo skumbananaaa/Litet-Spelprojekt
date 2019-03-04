@@ -475,6 +475,7 @@ void ResourceHandler::Construct()
 	for (int i = m_NrOfShadersLoaded; i < m_NrOfShaders; i++)
 	{
 		m_pShaders[i]->Construct();
+		m_pShaders[i]->SetDebugName(("ShaderProgram " + std::to_string(i)).c_str());
 	}
 }
 

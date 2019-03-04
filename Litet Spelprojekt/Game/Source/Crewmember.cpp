@@ -52,33 +52,32 @@ Crewmember::~Crewmember()
 
 }
 
-
-
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 {
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderHandler.Update(pSceneGame, m_pWorld, pSceneGame->GetCrew(), deltaTime);
 	GameObject::Update(camera, deltaTime);
+	
 	UpdateTransform();
 
 	if (isAlive())
 	{
-		CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1)->GetLevelData(), deltaTime);
-		CheckFireDamage(m_pWorld->GetLevel(GetPosition().y)->GetLevelData(), deltaTime);
+		CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1).GetLevelData(), deltaTime);
+		CheckFireDamage(m_pWorld->GetLevel(GetPosition().y).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
 	}
 }
 
 void Crewmember::OnPicked()
 {
-	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2)->GetLevel()[GetTile().x][GetTile().z];
-	for (int j = 0; j < m_pWorld->GetNumDoors(); j++)
+	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
+	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
 	{
 		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
-		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
+		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
 		if (doorRoomIndex == crewRoomIndex)
 		{
-			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y)->GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 			if (door->IsOpen())
 			{
 				m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
@@ -305,7 +304,7 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{
-		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2)->GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 	}
 
 	GameObject::SetPosition(position);

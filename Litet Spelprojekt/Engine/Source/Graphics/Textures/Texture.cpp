@@ -3,8 +3,9 @@
 #include <Graphics/Renderers/GLContext.h>
 
 Texture::Texture() noexcept
-	: m_Format(TEX_FORMAT_UNKNOWN),
-	m_Texture(0)
+	: m_Texture(0),
+	m_Desc(),
+	m_Params()
 {
 }
 
@@ -15,6 +16,16 @@ Texture::~Texture()
 		GL_CALL(glDeleteTextures(1, &m_Texture));
 		m_Texture = 0;
 	}
+}
+
+void Texture::SetDebugName(const char* pName)
+{
+	if (m_Texture == 0)
+	{
+		return;
+	}
+
+	GL_CALL(glObjectLabel(GL_TEXTURE, m_Texture, -1, pName));
 }
 
 void Texture::SetParameters(const TextureParams& params) noexcept
@@ -38,6 +49,8 @@ void Texture::SetParameters(const TextureParams& params) noexcept
 		GL_CALL(glTexParameteri(m_Type, GL_TEXTURE_WRAP_R, TexParamToGL(params.Wrap)));
 		GL_CALL(glBindTexture(m_Type, 0));
 	}
+
+	m_Params = params;
 }
 
 uint32 Texture::TexParamToGL(TEX_PARAM param) noexcept

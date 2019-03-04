@@ -22,6 +22,7 @@ public:
 	static uint32 EQUIREC_TO_CUBEMAP;
 	static uint32 ANIMATION;
 	static uint32 ANIMATION_DEPTH_PRE_PASS;
+	static uint32 SHADOW;
 
 private:
 	static void RegisterResourcesPreLoading();

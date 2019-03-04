@@ -32,12 +32,12 @@ void ScenarioMissile::OnEnd(Scene* scene) noexcept
 	DeleteSafe(m_pGameObjectMissile);
 }
 
-void ScenarioMissile::OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept
+void ScenarioMissile::OnVisibilityChange(World* pWorld, Scene* pScene) noexcept
 {
 
 }
 
-bool ScenarioMissile::Update(float dtS, World* world, Scene* scene, const std::vector<uint32>& activeRooms) noexcept
+bool ScenarioMissile::Update(float dtS, World* world, Scene* scene) noexcept
 {
 	if (m_pGameObjectMissile)
 	{

@@ -9,7 +9,7 @@ ALContext::ALContext() :
 	if (enumeration == AL_TRUE)
 	{
 		ListAudioDevices();
-		m_pDevice = alcOpenDevice(NULL);
+		m_pDevice = nullptr;// alcOpenDevice(NULL);
 		std::cout << "Default Audio Device selected" << std::endl;
 	}
 	else
@@ -24,7 +24,6 @@ ALContext::ALContext() :
 	else
 	{
 		m_pContext = alcCreateContext(m_pDevice, NULL);
-
 		if (alcMakeContextCurrent(m_pContext) != AL_TRUE)
 		{
 			std::cout << "Could not make OpenAL Context Current" << std::endl;

@@ -32,34 +32,44 @@ public:
 	void AddWorldObject(const WorldObject& object) noexcept;
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	void SetDoors(const glm::ivec3* doors, uint32 nrOfDoors);
+	void SetActiveRoom(uint32 roomID) noexcept;
 
-	const WorldLevel* const GetLevel(uint32 level) const noexcept;
-	WorldLevel* const GetLevel(uint32 level) noexcept;
+	WorldLevel& GetLevel(uint32 level) noexcept;
+	const WorldLevel& GetLevel(uint32 level) const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
+	uint32 GetNumRooms() const noexcept;
 	uint32 GetNumLevels() const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
-
-	const glm::ivec3* GetStairs() const noexcept;
-	uint32 GetNumStairs() const noexcept;
-	Room* GetRoom(uint32 room) const noexcept;
+	Room& GetRoom(uint32 room) noexcept;
+	const Room& GetRoom(uint32 room) const noexcept;
 	const glm::ivec3& GetDoor(uint32 index) const noexcept;
-	uint32 GetNumDoors() const noexcept;
-	uint32 GetNumRooms() const noexcept;
-	void GenerateRooms();
-	void GenerateFloor(Scene* pScene) noexcept;
-	void GenerateWater(Scene* pScene) noexcept;
 
-	void Update(Scene* pScene, float dt);
+	const std::vector<uint32>& GetActiveRooms() const noexcept;
+	const std::vector<float>& GetRoomLightTimers() const noexcept;
+	const std::vector<glm::ivec3>& GetStairs() const noexcept;
+	const std::vector<glm::ivec3>& GetDoors() const noexcept;
+
+	void Generate(Scene& scene) noexcept;
+
+	//Returns true if any visibility change happend
+	bool UpdateVisibility(Scene& scene, float dt);
 
 private:
-	WorldLevel** m_ppLevels;
-	uint32 m_NumLevels;
+	void GenerateRooms(Scene& scene) noexcept;
+	void GenerateFloor(Scene& scene) noexcept;
+	void GenerateLevelObject(Scene& scene) noexcept;
+	void PlaceGameObjects(Scene& scene) noexcept;
+	void PlaceDoors(Scene& scene) noexcept;
+	void PlaceStairs(Scene& scene) noexcept;
+	void GenerateRoomShadows(const Scene& scene) noexcept;
+
+private:
+	std::vector<WorldLevel> m_Levels;
 	std::vector<WorldObject> m_Objects;
-
-	glm::ivec3* m_pStairs;
-	uint32 m_NumStairs;
-
+	std::vector<glm::ivec3> m_Stairs;
 	std::vector<glm::ivec3> m_Doors;
-
-	std::vector<Room*> m_Rooms;
+	std::vector<Room> m_Rooms;
+	std::vector<float> m_RoomLightsTimers;
+	std::vector<uint32> m_ActiveRooms;
+	std::vector<PointLight*> m_RoomLights;
 };

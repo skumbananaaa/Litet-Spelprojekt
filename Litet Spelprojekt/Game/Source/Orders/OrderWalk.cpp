@@ -29,6 +29,12 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	{
 		return false;
 	}
+	if (!pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].IsOpen() && !pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z].IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+	{
+		std::cout << "Door opened" << std::endl;
+		pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].OpenDoor();
+	}
+
 	return FollowPath(dtS);
 }
 

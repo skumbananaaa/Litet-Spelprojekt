@@ -1,54 +1,55 @@
 #include "../../Include/Orders/OrderCloseDoor.h"
 #include <World/GameObjectDoor.h>
 
-OrderCloseDoor::OrderCloseDoor(GameObjectDoor* door, glm::ivec3 doorTile) : OrderWalk(doorTile)
+OrderDoor::OrderDoor(GameObjectDoor* door, glm::ivec3 doorTile, bool open) : OrderWalk(doorTile)
 {
 	m_pGameObjectDoor = door;
+	m_Open = open;
 }
 
-OrderCloseDoor::~OrderCloseDoor()
+OrderDoor::~OrderDoor()
 {
 }
 
-void OrderCloseDoor::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderDoor::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderCloseDoor::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
+bool OrderDoor::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
 	if (!m_IsPathReady)
 	{
 		return false;
 	}
-	if (!m_pGameObjectDoor->IsOpen())
+	if (m_pGameObjectDoor->IsOpen() == m_Open)
 	{
 		return true;
 	}
 	else if (FollowPath(dtS))
 	{
-		m_pGameObjectDoor->SetOpen(false);
+		m_pGameObjectDoor->SetOpen(m_Open);
 		return true;
 	}
 	return false;
 }
 
-void OrderCloseDoor::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+void OrderDoor::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
 }
 
-void OrderCloseDoor::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+void OrderDoor::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderCloseDoor::AllowsMultipleOrders() noexcept
+bool OrderDoor::AllowsMultipleOrders() noexcept
 {
 	return true;
 }
 
-std::string OrderCloseDoor::GetName() noexcept
+std::string OrderDoor::GetName() noexcept
 {
 	return "Close door";
 }

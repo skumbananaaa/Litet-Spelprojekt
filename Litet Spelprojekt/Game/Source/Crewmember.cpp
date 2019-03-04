@@ -25,7 +25,7 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_LastKnownPosition = position;
 
 	//Test
-	m_HasInjuryBoneBroken = Random::GenerateBool();
+	m_HasInjuryBoneBroken = false; // Random::GenerateBool();
 	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_SkillFire = Random::GenerateInt(1, 3);
@@ -80,9 +80,14 @@ void Crewmember::OnPicked()
 		if (doorRoomIndex == crewRoomIndex)
 		{
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			if (door->IsOpen())
+			if (!door->IsOpen())
 			{
-				m_OrderHandler.GiveOrder(new OrderCloseDoor(door, doorTile), this);
+				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, true), this);
+				break;
+			}
+			else if (door->IsOpen())
+			{
+				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
 				break;
 			}
 		}

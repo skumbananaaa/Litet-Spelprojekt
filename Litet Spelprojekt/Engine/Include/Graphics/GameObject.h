@@ -51,7 +51,7 @@ public:
 	bool IsDirty() const noexcept;
 	bool IsVisible() const noexcept;
 
-	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
+	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
 
 	virtual bool IsHovered() const noexcept;
 	virtual bool IsPicked() const noexcept;
@@ -82,6 +82,7 @@ protected:
 	bool m_IsPicked;
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
+	glm::vec3 m_Direction;
 
 private:
 	std::string m_Name;
@@ -93,7 +94,6 @@ private:
 	glm::vec3 m_Position;
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
-	glm::vec3 m_Direction;
 	float m_ExtendPosX;
 	int32 m_TypeId;
 	int32 m_Room = 1;

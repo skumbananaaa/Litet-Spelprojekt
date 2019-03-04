@@ -79,22 +79,30 @@ void WaterQuad::Construct()
 	DeleteArrSafe(m_pIndices);
 }
 
-WaterQuad* WaterQuad::CreateWaterQuad(glm::vec2& pos, float scale, uint32 gridDiameter) noexcept
+WaterQuad* WaterQuad::CreateWaterQuad(glm::vec2& pos, const glm::vec2 centerHoleDim, float scale, uint32 gridDiameter) noexcept
 {
 	uint32 numVertices = gridDiameter * gridDiameter * WATER_QUAD_VERTICES_PER_SQUARE;
 	std::vector<WaterVertex> vertices;
 
-	float gridRadius = gridDiameter / 2.0f;
-	float rowStart = pos.x - gridRadius * scale;
-	float colStart = pos.y - gridRadius * scale;
-	float rowEnd = pos.x + gridRadius * scale;
-	float colEnd = pos.y + gridRadius * scale;
+	glm::vec2 position = pos + glm::vec2(0.5f, 0.5f) + glm::vec2(1.0f, 0.0f) * (1.0f - scale);
+
+	float gridRadius = (float)gridDiameter / 2.0f;
+	float rowStart = position.x - gridRadius * scale;
+	float colStart = position.y - gridRadius * scale;
+	float rowEnd = position.x + gridRadius * scale;
+	float colEnd = position.y + gridRadius * scale;
+
+	glm::vec2 minHoleCoords = position - centerHoleDim / 2.0f + glm::vec2(-1.0f);
+	glm::vec2 maxHoleCoords = position + centerHoleDim / 2.0f + glm::vec2(-2.0f);
 
 	for (float row = rowStart; row < rowEnd; row += scale)
 	{
 		for (float col = colStart; col < colEnd; col += scale)
 		{
-			StoreGridSquare(col, row, scale, vertices);
+			if (row < minHoleCoords.x || row > maxHoleCoords.x || col < minHoleCoords.y || col > maxHoleCoords.y)
+			{
+				StoreGridSquare(col, row, scale, vertices);
+			}
 		}
 	}
 

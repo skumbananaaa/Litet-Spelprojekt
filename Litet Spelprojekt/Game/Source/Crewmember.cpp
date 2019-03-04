@@ -334,7 +334,7 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 	return m_PlayerTile;
 }
 
-bool Crewmember::FindPath(const glm::ivec3& goalPos)
+void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
 	if (!m_HasInjurySmoke && !m_HasInjuryBurned)
 	{

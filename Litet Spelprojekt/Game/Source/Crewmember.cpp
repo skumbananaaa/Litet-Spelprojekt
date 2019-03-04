@@ -328,9 +328,16 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 	return m_PlayerTile;
 }
 
-void Crewmember::FindPath(const glm::ivec3& goalPos)
+bool Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
+	if (!HasInjurySmoke())
+	{
+		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
+	}
+	else
+	{
+		Logger::LogEvent(GetName() + " cannot move!", true);
+	}
 }
 
 void Crewmember::LookForDoor(World* pWorld, Scene* pScene)

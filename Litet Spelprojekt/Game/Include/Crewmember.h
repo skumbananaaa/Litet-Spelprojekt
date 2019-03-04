@@ -22,7 +22,7 @@ public:
 	///<summary>Moves the objects position in the given direction, use update to apply.</summary>
 	void Move(const glm::vec3 & dir);
 	///<summary>Finds a path to the goal position.</summary>
-	void FindPath(const glm::ivec3& goalPos);
+	bool FindPath(const glm::ivec3& goalPos);
 
 	void LookForDoor(World* pWorld, Scene* pScene);
 	void CloseDoorOrder(glm::ivec3 doorTile);

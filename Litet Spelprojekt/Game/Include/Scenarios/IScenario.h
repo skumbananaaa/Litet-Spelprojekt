@@ -1,9 +1,9 @@
 #pragma once
 #include <EnginePch.h>
 #include <World/World.h>
-#include <Graphics/Scene.h>
+#include "../Scenes/SceneGame.h"
 
-class API IScenario
+class IScenario
 {
 protected:
 	IScenario();
@@ -11,10 +11,11 @@ protected:
 public:
 	virtual ~IScenario();
 	virtual void Init(World* pWorld) noexcept = 0;
-	virtual void OnStart(Scene* scene) noexcept = 0;
-	virtual void OnEnd(Scene* scene)noexcept = 0;
-	virtual void OnVisibilityChange(World* pWorld, Scene* pScene) = 0;
-	virtual bool Update(float dtS, World* pWorld, Scene* pScene) noexcept = 0;
+	virtual void OnStart(SceneGame* scene) noexcept = 0;
+	virtual void OnEnd(SceneGame* scene)noexcept = 0;
+	virtual void Escalate(const glm::ivec3& position) noexcept = 0;
+	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) = 0;
+	virtual bool Update(float dtS, World* pWorld, SceneGame* pScene) noexcept = 0;
 	virtual std::string GetName() noexcept = 0;
 	virtual int32 GetCooldownTime() noexcept = 0;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept = 0;

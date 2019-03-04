@@ -9,7 +9,7 @@ ALContext::ALContext() :
 	if (enumeration == AL_TRUE)
 	{
 		ListAudioDevices();
-		m_pDevice = nullptr;// alcOpenDevice(NULL);
+		alcOpenDevice(NULL);
 		std::cout << "Default Audio Device selected" << std::endl;
 	}
 	else

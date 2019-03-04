@@ -4,6 +4,14 @@
 
 #define MAX_PARTICLES 1000
 
+class MeshEmitter;
+
+class API IMeshListener
+{
+public:
+	virtual void OnMeshEmitterKilled(MeshEmitter* emitter) = 0;
+};
+
 class API MeshEmitter : public GameObject
 {
 	friend class ForwardRenderer;
@@ -15,7 +23,7 @@ public:
 	MeshEmitter& operator=(MeshEmitter&& other) = delete;
 	MeshEmitter& operator=(const MeshEmitter& other) = delete;
 
-	MeshEmitter();
+	MeshEmitter(float autoDeleteTimer = -1, IMeshListener* listerner = nullptr);
 	~MeshEmitter();
 
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
@@ -35,6 +43,8 @@ public:
 	uint32 GetNumParticles() const noexcept;
 
 	void AddColorNode(const glm::vec4& color, float atLifeTime) noexcept;
+
+	virtual void OnAddedToScene(Scene* scene) noexcept override;
 
 private:
 	void SpawnParticle() noexcept;
@@ -59,4 +69,7 @@ private:
 	float m_MaxSpeed;
 	float m_ConeAngle;
 	uint32 m_NumParticles;
+	Scene* m_pScene;
+	float m_AutoDeleteTimer;
+	IMeshListener* m_pListener;
 };

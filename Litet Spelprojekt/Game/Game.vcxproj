@@ -149,6 +149,7 @@
     <ClCompile Include="Source\GameObjectMissile.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
     <ClCompile Include="Source\Orders\OrderCloseDoor.cpp" />
+    <ClCompile Include="Source\Orders\OrderGiveAid.cpp" />
     <ClCompile Include="Source\Orders\OrderHandler.cpp" />
     <ClCompile Include="Source\Orders\OrderWalk.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioMissile.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Include\Orders\IOrder.h" />
     <ClInclude Include="Include\Orders\OrderCarry.h" />
     <ClInclude Include="Include\Orders\OrderCloseDoor.h" />
+    <ClInclude Include="Include\Orders\OrderGiveAid.h" />
     <ClInclude Include="Include\Orders\OrderHandler.h" />
     <ClInclude Include="Include\Orders\OrderWalk.h" />
     <ClInclude Include="Include\Path.h" />

@@ -73,13 +73,14 @@ void Crewmember::OnPicked()
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2)->GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetNumDoors(); j++)
 	{
+		//check if there is any door in the same room as a crewmember
 		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
 		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y)->GetLevel()[doorTile.x][doorTile.z];
 		if (doorRoomIndex == crewRoomIndex)
 		{
 			testNrOfEqualDoors++;
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y)->GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			while (testNrOfEqualDoors > 0)
+			while (testNrOfEqualDoors > 0) // while there are unchecked doors, make sure they get closed
 			{
 				if (door->IsOpen())
 				{

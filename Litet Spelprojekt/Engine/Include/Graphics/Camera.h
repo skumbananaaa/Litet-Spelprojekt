@@ -40,6 +40,11 @@ public:
 	void SetYaw(float yaw) noexcept;
 	void SetPitch(float pitch) noexcept;
 
+	void SetMinPitch(float min) noexcept;
+	void SetMaxPitch(float max) noexcept;
+	void SetMinDistToLookAt(float min) noexcept;
+	void SetMaxDistToLookAt(float max) noexcept;
+
 	const glm::mat4& GetViewMatrix() const noexcept;
 	const glm::mat4& GetProjectionMatrix() const noexcept;
 	const glm::mat4& GetCombinedMatrix() const noexcept;
@@ -52,10 +57,14 @@ public:
 	const glm::vec3& GetFront() const noexcept;
 	const glm::vec3& GetUp() const noexcept;
 
+	const glm::vec2& GetMinMaxPitch() const noexcept;
+	const glm::vec2& GetMinMaxDistToLookAt() const noexcept;
+
 	float GetYaw() const noexcept;
 	float GetPitch() const noexcept;
 	float GetFarPlane() const noexcept;
 	float GetNearPlane() const noexcept;
+	float GetDistanceToLookAt() const noexcept;
 
 private:
 	void CalcInverses();
@@ -76,10 +85,14 @@ private:
 	glm::vec3 m_Up;
 	glm::vec3 m_WorldUp;
 
+	glm::vec2 m_MinMaxPitch;
+	glm::vec2 m_MinMaxDistanceToLookAt;
+
 	float m_Yaw;
 	float m_Pitch;
 	float m_Far;
 	float m_Near;
+	float m_DistanceToLookAt;
 
 	bool m_IsDirty;
 	bool m_InverseIsDirty;
@@ -135,6 +148,16 @@ inline const glm::vec3& Camera::GetUp() const noexcept
 	return m_Up;
 }
 
+inline const glm::vec2 & Camera::GetMinMaxPitch() const noexcept
+{
+	return m_MinMaxPitch;
+}
+
+inline const glm::vec2& Camera::GetMinMaxDistToLookAt() const noexcept
+{
+	return m_MinMaxDistanceToLookAt;
+}
+
 inline float Camera::GetYaw() const noexcept
 {
 	return m_Yaw;
@@ -153,4 +176,9 @@ inline float Camera::GetFarPlane() const noexcept
 inline float Camera::GetNearPlane() const noexcept
 {
 	return m_Near;
+}
+
+inline float Camera::GetDistanceToLookAt() const noexcept
+{
+	return m_DistanceToLookAt;
 }

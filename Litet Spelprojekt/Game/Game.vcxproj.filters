@@ -242,5 +242,6 @@
     <Text Include="Resources\Shaders\deferredDecals.glsl" />
     <Text Include="Resources\Shaders\skybox.glsl" />
     <Text Include="Resources\Shaders\forwardParticles.glsl" />
+    <Text Include="Resources\Shaders\shadow.glsl" />
   </ItemGroup>
 </Project>

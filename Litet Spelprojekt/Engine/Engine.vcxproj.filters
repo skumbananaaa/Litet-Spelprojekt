@@ -91,6 +91,7 @@
     <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
     <ClCompile Include="Source\World\Scenarios\Orders\OrderCloseDoor.cpp" />
     <ClCompile Include="Source\World\Scenarios\Orders\OrderHandler.cpp" />
+    <ClCompile Include="Source\Graphics\Textures\StaticShadowCube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -198,6 +199,8 @@
     <ClInclude Include="Include\Graphics\GUI\TextField.h" />
     <ClInclude Include="Include\World\Scenarios\Orders\OrderCloseDoor.h" />
     <ClInclude Include="Include\World\Scenarios\Orders\OrderHandler.h" />
+    <ClInclude Include="Include\Graphics\Textures\StaticShadowCube.h" />
+    <ClInclude Include="Include\Graphics\IGLObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

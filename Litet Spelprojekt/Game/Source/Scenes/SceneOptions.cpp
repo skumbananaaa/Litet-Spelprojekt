@@ -1,12 +1,26 @@
 #include "..\..\Include\Scenes\SceneOptions.h"
 #include "../../Include/Game.h"
+#include <Audio/Sources/AudioSource.h>
 
 SceneOptions::SceneOptions()
 {
+	m_pAudioSourceSelect = AudioSource::CreateSoundSource(SOUND::UI_SELECT);
+	m_pAudioSourceSelect->SetRollOffFactor(10.0f);
+	m_pAudioSourceSelect->SetReferenceDistance(0.0f);
+	m_pAudioSourceSelect->SetMaxDistance(500.0f);
+	m_pAudioSourceSelect->SetLooping(false);
+
+	m_pAudioSourceHover = AudioSource::CreateSoundSource(SOUND::UI_HOVER);
+	m_pAudioSourceHover->SetRollOffFactor(10.0f);
+	m_pAudioSourceHover->SetReferenceDistance(0.0f);
+	m_pAudioSourceHover->SetMaxDistance(500.0f);
+	m_pAudioSourceHover->SetLooping(false);
 }
 
 SceneOptions::~SceneOptions()
 {
+	DeleteSafe(m_pAudioSourceSelect);
+	DeleteSafe(m_pAudioSourceHover);
 }
 
 void SceneOptions::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
@@ -44,6 +58,7 @@ void SceneOptions::OnRender(float dtS) noexcept
 
 void SceneOptions::OnButtonPressed(Button* button)
 {
+	m_pAudioSourceSelect->Play();
 }
 
 void SceneOptions::OnButtonReleased(Button* button)
@@ -53,6 +68,7 @@ void SceneOptions::OnButtonReleased(Button* button)
 
 void SceneOptions::OnButtonHovered(Button* button)
 {
+	m_pAudioSourceHover->Play();
 }
 
 void SceneOptions::OnButtonNotHovered(Button* button)

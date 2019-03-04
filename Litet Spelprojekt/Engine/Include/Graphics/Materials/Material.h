@@ -4,17 +4,6 @@
 #include "MaterialBase.h"
 #include <IO/ResourceHandler.h>
 
-#define DIFFUSE_MAP_BINDING_SLOT 0
-
-#define CAMERA_BUFFER_BINDING_SLOT 0
-#define LIGHT_BUFFER_BINDING_SLOT 1
-#define MATERIAL_BUFFER_BINDING_SLOT 2
-#define WORLD_BUFFER_BINDING_SLOT 3
-#define PLANE_BUFFER_BINDING_SLOT 4
-#define EXTENSION_BUFFER_BINDING_SLOT 5
-#define WATER_BUFFER_BINDING_SLOT 6
-#define ANIMATION_BUFFER_BINDING_SLOT 7
-
 class API Material
 {
 private:
@@ -36,6 +25,7 @@ public:
 	void SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept;
 	void SetWorldBuffer(const UniformBuffer* pWorldBuffer) const noexcept;
 	void SetExtensionBuffer(const UniformBuffer* pExtensionBuffer) const noexcept;
+	void SetShadowBuffer(const UniformBuffer* pShadowBuffer) const noexcept;
 
 	void SetStencilTest(bool enable, Func func = FUNC_ALWAYS, uint8 mask = 0xff, uint8 ref = 1, uint8 value = 0xff) const noexcept;
 	void SetStencilOp(StencilOp sFail, StencilOp dFail, StencilOp dPass) const noexcept;
@@ -78,6 +68,7 @@ private:
 		mutable const UniformBuffer* pMaterialBuffer = nullptr;
 		mutable const UniformBuffer* pWorldBuffer = nullptr;
 		mutable const UniformBuffer* pExtensionBuffer = nullptr;
+		mutable const UniformBuffer* pShadowBuffer = nullptr;
 		const Texture2D* pDiffuseMap = nullptr;
 		const Texture2D* pSpecularMap = nullptr;
 		glm::vec4 Color = glm::vec4(0.0f);

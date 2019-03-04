@@ -7,7 +7,7 @@
 class API SkyBox
 {
 public:
-	SkyBox(TextureCube* texture);
+	SkyBox(const TextureCube* texture);
 	~SkyBox();
 
 	const TextureCube& GetTexture() const noexcept;
@@ -15,5 +15,5 @@ public:
 
 private:
 	IndexedMesh* m_pMesh;
-	TextureCube* m_pTextureCube;
+	const TextureCube* m_pTextureCube;
 };

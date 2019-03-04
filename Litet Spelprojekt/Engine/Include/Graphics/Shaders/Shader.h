@@ -1,6 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <IO/IResource.h>
+#include <Graphics/IGLObject.h>
 
 enum ShaderType : uint8
 {
@@ -45,15 +46,15 @@ inline std::string GetShaderTypeAsString(ShaderType type)
 	return "UNKNOWN\n";
 }
 
-class API Shader : public IResource
+class API Shader : public IResource, public IGLObject
 {
 	friend class ShaderProgram;
 
 public:
-	uint32 ShaderTypeTable(ShaderType type) const noexcept;
 	virtual void Construct() override;
+	virtual void SetDebugName(const char* pName) override;
 
-	static Shader* Create(const char* const path, ShaderType type, const std::string& = "") noexcept;
+	uint32 ShaderTypeTable(ShaderType type) const noexcept;
 
 private:
 	Shader(const std::string& shaderCode, const std::string& path, ShaderType type) noexcept;
@@ -63,4 +64,7 @@ private:
 	ShaderType m_Type;
 	std::string m_ShaderCode;
 	std::string m_Path;
+
+public:
+	static Shader* Create(const char* const path, ShaderType type, const std::string& = "") noexcept;
 };

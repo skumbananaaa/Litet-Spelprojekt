@@ -1,7 +1,9 @@
 #include <EnginePch.h>
 #include <Graphics\Camera.h>
 
-Camera::Camera(const glm::vec3& pos, float pitch, float yaw, const glm::vec3& upVector) noexcept
+Camera::Camera(const glm::vec3& pos, float pitch, float yaw, const glm::vec3& upVector) noexcept :
+	m_MinMaxPitch(-1.55334303f, 1.55334303f),
+	m_MinMaxDistanceToLookAt(0.1f, 60.0f)
 {
 	m_InverseIsDirty = true;
 	m_Position = pos;
@@ -14,22 +16,27 @@ Camera::Camera(const glm::vec3& pos, float pitch, float yaw, const glm::vec3& up
 	m_WorldUp = upVector;
 	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 	m_LookAt = m_Position + m_Front;
+	m_DistanceToLookAt = 1.0f;
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, m_WorldUp);
 
 	CalcInverses();
 	m_IsDirty = false;
 }
 
-Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& upVector) noexcept
+Camera::Camera(const glm::vec3& pos, const glm::vec3& lookAt, const glm::vec3& upVector) noexcept :
+	m_MinMaxPitch(-1.55334303f, 1.55334303f),
+	m_MinMaxDistanceToLookAt(0.1f, 60.0f)
 {
 	m_InverseIsDirty = true; 
 	m_Position = pos;
 	m_LookAt = lookAt;
-	m_Front = glm::normalize(m_Position - m_LookAt);
+	glm::vec3 posToLookAt = m_LookAt - m_Position;
+	m_Front = glm::normalize(posToLookAt);
 	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
 	m_WorldUp = upVector;
-	m_Pitch = -asinf(m_Front.y);
+	m_Pitch = asinf(m_Front.y);
 	m_Yaw = atan2(m_Front.x, m_Front.z) - 3.0f * glm::half_pi<float>();
+	m_DistanceToLookAt = glm::length(posToLookAt);
 	m_ViewMatrix = glm::lookAt(m_Position, m_LookAt, m_WorldUp);
 
 	CalcInverses();
@@ -103,6 +110,8 @@ void Camera::MoveWorldCoords(const glm::vec3& worldCoords, bool moveLookAt) noex
 	{
 		m_LookAt += worldCoords;
 	}
+
+	m_DistanceToLookAt = glm::length(m_LookAt - m_Position);
 }
 
 void Camera::MoveLocalCoords(const glm::vec3& localCoords, bool moveLookAt) noexcept
@@ -124,6 +133,8 @@ void Camera::MoveLocalCoords(const glm::vec3& localCoords, bool moveLookAt) noex
 	{
 		m_LookAt += worldCoords;
 	}
+
+	m_DistanceToLookAt = glm::length(m_LookAt - m_Position);
 }
 
 void Camera::MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept
@@ -136,12 +147,24 @@ void Camera::MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept
 		case PosRelativeLookAt::Zoom:
 		{
 			glm::vec3 newPos = m_Position + m_Front * amount;
-			float distanceToLookAtAfterMove = glm::length(m_LookAt - newPos);
+			glm::vec3 newToLookAt = m_LookAt - newPos;
+			float distanceToLookAtAfterMove = glm::length(newToLookAt);
+			glm::vec3 newFront = newToLookAt / distanceToLookAtAfterMove;
 
-			if (distanceToLookAtAfterMove > 0.1f)
+			if (amount > 0.0f)
+			{
+				if (distanceToLookAtAfterMove > m_MinMaxDistanceToLookAt.x && glm::dot(newFront, m_Front) > 0.9f)
+				{
+					m_Position = newPos;
+					m_DistanceToLookAt = distanceToLookAtAfterMove;
+				}
+			}
+			else if (distanceToLookAtAfterMove < m_MinMaxDistanceToLookAt.y)
 			{
 				m_Position = newPos;
+				m_DistanceToLookAt = distanceToLookAtAfterMove;
 			}
+
 			break;
 		}
 
@@ -158,7 +181,7 @@ void Camera::MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept
 		{
 			float distanceToLookAt = glm::length(m_LookAt - m_Position);
 			m_Pitch -= amount;
-			m_Pitch = glm::clamp(m_Pitch, -1.55334303f, 1.55334303f);
+			m_Pitch = glm::clamp(m_Pitch, m_MinMaxPitch.x, m_MinMaxPitch.y);
 			m_Position = m_LookAt - 
 				glm::normalize(glm::vec3(
 				cosf(m_Pitch) * cosf(m_Yaw),
@@ -183,13 +206,13 @@ void Camera::OffsetPitch(float amount) noexcept
 	m_IsDirty = true;
 	m_InverseIsDirty = true;
 
-	if (m_Pitch > 1.55334303f)
+	if (m_Pitch > m_MinMaxPitch.y)
 	{
-		m_Pitch = 1.55334303f;
+		m_Pitch = m_MinMaxPitch.y;
 	}
-	else if (m_Pitch < -1.55334303f)
+	else if (m_Pitch < m_MinMaxPitch.x)
 	{
-		m_Pitch = -1.55334303f;
+		m_Pitch = m_MinMaxPitch.x;
 	}
 }
 
@@ -208,6 +231,7 @@ void Camera::SetPos(const glm::vec3& pos) noexcept
 
 	m_Front = glm::normalize(m_Position - m_LookAt);
 	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
+	m_DistanceToLookAt = glm::length(m_LookAt - m_Position);
 }
 
 void Camera::SetLookAt(const glm::vec3& lookAt) noexcept
@@ -218,6 +242,7 @@ void Camera::SetLookAt(const glm::vec3& lookAt) noexcept
 
 	m_Front = glm::normalize(m_Position - m_LookAt);
 	m_Up = glm::cross(glm::cross(m_Front, m_WorldUp), m_Front);
+	m_DistanceToLookAt = glm::length(m_LookAt - m_Position);
 }
 
 void Camera::SetYaw(float yaw) noexcept
@@ -233,14 +258,34 @@ void Camera::SetPitch(float pitch) noexcept
 	m_IsDirty = true;
 	m_InverseIsDirty = true;
 
-	if (m_Pitch > 1.55334303f)
+	if (m_Pitch > m_MinMaxPitch.y)
 	{
-		m_Pitch = 1.55334303f;
+		m_Pitch = m_MinMaxPitch.y;
 	}
-	else if (m_Pitch < -1.55334303f)
+	else if (m_Pitch < m_MinMaxPitch.x)
 	{
-		m_Pitch = -1.55334303f;
+		m_Pitch = m_MinMaxPitch.x;
 	}
+}
+
+void Camera::SetMinPitch(float min) noexcept
+{
+	m_MinMaxPitch.x = min;
+}
+
+void Camera::SetMaxPitch(float max) noexcept
+{
+	m_MinMaxPitch.y = max;
+}
+
+void Camera::SetMinDistToLookAt(float min) noexcept
+{
+	m_MinMaxDistanceToLookAt.x = min;
+}
+
+void Camera::SetMaxDistToLookAt(float max) noexcept
+{
+	m_MinMaxDistanceToLookAt.y = max;
 }
 
 void Camera::CalcInverses()

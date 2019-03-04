@@ -21,15 +21,15 @@ void ScenarioManager::Release() noexcept
 	}
 }
 
-void ScenarioManager::OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept
+void ScenarioManager::OnVisibilityChange(World* pWorld, Scene* pScene) noexcept
 {
 	for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
 	{
-		s_Scenarios[s_ActiveScenarios[i]]->OnVisibilityChange(pWorld, pScene, activeRooms);
+		s_Scenarios[s_ActiveScenarios[i]]->OnVisibilityChange(pWorld, pScene);
 	}
 }
 
-void ScenarioManager::Update(float dtS, World* world, Scene* scene, const std::vector<uint32>& activeRooms) noexcept
+void ScenarioManager::Update(float dtS, World* world, Scene* scene) noexcept
 {
 	for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
 	{
@@ -51,7 +51,7 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene, const std::v
 	for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
 	{
 		IScenario* scenario = s_Scenarios[s_ActiveScenarios[i]];
-		if (scenario->Update(dtS, world, scene, activeRooms))
+		if (scenario->Update(dtS, world, scene))
 		{
 			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Ended!");
 			scenario->OnEnd(scene);
@@ -61,7 +61,7 @@ void ScenarioManager::Update(float dtS, World* world, Scene* scene, const std::v
 	}
 }
 
-void ScenarioManager::SetEnabledScenarios(const std::vector<int32> ids) noexcept
+void ScenarioManager::SetEnabledScenarios(const std::vector<int32>& ids) noexcept
 {
 	s_NonActiveScenarios = ids;
 	s_ActiveScenarios.clear();
@@ -75,7 +75,7 @@ void ScenarioManager::Init(World* pWorld)
 	}
 }
 
-const std::vector<IScenario*> ScenarioManager::GetScenarios() noexcept
+const std::vector<IScenario*>& ScenarioManager::GetScenarios() noexcept
 {
 	return s_Scenarios;
 }

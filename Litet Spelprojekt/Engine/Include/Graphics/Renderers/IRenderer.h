@@ -20,11 +20,6 @@ struct SkyBoxPassPerObject
 	glm::mat4 model;
 };
 
-struct PlaneBuffer
-{
-	glm::vec4 ClipPlane;
-};
-
 class API IRenderer
 {
 public:

@@ -6,6 +6,8 @@
 #include <Graphics/GUI/SelectionHandler.h>
 #include <World/Scenarios/IScenario.h>
 
+class AudioSource;
+
 class SceneScenario : public SceneInternal, public ISelectionListener, public IButtonListener, public IExternalUIRenderer
 {
 	friend class Game;
@@ -36,4 +38,7 @@ private:
 	Button* m_pButtonStart;
 	ListScrollable* m_pListScrollable;
 	SelectionHandler m_SelectionHandler;
+	AudioSource* m_pAudioSourceSelect;
+	AudioSource* m_pAudioSourceDeselect;
+	AudioSource* m_pAudioSourceHover;
 };

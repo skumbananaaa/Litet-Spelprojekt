@@ -68,8 +68,8 @@ private:
 	uint32 m_NumBones;
 	uint32* m_pIndices;
 	uint32 m_NumIndices;
-	mutable std::map<std::string, uint32> m_BoneMap;
 	std::vector<MeshEntry> m_Entries;
+	mutable std::map<std::string, uint32> m_BoneMap;
 	mutable std::vector<glm::mat4> m_BoneOffsets;
 	
 private:

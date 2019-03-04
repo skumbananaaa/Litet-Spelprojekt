@@ -21,7 +21,7 @@ Framebuffer::Framebuffer(const FramebufferDesc& desc)
 	Create(desc);
 }
 
-Framebuffer::Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil)
+Framebuffer::Framebuffer(Texture** ppColor, uint32* pColorFaces, uint32 numTextures, Texture* pDepthStencil, uint32 depthFace)
 	: m_ppColor(),
 	m_pDepthStencil(nullptr),
 	m_NumColorAttachments(0),
@@ -36,7 +36,7 @@ Framebuffer::Framebuffer(Texture2D** ppColor, uint32 numTextures, Texture2D* pDe
 		m_ppColor[i] = nullptr;
 	}
 
-	Create(ppColor, numTextures, pDepthStencil);
+	Create(ppColor, pColorFaces, numTextures, pDepthStencil, depthFace);
 }
 
 Framebuffer::~Framebuffer()
@@ -89,9 +89,14 @@ void Framebuffer::Create(const FramebufferDesc& desc)
 	CreateFramebuffer();
 }
 
-void Framebuffer::Create(Texture2D** ppColor, uint32 numTextures, Texture2D* pDepthStencil)
+void Framebuffer::Create(Texture** ppColor, uint32* pColorFaces, uint32 numTextures, Texture* pDepthStencil, uint32 depthFace)
 {
-	if (numTextures > 8)
+	if ((ppColor == nullptr || numTextures < 1) && pDepthStencil == nullptr)
+	{
+		std::cout << "Error must have at least one attachment" << std::endl;
+		return;
+	}
+	else if (numTextures > 8)
 	{
 		std::cout << "Error cannot have more than 8 textures in a framebuffer" << std::endl;
 		return;
@@ -104,6 +109,7 @@ void Framebuffer::Create(Texture2D** ppColor, uint32 numTextures, Texture2D* pDe
 		m_Samples = pDepthStencil->GetSamples();
 
 		m_pDepthStencil = pDepthStencil;
+		m_DepthFace = depthFace;
 	}
 	else if (ppColor[0] != nullptr)
 	{
@@ -119,6 +125,11 @@ void Framebuffer::Create(Texture2D** ppColor, uint32 numTextures, Texture2D* pDe
 	for (uint32 i = 0; i < numTextures; i++)
 	{
 		m_ppColor[i] = ppColor[i];
+		if (m_ppColor[i]->GetType() == GL_TEXTURE_CUBE_MAP)
+		{
+			m_ColorFaces[i] = pColorFaces[i];
+		}
+
 		if (ppColor[i]->GetWidth() != m_Width || ppColor[i]->GetHeight() != m_Height || m_Samples != ppColor[i]->GetSamples())
 		{
 			std::cout << "Error: All textures in a framebuffer needs to have the same size and samples" << std::endl;
@@ -142,23 +153,35 @@ void Framebuffer::CreateFramebuffer()
 		if (m_ppColor[i] != nullptr)
 		{
 			drawBuffers[buf] = GL_COLOR_ATTACHMENT0 + buf;
-			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[buf], m_ppColor[i]->GetType(), m_ppColor[i]->m_Texture, 0));
+
+			uint32 type = m_ppColor[i]->GetType();
+			if (type == GL_TEXTURE_CUBE_MAP)
+			{
+				type = m_ColorFaces[i];
+			}
+
+			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, drawBuffers[buf], type, m_ppColor[i]->m_Texture, 0));
 
 			buf++;
 		}
 	}
 
 	GL_CALL(glDrawBuffers(buf, drawBuffers));
-
 	if (m_pDepthStencil != nullptr)
 	{
+		uint32 type = m_pDepthStencil->GetType();
+		if (type == GL_TEXTURE_CUBE_MAP)
+		{
+			type = m_DepthFace;
+		}
+
 		if (m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH)
 		{
-			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_pDepthStencil->GetType(), m_pDepthStencil->m_Texture, 0));
+			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, type, m_pDepthStencil->m_Texture, 0));
 		}
 		else if (m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH_STENCIL)
 		{
-			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, m_pDepthStencil->GetType(), m_pDepthStencil->m_Texture, 0));
+			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, type, m_pDepthStencil->m_Texture, 0));
 		}
 		else
 		{

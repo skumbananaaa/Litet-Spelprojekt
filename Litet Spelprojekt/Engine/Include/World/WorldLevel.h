@@ -61,11 +61,11 @@ class API WorldLevel
 	friend class Editor;
 
 public:
-	WorldLevel(WorldLevel&& other) = delete;
-	WorldLevel(const WorldLevel& other) = delete;
 	WorldLevel& operator=(WorldLevel&& other) = delete;
 	WorldLevel& operator=(const WorldLevel& other) = delete;
 
+	WorldLevel(WorldLevel&& other);
+	WorldLevel(const WorldLevel& other);
 	WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uint32 sizeX, uint32 sizeZ) noexcept;
 	~WorldLevel();
 
@@ -89,15 +89,14 @@ public:
 	void GenerateScenarioObjects(Scene* pScene, uint32 levelHeight);
 
 private:
+	uint32 m_SizeX;
+	uint32 m_SizeZ;
+	uint32 m_TilesBetweenBulkheads;
 	TileData** m_ppLevelData;
 	uint32** m_ppLevel;
 	std::vector<glm::ivec2> m_BurningIDs;
 	std::vector<glm::ivec2> m_FloodingIDs;
-	uint32 m_SizeX;
-	uint32 m_SizeZ;
 	std::vector<glm::vec4> m_Walls;
 	std::vector<glm::vec4> m_Bulkheads;
-	uint32 m_TilesBetweenBulkheads;
-
 	std::vector<glm::uvec4> m_RoomBounds;
 };

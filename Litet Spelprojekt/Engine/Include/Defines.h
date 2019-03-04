@@ -30,6 +30,8 @@
 
 #define MAX_NUM_BONES_PER_VERT 4
 #define MAX_NUM_BONES 60
+#define SHADOW_SIZE 512
+#define REFLECTION_SIZE 512
 
 constexpr float WATER_UPDATE_LEVEL_INTERVAL = 0.02f;
 constexpr float WATER_ROUNDING_FACTOR = 50.0f;

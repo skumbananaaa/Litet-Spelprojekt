@@ -1,6 +1,7 @@
 #include "..\..\Include\Scenes\SceneGame.h"
 #include "../../Include/Game.h"
 #include <World/LightManager.h>
+#include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include <World/GameObjectDoor.h>
 
@@ -31,6 +32,7 @@ SceneGame::SceneGame() : SceneInternal(false),
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
+	GetCamera().SetMaxPitch(0.0f);
 
 	GameObject* pGameObject;
 	//BOB
@@ -38,21 +40,10 @@ SceneGame::SceneGame() : SceneInternal(false),
 		pGameObject = new GameObject();
 		pGameObject->SetMaterial(MATERIAL::ANIMATED_MODEL);
 		pGameObject->SetAnimatedMesh(MESH::ANIMATED_MODEL);
-		pGameObject->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-		//pGameObject->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
+		pGameObject->SetPosition(glm::vec3(6.0f, 1.0f, 6.0f));
 		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		AddGameObject(pGameObject);
-	}
-
-	//Lights
-	{
-		for (uint32 i = 0; i < MAX_ROOMS_VISIBLE; i++)
-		{
-			AddRoomLight(new PointLight(m_pWorld->GetRoom(0)->GetCenter(), glm::vec4(2.0f, 2.0f, 2.0f, 2.0f)));
-			m_RoomLightsTimers.push_back(0.0f);
-			m_ActiveRooms.push_back(0);
-		}
 	}
 }
 
@@ -108,6 +99,8 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 	}
 
+	GetCamera().SetMaxPitch(1.55334303f);
+
 	DeleteSafe(m_pUICrew);
 }
 
@@ -130,32 +123,21 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	if (!IsPaused())
 	{
 		SceneInternal::OnUpdate(dtS);
-		ScenarioManager::Update(dtS, m_pWorld, this, m_ActiveRooms);
+		ScenarioManager::Update(dtS, m_pWorld, this);
 		UpdateCamera(dtS);
 
 		static float dist = 0.0f;
 		dist += 0.02f * dtS;
 		((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
 
-		std::vector<PointLight*>& roomLights = GetRoomLights();
-		const std::vector<GameObject*>& drawables = GetAnimatedDrawables();
-		for (uint32 i = 0; i < roomLights.size(); i++)
-		{
-			m_RoomLightsTimers[i] += dtS;
-			if (m_RoomLightsTimers[i] >= 5.0f)
-			{
-				roomLights[i]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-				m_RoomLightsTimers[i] = 0.0f;
-				m_pWorld->GetRoom(m_ActiveRooms[i])->SetActive(false);
-				m_ActiveRooms[i] = 1;
-				ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
-			}
-		}
-
 #if defined(PRINT_CPU_DEBUG_DATA)
 		CPUProfiler::StartTimer(CPU_PROFILER_SLOT_0);
 #endif
-		m_pWorld->Update(this, dtS);
+		if (m_pWorld->UpdateVisibility(*this, dtS))
+		{
+			ScenarioManager::OnVisibilityChange(m_pWorld, this);
+		}
+
 #if defined(PRINT_CPU_DEBUG_DATA)
 		CPUProfiler::EndTimer("World Update took %.3f ms", CPU_PROFILER_SLOT_0);
 #endif
@@ -259,7 +241,9 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 			else
 			{
 				const float cameraZoomSensitivity = 0.1f;
-				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y);
+				const glm::vec2& cNearFar = GetCamera().GetMinMaxDistToLookAt();
+				float distanceBoost = glm::max(15.0f * GetCamera().GetDistanceToLookAt() / cNearFar.y, 1.0f);
+				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
 			}
 		}
 	}
@@ -327,7 +311,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 			case KEY_R:
 			{
 				ShowCrewmember(0);
-				ScenarioManager::OnVisibilityChange(m_pWorld, this, m_ActiveRooms);
+				ScenarioManager::OnVisibilityChange(m_pWorld, this);
 				break;
 			}
 			case KEY_K:
@@ -398,106 +382,6 @@ void SceneGame::CreateWorld() noexcept
 
 	m_pWorld = WorldSerializer::Read("world.json");
 
-	//Place objects in scene
-	int gameObjects = m_pWorld->GetNumWorldObjects();
-	for (int i = 0; i < gameObjects; i++)
-	{
-		WorldObject worldObject = m_pWorld->GetWorldObject(i);
-		int32 width = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeX();
-		int32 height = m_pWorld->GetLevel(worldObject.TileId.y)->GetSizeZ();
-		int floorLevel = worldObject.TileId.y / 2;
-		pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
-		glm::uvec3 pos = worldObject.TileId;
-		pos.x += 1;
-		pos.z += 1;
-		pGameObject->SetPosition(pos);
-		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
-		pGameObject->SetRoom(m_pWorld->GetLevel(pos.y)->GetLevel()[pos.x][pos.z]);
-		pGameObject->UpdateTransform();
-		AddGameObject(pGameObject);
-		m_pWorld->GetLevel(pos.y)->GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);
-	}
-
-	//Generate Door GameObjects
-	for (uint32 i = 0; i < m_pWorld->GetNumDoors(); i++)
-	{
-		glm::vec3 door1 = m_pWorld->GetDoor(i);
-		WorldLevel* level = m_pWorld->GetLevel(door1.y);
-		float halfWidth = level->GetSizeX() / 2;
-		float halfHeight = level->GetSizeZ() / 2;
-
-		for (uint32 j = i + 1; j < m_pWorld->GetNumDoors(); j++)
-		{
-			glm::vec3 door2 = m_pWorld->GetDoor(j);
-			glm::vec3 delta = door1 - door2;
-			if (glm::length(delta) <= 1.0)
-			{
-				if (level->GetLevel()[(uint32)door1.x][(uint32)door1.z] != level->GetLevel()[(uint32)door2.x][(uint32)door2.z])
-				{
-					glm::vec3 position = (door1 + door2) / 2.0F;
-
-					pGameObject = new GameObject();
-					pGameObject->SetMaterial(MATERIAL::WHITE);
-					pGameObject->SetMesh(MESH::DOOR_FRAME);
-					pGameObject->SetPosition(position);
-					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-					pGameObject->UpdateTransform();
-					AddGameObject(pGameObject);
-
-					pGameObject = new GameObjectDoor();
-					pGameObject->SetPosition(position);
-					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-					pGameObject->UpdateTransform();
-					//reinterpret_cast<GameObjectDoor*>(pGameObject)->SetOpen(false);
-					AddGameObject(pGameObject);
-
-					level->GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-					level->GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-				}
-			}
-		}
-	}
-
-	//Generate Ladder GameObjects
-	for (uint32 i = 0; i < m_pWorld->GetNumStairs(); i++)
-	{
-		glm::ivec3 stair = m_pWorld->GetStairs()[i];
-		WorldLevel* level = m_pWorld->GetLevel(stair.y);
-		float halfWidth = level->GetSizeX() / 2;
-		float halfHeight = level->GetSizeZ() / 2;
-
-		glm::vec3 position = ((glm::vec3)stair);
-
-		const uint32* const* grid = level->GetLevel();
-		uint32 myId = grid[stair.x][stair.z];
-		float rotation = 0;
-
-		if (grid[stair.x + 1][stair.z] != myId)
-		{
-			rotation = glm::half_pi<float>() * 2.0F;
-		}
-		else if (grid[stair.x - 1][stair.z] != myId)
-		{
-			rotation = 0.0F;
-		}
-		else if (grid[stair.x][stair.z + 1] != myId)
-		{
-			rotation = glm::half_pi<float>();
-		}
-		else if (grid[stair.x][stair.z - 1] != myId)
-		{
-			rotation = glm::half_pi<float>() * 3.0F;
-		}
-
-		pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::WHITE);
-		pGameObject->SetMesh(MESH::LADDER);
-		pGameObject->SetPosition(position);
-		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
-		pGameObject->UpdateTransform();
-		AddGameObject(pGameObject);
-	}
-
 	//BOB
 	{
 		pGameObject = new GameObject();
@@ -517,45 +401,7 @@ void SceneGame::CreateWorld() noexcept
 	//SetClipPlanes(0);
 
 	// Generate rooms
-	m_pWorld->GenerateRooms();
-	for (int level = 0; level < m_pWorld->GetNumLevels(); level += 2)
-	{
-		glm::vec4 wall;
-
-		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfWalls(); i++)
-		{
-			wall = m_pWorld->GetLevel(level)->GetWall(i);
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::WALL_STANDARD);
-			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetPosition(glm::vec3(wall.x, 1.0f + level, wall.y));
-			pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
-			pGameObject->UpdateTransform();
-
-			AddGameObject(pGameObject);
-		}
-
-		glm::vec4 bulkhead;
-
-		for (int i = 0; i < m_pWorld->GetLevel(level)->GetNrOfBulkheads(); i++)
-		{
-			bulkhead = m_pWorld->GetLevel(level)->GetBulkhead(i);
-			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::BULKHEADS_STANDARD);
-			pGameObject->SetMesh(MESH::CUBE);
-			pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
-			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
-			pGameObject->UpdateTransform();
-
-			AddGameObject(pGameObject);
-		}
-	}
-
-	//Generate floor
-	m_pWorld->GenerateFloor(this);
-
-	//Generate water
-	m_pWorld->GenerateWater(this);
+	m_pWorld->Generate(*this);
 }
 
 void SceneGame::CreateCrew() noexcept
@@ -582,7 +428,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(10.0f, 0.9f + 4.0f, 10.0f), 100, names[0]);
 	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
-	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f)->GetLevel()[(int)10.0f][(int)10.0f]);
+	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
 	m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
 	AddGameObject(m_Crew.GetMember(0));
@@ -591,12 +437,12 @@ void SceneGame::CreateCrew() noexcept
 	for (int i = 1; i < NUM_CREW; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-		x = std::rand() % (m_pWorld->GetLevel(y)->GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y)->GetSizeZ() - 2) + 1;
+		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
-		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y)->GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
 		m_Crew.GetMember(i)->SetHidden(true);
 		m_Crew.GetMember(i)->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
@@ -735,19 +581,8 @@ glm::vec3 SceneGame::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint
 void SceneGame::ShowCrewmember(uint32 crewmember)
 {
 	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
-	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2)->GetLevel()[tile.x][tile.z];
-
-	if (!m_pWorld->GetRoom(roomIndex)->IsActive())
-	{
-		const glm::vec3& roomCenter = m_pWorld->GetRoom(roomIndex)->GetCenter();
-		std::vector<PointLight*>& roomLights = GetRoomLights();
-
-		roomLights[m_CurrentLight]->SetPosition(roomCenter);
-		m_RoomLightsTimers[m_CurrentLight] = 0.0f;
-		m_ActiveRooms[m_CurrentLight] = roomIndex;
-		m_pWorld->GetRoom(roomIndex)->SetActive(true);
-		m_CurrentLight = (m_CurrentLight + 1) % roomLights.size();
-	}
+	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
+	m_pWorld->SetActiveRoom(roomIndex);
 }
 
 Crewmember* SceneGame::RayTestCrewmembers()
@@ -781,7 +616,7 @@ Crewmember* SceneGame::GetCrewmember(uint32 shipNumber)
 	return m_Crew.GetMember(shipNumber);
 }
 
-Crew * SceneGame::GetCrew() noexcept
+Crew* SceneGame::GetCrew() noexcept
 {
 	return &m_Crew;
 }
@@ -791,7 +626,7 @@ UICrewMember* SceneGame::GetUICrewMember() noexcept
 	return m_pUICrewMember;
 }
 
-World * SceneGame::GetWorld() noexcept
+World* SceneGame::GetWorld() noexcept
 {
 	return m_pWorld;
 }

@@ -3,16 +3,35 @@
 #include "..\..\Include\Scenes\SceneMenu.h"
 #include "../../Include/Game.h"
 #include "../../Include/Scenarios/ScenarioManager.h"
+#include <Audio/Sources/AudioSource.h>
 
 SceneScenario::SceneScenario() : 
 	m_SelectionHandler(false, true)
 {
-	
+	m_pAudioSourceSelect = AudioSource::CreateSoundSource(SOUND::UI_SELECT);
+	m_pAudioSourceSelect->SetRollOffFactor(10.0f);
+	m_pAudioSourceSelect->SetReferenceDistance(0.0f);
+	m_pAudioSourceSelect->SetMaxDistance(500.0f);
+	m_pAudioSourceSelect->SetLooping(false);
+
+	m_pAudioSourceDeselect = AudioSource::CreateSoundSource(SOUND::UI_DESELECT);
+	m_pAudioSourceDeselect->SetRollOffFactor(10.0f);
+	m_pAudioSourceDeselect->SetReferenceDistance(0.0f);
+	m_pAudioSourceDeselect->SetMaxDistance(500.0f);
+	m_pAudioSourceDeselect->SetLooping(false);
+
+	m_pAudioSourceHover = AudioSource::CreateSoundSource(SOUND::UI_HOVER);
+	m_pAudioSourceHover->SetRollOffFactor(10.0f);
+	m_pAudioSourceHover->SetReferenceDistance(0.0f);
+	m_pAudioSourceHover->SetMaxDistance(500.0f);
+	m_pAudioSourceHover->SetLooping(false);
 }
 
 SceneScenario::~SceneScenario()
 {
-	Game::GetGame()->GetGUIManager().DeleteChildren();
+	DeleteSafe(m_pAudioSourceSelect);
+	DeleteSafe(m_pAudioSourceDeselect);
+	DeleteSafe(m_pAudioSourceHover);
 }
 
 void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
@@ -57,6 +76,8 @@ void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer
 	}
 
 	game->GetGUIManager().Add(m_pPanel);
+
+	m_SelectionHandler.AddSelectionListener(this);
 }
 
 void SceneScenario::OnDeactivated(SceneInternal* newScene) noexcept
@@ -68,17 +89,17 @@ void SceneScenario::OnDeactivated(SceneInternal* newScene) noexcept
 
 void SceneScenario::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 {
-
+	m_pAudioSourceSelect->Play();
 }
 
 void SceneScenario::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
 {
-
+	m_pAudioSourceDeselect->Play();
 }
 
 void SceneScenario::OnButtonPressed(Button* button)
 {
-
+	m_pAudioSourceSelect->Play();
 }
 
 void SceneScenario::OnButtonReleased(Button* button)
@@ -105,6 +126,7 @@ void SceneScenario::OnButtonReleased(Button* button)
 
 void SceneScenario::OnButtonHovered(Button* button)
 {
+	m_pAudioSourceHover->Play();
 }
 
 void SceneScenario::OnButtonNotHovered(Button* button)

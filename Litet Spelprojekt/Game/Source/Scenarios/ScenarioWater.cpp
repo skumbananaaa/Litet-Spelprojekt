@@ -19,16 +19,18 @@ void ScenarioWater::OnEnd(Scene* scene) noexcept
 
 }
 
-void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms)
+void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene)
 {
+	const std::vector<uint32>& activeRooms = pWorld->GetActiveRooms();
+
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_2);
 #endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
-		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
-		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex)->GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex)->GetFloodingIDs();
+		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
+		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
+		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
 
 		for (uint32 i = 0; i < floodingIDs.size(); i++)
 		{
@@ -56,18 +58,20 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, Scene* pScene, const std::
 #endif
 }
 
-bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::vector<uint32>& activeRooms) noexcept
+bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene) noexcept
 {
+	const std::vector<uint32>& activeRooms = pWorld->GetActiveRooms();
+
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_3);
 #endif
 	for (uint32 levelIndex = 0; levelIndex < pWorld->GetNumLevels(); levelIndex += 2)
 	{
-		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex)->GetLevel();
-		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex)->GetLevelData();
-		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex)->GetFloodingIDs();
-		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex)->GetSizeX(), pWorld->GetLevel(levelIndex)->GetSizeZ());
-		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex)->GetTilesBetweenBulkheads();
+		const uint32* const * ppLevel = pWorld->GetLevel(levelIndex).GetLevel();
+		TileData* const * ppLevelData = pWorld->GetLevel(levelIndex).GetLevelData();
+		std::vector<glm::ivec2>& floodingIDs = pWorld->GetLevel(levelIndex).GetFloodingIDs();
+		glm::ivec2 levelSize = glm::ivec2(pWorld->GetLevel(levelIndex).GetSizeX(), pWorld->GetLevel(levelIndex).GetSizeZ());
+		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex).GetTilesBetweenBulkheads();
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
@@ -114,7 +118,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 				bool canFlowDown = false;
 				if (levelIndex > 0)
 				{
-					if (pWorld->GetLevel(levelIndex - 2)->GetLevelData()[currentTile.x][currentTile.y].HasStairs)
+					if (pWorld->GetLevel(levelIndex - 2).GetLevelData()[currentTile.x][currentTile.y].HasStairs)
 					{
 						if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
 						{
@@ -192,7 +196,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 			ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = glm::max<float>(newActualWaterLevel - WATER_MAX_LEVEL, 0.0f);
 
 			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
-			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1)->GetLevelData(), currentTile, dtS);
+			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1).GetLevelData(), currentTile, dtS);
 
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 
@@ -248,7 +252,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, Scene* pScene, const std::v
 
 std::string ScenarioWater::GetName() noexcept
 {
-	return "Vattenl‰cka";
+	return "Vattenl√§cka";
 }
 
 int32 ScenarioWater::GetCooldownTime() noexcept

@@ -35,7 +35,6 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_MaxHealth = m_SkillStrength * 100.0f;
 	m_Health = m_MaxHealth;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
-	m_MovementSpeedMultiplier = 1.0f;
 }
 
 Crewmember::Crewmember(Crewmember& other)
@@ -52,7 +51,6 @@ Crewmember::Crewmember(Crewmember& other)
 	m_MaxHealth = other.m_MaxHealth;
 	m_Health = other.m_Health;
 	m_MovementSpeed = other.m_MovementSpeed;
-	m_MovementSpeedMultiplier = other.m_MovementSpeedMultiplier;
 	UpdateTransform();
 }
 
@@ -74,14 +72,6 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1).GetLevelData(), deltaTime);
 		CheckFireDamage(m_pWorld->GetLevel(GetPosition().y).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
-
-		//Multiply In MovementSpeed Multipliers;
-		m_MovementSpeedMultiplier = 1.0f;
-		const glm::ivec3& tilePos = GetTile();
-		if (m_pWorld->GetLevel(tilePos.y * 2).GetLevelData()[tilePos.x][tilePos.z].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
-		{
-			m_MovementSpeedMultiplier *= CREWMEMBER_IN_WATER_MOVEMENT_SPEED_MULTIPLIER;
-		}
 	}
 }
 
@@ -342,28 +332,43 @@ void Crewmember::UpdateHealth(float dt)
 	if (m_Health <= 0.0f)
 	{
 		Logger::LogEvent(GetName() + " has fainted!", false);
-		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
+		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED;
 	}
 	else if (m_Health < m_MaxHealth)
 	{
 		if (m_Health > 0.5f * m_MaxHealth)
 		{
-			m_MovementSpeed = CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
+			m_MovementSpeed = CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED;
 		}
 		else
 		{
-			m_MovementSpeed = CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
+			m_MovementSpeed = CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED;
 		}
 	}
 	else
 	{
-		m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED * m_MovementSpeedMultiplier;
+		m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 	}
 }
 
-void Crewmember::Move(const glm::vec3& dir, float dtS)
+void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 {
-	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * dtS;
+	//Multiply In MovementSpeed Multipliers;
+	float movementSpeedMultiplier = 1.0f;
+
+	if (allowMult)
+	{
+		const glm::ivec3& tilePos = GetTile();
+		uint32 yPos = tilePos.y * 2;
+
+		//Water Modifier
+		if (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+		{
+			movementSpeedMultiplier *= glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel / WATER_MAX_LEVEL));
+		}
+	}
+
+	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
 	SetPosition(res);
 }
 

@@ -49,7 +49,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	{
 		context.SetFramebuffer(ppFrameBuffers[i]);
 		context.SetClearDepth(1.0f);
-		context.Clear(CLEAR_FLAG_COLOR);
+		context.Clear(CLEAR_FLAG_DEPTH);
 	}
 
 	CameraBuffer cameraBuff = {};
@@ -108,9 +108,11 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 
 			context.SetFramebuffer(ppFrameBuffers[j]);
 			context.DrawIndexedMesh(mesh);
+
 		}
 	}
 
+	context.SetFramebuffer(nullptr);
 	context.SetCullMode(CULL_MODE_BACK);
 	context.SetColorMask(1, 1, 1, 1);
 	context.SetUniformBuffer(nullptr, 0);

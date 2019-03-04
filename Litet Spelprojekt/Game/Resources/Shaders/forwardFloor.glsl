@@ -233,7 +233,7 @@ float ShadowCalc(vec3 fragPos, vec3 normal)
 	float closestDepth = texture(g_ShadowMap, toLight).r * g_FarPlane;
 	float currentDepth = length(toLight);
 
-	float bias = max(0.025f * (1.0f - dot(normal, toLight)), 0.0025f);  
+	float bias = max(0.025f * (1.0f - dot(normal, toLight)), 0.0025f);
 	return ((currentDepth - bias) > closestDepth) ? 1.0f : 0.0f;
 }
 

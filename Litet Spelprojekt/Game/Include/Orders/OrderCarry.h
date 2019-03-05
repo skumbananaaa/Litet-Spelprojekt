@@ -1,11 +1,10 @@
 #pragma once
 #include "OrderWalk.h"
+
 class OrderCarry : public OrderWalk
 {
-protected:
-
 public:
-	OrderCarry(Crewmember* InNeedOfAssist);
+	OrderCarry(Crewmember* pInNeedOfAssist);
 	virtual ~OrderCarry();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept;

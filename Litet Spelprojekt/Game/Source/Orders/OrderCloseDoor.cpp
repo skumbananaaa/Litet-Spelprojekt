@@ -22,7 +22,8 @@ bool OrderDoor::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 	{
 		return false;
 	}
-	if (m_pGameObjectDoor->IsOpen() == m_Open)
+
+	if (m_pGameObjectDoor->IsOpen() == m_Open || m_pGameObjectDoor->IsClosed() == !m_Open)
 	{
 		return true;
 	}

@@ -127,21 +127,21 @@ void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
 	FindPath(doorTile);
 }
 
-bool Crewmember::Heal(int8 skillLevel)
+bool Crewmember::Heal(int8 skillLevel, float dtS)
 {
 	bool res = false;
 	//Broken Bone kan inte vara Bool
 	if (HasInjuryBoneBroken())
 	{
-		m_HasInjuryBoneBroken -= (m_HasInjuryBoneBroken - m_HasInjuryBoneBroken / skillLevel) * dt;
+		m_HasInjuryBoneBroken -= (m_HasInjuryBoneBroken - m_HasInjuryBoneBroken / skillLevel) * dtS;
 	}
 	else if (HasInjuryBurned())
 	{
-		m_HasInjuryBurned -= (m_HasInjuryBurned - m_HasInjuryBurned / skillLevel) * dt;
+		m_HasInjuryBurned -= (m_HasInjuryBurned - m_HasInjuryBurned / skillLevel) * dtS;
 	}
 	else if (HasInjurySmoke())
 	{
-		m_HasInjurySmoke -= (m_HasInjurySmoke - m_HasInjurySmoke / skillLevel) * dt;
+		m_HasInjurySmoke -= (m_HasInjurySmoke - m_HasInjurySmoke / skillLevel) * dtS;
 	}
 	else
 	{
@@ -228,11 +228,13 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 
 void Crewmember::OnOrderStarted() noexcept
 {
+	std::cout << GetName() << " started order!" << std::endl;
 	m_Idleing = false;
 }
 
 void Crewmember::OnAllOrdersFinished() noexcept
 {
+	std::cout << GetName() << " finished all order(s)!" << std::endl;
 	m_Idleing = true;
 }
 

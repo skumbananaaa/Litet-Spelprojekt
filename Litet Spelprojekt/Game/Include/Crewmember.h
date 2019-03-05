@@ -1,8 +1,9 @@
-#ifndef CREWMEMBER_H
-#define CREWMEMBER_H
+#pragma once
 
 #include <Graphics/GameObject.h>
 #include "../Include/Orders/OrderHandler.h"
+
+#pragma message("INCLUDE" __FILE__)
 
 #define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
 #define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
@@ -110,7 +111,6 @@ private:
 	int8 m_SkillFire;
 	int8 m_SkillMedic;
 	int8 m_SkillStrength;
-	float m_HasInjuryBoneBroken;
 		
 	//--INJURIES
 	float m_HasInjuryBoneBroken;
@@ -125,8 +125,6 @@ private:
 
 	Crewmember* m_pAssisting;
 };
-
-#endif
 
 inline int32 Crewmember::GetShipNumber() const noexcept
 {
@@ -143,7 +141,7 @@ inline const glm::vec3& Crewmember::GetDirection() const noexcept
 	return m_Direction;
 }
 
-const glm::ivec3& Crewmember::GetTile() const noexcept
+inline const glm::ivec3& Crewmember::GetTile() const noexcept
 {
 	return m_PlayerTile;
 }

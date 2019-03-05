@@ -1,5 +1,4 @@
 #pragma once
-#include "IOrder.h"
 #include "OrderWalk.h"
 
 class GameObjectDoor;

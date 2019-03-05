@@ -54,7 +54,8 @@ enum RoomEditingMode : uint32
 	REMOVE_DOOR,
 	ADD_STAIRS,
 	REMOVE_STAIRS,
-	SET_BURN_TEMP
+	SET_BURN_TEMP,
+	SET_MEDIC_BAY
 };
 
 class Editor : public Application, public ISelectionListener
@@ -150,6 +151,7 @@ private:
 	Button* m_pButtonAddStairs;
 	Button* m_pButtonRemoveStairs;
 	Button* m_pSetRoomBurnTemperature;
+	Button* m_pSetMedicBay;
 	Panel* m_pPanelEditor;
 
 	SelectionHandler m_SelectionHandlerMesh;

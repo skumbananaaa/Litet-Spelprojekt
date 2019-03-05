@@ -1,7 +1,11 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/GameObject.h>
-
+enum IDPurpose : uint32
+{
+	MEDIC_BAY,
+	UNWALKABLE
+};
 class API Tile : public GameObject
 {
 public:
@@ -20,7 +24,6 @@ public:
 
 	///<summary>Returns the id of the tile.</summary>
 	uint32 GetID() const;
-	///<summary>Returns the id of the tile.</summary>
 	bool HasStairs() const;
 	bool HasDoor() const;
 	float GetBurnTemperature() const;

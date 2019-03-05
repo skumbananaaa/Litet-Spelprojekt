@@ -18,7 +18,7 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);
 					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + std::sqrt(std::abs(addX) + std::abs(addZ)) + std::abs(addY) * 2;
 					
-					int h = std::abs(m_GoalTile.x - newX) + std::abs(m_GoalTile.y - newY) + std::abs(m_GoalTile.z - newZ);// + m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].Burning * 10000;
+					int h = std::abs(m_GoalTile.x - newX) + std::abs(m_GoalTile.y - newY) + std::abs(m_GoalTile.z - newZ) + m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->IsVisible() * 10000;
 					m_pppTiles[newX][newY][newZ].f = m_pppTiles[newX][newY][newZ].g + h;
 					
 					if (h < m_SmallestH && newY == m_GoalTile.y)

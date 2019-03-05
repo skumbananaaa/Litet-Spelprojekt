@@ -60,6 +60,15 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 		}
 	}
 
+	Room& room = pWorld->GetRoom(pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevel()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z]);
+
+	if(room.IsBurning() && !room.IsFireDetected())
+	{
+		room.SetFireDetected(true);
+		OrderWalk(glm::ivec3(m_GoalTile.x, m_GoalTile.y * 2, m_GoalTile.z));
+		
+	}
+
 	return FollowPath(dtS);
 }
 

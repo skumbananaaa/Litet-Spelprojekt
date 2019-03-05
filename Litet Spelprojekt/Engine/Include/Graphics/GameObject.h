@@ -44,7 +44,7 @@ public:
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
 	const glm::vec3& GetDirection() const noexcept;
-	const glm::ivec3& GetTile() noexcept;
+	glm::ivec3 GetTile() noexcept;
 	uint32 GetRoom() const noexcept;
 
 	bool IsHidden() const noexcept;
@@ -121,11 +121,10 @@ inline const glm::vec3& GameObject::GetDirection() const noexcept
 	return m_Direction;
 }
 
-inline const glm::ivec3& GameObject::GetTile() noexcept
+inline glm::ivec3 GameObject::GetTile() noexcept
 {
-	return glm::ivec3(glm::round(m_Position));
+	return glm::ivec3(std::round(m_Position.x), std::round((m_Position.y)), std::round(m_Position.z));
 }
-
 
 inline uint32 GameObject::GetRoom() const noexcept
 {

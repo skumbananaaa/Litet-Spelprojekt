@@ -24,13 +24,17 @@ void OrderCarry::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) n
 
 bool OrderCarry::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	bool res = false;
-	if (GetCrewMember()->GetTile() == m_pCarrying->GetTile())
+	if (!m_IsPathReady)
+	{
+		return false;
+	}
+
+	if (FollowPath(dtS))
 	{
 		GetCrewMember()->SetAssisting(m_pCarrying);
-		res = true;
+		return true;
 	}
-	return res;
+	return false;
 }
 
 void OrderCarry::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
@@ -52,4 +56,9 @@ std::string OrderCarry::GetName() noexcept
 bool OrderCarry::ReadyToAbort() noexcept
 {
 	return OrderWalk::ReadyToAbort();
+}
+
+bool OrderCarry::IsIdleOrder() noexcept
+{
+	return false;
 }

@@ -1,5 +1,5 @@
 #include "../../Include/Orders/OrderCloseDoor.h"
-#include <World/GameObjectDoor.h>
+#include "../../Include/GameObjectDoor.h"
 
 OrderDoor::OrderDoor(GameObjectDoor* door, glm::ivec3 doorTile, bool open) : OrderWalk(doorTile)
 {
@@ -22,7 +22,8 @@ bool OrderDoor::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 	{
 		return false;
 	}
-	if (m_pGameObjectDoor->IsOpen() == m_Open)
+
+	if (m_pGameObjectDoor->IsOpen() == m_Open || m_pGameObjectDoor->IsClosed() == !m_Open)
 	{
 		return true;
 	}
@@ -52,6 +53,11 @@ bool OrderDoor::AllowsMultipleOrders() noexcept
 std::string OrderDoor::GetName() noexcept
 {
 	return "Close door";
+}
+
+bool OrderDoor::IsIdleOrder() noexcept
+{
+	return false;
 }
 
 

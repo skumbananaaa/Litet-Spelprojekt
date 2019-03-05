@@ -165,7 +165,39 @@ void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcep
 
 	if (shipID >= 0)
 	{
-		crew->GetMember(shipID)->GiveOrder(new OrderDoor(this, GetTile(), false));
+		World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
+		const glm::ivec3& tile = GetTile();
+		glm::ivec3 tile2;
+		TileData * const * tiles = pWorld->GetLevel(tile.y).GetLevelData();
+		Crewmember* crewmember = crew->GetMember(shipID);
+
+		if (tiles[tile.x + 1][tile.z].HasDoor())
+		{
+			tile2 = tile;
+			tile2.x += 1;
+		}
+		else if (tiles[tile.x - 1][tile.z].HasDoor())
+		{
+			tile2 = tile;
+			tile2.x -= 1;
+		}
+		else if (tiles[tile.x][tile.z + 1].HasDoor())
+		{
+			tile2 = tile;
+			tile2.z += 1;
+		}
+		else if (tiles[tile.x][tile.z - 1].HasDoor())
+		{
+			tile2 = tile;
+			tile2.z -= 1;
+		}
+
+		if (glm::distance((glm::vec3)tile, crewmember->GetPosition()) < glm::distance((glm::vec3)tile2, crewmember->GetPosition()))
+		{
+			tile2 = tile;
+		}
+
+		crewmember->GiveOrder(new OrderDoor(this, tile2, false));
 	}
 }
 

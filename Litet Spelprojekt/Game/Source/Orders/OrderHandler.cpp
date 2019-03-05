@@ -1,8 +1,9 @@
 #include "../../Include/Orders/OrderHandler.h"
 #include "../../Include/Game.h"
 
-OrderHandler::OrderHandler()
+OrderHandler::OrderHandler(IOrderListener* pOrderListener)
 {
+	m_pOrderListener = pOrderListener;
 }
 
 OrderHandler::~OrderHandler()
@@ -50,6 +51,15 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 				std::cout << "[" << m_OrderQueue[i]->GetName() << "] Order Aborted" << std::endl;
 				DeleteSafe(m_OrderQueue[i]);
 				m_OrderQueue.erase(m_OrderQueue.begin() + i);
+
+				if (!m_OrderQueue.empty())
+				{
+					StartOrder();
+				}
+				else
+				{
+					m_pOrderListener->OnAllOrdersFinished();
+				}
 			}
 		}
 	}
@@ -65,6 +75,10 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 		{
 			StartOrder();
 		}
+		else
+		{
+			m_pOrderListener->OnAllOrdersFinished();
+		}
 	}
 }
 
@@ -73,4 +87,6 @@ void OrderHandler::StartOrder()
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderQueue[0]->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Started" << std::endl;
+
+	m_pOrderListener->OnOrderStarted(m_OrderQueue[0]->IsIdleOrder());
 }

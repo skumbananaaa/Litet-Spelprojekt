@@ -74,6 +74,11 @@ bool OrderWalk::ReadyToAbort() noexcept
 	return m_IsPathReady;
 }
 
+bool OrderWalk::IsIdleOrder() noexcept
+{
+	return false;
+}
+
 void OrderWalk::RunParallel()
 {
 	m_pPath = m_pPathFinder->FindPath(GetCrewMember()->GetTile(), m_GoalTile);
@@ -104,13 +109,11 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			move.y /= std::abs(move.y);
 			GetCrewMember()->SetDirection(glm::vec3(1, 0, 0));
-			//GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
 			GetCrewMember()->Move(glm::vec3(0, move.y, 0), false, dtS);
 		}
 		else
 		{
 			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
-			//GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
 			GetCrewMember()->Move(GetCrewMember()->GetDirection(), true, dtS);
 		}
 	}
@@ -118,5 +121,6 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 	{
 		return true;
 	}
+
 	return false;
 }

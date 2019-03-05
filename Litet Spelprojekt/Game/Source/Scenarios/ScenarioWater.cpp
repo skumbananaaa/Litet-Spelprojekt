@@ -130,7 +130,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 					{
 						if (ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
 						{
-							UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), levelIndex - 2, currentTile);
+							UpdateFloodingIdsBelow(pWorld->GetLevel(levelIndex - 2), levelIndex - 1, currentTile);
 							canFlowDown = UpdateWaterLevelBelow(pWorld->GetLevel(levelIndex), pWorld->GetLevel(levelIndex - 2), currentTile);
 						}
 					}

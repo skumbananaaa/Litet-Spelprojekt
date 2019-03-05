@@ -1,11 +1,10 @@
 #pragma once
 #include "OrderWalk.h"
+
 class OrderCarry : public OrderWalk
 {
-protected:
-
 public:
-	OrderCarry(Crewmember* InNeedOfAssist);
+	OrderCarry(Crewmember* pInNeedOfAssist);
 	virtual ~OrderCarry();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept;
@@ -15,6 +14,7 @@ public:
 	virtual bool AllowsMultipleOrders() noexcept;
 	virtual std::string GetName() noexcept;
 	virtual bool ReadyToAbort() noexcept;
+	virtual bool IsIdleOrder() noexcept;
 
 protected:
 	Crewmember* m_pCarrying;

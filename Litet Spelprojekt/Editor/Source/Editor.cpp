@@ -105,7 +105,6 @@ void Editor::OnResourcesLoaded()
 	m_pButtonAddStairs = new Button(10, m_pPanelEditor->GetHeight() - 400, m_pPanelEditor->GetWidth() - 20, 50, "Add Stairs");
 	m_pButtonRemoveStairs = new Button(10, m_pPanelEditor->GetHeight() - 460, m_pPanelEditor->GetWidth() - 20, 50, "Remove Stairs");
 	m_pSetRoomBurnTemperature = new Button(10, m_pPanelEditor->GetHeight() - 520, m_pPanelEditor->GetWidth() - 20, 50, "Set Burn Temp");
-	m_pSetMedicBay = new Button(10, m_pPanelEditor->GetHeight() - 580, m_pPanelEditor->GetWidth() - 20, 50, "Set Medic Bay");
 	m_pButtonAddRoom->SetUserData(reinterpret_cast<void*>(ADD_ROOM));
 	m_pButtonEditRoom->SetUserData(reinterpret_cast<void*>(EDIT_ROOM));
 	m_pButtonRemoveRoom->SetUserData(reinterpret_cast<void*>(DELETE_ROOM));
@@ -114,7 +113,6 @@ void Editor::OnResourcesLoaded()
 	m_pButtonAddStairs->SetUserData(reinterpret_cast<void*>(ADD_STAIRS));
 	m_pButtonRemoveStairs->SetUserData(reinterpret_cast<void*>(REMOVE_STAIRS));
 	m_pSetRoomBurnTemperature->SetUserData(reinterpret_cast<void*>(SET_BURN_TEMP));
-	m_pSetMedicBay->SetUserData(reinterpret_cast<void*>(SET_MEDIC_BAY));
 	m_pPanelEditor->Add(m_pTextViewEditor);
 	m_pPanelEditor->Add(m_pButtonAddRoom);
 	m_pPanelEditor->Add(m_pButtonEditRoom);
@@ -124,7 +122,6 @@ void Editor::OnResourcesLoaded()
 	m_pPanelEditor->Add(m_pButtonAddStairs);
 	m_pPanelEditor->Add(m_pButtonRemoveStairs);
 	m_pPanelEditor->Add(m_pSetRoomBurnTemperature);
-	m_pPanelEditor->Add(m_pSetMedicBay);
 	m_SelectionHandlerRoom.AddSelectionListener(this);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddRoom);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonEditRoom);
@@ -134,7 +131,6 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddStairs);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveStairs);
 	m_SelectionHandlerRoom.AddSelectable(m_pSetRoomBurnTemperature);
-	m_SelectionHandlerRoom.AddSelectable(m_pSetMedicBay);
 
 
 	std::vector<std::string> gameObjects;
@@ -1094,36 +1090,6 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 										if (pCurrentTile->GetID() == tileId)
 										{
 											pCurrentTile->SetBurnTemperature(burnTemperature);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				else if (m_CurrentEditingMode == SET_MEDIC_BAY)
-				{
-					glm::ivec2 currentPos = CalculateGridPosition(position);
-
-					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
-						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
-					{
-						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
-						uint32 tileId = pTile->GetID();
-
-						if (tileId >= TILE_SMALLEST_FREE)
-						{
-							for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
-							{
-								for (uint32 x = 0; x < m_ppGrids[gridId]->GetSize().x; x++)
-								{
-									for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
-									{
-										Tile* pCurrentTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
-
-										if (pCurrentTile->GetID() == tileId)
-										{
-											pCurrentTile->SetID(IDPurpose::MEDIC_BAY);
 										}
 									}
 								}

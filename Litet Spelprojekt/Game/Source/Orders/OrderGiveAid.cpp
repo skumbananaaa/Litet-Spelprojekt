@@ -21,7 +21,7 @@ bool OrderGiveAid::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembe
 	
 	if (res)
 	{
-		res = m_pAiding->Heal(GetCrewMember()->GetSkillMedic());
+		res = m_pAiding->Heal(GetCrewMember()->GetSkillMedic(), dtS);
 	}
 	return res;
 }

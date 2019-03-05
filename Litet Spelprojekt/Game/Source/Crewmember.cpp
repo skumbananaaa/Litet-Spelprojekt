@@ -222,7 +222,7 @@ int8 Crewmember::GetSkillStrength() const noexcept
 
 bool Crewmember::HasInjuryBoneBroken() const noexcept
 {
-	return m_HasInjuryBoneBroken;
+	return m_HasInjuryBoneBroken > 1.0;
 }
 
 bool Crewmember::HasInjuryBurned() const noexcept
@@ -255,20 +255,20 @@ void Crewmember::SetAssisting(Crewmember* inNeed)
 	m_pAssisting = inNeed;
 }
 
-bool Crewmember::Heal(int8 skillLevel)
+bool Crewmember::Heal(int8 skillLevel, float dt)
 {
 	bool res = false;
 	if (HasInjuryBoneBroken())
 	{
-		m_HasInjuryBoneBroken /= skillLevel;
+		m_HasInjuryBoneBroken -= (m_HasInjuryBoneBroken - m_HasInjuryBoneBroken / skillLevel) * dt;
 	}
 	else if (HasInjuryBurned())
 	{
-		m_HasInjuryBurned /= skillLevel;
+		m_HasInjuryBurned -= (m_HasInjuryBurned - m_HasInjuryBurned / skillLevel) * dt;
 	}
 	else if (HasInjurySmoke())
 	{
-		m_HasInjurySmoke /= skillLevel;
+		m_HasInjurySmoke -= (m_HasInjurySmoke - m_HasInjurySmoke/skillLevel) * dt;
 	}
 	else
 	{

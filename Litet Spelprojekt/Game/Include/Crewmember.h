@@ -72,7 +72,7 @@ public:
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury();
 
-	bool Heal(int8 skillLevel);
+	bool Heal(int8 skillLevel, float dt);
 	
 private:
 	void SetShipNumber(int32 shipnumber) noexcept;
@@ -95,7 +95,7 @@ private:
 	int8 m_SkillFire;
 	int8 m_SkillMedic;
 	int8 m_SkillStrength;
-	bool m_HasInjuryBoneBroken;
+	float m_HasInjuryBoneBroken;
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
 	float m_MaxHealth;

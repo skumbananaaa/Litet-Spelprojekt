@@ -28,6 +28,16 @@ class SoundEffect;
 class Music;
 class ShaderProgram;
 
+class API IGameObjectCreator
+{
+protected:
+	IGameObjectCreator() {};
+
+public:
+	virtual ~IGameObjectCreator() {};
+	virtual GameObject* CreateGameObject(uint32 gameobject) noexcept = 0;
+};
+
 class API ResourceHandler : public IRunnable
 {
 	friend class Application;
@@ -69,6 +79,8 @@ public:
 	static void QuaryGameObjectTypes(std::vector<std::string>& list);
 
 	virtual void RunParallel();
+
+	static void SetGameObjectCreator(IGameObjectCreator* creator);
 
 private:
 	static void Load();
@@ -168,6 +180,7 @@ private:
 
 	static IResourceListener* m_ResourceListener;
 	static std::string m_PrePath;
+	static IGameObjectCreator* m_pGameObjectCreator;
 
 	ResourceHandler();
 	static ResourceHandler* instance;

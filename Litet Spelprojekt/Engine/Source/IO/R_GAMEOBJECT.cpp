@@ -14,6 +14,7 @@ uint32 GAMEOBJECT::FIREALARM = 0;
 uint32 GAMEOBJECT::CUBOARD = 0;
 uint32 GAMEOBJECT::TABLE = 0;
 uint32 GAMEOBJECT::TOILET = 0;
+uint32 GAMEOBJECT::DOOR = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -35,13 +36,5 @@ void GAMEOBJECT::RegisterResources()
 	CUBOARD						= ResourceHandler::RegisterGameObject("Cuboard", MESH::CUBOARD, MATERIAL::CUBOARD);
 	TABLE						= ResourceHandler::RegisterGameObject("Table", MESH::TABLE, MATERIAL::TABLE);
 	TOILET						= ResourceHandler::RegisterGameObject("Toilet", MESH::TOILET, MATERIAL::TOILET);
-}
-
-GameObject* GAMEOBJECT::CreateGameObject(uint32 gameObject) noexcept
-{
-	if(gameObject == FIREALARM)
-	{
-		return new FireAlarm(SOUND::MONO_FIREALARM)/*VisualAudioSource::CreateResource(SOUND::MONO_FIREALARM)*/;
-	}
-	return new GameObject();
+	DOOR						= ResourceHandler::RegisterGameObject("Door", MESH::DOOR, MATERIAL::WHITE);
 }

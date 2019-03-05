@@ -50,7 +50,7 @@ public:
 	const std::vector<glm::ivec3>& GetDoors() const noexcept;
 
 	void Generate(Scene& scene) noexcept;
-	void GenerateRoomShadows(const Scene& scene, uint32 roomID) noexcept;
+	void GenerateRoomShadows(const Scene& scene) noexcept;
 
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);

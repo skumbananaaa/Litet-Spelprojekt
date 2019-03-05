@@ -30,7 +30,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 		params.MinFilter = TEX_PARAM_NEAREST;
 		params.Wrap = TEX_PARAM_EDGECLAMP;
 
-		m_pCube = TextureCube::CreateTextureCubeFromMemory(nullptr, desc);
+		m_pCube = TextureCube::CreateTextureCubeFromMemory(nullptr, desc, params);
 		m_pCube->SetDebugName("ShadowCube");
 	}
 
@@ -49,7 +49,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	{
 		context.SetFramebuffer(ppFrameBuffers[i]);
 		context.SetClearDepth(1.0f);
-		context.Clear(CLEAR_FLAG_DEPTH);
+		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 	}
 
 	CameraBuffer cameraBuff = {};
@@ -70,12 +70,12 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	UniformBuffer* pModelBuffer = new UniformBuffer(&modelBuff, 1, sizeof(ModelBuffer));
 	UniformBuffer* pShadowBuffer = new UniformBuffer(&shadowBuff, 1, sizeof(ShadowBuffer));
 
-	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, GetFarPlane());
+	glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)SHADOW_SIZE / (float)SHADOW_SIZE, 1.0f, GetFarPlane());
 	glm::mat4 cameraMatrices[6] =
 	{
 		proj * glm::lookAt(position, position + glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-		proj * glm::lookAt(position, position + glm::vec3(0.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+		proj * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f,  1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -88,6 +88,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	context.SetDepthFunc(FUNC_LESS);
 	context.Disable(CLIP_DISTANCE0);
 	context.SetViewport(SHADOW_SIZE, SHADOW_SIZE, 0, 0);
+	glDepthRange(0.0f, 1.0f);
 	
 	context.SetProgram(ResourceHandler::GetShader(SHADER::SHADOW));
 	context.SetUniformBuffer(pCameraBuffer, 0);

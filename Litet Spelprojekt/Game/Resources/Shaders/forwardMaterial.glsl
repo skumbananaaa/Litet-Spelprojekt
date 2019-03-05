@@ -243,10 +243,10 @@ layout(std140, binding = 8) uniform ShadowBuffer
 float ShadowCalc(vec3 fragPos, vec3 normal)
 {
 	vec3 toLight = fragPos - g_LightPos;
-	float closestDepth = texture(g_ShadowMap, toLight).r * g_FarPlane;
-	float currentDepth = length(toLight);
+	float closestDepth = texture(g_ShadowMap, toLight).r;
+	float currentDepth = length(toLight) / g_FarPlane;
 
-	float bias = max(0.025f * (1.0f - dot(normal, toLight)), 0.0025f);  
+	float bias = max(0.05f * (1.0f - dot(normal, normalize(toLight))), 0.005f);  
 	return ((currentDepth - bias) > closestDepth) ? 1.0f : 0.0f;
 }
 
@@ -263,9 +263,10 @@ void main()
 	vec3 specular = fs_in.Specular;
 	vec3 lightColor = (diffuse + specular);
 
-	float shadow = ShadowCalc(fs_in.FragPosition, fs_in.Normal);
+	float shadow = ShadowCalc(fs_in.FragPosition, normalize(fs_in.Normal));
 	vec3 pointLightColor = (1.0f - shadow) * ((color * fs_in.PointLightColor) + fs_in.PointLightSpecular);
 	
-	g_OutColor = vec4(min(ambient + lightColor + pointLightColor, vec3(1.0f)), 1.0f);
+	vec3 toLight = fs_in.FragPosition - g_LightPos;
+	g_OutColor = vec4(pointLightColor, 1.0f);//vec4(min(ambient + lightColor + pointLightColor, vec3(1.0f)), 1.0f);
 }
 #endif

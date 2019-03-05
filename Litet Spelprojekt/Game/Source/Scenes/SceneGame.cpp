@@ -430,6 +430,15 @@ void SceneGame::CreateCrew() noexcept
 	}
 }
 
+void SceneGame::GenerateShadows()
+{
+	if (m_pWorld)
+	{
+		uint32 numRooms = m_pWorld->GetNumRooms();
+		m_pWorld->GenerateRoomShadows(*this);
+	}
+}
+
 void SceneGame::PickPosition()
 {
 	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), Game::GetGame()->GetWindow().GetWidth(), Game::GetGame()->GetWindow().GetHeight());

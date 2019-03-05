@@ -25,8 +25,9 @@ out vec4 g_FragPosition;
 
 void main()
 {
-	g_FragPosition = g_Model * vec4(g_Position, 1.0f);
-	gl_Position = g_ProjectionView * g_FragPosition;
+	vec4 position = g_Model * vec4(g_Position, 1.0f);
+	g_FragPosition = position;
+	gl_Position = g_ProjectionView * position;
 }
 
 #elif defined(FRAGMENT_SHADER)
@@ -43,6 +44,6 @@ layout(std140, binding = 2) uniform LightBuffer
 void main()
 {
 	float dist = length(g_FragPosition.xyz - g_LightPosition);
-	gl_FragDepth = dist / g_FarPlane;
+	gl_FragDepth = (dist / g_FarPlane);
 }
 #endif

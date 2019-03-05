@@ -7,7 +7,7 @@ World::World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects, 
 	m_Stairs(),
 	m_Objects(),
 	m_Doors(),
-	m_Rooms(),
+	m_Rooms(0),
 	m_RoomLightsTimers(),
 	m_ActiveRooms()
 {
@@ -83,6 +83,7 @@ void World::GenerateRooms(Scene& scene) noexcept
 	std::vector<glm::uvec4> temp;
 	std::vector<glm::vec3> center;
 
+	constexpr float centreOffsetY = 1.85f;
 	for (int32 level = 0; level < m_Levels.size(); level += 2)
 	{
 		m_Levels[level].GenerateRooms();
@@ -92,21 +93,21 @@ void World::GenerateRooms(Scene& scene) noexcept
 			if (i >= m_RoomBounds.size())
 			{
 				m_RoomBounds.push_back(temp[i]);
-				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.5f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
+				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + centreOffsetY, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
 			}
 			else if (temp[i].x != 11)
 			{
-				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + 1.5f, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
+				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + centreOffsetY, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
 			}
 		}
 	}
 	
 	//Rooms
-	m_Rooms.push_back(Room());
-	m_Rooms.push_back(Room());
+	m_Rooms.emplace_back(Room());
+	m_Rooms.emplace_back(Room());
 	for (size_t i = 2; i < center.size(); i++)
 	{
-		m_Rooms.push_back(Room(center[i]));
+		m_Rooms.emplace_back(Room(center[i]));
 	}
 }
 
@@ -252,10 +253,12 @@ void World::PlaceStairs(Scene& scene) noexcept
 	}
 }
 
-void World::GenerateRoomShadows(const Scene& scene, uint32 roomID) noexcept
+void World::GenerateRoomShadows(const Scene& scene) noexcept
 {
-	assert(roomID < m_Rooms.size());
-	m_Rooms[roomID].GenerateShadows(scene);
+	for (size_t i = 0; i < m_Rooms.size(); i++)
+	{
+		m_Rooms[i].GenerateShadows(scene);
+	}
 }
 
 void World::Generate(Scene& scene) noexcept

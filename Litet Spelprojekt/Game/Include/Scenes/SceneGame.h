@@ -36,12 +36,14 @@ public:
 	virtual void OnKeyDown(KEY keycode) override;
 	virtual void OnResize(uint32 width, uint32 height) override;
 
+	void GenerateShadows();
 	void PickPosition();
 	void RequestDoorClosed();
 	void PickObject(bool hover);
-	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 	void ShowCrewmember(uint32 crewmember);
 	GameObject* RayTestGameObjects();
+
+	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	Crew* GetCrew() noexcept;
 	UICrewMember* GetUICrewMember() noexcept;

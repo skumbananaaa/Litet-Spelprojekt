@@ -51,6 +51,15 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 				std::cout << "[" << m_OrderQueue[i]->GetName() << "] Order Aborted" << std::endl;
 				DeleteSafe(m_OrderQueue[i]);
 				m_OrderQueue.erase(m_OrderQueue.begin() + i);
+
+				if (!m_OrderQueue.empty())
+				{
+					StartOrder();
+				}
+				else
+				{
+					m_pOrderListener->OnAllOrdersFinished();
+				}
 			}
 		}
 	}

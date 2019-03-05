@@ -54,25 +54,6 @@ struct TileData
 	{
 		return GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 	}
-
-	bool IsOpen() const noexcept
-	{
-		if (HasDoor())
-		{
-			GameObjectDoor* const door = (GameObjectDoor* const)GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			return door->IsOpen();
-		}
-		return true;
-	}
-
-	void OpenDoor()
-	{
-		if (HasDoor())
-		{
-			GameObjectDoor* const door = (GameObjectDoor* const)GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			door->SetOpen(true);
-		}
-	}
 };
 
 class API WorldLevel

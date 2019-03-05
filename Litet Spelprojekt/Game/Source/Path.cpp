@@ -16,9 +16,9 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 				{
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);
-					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + 1 + std::abs(addY);
+					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + std::sqrt(std::abs(addX) + std::abs(addZ)) + std::abs(addY) * 2;
 					
-					int h = std::abs(m_GoalTile.x - newX) + std::abs(m_GoalTile.y - newY) + std::abs(m_GoalTile.z - newZ) + m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].Burning * 10000;
+					int h = std::abs(m_GoalTile.x - newX) + std::abs(m_GoalTile.y - newY) + std::abs(m_GoalTile.z - newZ);// + m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].Burning * 10000;
 					m_pppTiles[newX][newY][newZ].f = m_pppTiles[newX][newY][newZ].g + h;
 					
 					if (h < m_SmallestH && newY == m_GoalTile.y)
@@ -38,6 +38,12 @@ void Path::CheckAdjacent()
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, -1, 0, 0);
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, 0, 1);
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, 0, -1);
+
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 1, 0, 1);
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, -1, 0, -1);
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, -1, 0, 1);
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 1, 0, -1);
+
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, 1, 0);
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, -1, 0);
 }

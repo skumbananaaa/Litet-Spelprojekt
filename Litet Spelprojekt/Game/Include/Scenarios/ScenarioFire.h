@@ -1,6 +1,6 @@
 #pragma once
 #include "IScenario.h"
-#include <World/GameObjectDoor.h>
+#include "../GameObjectDoor.h"
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>

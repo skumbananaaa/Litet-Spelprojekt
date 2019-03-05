@@ -1,16 +1,17 @@
 #include <EnginePch.h>
-#include <World\GameObjectDoor.h>
+#include "../Include/GameObjectDoor.h"
+#include "../Include/Game.h"
+#include "../Include/Orders/OrderCloseDoor.h"
 #include <Graphics/Scene.h>
+
+
 
 GameObjectDoor::GameObjectDoor() noexcept
 {
-	SetMaterial(MATERIAL::WHITE);
-	SetMesh(MESH::DOOR);
 	UpdateTransform();
 
 	m_Percentage = 1.0f;
 	m_Open = true;
-
 }
 
 GameObjectDoor::~GameObjectDoor()
@@ -145,9 +146,27 @@ void GameObjectDoor::UpdateTransform() noexcept
 	}
 }
 
-void GameObjectDoor::OnPicked() noexcept
+void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcept
 {
 	std::cout << "i am a picked door!" << std::endl;
+	
+	Crew* crew = Game::GetGame()->m_pSceneGame->GetCrew();
+	float shortDistance = FLT_MAX;
+	int32 shipID = -1;
+	for (int i = 0; i < selectedMembers.size(); i++)
+	{
+		float distance = glm::distance(GetPosition(), crew->GetMember(selectedMembers[i])->GetPosition());
+		if (distance < shortDistance)
+		{
+			shortDistance = distance;
+			shipID = selectedMembers[i];
+		}
+	}
+
+	if (shipID >= 0)
+	{
+		crew->GetMember(shipID)->GiveOrder(new OrderDoor(this, GetTile(), false));
+	}
 }
 
 void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept

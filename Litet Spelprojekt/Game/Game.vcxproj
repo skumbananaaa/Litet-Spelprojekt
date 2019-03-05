@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GameObjectDoor.cpp" />
     <ClCompile Include="Source\GameObjectMissile.cpp" />
     <ClCompile Include="Source\GameObjectTorpedo.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Include\Crew.h" />
     <ClInclude Include="Include\Crewmember.h" />
     <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\GameObjectDoor.h" />
     <ClInclude Include="Include\GameObjectMissile.h" />
     <ClInclude Include="Include\GameObjectTorpedo.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />

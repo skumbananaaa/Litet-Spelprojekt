@@ -14,5 +14,5 @@ public:
 private:
 	void StartOrder();
 
-	std::vector<IOrder*> s_OrderQueue;
+	std::vector<IOrder*> m_OrderQueue;
 };

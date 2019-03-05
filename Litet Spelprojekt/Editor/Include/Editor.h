@@ -2,7 +2,6 @@
 
 #include <System\Application.h>
 #include <Graphics\GameObject.h>
-#include <World/GameObjectDoor.h>
 #include <Graphics\Buffers\UniformBuffer.h>
 #include <Graphics\Camera.h>
 #include <Graphics/Renderers/IRenderer.h>
@@ -57,11 +56,13 @@ enum RoomEditingMode : uint32
 	SET_BURN_TEMP
 };
 
-class Editor : public Application, public ISelectionListener
+class Editor : public Application, public ISelectionListener, public IGameObjectCreator
 {
 public:
 	Editor() noexcept;
 	~Editor();
+
+	virtual GameObject* CreateGameObject(uint32 gameobject) noexcept override;
 
 	void NormalizeTileIndexes() noexcept;
 	glm::ivec2 CalculateGridPosition(const glm::vec2& mousePosition) noexcept;

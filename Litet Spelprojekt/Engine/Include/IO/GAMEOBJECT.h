@@ -18,8 +18,9 @@ public:
 	static uint32 CUBOARD;
 	static uint32 TABLE;
 	static uint32 TOILET;
+	static uint32 DOOR;
+
 private:
 	static void RegisterResourcesPreLoading();
 	static void RegisterResources();
-	static GameObject* CreateGameObject(uint32 gameObject) noexcept;
 };

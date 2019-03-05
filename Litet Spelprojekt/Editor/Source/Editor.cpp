@@ -1,6 +1,7 @@
 #include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Editor.h"
 #include <World/LightManager.h>
+#include <World/Scenarios/Fire/FireAlarm.h>
 
 Editor::Editor() noexcept : Application(false, 1600, 900, "../Game/"),
 	m_SelectionHandlerFloor(true),
@@ -10,6 +11,8 @@ Editor::Editor() noexcept : Application(false, 1600, 900, "../Game/"),
 	m_pOriginalMaterial(nullptr),
 	m_pPanelTop(nullptr)
 {
+	ResourceHandler::SetGameObjectCreator(this);
+
 	std::cout << "Editor" << std::endl;
 	m_MouseMaterial = MATERIAL::WHITE;
 	//GetGraphicsContext().Disable(Cap::CULL_FACE);
@@ -41,6 +44,15 @@ Editor::~Editor()
 
 	/*Delete(m_pTextViewFile);
 	Delete(m_pLoadingBar);*/
+}
+
+GameObject* Editor::CreateGameObject(uint32 gameobject) noexcept
+{
+	if (gameobject == GAMEOBJECT::FIREALARM)
+	{
+		return new FireAlarm(SOUND::MONO_FIREALARM);
+	}
+	return new GameObject();
 }
 
 void Editor::OnResourceLoading(const std::string& file, float percentage)
@@ -478,7 +490,9 @@ WorldLevel** Editor::CreateWorldLevels(std::vector<glm::ivec3>& stairs, std::vec
 					pGameObject->UpdateTransform();
 					m_ppScenes[(int32)door2.y / 2]->AddGameObject(pGameObject);
 
-					pGameObject = new GameObjectDoor();
+					pGameObject = new GameObject();
+					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMesh(MESH::DOOR);
 					pGameObject->SetPosition(position);
 					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 					pGameObject->UpdateTransform();

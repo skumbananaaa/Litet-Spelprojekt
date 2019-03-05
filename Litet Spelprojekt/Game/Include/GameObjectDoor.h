@@ -2,7 +2,7 @@
 #include <EnginePch.h>
 #include <Graphics/GameObject.h>
 
-class API GameObjectDoor : public GameObject
+class GameObjectDoor : public GameObject
 {
 public:
 	GameObjectDoor() noexcept;
@@ -16,7 +16,7 @@ public:
 	virtual void UpdateTransform() noexcept override;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 
-	void OnPicked() noexcept override;
+	void OnPicked(const std::vector<int32>& selectedMembers) noexcept override;
 
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
 

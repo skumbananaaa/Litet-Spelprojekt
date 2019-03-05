@@ -4,7 +4,7 @@
 #include "../Include/Orders/OrderWalk.h"
 #include "../Include/Orders/OrderCloseDoor.h"
 #include <World/WorldLevel.h>
-#include <World/GameObjectDoor.h>
+#include "../Include/GameObjectDoor.h"
 
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
@@ -75,9 +75,10 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	}
 }
 
-void Crewmember::OnPicked() noexcept
+void Crewmember::OnPicked(const std::vector<int32>& selectedMembers) noexcept
 {
 	m_IsPicked = true;
+	Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
 }
 
 void Crewmember::OnHovered() noexcept
@@ -90,6 +91,11 @@ void Crewmember::OnNotHovered() noexcept
 {
 	m_IsHovered = false;
 	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
+}
+
+void Crewmember::GiveOrder(IOrder * order) noexcept
+{
+	m_OrderHandler.GiveOrder(order, this);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -433,7 +439,8 @@ void Crewmember::OnAddedToScene(Scene* scene) noexcept
 
 void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
 {
-	FindPath(doorTile);
+	GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+	m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
 }
 
 void Crewmember::SetActionCapacity(const float actionCap)

@@ -4,6 +4,7 @@
 #include <Graphics/Scene.h>
 #include "../../Include/Crew.h"
 #include "../../Include/Path.h"
+#include "../../Include/GameObjectDoor.h"
 
 OrderWalk::OrderWalk(glm::ivec3 goalTile):
 	m_pPathFinder(nullptr),
@@ -29,10 +30,20 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	{
 		return false;
 	}
-	if (!pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].IsOpen() && !pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z].IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+
+	const TileData& tile1 = pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z];
+	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
+	const TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
+	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
+	if (door1 && door2)
 	{
-		std::cout << "Door opened" << std::endl;
-		pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].OpenDoor();
+		if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+		{
+			std::cout << "Door opened" << std::endl;
+			door1->SetOpen(true);
+		}
 	}
 
 	return FollowPath(dtS);

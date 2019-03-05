@@ -46,9 +46,10 @@ public:
 	///<summary>Updates matrix of the object.</summary>
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 
-	void OnPicked() noexcept override;
+	void OnPicked(const std::vector<int32>& selectedMembers) noexcept override;
 	void OnHovered() noexcept override;
 	void OnNotHovered() noexcept override;
+	void GiveOrder(IOrder* order) noexcept;
 	bool IsHovered() const noexcept override;
 	bool IsPicked() const noexcept override;
 

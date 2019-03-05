@@ -182,6 +182,10 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
+	if (m_pSceneGame)
+	{
+		//m_pSceneGame->OnRender(dtS);
+	}
 	if (m_pScene)
 	{
 		m_pScene->OnRender(dtS);

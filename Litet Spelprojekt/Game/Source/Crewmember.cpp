@@ -35,6 +35,7 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_MaxHealth = m_SkillStrength * 100.0f;
 	m_Health = m_MaxHealth;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
+	m_Idleing = true;
 }
 
 Crewmember::Crewmember(Crewmember& other)
@@ -51,6 +52,7 @@ Crewmember::Crewmember(Crewmember& other)
 	m_MaxHealth = other.m_MaxHealth;
 	m_Health = other.m_Health;
 	m_MovementSpeed = other.m_MovementSpeed;
+	m_Idleing = other.m_Idleing;
 	UpdateTransform();
 }
 
@@ -250,14 +252,20 @@ void Crewmember::ApplyBurnInjury(float burn)
 	m_HasInjuryBurned += burn;
 }
 
-void Crewmember::SetAssisting(Crewmember* inNeed)
+void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
 {
 	m_pAssisting = inNeed;
+}
+
+void Crewmember::SetIdleing(bool value) noexcept
+{
+	m_Idleing = value;
 }
 
 bool Crewmember::Heal(int8 skillLevel)
 {
 	bool res = false;
+	//Broken Bone kan inte vara Bool
 	if (HasInjuryBoneBroken())
 	{
 		m_HasInjuryBoneBroken /= skillLevel;
@@ -371,6 +379,11 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 		{
 			movementSpeedMultiplier *= glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel / WATER_MAX_LEVEL));
 		}
+
+		if (m_Idleing)
+		{
+			movementSpeedMultiplier *= CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER;
+		}
 	}
 
 	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
@@ -404,6 +417,11 @@ float Crewmember::GetMovementSpeed() const noexcept
 	return m_MovementSpeed;
 }
 
+bool Crewmember::IsIdleing() const noexcept
+{
+	return m_Idleing;
+}
+
 void Crewmember::SetDirection(const glm::vec3& direction) noexcept
 {
 	m_Direction = glm::normalize(direction);
@@ -418,7 +436,7 @@ glm::ivec3 Crewmember::GetTile() const noexcept
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (!HasInjurySmoke() && !HasInjuryBurned())
+	if (!HasInjurySmoke() && !HasInjuryBoneBroken())
 	{
 		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 	}

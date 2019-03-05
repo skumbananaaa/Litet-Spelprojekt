@@ -13,6 +13,7 @@
 #define CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED 0.8f
 #define CREWMEMBER_DEAD_MOVEMENT_SPEED 0.0f
 
+#define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
 class TileData;
 
@@ -39,7 +40,8 @@ public:
 	void SetPosition(const glm::vec3& position) noexcept;
 	///<summary>Sets the current direction that the crewmember is facing. Use .Update() to apply visual changes.</summary>
 	void SetDirection(const glm::vec3& direction) noexcept;
-	void SetAssisting(Crewmember* inNeed);
+	void SetAssisting(Crewmember* inNeed) noexcept;
+	void SetIdleing(bool value) noexcept;
 
 	virtual void OnPicked();
 	virtual void OnHovered();
@@ -57,6 +59,7 @@ public:
 	///<summary>Gets the current direction that the crewmember is facing.</summary>
 	const glm::vec3& GetDirection() const noexcept;
 	float GetMovementSpeed() const noexcept;
+	bool IsIdleing() const noexcept;
 	glm::ivec3 GetTile() const noexcept;
 
 	bool IsHovered() const noexcept;
@@ -101,6 +104,7 @@ private:
 	float m_MaxHealth;
 	float m_Health;
 	float m_MovementSpeed;
+	bool m_Idleing;
 
 	Crewmember* m_pAssisting;
 };

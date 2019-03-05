@@ -5,7 +5,7 @@
 class IOrderListener
 {
 public:
-	virtual void OnOrderRequested() noexcept = 0;
+	virtual void OnOrderStarted() noexcept = 0;
 	virtual void OnAllOrdersFinished() noexcept = 0;
 };
 

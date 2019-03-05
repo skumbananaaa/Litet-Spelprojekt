@@ -8,9 +8,9 @@
 
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
-	: m_pAssisting(nullptr)
+	: m_pAssisting(nullptr),
+	m_OrderHandler(this)
 {
-	m_ActionCap = actionCap;
 	SetName(name);
 	m_pWorld = world;
 	m_IsPicked = false;
@@ -38,24 +38,6 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_Idleing = true;
 }
 
-Crewmember::Crewmember(Crewmember& other)
-	: m_pAssisting(nullptr)
-{
-	m_ActionCap = other.m_ActionCap;
-	SetName(other.GetName());
-	m_PlayerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y) / 2),std::round(other.GetPosition().z));
-	SetDirection(other.GetDirection());
-	SetMaterial(MATERIAL::CREW_STANDARD);
-	SetMesh(MESH::CUBE);
-	SetPosition(other.GetPosition());
-	SetScale(glm::vec3(0.2, 1.8, 0.5));
-	m_MaxHealth = other.m_MaxHealth;
-	m_Health = other.m_Health;
-	m_MovementSpeed = other.m_MovementSpeed;
-	m_Idleing = other.m_Idleing;
-	UpdateTransform();
-}
-
 Crewmember::~Crewmember()
 {
 
@@ -77,31 +59,105 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	}
 }
 
-void Crewmember::OnPicked() noexcept
-{
-	m_IsPicked = true;
-}
-
-void Crewmember::OnHovered() noexcept
-{
-	m_IsHovered = true;
-	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(this);
-}
-
-void Crewmember::OnNotHovered() noexcept
-{
-	m_IsHovered = false;
-	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
-}
-
 void Crewmember::UpdateLastKnownPosition() noexcept
 {
 	m_LastKnownPosition = GetPosition();
 }
 
-const glm::vec3& Crewmember::GetLastKnownPosition() const noexcept
+void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 {
-	return m_LastKnownPosition;
+	//Multiply In MovementSpeed Multipliers;
+	float movementSpeedMultiplier = 1.0f;
+
+	if (allowMult)
+	{
+		const glm::ivec3& tilePos = GetTile();
+		uint32 yPos = tilePos.y * 2;
+
+		//Water Modifier
+		if (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+		{
+			movementSpeedMultiplier *= glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel / WATER_MAX_LEVEL));
+		}
+
+		if (m_Idleing)
+		{
+			movementSpeedMultiplier *= CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER;
+		}
+	}
+
+	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
+	SetPosition(res);
+}
+
+void Crewmember::FindPath(const glm::ivec3& goalPos)
+{
+	if (!HasInjurySmoke() && !HasInjuryBoneBroken())
+	{
+		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
+	}
+	else
+	{
+		Logger::LogEvent(GetName() + " cannot move!", true);
+	}
+}
+
+void Crewmember::LookForDoor() noexcept
+{
+	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
+	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
+	{
+		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
+		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
+		if (doorRoomIndex == crewRoomIndex)
+		{
+			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
+			if (door->IsOpen())
+			{
+				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
+			}
+		}
+	}
+	//StartOrder(pScene, pWorld, this);
+}
+
+void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
+{
+	FindPath(doorTile);
+}
+
+bool Crewmember::Heal(int8 skillLevel)
+{
+	bool res = false;
+	//Broken Bone kan inte vara Bool
+	if (HasInjuryBoneBroken())
+	{
+		m_HasInjuryBoneBroken /= skillLevel;
+	}
+	else if (HasInjuryBurned())
+	{
+		m_HasInjuryBurned /= skillLevel;
+	}
+	else if (HasInjurySmoke())
+	{
+		m_HasInjurySmoke /= skillLevel;
+	}
+	else
+	{
+		res = true;
+	}
+	return res;
+}
+
+void Crewmember::ApplyBurnInjury(float burn)
+{
+	m_HasInjuryBurned += burn;
+}
+
+void Crewmember::ApplyBoneInjury()
+{
+	m_HasInjuryBoneBroken = true;
 }
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept
@@ -170,64 +226,55 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 	return t;
 }
 
-int32 Crewmember::GetShipNumber() const noexcept
+void Crewmember::OnOrderStarted() noexcept
 {
-	return m_ShipNumber;
+	m_Idleing = false;
 }
 
-bool Crewmember::IsHovered() const noexcept
+void Crewmember::OnAllOrdersFinished() noexcept
 {
-	return m_IsHovered;
+	m_Idleing = true;
 }
 
-bool Crewmember::IsPicked() const noexcept
+void Crewmember::OnAddedToScene(Scene* scene) noexcept
 {
-	return m_IsPicked;
+	scene->RegisterPickableGameObject(this);
 }
 
-int8 Crewmember::GetSkillFire() const noexcept
+void Crewmember::OnPicked() noexcept
 {
-	return m_SkillFire;
+	m_IsPicked = true;
 }
 
-int8 Crewmember::GetSkillMedic() const noexcept
+void Crewmember::OnHovered() noexcept
 {
-	return m_SkillMedic;
+	m_IsHovered = true;
+	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(this);
 }
 
-int8 Crewmember::GetSkillStrength() const noexcept
+void Crewmember::OnNotHovered() noexcept
 {
-	return m_SkillStrength;
+	m_IsHovered = false;
+	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
 }
 
-bool Crewmember::HasInjuryBoneBroken() const noexcept
+void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
-	return m_HasInjuryBoneBroken;
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
+
+	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
+	{
+		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+	}
+
+	GameObject::SetPosition(position);
 }
 
-bool Crewmember::HasInjuryBurned() const noexcept
+void Crewmember::SetDirection(const glm::vec3& direction) noexcept
 {
-	return m_HasInjuryBurned > 1.0f;
-}
-
-bool Crewmember::HasInjurySmoke() const noexcept
-{
-	return m_HasInjurySmoke > 1.0f;
-}
-
-bool Crewmember::isAlive() const noexcept
-{
-	return m_Health > 0.0f;
-}
-
-void Crewmember::ApplyBoneInjury()
-{
-	m_HasInjuryBoneBroken = true;
-}
-
-void Crewmember::ApplyBurnInjury(float burn)
-{
-	m_HasInjuryBurned += burn;
+	m_Direction = glm::normalize(direction);
+	float angle = std::atan2f(1.0f * m_Direction.x, -1.0f * m_Direction.z);
+	SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, -angle));
 }
 
 void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
@@ -238,65 +285,6 @@ void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
 void Crewmember::SetIdleing(bool value) noexcept
 {
 	m_Idleing = value;
-}
-
-bool Crewmember::Heal(int8 skillLevel)
-{
-	bool res = false;
-	//Broken Bone kan inte vara Bool
-	if (HasInjuryBoneBroken())
-	{
-		m_HasInjuryBoneBroken /= skillLevel;
-	}
-	else if (HasInjuryBurned())
-	{
-		m_HasInjuryBurned /= skillLevel;
-	}
-	else if (HasInjurySmoke())
-	{
-		m_HasInjurySmoke /= skillLevel;
-	}
-	else
-	{
-		res = true;
-	}
-	return res;
-}
-
-void Crewmember::SetShipNumber(int32 shipnumber) noexcept
-{
-	m_ShipNumber = shipnumber;
-}
-
-void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
-{
-	float smokeDmgSpeed = 0.1f;
-	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
-	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
-	{
-		bool isSmoked = HasInjurySmoke();
-		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt;
-
-		if (isSmoked != HasInjurySmoke())
-		{
-			Logger::LogEvent(GetName() + " got smoked!" + std::to_string(m_HasInjurySmoke));
-		}
-	}
-}
-
-void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
-{
-	float burnSpeed = 0.1f;
-	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
-	if (tileData.Temp >= tileData.BurnsAt)
-	{
-		bool isBurned = HasInjuryBurned();
-		m_HasInjuryBurned += (tileData.Temp / tileData.BurnsAt) * burnSpeed * dt;
-		if (isBurned != HasInjuryBurned())
-		{
-			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));
-		}
-	}
 }
 
 void Crewmember::UpdateHealth(float dt)
@@ -342,119 +330,38 @@ void Crewmember::UpdateHealth(float dt)
 	}
 }
 
-void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
+void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 {
-	//Multiply In MovementSpeed Multipliers;
-	float movementSpeedMultiplier = 1.0f;
-
-	if (allowMult)
+	float smokeDmgSpeed = 0.1f;
+	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
-		const glm::ivec3& tilePos = GetTile();
-		uint32 yPos = tilePos.y * 2;
+		bool isSmoked = HasInjurySmoke();
+		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt;
 
-		//Water Modifier
-		if (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL)
+		if (isSmoked != HasInjurySmoke())
 		{
-			movementSpeedMultiplier *= glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel / WATER_MAX_LEVEL));
-		}
-
-		if (m_Idleing)
-		{
-			movementSpeedMultiplier *= CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER;
+			Logger::LogEvent(GetName() + " got smoked!" + std::to_string(m_HasInjurySmoke));
 		}
 	}
-
-	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
-	SetPosition(res);
 }
 
-const float Crewmember::GetActionCapacity() const
+void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
-	return m_ActionCap;
-}
-
-void Crewmember::SetPosition(const glm::vec3& position) noexcept
-{
-	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
-
-	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
+	float burnSpeed = 0.1f;
+	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	if (tileData.Temp >= tileData.BurnsAt)
 	{
-		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
-	}
-
-	GameObject::SetPosition(position);
-}
-
-const glm::vec3& Crewmember::GetDirection() const noexcept
-{
-	return m_Direction;
-}
-
-float Crewmember::GetMovementSpeed() const noexcept
-{
-	return m_MovementSpeed;
-}
-
-bool Crewmember::IsIdleing() const noexcept
-{
-	return m_Idleing;
-}
-
-void Crewmember::SetDirection(const glm::vec3& direction) noexcept
-{
-	m_Direction = glm::normalize(direction);
-	float angle = std::atan2f(1.0f * m_Direction.x, -1.0f * m_Direction.z);
-	SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, -angle));
-}
-
-glm::ivec3 Crewmember::GetTile() const noexcept
-{
-	return m_PlayerTile;
-}
-
-void Crewmember::FindPath(const glm::ivec3& goalPos)
-{
-	if (!HasInjurySmoke() && !HasInjuryBoneBroken())
-	{
-		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
-	}
-	else
-	{
-		Logger::LogEvent(GetName() + " cannot move!", true);
-	}
-}
-
-void Crewmember::LookForDoor() noexcept
-{
-	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
-	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
-	{
-		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
-		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
-		if (doorRoomIndex == crewRoomIndex)
+		bool isBurned = HasInjuryBurned();
+		m_HasInjuryBurned += (tileData.Temp / tileData.BurnsAt) * burnSpeed * dt;
+		if (isBurned != HasInjuryBurned())
 		{
-			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-
-				if (door->IsOpen())
-				{
-					m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
-				}
+			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));
 		}
 	}
-	//StartOrder(pScene, pWorld, this);
 }
 
-void Crewmember::OnAddedToScene(Scene* scene) noexcept
+void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
-	scene->RegisterPickableGameObject(this);
-}
-
-void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
-{
-	FindPath(doorTile);
-}
-
-void Crewmember::SetActionCapacity(const float actionCap)
-{
-	m_ActionCap = actionCap;
+	m_ShipNumber = shipnumber;
 }

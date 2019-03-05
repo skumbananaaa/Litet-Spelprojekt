@@ -36,7 +36,7 @@ public:
 	void CloseDoorOrder(glm::ivec3 doorTile);
 
 	//GAMEPLAY (NOT SETS OR GETS)
-	bool Heal(int8 skillLevel);
+	bool Heal(int8 skillLevel, float dtS);
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury();
 
@@ -110,9 +110,10 @@ private:
 	int8 m_SkillFire;
 	int8 m_SkillMedic;
 	int8 m_SkillStrength;
+	float m_HasInjuryBoneBroken;
 		
 	//--INJURIES
-	bool m_HasInjuryBoneBroken;
+	float m_HasInjuryBoneBroken;
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
 	float m_MaxHealth;
@@ -189,7 +190,7 @@ inline bool Crewmember::isAlive() const noexcept
 
 inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 {
-	return m_HasInjuryBoneBroken;
+	return m_HasInjuryBoneBroken > 1.0f;
 }
 
 inline bool Crewmember::HasInjuryBurned() const noexcept

@@ -31,7 +31,8 @@ public:
 	///<summary>Finds a path to the goal position.</summary>
 	void FindPath(const glm::ivec3& goalPos);
 
-	void LookForDoor(World* pWorld, Scene* pScene);
+	void LookForDoor() noexcept;
+	virtual void OnAddedToScene(Scene* scene) noexcept override;
 	void CloseDoorOrder(glm::ivec3 doorTile);
 
 	///<summary>Sets the actioncapacity of the crewmember to the specified value.</summary>
@@ -43,14 +44,15 @@ public:
 	void SetAssisting(Crewmember* inNeed) noexcept;
 	void SetIdleing(bool value) noexcept;
 
-	virtual void OnPicked();
-	virtual void OnHovered();
-	virtual void OnNotHovered();
-	void UpdateLastKnownPosition() noexcept;
-	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
+	void OnPicked() noexcept override;
+	void OnHovered() noexcept override;
+	void OnNotHovered() noexcept override;
+	bool IsHovered() const noexcept override;
+	bool IsPicked() const noexcept override;
 
-	///<summary>Updates matrix of the object.</summary>
-	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
+	void UpdateLastKnownPosition() noexcept;
+	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
+
 
 	int32 GetShipNumber() const noexcept;
 	///<summary>returns the current action capacity of the crewmember.</summary>
@@ -62,8 +64,7 @@ public:
 	bool IsIdleing() const noexcept;
 	glm::ivec3 GetTile() const noexcept;
 
-	bool IsHovered() const noexcept;
-	bool IsPicked() const noexcept;
+
 
 	int8 GetSkillFire() const noexcept;
 	int8 GetSkillMedic() const noexcept;

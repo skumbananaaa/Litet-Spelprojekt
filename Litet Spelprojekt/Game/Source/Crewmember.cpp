@@ -1,11 +1,11 @@
 #include "..\Include\Crewmember.h"
 #include "..\Include\Game.h"
 #include <System/Random.h>
-#include "..\Include\Game.h"
 #include "../Include/Orders/OrderWalk.h"
 #include "../Include/Orders/OrderCloseDoor.h"
 #include <World/WorldLevel.h>
 #include <World/GameObjectDoor.h>
+
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 	: m_pAssisting(nullptr)
@@ -77,40 +77,18 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	}
 }
 
-void Crewmember::OnPicked()
+void Crewmember::OnPicked() noexcept
 {
-	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
-	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
-	{
-		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
-		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
-		if (doorRoomIndex == crewRoomIndex)
-		{
-			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			if (!door->IsOpen())
-			{
-				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, true), this);
-				break;
-			}
-			else if (door->IsOpen())
-			{
-				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
-				break;
-			}
-		}
-	}
-
-
 	m_IsPicked = true;
 }
 
-void Crewmember::OnHovered()
+void Crewmember::OnHovered() noexcept
 {
 	m_IsHovered = true;
 	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(this);
 }
 
-void Crewmember::OnNotHovered()
+void Crewmember::OnNotHovered() noexcept
 {
 	m_IsHovered = false;
 	Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
@@ -446,9 +424,29 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 	}
 }
 
-void Crewmember::LookForDoor(World* pWorld, Scene* pScene)
+void Crewmember::LookForDoor() noexcept
 {
+	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
+	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
+	{
+		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
+		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
+		if (doorRoomIndex == crewRoomIndex)
+		{
+			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
+				if (door->IsOpen())
+				{
+					m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
+				}
+		}
+	}
 	//StartOrder(pScene, pWorld, this);
+}
+
+void Crewmember::OnAddedToScene(Scene* scene) noexcept
+{
+	scene->RegisterPickableGameObject(this);
 }
 
 void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)

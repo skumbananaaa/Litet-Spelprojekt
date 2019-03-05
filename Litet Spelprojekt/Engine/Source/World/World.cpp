@@ -250,12 +250,10 @@ void World::PlaceStairs(Scene& scene) noexcept
 	}
 }
 
-void World::GenerateRoomShadows(const Scene& scene) noexcept
+void World::GenerateRoomShadows(const Scene& scene, uint32 roomID) noexcept
 {
-	for (size_t i = 0; i < m_Rooms.size(); i++)
-	{
-		m_Rooms[i].GenerateShadows(scene);
-	}
+	assert(roomID < m_Rooms.size());
+	m_Rooms[roomID].GenerateShadows(scene);
 }
 
 void World::Generate(Scene& scene) noexcept
@@ -269,8 +267,6 @@ void World::Generate(Scene& scene) noexcept
 	//Place game objects, doors and stairs
 	PlaceGameObjects(scene);
 	PlaceStairs(scene);
-
-	GenerateRoomShadows(scene);
 
 	//Generate lights for rooms
 	for (size_t i = 0; i < m_Rooms.size(); i++)

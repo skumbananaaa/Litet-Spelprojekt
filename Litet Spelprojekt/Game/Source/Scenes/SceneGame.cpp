@@ -8,7 +8,7 @@
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
-	cartesianCamera(false),
+	m_CartesianCamera(false),
 	m_CurrentElevation(2),
 	m_pUIPause(nullptr),
 	m_IsPaused(false)
@@ -179,7 +179,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 	{
 		if (Input::IsKeyDown(KEY_LEFT_ALT))
 		{
-			if (!cartesianCamera)
+			if (!m_CartesianCamera)
 			{
 				if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 				{
@@ -218,7 +218,7 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 {
 	if (!IsPaused())
 	{
-		if (!cartesianCamera)
+		if (!m_CartesianCamera)
 		{
 			if (Input::IsKeyDown(KEY_LEFT_ALT))
 			{
@@ -288,7 +288,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			case KEY_O:
 			{
-				cartesianCamera = !cartesianCamera;
+				m_CartesianCamera = !m_CartesianCamera;
 				break;
 			}
 			case KEY_P:
@@ -617,7 +617,7 @@ void SceneGame::UpdateCamera(float dtS) noexcept
 	float cartesianCameraSpeed = 5.0F;
 	float cartesianCameraAngularSpeed = 1.5F;
 
-	if (cartesianCamera)
+	if (m_CartesianCamera)
 	{
 		glm::vec3 localMove(0.0f);
 

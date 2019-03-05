@@ -70,6 +70,8 @@ out VS_OUT
 	vec3 Normal;
 	vec3 FragPosition;
 	vec3 LightColor;
+	vec3 PointLightColor;
+	vec3 PointLightSpecular;
 	vec3 Specular;
 	vec2 TexCoords;
 } vs_out;
@@ -148,6 +150,8 @@ void main()
 	//Calculate light
 	vec3 specular = vec3(0.0f);
 	vec3 lightColor = vec3(0.0f);
+	vec3 pointLightColor = vec3(0.0f);
+	vec3 pointLightSpecular = vec3(0.0f);
 	
 	//Dirlights
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
@@ -177,8 +181,8 @@ void main()
 			vec3 lightCol = g_PointLights[i].Color.rgb * attenuation;
 			lightDir = normalize(lightDir);
 
-			lightColor += CalcLightContribution(lightDir, lightCol, normal);
-			specular += CalcSpecular(lightDir, lightCol, viewDir, normal);
+			pointLightColor += CalcLightContribution(lightDir, lightCol, normal);
+			pointLightSpecular += CalcSpecular(lightDir, lightCol, viewDir, normal);
 		}
 	}
 
@@ -214,6 +218,8 @@ void main()
 		}
 	}
 
+	vs_out.PointLightColor = pointLightColor;
+	vs_out.PointLightSpecular = pointLightSpecular;
 	vs_out.Specular = specular;
 	vs_out.LightColor = lightColor;
 
@@ -238,6 +244,8 @@ in VS_OUT
 	vec3 Normal;
 	vec3 FragPosition;
 	vec3 LightColor;
+	vec3 PointLightColor;
+	vec3 PointLightSpecular;
 	vec3 Specular;
 	vec2 TexCoords;
 } fs_in;
@@ -269,8 +277,11 @@ void main()
 	vec3 ambient = color * vec3(0.2f);
 	vec3 diffuse = color * fs_in.LightColor;
 	vec3 specular = fs_in.Specular;
+	vec3 lightColor = (diffuse + specular);
 
 	float shadow = ShadowCalc(fs_in.FragPosition, fs_in.Normal);
-	g_OutColor = vec4(min(ambient + ((1.0f - shadow) * (diffuse + specular)), vec3(1.0f)), 1.0f);
+	vec3 pointLightColor = (1.0f - shadow) * ((color * fs_in.PointLightColor) + fs_in.PointLightSpecular);
+	
+	g_OutColor = vec4(min(ambient + lightColor + pointLightColor, vec3(1.0f)), 1.0f);
 }
 #endif

@@ -20,7 +20,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	{
 		TextureDesc desc = {};
 		desc.GenerateMips = false;
-		desc.Format = TEX_FORMAT_DEPTH;
+		desc.Format = TEX_FORMAT_DEPTH16;
 		desc.Width = SHADOW_SIZE;
 		desc.Height = SHADOW_SIZE;
 		desc.Samples = 1;
@@ -70,7 +70,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	UniformBuffer* pModelBuffer = new UniformBuffer(&modelBuff, 1, sizeof(ModelBuffer));
 	UniformBuffer* pShadowBuffer = new UniformBuffer(&shadowBuff, 1, sizeof(ShadowBuffer));
 
-	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, GetFarPlane());
+	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, GetFarPlane());
 	glm::mat4 cameraMatrices[6] =
 	{
 		proj * glm::lookAt(position, position + glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),

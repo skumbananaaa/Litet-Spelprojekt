@@ -62,7 +62,7 @@ protected:
 
 private:
 	bool m_IsPaused;
-	bool cartesianCamera;
+	bool m_CartesianCamera;
 	
 	int32 m_CurrentElevation;
 	uint32 m_CurrentLight = 0;

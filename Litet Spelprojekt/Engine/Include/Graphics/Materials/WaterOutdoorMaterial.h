@@ -6,6 +6,7 @@
 _declspec(align(16)) struct WaterOutdoorBuffer
 {
 	glm::vec2 WaveFactor;
+	glm::vec2 TorpedoPos;
 };
 
 class API WaterOutdoorMaterial : public Material
@@ -18,6 +19,7 @@ public:
 
 	void SetPlanarReflector(PlanarReflector* pReflector) const;
 	void SetWaveFactor(const glm::vec2& waveFactor) const;
+	void SetTorpedoPosition(const glm::vec2& pos) const;
 
 private:
 	WaterOutdoorMaterial();

@@ -64,3 +64,9 @@ void WaterOutdoorMaterial::SetWaveFactor(const glm::vec2& waveFactor) const
 	m_Buffer.WaveFactor = waveFactor;
 	m_pWaterBuffer->UpdateData(&m_Buffer);
 }
+
+void WaterOutdoorMaterial::SetTorpedoPosition(const glm::vec2& pos) const
+{
+	m_Buffer.TorpedoPos = pos;
+	m_pWaterBuffer->UpdateData(&m_Buffer);
+}

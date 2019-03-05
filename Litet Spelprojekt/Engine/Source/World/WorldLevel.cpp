@@ -10,8 +10,6 @@ WorldLevel::WorldLevel(WorldLevel&& other)
 	m_ppLevel = other.m_ppLevel;
 	m_ppLevelData = other.m_ppLevelData;
 
-	m_BurningIDs.swap(other.m_BurningIDs);
-	m_FloodingIDs.swap(other.m_FloodingIDs);
 	m_RoomBounds.swap(other.m_RoomBounds);
 	m_Walls.swap(other.m_Walls);
 	m_Bulkheads.swap(other.m_Bulkheads);
@@ -19,8 +17,6 @@ WorldLevel::WorldLevel(WorldLevel&& other)
 
 WorldLevel::WorldLevel(const WorldLevel& other)
 {
-	m_BurningIDs = other.m_BurningIDs;
-	m_FloodingIDs = other.m_FloodingIDs;
 	m_RoomBounds = other.m_RoomBounds;
 	m_Walls = other.m_Walls;
 	m_Bulkheads = other.m_Bulkheads;
@@ -109,16 +105,6 @@ const TileData* const * const WorldLevel::GetLevelData() const noexcept
 TileData * const * const WorldLevel::GetLevelData() noexcept
 {
 	return m_ppLevelData;
-}
-
-std::vector<glm::ivec2>& WorldLevel::GetBurningIDs() noexcept
-{
-	return m_BurningIDs;
-}
-
-std::vector<glm::ivec2>& WorldLevel::GetFloodingIDs() noexcept
-{
-	return m_FloodingIDs;
 }
 
 uint32 WorldLevel::GetSizeX() const noexcept

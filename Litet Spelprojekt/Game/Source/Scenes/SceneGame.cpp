@@ -401,11 +401,11 @@ void SceneGame::CreateCrew() noexcept
 		"Bert Karlsson"
 	};
 
-	m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(10.0f, 0.9f + 4.0f, 10.0f), 100, names[0]);
+	m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(10.0f, 4.0f, 10.0f), 100, names[0]);
 	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(0)->SetHidden(true);
+	//m_Crew.GetMember(0)->SetHidden(true);
 	m_Crew.GetMember(0)->UpdateTransform();
 	AddGameObject(m_Crew.GetMember(0));
 
@@ -415,7 +415,7 @@ void SceneGame::CreateCrew() noexcept
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
-		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, 0.9f + y, z), 100, names[i % 15]);
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15]);
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);

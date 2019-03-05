@@ -57,3 +57,8 @@ bool OrderCarry::ReadyToAbort() noexcept
 {
 	return OrderWalk::ReadyToAbort();
 }
+
+bool OrderCarry::IsIdleOrder() noexcept
+{
+	return false;
+}

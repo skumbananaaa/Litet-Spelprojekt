@@ -41,14 +41,15 @@ public:
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury();
 
+	void OnPicked(const std::vector<int32>& selectedMembers) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
-	virtual void OnOrderStarted() noexcept override;
+	virtual void OnOrderStarted(bool idleOrder) noexcept override;
 	virtual void OnAllOrdersFinished() noexcept override;
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
-	void OnPicked() noexcept override;
 	void OnHovered() noexcept override;
 	void OnNotHovered() noexcept override;
+	void GiveOrder(IOrder* order) noexcept;
 
 	//SETS
 	void SetPosition(const glm::vec3& position) noexcept;

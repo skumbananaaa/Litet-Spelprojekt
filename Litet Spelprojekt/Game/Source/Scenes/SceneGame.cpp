@@ -3,7 +3,7 @@
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
-#include <World/GameObjectDoor.h>
+
 
 
 SceneGame::SceneGame() : SceneInternal(false),
@@ -247,15 +247,23 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 	{
 		switch (mousebutton)
 		{
-			case MOUSE_BUTTON_LEFT:
+			case MOUSE_BUTTON_RIGHT:
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					PickPosition();
+					GameObject* object = RayTestGameObjects();
+					if (!object)
+					{
+						PickPosition();
+					}
+					else if (m_Crew.HasSelectedMembers())
+					{
+						object->OnPicked(m_Crew.GetSelectedList());
+					}
 				}
 				break;
 			}
-			case MOUSE_BUTTON_RIGHT:
+			case MOUSE_BUTTON_LEFT:
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
@@ -518,16 +526,21 @@ void SceneGame::PickObject(bool hover)
 
 	if (object)
 	{
-		if (hover)
+		Crewmember* crewMember = dynamic_cast<Crewmember*>(object);
+
+		if (crewMember)
 		{
-			if (!object->IsHovered())
+			if (hover)
 			{
-				object->OnHovered();
+				if (!object->IsHovered())
+				{
+					object->OnHovered();
+				}
 			}
-		}
-		else
-		{
-			object->OnPicked();
+			else
+			{
+				object->OnPicked(m_Crew.GetSelectedList());
+			}
 		}
 	}
 	else if (hover)

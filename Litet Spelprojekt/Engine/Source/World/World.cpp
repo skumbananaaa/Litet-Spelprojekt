@@ -1,6 +1,5 @@
 #include <EnginePch.h>
 #include <World/World.h>
-#include <World/GameObjectDoor.h>
 
 World::World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects, uint32 numObjects) noexcept
 	: m_Levels(),
@@ -192,7 +191,7 @@ void World::PlaceDoors(Scene& scene) noexcept
 				pGameObject->UpdateTransform();
 				scene.AddGameObject(pGameObject);
 
-				pGameObject = new GameObjectDoor();
+				pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::DOOR);
 				pGameObject->SetPosition(position);
 				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 				pGameObject->SetDirection(glm::vec3((int)delta.z == 0, 0, -((int)delta.z == -1)));

@@ -6,7 +6,7 @@ class IOrderListener
 {
 public:
 	virtual ~IOrderListener() {};
-	virtual void OnOrderStarted() noexcept = 0;
+	virtual void OnOrderStarted(bool idleOrder) noexcept = 0;
 	virtual void OnAllOrdersFinished() noexcept = 0;
 };
 

@@ -4,7 +4,7 @@
 #include <Graphics/Scene.h>
 #include "../../Include/Crew.h"
 #include "../../Include/Path.h"
-#include <World/GameObjectDoor.h>
+#include "../../Include/GameObjectDoor.h"
 
 OrderWalk::OrderWalk(glm::ivec3 goalTile):
 	m_pPathFinder(nullptr),
@@ -62,11 +62,13 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 
 	Room& room = pWorld->GetRoom(pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevel()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z]);
 
-	if(room.IsBurning() && !room.IsFireDetected())
+	if (room.IsBurning())
 	{
-		room.SetFireDetected(true);
-		OrderWalk(glm::ivec3(m_GoalTile.x, m_GoalTile.y * 2, m_GoalTile.z));
-		
+		if (!room.IsFireDetected())
+		{
+			room.SetFireDetected(true);
+		}
+		GetCrewMember()->GiveOrder(new OrderWalk(glm::ivec3(m_GoalTile.x, m_GoalTile.y * 2, m_GoalTile.z)));
 	}
 
 	return FollowPath(dtS);
@@ -95,6 +97,11 @@ std::string OrderWalk::GetName() noexcept
 bool OrderWalk::ReadyToAbort() noexcept
 {
 	return m_IsPathReady;
+}
+
+bool OrderWalk::IsIdleOrder() noexcept
+{
+	return false;
 }
 
 void OrderWalk::RunParallel()

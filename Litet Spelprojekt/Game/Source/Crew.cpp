@@ -27,7 +27,7 @@ void Crew::RequestCloseDoor(World* pWorld, Scene* pScene)
 {
 	for (int i = 0; i < m_NrOf; i++)
 	{
-		//OrderHandler::GiveOrder(new OrderCloseDoor(), m_ppMembers[i]);
+		m_ppMembers[i]->LookForDoor();
 	}
 }
 

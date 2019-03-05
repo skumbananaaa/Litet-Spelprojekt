@@ -38,10 +38,10 @@ public:
 
 	void PickPosition();
 	void RequestDoorClosed();
-	void PickCrew(bool hover);
+	void PickObject(bool hover);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 	void ShowCrewmember(uint32 crewmember);
-	Crewmember* RayTestCrewmembers();
+	GameObject* RayTestGameObjects();
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	Crew* GetCrew() noexcept;
 	UICrewMember* GetUICrewMember() noexcept;

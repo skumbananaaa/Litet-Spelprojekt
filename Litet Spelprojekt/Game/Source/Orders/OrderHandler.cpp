@@ -1,17 +1,18 @@
 #include "../../Include/Orders/OrderHandler.h"
 #include "../../Include/Game.h"
 
-OrderHandler::OrderHandler()
+OrderHandler::OrderHandler(IOrderListener* pOrderListener)
 {
+	m_pOrderListener = pOrderListener;
 }
 
 OrderHandler::~OrderHandler()
 {
-	for (IOrder* order : s_OrderQueue)
+	for (IOrder* order : m_OrderQueue)
 	{
 		DeleteSafe(order);
 	}
-	s_OrderQueue.clear();
+	m_OrderQueue.clear();
 	std::cout << "Orders cleared" << std::endl;
 }
 
@@ -19,7 +20,7 @@ void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 {
 	if (!order->AllowsMultipleOrders())
 	{
-		for (IOrder* object : s_OrderQueue)
+		for (IOrder* object : m_OrderQueue)
 		{
 			if (object->GetName().compare(order->GetName()) == 0)
 			{
@@ -29,34 +30,54 @@ void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 		}
 	}
 
-	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	order->m_pCrewMember = crewMember;
-	order->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
-	s_OrderQueue.push_back(order);
-	std::cout << "[" << order->GetName() << "] Order Started" << std::endl;
+	m_OrderQueue.push_back(order);
+
+	if (m_OrderQueue.size() == 1)
+	{
+		StartOrder();
+	}
 }
 
 void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
-	for (int i = s_OrderQueue.size() - 1; i >= 0; i--)
+	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
 	{
-		if (s_OrderQueue[i]->m_Abort)
+		if (m_OrderQueue[i]->m_Abort)
 		{
-			if (s_OrderQueue[i]->ReadyToAbort())
+			if (m_OrderQueue[i]->ReadyToAbort())
 			{
-				s_OrderQueue[i]->AbortOrder(pScene, pWorld, pCrewMembers);
-				std::cout << "[" << s_OrderQueue[i]->GetName() << "] Order Aborted" << std::endl;
-				DeleteSafe(s_OrderQueue[i]);
-				s_OrderQueue.erase(s_OrderQueue.begin() + i);
+				m_OrderQueue[i]->AbortOrder(pScene, pWorld, pCrewMembers);
+				std::cout << "[" << m_OrderQueue[i]->GetName() << "] Order Aborted" << std::endl;
+				DeleteSafe(m_OrderQueue[i]);
+				m_OrderQueue.erase(m_OrderQueue.begin() + i);
 			}
 		}
 	}
 
-	if (!s_OrderQueue.empty() && s_OrderQueue[0]->UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+	if (!m_OrderQueue.empty() && m_OrderQueue[0]->UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
 	{
-		s_OrderQueue[0]->EndOrder(pScene, pWorld, pCrewMembers);
-		std::cout << "[" << s_OrderQueue[0]->GetName() << "] Order Ended" << std::endl;
-		DeleteSafe(s_OrderQueue[0]);
-		s_OrderQueue.erase(s_OrderQueue.begin());
+		m_OrderQueue[0]->EndOrder(pScene, pWorld, pCrewMembers);
+		std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Ended" << std::endl;
+		DeleteSafe(m_OrderQueue[0]);
+		m_OrderQueue.erase(m_OrderQueue.begin());
+
+		if (!m_OrderQueue.empty())
+		{
+			StartOrder();
+		}
+		else
+		{
+			m_pOrderListener->OnAllOrdersFinished();
+		}
 	}
+}
+
+void OrderHandler::StartOrder()
+{
+	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
+	m_OrderQueue[0]->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
+	std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Started" << std::endl;
+
+	m_pOrderListener->OnOrderStarted(m_OrderQueue[0]->IsIdleOrder());
 }

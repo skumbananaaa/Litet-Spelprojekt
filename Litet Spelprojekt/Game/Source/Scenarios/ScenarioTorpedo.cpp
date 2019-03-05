@@ -23,41 +23,13 @@ void ScenarioTorpedo::Init(World* pWorld) noexcept
 void ScenarioTorpedo::OnStart(SceneGame* scene) noexcept
 {
 	float rotation = Random::GenerateFloat(0.0, glm::two_pi<float>());
-	glm::vec3 pos = glm::vec3(glm::cos(rotation) * 200, -1.0F, glm::sin(rotation) * 200);
+	glm::vec3 pos = glm::vec3(glm::cos(rotation) * 200, 0.0F, glm::sin(rotation) * 200);
 
-	float shortest = 100000;
-	for (int i = 2; i < 10; i++)
-	{
-		float distance = glm::distance(glm::vec3(i, 0, 1), pos);
-		if (distance < shortest)
-		{
-			shortest = distance;
-			m_Target = glm::vec3(i, 0, 1);
-		}
-
-		distance = glm::distance(glm::vec3(i, 0, 39), pos);
-		if (distance < shortest)
-		{
-			shortest = distance;
-			m_Target = glm::vec3(i, 0, 39);
-		}
-	}
-	for (int i = 2; i < 39; i++)
-	{
-		float distance = glm::distance(glm::vec3(1, 0, i), pos);
-		if (distance < shortest)
-		{
-			shortest = distance;
-			m_Target = glm::vec3(1, 0, i);
-		}
-
-		distance = glm::distance(glm::vec3(9, 0, i), pos);
-		if (distance < shortest)
-		{
-			shortest = distance;
-			m_Target = glm::vec3(9, 0, i);
-		}
-	}
+	glm::vec3 centre = glm::vec3(6, 0, 21);
+	glm::vec3 ray = glm::normalize(pos - centre);
+	m_Target = pos + ray * (float)TestAgainstRay(ray, pos);
+	m_Target.x = glm::clamp(m_Target.x, 1.0f, 11.0f);
+	m_Target.z = glm::clamp(m_Target.z, 1.0f, 41.0f);
 
 	m_pGameObjectTorpedo = new GameObjectTorpedo(pos, m_Target);
 
@@ -70,7 +42,7 @@ void ScenarioTorpedo::OnEnd(SceneGame* scene) noexcept
 	DeleteSafe(m_pGameObjectTorpedo);
 
 	WaterOutdoorMaterial* pMaterial = reinterpret_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
-	pMaterial->SetTorpedoPosition(glm::vec2(0, 0));
+	pMaterial->SetTorpedoPosition(glm::vec2(FLT_MAX, FLT_MAX));
 }
 
 void ScenarioTorpedo::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
@@ -153,4 +125,47 @@ int32 ScenarioTorpedo::GetCooldownTime() noexcept
 int32 ScenarioTorpedo::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 60 * 5;
+}
+
+int32 ScenarioTorpedo::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept
+{
+	glm::vec3 centre = glm::vec3(6, 0, 21);
+
+	glm::vec3 normals[]{
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+	};
+
+	float size[] = {
+		5,
+		20
+	};
+
+	float d1[] = {
+		glm::dot(centre - normals[0] * size[0], normals[0]),
+		glm::dot(centre - normals[1] * size[1], normals[1])
+	};
+	float d2[] = {
+		glm::dot(centre + normals[0] * size[0], normals[0]),
+		glm::dot(centre + normals[1] * size[1], normals[1])
+	};
+
+	float t1[2];
+	float t2[2];
+	float t_min[2];
+	float t_max[2];
+
+	for (int j = 0; j < 2; j++)
+	{
+		if (std::abs(glm::dot(normals[j], ray)) > 0.01)
+		{
+			t1[j] = (d1[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
+			t2[j] = (d2[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
+
+			t_min[j] = std::min(t1[j], t2[j]);
+			t_max[j] = std::max(t1[j], t2[j]);
+		}
+	}
+
+	return std::min(t_max[0], t_max[1]);
 }

@@ -204,7 +204,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		}
 		else
 		{
-			PickCrew(true);
+			PickObject(true);
 		}
 	}
 }
@@ -259,7 +259,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					PickCrew(false);
+					PickObject(false);
 				}
 				break;
 			}
@@ -512,31 +512,32 @@ void SceneGame::RequestDoorClosed()
 	//}
 }
 
-void SceneGame::PickCrew(bool hover)
+void SceneGame::PickObject(bool hover)
 {
-	Crewmember* crewmember = RayTestCrewmembers();
+	GameObject* object = RayTestGameObjects();
 
-	if (crewmember)
+	if (object)
 	{
 		if (hover)
 		{
-			if (!crewmember->IsHovered())
+			if (!object->IsHovered())
 			{
-				crewmember->OnHovered();
+				object->OnHovered();
 			}
 		}
 		else
 		{
-			crewmember->OnPicked();
+			object->OnPicked();
 		}
 	}
 	else if (hover)
 	{
-		for (int i = 0; i < m_Crew.GetCount(); i++)
+		for (int i = 0; i < m_PickableGameObjects.size(); i++)
 		{
-			if (m_Crew.GetMember(i)->IsHovered())
+			
+			if (m_PickableGameObjects[i]->IsHovered())
 			{
-				m_Crew.GetMember(i)->OnNotHovered();
+				m_PickableGameObjects[i]->OnNotHovered();
 			}
 		}
 	}
@@ -561,7 +562,7 @@ void SceneGame::ShowCrewmember(uint32 crewmember)
 	m_pWorld->SetActiveRoom(roomIndex);
 }
 
-Crewmember* SceneGame::RayTestCrewmembers()
+GameObject* SceneGame::RayTestGameObjects()
 {
 	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), Game::GetGame()->GetWindow().GetWidth(), Game::GetGame()->GetWindow().GetHeight());
 	glm::vec3 rayOrigin = GetCamera().GetPosition();
@@ -569,9 +570,9 @@ Crewmember* SceneGame::RayTestCrewmembers()
 	float lastT = -1;
 	uint32 id = -1;
 
-	for (int i = 0; i < m_Crew.GetCount(); i++)
+	for (int i = 0; i < m_PickableGameObjects.size(); i++)
 	{
-		int32 t = m_Crew.GetMember(i)->TestAgainstRay(rayDir, rayOrigin, GetExtension());
+		int32 t = m_PickableGameObjects[i]->TestAgainstRay(rayDir, rayOrigin, GetExtension());
 
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{
@@ -582,7 +583,7 @@ Crewmember* SceneGame::RayTestCrewmembers()
 
 	if (id != -1)
 	{
-		return m_Crew.GetMember(id);
+		return m_PickableGameObjects[id];
 	}
 	return nullptr;
 }

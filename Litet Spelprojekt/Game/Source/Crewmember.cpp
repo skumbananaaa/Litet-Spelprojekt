@@ -6,6 +6,7 @@
 #include <World/WorldLevel.h>
 #include <World/GameObjectDoor.h>
 
+
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
 	: m_pAssisting(nullptr)
 {
@@ -418,7 +419,7 @@ void Crewmember::LookForDoor() noexcept
 
 				if (door->IsOpen())
 				{
-					m_OrderHandler.GiveOrder(new OrderCloseDoor(door), this);
+					m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
 				}
 		}
 	}

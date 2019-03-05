@@ -9,7 +9,7 @@ GameObjectDoor::GameObjectDoor() noexcept
 	UpdateTransform();
 
 	m_Percentage = 1.0f;
-	m_Open = false;
+	m_Open = true;
 
 }
 

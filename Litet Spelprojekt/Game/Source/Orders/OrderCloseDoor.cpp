@@ -55,5 +55,10 @@ std::string OrderDoor::GetName() noexcept
 	return "Close door";
 }
 
+bool OrderDoor::IsIdleOrder() noexcept
+{
+	return false;
+}
+
 
 

@@ -16,6 +16,7 @@ public:
 	virtual void AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool AllowsMultipleOrders() noexcept override;
 	virtual std::string GetName() noexcept override;
+	virtual bool IsIdleOrder() noexcept;
 
 private:
 	GameObjectDoor* m_pGameObjectDoor;

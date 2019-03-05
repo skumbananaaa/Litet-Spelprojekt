@@ -78,5 +78,6 @@ void OrderHandler::StartOrder()
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderQueue[0]->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Started" << std::endl;
-	m_pOrderListener->OnOrderStarted();
+
+	m_pOrderListener->OnOrderStarted(m_OrderQueue[0]->IsIdleOrder());
 }

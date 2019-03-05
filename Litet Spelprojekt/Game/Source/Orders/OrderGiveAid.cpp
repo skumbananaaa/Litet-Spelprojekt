@@ -54,6 +54,11 @@ bool OrderGiveAid::ReadyToAbort() noexcept
 	return OrderWalk::ReadyToAbort();
 }
 
+bool OrderGiveAid::IsIdleOrder() noexcept
+{
+	return false;
+}
+
 void OrderGiveAid::RunParallel()
 {
 	OrderWalk::RunParallel();

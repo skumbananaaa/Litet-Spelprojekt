@@ -63,6 +63,11 @@ bool OrderWalk::ReadyToAbort() noexcept
 	return m_IsPathReady;
 }
 
+bool OrderWalk::IsIdleOrder() noexcept
+{
+	return false;
+}
+
 void OrderWalk::RunParallel()
 {
 	m_pPath = m_pPathFinder->FindPath(GetCrewMember()->GetTile(), m_GoalTile);

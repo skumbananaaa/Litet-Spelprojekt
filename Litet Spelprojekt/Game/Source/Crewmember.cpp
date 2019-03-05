@@ -226,10 +226,10 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 	return t;
 }
 
-void Crewmember::OnOrderStarted() noexcept
+void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 {
 	std::cout << GetName() << " started order!" << std::endl;
-	m_Idleing = false;
+	m_Idleing = idleOrder;
 }
 
 void Crewmember::OnAllOrdersFinished() noexcept

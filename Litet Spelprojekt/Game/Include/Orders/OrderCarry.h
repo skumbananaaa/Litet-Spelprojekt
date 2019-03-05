@@ -14,6 +14,7 @@ public:
 	virtual bool AllowsMultipleOrders() noexcept;
 	virtual std::string GetName() noexcept;
 	virtual bool ReadyToAbort() noexcept;
+	virtual bool IsIdleOrder() noexcept;
 
 protected:
 	Crewmember* m_pCarrying;

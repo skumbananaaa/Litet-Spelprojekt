@@ -283,6 +283,11 @@ void Scene::ExtendScene() noexcept
 	m_Extended = !m_Extended;
 }
 
+void Scene::RegisterPickableGameObject(GameObject* pickableObject) noexcept
+{
+	m_PickableGameObjects.push_back(pickableObject);
+}
+
 void Scene::OnUpdate(float dtS) noexcept
 {
 	for (GameObject* pGameObject : m_GameObjects)

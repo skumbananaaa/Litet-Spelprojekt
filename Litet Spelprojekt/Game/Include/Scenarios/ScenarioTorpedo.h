@@ -22,6 +22,8 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept;
+
 
 private:
 	GameObjectTorpedo* m_pGameObjectTorpedo;

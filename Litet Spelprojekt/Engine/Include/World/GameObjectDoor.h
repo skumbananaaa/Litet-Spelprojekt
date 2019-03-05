@@ -14,6 +14,11 @@ public:
 
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	virtual void UpdateTransform() noexcept override;
+	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
+
+	void OnPicked() noexcept override;
+
+	virtual void OnAddedToScene(Scene* scene) noexcept override;
 
 private:
 	float m_Percentage;

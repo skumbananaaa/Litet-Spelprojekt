@@ -21,7 +21,7 @@ public:
 
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
 
-	virtual void OnOrderChosen(const std::string& name, void* userData) noexcept override;
+	virtual void OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept override;
 
 private:
 	float m_Percentage;

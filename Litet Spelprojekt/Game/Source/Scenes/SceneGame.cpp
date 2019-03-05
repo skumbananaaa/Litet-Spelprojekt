@@ -3,7 +3,7 @@
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
-
+#include "../../Include/GameObjectDoor.h"
 
 
 SceneGame::SceneGame() : SceneInternal(false),

@@ -12,9 +12,6 @@ GameObjectDoor::GameObjectDoor() noexcept
 
 	m_Percentage = 1.0f;
 	m_Open = true;
-
-	AddChoice("Stäng", nullptr);
-	AddChoice("Öppna", nullptr);
 }
 
 GameObjectDoor::~GameObjectDoor()
@@ -153,9 +150,25 @@ void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcep
 {
 	std::cout << "i am a picked door!" << std::endl;
 
-	DisplayOrders(0, 0);
+	if (!IsClosed())
+	{
+		AddChoice("Stäng", reinterpret_cast<void*>(false));
+	}
+	else if (!IsOpen())
+	{
+		AddChoice("Öppna", reinterpret_cast<void*>(true));
+	}
 
-	
+	DisplayOrders(200, 200, selectedMembers);
+}
+
+void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept
+{
+	scene->RegisterPickableGameObject(this);
+}
+
+void GameObjectDoor::OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept
+{
 	Crew* crew = Game::GetGame()->m_pSceneGame->GetCrew();
 	float shortDistance = FLT_MAX;
 	int32 shipID = -1;
@@ -203,16 +216,6 @@ void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcep
 			tile2 = tile;
 		}
 
-		crewmember->GiveOrder(new OrderDoor(this, tile2, false));
+		crewmember->GiveOrder(new OrderDoor(this, tile2, reinterpret_cast<uint32>(userData)));
 	}
-}
-
-void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept
-{
-	scene->RegisterPickableGameObject(this);
-}
-
-void GameObjectDoor::OnOrderChosen(const std::string & name, void * userData) noexcept
-{
-
 }

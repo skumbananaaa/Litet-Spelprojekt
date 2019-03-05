@@ -17,9 +17,29 @@ void UIOrder::AddChoice(const std::string& name, void* userData) noexcept
 	m_Choices.push_back(std::pair<std::string, void*>(name, userData));
 }
 
-void UIOrder::DisplayOrders(int32 x, int32 y)
+void UIOrder::OnButtonPressed(Button * button)
+{
+}
+
+void UIOrder::OnButtonReleased(Button * button)
+{
+	OnOrderChosen(button->GetText(), button->GetUserData(), m_SelectedMembers);
+	m_pPanel->SetVisible(false);
+}
+
+void UIOrder::OnButtonHovered(Button * button)
+{
+}
+
+void UIOrder::OnButtonNotHovered(Button * button)
+{
+}
+
+void UIOrder::DisplayOrders(int32 x, int32 y, const std::vector<int32>& selectedMembers)
 {
 	DisplayOrders(x, y, this);
+	m_Choices.clear();
+	m_SelectedMembers = selectedMembers;
 }
 
 void UIOrder::DisplayOrders(int32 x, int32 y, UIOrder* uiOrder)
@@ -36,6 +56,7 @@ void UIOrder::DisplayOrders(int32 x, int32 y, UIOrder* uiOrder)
 		Button* button = new Button(0, i * 30, m_pPanel->GetWidth(), 30, uiOrder->m_Choices[i].first);
 		button->SetUserData(uiOrder->m_Choices[i].second);
 		button->SetTextCentered(false);
+		button->AddButtonListener(uiOrder);
 		m_pPanel->Add(button);
 	}
 	Game::GetGame()->GetGUIManager().Add(m_pPanel);

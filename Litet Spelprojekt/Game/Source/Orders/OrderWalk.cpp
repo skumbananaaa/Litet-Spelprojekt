@@ -31,8 +31,8 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	}
 	if (!pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].IsOpen() && !pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z].IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
 	{
-		std::cout << "Door opened" << std::endl;
 		pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].OpenDoor();
+		return false;
 	}
 
 	return FollowPath(dtS);
@@ -93,13 +93,11 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			move.y /= std::abs(move.y);
 			GetCrewMember()->SetDirection(glm::vec3(1, 0, 0));
-			//GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
 			GetCrewMember()->Move(glm::vec3(0, move.y, 0), false, dtS);
 		}
 		else
 		{
 			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
-			//GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
 			GetCrewMember()->Move(GetCrewMember()->GetDirection(), true, dtS);
 		}
 	}
@@ -107,5 +105,6 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 	{
 		return true;
 	}
+
 	return false;
 }

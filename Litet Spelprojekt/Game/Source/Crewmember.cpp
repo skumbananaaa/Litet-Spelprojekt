@@ -13,7 +13,7 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	SetName(name);
 	m_pWorld = world;
 	m_IsPicked = false;
-	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
 	SetAnimatedMesh(MESH::ANIMATED_MODEL);
@@ -24,9 +24,9 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_LastKnownPosition = position;
 
 	//Test
-	m_HasInjuryBoneBroken = Random::GenerateBool();
-	m_HasInjuryBurned = Random::GenerateBool();
-	m_HasInjurySmoke = Random::GenerateBool();
+	m_HasInjuryBoneBroken = false; // Random::GenerateBool();
+	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
+	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);
@@ -41,7 +41,7 @@ Crewmember::Crewmember(Crewmember& other)
 {
 	m_ActionCap = other.m_ActionCap;
 	SetName(other.GetName());
-	m_PlayerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y - 0.9) / 2),std::round(other.GetPosition().z));
+	m_PlayerTile = glm::ivec3(std::round(other.GetPosition().x), std::round((other.GetPosition().y) / 2),std::round(other.GetPosition().z));
 	SetDirection(other.GetDirection());
 	SetMaterial(MATERIAL::CREW_STANDARD);
 	SetMesh(MESH::CUBE);
@@ -103,7 +103,7 @@ const glm::vec3& Crewmember::GetLastKnownPosition() const noexcept
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept
 {
-	glm::vec3 centre = GetPosition();
+	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
 	centre.x += extension * glm::floor(centre.y / 2.0f);
 
 	glm::vec3 normals[]{
@@ -204,12 +204,12 @@ bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 1.0;
+	return m_HasInjuryBurned > 1.0f;
 }
 
 bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 1.0;
+	return m_HasInjurySmoke > 1.0f;
 }
 
 bool Crewmember::isAlive() const noexcept
@@ -361,7 +361,7 @@ const float Crewmember::GetActionCapacity() const
 
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
-	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y - 0.9) / 2),std::round(position.z));
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{

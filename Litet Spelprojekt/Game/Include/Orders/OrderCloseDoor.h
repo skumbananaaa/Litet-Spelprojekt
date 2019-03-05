@@ -5,11 +5,11 @@
 class GameObjectDoor;
 
 
-class OrderCloseDoor : public OrderWalk 
+class OrderDoor : public OrderWalk 
 {
 public:
-	OrderCloseDoor(GameObjectDoor* door);
-	virtual ~OrderCloseDoor();
+	OrderDoor(GameObjectDoor* door, glm::ivec3 doorTile, bool open);
+	virtual ~OrderDoor();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
@@ -20,4 +20,5 @@ public:
 
 private:
 	GameObjectDoor* m_pGameObjectDoor;
+	bool m_Open;
 };

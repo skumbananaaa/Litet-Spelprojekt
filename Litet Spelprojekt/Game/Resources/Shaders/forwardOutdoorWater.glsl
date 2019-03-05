@@ -59,6 +59,7 @@ layout(std140, binding = 3) uniform WorldBuffer
 layout(std140, binding = 6) uniform WaterBuffer
 {
 	vec2 g_WaveFactor;
+	vec2 g_TorpedoPosition;
 };
 
 //OUT
@@ -69,6 +70,7 @@ out VS_OUT
 	vec3 ToCameraVector;
 	vec3 Specular;
 	vec3 Diffuse;
+	float FoamFactor;
 } vs_out;
 
 //CONSTS
@@ -160,6 +162,10 @@ void main()
 	vec3 currentVertex = vec3(g_Position.x, 0.0f, g_Position.y);
 	vec3 vertex1 = currentVertex + vec3(g_Indicators.x, 0.0f, g_Indicators.y);
 	vec3 vertex2 = currentVertex + vec3(g_Indicators.z, 0.0f, g_Indicators.w);
+	vs_out.FoamFactor = min(1.0f, 2.0f / length(g_TorpedoPosition - currentVertex.xz));
+	currentVertex.y += 2.0f * vs_out.FoamFactor;
+	vertex1.y += 2.0f * min(1.0f, 2.0f / length(g_TorpedoPosition - vertex1.xz));
+	vertex2.y += 2.0f * min(1.0f, 2.0f / length(g_TorpedoPosition - vertex2.xz));
 	
 	vs_out.ClipSpaceGrid = g_ProjectionView * vec4(currentVertex, 1.0f);
 	
@@ -273,11 +279,12 @@ layout(early_fragment_tests) in;
 //IN
 in VS_OUT
 {
-	in vec4 ClipSpaceGrid;
-	in vec3 Normal;
-	in vec3 ToCameraVector;
-	in vec3 Specular;
-	in vec3 Diffuse;
+	vec4 ClipSpaceGrid;
+	vec3 Normal;
+	vec3 ToCameraVector;
+	vec3 Specular;
+	vec3 Diffuse;
+	float FoamFactor;
 } fs_in;
 
 //UNIFORMS
@@ -327,6 +334,7 @@ void main()
 	reflectColour = mix(reflectColour, waterColour, minBlueness);
 	
 	vec3 finalColour = mix(reflectColour, refractColour, calculateFresnel());
+	finalColour = mix(finalColour, vec3(0.09f, 0.34f, 0.49f), fs_in.FoamFactor);
 	finalColour = finalColour * fs_in.Diffuse + fs_in.Specular;
 	
 	g_OutColor = vec4(finalColour, 1.0f);

@@ -1,5 +1,5 @@
 #include "../../Include/Orders/OrderCloseDoor.h"
-#include <World/GameObjectDoor.h>
+#include "../../Include/GameObjectDoor.h"
 
 OrderDoor::OrderDoor(GameObjectDoor* door, glm::ivec3 doorTile, bool open) : OrderWalk(doorTile)
 {
@@ -53,6 +53,11 @@ bool OrderDoor::AllowsMultipleOrders() noexcept
 std::string OrderDoor::GetName() noexcept
 {
 	return "Close door";
+}
+
+bool OrderDoor::IsIdleOrder() noexcept
+{
+	return false;
 }
 
 

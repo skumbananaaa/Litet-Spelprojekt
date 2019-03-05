@@ -12,6 +12,9 @@ GameObjectDoor::GameObjectDoor() noexcept
 
 	m_Percentage = 1.0f;
 	m_Open = true;
+
+	AddChoice("Stäng", nullptr);
+	AddChoice("Öppna", nullptr);
 }
 
 GameObjectDoor::~GameObjectDoor()
@@ -149,6 +152,9 @@ void GameObjectDoor::UpdateTransform() noexcept
 void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcept
 {
 	std::cout << "i am a picked door!" << std::endl;
+
+	DisplayOrders(0, 0);
+
 	
 	Crew* crew = Game::GetGame()->m_pSceneGame->GetCrew();
 	float shortDistance = FLT_MAX;
@@ -204,4 +210,9 @@ void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcep
 void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept
 {
 	scene->RegisterPickableGameObject(this);
+}
+
+void GameObjectDoor::OnOrderChosen(const std::string & name, void * userData) noexcept
+{
+
 }

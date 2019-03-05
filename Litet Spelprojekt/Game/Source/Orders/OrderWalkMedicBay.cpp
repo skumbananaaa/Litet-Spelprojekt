@@ -2,6 +2,7 @@
 #include <World/World.h>
 OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld): OrderWalk(pWorld->GetRoom(0).GetCenter())
 {
+	glm::vec3 tst = pWorld->GetRoom(0).GetCenter();
 }
 
 OrderWalkMedicBay::~OrderWalkMedicBay()

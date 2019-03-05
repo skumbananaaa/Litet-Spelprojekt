@@ -8,6 +8,70 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/string_cast.hpp>
 
+#define MAX_NUM_ROOMS 128
+
+enum ReservedTileIndexes : uint32
+{
+	SICKBAY_INTERVAL_END			= MAX_NUM_ROOMS - 1,
+	SICKBAY_0						= MAX_NUM_ROOMS - 1,
+	SICKBAY_1						= MAX_NUM_ROOMS - 2,
+	SICKBAY_INTERVAL_START			= MAX_NUM_ROOMS - 2,
+	NUM_SICKBAYS					= 2,
+	SICKBAY_CATEGORY_INDEX			= 6,
+
+	TOILET_INTERVAL_END				= MAX_NUM_ROOMS - 3,
+	TOILET_0						= MAX_NUM_ROOMS - 3,
+	TOILET_1						= MAX_NUM_ROOMS - 4,
+	TOILET_2						= MAX_NUM_ROOMS - 5,
+	TOILET_3						= MAX_NUM_ROOMS - 6,
+	TOILET_INTERVAL_START			= MAX_NUM_ROOMS - 6,
+	NUM_TOILETS						= 4,
+	TOILET_CATEGORY_INDEX			= 5,
+
+	MACHINE_ROOM_INTERVAL_END		= MAX_NUM_ROOMS - 7,
+	MACHINE_ROOM_0					= MAX_NUM_ROOMS - 7,
+	MACHINE_ROOM_1					= MAX_NUM_ROOMS - 8,
+	MACHINE_ROOM_INTERVAL_START		= MAX_NUM_ROOMS - 8,
+	NUM_MACHINE_ROOMS				= 2,
+	MACHINE_ROOM_CATEGORY_INDEX		= 4,
+
+	AMMUNITION_ROOM_INTERVAL_END	= MAX_NUM_ROOMS - 9,
+	AMMUNITION_ROOM_0				= MAX_NUM_ROOMS - 9,
+	AMMUNITION_ROOM_INTERVAL_START	= MAX_NUM_ROOMS - 9,
+	NUM_AMMUNITION_ROOMS			= 1,
+	AMMUNITION_ROOM_CATEGORY_INDEX	= 3,
+
+	KITCHEN_INTERVAL_END			= MAX_NUM_ROOMS - 10,
+	KITCHEN_0						= MAX_NUM_ROOMS - 10,
+	KITCHEN_INTERVAL_START			= MAX_NUM_ROOMS - 10,
+	NUM_KITCHENS					= 1,
+	KITCHEN_CATEGORY_INDEX			= 2,
+
+	DINING_ROOM_INTERVAL_END		= MAX_NUM_ROOMS - 11,
+	DINING_ROOM_0					= MAX_NUM_ROOMS - 11,
+	DINING_ROOM_INTERVAL_START		= MAX_NUM_ROOMS - 11,
+	NUM_DINING_ROOMS				= 1,
+	DINING_ROOM_CATEGORY_INDEX		= 1,
+
+	CABOOSE_INTERVAL_END			= MAX_NUM_ROOMS - 12,
+	CABOOSE_0						= MAX_NUM_ROOMS - 12,
+	CABOOSE_1						= MAX_NUM_ROOMS - 13,
+	CABOOSE_2						= MAX_NUM_ROOMS - 14,
+	CABOOSE_3						= MAX_NUM_ROOMS - 15,
+	CABOOSE_4						= MAX_NUM_ROOMS - 16,
+	CABOOSE_5						= MAX_NUM_ROOMS - 17,
+	CABOOSE_6						= MAX_NUM_ROOMS - 18,
+	CABOOSE_7						= MAX_NUM_ROOMS - 19,
+	CABOOSE_8						= MAX_NUM_ROOMS - 20,
+	CABOOSE_9						= MAX_NUM_ROOMS - 21,
+	CABOOSE_INTERVAL_START			= MAX_NUM_ROOMS - 21,
+	NUM_CABOOSES					= 10,
+	CABOOSE_CATEGORY_INDEX			= 0,
+
+	SMALLEST_RESERVED				= MAX_NUM_ROOMS - 21,
+	NUM_RESERVED_ROOM_CATEGORIES	= 7
+};
+
 struct WorldObject
 {
 	glm::uvec3 TileId = glm::uvec3(0);
@@ -54,6 +118,10 @@ public:
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
 
+public:
+	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromGlobal(uint32 globalIndex) noexcept;
+	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept;
+
 private:
 	void GenerateRooms(Scene& scene) noexcept;
 	void GenerateFloor(Scene& scene) noexcept;
@@ -73,3 +141,40 @@ private:
 	std::vector<uint32> m_ActiveRooms;
 	std::vector<PointLight*> m_RoomLights;
 };
+
+inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromGlobal(uint32 globalIndex) noexcept
+{
+	if (globalIndex >= SICKBAY_INTERVAL_START && globalIndex <= SICKBAY_INTERVAL_END)
+	{
+		return glm::uvec3(SICKBAY_INTERVAL_START - SMALLEST_RESERVED, SICKBAY_INTERVAL_END - SMALLEST_RESERVED, SICKBAY_CATEGORY_INDEX);
+	}
+	else if (globalIndex >= TOILET_INTERVAL_START && globalIndex <= TOILET_INTERVAL_END)
+	{
+		return glm::uvec3(TOILET_INTERVAL_START - SMALLEST_RESERVED, TOILET_INTERVAL_END - SMALLEST_RESERVED, TOILET_CATEGORY_INDEX);
+	}
+	else if (globalIndex >= MACHINE_ROOM_INTERVAL_START && globalIndex <= MACHINE_ROOM_INTERVAL_END)
+	{
+		return glm::uvec3(MACHINE_ROOM_INTERVAL_START - SMALLEST_RESERVED, MACHINE_ROOM_INTERVAL_END - SMALLEST_RESERVED, MACHINE_ROOM_CATEGORY_INDEX);
+	}
+	else if (globalIndex >= AMMUNITION_ROOM_INTERVAL_START && globalIndex <= AMMUNITION_ROOM_INTERVAL_END)
+	{
+		return glm::uvec3(AMMUNITION_ROOM_INTERVAL_START - SMALLEST_RESERVED, AMMUNITION_ROOM_INTERVAL_END - SMALLEST_RESERVED, AMMUNITION_ROOM_CATEGORY_INDEX);
+	}
+	else if (globalIndex >= KITCHEN_INTERVAL_START && globalIndex <= KITCHEN_INTERVAL_END)
+	{
+		return glm::uvec3(KITCHEN_INTERVAL_START - SMALLEST_RESERVED, KITCHEN_INTERVAL_END - SMALLEST_RESERVED, KITCHEN_CATEGORY_INDEX);
+	}
+	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
+	{
+		return glm::uvec3(DINING_ROOM_INTERVAL_START - SMALLEST_RESERVED, DINING_ROOM_INTERVAL_END - SMALLEST_RESERVED, DINING_ROOM_CATEGORY_INDEX);
+	}
+	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
+	{
+		return glm::uvec3(CABOOSE_INTERVAL_START - SMALLEST_RESERVED, CABOOSE_INTERVAL_END - SMALLEST_RESERVED, CABOOSE_CATEGORY_INDEX);
+	}
+}
+
+inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept
+{
+	return GetReservedTileLocalIntervalAndCategoryFromGlobal(localIndex + SMALLEST_RESERVED);
+}

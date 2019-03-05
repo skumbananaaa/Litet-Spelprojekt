@@ -413,7 +413,7 @@ void SceneGame::CreateCrew() noexcept
 	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
-	//m_Crew.GetMember(0)->SetHidden(true);
+	m_Crew.GetMember(0)->SetHidden(false);
 	m_Crew.GetMember(0)->UpdateTransform();
 	AddGameObject(m_Crew.GetMember(0));
 

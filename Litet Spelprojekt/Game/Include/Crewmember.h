@@ -194,10 +194,10 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 1.0f;
+	return false;// m_HasInjuryBurned > 9.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 1.0f;
+	return false;// m_HasInjurySmoke > 9.0f;
 }

@@ -167,7 +167,7 @@ void GameObjectDoor::UpdateTransform() noexcept
 
 void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcept
 {
-	std::cout << "i am a picked door!" << std::endl;
+	std::cout << "I am a picked door!" << std::endl;
 
 	if (!IsClosed())
 	{

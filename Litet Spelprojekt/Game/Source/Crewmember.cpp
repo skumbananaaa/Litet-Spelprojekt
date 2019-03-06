@@ -71,8 +71,16 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers) noexcept
 {
-	m_IsPicked = true;
-	Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
+	if (!m_IsPicked)
+	{
+		m_IsPicked = true;
+		Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
+	}
+	else
+	{
+		m_IsPicked = false;
+		Game::GetGame()->m_pSceneGame->GetCrew()->RemoveFromSelectedList(GetShipNumber());
+	}
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept

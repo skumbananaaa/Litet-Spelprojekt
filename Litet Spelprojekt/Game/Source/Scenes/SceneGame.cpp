@@ -256,7 +256,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					GameObject* object = RayTestGameObjects();
+					/*GameObject* object = RayTestGameObjects();
 					if (!object)
 					{
 						PickPosition();
@@ -264,7 +264,9 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 					else if (m_Crew.HasSelectedMembers())
 					{
 						object->OnPicked(m_Crew.GetSelectedList());
-					}
+					}*/
+
+					PickPosition();
 				}
 				break;
 			}
@@ -585,6 +587,10 @@ void SceneGame::PickObject(bool hover)
 			{
 				object->OnPicked(m_Crew.GetSelectedList());
 			}
+		}
+		else if (m_Crew.HasSelectedMembers() && !hover)
+		{
+			object->OnPicked(m_Crew.GetSelectedList());
 		}
 	}
 	else if (hover)

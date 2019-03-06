@@ -177,12 +177,15 @@ void Crew::AddMember(World* world, const glm::vec4& lightColor, const glm::vec3&
 	{
 	case NONE:
 		m_None.push_back(m_NrOf);
+		member->m_Group = NONE;
 		break;
 	case SMOKE_DIVER:
 		m_SmokeDivers.push_back(m_NrOf);
+		member->m_Group = SMOKE_DIVER;
 		break;
 	case MEDIC:
 		m_Medics.push_back(m_NrOf);
+		member->m_Group = MEDIC;
 		break;
 	}
 	m_Squads[squad].push_back(m_NrOf);

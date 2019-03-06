@@ -60,6 +60,13 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		CheckFireDamage(m_pWorld->GetLevel(GetTile().y*2).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
 	}
+
+	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+
+	if (room.IsBurning() && !room.IsFireDetected())
+	{
+		room.SetFireDetected(true);
+	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers) noexcept

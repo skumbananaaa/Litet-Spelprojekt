@@ -55,5 +55,10 @@ bool OrderDoor::IsIdleOrder() noexcept
 	return false;
 }
 
+bool OrderDoor::CanExecuteIfHurt() noexcept
+{
+	return false;
+}
+
 
 

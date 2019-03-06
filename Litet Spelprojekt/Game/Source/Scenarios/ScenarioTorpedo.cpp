@@ -28,8 +28,8 @@ void ScenarioTorpedo::OnStart(SceneGame* scene) noexcept
 	glm::vec3 centre = glm::vec3(6, 0, 21);
 	glm::vec3 ray = glm::normalize(pos - centre);
 	m_Target = pos + ray * (float)TestAgainstRay(ray, pos);
-	m_Target.x = glm::clamp(m_Target.x, 1.0f, 11.0f);
-	m_Target.z = glm::clamp(m_Target.z, 1.0f, 41.0f);
+	m_Target.x = glm::clamp(m_Target.x, 1.0f, 10.0f);
+	m_Target.z = glm::clamp(m_Target.z, 1.0f, 40.0f);
 
 	m_pGameObjectTorpedo = new GameObjectTorpedo(pos, m_Target);
 

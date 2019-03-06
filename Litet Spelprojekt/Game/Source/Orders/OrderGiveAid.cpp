@@ -63,3 +63,8 @@ void OrderGiveAid::RunParallel()
 {
 	OrderWalk::RunParallel();
 }
+
+bool OrderGiveAid::CanExecuteIfHurt() noexcept
+{
+	return false;
+}

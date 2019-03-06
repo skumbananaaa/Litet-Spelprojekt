@@ -20,8 +20,10 @@ public:
 	void Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept;
 
 private:
-	void StartOrder();
+	bool StartOrder();
+	bool CanExecuteOrder(IOrder* order, Crewmember* crewMember) noexcept;
 
 	std::vector<IOrder*> m_OrderQueue;
+	std::vector<IOrder*> m_OrdersToAbort;
 	IOrderListener* m_pOrderListener;
 };

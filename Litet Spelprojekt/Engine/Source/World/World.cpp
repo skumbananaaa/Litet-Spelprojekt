@@ -1,6 +1,5 @@
 #include <EnginePch.h>
 #include <World/World.h>
-#include <World/GameObjectDoor.h>
 
 World::World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects, uint32 numObjects) noexcept
 	: m_Levels(),
@@ -194,12 +193,32 @@ void World::PlaceDoors(Scene& scene) noexcept
 				pGameObject->UpdateTransform();
 				scene.AddGameObject(pGameObject);
 
-				pGameObject = new GameObjectDoor();
+				pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::DOOR);
 				pGameObject->SetPosition(position);
 				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
 				pGameObject->SetDirection(glm::vec3((int)delta.z == 0, 0, -((int)delta.z == -1)));
 				pGameObject->UpdateTransform();
 				scene.AddGameObject(pGameObject);
+
+				if (door1.y == 0 || (int32)position.z % 8 == 0)
+				{
+					pGameObject->SetMaterial(MATERIAL::RED);
+				}
+				else
+				{
+					DOOR_COLOR color1 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door1.x][(int32)door1.z]);
+					DOOR_COLOR color2 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door2.x][(int32)door2.z]);
+
+					if (color1 < color2)
+					{
+						pGameObject->SetMaterial(GetDoorMaterialFromColor(color1));
+					}
+					else
+					{
+						pGameObject->SetMaterial(GetDoorMaterialFromColor(color2));
+					}
+					
+				}
 
 				level.GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 				level.GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
@@ -265,7 +284,6 @@ void World::GenerateRoomShadows(const Scene& scene) noexcept
 void World::Generate(Scene& scene) noexcept
 {
 	PlaceDoors(scene);
-
 	GenerateRooms(scene);
 	GenerateFloor(scene);
 	GenerateLevelObject(scene);

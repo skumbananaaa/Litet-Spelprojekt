@@ -3,7 +3,7 @@
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
-#include <World/GameObjectDoor.h>
+#include "../../Include/GameObjectDoor.h"
 
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
@@ -113,6 +113,11 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		ScenarioManager::Update(dtS, m_pWorld, this);
 		UpdateCamera(dtS);
 
+		for (uint32 i = 0; i < m_pWorld->GetNumRooms(); i++)
+		{
+			m_pWorld->GetRoom(i).SetFloodUpdated(false);
+		}
+
 		static float dist = 0.0f;
 		dist += 0.02f * dtS;
 		((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
@@ -203,7 +208,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		}
 		else
 		{
-			PickObject(true);
+			PickObject(true, position.x, position.y);
 		}
 	}
 }
@@ -236,31 +241,51 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 	}
 }
 
-void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 {
 }
 
-void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
 	if (!IsPaused())
 	{
 		switch (mousebutton)
 		{
-			case MOUSE_BUTTON_LEFT:
-			{
-				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
-				{
-					PickPosition();
-				}
-				break;
-			}
 			case MOUSE_BUTTON_RIGHT:
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					PickObject(false);
+					/*GameObject* object = RayTestGameObjects();
+					if (!object)
+					{
+						PickPosition();
+					}
+					else if (m_Crew.HasSelectedMembers())
+					{
+						object->OnPicked(m_Crew.GetSelectedList());
+					}*/
+
+					PickPosition();
 				}
 				break;
+			}
+			case MOUSE_BUTTON_LEFT:
+			{
+				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
+				{
+					PickObject(false, position.x, position.y);
+				}
+				break;
+			}
+			case MOUSE_BUTTON_MIDDLE:
+			{
+				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				{
+					if (m_Crew.GetMember(i)->IsPicked())
+					{
+						m_Crew.GetMember(i)->GoToMedicBay(m_pWorld);
+					}
+				}
 			}
 		}
 	}
@@ -404,17 +429,46 @@ void SceneGame::CreateCrew() noexcept
 	//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 	//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 	m_Crew.GetMember(0)->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
-	//m_Crew.GetMember(0)->SetHidden(true);
+	m_Crew.GetMember(0)->SetHidden(false);
 	m_Crew.GetMember(0)->UpdateTransform();
 	AddGameObject(m_Crew.GetMember(0));
 
 	float x, y, z;
-	for (int i = 1; i < NUM_CREW; i++)
+	uint32 numSmokeDivers = 3;
+	uint32 numMedics = 2;
+	uint32 numNone = NUM_CREW - numMedics - numSmokeDivers;
+	for (int i = 1; i < numNone; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15]);
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetHidden(true);
+		m_Crew.GetMember(i)->UpdateTransform();
+		AddGameObject(m_Crew.GetMember(i));
+	}
+	for (int i = numNone; i < numNone + numMedics; i++)
+	{
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15], SMOKE_DIVER);
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetHidden(true);
+		m_Crew.GetMember(i)->UpdateTransform();
+		AddGameObject(m_Crew.GetMember(i));
+	}
+	for (int i = numNone + numMedics; i < NUM_CREW; i++)
+	{
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15], MEDIC);
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -520,22 +574,31 @@ void SceneGame::RequestDoorClosed()
 	//}
 }
 
-void SceneGame::PickObject(bool hover)
+void SceneGame::PickObject(bool hover, int32 positionX, int32 positionY)
 {
 	GameObject* object = RayTestGameObjects();
 
 	if (object)
 	{
-		if (hover)
+		Crewmember* crewMember = dynamic_cast<Crewmember*>(object);
+
+		if (crewMember)
 		{
-			if (!object->IsHovered())
+			if (hover)
 			{
-				object->OnHovered();
+				if (!object->IsHovered())
+				{
+					object->OnHovered();
+				}
+			}
+			else
+			{
+				object->OnPicked(m_Crew.GetSelectedList(), 0, 0);
 			}
 		}
-		else
+		else if (m_Crew.HasSelectedMembers() && !hover)
 		{
-			object->OnPicked();
+			object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 		}
 	}
 	else if (hover)

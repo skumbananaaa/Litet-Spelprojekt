@@ -101,7 +101,7 @@ void main()
 	vs_out.FragPosition = worldPos.xyz;
 
 	//Do extension
-	worldPos.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
+	worldPos.x += g_Extension * floor(clamp(g_InstanceModel[3].y, 0.0f, 5.9f) / 2.0f);
 
 	//Viewdir
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);
@@ -126,7 +126,7 @@ void main()
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
 		vec3 lightPos = vec3(g_PointLights[i].Position.xyz);
-		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
+		lightPos.x += g_Extension * floor(clamp(lightPos.y, 0.0f, 5.9f) / 2.0f);
 
 		vec3 lightDir = lightPos - worldPos.xyz;
 		float dist = length(lightDir);
@@ -143,7 +143,7 @@ void main()
 	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
 	{
 		vec3 lightPos = vec3(g_SpotLights[i].Position.xyz);
-		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
+		lightPos.x += g_Extension * floor(clamp(lightPos.y, 0.0f, 5.9f) / 2.0f);
 
 		float light_attenuation = 1.0f;
 		vec3 lightDir = lightPos - worldPos.xyz;

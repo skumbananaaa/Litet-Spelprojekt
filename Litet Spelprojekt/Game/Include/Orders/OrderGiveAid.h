@@ -16,8 +16,9 @@ public:
 	virtual bool AllowsMultipleOrders() noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual bool ReadyToAbort() noexcept override;
+	virtual bool IsIdleOrder() noexcept override;
 	virtual void RunParallel() override;
-
+	virtual bool CanExecuteIfHurt() noexcept override;
 protected:
 	Crewmember* m_pAiding;
 	glm::ivec3 m_Target;

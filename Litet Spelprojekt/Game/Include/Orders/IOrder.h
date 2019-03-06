@@ -27,6 +27,8 @@ public:
 	virtual bool AllowsMultipleOrders() noexcept = 0;
 	virtual std::string GetName() noexcept = 0;
 	virtual bool ReadyToAbort() noexcept = 0;
+	virtual bool IsIdleOrder() noexcept = 0;
+	virtual bool CanExecuteIfHurt() noexcept = 0;
 
 private:
 	Crewmember* m_pCrewMember;

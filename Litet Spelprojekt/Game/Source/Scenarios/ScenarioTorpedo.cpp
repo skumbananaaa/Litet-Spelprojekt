@@ -28,6 +28,8 @@ void ScenarioTorpedo::OnStart(SceneGame* scene) noexcept
 	glm::vec3 centre = glm::vec3(6, 0, 21);
 	glm::vec3 ray = glm::normalize(pos - centre);
 	m_Target = pos + ray * (float)TestAgainstRay(ray, pos);
+	m_Target.x = glm::clamp(m_Target.x, 1.0f, 10.0f);
+	m_Target.z = glm::clamp(m_Target.z, 1.0f, 40.0f);
 
 	m_pGameObjectTorpedo = new GameObjectTorpedo(pos, m_Target);
 
@@ -40,7 +42,7 @@ void ScenarioTorpedo::OnEnd(SceneGame* scene) noexcept
 	DeleteSafe(m_pGameObjectTorpedo);
 
 	WaterOutdoorMaterial* pMaterial = reinterpret_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
-	pMaterial->SetTorpedoPosition(glm::vec2(0, 0));
+	pMaterial->SetTorpedoPosition(glm::vec2(FLT_MAX, FLT_MAX));
 }
 
 void ScenarioTorpedo::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
@@ -93,7 +95,8 @@ bool ScenarioTorpedo::Update(float dtS, World* world, SceneGame* scene) noexcept
 				if (distance <= 10)
 				{
 					crew->GetMember(i)->ApplyBurnInjury(10 - distance + 1);
-					crew->GetMember(i)->ApplyBoneInjury();
+					crew->GetMember(i)->ApplyBoneInjury(10 - distance + 1);
+					crew->GetMember(i)->ApplyBleedInjury(10 - distance + 1);
 					Logger::LogEvent(crew->GetMember(i)->GetName() + " was hit!", false);
 				}
 			}

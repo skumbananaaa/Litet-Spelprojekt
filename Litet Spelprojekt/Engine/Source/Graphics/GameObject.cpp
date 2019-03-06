@@ -63,7 +63,7 @@ void GameObject::OnNotHovered() noexcept
 	//m_IsHovered = false;
 	//Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
 }
-void GameObject::OnPicked() noexcept
+void GameObject::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
 	//m_IsPicked = true;
 }

@@ -51,7 +51,8 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)
 			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel > WATER_UPDATE_LEVEL_INTERVAL))
 			{
 				GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
-				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
+				Room& room = pWorld->GetRoom(ppLevel[currentTile.x][currentTile.y]);
+				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end() || room.IsFloodDetected();
 
 				if (waterIsVisible)
 				{
@@ -113,6 +114,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		uint32 tilesBetweenBulkheads = pWorld->GetLevel(levelIndex).GetTilesBetweenBulkheads();
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
+
 
 		//We are on the upper grid level of a world level
 
@@ -183,10 +185,10 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tilePosZ, canSpreadToPosZ);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tileNegZ, canSpreadToNegZ);
 
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor.x, waterLevelDifPosX);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor.y, waterLevelDifNegX);
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor.z, waterLevelDifPosZ);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor.w, waterLevelDifNegZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor.x, canSpreadToPosX);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor.y, canSpreadToNegX);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor.z, canSpreadToPosZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor.w, canSpreadToNegZ);
 				}
 			}
 			else
@@ -203,7 +205,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			ppLevelData[currentTile.x][currentTile.y].WaterLevel = glm::min<float>(newActualWaterLevel, WATER_MAX_LEVEL);
 			ppLevelData[currentTile.x][currentTile.y].WaterLevelChange = glm::max<float>(newActualWaterLevel - WATER_MAX_LEVEL, 0.0f);
 
-			Evaporate(pScene, ppLevelData, toRemoveFloodingIDs, currentTile, dtS);
+			Evaporate(pScene, ppLevelData, ppLevel, toRemoveFloodingIDs, currentTile, dtS);
 			ExtinguishFire(ppLevelData, pWorld->GetLevel(levelIndex + 1).GetLevelData(), currentTile, dtS);
 
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
@@ -217,7 +219,14 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 				pGameObject->SetPosition(glm::vec3(currentTile.x, (float)levelIndex + 0.05f + yScale / 2.0f, currentTile.y));
 				pGameObject->SetScale(glm::vec3(1.0f, yScale, 1.0f));
 
-				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end();
+				Room& room = pWorld->GetRoom(ppLevel[currentTile.x][currentTile.y]);
+				bool waterIsVisible = m_WaterAlwaysVisible || std::find(activeRooms.begin(), activeRooms.end(), ppLevel[currentTile.x][currentTile.y]) != activeRooms.end() || room.IsFloodDetected();
+
+				if (!room.IsFlooded() && !room.IsFloodUpdatedThisFrame())
+				{
+					room.SetFlooded(true);
+					room.SetFloodUpdated(true);
+				}
 
 				if (waterIsVisible)
 				{

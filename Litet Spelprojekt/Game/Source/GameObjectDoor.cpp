@@ -1,14 +1,14 @@
 #include <EnginePch.h>
-#include <World\GameObjectDoor.h>
+#include "../Include/GameObjectDoor.h"
+#include "../Include/Game.h"
+#include "../Include/Orders/OrderCloseDoor.h"
 #include <Graphics/Scene.h>
 
 GameObjectDoor::GameObjectDoor() noexcept
 {
-	SetMaterial(MATERIAL::WHITE);
-	SetMesh(MESH::DOOR);
 	UpdateTransform();
 
-	m_Percentage = 0.0f;
+	m_Percentage = 1.0f;
 	m_Open = false;
 }
 
@@ -30,6 +30,27 @@ bool GameObjectDoor::IsOpen() const noexcept
 bool GameObjectDoor::IsClosed() const noexcept
 {
 	return m_Percentage <= 0.0F;
+}
+
+DOOR_COLOR GameObjectDoor::GetColor() const noexcept
+{
+	if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::RED))
+	{
+		return RED;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::GREEN))
+	{
+		return GREEN;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::BLUE))
+	{
+		return BLUE;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::YELLOW))
+	{
+		return YELLOW;
+	}
+	return YELLOW;
 }
 
 void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept
@@ -144,12 +165,76 @@ void GameObjectDoor::UpdateTransform() noexcept
 	}
 }
 
-void GameObjectDoor::OnPicked() noexcept
+void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	std::cout << "i am a picked door!" << std::endl;
+	std::cout << "I am a picked door!" << std::endl;
+
+	if (!IsClosed())
+	{
+		AddChoice("Stäng", reinterpret_cast<void*>(false));
+	}
+	else if (!IsOpen())
+	{
+		AddChoice("Öppna", reinterpret_cast<void*>(true));
+	}
+
+	DisplayOrders(x, y, selectedMembers);
 }
 
 void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept
 {
 	scene->RegisterPickableGameObject(this);
+}
+
+void GameObjectDoor::OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept
+{
+	Crew* crew = Game::GetGame()->m_pSceneGame->GetCrew();
+	float shortDistance = FLT_MAX;
+	int32 shipID = -1;
+	for (int i = 0; i < selectedMembers.size(); i++)
+	{
+		float distance = glm::distance(GetPosition(), crew->GetMember(selectedMembers[i])->GetPosition());
+		if (distance < shortDistance)
+		{
+			shortDistance = distance;
+			shipID = selectedMembers[i];
+		}
+	}
+
+	if (shipID >= 0)
+	{
+		World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
+		const glm::ivec3& tile = GetTile();
+		glm::ivec3 tile2;
+		TileData * const * tiles = pWorld->GetLevel(tile.y).GetLevelData();
+		Crewmember* crewmember = crew->GetMember(shipID);
+
+		if (tiles[tile.x + 1][tile.z].HasDoor())
+		{
+			tile2 = tile;
+			tile2.x += 1;
+		}
+		else if (tiles[tile.x - 1][tile.z].HasDoor())
+		{
+			tile2 = tile;
+			tile2.x -= 1;
+		}
+		else if (tiles[tile.x][tile.z + 1].HasDoor())
+		{
+			tile2 = tile;
+			tile2.z += 1;
+		}
+		else if (tiles[tile.x][tile.z - 1].HasDoor())
+		{
+			tile2 = tile;
+			tile2.z -= 1;
+		}
+
+		if (glm::distance((glm::vec3)tile, crewmember->GetPosition()) < glm::distance((glm::vec3)tile2, crewmember->GetPosition()))
+		{
+			tile2 = tile;
+		}
+
+		crewmember->GiveOrder(new OrderDoor(this, tile2, reinterpret_cast<uint32>(userData)));
+	}
 }

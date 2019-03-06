@@ -18,10 +18,14 @@ void OrderGiveAid::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) 
 bool OrderGiveAid::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
 	bool res = OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS);
-	
+	uint32 healLevel = 2;
+	if (GetCrewMember()->GetGroup() == MEDIC)
+	{
+		healLevel = 5;
+	}
 	if (res)
 	{
-		res = m_pAiding->Heal(GetCrewMember()->GetSkillMedic(), dtS);
+		res = m_pAiding->Heal(healLevel, dtS);
 	}
 	return res;
 }
@@ -54,7 +58,17 @@ bool OrderGiveAid::ReadyToAbort() noexcept
 	return OrderWalk::ReadyToAbort();
 }
 
+bool OrderGiveAid::IsIdleOrder() noexcept
+{
+	return false;
+}
+
 void OrderGiveAid::RunParallel()
 {
 	OrderWalk::RunParallel();
+}
+
+bool OrderGiveAid::CanExecuteIfHurt() noexcept
+{
+	return false;
 }

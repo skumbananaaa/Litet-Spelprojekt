@@ -18,6 +18,7 @@ uint32 TEXTURE::INSTRUMENT_2 = 0;
 uint32 TEXTURE::ICON_INJURY_BONE = 0;
 uint32 TEXTURE::ICON_INJURY_BURN = 0;
 uint32 TEXTURE::ICON_INJURY_SMOKE = 0;
+uint32 TEXTURE::ICON_INJURY_BLEED = 0;
 uint32 TEXTURE::ICON_SKILL_FIRE = 0;
 uint32 TEXTURE::ICON_SKILL_MEDIC = 0;
 uint32 TEXTURE::ICON_SKILL_STRENGTH = 0;
@@ -64,6 +65,7 @@ void TEXTURE::RegisterResources()
 	WALL1				= ResourceHandler::RegisterTexture2D("wallTexture.jpg", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR1				= ResourceHandler::RegisterTexture2D("floorTexture.jpg", TEX_FORMAT_RGBA, true, false, params);
 
+	ICON_INJURY_BLEED	= ResourceHandler::RegisterTexture2D("Icons/InjuryBleed.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BURN	= ResourceHandler::RegisterTexture2D("Icons/InjuryBurn.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_SMOKE	= ResourceHandler::RegisterTexture2D("Icons/InjurySmoke.png", TEX_FORMAT_RGBA, false, true);

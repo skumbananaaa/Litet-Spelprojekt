@@ -1,6 +1,6 @@
 #pragma once
 #include "IScenario.h"
-#include <World/GameObjectDoor.h>
+#include "../GameObjectDoor.h"
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
@@ -43,12 +43,12 @@ private:
 	glm::vec4 CalculateFloodFactors(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept;
 
 	void UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept;
-	void UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept;
+	void UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, uint32 canSpreadTo) const noexcept;
 
 	void UpdateFloodingIdsBelow(WorldLevel& worldLevel, uint32 waterLevelIndexBelow, const glm::ivec2& tile) const noexcept;
 	bool UpdateWaterLevelBelow(WorldLevel& worldLevel, WorldLevel& pWorldLevelBelow, const glm::ivec2& tile) const noexcept;
 
-	void Evaporate(Scene* pScene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
+	void Evaporate(Scene* pScene, TileData * const * ppLevelData, const uint32* const * ppLevel, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
 	void ExtinguishFire(TileData * const * ppLevelData, TileData * const * ppLevelDataAbove, const glm::ivec2& currentTile, float dtS) const noexcept;
 };
 
@@ -170,9 +170,9 @@ inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std
 	}
 }
 
-inline void ScenarioWater::UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept
+inline void ScenarioWater::UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, uint32 canSpreadTo) const noexcept
 {
-	//if (waterLevelDif > 0.0f)
+	if (canSpreadTo > 0)
 	{
 		ppLevelData[tileFrom.x][tileFrom.y].WaterLevelChange -= floodFactor;
 		ppLevelData[tileTo.x][tileTo.y].WaterLevelChange += floodFactor;
@@ -204,7 +204,7 @@ inline bool ScenarioWater::UpdateWaterLevelBelow(WorldLevel& worldLevel, WorldLe
 	return false;
 }
 
-inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelData, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept
+inline void ScenarioWater::Evaporate(Scene* pScene, TileData * const * ppLevelData, const uint32* const * ppLevel, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept
 {
 	if (ppLevelData[tile.x][tile.y].WaterLevelAge < 0.01f)
 	{
@@ -223,6 +223,16 @@ inline void ScenarioWater::Evaporate(Scene* scene, TileData * const * ppLevelDat
 			ppLevelData[tile.x][tile.y].AlreadyFlooded = false;
 			ppLevelData[tile.x][tile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetIsVisible(false);
 			toRemoveFloodingIDs.push_back(tile);
+
+			SceneGame* pSceneGame = (SceneGame*)pScene;
+			World* pWorld = pSceneGame->GetWorld();
+
+			Room& room = pSceneGame->GetWorld()->GetRoom(ppLevel[tile.x][tile.y]);
+
+			if (room.IsFlooded() && !room.IsFloodUpdatedThisFrame())
+			{
+				room.SetFlooded(false);
+			}
 
 			//if (ppLevelData[tile.x][tile.y].Burning)
 			//{

@@ -5,6 +5,8 @@
 #include "../Include/Scenarios/ScenarioWater.h"
 #include "../Include/Scenarios/ScenarioMissile.h"
 #include "../Include/Scenarios/ScenarioTorpedo.h"
+#include <World/Scenarios/Fire/FireAlarm.h>
+#include "../Include/GameObjectDoor.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -25,6 +27,8 @@ Game::Game() noexcept
 	m_pSceneScenario(nullptr),
 	m_pSceneGame(nullptr)
 {
+	ResourceHandler::SetGameObjectCreator(this);
+
 	m_pSceneLoading = new SceneLoading();
 
 	m_pRenderer = new ForwardRenderer();
@@ -40,8 +44,8 @@ Game::Game() noexcept
 
 	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioMissile());
 	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioTorpedo());
-	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(true));
-	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(true));
+	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(false));
+	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 	SetScene(m_pSceneLoading);
 }
@@ -60,6 +64,19 @@ Game::~Game()
 	DeleteSafe(m_pAudioSourceMenu);
 
 	ScenarioManager::Release();
+}
+
+GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
+{
+	if (gameobject == GAMEOBJECT::FIREALARM)
+	{
+		return new FireAlarm(SOUND::MONO_FIREALARM);
+	}
+	else if (gameobject == GAMEOBJECT::DOOR)
+	{
+		return new GameObjectDoor();
+	}
+	return new GameObject();
 }
 
 void Game::OnResourceLoading(const std::string& file, float percentage)
@@ -187,6 +204,10 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
+	if (m_pSceneGame)
+	{
+		//m_pSceneGame->OnRender(dtS);
+	}
 	if (m_pScene)
 	{
 		m_pScene->OnRender(dtS);

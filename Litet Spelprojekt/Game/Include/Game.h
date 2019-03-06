@@ -9,6 +9,7 @@
 #include "Scenes/SceneScenario.h"
 #include <Graphics/Renderers/ForwardRenderer.h>
 #include <Audio/Sources/AudioSource.h>
+#include <IO/ResourceHandler.h>
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
@@ -16,11 +17,13 @@
 
 #define NUM_CREW 15
 
-class Game : public Application
+class Game : public Application, public IGameObjectCreator
 {
 public:
 	Game() noexcept;
 	~Game();
+
+	virtual GameObject* CreateGameObject(uint32 gameobject) noexcept override;
 
 	void OnResourceLoading(const std::string&, float percentage) override;
 	void OnResourcesLoaded() override;

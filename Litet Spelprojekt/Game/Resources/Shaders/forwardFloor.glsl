@@ -209,8 +209,8 @@ float InvShadowCalc(vec3 fragPos, vec3 normal, samplerCube shadowMap, int lightI
 	float currentDepth = length(toLight);
 	float closestDepth = texture(shadowMap, toLight).r * g_LightPos[lightIndex].w * 10.0f; //FARPLANE
 
-	float bias = max(0.025f * (1.0f - dot(normal, normalize(toLight)), 0.00125f);
-	return lightComingFromAbove * (currentDepth - bias) >= closestDepth ? 0.0f : 1.0f;
+	float bias = max(0.025f * (1.0f - dot(normal, normalize(toLight))), 0.00125f);
+	return (currentDepth - bias) >= closestDepth ? 0.0f : 1.0f;
 }
 
 void main()

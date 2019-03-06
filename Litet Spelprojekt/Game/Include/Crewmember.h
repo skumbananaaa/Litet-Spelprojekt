@@ -42,14 +42,15 @@ public:
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury();
 
+	void OnPicked(const std::vector<int32>& selectedMembers) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 	virtual void OnOrderStarted(bool idleOrder) noexcept override;
 	virtual void OnAllOrdersFinished() noexcept override;
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
-	void OnPicked() noexcept override;
 	void OnHovered() noexcept override;
 	void OnNotHovered() noexcept override;
+	void GiveOrder(IOrder* order) noexcept;
 
 	//SETS
 	void SetPosition(const glm::vec3& position) noexcept;
@@ -194,10 +195,10 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 1.0f;
+	return false;// m_HasInjuryBurned > 9.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 1.0f;
+	return false;// m_HasInjurySmoke > 9.0f;
 }

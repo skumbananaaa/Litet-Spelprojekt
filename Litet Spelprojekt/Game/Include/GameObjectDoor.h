@@ -1,8 +1,9 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/GameObject.h>
+#include "../Include/GUI/UIOrder.h"
 
-class API GameObjectDoor : public GameObject
+class GameObjectDoor : public GameObject, public UIOrder
 {
 public:
 	GameObjectDoor() noexcept;
@@ -16,9 +17,11 @@ public:
 	virtual void UpdateTransform() noexcept override;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 
-	void OnPicked() noexcept override;
+	void OnPicked(const std::vector<int32>& selectedMembers) noexcept override;
 
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
+
+	virtual void OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept override;
 
 private:
 	float m_Percentage;

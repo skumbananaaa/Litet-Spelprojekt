@@ -1,6 +1,6 @@
 #pragma once
 #include "IScenario.h"
-#include <World/GameObjectDoor.h>
+#include "../GameObjectDoor.h"
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
@@ -43,7 +43,7 @@ private:
 	glm::vec4 CalculateFloodFactors(float waterLevelDifPosX, float waterLevelDifNegX, float waterLevelDifPosZ, float waterLevelDifNegZ, float dtS) const noexcept;
 
 	void UpdateFloodingIds(TileData * const * ppLevelData, std::vector<glm::ivec2>& newFloodingIDs, const glm::ivec2& tilePos, uint32 canSpreadToo) const noexcept;
-	void UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept;
+	void UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, uint32 canSpreadTo) const noexcept;
 
 	void UpdateFloodingIdsBelow(WorldLevel& worldLevel, uint32 waterLevelIndexBelow, const glm::ivec2& tile) const noexcept;
 	bool UpdateWaterLevelBelow(WorldLevel& worldLevel, WorldLevel& pWorldLevelBelow, const glm::ivec2& tile) const noexcept;
@@ -170,9 +170,9 @@ inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std
 	}
 }
 
-inline void ScenarioWater::UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, float waterLevelDif) const noexcept
+inline void ScenarioWater::UpdateWaterLevel(TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, float floodFactor, uint32 canSpreadTo) const noexcept
 {
-	//if (waterLevelDif > 0.0f)
+	if (canSpreadTo > 0)
 	{
 		ppLevelData[tileFrom.x][tileFrom.y].WaterLevelChange -= floodFactor;
 		ppLevelData[tileTo.x][tileTo.y].WaterLevelChange += floodFactor;

@@ -5,7 +5,7 @@
 #include "../Include/Orders/OrderCloseDoor.h"
 #include "../Include/Orders/OrderWalkMedicBay.h"
 #include <World/WorldLevel.h>
-#include <World/GameObjectDoor.h>
+#include "../Include/GameObjectDoor.h"
 
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
@@ -60,6 +60,12 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	}
 }
 
+void Crewmember::OnPicked(const std::vector<int32>& selectedMembers) noexcept
+{
+	m_IsPicked = true;
+	Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
+}
+
 void Crewmember::UpdateLastKnownPosition() noexcept
 {
 	m_LastKnownPosition = GetPosition();
@@ -103,6 +109,11 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 	}
 }
 
+void Crewmember::GiveOrder(IOrder * order) noexcept
+{
+	m_OrderHandler.GiveOrder(order, this);
+}
+
 void Crewmember::LookForDoor() noexcept
 {
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
@@ -121,11 +132,6 @@ void Crewmember::LookForDoor() noexcept
 		}
 	}
 	//StartOrder(pScene, pWorld, this);
-}
-
-void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
-{
-	FindPath(doorTile);
 }
 
 void Crewmember::GoToMedicBay(World* world)
@@ -256,11 +262,6 @@ void Crewmember::OnAddedToScene(Scene* scene) noexcept
 	scene->RegisterPickableGameObject(this);
 }
 
-void Crewmember::OnPicked() noexcept
-{
-	m_IsPicked = true;
-}
-
 void Crewmember::OnHovered() noexcept
 {
 	m_IsHovered = true;
@@ -379,4 +380,10 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 {
 	m_ShipNumber = shipnumber;
+}
+
+void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
+{
+	GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+	m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
 }

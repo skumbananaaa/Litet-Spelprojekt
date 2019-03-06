@@ -183,10 +183,10 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tilePosZ, canSpreadToPosZ);
 					UpdateFloodingIds(ppLevelData, newFloodingIDs, tileNegZ, canSpreadToNegZ);
 
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor.x, waterLevelDifPosX);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor.y, waterLevelDifNegX);
-					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor.z, waterLevelDifPosZ);
-					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor.w, waterLevelDifNegZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosX, floodFactor.x, canSpreadToPosX);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegX, floodFactor.y, canSpreadToNegX);
+					UpdateWaterLevel(ppLevelData, currentTile, tilePosZ, floodFactor.z, canSpreadToPosZ);
+					UpdateWaterLevel(ppLevelData, currentTile, tileNegZ, floodFactor.w, canSpreadToNegZ);
 				}
 			}
 			else

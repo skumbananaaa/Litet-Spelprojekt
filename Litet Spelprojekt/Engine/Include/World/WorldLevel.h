@@ -1,7 +1,6 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Scene.h>
-#include <World/GameObjectDoor.h>
 
 #define GAMEOBJECT_CONST_INDEX_WATER 0
 #define GAMEOBJECT_CONST_INDEX_DOOR 1
@@ -53,25 +52,6 @@ struct TileData
 	bool HasDoor() const noexcept
 	{
 		return GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-	}
-
-	bool IsOpen() const noexcept
-	{
-		if (HasDoor())
-		{
-			GameObjectDoor* const door = (GameObjectDoor* const)GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			return door->IsOpen();
-		}
-		return true;
-	}
-
-	void OpenDoor()
-	{
-		if (HasDoor())
-		{
-			GameObjectDoor* const door = (GameObjectDoor* const)GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-			door->SetOpen(true);
-		}
 	}
 };
 

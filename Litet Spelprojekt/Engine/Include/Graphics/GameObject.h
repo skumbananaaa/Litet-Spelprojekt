@@ -23,6 +23,7 @@ public:
 	virtual void SetIsVisible(bool isVisible) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
 	virtual void SetAnimatedMesh(int32 mesh) noexcept;
+	virtual void UpdateAnimatedMesh(int32 mesh) noexcept;
 	virtual void SetMaterial(int32 material) noexcept;
 	virtual void SetDecal(int32 decal) noexcept;
 	virtual void SetPosition(const glm::vec3& position) noexcept;
@@ -143,8 +144,13 @@ inline void GameObject::SetMesh(int32 mesh) noexcept
 
 inline void GameObject::SetAnimatedMesh(int32 mesh) noexcept
 {
-	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+	UpdateAnimatedMesh(mesh);
 	m_pASkeleton = new AnimatedSkeleton();
+}
+
+inline void GameObject::UpdateAnimatedMesh(int32 mesh) noexcept
+{
+	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
 }
 
 inline void GameObject::SetDecal(int32 decal) noexcept

@@ -53,8 +53,8 @@ void MESH::RegisterResources()
 	INSTRUMENT_2			= ResourceHandler::RegisterMesh("Instrument2.obj");
 	LAMP					= ResourceHandler::RegisterMesh("Lamp.obj");
 	MESH_PARTICLE			= ResourceHandler::RegisterMeshParticle(MeshParticle::CreateCube());
-	ANIMATED_MODEL_RUN		= ResourceHandler::RegisterAnimatedMesh("CrewMemberRunning8.fbx");
-	ANIMATED_MODEL_IDLE		= ResourceHandler::RegisterAnimatedMesh("CrewMemberIdle1.fbx");
+	ANIMATED_MODEL_RUN		= ResourceHandler::RegisterAnimatedMesh("CrewMemberRunning10.fbx");
+	ANIMATED_MODEL_IDLE		= ResourceHandler::RegisterAnimatedMesh("CrewMemberIdle3.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");

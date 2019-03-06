@@ -30,7 +30,6 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjuryBleeding = 0.0f;
-	m_SkillFire = Random::GenerateInt(1, 3);
 	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);*/

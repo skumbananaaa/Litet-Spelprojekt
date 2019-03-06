@@ -1,8 +1,8 @@
 #include "../../Include/Orders/OrderWalkMedicBay.h"
 #include <World/World.h>
-OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld): OrderWalk(pWorld->GetRoom(0).GetCenter())
+OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld): OrderWalk(pWorld->GetRoom(SICKBAY_CATEGORY_INDEX).GetCenter())
 {
-	glm::vec3 tst = pWorld->GetRoom(0).GetCenter();
+	glm::vec3 tst = pWorld->GetRoom(SICKBAY_CATEGORY_INDEX).GetCenter();
 }
 
 OrderWalkMedicBay::~OrderWalkMedicBay()

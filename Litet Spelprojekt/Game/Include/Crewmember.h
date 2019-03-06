@@ -107,7 +107,6 @@ private:
 	//SETS
 	void SetShipNumber(int32 shipnumber) noexcept;
 
-
 private:
 	//UTILITY
 	World* m_pWorld;

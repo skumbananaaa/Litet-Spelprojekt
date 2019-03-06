@@ -196,7 +196,7 @@ void main()
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
-		vec3 lightColor = g_DirLights[i].Color.rgb;
+		vec3 lightColor = g_DirLights[i].Color.rgb * 3.0f;
 
 		vs_out.Diffuse += CalculateDiffuseLighting(lightDir, vs_out.Normal, lightColor, 1.0f);
 		vs_out.Specular += CalcSpecularLighting(vs_out.ToCameraVector, lightDir, vs_out.Normal, lightColor, 1.0f, specularStrength);

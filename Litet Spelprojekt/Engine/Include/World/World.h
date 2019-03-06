@@ -129,6 +129,7 @@ public:
 	const std::vector<glm::ivec3>& GetDoors() const noexcept;
 
 	void Generate(Scene& scene) noexcept;
+	void GenerateRoomShadows(const Scene& scene) noexcept;
 
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
@@ -146,7 +147,6 @@ private:
 	void PlaceGameObjects(Scene& scene) noexcept;
 	void PlaceDoors(Scene& scene) noexcept;
 	void PlaceStairs(Scene& scene) noexcept;
-	void GenerateRoomShadows(const Scene& scene) noexcept;
 
 private:
 	std::vector<WorldLevel> m_Levels;

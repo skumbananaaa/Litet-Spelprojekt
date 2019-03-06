@@ -47,8 +47,11 @@ void TextureCube::CreateFromMemory(const void* ppInitalData[6], const TextureDes
 	}
 
 	m_Desc = desc;
+	if (m_Desc.GenerateMips)
+	{
+		GL_CALL(glGenerateMipmap(m_Type));
+	}
 
-	GL_CALL(glGenerateMipmap(m_Type));
 	GL_CALL(glBindTexture(m_Type, 0));
 }
 
@@ -78,7 +81,11 @@ void TextureCube::CreateFromFiles(const char* const ppPaths[6], const TextureDes
 		}
 	}
 
-	GL_CALL(glGenerateMipmap(m_Type));
+	if (m_Desc.GenerateMips)
+	{
+		GL_CALL(glGenerateMipmap(m_Type));
+	}
+	
 	GL_CALL(glBindTexture(m_Type, 0));
 	
 	std::cout << "Loaded CubeMap successfully" << std::endl;
@@ -87,7 +94,7 @@ void TextureCube::CreateFromFiles(const char* const ppPaths[6], const TextureDes
 void TextureCube::CreateFromPanorama(const Texture2D* pPanorama)
 {
 	m_Desc.Format = pPanorama->GetFormat();
-	m_Desc.Width = pPanorama->GetWidth();
+	m_Desc.Width = pPanorama->GetWidth() > 2048 ? 2048 : pPanorama->GetWidth();
 	m_Desc.Height = m_Desc.Width;
 
 	uint32 captureFBO, captureRBO;
@@ -96,14 +103,15 @@ void TextureCube::CreateFromPanorama(const Texture2D* pPanorama)
 
 	GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, captureFBO));
 	GL_CALL(glBindRenderbuffer(GL_RENDERBUFFER, captureRBO));
-	GL_CALL(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_Desc.Width, m_Desc.Format));
+
+	GL_CALL(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_Desc.Width, m_Desc.Height));
 	GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO));
 
 	GL_CALL(glGenTextures(1, &m_Texture));
 	GL_CALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_Texture));
 	for (uint32 i = 0; i < 6; i++)
 	{
-		GL_CALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_Desc.Width, m_Desc.Height, 0, GL_RGB, GL_FLOAT, nullptr));
+		GL_CALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, m_Desc.Width, m_Desc.Height, 0, GL_RGB, GL_BYTE, nullptr));
 	}
 
 	TextureParams params;
@@ -155,6 +163,7 @@ void TextureCube::CreateFromPanorama(const Texture2D* pPanorama)
 	delete pBuff;
 
 	GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	
 	GL_CALL(glDeleteFramebuffers(1, &captureFBO));
 	GL_CALL(glDeleteRenderbuffers(1, &captureRBO));
 }

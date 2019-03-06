@@ -1,6 +1,20 @@
 #include <EnginePch.h>
 #include <World/Room.h>
 
+Room::Room(Room&& other)
+	: m_pShadowMap(other.m_pShadowMap),
+	m_Center(other.m_Center)
+{
+	other.m_pShadowMap = nullptr;
+	other.m_Center = glm::vec3(0.0f);
+}
+
+Room::Room() noexcept
+	: m_pShadowMap(nullptr),
+	m_Center(glm::vec3(0.0f))
+{
+}
+
 Room::Room(glm::vec3 center) noexcept
 	: m_pShadowMap(nullptr),
 	m_Center(center)

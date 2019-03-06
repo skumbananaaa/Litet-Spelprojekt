@@ -5,7 +5,13 @@
 class API Room
 {
 public:
-	Room(glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f)) noexcept;
+	Room(const Room& other) = delete;
+	Room& operator=(Room&& other) = delete;
+	Room& operator=(const Room& other) = delete;
+
+	Room(Room&& other);
+	Room() noexcept;
+	Room(glm::vec3 center) noexcept;
 	~Room();
 
 	const StaticShadowCube* GetShadowMap() const noexcept;

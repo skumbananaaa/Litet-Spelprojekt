@@ -1,6 +1,7 @@
 #pragma once
 #include "TextureCube.h"
 #include "Framebuffer.h"
+#include <Graphics/Buffers/UniformBuffer.h>
 
 class PointLight;
 class Scene;
@@ -33,5 +34,5 @@ inline const TextureCube* StaticShadowCube::GetCubeTexture() const
 
 inline constexpr float StaticShadowCube::GetFarPlane() const
 {
-	return 50.0f;
+	return 10.0f;
 }

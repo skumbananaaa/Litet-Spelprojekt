@@ -113,6 +113,11 @@ void OrderWalk::RunParallel()
 	m_IsPathReady = true;
 }
 
+bool OrderWalk::CanExecuteIfHurt() noexcept
+{
+	return true;
+}
+
 bool OrderWalk::FollowPath(float dtS) noexcept
 {
 	const glm::vec3& position = GetCrewMember()->GetPosition();

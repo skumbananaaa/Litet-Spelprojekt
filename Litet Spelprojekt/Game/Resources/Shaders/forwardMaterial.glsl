@@ -122,7 +122,7 @@ void main()
 	uvec4 roomIndex = CalcRoomIndex(mapPos);
 
 	//Do extension
-	worldPos.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
+	worldPos.x += g_Extension * floor(clamp(g_InstanceModel[3].y, 0.0f, 5.9f) / 2.0f);
 
 	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
 	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
@@ -151,7 +151,7 @@ void main()
 		uvec4 lightRoomIndex = CalcRoomIndex(lightMapPos);
 
 		vec3 lightPos = vec3(g_PointLights[i].Position.xyz);
-		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
+		lightPos.x += g_Extension * floor(clamp(lightPos.y, 0.0f, 5.9f) / 2.0f);
 
 		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
 		{
@@ -174,7 +174,7 @@ void main()
 		uvec4 lightRoomIndex = CalcRoomIndex(lightMapPos);
 
 		vec3 lightPos = vec3(g_SpotLights[i].Position.xyz);
-		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
+		lightPos.x += g_Extension * floor(clamp(lightPos.y, 0.0f, 5.9f) / 2.0f);
 
 		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
 		{

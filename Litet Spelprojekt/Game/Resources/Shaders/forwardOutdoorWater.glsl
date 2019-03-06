@@ -70,7 +70,7 @@ out VS_OUT
 
 //CONSTS
 const float specularStrength = 256.0f;//0.6;
-const float waveScalingFactor = 0.5f;
+const float waveScalingFactor = 0.3f;
 
 vec3 mod289(vec3 x)
 {
@@ -184,9 +184,9 @@ void main()
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
-		vec3 lightColor = g_DirLights[i].Color.rgb * 3.0f;
+		vec3 lightCol = g_DirLights[i].Color.rgb;
 
-		lightColor += CalcLightContribution(lightDir, lightCol, normal);
+		lightColor += 3.0f * CalcLightContribution(lightDir, lightCol, normal);
 		specular += CalcSpecular(lightDir, lightCol, viewDir, normal);
 	}
 

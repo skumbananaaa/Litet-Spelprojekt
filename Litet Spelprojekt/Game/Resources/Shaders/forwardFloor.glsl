@@ -215,7 +215,11 @@ layout(early_fragment_tests) in;
 layout(location = 0) out vec4 g_OutColor;
 
 layout(binding = 0) uniform sampler2D g_DiffuseMap;
-layout(binding = 1) uniform samplerCube g_ShadowMap;
+layout(binding = 1) uniform samplerCube g_ShadowMap0;
+layout(binding = 2) uniform samplerCube g_ShadowMap1;
+layout(binding = 3) uniform samplerCube g_ShadowMap2;
+layout(binding = 4) uniform samplerCube g_ShadowMap3;
+layout(binding = 5) uniform samplerCube g_ShadowMap4;
 
 in VS_OUT
 {
@@ -230,22 +234,25 @@ in VS_OUT
 
 layout(std140, binding = 8) uniform ShadowBuffer
 {
-	vec3 g_LightPos;
-	float g_FarPlane;
+	vec4 g_LightPos[NUM_POINT_LIGHTS];
+	float g_FarPlane[NUM_POINT_LIGHTS];
+	float g_NumShadowMapsToUse;
 };
 
-float ShadowCalc(vec3 fragPos, vec3 normal)
+float ShadowCalc(vec3 fragPos, vec3 normal, samplerCube shadowMap, float useShadowMap, int lightIndex)
 {
-	vec3 toLight = fragPos - g_LightPos;
-	float closestDepth = texture(g_ShadowMap, toLight).r;
-	float currentDepth = length(toLight) / g_FarPlane;
+	vec3 toLight = fragPos - g_LightPos[lightIndex].xyz;
+	float currentDepth = length(toLight);
+	float closestDepth = texture(shadowMap, toLight).r * g_FarPlane[lightIndex] * useShadowMap;
 
-	float bias = max(0.05f * (1.0f - dot(normal, normalize(toLight))), 0.005f);
-	return ((currentDepth - bias) > closestDepth) ? 1.0f : 0.0f;
+	float bias = max(0.025f * (1.0f - dot(normal, normalize(toLight))), 0.00125f);
+	return (currentDepth - bias) > closestDepth ? 1.0f : 0.0f;
 }
 
 void main()
 {
+	vec3 normal = normalize(fs_in.Normal);
+
 	//Color
 	vec3 mappedColor = texture(g_DiffuseMap, fs_in.TexCoords).rgb * g_HasDiffuseMap;
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
@@ -257,10 +264,15 @@ void main()
 	vec3 specular = fs_in.Specular;
 	vec3 lightColor = (diffuse + specular);
 
-	float shadow = ShadowCalc(fs_in.FragPosition, normalize(fs_in.Normal));
+	float shadow = 0.0f;
+	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap0, clamp(g_NumShadowMapsToUse, 	   	  0.0f, 1.0f), 0);
+	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap1, clamp(g_NumShadowMapsToUse - 1.0f, 0.0f, 1.0f), 1);
+	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap2, clamp(g_NumShadowMapsToUse - 2.0f, 0.0f, 1.0f), 2);
+	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap3, clamp(g_NumShadowMapsToUse - 3.0f, 0.0f, 1.0f), 3);
+	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap4, clamp(g_NumShadowMapsToUse - 4.0f, 0.0f, 1.0f), 4);
+	shadow = min(1.0f, shadow);
 	vec3 pointLightColor = (1.0f - shadow) * ((color * fs_in.PointLightColor) + fs_in.PointLightSpecular);
 	
-	vec3 toLight = fs_in.FragPosition - g_LightPos;
 	g_OutColor = vec4(pointLightColor, 1.0f);//vec4(min(ambient + lightColor + pointLightColor, vec3(1.0f)), 1.0f);
 }
 #endif

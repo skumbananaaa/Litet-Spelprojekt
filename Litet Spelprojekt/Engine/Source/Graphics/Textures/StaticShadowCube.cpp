@@ -70,7 +70,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	UniformBuffer* pModelBuffer = new UniformBuffer(&modelBuff, 1, sizeof(ModelBuffer));
 	UniformBuffer* pShadowBuffer = new UniformBuffer(&shadowBuff, 1, sizeof(ShadowBuffer));
 
-	glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)SHADOW_SIZE / (float)SHADOW_SIZE, 1.0f, GetFarPlane());
+	glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)SHADOW_SIZE / (float)SHADOW_SIZE, 0.1f, GetFarPlane());
 	glm::mat4 cameraMatrices[6] =
 	{
 		proj * glm::lookAt(position, position + glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -99,17 +99,20 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	for (uint32 i = 0; i < drawables.size(); i++)
 	{
 		const IndexedMesh& mesh = *(drawables[i]->GetMesh());
+		const Material* material = drawables[i]->GetMaterial();
 
-		modelBuff.Model = drawables[i]->GetTransform();
-		pModelBuffer->UpdateData(&modelBuff);
-		for (uint32 j = 0; j < 6; j++)
+		if (material != ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))
 		{
-			cameraBuff.ProjectionView = cameraMatrices[j];
-			pCameraBuffer->UpdateData(&cameraBuff);
+			modelBuff.Model = drawables[i]->GetTransform();
+			pModelBuffer->UpdateData(&modelBuff);
+			for (uint32 j = 0; j < 6; j++)
+			{
+				cameraBuff.ProjectionView = cameraMatrices[j];
+				pCameraBuffer->UpdateData(&cameraBuff);
 
-			context.SetFramebuffer(ppFrameBuffers[j]);
-			context.DrawIndexedMesh(mesh);
-
+				context.SetFramebuffer(ppFrameBuffers[j]);
+				context.DrawIndexedMesh(mesh);
+			}
 		}
 	}
 

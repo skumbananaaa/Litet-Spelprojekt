@@ -308,10 +308,20 @@ void World::SetActiveRoom(uint32 roomID) noexcept
 {
 	if (!m_Rooms[roomID].IsActive())
 	{
+		if (m_ActiveRooms.size() >= MAX_ROOMS_VISIBLE)
+		{
+			m_Rooms[m_ActiveRooms[0]].SetActive(false);
+			m_RoomLights[m_ActiveRooms[0]]->SetIsVisible(false);
+			m_RoomLightsTimers[m_ActiveRooms[0]] = 0.0f;
+			m_ActiveRooms.erase(m_ActiveRooms.begin());
+		}
+
 		m_Rooms[roomID].SetActive(true);
 		m_RoomLights[roomID]->SetIsVisible(true);
 		m_RoomLightsTimers[roomID] = 0.0f;
 		m_ActiveRooms.emplace_back(roomID);
+
+		std::cout << "Num Active Rooms: " << std::to_string(m_ActiveRooms.size()) << std::endl;
 	}
 }
 

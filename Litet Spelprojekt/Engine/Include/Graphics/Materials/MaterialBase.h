@@ -2,7 +2,7 @@
 #include <EnginePch.h>
 
 #define NUM_DIRECTIONAL_LIGHTS 1
-#define NUM_POINT_LIGHTS 3
+#define NUM_POINT_LIGHTS MAX_ROOMS_VISIBLE
 #define NUM_SPOT_LIGHTS 2
 
 #define LEVEL_SIZE_X 12
@@ -10,7 +10,11 @@
 #define LEVEL_SIZE_Z 42
 
 #define DIFFUSE_MAP_BINDING_SLOT 0
-#define SHADOW_MAP_1_BINDING_SLOT 1
+#define SHADOW_MAP_0_BINDING_SLOT 1
+#define SHADOW_MAP_1_BINDING_SLOT 2
+#define SHADOW_MAP_2_BINDING_SLOT 3
+#define SHADOW_MAP_3_BINDING_SLOT 4
+#define SHADOW_MAP_4_BINDING_SLOT 5
 
 #define CAMERA_BUFFER_BINDING_SLOT 0
 #define LIGHT_BUFFER_BINDING_SLOT 1
@@ -82,6 +86,7 @@ struct PlaneBuffer
 
 struct ShadowBuffer
 {
-	glm::vec3 LightPosition;
-	float FarPlane;
+	glm::vec4 LightPosition[NUM_POINT_LIGHTS];
+	float FarPlane[NUM_POINT_LIGHTS];
+	float NumShadowMapsToUse;
 };

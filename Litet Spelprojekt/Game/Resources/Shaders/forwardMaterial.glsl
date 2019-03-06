@@ -94,25 +94,7 @@ vec3 CalcSpecular(vec3 lightDir, vec3 lightCol, vec3 viewDir, vec3 normal)
 	return lightCol * spec;
 }
 
-ivec3 CalcMapPos(vec3 worldpos)
-{
-	ivec3 mapPos = ivec3(round(worldpos.x), worldpos.y, round(worldpos.z));
-	mapPos.x = clamp(mapPos.x, 0, 11);
-	mapPos.y = clamp(mapPos.y, 0, 5);
-	mapPos.z = clamp(mapPos.z, 0, 41);
-
-	return mapPos;
-}
-
-uvec4 CalcRoomIndex(ivec3 mapPos)
-{
-	return uvec4(
-		g_Map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].x,
-		g_Map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].y,
-		g_Map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].z,
-		g_Map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].w
-	);
-}
+#define DIRECTIONAL_LIGHT_CONTRIBUTION 0.1f
 
 void main()
 {
@@ -121,10 +103,6 @@ void main()
 	vec4 worldPos = g_InstanceModel * vec4(g_Position, 1.0f);
 	vs_out.Normal = normal;
 	vs_out.FragPosition = worldPos.xyz;
-
-	//Calculate position in tiles
-	ivec3 mapPos = CalcMapPos(worldPos.xyz);
-	uvec4 roomIndex = CalcRoomIndex(mapPos);
 
 	//Do extension
 	worldPos.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
@@ -147,62 +125,50 @@ void main()
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
 		vec3 lightCol = g_DirLights[i].Color.rgb;
 
-		lightColor += CalcLightContribution(lightDir, lightCol, normal);
-		specular += CalcSpecular(lightDir, lightCol, viewDir, normal);
+		lightColor += DIRECTIONAL_LIGHT_CONTRIBUTION * CalcLightContribution(lightDir, lightCol, normal);
+		specular += DIRECTIONAL_LIGHT_CONTRIBUTION * CalcSpecular(lightDir, lightCol, viewDir, normal);
 	}
 
 	//PointLights
 	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
-		ivec3 lightMapPos = CalcMapPos(g_PointLights[i].Position.xyz);
-		uvec4 lightRoomIndex = CalcRoomIndex(lightMapPos);
-
 		vec3 lightPos = vec3(g_PointLights[i].Position.xyz);
 		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
 
-		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
-		{
-			vec3 lightDir = lightPos - worldPos.xyz;
-			float dist = length(lightDir);
-			lightDir = normalize(lightDir);
+		vec3 lightDir = lightPos - worldPos.xyz;
+		float dist = length(lightDir);
 
-			float attenuation = 1.0f / (dist);
-			vec3 lightCol = g_PointLights[i].Color.rgb * attenuation;
+		float attenuation = 1.0f / sqrt(dist);
+		vec3 lightCol = g_PointLights[i].Color.rgb * attenuation;
+		lightDir = normalize(lightDir);
 
-			pointLightColor		+= CalcLightContribution(lightDir, lightCol, normal);
-			pointLightSpecular	+= CalcSpecular(lightDir, lightCol, viewDir, normal);
-		}
+		pointLightColor += CalcLightContribution(lightDir, lightCol, normal);
+		pointLightSpecular += CalcSpecular(lightDir, lightCol, viewDir, normal);
 	}
 
 	//Spotlights
 	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
 	{
-		ivec3 lightMapPos = CalcMapPos(g_PointLights[i].Position.xyz);
-		uvec4 lightRoomIndex = CalcRoomIndex(lightMapPos);
-
 		vec3 lightPos = vec3(g_SpotLights[i].Position.xyz);
 		lightPos.x += g_Extension * floor(lightPos.y / 2.0f);
 
-		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
+		float light_attenuation = 1.0f;
+		vec3 lightDir = lightPos - worldPos.xyz;
+		vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
+		float dist = length(lightDir);
+		lightDir = lightDir / dist;
+
+		float attenuation = 1.0f / ((dist));
+
+		float theta = dot(lightDir, -targetDir);
+		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
+		float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
+
+		vec3 lightCol = g_SpotLights[i].Color.rgb * attenuation;
+		if (theta > g_SpotLights[i].OuterAngle)
 		{
-			float light_attenuation = 1.0f;
-			vec3 lightDir = lightPos - worldPos.xyz;
-			vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
-			float dist = length(lightDir);
-			lightDir = lightDir / dist;
-			
-			float attenuation = 1.0f / ((dist));
-		
-			float theta = dot(lightDir, -targetDir);
-			float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
-			float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
-	
-			vec3 lightCol = g_SpotLights[i].Color.rgb * attenuation;
-			if(theta > g_SpotLights[i].OuterAngle)
-			{
-				lightColor += CalcLightContribution(lightDir, lightCol, normal);
-				specular += CalcSpecular(lightDir, lightCol, viewDir, normal);
-			}
+			lightColor += CalcLightContribution(lightDir, lightCol, normal);
+			specular += CalcSpecular(lightDir, lightCol, viewDir, normal);
 		}
 	}
 
@@ -241,18 +207,16 @@ in VS_OUT
 layout(std140, binding = 8) uniform ShadowBuffer
 {
 	vec4 g_LightPos[NUM_POINT_LIGHTS];
-	float g_FarPlane[NUM_POINT_LIGHTS];
-	float g_NumShadowMapsToUse;
 };
 
-float ShadowCalc(vec3 fragPos, vec3 normal, samplerCube shadowMap, float useShadowMap, int lightIndex)
+float InvShadowCalc(vec3 fragPos, vec3 normal, samplerCube shadowMap, int lightIndex)
 {
 	vec3 toLight = fragPos - g_LightPos[lightIndex].xyz;
 	float currentDepth = length(toLight);
-	float closestDepth = texture(shadowMap, toLight).r * g_FarPlane[lightIndex] * useShadowMap;
-	
-	float bias = max(0.05f * (1.0f - dot(normal, normalize(toLight))), 0.0025f);
-	return (currentDepth - bias) > closestDepth ? 1.0f : 0.0f;
+	float closestDepth = texture(shadowMap, toLight).r * g_LightPos[lightIndex].w * 10.0f; //FARPLANE
+
+	float bias = max(0.025f * (1.0f - dot(normal, normalize(toLight))), 0.00125f);
+	return (currentDepth - bias) >= closestDepth ? 0.0f : 1.0f;
 }
 
 void main()
@@ -270,15 +234,14 @@ void main()
 	vec3 specular = fs_in.Specular;
 	vec3 lightColor = (diffuse + specular);
 
-	float shadow = 0.0f;
-	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap0, clamp(g_NumShadowMapsToUse, 	   	  0.0f, 1.0f), 0);
-	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap1, clamp(g_NumShadowMapsToUse - 1.0f, 0.0f, 1.0f), 1);
-	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap2, clamp(g_NumShadowMapsToUse - 2.0f, 0.0f, 1.0f), 2);
-	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap3, clamp(g_NumShadowMapsToUse - 3.0f, 0.0f, 1.0f), 3);
-	shadow += ShadowCalc(fs_in.FragPosition, normal, g_ShadowMap4, clamp(g_NumShadowMapsToUse - 4.0f, 0.0f, 1.0f), 4);
-	shadow = min(1.0f, shadow);
-	vec3 pointLightColor = (1.0f - shadow) * ((color * fs_in.PointLightColor) + fs_in.PointLightSpecular);
-	
-	g_OutColor = vec4(pointLightColor, 1.0f);//vec4(min(ambient + lightColor + pointLightColor, vec3(1.0f)), 1.0f);
+	vec3 startPointLightColor = ((color * fs_in.PointLightColor) + fs_in.PointLightSpecular);
+	vec3 finalPointLightColor = vec3(0.0f);
+	finalPointLightColor += InvShadowCalc(fs_in.FragPosition, normal, g_ShadowMap0, 0) * startPointLightColor;
+	finalPointLightColor += InvShadowCalc(fs_in.FragPosition, normal, g_ShadowMap1, 1) * startPointLightColor;
+	finalPointLightColor += InvShadowCalc(fs_in.FragPosition, normal, g_ShadowMap2, 2) * startPointLightColor;
+	finalPointLightColor += InvShadowCalc(fs_in.FragPosition, normal, g_ShadowMap3, 3) * startPointLightColor;
+	finalPointLightColor += InvShadowCalc(fs_in.FragPosition, normal, g_ShadowMap4, 4) * startPointLightColor;
+
+	g_OutColor = vec4(min(ambient + lightColor + finalPointLightColor, vec3(1.0f)), 1.0f);
 }
 #endif

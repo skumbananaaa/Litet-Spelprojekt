@@ -130,9 +130,10 @@ void World::GenerateFloor(Scene& scene) noexcept
 				}
 
 				pGameObject = new GameObject();
-				pGameObject->SetMesh(MESH::QUAD);
+				pGameObject->SetMesh(MESH::CUBE);
 				pGameObject->SetMaterial(MATERIAL::FLOOR);
 				pGameObject->SetPosition(glm::vec3(x, level, z));
+				pGameObject->SetScale(glm::vec3(1.0f, 0.1f, 1.0f));
 				pGameObject->UpdateTransform();
 				scene.AddGameObject(pGameObject);
 			}
@@ -320,8 +321,6 @@ void World::SetActiveRoom(uint32 roomID) noexcept
 		m_RoomLights[roomID]->SetIsVisible(true);
 		m_RoomLightsTimers[roomID] = 0.0f;
 		m_ActiveRooms.emplace_back(roomID);
-
-		std::cout << "Num Active Rooms: " << std::to_string(m_ActiveRooms.size()) << std::endl;
 	}
 }
 
@@ -405,8 +404,6 @@ void World::GenerateLevelObject(Scene& scene) noexcept
 				pGameObject->SetScale(glm::vec3(wall.z + 0.1f, 2.0f, wall.w + 0.1f));
 				pGameObject->UpdateTransform();
 
-				std::cout << "Wall: " << glm::to_string(wall) << std::endl;
-
 				scene.AddGameObject(pGameObject);
 			}
 
@@ -421,8 +418,6 @@ void World::GenerateLevelObject(Scene& scene) noexcept
 				pGameObject->SetPosition(glm::vec3(bulkhead.x, 1.0f + level, bulkhead.y));
 				pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
 				pGameObject->UpdateTransform();
-
-				std::cout << "Bulkhead: " << glm::to_string(bulkhead) << std::endl;
 
 				scene.AddGameObject(pGameObject);
 			}

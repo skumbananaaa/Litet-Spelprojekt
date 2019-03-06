@@ -87,6 +87,4 @@ struct PlaneBuffer
 struct ShadowBuffer
 {
 	glm::vec4 LightPosition[NUM_POINT_LIGHTS];
-	float FarPlane[NUM_POINT_LIGHTS];
-	float NumShadowMapsToUse;
 };

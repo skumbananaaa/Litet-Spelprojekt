@@ -237,10 +237,7 @@ void ForwardRenderer::Create() noexcept
 		for (uint32 i = 0; i < NUM_POINT_LIGHTS; i++)
 		{
 			buff.LightPosition[i] = glm::vec4(0.0f);
-			buff.FarPlane[i] = 0.0f;
 		}
-
-		buff.NumShadowMapsToUse = 0.0f;
 
 		m_pShadowBuffer = new UniformBuffer(&buff, 1, sizeof(ShadowBuffer));
 	}
@@ -468,14 +465,18 @@ void ForwardRenderer::UpdateShadowBuffer(const World* const pWorld) const noexce
 	if (pWorld != nullptr)
 	{
 		ShadowBuffer buff = {};
+		sizeof(ShadowBuffer);
 
 		for (uint32 i = 0; i < pWorld->GetActiveRooms().size(); i++)
 		{
 			uint32 roomIndex = pWorld->GetActiveRooms()[i];
 
 			buff.LightPosition[i] = glm::vec4(pWorld->GetRoom(roomIndex).GetCenter(), 1.0f);
-			buff.FarPlane[i] = pWorld->GetRoom(roomIndex).GetShadowMap()->GetFarPlane();
-			buff.NumShadowMapsToUse += 1.0f;
+		}
+
+		for (uint32 i = pWorld->GetActiveRooms().size(); i < MAX_ROOMS_VISIBLE; i++)
+		{
+			buff.LightPosition[i] = glm::vec4(0.0f);
 		}
 
 		m_pShadowBuffer->UpdateData(&buff);

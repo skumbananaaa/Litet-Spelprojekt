@@ -45,7 +45,7 @@ Game::Game() noexcept
 	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioMissile());
 	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioTorpedo());
 	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(false));
-	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(true));
+	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 	SetScene(m_pSceneLoading);
 }

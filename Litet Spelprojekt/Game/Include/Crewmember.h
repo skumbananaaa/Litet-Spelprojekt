@@ -192,12 +192,12 @@ inline bool Crewmember::IsAlive() const noexcept
 
 inline bool Crewmember::IsAbleToWork() const noexcept
 {
-	return !(HasInjurySmoke() || (m_Health < 0.75*m_MaxHealth) || m_HasInjuryBoneBroken >= 3.0f);
+	return !(m_HasInjurySmoke > 5.0f || (m_Health < 0.75*m_MaxHealth) || m_HasInjuryBoneBroken >= 3.0f || m_HasInjuryBurned > 3.0f);
 }
 
 inline bool Crewmember::IsAbleToWalk() const noexcept
 {
-	return !(m_HasInjuryBoneBroken > 5.0f || HasInjurySmoke() || m_Health < 0.5f * m_MaxHealth);
+	return !(m_HasInjuryBoneBroken > 5.0f || m_HasInjurySmoke > 10.0f || m_Health < 0.5f * m_MaxHealth || m_HasInjuryBurned > 10.0f);
 }
 
 inline bool Crewmember::HasInjuryBoneBroken() const noexcept
@@ -207,10 +207,10 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 9.0f;
+	return m_HasInjuryBurned > 1.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 9.0f;
+	return m_HasInjurySmoke > 1.0f;
 }

@@ -137,7 +137,7 @@ void Crewmember::LookForDoor() noexcept
 
 void Crewmember::GoToMedicBay(World* world)
 {
-	if (!HasInjurySmoke() && !HasInjuryBoneBroken())
+	if (IsAbleToWalk())
 	{
 		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(world), this);
 	}

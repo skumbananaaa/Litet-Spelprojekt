@@ -44,7 +44,6 @@ public:
 	void ShowCrewmember(uint32 crewmember);
 	GameObject* RayTestGameObjects();
 
-	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	Crew* GetCrew() noexcept;
 	UICrewMember* GetUICrewMember() noexcept;

@@ -114,6 +114,11 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		ScenarioManager::Update(dtS, m_pWorld, this);
 		UpdateCamera(dtS);
 
+		for (uint32 i = 0; i < m_pWorld->GetNumRooms(); i++)
+		{
+			m_pWorld->GetRoom(i).SetFloodUpdated(false);
+		}
+
 		static float dist = 0.0f;
 		dist += 0.02f * dtS;
 		((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);

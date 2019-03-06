@@ -21,6 +21,7 @@ public:
 	static uint32 ICON_INJURY_BONE;
 	static uint32 ICON_INJURY_BURN;
 	static uint32 ICON_INJURY_SMOKE;
+	static uint32 ICON_INJURY_BLEED;
 	static uint32 ICON_SKILL_FIRE;
 	static uint32 ICON_SKILL_MEDIC;
 	static uint32 ICON_SKILL_STRENGTH;

@@ -39,7 +39,8 @@ public:
 	//GAMEPLAY (NOT SETS OR GETS)
 	bool Heal(int8 skillLevel, float dtS);
 	void ApplyBurnInjury(float burn);
-	void ApplyBoneInjury();
+	void ApplyBoneInjury(float boneBreak);
+	void ApplyBleedInjury(float bleed);
 
 	void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
@@ -77,6 +78,7 @@ public:
 	bool HasInjuryBoneBroken() const noexcept;
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
+	bool HasInjuryBleed() const noexcept;
 
 private:
 	//UPDATES
@@ -117,6 +119,7 @@ private:
 	float m_HasInjuryBoneBroken;
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
+	float m_HasInjuryBleeding;
 	float m_MaxHealth;
 	float m_Health;
 
@@ -194,10 +197,15 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return false;// m_HasInjuryBurned > 9.0f;
+	return m_HasInjuryBurned > 9.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return false;// m_HasInjurySmoke > 9.0f;
+	return m_HasInjurySmoke > 9.0f;
+}
+
+inline bool Crewmember::HasInjuryBleed() const noexcept
+{
+	return m_HasInjuryBleeding > 1.0f;
 }

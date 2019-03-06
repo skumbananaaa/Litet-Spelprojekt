@@ -25,9 +25,10 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_LastKnownPosition = position;
 
 	//Test
-	m_HasInjuryBoneBroken = false; // Random::GenerateBool();
-	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
+	m_HasInjuryBoneBroken = 10.0f; // Random::GenerateBool();
+	m_HasInjuryBurned = 10.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
+	m_HasInjuryBleeding = 10.0f;
 	m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);
@@ -161,9 +162,14 @@ void Crewmember::ApplyBurnInjury(float burn)
 	m_HasInjuryBurned += burn;
 }
 
-void Crewmember::ApplyBoneInjury()
+void Crewmember::ApplyBoneInjury(float boneBreak)
 {
-	m_HasInjuryBoneBroken = true;
+	m_HasInjuryBoneBroken += boneBreak;
+}
+
+void Crewmember::ApplyBleedInjury(float bleed)
+{
+	m_HasInjuryBleeding += bleed;
 }
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept

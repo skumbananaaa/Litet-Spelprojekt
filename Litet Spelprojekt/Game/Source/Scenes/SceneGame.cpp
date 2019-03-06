@@ -51,8 +51,6 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	GetRenderer()->SetWorldBuffer(*this, m_pWorld);
-
 	m_pUICrewMember = new UICrewMember(330, 170);
 	m_pUILog = new UILog(window->GetWidth() - 350, window->GetHeight() - 450, 350, 450);
 	

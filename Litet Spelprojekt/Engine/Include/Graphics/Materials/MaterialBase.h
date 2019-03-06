@@ -19,7 +19,6 @@
 #define CAMERA_BUFFER_BINDING_SLOT 0
 #define LIGHT_BUFFER_BINDING_SLOT 1
 #define MATERIAL_BUFFER_BINDING_SLOT 2
-#define WORLD_BUFFER_BINDING_SLOT 3
 #define PLANE_BUFFER_BINDING_SLOT 4
 #define EXTENSION_BUFFER_BINDING_SLOT 5
 #define WATER_BUFFER_BINDING_SLOT 6
@@ -72,11 +71,6 @@ struct MaterialBuffer
 	glm::vec4 ClipPlane;
 	float Specular;
 	float HasDiffuseMap;
-};
-
-struct WorldBuffer
-{
-	uint32 map[LEVEL_SIZE_X * LEVEL_SIZE_Y * LEVEL_SIZE_Z];
 };
 
 struct PlaneBuffer

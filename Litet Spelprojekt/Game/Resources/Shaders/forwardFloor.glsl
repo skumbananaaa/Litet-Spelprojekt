@@ -49,11 +49,6 @@ layout(std140, binding = 1) uniform LightBuffer
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
 };
 
-layout(std140, binding = 3) uniform WorldBuffer
-{
-	ivec4 g_Map[LEVEL_SIZE];
-};
-
 layout(std140, binding = 5) uniform Extension
 {
 	float g_Extension;
@@ -209,8 +204,8 @@ float InvShadowCalc(vec3 fragPos, vec3 normal, samplerCube shadowMap, int lightI
 	float currentDepth = length(toLight);
 	float closestDepth = texture(shadowMap, toLight).r * g_LightPos[lightIndex].w * 10.0f; //FARPLANE
 
-	float bias = max(0.025f * (1.0f - dot(normal, normalize(toLight)), 0.00125f);
-	return lightComingFromAbove * (currentDepth - bias) >= closestDepth ? 0.0f : 1.0f;
+	float bias = max(0.05f * (1.0f - dot(normal, normalize(toLight))), 0.025f);
+	return (currentDepth - bias) >= closestDepth ? 0.0f : 1.0f;
 }
 
 void main()

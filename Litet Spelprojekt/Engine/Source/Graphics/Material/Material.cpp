@@ -54,7 +54,6 @@ void Material::Bind(const Framebuffer* pGBuffer) const noexcept
 	context.SetUniformBuffer(m_Data.pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_Data.pLightBuffer, LIGHT_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_Data.pMaterialBuffer, MATERIAL_BUFFER_BINDING_SLOT);
-	context.SetUniformBuffer(m_Data.pWorldBuffer, WORLD_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_Data.pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_Data.pShadowBuffer, SHADOW_BUFFER_BINDING_SLOT);
 
@@ -71,7 +70,6 @@ void Material::Unbind() const noexcept
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, LIGHT_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, MATERIAL_BUFFER_BINDING_SLOT);
-	context.SetUniformBuffer(nullptr, WORLD_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, EXTENSION_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(nullptr, SHADOW_BUFFER_BINDING_SLOT);
 
@@ -91,11 +89,6 @@ void Material::SetCameraBuffer(const UniformBuffer* pCameraBuffer) const noexcep
 void Material::SetMaterialBuffer(const UniformBuffer* pMaterialBuffer) const noexcept
 {
 	m_Data.pMaterialBuffer = pMaterialBuffer;
-}
-
-void Material::SetWorldBuffer(const UniformBuffer* pWorldBuffer) const noexcept
-{
-	m_Data.pWorldBuffer = pWorldBuffer;
 }
 
 void Material::SetExtensionBuffer(const UniformBuffer * pExtensionBuffer) const noexcept

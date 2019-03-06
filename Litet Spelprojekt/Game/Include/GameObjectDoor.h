@@ -13,6 +13,8 @@ public:
 	bool IsOpen() const noexcept;
 	bool IsClosed() const noexcept;
 
+	void SetColor(DOOR_COLOR color) noexcept;
+
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	virtual void UpdateTransform() noexcept override;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
@@ -26,4 +28,5 @@ public:
 private:
 	float m_Percentage;
 	bool m_Open;
+	DOOR_COLOR m_Color;
 };

@@ -19,9 +19,9 @@
 #define NR_GROUPS 3
 enum GroupType : uint32
 {
-	NONE,
-	MEDIC,
-	SMOKE_DIVER
+	MEDIC = 0,
+	SMOKE_DIVER = 1,
+	NONE = 2
 };
 
 class TileData;
@@ -31,7 +31,7 @@ class Crewmember : public GameObject, public IOrderListener
 	friend class Crew;
 
 public:
-	Crewmember(World* world, const glm::vec4& lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), float actionCap = 100, const std::string& name = "");
+	Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);
 	~Crewmember();
 	
 	//UPDATES
@@ -73,9 +73,7 @@ public:
 	const glm::vec3& GetDirection() const noexcept;
 	const glm::ivec3& GetTile() const noexcept;
 	float GetMovementSpeed() const noexcept;
-	/*int8 GetSkillFire() const noexcept;
-	int8 GetSkillMedic() const noexcept;
-	int8 GetSkillStrength() const noexcept;*/
+
 	uint32 GetGroup() const noexcept;
 	int32 GetForgetfulness() const noexcept;
 
@@ -122,10 +120,7 @@ private:
 	int32 m_ShipNumber;
 	glm::vec3 m_LastKnownPosition;
 
-	//--SKILLS
-	/*int8 m_SkillFire;
-	int8 m_SkillMedic;
-	int8 m_SkillStrength;*/
+	//--GROUP
 	uint32 m_Group;
 		
 	//--INJURIES
@@ -168,21 +163,6 @@ inline float Crewmember::GetMovementSpeed() const noexcept
 {
 	return m_MovementSpeed;
 }
-
-/*inline int8 Crewmember::GetSkillFire() const noexcept
-{
-	return m_SkillFire;
-}
-
-inline int8 Crewmember::GetSkillMedic() const noexcept
-{
-	return m_SkillMedic;
-}
-
-inline int8 Crewmember::GetSkillStrength() const noexcept
-{
-	return m_SkillStrength;
-}*/
 
 inline uint32 Crewmember::GetGroup() const noexcept
 {

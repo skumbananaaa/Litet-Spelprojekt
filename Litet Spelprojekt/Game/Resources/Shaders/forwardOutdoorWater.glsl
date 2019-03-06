@@ -184,7 +184,7 @@ void main()
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
-		vec3 lightCol = g_DirLights[i].Color.rgb;
+		vec3 lightColor = g_DirLights[i].Color.rgb * 3.0f;
 
 		lightColor += CalcLightContribution(lightDir, lightCol, normal);
 		specular += CalcSpecular(lightDir, lightCol, viewDir, normal);

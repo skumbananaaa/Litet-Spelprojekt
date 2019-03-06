@@ -77,6 +77,7 @@ public:
 	int8 GetSkillMedic() const noexcept;
 	int8 GetSkillStrength() const noexcept;*/
 	uint32 GetGroup() const noexcept;
+	int32 GetForgetfulness() const noexcept;
 
 	//IS
 	bool IsIdleing() const noexcept;
@@ -138,6 +139,8 @@ private:
 	float m_MovementSpeed;
 	bool m_Idleing;
 
+	int32 m_Forgetfulness;
+
 	Crewmember* m_pAssisting;
 };
 
@@ -184,6 +187,11 @@ inline int8 Crewmember::GetSkillStrength() const noexcept
 inline uint32 Crewmember::GetGroup() const noexcept
 {
 	return m_Group;
+}
+
+inline int32 Crewmember::GetForgetfulness() const noexcept
+{
+	return m_Forgetfulness;
 }
 
 inline bool Crewmember::IsIdleing() const noexcept

@@ -198,6 +198,12 @@ void World::PlaceDoors(Scene& scene) noexcept
 				pGameObject->UpdateTransform();
 				scene.AddGameObject(pGameObject);
 
+				/*if (door1.y == 0)
+				{
+					pGameObject->SetCo
+				}*/
+
+
 				level.GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 				level.GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 

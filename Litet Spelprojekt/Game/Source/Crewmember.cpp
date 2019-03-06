@@ -37,6 +37,8 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_Health = m_MaxHealth;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 	m_Idleing = true;
+
+	m_Forgetfulness = 3;
 }
 
 Crewmember::~Crewmember()

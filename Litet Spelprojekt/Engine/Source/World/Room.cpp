@@ -37,6 +37,21 @@ const bool Room::IsFireDetected() const noexcept
 	return m_FireDetected;
 }
 
+const bool Room::IsFlooded() const noexcept
+{
+	return m_Flooded;
+}
+
+const bool Room::IsFloodDetected() const noexcept
+{
+	return m_FloodDetected;
+}
+
+const bool Room::IsFloodUpdatedThisFrame() const noexcept
+{
+	return m_FloodUpdatedThisFrame;
+}
+
 void Room::SetActive(bool active) noexcept
 {
 	m_Active = active;
@@ -50,6 +65,21 @@ void Room::SetBurning(bool burning) noexcept
 void Room::SetFireDetected(bool detected) noexcept
 {
 	m_FireDetected = detected;
+}
+
+void Room::SetFlooded(bool flooded) noexcept
+{
+	m_Flooded = flooded;
+}
+
+void Room::SetFloodDetected(bool detected) noexcept
+{
+	m_FloodDetected = detected;
+}
+
+void Room::SetFloodUpdated(bool updated) noexcept
+{
+	m_FloodUpdatedThisFrame = updated;
 }
 
 void Room::GenerateShadows(const Scene& scene) noexcept

@@ -25,6 +25,11 @@ void Crew::AddToSelectedList(int32 crewIndex) noexcept
 	m_SelectedMembers.push_back(crewIndex);
 }
 
+void Crew::RemoveFromSelectedList(int32 crewIndex) noexcept
+{
+	m_SelectedMembers.erase(std::find(m_SelectedMembers.begin(), m_SelectedMembers.end(), crewIndex));
+}
+
 bool Crew::HasSelectedMembers() const noexcept
 {
 	return !m_SelectedMembers.empty();

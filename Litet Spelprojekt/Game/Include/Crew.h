@@ -18,6 +18,8 @@ public:
 	const std::vector<int32>& GetSelectedList() const noexcept;
 	const std::vector<uint32>& GetSquad(uint32 index) const noexcept;
 
+	void RemoveFromSelectedList(int32 crewIndex) noexcept;
+
 	// Crewmembers
 	Crewmember* GetMember(int index);
 

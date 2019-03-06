@@ -5,11 +5,10 @@
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include "../../Include/GameObjectDoor.h"
 
-
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
-	cartesianCamera(false),
+	m_CartesianCamera(false),
 	m_CurrentElevation(2),
 	m_pUIPause(nullptr),
 	m_IsPaused(false)
@@ -51,8 +50,6 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
-
-	GetRenderer()->SetWorldBuffer(*this, m_pWorld);
 
 	m_pUICrewMember = new UICrewMember(330, 170);
 	m_pUILog = new UILog(window->GetWidth() - 350, window->GetHeight() - 450, 350, 450);
@@ -174,7 +171,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 	{
 		if (Input::IsKeyDown(KEY_LEFT_ALT))
 		{
-			if (!cartesianCamera)
+			if (!m_CartesianCamera)
 			{
 				if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 				{
@@ -204,7 +201,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		}
 		else
 		{
-			PickObject(true);
+			PickObject(true, position.x, position.y);
 		}
 	}
 }
@@ -213,7 +210,7 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 {
 	if (!IsPaused())
 	{
-		if (!cartesianCamera)
+		if (!m_CartesianCamera)
 		{
 			if (Input::IsKeyDown(KEY_LEFT_ALT))
 			{
@@ -237,11 +234,11 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 	}
 }
 
-void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 {
 }
 
-void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
 	if (!IsPaused())
 	{
@@ -251,7 +248,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					GameObject* object = RayTestGameObjects();
+					/*GameObject* object = RayTestGameObjects();
 					if (!object)
 					{
 						PickPosition();
@@ -259,7 +256,9 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 					else if (m_Crew.HasSelectedMembers())
 					{
 						object->OnPicked(m_Crew.GetSelectedList());
-					}
+					}*/
+
+					PickPosition();
 				}
 				break;
 			}
@@ -267,7 +266,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					PickObject(false);
+					PickObject(false, position.x, position.y);
 				}
 				break;
 			}
@@ -301,7 +300,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			case KEY_O:
 			{
-				cartesianCamera = !cartesianCamera;
+				m_CartesianCamera = !m_CartesianCamera;
 				break;
 			}
 			case KEY_P:
@@ -417,7 +416,7 @@ void SceneGame::CreateCrew() noexcept
 		"Knut",
 		"Britt-Marie",
 		"Bert Karlsson",
-		"Herman Söderlund"
+		"Herman Sï¿½derlund"
 	};
 
 	int index = 0;
@@ -502,6 +501,15 @@ void SceneGame::CreateCrew() noexcept
 		m_Crew.GetMember(i)->SetHidden(true);
 		m_Crew.GetMember(i)->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
+	}
+}
+
+void SceneGame::GenerateShadows()
+{
+	if (m_pWorld)
+	{
+		uint32 numRooms = m_pWorld->GetNumRooms();
+		m_pWorld->GenerateRoomShadows(*this);
 	}
 }
 
@@ -592,7 +600,7 @@ void SceneGame::RequestDoorClosed()
 	//}
 }
 
-void SceneGame::PickObject(bool hover)
+void SceneGame::PickObject(bool hover, int32 positionX, int32 positionY)
 {
 	GameObject* object = RayTestGameObjects();
 
@@ -611,8 +619,12 @@ void SceneGame::PickObject(bool hover)
 			}
 			else
 			{
-				object->OnPicked(m_Crew.GetSelectedList());
+				object->OnPicked(m_Crew.GetSelectedList(), 0, 0);
 			}
+		}
+		else if (m_Crew.HasSelectedMembers() && !hover)
+		{
+			object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 		}
 	}
 	else if (hover)
@@ -698,7 +710,7 @@ void SceneGame::UpdateCamera(float dtS) noexcept
 	float cartesianCameraSpeed = 5.0F;
 	float cartesianCameraAngularSpeed = 1.5F;
 
-	if (cartesianCamera)
+	if (m_CartesianCamera)
 	{
 		glm::vec3 localMove(0.0f);
 

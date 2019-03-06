@@ -174,6 +174,7 @@ private:
 	mutable Func m_CurrentDepthFunc;
 
 	mutable uint32 m_CurrentTextures[16];
+	mutable const Framebuffer* m_pCurrentFramebuffer;
 	mutable const ShaderProgram* m_pCurrentProgram;
 	mutable const Texture* m_pCurrentTextures[16];
 	mutable const UniformBuffer* m_pCurrentUniforms[16];

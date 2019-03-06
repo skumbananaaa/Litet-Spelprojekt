@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderCloseDoor.h"
 #include "../../Include/GameObjectDoor.h"
+#include "../../Include/Crewmember.h"
 
 OrderDoor::OrderDoor(GameObjectDoor* door, glm::ivec3 doorTile, bool open) : OrderWalk(doorTile)
 {

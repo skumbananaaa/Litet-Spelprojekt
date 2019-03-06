@@ -165,8 +165,16 @@ void Framebuffer::CreateFramebuffer()
 			buf++;
 		}
 	}
+	
+	if (buf > 0)
+	{
+		GL_CALL(glDrawBuffers(buf, drawBuffers));
+	}
+	else
+	{
+		GL_CALL(glDrawBuffer(GL_NONE));
+	}
 
-	GL_CALL(glDrawBuffers(buf, drawBuffers));
 	if (m_pDepthStencil != nullptr)
 	{
 		uint32 type = m_pDepthStencil->GetType();
@@ -175,7 +183,9 @@ void Framebuffer::CreateFramebuffer()
 			type = m_DepthFace;
 		}
 
-		if (m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH)
+		if (m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH || 
+			m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH16 ||
+			m_pDepthStencil->GetFormat() == TEX_FORMAT_DEPTH32)
 		{
 			GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, type, m_pDepthStencil->m_Texture, 0));
 		}

@@ -16,4 +16,5 @@ public:
 	static IOrder* GetIdleOrder(); 
 
 private:
+	static std::vector<GameObject*> s_Beds;
 };

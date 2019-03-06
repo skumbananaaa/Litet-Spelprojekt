@@ -5,6 +5,7 @@
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include "../../Include/GameObjectDoor.h"
 #include "../../Include/Orders/OrderSleep.h"
+#include "../../Include/Orders/OrderSchedule.h"
 
 
 SceneGame::SceneGame() : SceneInternal(false),
@@ -23,6 +24,7 @@ SceneGame::SceneGame() : SceneInternal(false),
 	CreateWorld();
 	CreateCrew();
 
+	OrderSchedule::Init(this);
 	LightManager::Init(this, 2);
 	ScenarioManager::Init(m_pWorld);
 
@@ -71,6 +73,11 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	m_pUICrew = new UICrew(0, window->GetHeight() - 150, 200, 500, members);
 
 	SetPaused(false);
+
+	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+	{
+		m_Crew.GetMember(i)->GiveOrder(OrderSchedule::GetIdleOrder());
+	}
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
@@ -210,7 +217,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 	}
 }
 
-void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & position)
+void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
 	if (!IsPaused())
 	{
@@ -238,11 +245,11 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 	}
 }
 
-void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 {
 }
 
-void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
 	if (!IsPaused())
 	{
@@ -318,12 +325,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 			}
 			case KEY_G:
 			{
-				GameObject* pBed = GetGameObject("Bunk Bed1");
-				if (pBed)
-				{
-					m_Crew.GetMember(0)->GiveOrder(new OrderSleep(pBed->GetTile(), pBed));
-				}
-
+				m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 				break;
 			}
 		}
@@ -438,7 +440,7 @@ void SceneGame::CreateCrew() noexcept
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-		m_Crew.GetMember(i)->SetHidden(true);
+		m_Crew.GetMember(i)->SetHidden(false);
 		m_Crew.GetMember(i)->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
 	}

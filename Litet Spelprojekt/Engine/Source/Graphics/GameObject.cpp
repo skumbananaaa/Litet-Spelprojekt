@@ -14,7 +14,8 @@ GameObject::GameObject() noexcept
 	m_IsVisible(true),
 	m_IsHovered(false),
 	m_IsPicked(false),
-	m_TypeId(-1)
+	m_TypeId(-1),
+	m_Room(0)
 {
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	UpdateTransform();

@@ -28,17 +28,8 @@ bool OrderSleep::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, f
 			m_IsAtBed = true;
 			m_Position = GetCrewMember()->GetPosition();
 			
-			glm::vec4 rotation = m_pBed->GetRotation();
-			if (rotation.w > 0.0f)
-			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.65f, -1.35f));
-				GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
-			}
-			else
-			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(-1.35f, 0.65f, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f)), glm::radians<float>(90.0f)));
-			}
+			GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.65f, -1.35f));
+			GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(90.0f)));
 		}
 	}
 	else 

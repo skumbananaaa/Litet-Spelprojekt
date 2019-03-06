@@ -5,6 +5,7 @@
 #include "../Include/Orders/OrderCloseDoor.h"
 #include <World/WorldLevel.h>
 #include "../Include/GameObjectDoor.h"
+#include "../Include/Orders/OrderSchedule.h"
 
 
 Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
@@ -40,7 +41,6 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 
 Crewmember::~Crewmember()
 {
-
 }
 
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
@@ -108,7 +108,7 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 	}
 }
 
-void Crewmember::GiveOrder(IOrder * order) noexcept
+void Crewmember::GiveOrder(IOrder* order) noexcept
 {
 	m_OrderHandler.GiveOrder(order, this);
 }
@@ -242,6 +242,8 @@ void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
 	m_Idleing = true;
+
+	GiveOrder(OrderSchedule::GetIdleOrder());
 }
 
 void Crewmember::OnAddedToScene(Scene* scene) noexcept
@@ -264,6 +266,7 @@ void Crewmember::OnNotHovered() noexcept
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
+	m_PlayerTile.z = m_PlayerTile.z < 0 ? 0 : m_PlayerTile.z;
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{
@@ -333,8 +336,14 @@ void Crewmember::UpdateHealth(float dt)
 	}
 }
 
-void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
+void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexcept
 {
+	//HOT FIX
+	if (m_PlayerTile.z < 0)
+	{
+		return;
+	}
+
 	float smokeDmgSpeed = 0.1f;
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
@@ -351,6 +360,12 @@ void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 
 void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
+	//HOT FIX
+	if (m_PlayerTile.z < 0)
+	{
+		return;
+	}
+
 	float burnSpeed = 0.1f;
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.Temp >= tileData.BurnsAt)

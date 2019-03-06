@@ -59,7 +59,6 @@ public:
 	virtual void OnPicked(const std::vector<int32>& selectedMembers) noexcept;
 	virtual void OnHovered() noexcept;
 	virtual void OnNotHovered() noexcept;
-
 	
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
@@ -97,7 +96,7 @@ private:
 	glm::vec3 m_Scale;
 	float m_ExtendPosX;
 	int32 m_TypeId;
-	int32 m_Room = 1;
+	int32 m_Room;
 	bool m_IsHidden = false;
 };
 

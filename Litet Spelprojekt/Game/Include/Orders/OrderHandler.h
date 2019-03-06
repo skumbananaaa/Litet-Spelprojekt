@@ -22,6 +22,7 @@ public:
 private:
 	void StartOrder();
 
+private:
 	std::vector<IOrder*> m_OrderQueue;
 	IOrderListener* m_pOrderListener;
 };

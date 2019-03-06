@@ -319,12 +319,15 @@ GameObject* ResourceHandler::CreateGameObject(int32 gameObject)
 	{
 		return nullptr;
 	}
-	GAMEOBJECT_DESC_INTERNAL desc = m_pGameObjectFiles[gameObject];
+
+	GAMEOBJECT_DESC_INTERNAL& desc = m_pGameObjectFiles[gameObject];
+
 	GameObject* pGameObject = m_pGameObjectCreator->CreateGameObject(gameObject);
 	pGameObject->SetMesh(desc.mesh);
 	pGameObject->SetMaterial(desc.material);
 	pGameObject->SetDecal(desc.decal);
 	pGameObject->SetTypeId(gameObject);
+	pGameObject->SetName(desc.name + std::to_string(desc.count++));
 	return pGameObject;
 }
 

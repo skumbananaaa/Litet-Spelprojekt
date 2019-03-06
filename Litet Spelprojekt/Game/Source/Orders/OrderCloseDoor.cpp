@@ -1,7 +1,8 @@
 #include "../../Include/Orders/OrderCloseDoor.h"
 #include "../../Include/GameObjectDoor.h"
 
-OrderDoor::OrderDoor(GameObjectDoor* door, glm::ivec3 doorTile, bool open) : OrderWalk(doorTile)
+OrderDoor::OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open)
+	: OrderWalk(doorTile)
 {
 	m_pGameObjectDoor = door;
 	m_Open = open;
@@ -54,6 +55,3 @@ bool OrderDoor::IsIdleOrder() noexcept
 {
 	return false;
 }
-
-
-

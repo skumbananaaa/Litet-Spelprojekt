@@ -1,11 +1,13 @@
 #pragma once
 #include "OrderWalk.h"
 
-class OrderGiveAid : public OrderWalk
+class GameObject;
+
+class OrderSleep : public OrderWalk
 {
 public:
-	OrderGiveAid(Crewmember* injuredMember);
-	virtual ~OrderGiveAid();
+	OrderSleep(const glm::ivec3& bedTile, GameObject* pBed);
+	virtual ~OrderSleep();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
@@ -17,7 +19,9 @@ public:
 	virtual bool IsIdleOrder() noexcept;
 	virtual void RunParallel() override;
 
-protected:
-	Crewmember* m_pAiding;
-	glm::ivec3 m_Target;
+private:
+	GameObject* m_pBed;
+	glm::vec3 m_Position;
+	float m_Timer;
+	bool m_IsAtBed;
 };

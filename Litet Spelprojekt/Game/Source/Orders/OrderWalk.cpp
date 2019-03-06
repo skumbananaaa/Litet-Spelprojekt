@@ -6,7 +6,7 @@
 #include "../../Include/Path.h"
 #include "../../Include/GameObjectDoor.h"
 
-OrderWalk::OrderWalk(glm::ivec3 goalTile):
+OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 	m_pPathFinder(nullptr),
 	m_pPath(nullptr),
 	m_IsPathReady(false)

@@ -3,11 +3,10 @@
 
 class GameObjectDoor;
 
-
 class OrderDoor : public OrderWalk 
 {
 public:
-	OrderDoor(GameObjectDoor* door, glm::ivec3 doorTile, bool open);
+	OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open);
 	virtual ~OrderDoor();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;

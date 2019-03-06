@@ -4,7 +4,8 @@
 #include <World/Tile.h>
 #include <World/World.h>
 
-struct tls {
+struct tls
+{
 	int g = 0;
 	int f;
 	glm::ivec3 parentTile;
@@ -48,4 +49,3 @@ private:
 	bool m_GoalSet;
 	int32 m_GetNumLevels;
 };
-

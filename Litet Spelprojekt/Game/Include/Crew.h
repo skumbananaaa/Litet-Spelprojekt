@@ -2,8 +2,6 @@
 #define CREW_H
 #include "Crewmember.h"
 
-
-
 class Crew
 {
 public:

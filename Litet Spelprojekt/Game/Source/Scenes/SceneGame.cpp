@@ -4,6 +4,7 @@
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include "../../Include/GameObjectDoor.h"
+#include "../../Include/Orders/OrderSleep.h"
 
 
 SceneGame::SceneGame() : SceneInternal(false),
@@ -313,6 +314,16 @@ void SceneGame::OnKeyDown(KEY keycode)
 			case KEY_K:
 			{
 				RequestDoorClosed();
+				break;
+			}
+			case KEY_G:
+			{
+				GameObject* pBed = GetGameObject("Bunk Bed1");
+				if (pBed)
+				{
+					m_Crew.GetMember(0)->GiveOrder(new OrderSleep(pBed->GetTile(), pBed));
+				}
+
 				break;
 			}
 		}

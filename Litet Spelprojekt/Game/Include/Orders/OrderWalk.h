@@ -10,7 +10,7 @@ class OrderWalk : public IOrder, public IRunnable
 protected:
 
 public:
-	OrderWalk(glm::ivec3 targetTile);
+	OrderWalk(const glm::ivec3& targetTile);
 	virtual ~OrderWalk();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
@@ -25,6 +25,7 @@ public:
 
 protected:
 	bool FollowPath(float dtS) noexcept;
+
 protected:
 	glm::ivec3 m_GoalTile;
 	glm::vec3 m_directionTile;

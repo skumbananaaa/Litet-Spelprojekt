@@ -68,7 +68,13 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 		{
 			room.SetFireDetected(true);
 		}
-		GetCrewMember()->GiveOrder(new OrderWalk(glm::ivec3(m_GoalTile.x, m_GoalTile.y * 2, m_GoalTile.z)));
+		GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+	}
+
+	if (room.IsFlooded() && !room.IsFloodDetected())
+	{
+		room.SetFloodDetected(true);
+		GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 
 	return FollowPath(dtS);

@@ -49,7 +49,7 @@ void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 	OrderWalk* walkOrder = dynamic_cast<OrderWalk*>(order);
 	if (walkOrder)
 	{
-		order->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+		//order->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	}
 
 	if (m_OrderQueue.size() == 1)
@@ -89,7 +89,7 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 		{
 			m_OrderQueue[0]->EndOrder(pScene, pWorld, pCrewMembers);
 			std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Ended" << std::endl;
-			m_OrderQueue[0]->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+			//m_OrderQueue[0]->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 			DeleteSafe(m_OrderQueue[0]);
 			m_OrderQueue.erase(m_OrderQueue.begin());
 

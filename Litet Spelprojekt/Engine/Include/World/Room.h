@@ -13,10 +13,16 @@ public:
 	const bool IsActive() const noexcept;
 	const bool IsBurning() const noexcept;
 	const bool IsFireDetected() const noexcept;
+	const bool IsFlooded() const noexcept;
+	const bool IsFloodDetected() const noexcept;
+	const bool IsFloodUpdatedThisFrame() const noexcept;
 
 	void SetActive(bool active) noexcept;
 	void SetBurning(bool burning) noexcept;
 	void SetFireDetected(bool detected) noexcept;
+	void SetFlooded(bool flooded) noexcept;
+	void SetFloodDetected(bool detected) noexcept;
+	void SetFloodUpdated(bool updated) noexcept;
 	void GenerateShadows(const Scene& scene) noexcept;
 
 private:
@@ -24,5 +30,8 @@ private:
 	bool m_Active = false;
 	bool m_Burning = false;
 	bool m_FireDetected = false;
+	bool m_Flooded = false;
+	bool m_FloodDetected = false;
+	bool m_FloodUpdatedThisFrame = false;
 	StaticShadowCube* m_pShadowMap;
 };

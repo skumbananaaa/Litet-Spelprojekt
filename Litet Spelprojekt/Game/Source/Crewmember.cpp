@@ -31,13 +31,16 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjuryBleeding = 0.0f;
 	m_SkillFire = Random::GenerateInt(1, 3);
+	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
-	m_SkillStrength = Random::GenerateInt(1, 3);
+	m_SkillStrength = Random::GenerateInt(1, 3);*/
 
-	m_MaxHealth = m_SkillStrength * 100.0f;
+	m_MaxHealth = 100.0f;
 	m_Health = m_MaxHealth;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 	m_Idleing = true;
+
+	m_Forgetfulness = 3;
 }
 
 Crewmember::~Crewmember()
@@ -58,6 +61,13 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		CheckSmokeDamage(m_pWorld->GetLevel(GetTile().y*2 + 1).GetLevelData(), deltaTime);
 		CheckFireDamage(m_pWorld->GetLevel(GetTile().y*2).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
+	}
+
+	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+
+	if (room.IsBurning() && !room.IsFireDetected())
+	{
+		room.SetFireDetected(true);
 	}
 }
 
@@ -309,6 +319,12 @@ void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
 void Crewmember::SetIdleing(bool value) noexcept
 {
 	m_Idleing = value;
+}
+
+void Crewmember::SetGroup(uint32 group) noexcept
+{
+	assert(group < NR_GROUPS);
+	m_Group = group;
 }
 
 void Crewmember::UpdateHealth(float dt)

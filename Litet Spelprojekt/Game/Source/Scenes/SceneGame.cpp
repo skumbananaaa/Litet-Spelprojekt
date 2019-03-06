@@ -114,6 +114,11 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		ScenarioManager::Update(dtS, m_pWorld, this);
 		UpdateCamera(dtS);
 
+		for (uint32 i = 0; i < m_pWorld->GetNumRooms(); i++)
+		{
+			m_pWorld->GetRoom(i).SetFloodUpdated(false);
+		}
+
 		static float dist = 0.0f;
 		dist += 0.02f * dtS;
 		((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
@@ -429,12 +434,41 @@ void SceneGame::CreateCrew() noexcept
 	AddGameObject(m_Crew.GetMember(0));
 
 	float x, y, z;
-	for (int i = 1; i < NUM_CREW; i++)
+	uint32 numSmokeDivers = 3;
+	uint32 numMedics = 2;
+	uint32 numNone = NUM_CREW - numMedics - numSmokeDivers;
+	for (int i = 1; i < numNone; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15]);
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetHidden(true);
+		m_Crew.GetMember(i)->UpdateTransform();
+		AddGameObject(m_Crew.GetMember(i));
+	}
+	for (int i = numNone; i < numNone + numMedics; i++)
+	{
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15], SMOKE_DIVER);
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetHidden(true);
+		m_Crew.GetMember(i)->UpdateTransform();
+		AddGameObject(m_Crew.GetMember(i));
+	}
+	for (int i = numNone + numMedics; i < NUM_CREW; i++)
+	{
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15], MEDIC);
 		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
 		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
 		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);

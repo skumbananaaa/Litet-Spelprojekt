@@ -2,6 +2,7 @@
 #include <EnginePch.h>
 #include <Graphics/GameObject.h>
 #include "../Include/GUI/UIOrder.h"
+#include <World/World.h>
 
 class GameObjectDoor : public GameObject, public UIOrder
 {
@@ -12,6 +13,8 @@ public:
 	void SetOpen(bool open) noexcept;
 	bool IsOpen() const noexcept;
 	bool IsClosed() const noexcept;
+
+	DOOR_COLOR GetColor() const noexcept;
 
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	virtual void UpdateTransform() noexcept override;

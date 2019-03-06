@@ -198,6 +198,26 @@ void World::PlaceDoors(Scene& scene) noexcept
 				pGameObject->UpdateTransform();
 				scene.AddGameObject(pGameObject);
 
+				if (door1.y == 0 || (int32)position.z % 8 == 0)
+				{
+					pGameObject->SetMaterial(MATERIAL::RED);
+				}
+				else
+				{
+					DOOR_COLOR color1 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door1.x][(int32)door1.z]);
+					DOOR_COLOR color2 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door2.x][(int32)door2.z]);
+
+					if (color1 < color2)
+					{
+						pGameObject->SetMaterial(GetDoorMaterialFromColor(color1));
+					}
+					else
+					{
+						pGameObject->SetMaterial(GetDoorMaterialFromColor(color2));
+					}
+					
+				}
+
 				level.GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 				level.GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
 
@@ -262,7 +282,6 @@ void World::GenerateRoomShadows(const Scene& scene) noexcept
 void World::Generate(Scene& scene) noexcept
 {
 	PlaceDoors(scene);
-
 	GenerateRooms(scene);
 	GenerateFloor(scene);
 	GenerateLevelObject(scene);

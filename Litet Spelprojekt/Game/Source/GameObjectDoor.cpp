@@ -4,8 +4,6 @@
 #include "../Include/Orders/OrderCloseDoor.h"
 #include <Graphics/Scene.h>
 
-
-
 GameObjectDoor::GameObjectDoor() noexcept
 {
 	UpdateTransform();
@@ -32,6 +30,27 @@ bool GameObjectDoor::IsOpen() const noexcept
 bool GameObjectDoor::IsClosed() const noexcept
 {
 	return m_Percentage <= 0.0F;
+}
+
+DOOR_COLOR GameObjectDoor::GetColor() const noexcept
+{
+	if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::RED))
+	{
+		return RED;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::GREEN))
+	{
+		return GREEN;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::BLUE))
+	{
+		return BLUE;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::YELLOW))
+	{
+		return YELLOW;
+	}
+	return YELLOW;
 }
 
 void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept

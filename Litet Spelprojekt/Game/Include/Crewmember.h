@@ -16,6 +16,14 @@
 
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
+#define NR_GROUPS 3
+enum GroupType : uint32
+{
+	NONE,
+	MEDIC,
+	SMOKE_DIVER
+};
+
 class TileData;
 
 class Crewmember : public GameObject, public IOrderListener
@@ -58,6 +66,7 @@ public:
 	void SetDirection(const glm::vec3& direction) noexcept;
 	void SetAssisting(Crewmember* inNeed) noexcept;
 	void SetIdleing(bool value) noexcept;
+	void SetGroup(uint32 group) noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;
@@ -65,9 +74,11 @@ public:
 	const glm::vec3& GetDirection() const noexcept;
 	const glm::ivec3& GetTile() const noexcept;
 	float GetMovementSpeed() const noexcept;
-	int8 GetSkillFire() const noexcept;
+	/*int8 GetSkillFire() const noexcept;
 	int8 GetSkillMedic() const noexcept;
-	int8 GetSkillStrength() const noexcept;
+	int8 GetSkillStrength() const noexcept;*/
+	uint32 GetGroup() const noexcept;
+	int32 GetForgetfulness() const noexcept;
 
 	//IS
 	bool IsIdleing() const noexcept;
@@ -114,9 +125,10 @@ private:
 	glm::vec3 m_LastKnownPosition;
 
 	//--SKILLS
-	int8 m_SkillFire;
+	/*int8 m_SkillFire;
 	int8 m_SkillMedic;
-	int8 m_SkillStrength;
+	int8 m_SkillStrength;*/
+	uint32 m_Group;
 		
 	//--INJURIES
 	float m_HasInjuryBoneBroken;
@@ -129,6 +141,8 @@ private:
 	//--MOVEMENT
 	float m_MovementSpeed;
 	bool m_Idleing;
+
+	int32 m_Forgetfulness;
 
 	Crewmember* m_pAssisting;
 };
@@ -158,7 +172,7 @@ inline float Crewmember::GetMovementSpeed() const noexcept
 	return m_MovementSpeed;
 }
 
-inline int8 Crewmember::GetSkillFire() const noexcept
+/*inline int8 Crewmember::GetSkillFire() const noexcept
 {
 	return m_SkillFire;
 }
@@ -171,6 +185,16 @@ inline int8 Crewmember::GetSkillMedic() const noexcept
 inline int8 Crewmember::GetSkillStrength() const noexcept
 {
 	return m_SkillStrength;
+}*/
+
+inline uint32 Crewmember::GetGroup() const noexcept
+{
+	return m_Group;
+}
+
+inline int32 Crewmember::GetForgetfulness() const noexcept
+{
+	return m_Forgetfulness;
 }
 
 inline bool Crewmember::IsIdleing() const noexcept

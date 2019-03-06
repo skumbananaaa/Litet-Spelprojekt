@@ -15,7 +15,7 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 
 	for (Crewmember* crewmember : crewmembers)
 	{
-		if (crewmember->GetSkillFire() > crewmember->GetSkillMedic())
+		/*if (crewmember->GetSkillFire() > crewmember->GetSkillMedic())
 		{
 			if (crewmember->GetSkillFire() > crewmember->GetSkillStrength())
 			{
@@ -41,6 +41,19 @@ UICrew::UICrew(float x, float y, float width, float height, const std::vector<Cr
 		else
 		{
 			strength.push_back(crewmember);
+		}*/
+
+		switch (crewmember->GetGroup())
+		{
+		case NONE:
+			strength.push_back(crewmember);
+			break;
+		case SMOKE_DIVER:
+			fires.push_back(crewmember);
+			break;
+		case MEDIC:
+			medics.push_back(crewmember);
+			break;
 		}
 	}
 

@@ -29,11 +29,11 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_HasInjuryBoneBroken = false; // Random::GenerateBool();
 	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
-	m_SkillFire = Random::GenerateInt(1, 3);
+	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
-	m_SkillStrength = Random::GenerateInt(1, 3);
+	m_SkillStrength = Random::GenerateInt(1, 3);*/
 
-	m_MaxHealth = m_SkillStrength * 100.0f;
+	m_MaxHealth = 100.0f;
 	m_Health = m_MaxHealth;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 	m_Idleing = true;
@@ -302,6 +302,12 @@ void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
 void Crewmember::SetIdleing(bool value) noexcept
 {
 	m_Idleing = value;
+}
+
+void Crewmember::SetGroup(uint32 group) noexcept
+{
+	assert(group < NR_GROUPS);
+	m_Group = group;
 }
 
 void Crewmember::UpdateHealth(float dt)

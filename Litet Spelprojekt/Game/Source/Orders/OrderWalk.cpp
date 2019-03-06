@@ -5,6 +5,7 @@
 #include "../../Include/Crew.h"
 #include "../../Include/Path.h"
 #include "../../Include/GameObjectDoor.h"
+#include <System/Random.h>
 
 OrderWalk::OrderWalk(glm::ivec3 goalTile):
 	m_pPathFinder(nullptr),
@@ -40,6 +41,7 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	{
 		if (door1 == door2)
 		{
+			// Open door before passing through
 			if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
 			{
 				if (door1->IsClosed())
@@ -49,8 +51,9 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 				return false;
 			}
 		}
-		else if (tile1.HasDoor() && !door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile)
+		else if (tile1.HasDoor() && !door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile && m_OopsIForgot > GetCrewMember()->GetForgetfulness())
 		{
+			// Close door after passing through
 			if (door1->IsOpen())
 			{
 				GetCrewMember()->SetDirection(-GetCrewMember()->GetDirection());
@@ -134,6 +137,7 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 			m_directionTile = m_pPath[m_NrOfTilesLeft - 1];
 			m_TargetTile = m_pPath[--m_NrOfTilesLeft];
 			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
+			m_OopsIForgot = Random::GenerateInt(0, 100);
 		}
 	}
 

@@ -22,6 +22,7 @@ OrderWalk::~OrderWalk()
 void OrderWalk::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	m_pPathFinder = new Path(pWorld);
+	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);
 }
 
@@ -95,6 +96,7 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 
 void OrderWalk::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
+	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	DeleteSafe(m_pPathFinder);
 }
 

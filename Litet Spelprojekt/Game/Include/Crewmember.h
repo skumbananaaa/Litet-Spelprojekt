@@ -35,6 +35,7 @@ public:
 	void FindPath(const glm::ivec3& goalPos);
 	void LookForDoor() noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
+	void GoToMedicBay(World* world);
 
 	//GAMEPLAY (NOT SETS OR GETS)
 	bool Heal(int8 skillLevel, float dtS);

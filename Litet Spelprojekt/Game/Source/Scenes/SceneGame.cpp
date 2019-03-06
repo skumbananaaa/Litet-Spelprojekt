@@ -271,6 +271,16 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 				}
 				break;
 			}
+			case MOUSE_BUTTON_MIDDLE:
+			{
+				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				{
+					if (m_Crew.GetMember(i)->IsPicked())
+					{
+						m_Crew.GetMember(i)->GoToMedicBay(m_pWorld);
+					}
+				}
+			}
 		}
 	}
 }

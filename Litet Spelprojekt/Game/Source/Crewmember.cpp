@@ -3,6 +3,7 @@
 #include <System/Random.h>
 #include "../Include/Orders/OrderWalk.h"
 #include "../Include/Orders/OrderCloseDoor.h"
+#include "../Include/Orders/OrderWalkMedicBay.h"
 #include <World/WorldLevel.h>
 #include "../Include/GameObjectDoor.h"
 
@@ -131,6 +132,18 @@ void Crewmember::LookForDoor() noexcept
 		}
 	}
 	//StartOrder(pScene, pWorld, this);
+}
+
+void Crewmember::GoToMedicBay(World* world)
+{
+	if (!HasInjurySmoke() && !HasInjuryBoneBroken())
+	{
+		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(world), this);
+	}
+	else
+	{
+		Logger::LogEvent(GetName() + " cannot move to Med Bay!", true);
+	}
 }
 
 bool Crewmember::Heal(int8 skillLevel, float dtS)

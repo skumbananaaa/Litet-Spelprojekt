@@ -85,6 +85,8 @@ uint32 Texture::TexFormatToGL(TEX_FORMAT format) noexcept
 		GL_RGBA,
 		GL_RGBA,
 		GL_DEPTH_COMPONENT,
+		GL_DEPTH_COMPONENT,
+		GL_DEPTH_COMPONENT,
 		GL_DEPTH_STENCIL,
 		GL_RGB,
 	};
@@ -105,6 +107,8 @@ uint32 Texture::TexFormatToGLInternal(TEX_FORMAT format) noexcept
 		GL_RGBA,
 		GL_RGBA16F,
 		GL_DEPTH_COMPONENT,
+		GL_DEPTH_COMPONENT16,
+		GL_DEPTH_COMPONENT32,
 		GL_DEPTH24_STENCIL8,
 		GL_RGB16F,
 	};
@@ -125,6 +129,8 @@ uint32 Texture::TexFormatToGLType(TEX_FORMAT format) noexcept
 		GL_UNSIGNED_BYTE,
 		GL_FLOAT,
 		GL_UNSIGNED_INT,
+		GL_FLOAT,
+		GL_FLOAT,
 		GL_UNSIGNED_INT_24_8,
 		GL_FLOAT,
 	};

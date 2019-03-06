@@ -20,7 +20,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	{
 		TextureDesc desc = {};
 		desc.GenerateMips = false;
-		desc.Format = TEX_FORMAT_DEPTH;
+		desc.Format = TEX_FORMAT_DEPTH16;
 		desc.Width = SHADOW_SIZE;
 		desc.Height = SHADOW_SIZE;
 		desc.Samples = 1;
@@ -30,7 +30,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 		params.MinFilter = TEX_PARAM_NEAREST;
 		params.Wrap = TEX_PARAM_EDGECLAMP;
 
-		m_pCube = TextureCube::CreateTextureCubeFromMemory(nullptr, desc);
+		m_pCube = TextureCube::CreateTextureCubeFromMemory(nullptr, desc, params);
 		m_pCube->SetDebugName("ShadowCube");
 	}
 
@@ -49,7 +49,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	{
 		context.SetFramebuffer(ppFrameBuffers[i]);
 		context.SetClearDepth(1.0f);
-		context.Clear(CLEAR_FLAG_COLOR);
+		context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 	}
 
 	CameraBuffer cameraBuff = {};
@@ -70,12 +70,12 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	UniformBuffer* pModelBuffer = new UniformBuffer(&modelBuff, 1, sizeof(ModelBuffer));
 	UniformBuffer* pShadowBuffer = new UniformBuffer(&shadowBuff, 1, sizeof(ShadowBuffer));
 
-	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, GetFarPlane());
+	glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)SHADOW_SIZE / (float)SHADOW_SIZE, 0.1f, GetFarPlane());
 	glm::mat4 cameraMatrices[6] =
 	{
 		proj * glm::lookAt(position, position + glm::vec3( 1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-		proj * glm::lookAt(position, position + glm::vec3(0.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f,  1.0f)),
+		proj * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f,  1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 		proj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -84,9 +84,11 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	context.SetColorMask(0, 0, 0, 0);
 	context.SetDepthMask(true);
 	context.Enable(DEPTH_TEST);
+	context.Disable(CULL_FACE);
 	context.SetDepthFunc(FUNC_LESS);
 	context.Disable(CLIP_DISTANCE0);
 	context.SetViewport(SHADOW_SIZE, SHADOW_SIZE, 0, 0);
+	glDepthRange(0.0f, 1.0f);
 	
 	context.SetProgram(ResourceHandler::GetShader(SHADER::SHADOW));
 	context.SetUniformBuffer(pCameraBuffer, 0);
@@ -97,22 +99,29 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 	for (uint32 i = 0; i < drawables.size(); i++)
 	{
 		const IndexedMesh& mesh = *(drawables[i]->GetMesh());
+		const Material* material = drawables[i]->GetMaterial();
 
-		modelBuff.Model = drawables[i]->GetTransform();
-		pModelBuffer->UpdateData(&modelBuff);
-		for (uint32 j = 0; j < 6; j++)
+		if (material != ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))
 		{
-			cameraBuff.ProjectionView = cameraMatrices[j];
-			pCameraBuffer->UpdateData(&cameraBuff);
+			modelBuff.Model = drawables[i]->GetTransform();
+			pModelBuffer->UpdateData(&modelBuff);
+			for (uint32 j = 0; j < 6; j++)
+			{
+				cameraBuff.ProjectionView = cameraMatrices[j];
+				pCameraBuffer->UpdateData(&cameraBuff);
 
-			context.SetFramebuffer(ppFrameBuffers[j]);
-			context.DrawIndexedMesh(mesh);
+				context.SetFramebuffer(ppFrameBuffers[j]);
+				context.DrawIndexedMesh(mesh);
+			}
 		}
 	}
 
+	context.SetFramebuffer(nullptr);
+	context.SetCullMode(CULL_MODE_BACK);
 	context.SetColorMask(1, 1, 1, 1);
 	context.SetUniformBuffer(nullptr, 0);
 	context.SetUniformBuffer(nullptr, 1);
+	context.SetUniformBuffer(nullptr, 2);
 
 	for (uint32 i = 0; i < 6; i++)
 	{

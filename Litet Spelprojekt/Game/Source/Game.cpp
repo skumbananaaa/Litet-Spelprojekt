@@ -99,6 +99,11 @@ void Game::OnResourcesLoaded()
 	m_pSceneScenario = new SceneScenario();
 	m_pSceneGame = new SceneGame();
 
+	if (m_pSceneGame)
+	{
+		m_pSceneGame->GenerateShadows();
+	}
+
 	m_pScene->OnResourcesLoaded();
 }
 

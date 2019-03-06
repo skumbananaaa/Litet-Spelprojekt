@@ -10,7 +10,7 @@
 
 #define MAX_NUM_ROOMS 128
 
-enum DOOR_COLOR
+enum DOOR_COLOR : uint32
 {
 	RED,
 	GREEN,
@@ -134,6 +134,8 @@ public:
 	bool UpdateVisibility(Scene& scene, float dt);
 
 public:
+	static uint32 GetDoorMaterialFromColor(DOOR_COLOR color) noexcept;
+	static DOOR_COLOR GetDoorColorFromGlobal(uint32 globalIndex) noexcept;
 	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromGlobal(uint32 globalIndex) noexcept;
 	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept;
 
@@ -156,6 +158,56 @@ private:
 	std::vector<uint32> m_ActiveRooms;
 	std::vector<PointLight*> m_RoomLights;
 };
+
+inline uint32 World::GetDoorMaterialFromColor(DOOR_COLOR color) noexcept
+{
+	switch (color)
+	{
+	case RED:
+		return MATERIAL::RED;
+	case GREEN:
+		return MATERIAL::GREEN;
+	case BLUE:
+		return MATERIAL::BLUE;
+	case YELLOW:
+		return MATERIAL::YELLOW;
+	default:
+		return MATERIAL::YELLOW;
+	}
+}
+
+inline DOOR_COLOR World::GetDoorColorFromGlobal(uint32 globalIndex) noexcept
+{
+	if (globalIndex >= SICKBAY_INTERVAL_START && globalIndex <= SICKBAY_INTERVAL_END)
+	{
+		return (DOOR_COLOR)SICKBAY_DOOR_COLOR;
+	}
+	else if (globalIndex >= TOILET_INTERVAL_START && globalIndex <= TOILET_INTERVAL_END)
+	{
+		return (DOOR_COLOR)TOILET_DOOR_COLOR;
+	}
+	else if (globalIndex >= MACHINE_ROOM_INTERVAL_START && globalIndex <= MACHINE_ROOM_INTERVAL_END)
+	{
+		return (DOOR_COLOR)MACHINE_DOOR_COLOR;
+	}
+	else if (globalIndex >= AMMUNITION_ROOM_INTERVAL_START && globalIndex <= AMMUNITION_ROOM_INTERVAL_END)
+	{
+		return (DOOR_COLOR)AMMUNITION_DOOR_COLOR;
+	}
+	else if (globalIndex >= KITCHEN_INTERVAL_START && globalIndex <= KITCHEN_INTERVAL_END)
+	{
+		return (DOOR_COLOR)KITCHEN_DOOR_COLOR;
+	}
+	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
+	{
+		return (DOOR_COLOR)DINING_DOOR_COLOR;
+	}
+	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
+	{
+		return (DOOR_COLOR)CABOOSE_DOOR_COLOR;
+	}
+	return YELLOW;
+}
 
 inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromGlobal(uint32 globalIndex) noexcept
 {

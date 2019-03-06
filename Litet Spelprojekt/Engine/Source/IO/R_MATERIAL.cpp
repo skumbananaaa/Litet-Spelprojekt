@@ -44,7 +44,7 @@ void MATERIAL::RegisterResources()
 	RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	GREEN				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	BLUE				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
-	YELLOW				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 256.0f, SHADER::STANDARD_MATERIAL);
+	YELLOW				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	BOAT				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);

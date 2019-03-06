@@ -32,25 +32,25 @@ bool GameObjectDoor::IsClosed() const noexcept
 	return m_Percentage <= 0.0F;
 }
 
-void GameObjectDoor::SetColor(DOOR_COLOR color) noexcept
+DOOR_COLOR GameObjectDoor::GetColor() const noexcept
 {
-	switch (color)
+	if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::RED))
 	{
-	case RED:
-		SetMaterial(MATERIAL::RED);
-		break;
-	case GREEN:
-		SetMaterial(MATERIAL::GREEN);
-		break;
-	case BLUE:
-		SetMaterial(MATERIAL::BLUE);
-		break;
-	case YELLOW:
-		SetMaterial(MATERIAL::YELLOW);
-		break;
-	default:
-		break;
+		return RED;
 	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::GREEN))
+	{
+		return GREEN;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::BLUE))
+	{
+		return BLUE;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::YELLOW))
+	{
+		return YELLOW;
+	}
+	return YELLOW;
 }
 
 void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept

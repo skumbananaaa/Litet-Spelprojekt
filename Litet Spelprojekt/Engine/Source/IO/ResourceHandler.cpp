@@ -59,6 +59,7 @@ uint32 ResourceHandler::m_NrOfShadersLoaded = 0;
 
 IResourceListener* ResourceHandler::m_ResourceListener;
 std::string ResourceHandler::m_PrePath;
+IGameObjectCreator* ResourceHandler::m_pGameObjectCreator;
 
 ResourceHandler* ResourceHandler::instance = nullptr;
 
@@ -319,7 +320,7 @@ GameObject* ResourceHandler::CreateGameObject(int32 gameObject)
 		return nullptr;
 	}
 	GAMEOBJECT_DESC_INTERNAL desc = m_pGameObjectFiles[gameObject];
-	GameObject* pGameObject = GAMEOBJECT::CreateGameObject(gameObject);
+	GameObject* pGameObject = m_pGameObjectCreator->CreateGameObject(gameObject);
 	pGameObject->SetMesh(desc.mesh);
 	pGameObject->SetMaterial(desc.material);
 	pGameObject->SetDecal(desc.decal);
@@ -608,4 +609,9 @@ void ResourceHandler::TriggerOnLoading(const std::string& file, float percentage
 	{
 		m_ResourceListener->OnLoading(file, percentage);
 	}
+}
+
+void ResourceHandler::SetGameObjectCreator(IGameObjectCreator * creator)
+{
+	m_pGameObjectCreator = creator;
 }

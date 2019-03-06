@@ -31,6 +31,7 @@ public:
 	void RemoveSpotLight(SpotLight* pLight) noexcept;
 	void RemoveGameObject(GameObject* pGameObject) noexcept;
 	void ExtendScene() noexcept;
+	void RegisterPickableGameObject(GameObject* pickableObject) noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;
@@ -50,6 +51,9 @@ public:
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
 	const float GetExtension() const noexcept;
+
+protected:
+	std::vector<GameObject*> m_PickableGameObjects;
 
 private:
 	Camera* m_pCamera;

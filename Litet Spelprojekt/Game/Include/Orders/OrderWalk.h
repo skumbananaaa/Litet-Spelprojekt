@@ -20,8 +20,9 @@ public:
 	virtual bool AllowsMultipleOrders() noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual bool ReadyToAbort() noexcept override;
+	virtual bool IsIdleOrder() noexcept override;
 	virtual void RunParallel() override;
-
+	virtual bool CanExecuteIfHurt() noexcept override;
 protected:
 	bool FollowPath(float dtS) noexcept;
 protected:

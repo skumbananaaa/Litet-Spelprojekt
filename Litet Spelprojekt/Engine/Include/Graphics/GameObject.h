@@ -29,6 +29,7 @@ public:
 	virtual void SetRotation(const glm::vec4& rotation) noexcept;
 	virtual void SetScale(const glm::vec3& scale) noexcept;
 	virtual void SetRoom(uint32 room) noexcept;
+	virtual void SetDirection(const glm::vec3& direction) noexcept;
 	void SetHidden(bool isHidden) noexcept;
 
 	const std::string& GetName() const noexcept;
@@ -42,11 +43,23 @@ public:
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
+	const glm::vec3& GetDirection() const noexcept;
+	glm::ivec3 GetTile() noexcept;
 	uint32 GetRoom() const noexcept;
+
 	bool IsHidden() const noexcept;
 
 	bool IsDirty() const noexcept;
 	bool IsVisible() const noexcept;
+
+	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
+
+	virtual bool IsHovered() const noexcept;
+	virtual bool IsPicked() const noexcept;
+	virtual void OnPicked(const std::vector<int32>& selectedMembers) noexcept;
+	virtual void OnHovered() noexcept;
+	virtual void OnNotHovered() noexcept;
+
 	
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
@@ -66,8 +79,11 @@ public:
 protected:
 	bool m_IsDirty;
 	bool m_IsVisible;
+	bool m_IsHovered;
+	bool m_IsPicked;
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
+	glm::vec3 m_Direction;
 
 private:
 	std::string m_Name;
@@ -98,6 +114,16 @@ inline const glm::vec4& GameObject::GetRotation() const noexcept
 inline const glm::vec3& GameObject::GetScale() const noexcept
 {
 	return m_Scale;
+}
+ 
+inline const glm::vec3& GameObject::GetDirection() const noexcept
+{
+	return m_Direction;
+}
+
+inline glm::ivec3 GameObject::GetTile() noexcept
+{
+	return glm::ivec3(std::round(m_Position.x), std::round((m_Position.y)), std::round(m_Position.z));
 }
 
 inline uint32 GameObject::GetRoom() const noexcept
@@ -179,6 +205,16 @@ inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
 inline bool GameObject::IsDirty() const noexcept
 {
 	return m_IsDirty;
+}
+
+inline bool GameObject::IsHovered() const noexcept
+{
+	return m_IsHovered;
+}
+
+inline bool GameObject::IsPicked() const noexcept
+{
+	return m_IsPicked;
 }
 
 inline bool GameObject::IsVisible() const noexcept

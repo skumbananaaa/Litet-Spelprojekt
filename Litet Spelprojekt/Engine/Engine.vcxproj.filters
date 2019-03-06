@@ -84,13 +84,9 @@
     <ClCompile Include="Source\Graphics\Particles\MeshEmitter.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\MeshParticle.cpp" />
     <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
-    <ClCompile Include="Source\World\GameObjectDoor.cpp" />
     <ClCompile Include="Source\System\CPUProfiler.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\WaterQuad.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextField.cpp" />
-    <ClCompile Include="Source\World\Scenarios\IScenario.cpp" />
-    <ClCompile Include="Source\World\Scenarios\Orders\OrderCloseDoor.cpp" />
-    <ClCompile Include="Source\World\Scenarios\Orders\OrderHandler.cpp" />
     <ClCompile Include="Source\Graphics\Textures\StaticShadowCube.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -189,15 +185,12 @@
     <ClInclude Include="Include\Graphics\Materials\WaterIndoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\WaterOutdoorMaterial.h" />
     <ClInclude Include="Include\Graphics\Materials\AnimatedSkeleton.h" />
-    <ClInclude Include="Include\World\GameObjectDoor.h" />
     <ClInclude Include="Include\System\CPUProfiler.h" />
     <ClInclude Include="Include\Graphics\Particles\MeshEmitter.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshParticle.h" />
     <ClInclude Include="Include\Graphics\Geometry\MeshBase.h" />
     <ClInclude Include="Include\Graphics\Geometry\WaterQuad.h" />
     <ClInclude Include="Include\Graphics\GUI\TextField.h" />
-    <ClInclude Include="Include\World\Scenarios\Orders\OrderCloseDoor.h" />
-    <ClInclude Include="Include\World\Scenarios\Orders\OrderHandler.h" />
     <ClInclude Include="Include\Graphics\Textures\StaticShadowCube.h" />
     <ClInclude Include="Include\Graphics\IGLObject.h" />
   </ItemGroup>

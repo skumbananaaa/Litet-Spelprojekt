@@ -4,6 +4,7 @@
 #include <Graphics/Scene.h>
 #include "../../Include/Crew.h"
 #include "../../Include/Path.h"
+#include "../../Include/GameObjectDoor.h"
 
 OrderWalk::OrderWalk(glm::ivec3 goalTile):
 	m_pPathFinder(nullptr),
@@ -29,10 +30,45 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	{
 		return false;
 	}
-	if (!pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].IsOpen() && !pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z].IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+
+	TileData& tile1 = pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z];
+	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+	TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
+	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
+	if (door1)
 	{
-		std::cout << "Door opened" << std::endl;
-		pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z].OpenDoor();
+		if (door1 == door2)
+		{
+			if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+			{
+				if (door1->IsClosed())
+				{
+					door1->SetOpen(true);
+				}
+				return false;
+			}
+		}
+		else if (tile1.HasDoor() && !door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile)
+		{
+			if (door1->IsOpen())
+			{
+				GetCrewMember()->SetDirection(-GetCrewMember()->GetDirection());
+				door1->SetOpen(false);
+			}
+			return false;
+		}
+	}
+
+	Room& room = pWorld->GetRoom(pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevel()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z]);
+
+	if (room.IsBurning())
+	{
+		if (!room.IsFireDetected())
+		{
+			room.SetFireDetected(true);
+		}
+		GetCrewMember()->GiveOrder(new OrderWalk(glm::ivec3(m_GoalTile.x, m_GoalTile.y * 2, m_GoalTile.z)));
 	}
 
 	return FollowPath(dtS);
@@ -63,6 +99,11 @@ bool OrderWalk::ReadyToAbort() noexcept
 	return m_IsPathReady;
 }
 
+bool OrderWalk::IsIdleOrder() noexcept
+{
+	return false;
+}
+
 void OrderWalk::RunParallel()
 {
 	m_pPath = m_pPathFinder->FindPath(GetCrewMember()->GetTile(), m_GoalTile);
@@ -70,6 +111,11 @@ void OrderWalk::RunParallel()
 	m_TargetTile = GetCrewMember()->GetTile();
 	m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
 	m_IsPathReady = true;
+}
+
+bool OrderWalk::CanExecuteIfHurt() noexcept
+{
+	return true;
 }
 
 bool OrderWalk::FollowPath(float dtS) noexcept
@@ -93,13 +139,11 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			move.y /= std::abs(move.y);
 			GetCrewMember()->SetDirection(glm::vec3(1, 0, 0));
-			//GetCrewMember()->SetPosition(position + glm::vec3(0, move.y * dtS, 0));
 			GetCrewMember()->Move(glm::vec3(0, move.y, 0), false, dtS);
 		}
 		else
 		{
 			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
-			//GetCrewMember()->SetPosition(position + GetCrewMember()->GetDirection() * dtS);
 			GetCrewMember()->Move(GetCrewMember()->GetDirection(), true, dtS);
 		}
 	}
@@ -107,5 +151,6 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 	{
 		return true;
 	}
+
 	return false;
 }

@@ -12,8 +12,11 @@ GameObject::GameObject() noexcept
 	m_Scale(1.0f),
 	m_IsDirty(true),
 	m_IsVisible(true),
+	m_IsHovered(false),
+	m_IsPicked(false),
 	m_TypeId(-1)
 {
+	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	UpdateTransform();
 }
 
@@ -42,6 +45,32 @@ void GameObject::SetRotation(const glm::vec4& rotation) noexcept
 {
 	m_Rotation = rotation;
 	m_IsDirty = true;
+}
+
+void GameObject::SetDirection(const glm::vec3& direction) noexcept
+{
+	m_Direction = glm::normalize(direction);
+}
+
+void GameObject::OnHovered() noexcept
+{
+	//m_IsHovered = true;
+	//Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(this);
+}
+
+void GameObject::OnNotHovered() noexcept
+{
+	//m_IsHovered = false;
+	//Game::GetGame()->m_pSceneGame->GetUICrewMember()->SetCrewMember(nullptr);
+}
+void GameObject::OnPicked(const std::vector<int32>& selectedMembers) noexcept
+{
+	//m_IsPicked = true;
+}
+
+int32 GameObject::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept
+{
+	return true;
 }
 
 void GameObject::SetScale(const glm::vec3& scale) noexcept

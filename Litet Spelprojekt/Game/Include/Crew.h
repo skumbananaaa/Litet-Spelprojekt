@@ -14,6 +14,9 @@ public:
 	Crewmember* GetMember(int index);
 	const int GetCount() const;
 	void RequestCloseDoor(World* pWorld, Scene* pScene);
+	void AddToSelectedList(int32 crewIndex) noexcept;
+	bool HasSelectedMembers() const noexcept;
+	const std::vector<int32>& GetSelectedList() const noexcept;
 
 private:
 	void Expand();
@@ -22,6 +25,7 @@ private:
 	int m_NrOf;
 	int m_Cap;
 	Crewmember** m_ppMembers;
+	std::vector<int32> m_SelectedMembers;
 };
 
 #endif

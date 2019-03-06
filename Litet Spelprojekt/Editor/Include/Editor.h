@@ -2,7 +2,6 @@
 
 #include <System\Application.h>
 #include <Graphics\GameObject.h>
-#include <World/GameObjectDoor.h>
 #include <Graphics\Buffers\UniformBuffer.h>
 #include <Graphics\Camera.h>
 #include <Graphics/Renderers/IRenderer.h>
@@ -29,10 +28,9 @@
 #define NUM_GRID_LEVELS 6
 #define NUM_BOAT_LEVELS 3
 
-#define MAX_NUM_ROOMS 128
-#define TILE_DOOR_INDEX 0
+#define TILE_UNDEFINED_INDEX 0
 #define TILE_NON_WALKABLE_INDEX 1
-#define TILE_SMALLEST_FREE 2
+#define TILE_SMALLEST_FREE_INDEX 2
 
 #define ELEMENT_HEIGHT 50
 
@@ -54,16 +52,29 @@ enum RoomEditingMode : uint32
 	REMOVE_DOOR,
 	ADD_STAIRS,
 	REMOVE_STAIRS,
-	SET_BURN_TEMP
+	SET_BURN_TEMP,
+	SET_SICKBAY,
+	SET_TOILET,
+	SET_MACHINE,
+	SET_AMMO,
+	SET_KITCHEN,
+	SET_DINING,
+	SET_CABOOSE
 };
 
-class Editor : public Application, public ISelectionListener
+class Editor : public Application, public ISelectionListener, public IGameObjectCreator
 {
 public:
 	Editor() noexcept;
 	~Editor();
 
+	virtual GameObject* CreateGameObject(uint32 gameobject) noexcept override;
+
 	void NormalizeTileIndexes() noexcept;
+	void NormalizeReservedTileIndexes() noexcept;
+	void UpdateNumReservedIndexesEachCat() noexcept;
+	bool CheckAndAddReservedIndex(uint32 category) noexcept;
+	void SetReservedTileIndexes(uint32 clickedIndex, uint32 category, uint32 reservedIndex) noexcept;
 	glm::ivec2 CalculateGridPosition(const glm::vec2& mousePosition) noexcept;
 	glm::ivec2 CalculateLowestCorner(const glm::ivec2& firstCorner, const glm::ivec2& secondCorner) noexcept;
 
@@ -150,7 +161,15 @@ private:
 	Button* m_pButtonAddStairs;
 	Button* m_pButtonRemoveStairs;
 	Button* m_pSetRoomBurnTemperature;
+	Button* m_pButtonSetAsSickbay;
+	Button* m_pButtonSetAsToilet;
+	Button* m_pButtonSetAsMachineRoom;
+	Button* m_pButtonSetAsAmmunitionRoom;
+	Button* m_pButtonSetAsKitchen;
+	Button* m_pButtonSetAsDiningRoom;
+	Button* m_pButtonSetAsCaboose;
 	Panel* m_pPanelEditor;
+	PanelScrollable* m_pPanelScrollableRoomEditor;
 
 	SelectionHandler m_SelectionHandlerMesh;
 	SelectionHandler m_SelectionHandlerMeshEdit;
@@ -159,4 +178,83 @@ private:
 	Button* m_pButtonEditMesh;
 	PanelScrollable* m_pPanelScrollableAddMesh;
 	PanelScrollable* m_pPanelScrollableEditMesh;
+
+	//RESERVED TILES STUFF
+	uint32 m_NumReservedInEachCat[NUM_RESERVED_ROOM_CATEGORIES];
 };
+
+inline bool Editor::CheckAndAddReservedIndex(uint32 category) noexcept
+{
+	if (category == SICKBAY_CATEGORY_INDEX)
+	{
+		if (m_NumReservedInEachCat[SICKBAY_CATEGORY_INDEX] < NUM_SICKBAYS)
+		{
+			m_NumReservedInEachCat[SICKBAY_CATEGORY_INDEX]++;
+			return true;
+		}
+
+		return false;
+	}
+	else if (category == TOILET_CATEGORY_INDEX)
+	{
+		if (m_NumReservedInEachCat[TOILET_CATEGORY_INDEX] < NUM_TOILETS)
+		{
+			m_NumReservedInEachCat[TOILET_CATEGORY_INDEX]++;
+			return true;
+		}
+
+		return false;
+	}
+	else if (category == MACHINE_ROOM_CATEGORY_INDEX)
+	{
+		if (m_NumReservedInEachCat[MACHINE_ROOM_CATEGORY_INDEX] < NUM_MACHINE_ROOMS)
+		{
+			m_NumReservedInEachCat[MACHINE_ROOM_CATEGORY_INDEX]++;
+			return true;
+		}
+
+		return false;
+	}
+	else if (category == AMMUNITION_ROOM_CATEGORY_INDEX)
+	{
+		if (m_NumReservedInEachCat[AMMUNITION_ROOM_CATEGORY_INDEX] < NUM_AMMUNITION_ROOMS)
+		{
+			m_NumReservedInEachCat[AMMUNITION_ROOM_CATEGORY_INDEX]++;
+			return true;
+		}
+
+		return false;
+	}
+	else if (category == KITCHEN_CATEGORY_INDEX)
+	{
+		if (m_NumReservedInEachCat[KITCHEN_CATEGORY_INDEX] < NUM_KITCHENS)
+		{
+			m_NumReservedInEachCat[KITCHEN_CATEGORY_INDEX]++;
+			return true;
+		}
+
+		return false;
+	}
+	else if (category == DINING_ROOM_CATEGORY_INDEX)
+	{
+		if (m_NumReservedInEachCat[DINING_ROOM_CATEGORY_INDEX] < NUM_DINING_ROOMS)
+		{
+			m_NumReservedInEachCat[DINING_ROOM_CATEGORY_INDEX]++;
+			return true;
+		}
+
+		return false;
+	}
+	else if (category == CABOOSE_CATEGORY_INDEX)
+	{
+		if (m_NumReservedInEachCat[CABOOSE_CATEGORY_INDEX] < NUM_CABOOSES)
+		{
+			m_NumReservedInEachCat[CABOOSE_CATEGORY_INDEX]++;
+			return true;
+		}
+
+		return false;
+	}
+
+	return false;
+}

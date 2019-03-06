@@ -27,8 +27,30 @@ void Crew::RequestCloseDoor(World* pWorld, Scene* pScene)
 {
 	for (int i = 0; i < m_NrOf; i++)
 	{
-		//OrderHandler::GiveOrder(new OrderCloseDoor(), m_ppMembers[i]);
+		m_ppMembers[i]->LookForDoor();
 	}
+}
+
+void Crew::AddToSelectedList(int32 crewIndex) noexcept
+{
+	for (int i = 0; i < m_SelectedMembers.size(); i++)
+	{
+		if (m_SelectedMembers[i] == crewIndex)
+		{
+			return;
+		}
+	}
+	m_SelectedMembers.push_back(crewIndex);
+}
+
+bool Crew::HasSelectedMembers() const noexcept
+{
+	return m_SelectedMembers.size() > 0;
+}
+
+const std::vector<int32>& Crew::GetSelectedList() const noexcept
+{
+	return m_SelectedMembers;
 }
 
 Crew::Crew(int cap)

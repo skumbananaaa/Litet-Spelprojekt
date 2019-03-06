@@ -16,7 +16,11 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 				{
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);
-					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + 1 + std::abs(addY);
+
+					int fireFactor = m_pWorld->GetLevel(newY * 2 + 1).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->IsVisible() * 10000;
+					int waterFactor = m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(newY).GetLevelData()[newX][newZ].WaterLevel / WATER_MAX_LEVEL));
+
+					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + std::sqrt(std::abs(addX) + std::abs(addZ)) + std::abs(addY) * 2 + fireFactor + waterFactor;
 					
 					int h = std::abs(m_GoalTile.x - newX) + std::abs(m_GoalTile.y - newY) + std::abs(m_GoalTile.z - newZ);
 					m_pppTiles[newX][newY][newZ].f = m_pppTiles[newX][newY][newZ].g + h;
@@ -38,6 +42,12 @@ void Path::CheckAdjacent()
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, -1, 0, 0);
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, 0, 1);
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, 0, -1);
+
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 1, 0, 1);
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, -1, 0, -1);
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, -1, 0, 1);
+	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 1, 0, -1);
+
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, 1, 0);
 	AddToOpen(m_CurrentTile.x, m_CurrentTile.y, m_CurrentTile.z, 0, -1, 0);
 }

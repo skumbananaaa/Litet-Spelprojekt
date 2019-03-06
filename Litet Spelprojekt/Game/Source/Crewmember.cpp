@@ -18,7 +18,7 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
-	SetAnimatedMesh(MESH::ANIMATED_MODEL);
+	SetAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
@@ -26,9 +26,10 @@ Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec
 	m_LastKnownPosition = position;
 
 	//Test
-	m_HasInjuryBoneBroken = false; // Random::GenerateBool();
+	m_HasInjuryBoneBroken = 0.0f; // Random::GenerateBool();
 	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
+	m_HasInjuryBleeding = 0.0f;
 	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);*/
@@ -69,7 +70,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	}
 }
 
-void Crewmember::OnPicked(const std::vector<int32>& selectedMembers) noexcept
+void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
 	if (!m_IsPicked)
 	{
@@ -124,10 +125,11 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 	{
 		Logger::LogEvent(GetName() + " cannot move!", true);
 	}*/
+
 	m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 }
 
-void Crewmember::GiveOrder(IOrder * order) noexcept
+void Crewmember::GiveOrder(IOrder* order) noexcept
 {
 	m_OrderHandler.GiveOrder(order, this);
 }
@@ -192,9 +194,14 @@ void Crewmember::ApplyBurnInjury(float burn)
 	m_HasInjuryBurned += burn;
 }
 
-void Crewmember::ApplyBoneInjury()
+void Crewmember::ApplyBoneInjury(float boneBreak)
 {
-	m_HasInjuryBoneBroken = true;
+	m_HasInjuryBoneBroken += boneBreak;
+}
+
+void Crewmember::ApplyBleedInjury(float bleed)
+{
+	m_HasInjuryBleeding += bleed;
 }
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept

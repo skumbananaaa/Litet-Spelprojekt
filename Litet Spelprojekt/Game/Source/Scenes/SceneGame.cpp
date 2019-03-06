@@ -209,7 +209,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		}
 		else
 		{
-			PickObject(true);
+			PickObject(true, position.x, position.y);
 		}
 	}
 }
@@ -242,11 +242,11 @@ void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & positi
 	}
 }
 
-void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 {
 }
 
-void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & position)
+void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
 	if (!IsPaused())
 	{
@@ -274,7 +274,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2 & posit
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					PickObject(false);
+					PickObject(false, position.x, position.y);
 				}
 				break;
 			}
@@ -566,7 +566,7 @@ void SceneGame::RequestDoorClosed()
 	//}
 }
 
-void SceneGame::PickObject(bool hover)
+void SceneGame::PickObject(bool hover, int32 positionX, int32 positionY)
 {
 	GameObject* object = RayTestGameObjects();
 
@@ -585,12 +585,12 @@ void SceneGame::PickObject(bool hover)
 			}
 			else
 			{
-				object->OnPicked(m_Crew.GetSelectedList());
+				object->OnPicked(m_Crew.GetSelectedList(), 0, 0);
 			}
 		}
 		else if (m_Crew.HasSelectedMembers() && !hover)
 		{
-			object->OnPicked(m_Crew.GetSelectedList());
+			object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 		}
 	}
 	else if (hover)

@@ -43,6 +43,14 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
 	Escalate(pos);*/
+
+	uint32 lvl = 4;
+	uint32 x = 5;
+	uint32 z = 18;
+	glm::ivec3 pos = glm::ivec3(x, lvl, z);
+
+	Escalate(pos);
+
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept
@@ -53,8 +61,14 @@ void ScenarioFire::OnEnd(SceneGame* scene) noexcept
 void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
 {
 	TileData& tileData = m_pWorld->GetLevel(position.y).GetLevelData()[position.x][position.z];
+	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(position.y).GetLevel()[position.x][position.z]);
 	tileData.Temp = tileData.BurnsAt + 0.1f;
 	tileData.Burning = true;
+	if (!room.IsBurning())
+	{
+		room.SetBurning(true);
+	}
+	m_pWorld->GetRoom(m_pWorld->GetLevel(position.y).GetLevel()[position.x][position.z]).SetBurning(true);
 
 	tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(m_FireAlwaysVisible);
 	m_OnFire.push_back(position);
@@ -64,7 +78,7 @@ void ScenarioFire::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
 {
 }
 
-bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene) noexcept
+bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 {
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_4);
@@ -79,11 +93,11 @@ bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene) noexcept
 		glm::ivec3 pos = m_OnFire[i];
 		TileData& originTile = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z];
 
-		SpreadFireSideways(dtS, glm::ivec3(0, 0, 0), pos, scene);
-		SpreadFireSideways(dtS, glm::ivec3(1, 0, 0), pos, scene);
-		SpreadFireSideways(dtS, glm::ivec3(-1, 0, 0), pos, scene);
-		SpreadFireSideways(dtS, glm::ivec3(0, 0, 1), pos, scene);
-		SpreadFireSideways(dtS, glm::ivec3(0, 0, -1), pos, scene);
+		SpreadFireSideways(dtS, glm::ivec3(0, 0, 0), pos, pScene);
+		SpreadFireSideways(dtS, glm::ivec3(1, 0, 0), pos, pScene);
+		SpreadFireSideways(dtS, glm::ivec3(-1, 0, 0), pos, pScene);
+		SpreadFireSideways(dtS, glm::ivec3(0, 0, 1), pos, pScene);
+		SpreadFireSideways(dtS, glm::ivec3(0, 0, -1), pos, pScene);
 
 		EvaporateWater(originTile, dtS);
 
@@ -99,6 +113,17 @@ bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene) noexcept
 		TileData& currentTile = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z];
 		TileData& tileData = m_pWorld->GetLevel(pos.y + (pos.y + 1) % 2).GetLevelData()[pos.x][pos.z];
 		bool alreadySmoke = tileData.SmokeAmount >= tileData.SmokeLimit;
+
+		Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(pos.y).GetLevel()[pos.x][pos.z]);
+
+		uint32 id = m_pWorld->GetLevel(pos.y + (pos.y + 1) % 2).GetLevel()[pos.x][pos.z];
+
+		if (room.IsFireDetected())
+		{
+			m_DiscoveredRooms[id] = true;
+			SetFireVisible(id, true);
+			SetSmokeVisible(id, true);
+		}
 
 		if (currentTile.WaterLevel < 0.5f * WATER_MAX_LEVEL)
 		{
@@ -116,6 +141,7 @@ bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene) noexcept
 				}
 
 				TileData& lowerTileData = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z];
+
 				for (uint32 i = tileData.NrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
 				{
     				FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
@@ -126,7 +152,6 @@ bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene) noexcept
     					{
     						lowerTileData.GameObjects[i]->OnSmokeDetected();
     						//ShowInRoom(m_pWorld->GetLevel(pos.y + (pos.y + 1) % 2)->GetLevel()[pos.x][pos.z]);
-    						uint32 id = m_pWorld->GetLevel(pos.y + (pos.y + 1) % 2).GetLevel()[pos.x][pos.z];
     						m_DiscoveredRooms[id] = true;
     						SetFireVisible(id, true);
     						SetSmokeVisible(id, true);
@@ -153,12 +178,18 @@ bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene) noexcept
 		if (aboveIndex < m_pWorld->GetNumLevels())
 		{
 			TileData& aboveData = m_pWorld->GetLevel(aboveIndex).GetLevelData()[smokePos.x][smokePos.z];
+			Room& aboveRoom = m_pWorld->GetRoom(m_pWorld->GetLevel(aboveIndex).GetLevel()[smokePos.x][smokePos.z]);
 			// TWEAK HERE
  			aboveData.Temp += glm::max(tile.SmokeAmount - tile.SmokeLimit, 0.0f) * dtS * 3.0f / aboveData.BurnsAt;
 			if (aboveData.Temp > aboveData.BurnsAt && !aboveData.Burning)
 			{
 				glm::ivec3 pos = smokePos + glm::ivec3(0.0f, 1.0f, 0.0f);
 				aboveData.Burning = true;
+				if (!aboveRoom.IsBurning())
+				{
+					aboveRoom.SetBurning(true);
+				}
+
 				m_OnFire.push_back(pos);
 
 				if (aboveData.WaterLevel < WATER_UPDATE_LEVEL_INTERVAL)
@@ -174,10 +205,10 @@ bool ScenarioFire::Update(float dtS, World* world, SceneGame* scene) noexcept
 		uint32 rest = 0;
 		if (spread > 0.0001f)
 		{
-			rest += SpreadSmokeSideways(dtS, glm::ivec3(1, 0, 0), smokePos, spread, scene);
-			rest += SpreadSmokeSideways(dtS, glm::ivec3(-1, 0, 0), smokePos, spread, scene);
-			rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, 1), smokePos, spread, scene);
-			rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, -1), smokePos, spread, scene);
+			rest += SpreadSmokeSideways(dtS, glm::ivec3(1, 0, 0), smokePos, spread, pScene);
+			rest += SpreadSmokeSideways(dtS, glm::ivec3(-1, 0, 0), smokePos, spread, pScene);
+			rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, 1), smokePos, spread, pScene);
+			rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, -1), smokePos, spread, pScene);
 			tile.SmokeAmount -= spread * rest;
 		}
 	}
@@ -272,6 +303,7 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	glm::ivec3 tileTo = origin + offset;
 	TileData& originTile = m_pWorld->GetLevel(origin.y).GetLevelData()[origin.x][origin.z];
 	TileData& tileData = m_pWorld->GetLevel(tileTo.y).GetLevelData()[tileTo.x][tileTo.z];
+	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(tileTo.y).GetLevel()[tileTo.x][tileTo.z]);
 	uint32 tilesBetweenBulkheads = m_pWorld->GetLevel(origin.y).GetTilesBetweenBulkheads();
 	//TWEAK HERE
 	float rateOfSpread = 1.0f;
@@ -299,12 +331,17 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	{
 		m_OnFire.push_back(tileTo);
 		tileData.Burning = true;
+		if (!room.IsBurning())
+		{
+			room.SetBurning(true);
+		}
 
 		if (tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE] != nullptr)
 		{
 			if (tileData.WaterLevel < WATER_UPDATE_LEVEL_INTERVAL)
 			{
 				tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(m_DiscoveredRooms[m_pppMap[tileTo.y][tileTo.x][tileTo.z]] || m_FireAlwaysVisible);
+				
 			}
 		}
 
@@ -324,7 +361,7 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	}
 }
 
-bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene)
+bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* pScene)
 {
 	bool res = false;
 	glm::ivec3 tileTo = origin + offset;
@@ -360,6 +397,8 @@ bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, cons
 				for (uint32 i = tileData.NrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
 				{
 					FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
+
+					
 
 					if (alarm != nullptr)
 					{

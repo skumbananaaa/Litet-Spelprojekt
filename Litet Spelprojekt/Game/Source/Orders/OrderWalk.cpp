@@ -31,19 +31,44 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 		return false;
 	}
 
-	const TileData& tile1 = pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z];
+	TileData& tile1 = pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z];
 	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-
-	const TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
+	TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
 	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 
-	if (door1 && door2)
+	if (door1)
 	{
-		if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+		if (door1 == door2)
 		{
-			std::cout << "Door opened" << std::endl;
-			door1->SetOpen(true);
+			if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+			{
+				if (door1->IsClosed())
+				{
+					door1->SetOpen(true);
+				}
+				return false;
+			}
 		}
+		else if (tile1.HasDoor() && !door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile)
+		{
+			if (door1->IsOpen())
+			{
+				GetCrewMember()->SetDirection(-GetCrewMember()->GetDirection());
+				door1->SetOpen(false);
+			}
+			return false;
+		}
+	}
+
+	Room& room = pWorld->GetRoom(pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevel()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z]);
+
+	if (room.IsBurning())
+	{
+		if (!room.IsFireDetected())
+		{
+			room.SetFireDetected(true);
+		}
+		GetCrewMember()->GiveOrder(new OrderWalk(glm::ivec3(m_GoalTile.x, m_GoalTile.y * 2, m_GoalTile.z)));
 	}
 
 	return FollowPath(dtS);

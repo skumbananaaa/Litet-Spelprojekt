@@ -18,16 +18,11 @@ void OrderDoor::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noe
 
 bool OrderDoor::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	if (!m_IsPathReady)
-	{
-		return false;
-	}
-
 	if (m_pGameObjectDoor->IsOpen() == m_Open || m_pGameObjectDoor->IsClosed() == !m_Open)
 	{
 		return true;
 	}
-	else if (FollowPath(dtS))
+	else if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
 	{
 		m_pGameObjectDoor->SetOpen(m_Open);
 		return true;

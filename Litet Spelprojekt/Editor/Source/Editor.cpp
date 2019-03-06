@@ -87,7 +87,7 @@ void Editor::OnResourcesLoaded()
 
 	m_RoomBeingEdited = -1;
 	m_CurrentGridIndex = 0;
-	m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
+	m_LargestIndexUsed = TILE_SMALLEST_FREE_INDEX - 1;
 
 	m_Dragging = false;
 	m_CurrentEditingMode = NONE;
@@ -107,16 +107,26 @@ void Editor::OnResourcesLoaded()
 	m_pPanelTop->Add(m_pTextFieldBurnTemp);
 
 
-	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
-	m_pTextViewEditor = new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Room Tool", true);
-	m_pButtonAddRoom = new Button(10, m_pPanelEditor->GetHeight() - 100, m_pPanelEditor->GetWidth() - 20, 50, "New Room");
-	m_pButtonEditRoom = new Button(10, m_pPanelEditor->GetHeight() - 160, m_pPanelEditor->GetWidth() - 20, 50, "Edit Room");
-	m_pButtonRemoveRoom = new Button(10, m_pPanelEditor->GetHeight() - 220, m_pPanelEditor->GetWidth() - 20, 50, "Delete Room");
-	m_pButtonAddDoor = new Button(10, m_pPanelEditor->GetHeight() - 280, m_pPanelEditor->GetWidth() - 20, 50, "Add Door");
-	m_pButtonRemoveDoor = new Button(10, m_pPanelEditor->GetHeight() - 340, m_pPanelEditor->GetWidth() - 20, 50, "Remove Door");
-	m_pButtonAddStairs = new Button(10, m_pPanelEditor->GetHeight() - 400, m_pPanelEditor->GetWidth() - 20, 50, "Add Stairs");
-	m_pButtonRemoveStairs = new Button(10, m_pPanelEditor->GetHeight() - 460, m_pPanelEditor->GetWidth() - 20, 50, "Remove Stairs");
-	m_pSetRoomBurnTemperature = new Button(10, m_pPanelEditor->GetHeight() - 520, m_pPanelEditor->GetWidth() - 20, 50, "Set Burn Temp");
+	m_pPanelEditor = new Panel(GetWindow().GetWidth() - 250, (GetWindow().GetHeight() - 650) / 2, 250, 650);
+	m_pPanelScrollableRoomEditor = new PanelScrollable(10, 10, m_pPanelEditor->GetWidth() - 20, m_pPanelEditor->GetHeight() - 70, m_pPanelEditor->GetWidth() - 20, 60 * 15);
+	
+	m_pTextViewEditor				= new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Room Tool", true);
+	m_pButtonAddRoom				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 50, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "New Room");
+	m_pButtonEditRoom				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 110, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Edit Room");
+	m_pButtonRemoveRoom				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 170, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Delete Room");
+	m_pButtonAddDoor				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 230, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Add Door");
+	m_pButtonRemoveDoor				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 290, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Remove Door");
+	m_pButtonAddStairs				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 350, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Add Stairs");
+	m_pButtonRemoveStairs			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 410, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Remove Stairs");
+	m_pSetRoomBurnTemperature		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 470, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Burn Temp");
+	m_pButtonSetAsSickbay			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 530, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Sickbay");
+	m_pButtonSetAsToilet			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 590, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Toilet");
+	m_pButtonSetAsMachineRoom		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 650, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Machine");
+	m_pButtonSetAsAmmunitionRoom	= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 710, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Ammo");
+	m_pButtonSetAsKitchen			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 770, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Kitchen");
+	m_pButtonSetAsDiningRoom		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 830, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Dining");
+	m_pButtonSetAsCaboose			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 890, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Set Caboose");
+
 	m_pButtonAddRoom->SetUserData(reinterpret_cast<void*>(ADD_ROOM));
 	m_pButtonEditRoom->SetUserData(reinterpret_cast<void*>(EDIT_ROOM));
 	m_pButtonRemoveRoom->SetUserData(reinterpret_cast<void*>(DELETE_ROOM));
@@ -125,15 +135,33 @@ void Editor::OnResourcesLoaded()
 	m_pButtonAddStairs->SetUserData(reinterpret_cast<void*>(ADD_STAIRS));
 	m_pButtonRemoveStairs->SetUserData(reinterpret_cast<void*>(REMOVE_STAIRS));
 	m_pSetRoomBurnTemperature->SetUserData(reinterpret_cast<void*>(SET_BURN_TEMP));
+	m_pButtonSetAsSickbay->SetUserData(reinterpret_cast<void*>(SET_SICKBAY));
+	m_pButtonSetAsToilet->SetUserData(reinterpret_cast<void*>(SET_TOILET));
+	m_pButtonSetAsMachineRoom->SetUserData(reinterpret_cast<void*>(SET_MACHINE));
+	m_pButtonSetAsAmmunitionRoom->SetUserData(reinterpret_cast<void*>(SET_AMMO));
+	m_pButtonSetAsKitchen->SetUserData(reinterpret_cast<void*>(SET_KITCHEN));
+	m_pButtonSetAsDiningRoom->SetUserData(reinterpret_cast<void*>(SET_DINING));
+	m_pButtonSetAsCaboose->SetUserData(reinterpret_cast<void*>(SET_CABOOSE));
+
 	m_pPanelEditor->Add(m_pTextViewEditor);
-	m_pPanelEditor->Add(m_pButtonAddRoom);
-	m_pPanelEditor->Add(m_pButtonEditRoom);
-	m_pPanelEditor->Add(m_pButtonRemoveRoom);
-	m_pPanelEditor->Add(m_pButtonAddDoor);
-	m_pPanelEditor->Add(m_pButtonRemoveDoor);
-	m_pPanelEditor->Add(m_pButtonAddStairs);
-	m_pPanelEditor->Add(m_pButtonRemoveStairs);
-	m_pPanelEditor->Add(m_pSetRoomBurnTemperature);
+	m_pPanelEditor->Add(m_pPanelScrollableRoomEditor);
+
+	m_pPanelScrollableRoomEditor->Add(m_pButtonAddRoom);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonEditRoom);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonRemoveRoom);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonAddDoor);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonRemoveDoor);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonAddStairs);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonRemoveStairs);
+	m_pPanelScrollableRoomEditor->Add(m_pSetRoomBurnTemperature);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonSetAsSickbay);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonSetAsToilet);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonSetAsMachineRoom);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonSetAsAmmunitionRoom);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonSetAsKitchen);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonSetAsDiningRoom);
+	m_pPanelScrollableRoomEditor->Add(m_pButtonSetAsCaboose);
+
 	m_SelectionHandlerRoom.AddSelectionListener(this);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddRoom);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonEditRoom);
@@ -143,7 +171,13 @@ void Editor::OnResourcesLoaded()
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonAddStairs);
 	m_SelectionHandlerRoom.AddSelectable(m_pButtonRemoveStairs);
 	m_SelectionHandlerRoom.AddSelectable(m_pSetRoomBurnTemperature);
-
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonSetAsSickbay);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonSetAsToilet);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonSetAsMachineRoom);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonSetAsAmmunitionRoom);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonSetAsKitchen);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonSetAsDiningRoom);
+	m_SelectionHandlerRoom.AddSelectable(m_pButtonSetAsCaboose);
 
 	std::vector<std::string> gameObjects;
 	ResourceHandler::QuaryGameObjectTypes(gameObjects);
@@ -235,6 +269,11 @@ void Editor::OnResourcesLoaded()
 	}
 
 	CreateWalls();
+
+	for (uint32 i = 0; i < NUM_RESERVED_ROOM_CATEGORIES; i++)
+	{
+		m_NumReservedInEachCat[i] = 0;
+	}
 
 	std::cout << "Resources Loaded!" << std::endl;
 }
@@ -711,10 +750,10 @@ glm::vec3 Editor::GetDirectionBasedOnCamera(Direction direction)
 void Editor::NormalizeTileIndexes() noexcept
 {
 	std::cout << "Normalizing Tile Indexes" << std::endl;
-	bool indexesExisting[MAX_NUM_ROOMS];
-	uint32 indexesMissingBefore[MAX_NUM_ROOMS];
+	bool indexesExisting[SMALLEST_RESERVED];
+	uint32 indexesMissingBefore[SMALLEST_RESERVED];
 
-	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
+	for (uint32 i = 0; i < SMALLEST_RESERVED; i++)
 	{
 		indexesExisting[i] = false;
 		indexesMissingBefore[i] = 0;
@@ -727,9 +766,9 @@ void Editor::NormalizeTileIndexes() noexcept
 			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
 			{
 				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
-				int32 index = pTile->GetID() - TILE_SMALLEST_FREE;
+				int32 index = pTile->GetID() - TILE_SMALLEST_FREE_INDEX;
 
-				if (index >= 0)
+				if (index >= 0 && index < SMALLEST_RESERVED - TILE_SMALLEST_FREE_INDEX)
 				{
 					indexesExisting[index] = true;
 				}
@@ -739,7 +778,7 @@ void Editor::NormalizeTileIndexes() noexcept
 
 	uint32 indexesMissing = 0;
 	bool someIndexExists = false;
-	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
+	for (uint32 i = 0; i < SMALLEST_RESERVED; i++)
 	{
 		if (!indexesExisting[i])
 		{
@@ -748,7 +787,7 @@ void Editor::NormalizeTileIndexes() noexcept
 		else
 		{
 			someIndexExists = true;
-			m_LargestIndexUsed = i + TILE_SMALLEST_FREE - indexesMissing;
+			m_LargestIndexUsed = i + TILE_SMALLEST_FREE_INDEX - indexesMissing;
 		}
 
 		indexesMissingBefore[i] = indexesMissing;
@@ -756,7 +795,7 @@ void Editor::NormalizeTileIndexes() noexcept
 
 	if (!someIndexExists)
 	{
-		m_LargestIndexUsed = TILE_SMALLEST_FREE - 1;
+		m_LargestIndexUsed = TILE_SMALLEST_FREE_INDEX - 1;
 	}
 
 	std::cout << "New Largest Index Used: " << m_LargestIndexUsed << std::endl;
@@ -768,7 +807,92 @@ void Editor::NormalizeTileIndexes() noexcept
 			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
 			{
 				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
-				int32 index = pTile->GetID() - TILE_SMALLEST_FREE;
+				int32 index = pTile->GetID() - TILE_SMALLEST_FREE_INDEX;
+
+				if (index >= 0 && index < SMALLEST_RESERVED - TILE_SMALLEST_FREE_INDEX)
+				{
+					uint32 newIndex = pTile->GetID() - indexesMissingBefore[index];
+					pTile->SetID(newIndex);
+
+					if (!pTile->HasStairs() && !pTile->HasDoor())
+					{
+						pTile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
+					}
+				}
+			}
+		}
+	}
+
+	NormalizeReservedTileIndexes();
+}
+
+void Editor::NormalizeReservedTileIndexes() noexcept
+{
+	std::cout << "Normalizing Reserved Tile Indexes" << std::endl;
+	const uint32 numReservedIndexes = MAX_NUM_ROOMS - SMALLEST_RESERVED;
+	bool indexesExisting[numReservedIndexes];
+	uint32 indexesMissingBefore[numReservedIndexes];
+	uint32 newNumReservedInEachCat[NUM_RESERVED_ROOM_CATEGORIES];
+
+	for (uint32 i = 0; i < numReservedIndexes; i++)
+	{
+		indexesExisting[i] = false;
+		indexesMissingBefore[i] = 0;
+	}
+
+	for (uint32 i = 0; i < NUM_RESERVED_ROOM_CATEGORIES; i++)
+	{
+		newNumReservedInEachCat[i] = 0;
+	}
+
+	for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
+	{
+		for (uint32 x = 0; x < m_ppGrids[gridId]->GetSize().x; x++)
+		{
+			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
+			{
+				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
+				int32 index = (int32)pTile->GetID() - (int32)SMALLEST_RESERVED;
+
+				if (index >= 0)
+				{
+					//std::cout << "Reserved tile with local index " << std::to_string(index) << " found!" << std::endl;
+					indexesExisting[index] = true;
+				}
+			}
+		}
+	}
+
+	for (uint32 i = 0; i < numReservedIndexes; i++)
+	{
+		glm::uvec3 reservedIntervalCat = World::GetReservedTileLocalIntervalAndCategoryFromLocal(i);
+
+		if (!indexesExisting[i])
+		{
+			for (uint32 j = i + 1; j <= reservedIntervalCat.y; j++)
+			{
+				indexesMissingBefore[j]++;
+			}
+		}
+		else
+		{
+			newNumReservedInEachCat[reservedIntervalCat.z]++;
+		}
+	}
+
+	for (uint32 i = 0; i < numReservedIndexes; i++)
+	{
+		std::cout << "Reserved Room Index " << std::to_string(i) << " has " << std::to_string(indexesMissingBefore[i]) << " missing before!" << std::endl;
+	}
+
+	for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
+	{
+		for (uint32 x = 0; x < m_ppGrids[gridId]->GetSize().x; x++)
+		{
+			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
+			{
+				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
+				int32 index = (int32)pTile->GetID() - (int32)SMALLEST_RESERVED;
 
 				if (index >= 0)
 				{
@@ -777,12 +901,75 @@ void Editor::NormalizeTileIndexes() noexcept
 
 					if (!pTile->HasStairs() && !pTile->HasDoor())
 					{
-						pTile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						pTile->SetDefaultMaterial(m_TileColors[(newIndex - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 					}
 				}
 			}
 		}
 	}
+
+	for (uint32 i = 0; i < NUM_RESERVED_ROOM_CATEGORIES; i++)
+	{
+		m_NumReservedInEachCat[i] = newNumReservedInEachCat[i];
+		std::cout << "Category " << std::to_string(i) << " now has " << m_NumReservedInEachCat[i] << " number of rooms" << std::endl;
+	}
+}
+
+void Editor::UpdateNumReservedIndexesEachCat() noexcept
+{
+	for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
+	{
+		for (uint32 x = 0; x < m_ppGrids[gridId]->GetSize().x; x++)
+		{
+			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
+			{
+				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
+				int32 index = pTile->GetID() - ReservedTileIndexes::SMALLEST_RESERVED;
+
+				if (index >= 0)
+				{
+					glm::uvec3 reservedIntervalCat = World::GetReservedTileLocalIntervalAndCategoryFromLocal(index);
+					m_NumReservedInEachCat[index] = index - reservedIntervalCat.x;
+				}
+			}
+		}
+	}
+}
+
+void Editor::SetReservedTileIndexes(uint32 clickedIndex, uint32 category, uint32 reservedIndex) noexcept
+{
+	if (!CheckAndAddReservedIndex(category))
+	{
+		std::cout << "That Reserved Room Type is Full: " << std::to_string(reservedIndex) << std::endl;
+		return;
+	}
+
+	std::cout << "That Reserved Room Type is Available: " << std::to_string(reservedIndex) << std::endl;
+
+	for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
+	{
+		for (uint32 x = 0; x < m_ppGrids[gridId]->GetSize().x; x++)
+		{
+			for (uint32 y = 0; y < m_ppGrids[gridId]->GetSize().y; y++)
+			{
+				Tile* pTile = m_ppGrids[gridId]->GetTile(glm::ivec2(x, y));
+				int32 index = pTile->GetID();
+
+				if (index == clickedIndex)
+				{
+					pTile->SetID(reservedIndex);
+					//std::cout << "Reserved Tile Index " << std::to_string(reservedIndex) << " at " << std::to_string(clickedIndex) << std::endl;
+
+					if (!pTile->HasStairs() && !pTile->HasDoor())
+					{
+						pTile->SetMaterial(m_TileTints[(reservedIndex - TILE_SMALLEST_FREE_INDEX + 1) % MAX_NUM_ROOMS]);
+					}
+				}
+			}
+		}
+	}
+
+	NormalizeTileIndexes();
 }
 
 glm::ivec2 Editor::CalculateGridPosition(const glm::vec2& mousePosition) noexcept
@@ -891,7 +1078,7 @@ void Editor::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& positio
 
 						if (pTile->GetID() == TILE_NON_WALKABLE_INDEX)
 						{
-							pTile->SetMaterial(m_TileTints[(m_LargestIndexUsed - TILE_SMALLEST_FREE + 1) % MAX_NUM_ROOMS]);
+							pTile->SetMaterial(m_TileTints[(m_LargestIndexUsed - TILE_SMALLEST_FREE_INDEX + 1) % MAX_NUM_ROOMS]);
 						}
 					}
 				}
@@ -909,7 +1096,7 @@ void Editor::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& positio
 
 						if (pTile->GetID() >= TILE_NON_WALKABLE_INDEX)
 						{
-							pTile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							pTile->SetMaterial(m_TileTints[(m_RoomBeingEdited - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 						}
 					}
 				}
@@ -1016,9 +1203,9 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 						{
 							uint32 tileId = pTile->GetID();
 
-							if (tileId >= TILE_SMALLEST_FREE)
+							if (tileId >= TILE_SMALLEST_FREE_INDEX)
 							{
-								pTile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+								pTile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 							}
 							else if (tileId == TILE_NON_WALKABLE_INDEX)
 							{
@@ -1062,9 +1249,9 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 						{
 							uint32 tileId = pTile->GetID();
 
-							if (tileId >= TILE_SMALLEST_FREE)
+							if (tileId >= TILE_SMALLEST_FREE_INDEX)
 							{
-								pTile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+								pTile->SetDefaultMaterial(m_TileColors[(tileId - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 							}
 							else if (tileId == TILE_NON_WALKABLE_INDEX)
 							{
@@ -1091,7 +1278,7 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 						float burnTemperature = (float)m_pTextFieldBurnTemp->GetTextAsUInt();
 						m_pTextFieldBurnTemp->SetSelected(false);
 
-						if (tileId >= TILE_SMALLEST_FREE)
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
 						{
 							for (uint32 gridId = 0; gridId < NUM_GRID_LEVELS; gridId++)
 							{
@@ -1108,6 +1295,118 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 									}
 								}
 							}
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == SET_SICKBAY)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
+						{
+							SetReservedTileIndexes(tileId, SICKBAY_CATEGORY_INDEX, SICKBAY_INTERVAL_START + m_NumReservedInEachCat[SICKBAY_CATEGORY_INDEX]);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == SET_TOILET)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
+						{
+							SetReservedTileIndexes(tileId, TOILET_CATEGORY_INDEX, TOILET_INTERVAL_START + m_NumReservedInEachCat[TOILET_CATEGORY_INDEX]);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == SET_MACHINE)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
+						{
+							SetReservedTileIndexes(tileId, MACHINE_ROOM_CATEGORY_INDEX, MACHINE_ROOM_INTERVAL_START + m_NumReservedInEachCat[MACHINE_ROOM_CATEGORY_INDEX]);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == SET_AMMO)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
+						{
+							SetReservedTileIndexes(tileId, AMMUNITION_ROOM_CATEGORY_INDEX, AMMUNITION_ROOM_INTERVAL_START + m_NumReservedInEachCat[AMMUNITION_ROOM_CATEGORY_INDEX]);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == SET_KITCHEN)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
+						{
+							SetReservedTileIndexes(tileId, KITCHEN_CATEGORY_INDEX, KITCHEN_INTERVAL_START + m_NumReservedInEachCat[KITCHEN_CATEGORY_INDEX]);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == SET_DINING)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
+						{
+							SetReservedTileIndexes(tileId, DINING_ROOM_CATEGORY_INDEX, DINING_ROOM_INTERVAL_START + m_NumReservedInEachCat[DINING_ROOM_CATEGORY_INDEX]);
+						}
+					}
+				}
+				else if (m_CurrentEditingMode == SET_CABOOSE)
+				{
+					glm::ivec2 currentPos = CalculateGridPosition(position);
+
+					if (currentPos.x >= 0 && currentPos.x <= m_ppGrids[m_CurrentGridIndex]->GetSize().x - 1 &&
+						currentPos.y >= 0 && currentPos.y <= m_ppGrids[m_CurrentGridIndex]->GetSize().y - 1)
+					{
+						Tile* pTile = m_ppGrids[m_CurrentGridIndex]->GetTile(currentPos);
+						uint32 tileId = pTile->GetID();
+
+						if (tileId >= TILE_SMALLEST_FREE_INDEX)
+						{
+							SetReservedTileIndexes(tileId, CABOOSE_CATEGORY_INDEX, CABOOSE_INTERVAL_START + m_NumReservedInEachCat[CABOOSE_CATEGORY_INDEX]);
 						}
 					}
 				}
@@ -1156,7 +1455,7 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 
 		if (m_CurrentEditingMode == ADD_ROOM)
 		{
-			if (m_LargestIndexUsed < MAX_NUM_ROOMS + TILE_SMALLEST_FREE - 1)
+			if (m_LargestIndexUsed < ReservedTileIndexes::SMALLEST_RESERVED + TILE_SMALLEST_FREE_INDEX - 1)
 			{
 				m_LargestIndexUsed++;
 				bool addedRoom = false;
@@ -1176,11 +1475,11 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 
 							if (!pTile0->HasStairs() && !pTile0->HasDoor())
 							{
-								pTile0->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+								pTile0->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 							}
 
 							pTile1->SetID(m_LargestIndexUsed);
-							pTile1->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							pTile1->SetDefaultMaterial(m_TileColors[(m_LargestIndexUsed - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 
 							addedRoom = true;
 						}
@@ -1223,11 +1522,11 @@ void Editor::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 
 						if (!pTile0->HasStairs() && !pTile0->HasDoor())
 						{
-							pTile0->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+							pTile0->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 						}
 
 						pTile1->SetID(m_RoomBeingEdited);
-						pTile1->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						pTile1->SetDefaultMaterial(m_TileColors[(m_RoomBeingEdited - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 					}
 				}
 			}
@@ -1544,14 +1843,14 @@ void Editor::OnButtonReleased(Button* button)
 					Tile* pTile = pGrid->GetTile(glm::ivec2(x, y));
 					uint32 tileId = ppLevelIndexes[x + 1][y + 1];
 
-					if (tileId > largestUsedTileId)
+					if (tileId > largestUsedTileId && tileId < SMALLEST_RESERVED)
 					{
 						largestUsedTileId = tileId;
 					}
 
-					if (tileId >= TILE_SMALLEST_FREE)
+					if (tileId >= TILE_SMALLEST_FREE_INDEX)
 					{
-						pTile->SetDefaultMaterial(editor->m_TileColors[(tileId - TILE_SMALLEST_FREE) % MAX_NUM_ROOMS]);
+						pTile->SetDefaultMaterial(editor->m_TileColors[(tileId - TILE_SMALLEST_FREE_INDEX) % MAX_NUM_ROOMS]);
 					}
 					else if (tileId == TILE_NON_WALKABLE_INDEX)
 					{
@@ -1616,6 +1915,8 @@ void Editor::OnButtonReleased(Button* button)
 		editor->m_MouseMaterial = MATERIAL::WHITE;
 
 		editor->CreateWalls();
+
+		editor->UpdateNumReservedIndexesEachCat();
 
 		Delete(pWorld);
 	}

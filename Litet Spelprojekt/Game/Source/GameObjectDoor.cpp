@@ -146,7 +146,7 @@ void GameObjectDoor::UpdateTransform() noexcept
 	}
 }
 
-void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcept
+void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
 	std::cout << "i am a picked door!" << std::endl;
 
@@ -159,7 +159,7 @@ void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcep
 		AddChoice("Öppna", reinterpret_cast<void*>(true));
 	}
 
-	DisplayOrders(200, 200, selectedMembers);
+	DisplayOrders(x, y, selectedMembers);
 }
 
 void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept

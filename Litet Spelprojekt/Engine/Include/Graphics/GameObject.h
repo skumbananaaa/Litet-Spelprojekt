@@ -56,7 +56,7 @@ public:
 
 	virtual bool IsHovered() const noexcept;
 	virtual bool IsPicked() const noexcept;
-	virtual void OnPicked(const std::vector<int32>& selectedMembers) noexcept;
+	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept;
 	virtual void OnHovered() noexcept;
 	virtual void OnNotHovered() noexcept;
 

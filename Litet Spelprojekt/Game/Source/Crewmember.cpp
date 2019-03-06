@@ -99,14 +99,15 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (IsAbleToWalk())
+	/*if (IsAbleToWalk())
 	{
 		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 	}
 	else
 	{
 		Logger::LogEvent(GetName() + " cannot move!", true);
-	}
+	}*/
+	m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 }
 
 void Crewmember::GiveOrder(IOrder * order) noexcept

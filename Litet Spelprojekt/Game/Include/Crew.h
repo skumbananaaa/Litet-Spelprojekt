@@ -20,6 +20,7 @@ public:
 
 	// Removes
 	void RemoveFromSquad(uint32 squadIndex, uint32 memberIndex);
+	void RemoveFromSelectedList(int32 crewIndex) noexcept;
 
 	// Gets
 		// Vectors

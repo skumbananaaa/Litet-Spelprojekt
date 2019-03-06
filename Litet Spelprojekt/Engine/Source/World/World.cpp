@@ -130,7 +130,7 @@ void World::GenerateFloor(Scene& scene) noexcept
 				pGameObject = new GameObject();
 				pGameObject->SetMesh(MESH::QUAD);
 				pGameObject->SetMaterial(MATERIAL::FLOOR);
-				pGameObject->SetPosition(glm::vec3(x, level, z));
+				pGameObject->SetPosition(glm::vec3(x, level + 0.0001, z));
 				pGameObject->UpdateTransform();
 				scene.AddGameObject(pGameObject);
 			}

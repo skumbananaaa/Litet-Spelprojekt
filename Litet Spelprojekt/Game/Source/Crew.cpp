@@ -79,6 +79,11 @@ void Crew::RemoveFromSquad(uint32 squadIndex, uint32 memberIndex)
 	m_Squads[squadIndex].erase(m_Squads[squadIndex].begin() + memberIndex);
 }
 
+void Crew::RemoveFromSelectedList(int32 crewIndex) noexcept
+{
+	m_SelectedMembers.erase(std::find(m_SelectedMembers.begin(), m_SelectedMembers.end(), crewIndex));
+}
+
 bool Crew::HasSelectedMembers() const noexcept
 {
 	return m_SelectedMembers.size() > 0;

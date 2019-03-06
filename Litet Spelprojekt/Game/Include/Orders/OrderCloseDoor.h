@@ -16,6 +16,7 @@ public:
 	virtual bool AllowsMultipleOrders() noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual bool IsIdleOrder() noexcept override;
+	virtual bool CanExecuteIfHurt() noexcept override;
 
 private:
 	GameObjectDoor* m_pGameObjectDoor;

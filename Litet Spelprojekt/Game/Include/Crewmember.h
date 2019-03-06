@@ -16,6 +16,14 @@
 
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
+#define NR_GROUPS 3
+enum GroupType : uint32
+{
+	NONE,
+	MEDIC,
+	SMOKE_DIVER
+};
+
 class TileData;
 
 class Crewmember : public GameObject, public IOrderListener
@@ -35,13 +43,15 @@ public:
 	void FindPath(const glm::ivec3& goalPos);
 	void LookForDoor() noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
+	void GoToMedicBay(World* world);
 
 	//GAMEPLAY (NOT SETS OR GETS)
 	bool Heal(int8 skillLevel, float dtS);
 	void ApplyBurnInjury(float burn);
-	void ApplyBoneInjury();
+	void ApplyBoneInjury(float boneBreak);
+	void ApplyBleedInjury(float bleed);
 
-	void OnPicked(const std::vector<int32>& selectedMembers) noexcept override;
+	void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 	virtual void OnOrderStarted(bool idleOrder) noexcept override;
@@ -56,6 +66,7 @@ public:
 	void SetDirection(const glm::vec3& direction) noexcept;
 	void SetAssisting(Crewmember* inNeed) noexcept;
 	void SetIdleing(bool value) noexcept;
+	void SetGroup(uint32 group) noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;
@@ -63,20 +74,25 @@ public:
 	const glm::vec3& GetDirection() const noexcept;
 	const glm::ivec3& GetTile() const noexcept;
 	float GetMovementSpeed() const noexcept;
-	int8 GetSkillFire() const noexcept;
+	/*int8 GetSkillFire() const noexcept;
 	int8 GetSkillMedic() const noexcept;
-	int8 GetSkillStrength() const noexcept;
+	int8 GetSkillStrength() const noexcept;*/
+	uint32 GetGroup() const noexcept;
+	int32 GetForgetfulness() const noexcept;
 
 	//IS
 	bool IsIdleing() const noexcept;
 	bool IsHovered() const noexcept override;
 	bool IsPicked() const noexcept override;
-	bool isAlive() const noexcept;
+	bool IsAlive() const noexcept;
+	bool IsAbleToWork() const noexcept;
+	bool IsAbleToWalk() const noexcept;
 
 	//HAS
 	bool HasInjuryBoneBroken() const noexcept;
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
+	bool HasInjuryBleed() const noexcept;
 
 private:
 	//UPDATES
@@ -90,7 +106,6 @@ private:
 
 	//SETS
 	void SetShipNumber(int32 shipnumber) noexcept;
-
 
 private:
 	//UTILITY
@@ -109,20 +124,24 @@ private:
 	glm::vec3 m_LastKnownPosition;
 
 	//--SKILLS
-	int8 m_SkillFire;
+	/*int8 m_SkillFire;
 	int8 m_SkillMedic;
-	int8 m_SkillStrength;
+	int8 m_SkillStrength;*/
+	uint32 m_Group;
 		
 	//--INJURIES
 	float m_HasInjuryBoneBroken;
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
+	float m_HasInjuryBleeding;
 	float m_MaxHealth;
 	float m_Health;
 
 	//--MOVEMENT
 	float m_MovementSpeed;
 	bool m_Idleing;
+
+	int32 m_Forgetfulness;
 
 	Crewmember* m_pAssisting;
 };
@@ -152,7 +171,7 @@ inline float Crewmember::GetMovementSpeed() const noexcept
 	return m_MovementSpeed;
 }
 
-inline int8 Crewmember::GetSkillFire() const noexcept
+/*inline int8 Crewmember::GetSkillFire() const noexcept
 {
 	return m_SkillFire;
 }
@@ -165,6 +184,16 @@ inline int8 Crewmember::GetSkillMedic() const noexcept
 inline int8 Crewmember::GetSkillStrength() const noexcept
 {
 	return m_SkillStrength;
+}*/
+
+inline uint32 Crewmember::GetGroup() const noexcept
+{
+	return m_Group;
+}
+
+inline int32 Crewmember::GetForgetfulness() const noexcept
+{
+	return m_Forgetfulness;
 }
 
 inline bool Crewmember::IsIdleing() const noexcept
@@ -182,9 +211,19 @@ inline bool Crewmember::IsPicked() const noexcept
 	return m_IsPicked;
 }
 
-inline bool Crewmember::isAlive() const noexcept
+inline bool Crewmember::IsAlive() const noexcept
 {
 	return m_Health > 0.0f;
+}
+
+inline bool Crewmember::IsAbleToWork() const noexcept
+{
+	return !(m_HasInjurySmoke > 5.0f || (m_Health < 0.75*m_MaxHealth) || m_HasInjuryBoneBroken >= 3.0f || m_HasInjuryBurned > 3.0f);
+}
+
+inline bool Crewmember::IsAbleToWalk() const noexcept
+{
+	return !(m_HasInjuryBoneBroken > 5.0f || m_HasInjurySmoke > 10.0f || m_Health < 0.5f * m_MaxHealth || m_HasInjuryBurned > 10.0f);
 }
 
 inline bool Crewmember::HasInjuryBoneBroken() const noexcept
@@ -194,10 +233,15 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return false;// m_HasInjuryBurned > 9.0f;
+	return m_HasInjuryBurned > 9.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return false;// m_HasInjurySmoke > 9.0f;
+	return m_HasInjurySmoke > 9.0f;
+}
+
+inline bool Crewmember::HasInjuryBleed() const noexcept
+{
+	return m_HasInjuryBleeding > 1.0f;
 }

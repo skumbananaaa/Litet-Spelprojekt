@@ -7,11 +7,10 @@
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Orders/OrderSchedule.h"
 
-
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
 	m_pTestAudioSource(nullptr),
-	cartesianCamera(false),
+	m_CartesianCamera(false),
 	m_CurrentElevation(2),
 	m_pUIPause(nullptr),
 	m_IsPaused(false)
@@ -122,6 +121,11 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		ScenarioManager::Update(dtS, m_pWorld, this);
 		UpdateCamera(dtS);
 
+		for (uint32 i = 0; i < m_pWorld->GetNumRooms(); i++)
+		{
+			m_pWorld->GetRoom(i).SetFloodUpdated(false);
+		}
+
 		static float dist = 0.0f;
 		dist += 0.02f * dtS;
 		((WaterIndoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))->SetDistortionFactor(dist);
@@ -182,7 +186,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 	{
 		if (Input::IsKeyDown(KEY_LEFT_ALT))
 		{
-			if (!cartesianCamera)
+			if (!m_CartesianCamera)
 			{
 				if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 				{
@@ -212,7 +216,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		}
 		else
 		{
-			PickObject(true);
+			PickObject(true, position.x, position.y);
 		}
 	}
 }
@@ -221,7 +225,7 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 {
 	if (!IsPaused())
 	{
-		if (!cartesianCamera)
+		if (!m_CartesianCamera)
 		{
 			if (Input::IsKeyDown(KEY_LEFT_ALT))
 			{
@@ -259,7 +263,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					GameObject* object = RayTestGameObjects();
+					/*GameObject* object = RayTestGameObjects();
 					if (!object)
 					{
 						PickPosition();
@@ -267,7 +271,9 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 					else if (m_Crew.HasSelectedMembers())
 					{
 						object->OnPicked(m_Crew.GetSelectedList());
-					}
+					}*/
+
+					PickPosition();
 				}
 				break;
 			}
@@ -275,9 +281,19 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					PickObject(false);
+					PickObject(false, position.x, position.y);
 				}
 				break;
+			}
+			case MOUSE_BUTTON_MIDDLE:
+			{
+				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				{
+					if (m_Crew.GetMember(i)->IsPicked())
+					{
+						m_Crew.GetMember(i)->GoToMedicBay(m_pWorld);
+					}
+				}
 			}
 		}
 	}
@@ -299,7 +315,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			case KEY_O:
 			{
-				cartesianCamera = !cartesianCamera;
+				m_CartesianCamera = !m_CartesianCamera;
 				break;
 			}
 			case KEY_P:
@@ -431,7 +447,10 @@ void SceneGame::CreateCrew() noexcept
 	AddGameObject(m_Crew.GetMember(0));
 
 	float x, y, z;
-	for (int i = 1; i < NUM_CREW; i++)
+	uint32 numSmokeDivers = 3;
+	uint32 numMedics = 2;
+	uint32 numNone = NUM_CREW - numMedics - numSmokeDivers;
+	for (int i = 1; i < numNone; i++)
 	{
 		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
@@ -443,6 +462,41 @@ void SceneGame::CreateCrew() noexcept
 		m_Crew.GetMember(i)->SetHidden(false);
 		m_Crew.GetMember(i)->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
+	}
+	for (int i = numNone; i < numNone + numMedics; i++)
+	{
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15], SMOKE_DIVER);
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetHidden(true);
+		m_Crew.GetMember(i)->UpdateTransform();
+		AddGameObject(m_Crew.GetMember(i));
+	}
+	for (int i = numNone + numMedics; i < NUM_CREW; i++)
+	{
+		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
+		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
+		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+		m_Crew.AddMember(m_pWorld, DEFAULT_LIGHT, glm::vec3(x, y, z), 100, names[i % 15], MEDIC);
+		//m_Scenes[0]->AddSpotLight(m_Crew.GetMember(i)->GetTorch());
+		//m_Scenes[0]->AddPointLight(m_Crew.GetMember(i)->GetLight());
+		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+		m_Crew.GetMember(i)->SetHidden(true);
+		m_Crew.GetMember(i)->UpdateTransform();
+		AddGameObject(m_Crew.GetMember(i));
+	}
+}
+
+void SceneGame::GenerateShadows()
+{
+	if (m_pWorld)
+	{
+		uint32 numRooms = m_pWorld->GetNumRooms();
+		m_pWorld->GenerateRoomShadows(*this);
 	}
 }
 
@@ -533,7 +587,7 @@ void SceneGame::RequestDoorClosed()
 	//}
 }
 
-void SceneGame::PickObject(bool hover)
+void SceneGame::PickObject(bool hover, int32 positionX, int32 positionY)
 {
 	GameObject* object = RayTestGameObjects();
 
@@ -552,8 +606,12 @@ void SceneGame::PickObject(bool hover)
 			}
 			else
 			{
-				object->OnPicked(m_Crew.GetSelectedList());
+				object->OnPicked(m_Crew.GetSelectedList(), 0, 0);
 			}
+		}
+		else if (m_Crew.HasSelectedMembers() && !hover)
+		{
+			object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 		}
 	}
 	else if (hover)
@@ -639,7 +697,7 @@ void SceneGame::UpdateCamera(float dtS) noexcept
 	float cartesianCameraSpeed = 5.0F;
 	float cartesianCameraAngularSpeed = 1.5F;
 
-	if (cartesianCamera)
+	if (m_CartesianCamera)
 	{
 		glm::vec3 localMove(0.0f);
 

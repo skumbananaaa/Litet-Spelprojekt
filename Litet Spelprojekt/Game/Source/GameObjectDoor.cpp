@@ -4,13 +4,11 @@
 #include "../Include/Orders/OrderCloseDoor.h"
 #include <Graphics/Scene.h>
 
-
-
 GameObjectDoor::GameObjectDoor() noexcept
 {
 	UpdateTransform();
 
-	m_Percentage = 1.0f;
+	m_Percentage = 0.0f;
 	m_Open = false;
 }
 
@@ -32,6 +30,27 @@ bool GameObjectDoor::IsOpen() const noexcept
 bool GameObjectDoor::IsClosed() const noexcept
 {
 	return m_Percentage <= 0.0F;
+}
+
+DOOR_COLOR GameObjectDoor::GetColor() const noexcept
+{
+	if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::RED))
+	{
+		return RED;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::GREEN))
+	{
+		return GREEN;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::BLUE))
+	{
+		return BLUE;
+	}
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::YELLOW))
+	{
+		return YELLOW;
+	}
+	return YELLOW;
 }
 
 void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept
@@ -146,9 +165,9 @@ void GameObjectDoor::UpdateTransform() noexcept
 	}
 }
 
-void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcept
+void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	std::cout << "i am a picked door!" << std::endl;
+	std::cout << "I am a picked door!" << std::endl;
 
 	if (!IsClosed())
 	{
@@ -159,7 +178,7 @@ void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers) noexcep
 		AddChoice("Öppna", reinterpret_cast<void*>(true));
 	}
 
-	DisplayOrders(200, 200, selectedMembers);
+	DisplayOrders(x, y, selectedMembers);
 }
 
 void GameObjectDoor::OnAddedToScene(Scene* scene) noexcept

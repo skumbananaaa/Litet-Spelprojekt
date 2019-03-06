@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderHandler.h"
 #include "../../Include/Game.h"
+#include "../../Include/Orders/OrderWalk.h"
 
 OrderHandler::OrderHandler(IOrderListener* pOrderListener)
 {
@@ -13,25 +14,43 @@ OrderHandler::~OrderHandler()
 		DeleteSafe(order);
 	}
 	m_OrderQueue.clear();
+
+	for (IOrder* order : m_OrdersToAbort)
+	{
+		DeleteSafe(order);
+	}
+	m_OrdersToAbort.clear();
+
 	std::cout << "Orders cleared" << std::endl;
 }
 
 void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 {
-	if (!order->AllowsMultipleOrders())
+	if (!CanExecuteOrder(order, crewMember))
+	{
+		m_OrdersToAbort.push_back(order);
+		return;
+	}
+	else if (!order->AllowsMultipleOrders())
 	{
 		for (IOrder* object : m_OrderQueue)
 		{
 			if (object->GetName().compare(order->GetName()) == 0)
 			{
-				object->m_Abort = true;
-				break;
+				m_OrdersToAbort.push_back(order);
+				return;
 			}
 		}
 	}
 
 	order->m_pCrewMember = crewMember;
 	m_OrderQueue.push_back(order);
+
+	OrderWalk* walkOrder = dynamic_cast<OrderWalk*>(order);
+	if (walkOrder)
+	{
+		//order->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+	}
 
 	if (m_OrderQueue.size() == 1)
 	{
@@ -41,52 +60,84 @@ void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 
 void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
-	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
+	//Abort all orders that wants to be deleted
+	for (int i = m_OrdersToAbort.size() - 1; i >= 0; i--)
 	{
-		if (m_OrderQueue[i]->m_Abort)
+		if (m_OrdersToAbort[i]->ReadyToAbort())
 		{
-			if (m_OrderQueue[i]->ReadyToAbort())
-			{
-				m_OrderQueue[i]->AbortOrder(pScene, pWorld, pCrewMembers);
-				std::cout << "[" << m_OrderQueue[i]->GetName() << "] Order Aborted" << std::endl;
-				DeleteSafe(m_OrderQueue[i]);
-				m_OrderQueue.erase(m_OrderQueue.begin() + i);
-
-				if (!m_OrderQueue.empty())
-				{
-					StartOrder();
-				}
-				else
-				{
-					m_pOrderListener->OnAllOrdersFinished();
-				}
-			}
+			m_OrdersToAbort[i]->AbortOrder(pScene, pWorld, pCrewMembers);
+			std::cout << "[" << m_OrdersToAbort[i]->GetName() << "] Order Aborted" << std::endl;
+			DeleteSafe(m_OrdersToAbort[i]);
+			m_OrdersToAbort.erase(m_OrdersToAbort.begin() + i);
 		}
 	}
 
-	if (!m_OrderQueue.empty() && m_OrderQueue[0]->UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+	if (!m_OrderQueue.empty())
 	{
-		m_OrderQueue[0]->EndOrder(pScene, pWorld, pCrewMembers);
-		std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Ended" << std::endl;
-		DeleteSafe(m_OrderQueue[0]);
-		m_OrderQueue.erase(m_OrderQueue.begin());
-
-		if (!m_OrderQueue.empty())
+		//Check if current order is still executable
+		if (!CanExecuteOrder(m_OrderQueue[0], m_OrderQueue[0]->GetCrewMember()))
 		{
-			StartOrder();
+			if (!StartOrder())
+			{
+				m_pOrderListener->OnAllOrdersFinished();
+				return;
+			}
 		}
-		else
+
+		//Update Current Order
+		if (m_OrderQueue[0]->UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
 		{
-			m_pOrderListener->OnAllOrdersFinished();
+			m_OrderQueue[0]->EndOrder(pScene, pWorld, pCrewMembers);
+			std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Ended" << std::endl;
+			//m_OrderQueue[0]->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+			DeleteSafe(m_OrderQueue[0]);
+			m_OrderQueue.erase(m_OrderQueue.begin());
+
+			if (!StartOrder())
+			{
+				m_pOrderListener->OnAllOrdersFinished();
+			}
 		}
 	}
 }
 
-void OrderHandler::StartOrder()
+bool OrderHandler::StartOrder()
 {
+	if (m_OrderQueue.empty())
+	{
+		return false;
+	}
+	else if (!CanExecuteOrder(m_OrderQueue[0], m_OrderQueue[0]->GetCrewMember()))
+	{
+		m_OrdersToAbort.push_back(m_OrderQueue[0]);
+		m_OrderQueue.erase(m_OrderQueue.begin());
+		return StartOrder();
+	}
+
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderQueue[0]->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Started" << std::endl;
 
 	m_pOrderListener->OnOrderStarted(m_OrderQueue[0]->IsIdleOrder());
+	return true;
+}
+
+bool OrderHandler::CanExecuteOrder(IOrder* order, Crewmember* crewMember) noexcept
+{
+	if (!crewMember->IsAbleToWalk())
+	{
+		OrderWalk* pOrderWalk = dynamic_cast<OrderWalk*>(order);
+		if (pOrderWalk)
+		{
+			return false;
+		}
+	}
+	else if (!crewMember->IsAbleToWork())
+	{
+		if (!order->CanExecuteIfHurt())
+		{
+			return false;
+		}
+	}
+	return true;
 }

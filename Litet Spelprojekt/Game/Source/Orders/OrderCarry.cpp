@@ -24,12 +24,7 @@ void OrderCarry::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) n
 
 bool OrderCarry::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	if (!m_IsPathReady)
-	{
-		return false;
-	}
-
-	if (FollowPath(dtS))
+	if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
 	{
 		GetCrewMember()->SetAssisting(m_pCarrying);
 		return true;
@@ -59,6 +54,11 @@ bool OrderCarry::ReadyToAbort() noexcept
 }
 
 bool OrderCarry::IsIdleOrder() noexcept
+{
+	return false;
+}
+
+bool OrderCarry::CanExecuteIfHurt() noexcept
 {
 	return false;
 }

@@ -5,6 +5,7 @@
 #include "../../Include/Crew.h"
 #include "../../Include/Path.h"
 #include "../../Include/GameObjectDoor.h"
+#include <System/Random.h>
 
 OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 	m_pPathFinder(nullptr),
@@ -21,6 +22,7 @@ OrderWalk::~OrderWalk()
 void OrderWalk::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	m_pPathFinder = new Path(pWorld);
+	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);
 }
 
@@ -40,23 +42,35 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	{
 		if (door1 == door2)
 		{
+			// Open door before passing through
 			if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
 			{
 				if (door1->IsClosed())
 				{
+					GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 					door1->SetOpen(true);
 				}
 				return false;
 			}
+			else
+			{
+				GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			}
 		}
-		else if (tile1.HasDoor() && !door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile)
+		else if (!door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile && m_OopsIForgot > GetCrewMember()->GetForgetfulness())
 		{
+			// Close door after passing through
 			if (door1->IsOpen())
 			{
 				GetCrewMember()->SetDirection(-GetCrewMember()->GetDirection());
+				GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 				door1->SetOpen(false);
 			}
 			return false;
+		}
+		else
+		{
+			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 		}
 	}
 
@@ -68,7 +82,13 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 		{
 			room.SetFireDetected(true);
 		}
-		GetCrewMember()->GiveOrder(new OrderWalk(glm::ivec3(m_GoalTile.x, m_GoalTile.y * 2, m_GoalTile.z)));
+		GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+	}
+
+	if (room.IsFlooded() && !room.IsFloodDetected())
+	{
+		room.SetFloodDetected(true);
+		GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 
 	return FollowPath(dtS);
@@ -76,6 +96,7 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 
 void OrderWalk::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
+	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	DeleteSafe(m_pPathFinder);
 }
 
@@ -113,6 +134,11 @@ void OrderWalk::RunParallel()
 	m_IsPathReady = true;
 }
 
+bool OrderWalk::CanExecuteIfHurt() noexcept
+{
+	return true;
+}
+
 bool OrderWalk::FollowPath(float dtS) noexcept
 {
 	const glm::vec3& position = GetCrewMember()->GetPosition();
@@ -123,6 +149,7 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 			m_directionTile = m_pPath[m_NrOfTilesLeft - 1];
 			m_TargetTile = m_pPath[--m_NrOfTilesLeft];
 			m_TargetPos = glm::vec3(m_TargetTile.x, m_TargetTile.y * 2, m_TargetTile.z);
+			m_OopsIForgot = Random::GenerateInt(0, 100);
 		}
 	}
 

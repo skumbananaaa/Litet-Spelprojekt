@@ -52,10 +52,10 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	UpdateTransform();
 
-	if (isAlive())
+	if (IsAlive())
 	{
-		CheckSmokeDamage(m_pWorld->GetLevel(GetPosition().y + 1).GetLevelData(), deltaTime);
-		CheckFireDamage(m_pWorld->GetLevel(GetPosition().y).GetLevelData(), deltaTime);
+		CheckSmokeDamage(m_pWorld->GetLevel(GetTile().y*2 + 1).GetLevelData(), deltaTime);
+		CheckFireDamage(m_pWorld->GetLevel(GetTile().y*2).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
 	}
 }
@@ -99,7 +99,7 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
 {
-	if (!HasInjurySmoke() && !HasInjuryBoneBroken())
+	if (IsAbleToWalk())
 	{
 		m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
 	}

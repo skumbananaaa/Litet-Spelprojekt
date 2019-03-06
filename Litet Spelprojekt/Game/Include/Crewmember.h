@@ -72,7 +72,9 @@ public:
 	bool IsIdleing() const noexcept;
 	bool IsHovered() const noexcept override;
 	bool IsPicked() const noexcept override;
-	bool isAlive() const noexcept;
+	bool IsAlive() const noexcept;
+	bool IsAbleToWork() const noexcept;
+	bool IsAbleToWalk() const noexcept;
 
 	//HAS
 	bool HasInjuryBoneBroken() const noexcept;
@@ -183,9 +185,19 @@ inline bool Crewmember::IsPicked() const noexcept
 	return m_IsPicked;
 }
 
-inline bool Crewmember::isAlive() const noexcept
+inline bool Crewmember::IsAlive() const noexcept
 {
 	return m_Health > 0.0f;
+}
+
+inline bool Crewmember::IsAbleToWork() const noexcept
+{
+	return !(HasInjurySmoke() || (m_Health < 0.75*m_MaxHealth) || m_HasInjuryBoneBroken >= 3.0f);
+}
+
+inline bool Crewmember::IsAbleToWalk() const noexcept
+{
+	return !(m_HasInjuryBoneBroken > 5.0f || HasInjurySmoke() || m_Health < 0.5f * m_MaxHealth);
 }
 
 inline bool Crewmember::HasInjuryBoneBroken() const noexcept
@@ -195,10 +207,10 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return false;// m_HasInjuryBurned > 9.0f;
+	return m_HasInjuryBurned > 9.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return false;// m_HasInjurySmoke > 9.0f;
+	return m_HasInjurySmoke > 9.0f;
 }

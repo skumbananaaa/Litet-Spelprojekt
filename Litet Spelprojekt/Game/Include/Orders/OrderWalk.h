@@ -34,4 +34,5 @@ protected:
 	glm::ivec3* m_pPath;
 	int32 m_NrOfTilesLeft;
 	bool m_IsPathReady;
+	int32 m_OopsIForgot;
 };

@@ -47,7 +47,7 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 			{
 				if (door1->IsClosed())
 				{
-					GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+					GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 					door1->SetOpen(true);
 				}
 				return false;
@@ -63,7 +63,7 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 			if (door1->IsOpen())
 			{
 				GetCrewMember()->SetDirection(-GetCrewMember()->GetDirection());
-				GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+				GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 				door1->SetOpen(false);
 			}
 			return false;

@@ -9,6 +9,7 @@ WaterOutdoorMaterial::WaterOutdoorMaterial() : Material(SHADER::WATER_OUTDOOR_MA
 	m_Buffer()
 {
 	m_Buffer.WaveFactor = glm::vec2(0.0f);
+	m_Buffer.TorpedoPos = glm::vec2(FLT_MAX, FLT_MAX);
 	m_pWaterBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(WaterOutdoorBuffer));
 	SetIncludeInDepthPrePass(false);
 	SetIsReflectable(true);

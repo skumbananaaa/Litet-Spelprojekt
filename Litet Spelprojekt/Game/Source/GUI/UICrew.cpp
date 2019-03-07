@@ -3,117 +3,24 @@
 #include "../../Include/Scenes/SceneGame.h"
 #include <System/Random.h>
 
-UICrew::UICrew(float x, float y, float width, float height, const std::vector<Crewmember*>& crewmembers) :
-	m_SelectionHandler(false),
-	m_Fires(nullptr),
-	m_Medics(nullptr),
-	m_Strengths(nullptr)
+UICrew::UICrew(float x, float y, float width, float height, Crew* crew) :
+	m_SelectionHandler(false)
 {
-	std::vector<Crewmember*> fires;
-	std::vector<Crewmember*> medics;
-	std::vector<Crewmember*> strength;
-
-	for (Crewmember* crewmember : crewmembers)
-	{
-		/*if (crewmember->GetSkillFire() > crewmember->GetSkillMedic())
-		{
-			if (crewmember->GetSkillFire() > crewmember->GetSkillStrength())
-			{
-				fires.push_back(crewmember);
-			}
-			else if(crewmember->GetSkillMedic() > crewmember->GetSkillStrength())
-			{
-				medics.push_back(crewmember);
-			}
-			else
-			{
-				strength.push_back(crewmember);
-			}
-		}
-		else if (crewmember->GetSkillFire() > crewmember->GetSkillStrength())
-		{
-			medics.push_back(crewmember);
-		}
-		else if (crewmember->GetSkillMedic() > crewmember->GetSkillStrength())
-		{
-			medics.push_back(crewmember);
-		}
-		else
-		{
-			strength.push_back(crewmember);
-		}*/
-
-		switch (crewmember->GetGroup())
-		{
-		case NONE:
-			strength.push_back(crewmember);
-			break;
-		case SMOKE_DIVER:
-			fires.push_back(crewmember);
-			break;
-		case MEDIC:
-			medics.push_back(crewmember);
-			break;
-		}
-	}
-
 	static int32 buttonHeight = 35;
 	static glm::vec4 buttonColor = glm::vec4(GUIContext::COLOR_PANEL_MIDGROUND);
 	static glm::vec2 textOffset = glm::vec2(10.0, 0.0);
 
-	m_Fires = new PanelExpandable(x, y + 100, width, 50, fires.size() * buttonHeight, "Rökdykare");
-	m_Medics = new PanelExpandable(x, y + 50, width, 50, medics.size() * buttonHeight, "Sjukvårdare");
-	m_Strengths = new PanelExpandable(x, y + 0, width, 50, strength.size() * buttonHeight, "Biffar");
 
-	m_Fires->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_FIRE));
-	m_Medics->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_MEDIC));
-	m_Strengths->SetUserData(reinterpret_cast<void*>(TEXTURE::ICON_SKILL_STRENGTH));
+	m_Panels.push_back(CreateExpandable("Rökdykare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_FIRE, 0, crew, buttonColor, textOffset));
+	m_Panels.push_back(CreateExpandable("Sjukvårdare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_MEDIC, 1, crew, buttonColor, textOffset));
 
-	m_Fires->AddExpandableListener(this);
-	m_Medics->AddExpandableListener(this);
-	m_Strengths->AddExpandableListener(this);
+	for (int i = m_Panels.size(); i < crew->NrOfSquads(); i++)
+	{
+		m_Panels.push_back(CreateExpandable("Grupp " + std::to_string(i - 1), x, y, width, buttonHeight, TEXTURE::ICON_SKILL_STRENGTH, i, crew, buttonColor, textOffset));
+	}
 
-	m_Fires->AddExternalRenderer(this);
-	m_Medics->AddExternalRenderer(this);
-	m_Strengths->AddExternalRenderer(this);
-
-	m_Fires->SetTextCentered(false);
-	m_Medics->SetTextCentered(false);
-	m_Strengths->SetTextCentered(false);
-
-	m_Fires->SetTextOffset(textOffset);
-	m_Medics->SetTextOffset(textOffset);
-	m_Strengths->SetTextOffset(textOffset);
-
-	m_Fires->SetClientAreaColor(buttonColor);
-	m_Medics->SetClientAreaColor(buttonColor);
-	m_Strengths->SetClientAreaColor(buttonColor);
-
-	m_SelectionHandler.AddSelectable(m_Fires);
-	m_SelectionHandler.AddSelectable(m_Medics);
-	m_SelectionHandler.AddSelectable(m_Strengths);
 	m_SelectionHandler.AddSelectionListener(this);
-
 	m_HoveringHandler.AddHoveringListener(this);
-
-	for (int i = 0; i < fires.size(); i++)
-	{
-		m_Fires->Add(CreateButton(fires[i]->GetName(), buttonColor, i * buttonHeight, buttonHeight, textOffset, fires[i]->GetShipNumber()));
-	}
-
-	for (int i = 0; i < medics.size(); i++)
-	{
-		m_Medics->Add(CreateButton(medics[i]->GetName(), buttonColor, i * buttonHeight, buttonHeight, textOffset, medics[i]->GetShipNumber()));
-	}
-
-	for (int i = 0; i < strength.size(); i++)
-	{
-		m_Strengths->Add(CreateButton(strength[i]->GetName(), buttonColor, i * buttonHeight, buttonHeight, textOffset, strength[i]->GetShipNumber()));
-	}
-
-	Game::GetGame()->GetGUIManager().Add(m_Fires);
-	Game::GetGame()->GetGUIManager().Add(m_Medics);
-	Game::GetGame()->GetGUIManager().Add(m_Strengths);
 }
 
 UICrew::~UICrew()
@@ -123,27 +30,33 @@ UICrew::~UICrew()
 
 void UICrew::OnExpanding(PanelExpandable* panel, float percentage)
 {
-	if (panel == m_Fires)
+	bool found = false;
+	for (int i = 0; i < m_Panels.size(); i++)
 	{
-		m_Medics->SetPosition(m_Medics->GetX(), m_Fires->GetYForClientArea() - m_Medics->GetHeight());
-		m_Strengths->SetPosition(m_Strengths->GetX(), m_Medics->GetYForClientArea() - m_Strengths->GetHeight());
-	}
-	else if (panel == m_Medics)
-	{
-		m_Strengths->SetPosition(m_Strengths->GetX(), m_Medics->GetYForClientArea() - m_Strengths->GetHeight());
+		if (found)
+		{
+			m_Panels[i]->SetPosition(m_Panels[i]->GetX(), m_Panels[i - 1]->GetYForClientArea() - m_Panels[i]->GetHeight());
+		}
+		else if (panel == m_Panels[i])
+		{
+			found = true;
+		}
 	}
 }
 
 void UICrew::OnCollapsing(PanelExpandable* panel, float percentage)
 {
-	if (panel == m_Fires)
+	bool found = false;
+	for (int i = 0; i < m_Panels.size(); i++)
 	{
-		m_Medics->SetPosition(m_Medics->GetX(), m_Fires->GetYForClientArea() - m_Medics->GetHeight());
-		m_Strengths->SetPosition(m_Strengths->GetX(), m_Medics->GetYForClientArea() - m_Strengths->GetHeight());
-	}
-	else if (panel == m_Medics)
-	{
-		m_Strengths->SetPosition(m_Strengths->GetX(), m_Medics->GetYForClientArea() - m_Strengths->GetHeight());
+		if (found)
+		{
+			m_Panels[i]->SetPosition(m_Panels[i]->GetX(), m_Panels[i - 1]->GetYForClientArea() - m_Panels[i]->GetHeight());
+		}
+		else if (panel == m_Panels[i])
+		{
+			found = true;
+		}
 	}
 }
 
@@ -206,9 +119,9 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	crewmember->UpdateLastKnownPosition();
 }
 
-ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& color, float y, float height, const glm::vec2& textOffset, int shipnumber)
+ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& color, float y, float width, float height, const glm::vec2& textOffset, int shipnumber)
 {
-	ProgressButton* button = new ProgressButton(0, y, m_Strengths->GetWidth(), height, text);
+	ProgressButton* button = new ProgressButton(0, y, width, height, text);
 	button->SetBackgroundColor(color);
 	button->SetProgressColor(GUIContext::COLOR_SELECTED);
 	button->SetTextCentered(false);
@@ -218,4 +131,26 @@ ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& c
 	button->AddProgressListener(this);
 	m_HoveringHandler.AddHoverable(button);
 	return button;
+}
+
+PanelExpandable* UICrew::CreateExpandable(const std::string& text, float x, float y, float width, float buttonHeight, uint32 icon, int index, Crew* crew, const glm::vec4& buttonColor, const glm::vec2& textOffset)
+{
+	PanelExpandable* panel = new PanelExpandable(x, y - index * 50, width, 50, crew->GetSquadCount(index) * buttonHeight, text);
+	panel->SetUserData(reinterpret_cast<void*>(icon));
+	panel->AddExpandableListener(this);
+	panel->AddExternalRenderer(this);
+	panel->SetTextCentered(false);
+	panel->SetTextOffset(textOffset);
+	panel->SetClientAreaColor(buttonColor);
+	m_SelectionHandler.AddSelectable(panel);
+
+	for (int i = 0; i < crew->GetSquadCount(index); i++)
+	{
+		Crewmember* member = crew->GetMember(crew->GetSquad(index)[i]);
+		panel->Add(CreateButton(member->GetName(), buttonColor, i * buttonHeight, width, buttonHeight, textOffset, member->GetShipNumber()));
+	}
+
+	Game::GetGame()->GetGUIManager().Add(panel);
+
+	return panel;
 }

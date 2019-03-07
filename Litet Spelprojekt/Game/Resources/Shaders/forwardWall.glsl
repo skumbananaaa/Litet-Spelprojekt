@@ -49,11 +49,6 @@ layout(std140, binding = 1) uniform LightBuffer
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
 };
 
-layout(std140, binding = 3) uniform WorldBuffer
-{
-	ivec4 g_Map[LEVEL_SIZE];
-};
-
 layout(std140, binding = 5) uniform Extension
 {
 	float g_Extension;

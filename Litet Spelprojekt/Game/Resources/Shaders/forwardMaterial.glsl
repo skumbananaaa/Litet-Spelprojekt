@@ -49,11 +49,6 @@ layout(std140, binding = 2) uniform MaterialBuffer
 	float g_HasSpecularMap;
 };
 
-layout(std140, binding = 3) uniform WorldBuffer
-{
-	ivec4 g_Map[LEVEL_SIZE];
-};
-
 layout(std140, binding = 5) uniform Extension
 {
 	float g_Extension;

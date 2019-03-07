@@ -40,11 +40,11 @@ void MESH::RegisterResourcesPreLoading()
 	QUAD					= ResourceHandler::RegisterMesh(IndexedMesh::CreateQuad());
 	CUBE					= ResourceHandler::RegisterMesh(IndexedMesh::CreateCube());
 	WATER_QUAD				= ResourceHandler::RegisterMesh(WaterQuad::CreateWaterQuad(glm::vec2(21.0f, 6.0f), glm::vec2(40.0f, 10.0f), 2.0, 100));
+	SHIP					= ResourceHandler::RegisterMesh("ship1.obj");
 }
 
 void MESH::RegisterResources()
 {
-	SHIP					= ResourceHandler::RegisterMesh("ship1.obj");
 	CLIFF_3_LOW				= ResourceHandler::RegisterMesh("cliff_3_low.obj");
 	CUBE_OBJ				= ResourceHandler::RegisterMesh("cube.obj");
 	SPHERE					= ResourceHandler::RegisterMesh("sphere.obj");

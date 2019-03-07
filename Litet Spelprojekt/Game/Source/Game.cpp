@@ -103,12 +103,6 @@ void Game::OnResourcesLoaded()
 	m_pSceneCredits = new SceneCredits();
 	m_pSceneOptions = new SceneOptions();
 	m_pSceneScenario = new SceneScenario();
-	m_pSceneGame = new SceneGame();
-
-	if (m_pSceneGame)
-	{
-		m_pSceneGame->GenerateShadows();
-	}
 
 	m_pScene->OnResourcesLoaded();
 }
@@ -181,6 +175,12 @@ void Game::OnUpdate(float dtS)
 		{
 			m_pScene->SetSkyBox(nullptr);
 			m_pScene->OnDeactivated(m_pSceneNext);
+
+			if (m_pScene == m_pSceneGame)
+			{
+				DeleteSafe(m_pSceneGame);
+				m_pScene = nullptr;
+			}
 		}
 
 		m_pSceneNext->OnActivated(m_pScene, m_pRenderer);
@@ -210,10 +210,6 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
-	if (m_pSceneGame)
-	{
-		//m_pSceneGame->OnRender(dtS);
-	}
 	if (m_pScene)
 	{
 		m_pScene->OnRender(dtS);
@@ -232,6 +228,20 @@ void Game::SetScene(SceneInternal* scene) noexcept
 	{
 		m_pAudioSourceMenu->Play();
 	}
+}
+
+void Game::StartGame() noexcept
+{
+	if (!m_pSceneGame)
+	{
+		m_pSceneGame = new SceneGame();
+		if (m_pSceneGame)
+		{
+			m_pSceneGame->GenerateShadows();
+			ResetPrevTime();
+			SetScene(m_pSceneGame);
+		}
+	}	
 }
 
 Game* Game::GetGame()

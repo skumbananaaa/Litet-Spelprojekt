@@ -20,6 +20,10 @@ void ScenarioMissile::Init(World* pWorld) noexcept
 
 }
 
+void ScenarioMissile::Release() noexcept
+{
+}
+
 void ScenarioMissile::OnStart(SceneGame* scene) noexcept
 {
 	glm::vec3 pos = glm::vec3(Random::GenerateInt(-200, 200), 200, Random::GenerateInt(-200, 200));

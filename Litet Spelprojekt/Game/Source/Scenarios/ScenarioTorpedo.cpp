@@ -20,6 +20,10 @@ void ScenarioTorpedo::Init(World* pWorld) noexcept
 
 }
 
+void ScenarioTorpedo::Release() noexcept
+{
+}
+
 void ScenarioTorpedo::OnStart(SceneGame* scene) noexcept
 {
 	float rotation = Random::GenerateFloat(0.0, glm::two_pi<float>());

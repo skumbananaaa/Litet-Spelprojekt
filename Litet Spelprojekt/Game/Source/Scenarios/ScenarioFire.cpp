@@ -29,6 +29,12 @@ void ScenarioFire::Init(World* pWorld) noexcept
 	}
 }
 
+void ScenarioFire::Release() noexcept
+{
+	DeleteArrSafe(m_pppMap);
+	m_DiscoveredRooms.clear();
+}
+
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
 	/*uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
@@ -99,6 +105,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		SpreadFireSideways(dtS, glm::ivec3(0, 0, -1), pos, pScene);
 
 		EvaporateWater(originTile, dtS);
+		((MeshEmitter*)originTile.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE])->SetParticlesPerSeconds(originTile.Temp * 5.0f / originTile.BurnsAt);
 
 		if (originTile.Temp < originTile.BurnsAt && originTile.Burning && originTile.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE] != nullptr)
 		{
@@ -126,7 +133,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 		if (currentTile.WaterLevel < 0.5f * WATER_MAX_LEVEL)
 		{
-			tileData.SmokeAmount += m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z].Temp * 2.0f;
+			tileData.SmokeAmount += std::max((m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z].Temp - m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z].BurnsAt) * 1.3f, 0.0f);
 			tileData.SmokeAmount = std::min(tileData.SmokeAmount, 1000.0f);
 
 			if (!alreadySmoke && tileData.SmokeAmount >= tileData.SmokeLimit)
@@ -179,7 +186,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			TileData& aboveData = m_pWorld->GetLevel(aboveIndex).GetLevelData()[smokePos.x][smokePos.z];
 			Room& aboveRoom = m_pWorld->GetRoom(m_pWorld->GetLevel(aboveIndex).GetLevel()[smokePos.x][smokePos.z]);
 			// TWEAK HERE
- 			aboveData.Temp += glm::max(tile.SmokeAmount - tile.SmokeLimit, 0.0f) * dtS * 3.0f / aboveData.BurnsAt;
+ 			aboveData.Temp += glm::max(tile.SmokeAmount - tile.SmokeLimit, 0.0f) * dtS * 0.1f / aboveData.BurnsAt;
 			if (aboveData.Temp > aboveData.BurnsAt && !aboveData.Burning)
 			{
 				glm::ivec3 pos = smokePos + glm::ivec3(0.0f, 1.0f, 0.0f);
@@ -210,6 +217,8 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, -1), smokePos, spread, pScene);
 			tile.SmokeAmount -= spread * rest;
 		}
+
+		((MeshEmitter*)tile.GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE])->SetParticlesPerSeconds(tile.SmokeAmount / 50);
 	}
 
 	//Remove Fire and Smoke
@@ -305,10 +314,10 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(tileTo.y).GetLevel()[tileTo.x][tileTo.z]);
 	uint32 tilesBetweenBulkheads = m_pWorld->GetLevel(origin.y).GetTilesBetweenBulkheads();
 	//TWEAK HERE
-	float rateOfSpread = 1.0f;
-	float rateOfWallSpread = 0.0002f;
+	float rateOfSpread = 0.35f;
+	float rateOfWallSpread = 0.00002f;
 	float rateOfNormalDoorSpread = 0.02f;
-	float rateOfFloorSpread = 0.0003f;
+	float rateOfFloorSpread = 0.003f;
 	float rateOfBulkheadSpreadFactor = 0.01f;
 	float rateOfBulkheadDoorSpreadFactor = 1.25f; //This spread is relative to the "rateOfBulkheadSpreadFactor"
 
@@ -396,8 +405,6 @@ bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, cons
 				for (uint32 i = tileData.NrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
 				{
 					FireAlarm* alarm = dynamic_cast<FireAlarm*>(lowerTileData.GameObjects[i]);
-
-					
 
 					if (alarm != nullptr)
 					{

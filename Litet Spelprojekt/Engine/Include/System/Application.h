@@ -26,6 +26,7 @@ public:
 	virtual void OnResourceLoadingFinished() override;
 
 	void Exit() noexcept;
+	void ResetPrevTime() noexcept;
 
 	int32_t Run();
 
@@ -69,6 +70,7 @@ private:
 	std::string m_Resource;
 	float m_Progress;
 	float m_LastProgress;
+	std::chrono::time_point<std::chrono::steady_clock> m_PrevTime;
 
 	void InternalOnRender(float dtS);
 	void InternalOnUpdate(float dtS);

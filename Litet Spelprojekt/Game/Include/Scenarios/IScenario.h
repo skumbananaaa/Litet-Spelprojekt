@@ -11,6 +11,7 @@ protected:
 public:
 	virtual ~IScenario();
 	virtual void Init(World* pWorld) noexcept = 0;
+	virtual void Release() noexcept = 0;
 	virtual void OnStart(SceneGame* scene) noexcept = 0;
 	virtual void OnEnd(SceneGame* scene)noexcept = 0;
 	virtual void Escalate(const glm::ivec3& position) noexcept = 0;

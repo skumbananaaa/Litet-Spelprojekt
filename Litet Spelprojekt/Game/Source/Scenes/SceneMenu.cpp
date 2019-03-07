@@ -111,6 +111,7 @@ void SceneMenu::OnButtonReleased(Button* button)
 
 void SceneMenu::OnButtonHovered(Button* button)
 {
+	m_pAudioSourceHover->Stop();
 	m_pAudioSourceHover->Play();
 }
 

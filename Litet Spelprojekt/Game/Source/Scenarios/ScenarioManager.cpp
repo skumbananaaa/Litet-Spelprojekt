@@ -108,6 +108,14 @@ void ScenarioManager::Init(World* pWorld)
 	}
 }
 
+void ScenarioManager::Reset() noexcept
+{
+	for (IScenario* scenario : s_Scenarios)
+	{
+		scenario->Release();
+	}
+}
+
 const std::vector<IScenario*>& ScenarioManager::GetScenarios() noexcept
 {
 	return s_Scenarios;

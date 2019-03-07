@@ -15,6 +15,12 @@ void ScenarioWater::Init(World* pWorld) noexcept
 	m_FloodingIDs = new std::vector<glm::ivec2>[pWorld->GetNumLevels() / 2];
 }
 
+void ScenarioWater::Release() noexcept
+{
+	m_InletTiles.clear();
+	DeleteArrSafe(m_FloodingIDs);
+}
+
 void ScenarioWater::OnStart(SceneGame* scene) noexcept
 {
 	

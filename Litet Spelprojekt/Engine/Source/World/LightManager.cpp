@@ -34,6 +34,7 @@ void LightManager::Release() noexcept
 			Delete(spotlight);
 		}
 	}
+	s_Spotlights.clear();
 }
 
 SpotLight* LightManager::AcquireSpotlight(const glm::vec3& pos, float innerAngle, float outerAngle, const glm::vec3& direction, const glm::vec4& color) noexcept

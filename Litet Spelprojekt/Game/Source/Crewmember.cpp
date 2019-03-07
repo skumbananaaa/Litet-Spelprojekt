@@ -284,6 +284,11 @@ void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
+	
+	glm::ivec3 tile = GetTile();
+	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
+	m_LastKnownPosition = GetPosition();
+	m_pWorld->SetActiveRoom(roomIndex);
 	m_Idleing = true;
 }
 

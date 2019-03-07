@@ -248,16 +248,6 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					/*GameObject* object = RayTestGameObjects();
-					if (!object)
-					{
-						PickPosition();
-					}
-					else if (m_Crew.HasSelectedMembers())
-					{
-						object->OnPicked(m_Crew.GetSelectedList());
-					}*/
-
 					PickPosition();
 				}
 				break;
@@ -416,7 +406,7 @@ void SceneGame::CreateCrew() noexcept
 		"Knut",
 		"Britt-Marie",
 		"Bert Karlsson",
-		"Herman S�derlund"
+		"Herman Söderlund"
 	};
 
 	int index = 0;
@@ -548,12 +538,34 @@ void SceneGame::PickPosition()
 
 	if (pointOnSurface != glm::vec3(0.0f, 0.0f, 0.0f))
 	{
-		for (int i = 0; i < m_Crew.GetCount(); i++)
+		std::vector<int32> selectedList = m_Crew.GetSelectedList();
+
+		for (int32 i = 0; i < selectedList.size(); i++)
 		{
-			if (m_Crew.GetMember(i)->IsPicked())
+			glm::ivec3 tile = glm::round(pointOnSurface);
+			if (i > 0)
 			{
-				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
+				glm::clamp(tile.x, 1, 10);
+				glm::clamp(tile.y, 0, 4);
+				glm::clamp(tile.z, 1, 40);
+				if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				{
+					tile.x += 1;
+				}
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				{
+					tile.x -= 1;
+				}
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				{
+					tile.z += 1;
+				}
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				{
+					tile.z -= 1;
+				}
 			}
+			m_Crew.GetMember(selectedList[i])->FindPath(tile);
 		}
 	}
 }

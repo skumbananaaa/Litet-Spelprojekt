@@ -10,7 +10,8 @@
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
-	m_OrderHandler(this)
+	m_OrderHandler(this),
+	m_pUISelectedCrew(nullptr)
 {
 	SetName(name);
 	m_pWorld = world;
@@ -22,7 +23,6 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
-
 	m_LastKnownPosition = position;
 
 	//Test
@@ -52,7 +52,6 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderHandler.Update(pSceneGame, m_pWorld, pSceneGame->GetCrew(), deltaTime);
 	GameObject::Update(camera, deltaTime);
-	
 	UpdateTransform();
 
 	if (IsAlive())
@@ -68,20 +67,16 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	{
 		room.SetFireDetected(true);
 	}
+
+	if (m_pUISelectedCrew)
+	{
+		m_pUISelectedCrew->UpdatePosition(GetPosition());
+	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	if (!m_IsPicked)
-	{
-		m_IsPicked = true;
-		Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
-	}
-	else
-	{
-		m_IsPicked = false;
-		Game::GetGame()->m_pSceneGame->GetCrew()->RemoveFromSelectedList(GetShipNumber());
-	}
+	SetIsPicked(true);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -309,6 +304,26 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	}
 
 	GameObject::SetPosition(position);
+}
+
+void Crewmember::SetIsPicked(bool picked) noexcept
+{
+	if (m_IsPicked != picked)
+	{
+		m_IsPicked = picked;
+
+		if (m_IsPicked)
+		{
+			m_pUISelectedCrew = new UISelectedCrew(GetName());
+			Game::GetGame()->GetGUIManager().Add(m_pUISelectedCrew);
+			Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
+		}
+		else
+		{
+			Game::GetGame()->GetGUIManager().Remove(m_pUISelectedCrew);
+			m_pUISelectedCrew = nullptr;
+		}
+	}
 }
 
 void Crewmember::SetDirection(const glm::vec3& direction) noexcept

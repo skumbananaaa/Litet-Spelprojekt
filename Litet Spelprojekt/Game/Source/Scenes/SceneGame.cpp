@@ -51,7 +51,7 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pUICrewMember = new UICrewMember(330, 170);
+	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
 	m_pUILog = new UILog(window->GetWidth() - 350, window->GetHeight() - 450, 350, 450);
 	
 	game->GetGUIManager().Add(m_pUICrewMember);
@@ -201,7 +201,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		}
 		else
 		{
-			PickObject(true, position.x, position.y);
+			Pick(true, position.x, position.y);
 		}
 	}
 }
@@ -266,7 +266,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					PickObject(false, position.x, position.y);
+					Pick(false, position.x, position.y);
 				}
 				break;
 			}
@@ -279,6 +279,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 						m_Crew.GetMember(i)->GoToMedicBay(m_pWorld);
 					}
 				}
+				break;
 			}
 		}
 	}
@@ -548,12 +549,9 @@ void SceneGame::PickPosition()
 
 	if (pointOnSurface != glm::vec3(0.0f, 0.0f, 0.0f))
 	{
-		for (int i = 0; i < m_Crew.GetCount(); i++)
+		for (int i = 0; i < m_Crew.GetSelectedList().size(); i++)
 		{
-			if (m_Crew.GetMember(i)->IsPicked())
-			{
-				m_Crew.GetMember(i)->FindPath(glm::round(pointOnSurface));
-			}
+			m_Crew.GetMember(m_Crew.GetSelectedList()[i])->FindPath(glm::round(pointOnSurface));
 		}
 	}
 }
@@ -600,7 +598,7 @@ void SceneGame::RequestDoorClosed()
 	//}
 }
 
-void SceneGame::PickObject(bool hover, int32 positionX, int32 positionY)
+void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)
 {
 	GameObject* object = RayTestGameObjects();
 
@@ -617,9 +615,14 @@ void SceneGame::PickObject(bool hover, int32 positionX, int32 positionY)
 					object->OnHovered();
 				}
 			}
+			else if(!Input::IsKeyDown(KEY_LEFT_CTRL))
+			{
+				m_Crew.ClearSelectedList();
+				object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
+			}
 			else
 			{
-				object->OnPicked(m_Crew.GetSelectedList(), 0, 0);
+				object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 			}
 		}
 		else if (m_Crew.HasSelectedMembers() && !hover)
@@ -637,6 +640,10 @@ void SceneGame::PickObject(bool hover, int32 positionX, int32 positionY)
 				m_PickableGameObjects[i]->OnNotHovered();
 			}
 		}
+	}
+	else
+	{
+		m_Crew.ClearSelectedList();
 	}
 }
 

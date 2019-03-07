@@ -26,6 +26,19 @@ OrderHandler::~OrderHandler()
 
 void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 {
+	int index = -1;
+	if (!order->IsIdleOrder())
+	{
+		for (int32 i = m_OrderQueue.size() - 1; i >= 0; i--)
+		{
+			if (m_OrderQueue[i]->IsIdleOrder())
+			{
+				m_OrdersToAbort.push_back(m_OrderQueue[i]);
+				m_OrderQueue.erase(m_OrderQueue.begin() + i);
+			}
+		}
+	}
+
 	if (!CanExecuteOrder(order, crewMember))
 	{
 		m_OrdersToAbort.push_back(order);
@@ -33,26 +46,30 @@ void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
 	}
 	else if (!order->AllowsMultipleOrders())
 	{
-		for (IOrder* object : m_OrderQueue)
+		for (int i = 0; i < m_OrderQueue.size(); i++)
 		{
-			if (object->GetName().compare(order->GetName()) == 0)
+			if (m_OrderQueue[i]->GetName().compare(order->GetName()) == 0)
 			{
-				m_OrdersToAbort.push_back(order);
-				return;
+				m_OrdersToAbort.push_back(m_OrderQueue[i]);
+				m_OrderQueue[i] = order;
+				index = i;
+				break;
 			}
 		}
+		if (index == -1)
+		{
+			index = m_OrderQueue.size();
+			m_OrderQueue.push_back(order);
+		}
 	}
-
-	order->m_pCrewMember = crewMember;
-	m_OrderQueue.push_back(order);
-
-	OrderWalk* walkOrder = dynamic_cast<OrderWalk*>(order);
-	if (walkOrder)
+	else
 	{
-		//order->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+		index = m_OrderQueue.size();
+		m_OrderQueue.push_back(order);
 	}
+	order->m_pCrewMember = crewMember;
 
-	if (m_OrderQueue.size() == 1)
+	if (index == 0)
 	{
 		StartOrder();
 	}

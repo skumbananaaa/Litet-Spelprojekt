@@ -303,7 +303,7 @@ void Crewmember::OnAllOrdersFinished() noexcept
 	glm::ivec3 tile = GetTile();
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
 	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetActiveRoom(roomIndex);
+	m_pWorld->SetRoomActive(roomIndex, true);
 	m_Idleing = true;
 
 	GiveOrder(OrderSchedule::GetIdleOrder());

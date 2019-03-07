@@ -8,7 +8,7 @@
 #include "../Include/GameObjectDoor.h"
 
 
-Crewmember::Crewmember(World* world, const glm::vec4& lightColor, const glm::vec3& position, float actionCap, const std::string& name)
+Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
 	m_OrderHandler(this)
 {

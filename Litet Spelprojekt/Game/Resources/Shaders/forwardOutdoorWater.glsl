@@ -51,11 +51,6 @@ layout(std140, binding = 1) uniform LightBuffer
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
 };
 
-layout(std140, binding = 3) uniform WorldBuffer
-{
-	ivec4 map[LEVEL_SIZE];
-};
-
 layout(std140, binding = 6) uniform WaterBuffer
 {
 	vec2 g_WaveFactor;
@@ -68,14 +63,14 @@ out VS_OUT
 	vec4 ClipSpaceGrid;
 	vec3 Normal;
 	vec3 ToCameraVector;
+	vec3 LightColor;
 	vec3 Specular;
-	vec3 Diffuse;
 	float FoamFactor;
 } vs_out;
 
 //CONSTS
 const float specularStrength = 256.0f;//0.6;
-const float waveScalingFactor = 0.5f;
+const float waveScalingFactor = 0.3f;
 
 vec3 mod289(vec3 x)
 {
@@ -136,20 +131,20 @@ float snoise(vec2 v)
 	return 130.0f * dot(m, g);
 }
 
-vec3 CalculateDiffuseLighting(vec3 toLightVector, vec3 normal, vec3 lightColor, float intensity)
+vec3 CalcLightContribution(vec3 lightDir, vec3 lightCol, vec3 normal)
 {
-	float brightness = max(dot(toLightVector, normal), 0.0f);
-	return lightColor * brightness * intensity;
+	return max(dot(normal, lightDir), 0.0f) * lightCol;
 }
 
-vec3 CalcSpecularLighting(vec3 toCamVector, vec3 toLightVector, vec3 normal, vec3 lightColor, float intensity, float specularIntensity)
+vec3 CalcSpecular(vec3 lightDir, vec3 lightCol, vec3 viewDir, vec3 normal)
 {
-	vec3 halfwayDir = normalize(toLightVector + toCamVector);
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), specularIntensity);
-	return spec * lightColor * intensity;
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), specularStrength);
+	return lightCol * spec;
 }
 
-vec3 calcNormal(vec3 vertex0, vec3 vertex1, vec3 vertex2)
+vec3 CalcNormal(vec3 vertex0, vec3 vertex1, vec3 vertex2)
 {
 	vec3 tangent = vertex1 - vertex0;
 	vec3 bitangent = vertex2 - vertex0;
@@ -174,100 +169,29 @@ void main()
 	vertex1 += waveScalingFactor * snoise(vertex1.xz + g_WaveFactor);
 	vertex2 += waveScalingFactor * snoise(vertex2.xz + g_WaveFactor);
 	
-	vs_out.Normal = calcNormal(currentVertex, vertex1, vertex2);
+	vec3 normal = CalcNormal(currentVertex, vertex1, vertex2);
+	vs_out.Normal = normal;
 	vs_out.ToCameraVector = normalize(g_CameraPosition - currentVertex);
-	
-	ivec3 mapPos = ivec3(round(currentVertex.x), currentVertex.y, round(currentVertex.z));
-	mapPos.x = clamp(mapPos.x, 0, 11);
-	mapPos.y = clamp(mapPos.y, 0, 5);
-	mapPos.z = clamp(mapPos.z, 0, 41);
 
-	uint roomIndex[] = {
-		map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].x,
-		map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].y,
-		map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].z,
-		map[int(mapPos.x * 63 + mapPos.y * 10.5 + mapPos.z * 0.25)].w
-	};
+	//Viewdir
+	vec3 viewDir = normalize(g_CameraPosition.xyz - currentVertex.xyz);
 
-	vs_out.Diffuse = vec3(0.0f);
-	vs_out.Specular = vec3(0.0f);
+	//Calculate light
+	vec3 specular = vec3(0.0f);
+	vec3 lightColor = vec3(0.0f);
 
-	//Calculate lighting
+	//Dirlights
 	for (uint i = 0; i < NUM_DIRECTIONAL_LIGHTS; i++)
 	{
 		vec3 lightDir = normalize(g_DirLights[i].Direction.xyz);
-		vec3 lightColor = g_DirLights[i].Color.rgb * 3.0f;
+		vec3 lightCol = g_DirLights[i].Color.rgb;
 
-		vs_out.Diffuse += CalculateDiffuseLighting(lightDir, vs_out.Normal, lightColor, 1.0f);
-		vs_out.Specular += CalcSpecularLighting(vs_out.ToCameraVector, lightDir, vs_out.Normal, lightColor, 1.0f, specularStrength);
+		lightColor += 3.0f * CalcLightContribution(lightDir, lightCol, normal);
+		specular += CalcSpecular(lightDir, lightCol, viewDir, normal);
 	}
 
-	for (uint i = 0; i < NUM_POINT_LIGHTS; i++)
-	{
-		ivec3 lightMapPos = ivec3(round(g_PointLights[i].Position.x), g_PointLights[i].Position.y, round(g_PointLights[i].Position.z));
-		lightMapPos.x = clamp(lightMapPos.x, 0, 11);
-		lightMapPos.y = clamp(lightMapPos.y, 0, 5);
-		lightMapPos.z = clamp(lightMapPos.z, 0, 41);
-
-		uint lightRoomIndex[] = {
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].x,
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].y,
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].z,
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].w
-		};
-
-		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
-		{
-			vec3 lightDir = g_PointLights[i].Position.xyz - currentVertex;
-			float dist = length(lightDir);
-
-			float attenuation = 1.0f / (dist * dist);
-			vec3 lightColor = g_PointLights[i].Color.rgb * attenuation;
-			lightDir = normalize(lightDir);
-			float cosTheta = dot(vs_out.Normal, lightDir);
-
-			vs_out.Diffuse += CalculateDiffuseLighting(lightDir, vs_out.Normal, lightColor, 1.0f);
-			vs_out.Specular += CalcSpecularLighting(vs_out.ToCameraVector, lightDir, vs_out.Normal, lightColor, 1.0f, specularStrength);
-		}
-	}
-
-	for (uint i = 0; i < NUM_SPOT_LIGHTS; i++) 
-	{
-		ivec3 lightMapPos = ivec3(round(g_SpotLights[i].Position.x), g_SpotLights[i].Position.y, round(g_SpotLights[i].Position.z));
-		lightMapPos.x = clamp(lightMapPos.x, 0, 11);
-		lightMapPos.y = clamp(lightMapPos.y, 0, 5);
-		lightMapPos.z = clamp(lightMapPos.z, 0, 41);
-
-		uint lightRoomIndex[] = {
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].x,
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].y,
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].z,
-			map[int(lightMapPos.x * 63 + lightMapPos.y * 10.5 + lightMapPos.z * 0.25)].w
-		};
-		
-		if (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] != 1 && (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] || (lightRoomIndex[(lightMapPos.x * 252 + lightMapPos.y * 42 + lightMapPos.z) % 4] == 0 || roomIndex[(mapPos.x * 252 + mapPos.y * 42 + mapPos.z) % 4] == 0) && lightMapPos.y / 2 == mapPos.y / 2))
-		{
-			float light_attenuation = 1.0f;
-			vec3 lightDir = g_SpotLights[i].Position.xyz - currentVertex;
-			vec3 targetDir = normalize(g_SpotLights[i].TargetDirection);
-			float dist = length(lightDir);
-			lightDir = normalize(lightDir);
-
-			float attenuation = 1.0f / ((dist));
-
-			vec3 lightColor = g_SpotLights[i].Color.rgb * attenuation;
-
-			float theta = dot(lightDir, -targetDir);
-			float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
-			float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
-
-			if(theta > g_SpotLights[i].OuterAngle)
-			{
-				vs_out.Diffuse += CalculateDiffuseLighting(lightDir, vs_out.Normal, lightColor, intensity);
-				vs_out.Specular += CalcSpecularLighting(vs_out.ToCameraVector, lightDir, vs_out.Normal, lightColor, intensity, specularStrength);
-			}
-		}
-	}
+	vs_out.Specular = specular;
+	vs_out.LightColor = lightColor;
 
 	gl_Position = g_ProjectionView * vec4(currentVertex, 1.0f);
 }
@@ -282,8 +206,8 @@ in VS_OUT
 	vec4 ClipSpaceGrid;
 	vec3 Normal;
 	vec3 ToCameraVector;
+	vec3 LightColor;
 	vec3 Specular;
-	vec3 Diffuse;
 	float FoamFactor;
 } fs_in;
 
@@ -304,7 +228,7 @@ const float fogDensity = 0.075;
 const float fogGradient = 5.0;
 
 //FUNCTIONS
-float calculateFresnel()
+float CalculateFresnel()
 {
 	vec3 viewVector = normalize(fs_in.ToCameraVector);
 	vec3 normal = normalize(fs_in.Normal);
@@ -313,7 +237,7 @@ float calculateFresnel()
 	return clamp(refractiveFactor, 0.0, 1.0);
 }
 
-vec2 clipSpaceToTexCoords(vec4 clipSpace)
+vec2 ClipSpaceToTexCoords(vec4 clipSpace)
 {
 	vec2 ndc = (clipSpace.xy / clipSpace.w);
 	vec2 texCoords = ndc / 2.0 + 0.5;
@@ -322,7 +246,7 @@ vec2 clipSpaceToTexCoords(vec4 clipSpace)
 
 void main()
 {
-	vec2 texCoordsGrid = clipSpaceToTexCoords(fs_in.ClipSpaceGrid);
+	vec2 texCoordsGrid = ClipSpaceToTexCoords(fs_in.ClipSpaceGrid);
 	
 	vec2 refractionTexCoords = texCoordsGrid;
 	vec2 reflectionTexCoords = vec2(texCoordsGrid.x, 1.0f - texCoordsGrid.y);
@@ -333,9 +257,9 @@ void main()
 	//apply some blueness
 	reflectColour = mix(reflectColour, waterColour, minBlueness);
 	
-	vec3 finalColour = mix(reflectColour, refractColour, calculateFresnel());
+	vec3 finalColour = mix(reflectColour, refractColour, CalculateFresnel());
 	finalColour = mix(finalColour, vec3(0.09f, 0.34f, 0.49f), fs_in.FoamFactor);
-	finalColour = finalColour * fs_in.Diffuse + fs_in.Specular;
+	finalColour = finalColour * fs_in.LightColor + fs_in.Specular;
 	
 	g_OutColor = vec4(finalColour, 1.0f);
 }

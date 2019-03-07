@@ -12,7 +12,7 @@ SceneInternal::SceneInternal(bool autoRotateCamera) :
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	Camera* pCamera = new Camera(glm::vec3(10.0f, 10.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	Camera* pCamera = new Camera(glm::vec3(20.0f, 20.0f, 0.0f), glm::vec3(5.5f, 2.0f, 20.5f));
 	float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
 	pCamera->UpdateFromLookAt();
@@ -56,8 +56,19 @@ void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) n
 	}
 	else
 	{
-		GetCamera().SetPos(glm::vec3(10.0f, 10.0f, 0.0f));
-		GetCamera().SetLookAt(glm::vec3(0.0f, 0.0f, 0.0f));
+		GetCamera().SetPos(glm::vec3(20.0f, 20.0f, 0.0f));
+		GetCamera().SetLookAt(glm::vec3(5.5f, 2.0f, 20.5f));
+	}
+	if (lastScene != Game::GetGame()->m_pSceneScenario)
+	{
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetName("ship");
+		pGameObject->SetMaterial(MATERIAL::BOAT);
+		pGameObject->SetMesh(MESH::SHIP);
+		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
+		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->UpdateTransform();
+		AddGameObject(pGameObject);
 	}
 }
 

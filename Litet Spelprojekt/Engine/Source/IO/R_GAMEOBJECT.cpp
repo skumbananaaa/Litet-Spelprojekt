@@ -15,6 +15,7 @@ uint32 GAMEOBJECT::CUBOARD = 0;
 uint32 GAMEOBJECT::TABLE = 0;
 uint32 GAMEOBJECT::TOILET = 0;
 uint32 GAMEOBJECT::DOOR = 0;
+uint32 GAMEOBJECT::FLOOR = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -37,4 +38,5 @@ void GAMEOBJECT::RegisterResources()
 	TABLE						= ResourceHandler::RegisterGameObject("Table", MESH::TABLE, MATERIAL::TABLE);
 	TOILET						= ResourceHandler::RegisterGameObject("Toilet", MESH::TOILET, MATERIAL::TOILET);
 	DOOR						= ResourceHandler::RegisterGameObject("Door", MESH::DOOR, MATERIAL::WHITE);
+	FLOOR						= ResourceHandler::RegisterGameObject("Floor", MESH::CUBE);
 }

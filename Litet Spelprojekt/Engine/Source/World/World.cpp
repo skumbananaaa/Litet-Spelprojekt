@@ -128,9 +128,9 @@ void World::GenerateFloor(Scene& scene) noexcept
 					}
 				}
 
-				pGameObject = new GameObject();
-				pGameObject->SetMesh(MESH::CUBE);
-				pGameObject->SetMaterial(MATERIAL::FLOOR);
+				pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::FLOOR);
+				pGameObject->SetMaterial(m_Levels[level].GetLevel()[x][z] < SMALLEST_RESERVED ?
+					MATERIAL::FLOOR : World::GetReservedTileFloorMaterialFromGlobal(m_Levels[level].GetLevel()[x][z]));
 				pGameObject->SetPosition(glm::vec3(x, level, z));
 				pGameObject->SetScale(glm::vec3(1.0f, 0.1f, 1.0f));
 				pGameObject->UpdateTransform();

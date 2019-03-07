@@ -17,7 +17,7 @@ struct tls
 class Path
 {
 public:
-	Path(const World* world);
+	Path(const World* world, bool hasSmokeDiverGear);
 	~Path();
 
 	glm::ivec3* FindPath(const glm::ivec3& start, const glm::ivec3& goal);
@@ -48,4 +48,5 @@ private:
 	int m_LargestZ = 0;
 	bool m_GoalSet;
 	int32 m_GetNumLevels;
+	bool m_HasSmokeDiverGear;
 };

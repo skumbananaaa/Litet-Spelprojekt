@@ -11,7 +11,8 @@
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
-	m_OrderHandler(this)
+	m_OrderHandler(this),
+	m_GearIsEquipped(false)
 {
 	SetName(name);
 	m_pWorld = world;
@@ -81,6 +82,11 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	if (room.IsBurning() && !room.IsFireDetected())
 	{
 		room.SetFireDetected(true);
+	}
+
+	if (IsIdleing() && !IsAbleToWork() && IsAbleToWalk() && room.GetCenter() != m_pWorld->GetRoom(SICKBAY_0).GetCenter())
+	{
+		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld), this);
 	}
 }
 
@@ -293,6 +299,11 @@ void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
+	
+	glm::ivec3 tile = GetTile();
+	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
+	m_LastKnownPosition = GetPosition();
+	m_pWorld->SetActiveRoom(roomIndex);
 	m_Idleing = true;
 
 	GiveOrder(OrderSchedule::GetIdleOrder());
@@ -351,6 +362,11 @@ void Crewmember::SetGroup(uint32 group) noexcept
 	m_Group = group;
 }
 
+void Crewmember::SetGearIsEquipped(bool value) noexcept
+{
+	m_GearIsEquipped = value;
+}
+
 void Crewmember::UpdateHealth(float dt)
 {
 	//Tweak here!
@@ -396,6 +412,11 @@ void Crewmember::UpdateHealth(float dt)
 
 void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexcept
 {
+	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	{
+		return;
+	}
+
 	//HOT FIX
 	if (m_PlayerTile.z < 0)
 	{
@@ -418,6 +439,11 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 
 void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
+	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	{
+		return;
+	}
+
 	//HOT FIX
 	if (m_PlayerTile.z < 0)
 	{

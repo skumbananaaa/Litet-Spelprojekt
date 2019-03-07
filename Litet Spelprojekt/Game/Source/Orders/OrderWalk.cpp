@@ -17,11 +17,12 @@ OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 
 OrderWalk::~OrderWalk()
 {
+	DeleteSafe(m_pPathFinder);
 }
 
 void OrderWalk::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	m_pPathFinder = new Path(pWorld);
+	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroup() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
 	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);
 }
@@ -141,10 +142,12 @@ bool OrderWalk::CanExecuteIfHurt() noexcept
 
 bool OrderWalk::FollowPath(float dtS) noexcept
 {
-	const glm::vec3& position = GetCrewMember()->GetPosition();
+	Crewmember* crewmember = GetCrewMember();
+
+	const glm::vec3& position = crewmember->GetPosition();
 	if (m_NrOfTilesLeft > 0)
 	{
-		if (GetCrewMember()->GetTile() == m_TargetTile)
+		if (crewmember->GetTile() == m_TargetTile)
 		{
 			m_directionTile = m_pPath[m_NrOfTilesLeft - 1];
 			m_TargetTile = m_pPath[--m_NrOfTilesLeft];
@@ -160,13 +163,14 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		if (std::abs(move.y) > 0.1)
 		{
 			move.y /= std::abs(move.y);
-			GetCrewMember()->SetDirection(glm::vec3(1, 0, 0));
-			GetCrewMember()->Move(glm::vec3(0, move.y, 0), false, dtS);
+			crewmember->SetDirection(glm::vec3(1, 0, 0));
+			crewmember->Move(glm::vec3(0, move.y, 0), false, dtS);
 		}
 		else
 		{
-			GetCrewMember()->SetDirection(glm::vec3(move.x, 0, move.z));
-			GetCrewMember()->Move(GetCrewMember()->GetDirection(), true, dtS);
+			crewmember->SetDirection(glm::vec3(move.x, 0, move.z));
+			crewmember->Move(crewmember->GetDirection(), true, dtS);
+			crewmember->SetPosition(glm::vec3(crewmember->GetPosition().x, m_TargetPos.y, crewmember->GetPosition().z));
 		}
 	}
 	else
@@ -175,4 +179,19 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 	}
 
 	return false;
+}
+
+void OrderWalk::RestartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, const glm::ivec3& goalTile) noexcept
+{
+	//Cleanup
+	DeleteSafe(m_pPathFinder);
+
+	//Reinit
+	m_pPathFinder = nullptr;
+	m_pPath = nullptr;
+	m_IsPathReady = false;
+	m_GoalTile = glm::ivec3(goalTile.x, goalTile.y / 2, goalTile.z);
+
+	//Start
+	StartOrder(pScene, pWorld, pCrewMembers);
 }

@@ -80,8 +80,8 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 			if (!StartOrder())
 			{
 				m_pOrderListener->OnAllOrdersFinished();
-				return;
 			}
+			return;
 		}
 
 		//Update Current Order

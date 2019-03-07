@@ -12,6 +12,7 @@ public:
 	static bool StartScenario(int32 index) noexcept;
 	static void Escalate(int32 index, const glm::ivec3& position) noexcept;
 	static void Init(World* pWorld);
+	static void Reset() noexcept;
 	static const std::vector<IScenario*>& GetScenarios() noexcept;
 
 private:

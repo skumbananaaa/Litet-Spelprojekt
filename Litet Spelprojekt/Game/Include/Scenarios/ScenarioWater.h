@@ -19,6 +19,7 @@ public:
 	~ScenarioWater();
 
 	virtual void Init(World* pWorld) noexcept override;
+	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
 	virtual void OnEnd(SceneGame* scene)noexcept override;
 	virtual void Escalate(const glm::ivec3& position) noexcept override;

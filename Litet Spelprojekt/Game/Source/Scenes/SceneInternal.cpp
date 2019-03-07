@@ -23,13 +23,22 @@ SceneInternal::SceneInternal(bool autoRotateCamera) :
 	pGameObject->SetMaterial(MATERIAL::WATER_OUTDOOR);
 	AddGameObject(pGameObject);
 
+	if (autoRotateCamera)
+	{
+		GameObject* pGameObject = new GameObject();
+		pGameObject->SetName("ship");
+		pGameObject->SetMaterial(MATERIAL::BOAT);
+		pGameObject->SetMesh(MESH::SHIP);
+		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
+		pGameObject->SetScale(glm::vec3(1.0f));
+		pGameObject->UpdateTransform();
+		AddGameObject(pGameObject);
+	}
+
 	//Reflector for water
 	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 0.01f);
 	AddPlanarReflector(pReflector);
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
-	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(pReflector);
-
+	
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f), glm::vec3(1.0f, 1.0f, 0.0f));
 	AddDirectionalLight(pDirectionalLight);
 }
@@ -48,7 +57,7 @@ SceneInternal::~SceneInternal()
 void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) noexcept
 {
 	m_pRenderer = renderer;
-	if (lastScene != Game::GetGame()->m_pSceneGame)
+	if (lastScene && lastScene != Game::GetGame()->m_pSceneGame)
 	{
 		GetCamera().SetPos(lastScene->GetCamera().GetPosition());
 		GetCamera().SetYaw(lastScene->GetCamera().GetYaw());
@@ -59,21 +68,15 @@ void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) n
 		GetCamera().SetPos(glm::vec3(20.0f, 20.0f, 0.0f));
 		GetCamera().SetLookAt(glm::vec3(5.5f, 2.0f, 20.5f));
 	}
-	if (lastScene != Game::GetGame()->m_pSceneScenario)
-	{
-		GameObject* pGameObject = new GameObject();
-		pGameObject->SetName("ship");
-		pGameObject->SetMaterial(MATERIAL::BOAT);
-		pGameObject->SetMesh(MESH::SHIP);
-		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
-		pGameObject->SetScale(glm::vec3(1.0f));
-		pGameObject->UpdateTransform();
-		AddGameObject(pGameObject);
-	}
+
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilOp(STENCIL_OP_KEEP, STENCIL_OP_KEEP, STENCIL_OP_KEEP);
+	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetPlanarReflector(GetPlanarReflectors()[0]);
 }
 
 void SceneInternal::OnDeactivated(SceneInternal* newScene) noexcept
 {
+
 	Game* game = Game::GetGame();
 	game->GetGUIManager().DeleteChildren();
 }

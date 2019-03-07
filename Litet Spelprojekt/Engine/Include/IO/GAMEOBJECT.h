@@ -19,6 +19,7 @@ public:
 	static uint32 TABLE;
 	static uint32 TOILET;
 	static uint32 DOOR;
+	static uint32 FLOOR;
 
 private:
 	static void RegisterResourcesPreLoading();

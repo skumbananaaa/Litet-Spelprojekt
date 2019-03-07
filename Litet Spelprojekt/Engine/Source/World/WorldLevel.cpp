@@ -323,12 +323,12 @@ void WorldLevel::GenerateScenarioObjects(Scene* pScene, uint32 levelHeight)
 				pEmitter = new MeshEmitter();
 				pEmitter->SetMesh(MESH::MESH_PARTICLE);
 				pEmitter->SetTimeToLive(2.4f);
-				pEmitter->SetConeAngle(glm::radians<float>(50.0f));
+				pEmitter->SetConeAngle(glm::radians<float>(90.0f));
 				pEmitter->SetSpeed(0.1f, 0.4f);
 				pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.3f));
 				pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
 				pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-				pEmitter->SetPosition(glm::vec3(x, levelHeight, z));
+				pEmitter->SetPosition(glm::vec3(x, levelHeight + 0.3f, z));
 				pEmitter->SetParticlesPerSeconds(4);
 				pEmitter->UpdateTransform();
 				pEmitter->SetIsVisible(false);

@@ -17,6 +17,7 @@ OrderWalk::OrderWalk(glm::ivec3 goalTile):
 
 OrderWalk::~OrderWalk()
 {
+	DeleteSafe(m_pPathFinder);
 }
 
 void OrderWalk::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept

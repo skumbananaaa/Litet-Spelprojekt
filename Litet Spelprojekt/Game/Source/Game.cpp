@@ -7,6 +7,7 @@
 #include "../Include/Scenarios/ScenarioTorpedo.h"
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../Include/GameObjectDoor.h"
+#include "../Include/GameObjectFloor.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -76,6 +77,11 @@ GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
 	{
 		return new GameObjectDoor();
 	}
+	else if (gameobject == GAMEOBJECT::FLOOR)
+	{
+		GameObject* pGameObject = new GameObjectFloor();
+		return pGameObject;
+	}
 	return new GameObject();
 }
 
@@ -130,7 +136,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 	bool clickedOnGUI = false;
 	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		if (pObject->OwnsPoint(position))
+		if (pObject->OwnsPoint(position) && pObject->IsVisible())
 		{
 			clickedOnGUI = true;
 			break;

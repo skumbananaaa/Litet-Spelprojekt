@@ -55,7 +55,7 @@ public:
 	static uint32 RegisterWaterIndoorMaterial();
 	static uint32 RegisterWallMaterial(int32 texture, float specular);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
-	static uint32 RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal = -1);
+	static uint32 RegisterGameObject(std::string name, int32 mesh = -1, int32 material = -1, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);
 	static uint32 RegisterMusic(const std::string filename);
 	static uint32 RegisterShader(const std::string vertex, const std::string pixel = "", const ShaderDefines& defines = ShaderDefines());
@@ -112,8 +112,8 @@ private:
 	struct GAMEOBJECT_DESC_INTERNAL
 	{
 		std::string name = "";
-		uint32 mesh;
-		uint32 material;
+		int32 mesh;
+		int32 material;
 		int32 decal;
 	};
 

@@ -139,6 +139,7 @@ public:
 	static DOOR_COLOR GetDoorColorFromGlobal(uint32 globalIndex) noexcept;
 	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromGlobal(uint32 globalIndex) noexcept;
 	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept;
+	static uint32 GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) noexcept;
 
 private:
 	void GenerateRooms(Scene& scene) noexcept;
@@ -244,4 +245,38 @@ inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromGlobal(uint3
 inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept
 {
 	return GetReservedTileLocalIntervalAndCategoryFromGlobal(localIndex + SMALLEST_RESERVED);
+}
+
+inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) noexcept
+{
+	if (globalIndex >= SICKBAY_INTERVAL_START && globalIndex <= SICKBAY_INTERVAL_END)
+	{
+		return MATERIAL::FLOOR;
+	}
+	else if (globalIndex >= TOILET_INTERVAL_START && globalIndex <= TOILET_INTERVAL_END)
+	{
+		return MATERIAL::FLOOR;
+	}
+	else if (globalIndex >= MACHINE_ROOM_INTERVAL_START && globalIndex <= MACHINE_ROOM_INTERVAL_END)
+	{
+		return MATERIAL::FLOOR;
+	}
+	else if (globalIndex >= AMMUNITION_ROOM_INTERVAL_START && globalIndex <= AMMUNITION_ROOM_INTERVAL_END)
+	{
+		return MATERIAL::FLOOR;
+	}
+	else if (globalIndex >= KITCHEN_INTERVAL_START && globalIndex <= KITCHEN_INTERVAL_END)
+	{
+		return MATERIAL::FLOOR;
+	}
+	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
+	{
+		return MATERIAL::FLOOR;
+	}
+	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
+	{
+		return MATERIAL::FLOOR;
+	}
+
+	return MATERIAL::FLOOR;
 }

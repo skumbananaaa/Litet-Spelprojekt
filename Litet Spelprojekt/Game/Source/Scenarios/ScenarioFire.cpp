@@ -51,12 +51,11 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	Escalate(pos);*/
 
 	uint32 lvl = 4;
-	uint32 x = 5;
-	uint32 z = 18;
+	uint32 x = 10;
+	uint32 z = 1;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
 	Escalate(pos);
-
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept

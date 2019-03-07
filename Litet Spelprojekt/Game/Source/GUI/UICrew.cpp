@@ -62,12 +62,31 @@ void UICrew::OnCollapsing(PanelExpandable* panel, float percentage)
 
 void UICrew::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 {
+	PanelExpandable* panel = (PanelExpandable*)selection;
 
+	for (int i = 0; i < panel->GetChildren().size(); i++)
+	{
+		uint32 shipNumber = reinterpret_cast<uint32>(panel->GetChildren()[i]->GetUserData());
+		Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
+		if (!crewmember->IsPicked())
+		{
+			crewmember->OnPicked(Game::GetGame()->m_pSceneGame->GetCrew()->GetSelectedList(), 0, 0);
+		}
+	}
 }
 
 void UICrew::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
 {
-
+	PanelExpandable* panel = (PanelExpandable*)selection;
+	for (int i = 0; i < panel->GetChildren().size(); i++)
+	{
+		uint32 shipNumber = reinterpret_cast<uint32>(panel->GetChildren()[i]->GetUserData());
+		Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
+		if (crewmember->IsPicked())
+		{
+			crewmember->OnPicked(Game::GetGame()->m_pSceneGame->GetCrew()->GetSelectedList(), 0, 0);
+		}
+	}
 }
 
 void UICrew::OnHovered(const HoveringHandler* handler, IHoverable* selection)
@@ -110,8 +129,8 @@ void UICrew::OnButtonNotHovered(Button* button)
 
 void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 {
-	progressButton->SetPercentage(0.0);
-	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
+		progressButton->SetPercentage(0.0);
+		progressButton->SetTextColor(GUIContext::COLOR_WHITE);
 	int32 shipnumber = reinterpret_cast<uint32>(progressButton->GetUserData());
 	Game::GetGame()->m_pSceneGame->ShowCrewmember(shipnumber);
 	Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipnumber);

@@ -17,6 +17,7 @@
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
 #define NR_GROUPS 3
+
 enum GroupType : uint32
 {
 	MEDIC = 0,
@@ -67,6 +68,7 @@ public:
 	void SetAssisting(Crewmember* inNeed) noexcept;
 	void SetIdleing(bool value) noexcept;
 	void SetGroup(uint32 group) noexcept;
+	void SetGearIsEquipped(bool value) noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;
@@ -91,6 +93,7 @@ public:
 	bool HasInjuryBurned() const noexcept;
 	bool HasInjurySmoke() const noexcept;
 	bool HasInjuryBleed() const noexcept;
+	bool HasGearEquipped() const noexcept;
 
 private:
 	//UPDATES
@@ -120,6 +123,7 @@ private:
 	//--SOME SUBCATEGORY?
 	int32 m_ShipNumber;
 	glm::vec3 m_LastKnownPosition;
+	bool m_GearIsEquipped;
 
 	//--GROUP
 	uint32 m_Group;
@@ -224,4 +228,9 @@ inline bool Crewmember::HasInjurySmoke() const noexcept
 inline bool Crewmember::HasInjuryBleed() const noexcept
 {
 	return m_HasInjuryBleeding > 1.0f;
+}
+
+inline bool Crewmember::HasGearEquipped() const noexcept
+{
+	return m_GearIsEquipped;
 }

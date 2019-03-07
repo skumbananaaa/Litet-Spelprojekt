@@ -68,6 +68,11 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	{
 		room.SetFireDetected(true);
 	}
+
+	if (IsIdleing() && !IsAbleToWork() && IsAbleToWalk() && room.GetCenter() != m_pWorld->GetRoom(SICKBAY_0).GetCenter())
+	{
+		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld), this);
+	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept

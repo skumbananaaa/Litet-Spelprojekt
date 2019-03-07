@@ -36,6 +36,8 @@ SceneGame::SceneGame() : SceneInternal(false),
 
 SceneGame::~SceneGame()
 {
+	ScenarioManager::Reset();
+
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
 	DeleteSafe(m_pTestAudioSource);

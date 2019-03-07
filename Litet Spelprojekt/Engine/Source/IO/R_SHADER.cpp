@@ -61,6 +61,7 @@ void SHADER::RegisterResourcesPreLoading()
 		defines.ppDefines = pDefines;
 		defines.NumDefines = _countof(pDefines);
 
+		STANDARD_MATERIAL			= ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl", defines);
 		WATER_OUTDOOR_MATERIAL		= ResourceHandler::RegisterShader("forwardOutdoorWater.glsl", "forwardOutdoorWater.glsl", defines);
 	}
 }
@@ -96,7 +97,6 @@ void SHADER::RegisterResources()
 		defines.ppDefines = pDefines;
 		defines.NumDefines = _countof(pDefines);
 
-		STANDARD_MATERIAL = ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl", defines);
 		WATER_INDOOR_MATERIAL = ResourceHandler::RegisterShader("forwardIndoorWater.glsl", "forwardIndoorWater.glsl", defines);
 	}
 

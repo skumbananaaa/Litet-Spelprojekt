@@ -29,6 +29,12 @@ void ScenarioFire::Init(World* pWorld) noexcept
 	}
 }
 
+void ScenarioFire::Release() noexcept
+{
+	DeleteArrSafe(m_pppMap);
+	m_DiscoveredRooms.clear();
+}
+
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
 	/*uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);

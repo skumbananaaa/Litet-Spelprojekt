@@ -38,6 +38,7 @@ public:
 	void OnRender(float dtS) override;
 	
 	void SetScene(SceneInternal* scene) noexcept;
+	void StartGame() noexcept;
 
 	static Game* GetGame();
 

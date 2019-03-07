@@ -11,7 +11,7 @@
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
 	m_OrderHandler(this),
-	m_pUISelectedCrew(nullptr)
+	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false)
 {
 	SetName(name);

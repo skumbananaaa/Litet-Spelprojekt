@@ -47,6 +47,20 @@ Crewmember::~Crewmember()
 {
 }
 
+void Crewmember::SetRoom(uint32 room) noexcept
+{
+	if (m_pWorld->GetRoom(GetRoom()).IsActive())
+	{
+		if (GetRoom() != room)
+		{
+			m_pWorld->SetRoomActive(GetRoom(), false);
+			m_pWorld->SetRoomActive(room, true);
+		}
+	}
+
+	GameObject::SetRoom(room);
+}
+
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 {
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;

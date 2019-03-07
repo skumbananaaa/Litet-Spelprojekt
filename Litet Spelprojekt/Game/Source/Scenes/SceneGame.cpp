@@ -66,6 +66,8 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	SetPaused(false);
 
+
+	//m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
 		m_Crew.GetMember(i)->GiveOrder(OrderSchedule::GetIdleOrder());
@@ -669,7 +671,7 @@ void SceneGame::ShowCrewmember(uint32 crewmember)
 {
 	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
-	m_pWorld->SetActiveRoom(roomIndex);
+	m_pWorld->SetRoomActive(roomIndex, true);
 }
 
 GameObject* SceneGame::RayTestGameObjects()

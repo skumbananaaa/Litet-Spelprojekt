@@ -34,8 +34,9 @@ public:
 	Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);
 	~Crewmember();
 	
+	virtual void SetRoom(uint32 room) noexcept override;
 	//UPDATES
-	void Update(const Camera& camera, float deltaTime) noexcept override;
+	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	void UpdateLastKnownPosition() noexcept;
 
 	//PATHFINDING (NOT SETS OR GETS)
@@ -51,14 +52,14 @@ public:
 	void ApplyBoneInjury(float boneBreak);
 	void ApplyBleedInjury(float bleed);
 
-	void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
+	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
-	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
+	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 	virtual void OnOrderStarted(bool idleOrder) noexcept override;
 	virtual void OnAllOrdersFinished() noexcept override;
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
-	void OnHovered() noexcept override;
-	void OnNotHovered() noexcept override;
+	virtual void OnHovered() noexcept override;
+	virtual void OnNotHovered() noexcept override;
 	void GiveOrder(IOrder* order) noexcept;
 
 	//SETS
@@ -80,8 +81,8 @@ public:
 
 	//IS
 	bool IsIdleing() const noexcept;
-	bool IsHovered() const noexcept override;
-	bool IsPicked() const noexcept override;
+	virtual bool IsHovered() const noexcept override;
+	virtual bool IsPicked() const noexcept override;
 	bool IsAlive() const noexcept;
 	bool IsAbleToWork() const noexcept;
 	bool IsAbleToWalk() const noexcept;

@@ -37,7 +37,6 @@ public:
 
 	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, const World* pWorld, float dtS) const override final;
-	void SetWorldBuffer(const Scene& scene, const World* pWorld) const override final;
 
 private:
 	void Create() noexcept;
@@ -66,7 +65,6 @@ private:
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;
 	UniformBuffer* m_pPlaneBuffer;
-	mutable WorldBuffer m_LocalWorldBuff = {};
 	UniformBuffer* m_pWorldBuffer;
 	
 	UniformBuffer* m_pSkyBoxPassPerFrame;

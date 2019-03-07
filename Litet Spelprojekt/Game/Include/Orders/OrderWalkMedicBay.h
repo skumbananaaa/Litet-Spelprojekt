@@ -5,7 +5,7 @@ class OrderWalkMedicBay : public OrderWalk
 {
 public:
 	OrderWalkMedicBay(World* pWorld);
-	virtual ~OrderWalkMedicBay();
+	virtual ~OrderWalkMedicBay() override;
 
 /*	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;

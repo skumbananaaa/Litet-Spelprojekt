@@ -89,11 +89,13 @@ void SceneScenario::OnDeactivated(SceneInternal* newScene) noexcept
 
 void SceneScenario::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 {
+	m_pAudioSourceSelect->Stop();
 	m_pAudioSourceSelect->Play();
 }
 
 void SceneScenario::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
 {
+	m_pAudioSourceDeselect->Stop();
 	m_pAudioSourceDeselect->Play();
 }
 
@@ -126,6 +128,7 @@ void SceneScenario::OnButtonReleased(Button* button)
 
 void SceneScenario::OnButtonHovered(Button* button)
 {
+	m_pAudioSourceHover->Stop();
 	m_pAudioSourceHover->Play();
 }
 

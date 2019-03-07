@@ -564,6 +564,26 @@ void SceneGame::PickPosition()
 				{
 					tile.z -= 1;
 				}
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 6)
+				{
+					tile.x += 1;
+					tile.z += 1;
+				}
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 7)
+				{
+					tile.x -= 1;
+					tile.z -= 1;
+				}
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 8)
+				{
+					tile.x -= 1;
+					tile.z += 1;
+				}
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 9)
+				{
+					tile.x += 1;
+					tile.z -= 1;
+				}
 			}
 			m_Crew.GetMember(selectedList[i])->FindPath(tile);
 		}

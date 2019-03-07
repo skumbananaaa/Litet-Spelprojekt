@@ -17,7 +17,8 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);
 
-					int fireFactor = m_pWorld->GetLevel(newY * 2 + 1).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->IsVisible() * 10000;
+					int fireFactorMultiplier = m_HasSmokeDiverGear ? 0 : 10000;
+					int fireFactor = m_pWorld->GetLevel(newY * 2 + 1).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->IsVisible() * fireFactorMultiplier;
 					int waterFactor = m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(newY).GetLevelData()[newX][newZ].WaterLevel / WATER_MAX_LEVEL));
 
 					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + (std::abs(addX) + std::abs(addZ)) + std::abs(addY) * 2 + fireFactor + waterFactor; //crashade här en gång, hann inte kolla, sprang o laga mat
@@ -82,8 +83,9 @@ bool Path::MoveToNextTile()
 	return false;
 }
 
-Path::Path(const World * world)
+Path::Path(const World * world, bool hasSmokeDiverGear)
 {
+	m_HasSmokeDiverGear = hasSmokeDiverGear;
 	m_pWorld = world;
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels() / 2];
 	m_pSize = new glm::ivec2[m_pWorld->GetNumLevels() / 2];

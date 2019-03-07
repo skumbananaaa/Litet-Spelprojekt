@@ -23,9 +23,11 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual void RunParallel() override;
 	virtual bool CanExecuteIfHurt() noexcept override;
+
 protected:
 	bool FollowPath(float dtS) noexcept;
 	void RestartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, const glm::ivec3& goalTile) noexcept;
+
 protected:
 	glm::ivec3 m_GoalTile;
 	glm::vec3 m_directionTile;
@@ -37,3 +39,4 @@ protected:
 	bool m_IsPathReady;
 	int32 m_OopsIForgot;
 };
+

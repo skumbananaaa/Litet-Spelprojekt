@@ -6,6 +6,7 @@
 #include <GLM/gtc/type_ptr.hpp>
 #include <GLM/gtx/string_cast.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
+#include <GLM/gtx/norm.hpp>
 
 #if defined(ENGINE_EXPORT)
 #include <GLAD/glad.h>

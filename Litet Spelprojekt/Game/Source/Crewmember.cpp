@@ -410,6 +410,11 @@ void Crewmember::UpdateHealth(float dt)
 
 void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 {
+	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	{
+		return;
+	}
+
 	float smokeDmgSpeed = 0.1f;
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
@@ -426,6 +431,11 @@ void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 
 void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
+	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	{
+		return;
+	}
+
 	float burnSpeed = 0.1f;
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.Temp >= tileData.BurnsAt)

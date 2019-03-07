@@ -23,9 +23,9 @@ int32 GameObjectFloor::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origi
 	};
 
 	float h[] = {
-		GetScale().x,
-		GetScale().y,
-		GetScale().z
+		GetScale().x / 2.0f,
+		GetScale().y / 2.0f,
+		GetScale().z / 2.0f
 	};
 
 	float d1[] = {

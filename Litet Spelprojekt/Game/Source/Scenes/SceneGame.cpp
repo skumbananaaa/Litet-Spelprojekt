@@ -550,9 +550,9 @@ void SceneGame::PickPosition()
 			glm::ivec3 tile = glm::round(pointOnSurface);
 			if (i > 0)
 			{
-				glm::clamp(tile.x, 1, 10);
-				glm::clamp(tile.y, 0, 4);
-				glm::clamp(tile.z, 1, 40);
+				tile.x = glm::clamp(tile.x, 1, 10);
+				tile.y = glm::clamp(tile.y, 0, 4);
+				tile.z = glm::clamp(tile.z, 1, 40);
 				if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 2)
 				{
 					tile.x += 1;

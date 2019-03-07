@@ -17,7 +17,7 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);
 
-					int fireFactorMultiplier = m_HasSmokeDiverGear ? 0 : 10000;
+					int fireFactorMultiplier = m_HasSmokeDiverGear ? 1 : 10000;
 					int fireFactor = m_pWorld->GetLevel(newY * 2 + 1).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->IsVisible() * fireFactorMultiplier;
 					int waterFactor = m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(newY).GetLevelData()[newX][newZ].WaterLevel / WATER_MAX_LEVEL));
 

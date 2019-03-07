@@ -256,7 +256,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 std::string ScenarioFire::GetName() noexcept
 {
-	return "Bajseld";
+	return "Den Elden";
 }
 
 int32 ScenarioFire::GetCooldownTime() noexcept
@@ -314,7 +314,7 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(tileTo.y).GetLevel()[tileTo.x][tileTo.z]);
 	uint32 tilesBetweenBulkheads = m_pWorld->GetLevel(origin.y).GetTilesBetweenBulkheads();
 	//TWEAK HERE
-	float rateOfSpread = 0.35f;
+	float rateOfSpread = 0.9f;//0.35f;
 	float rateOfWallSpread = 0.00002f;
 	float rateOfNormalDoorSpread = 0.02f;
 	float rateOfFloorSpread = 0.003f;

@@ -34,6 +34,7 @@ private:
 	glm::ivec3 m_BurningTile;
 	float m_EquippingGearTimer;
 	bool m_ExtinguishingFire;
+	bool m_FireFullyExtinguished;
 };
 
 inline bool OrderExtinguishFire::CheckIfTileInWorld(const glm::ivec2& levelSize, const glm::ivec3& tile) const noexcept

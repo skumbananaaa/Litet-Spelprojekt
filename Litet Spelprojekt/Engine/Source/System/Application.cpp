@@ -5,8 +5,6 @@
 constexpr float timestep = 1.0f / 30.0f;
 Application* Application::s_Instance = nullptr;
 
-//Framebuffer* temp;
-
 Application::Application(bool fullscreen, uint32 width, uint32 height, const std::string& prePath, bool useMultiThreading)
 	: m_pWindow(nullptr),
 	m_pGraphicsContext(nullptr),
@@ -39,15 +37,6 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 		m_pGraphicsContext = new GLContext(width, height);
 		m_pAudioContext = IAudioContext::CreateContext();
 
-		/*FramebufferDesc desc;
-		desc.DepthStencilFormat = TEX_FORMAT_UNKNOWN;
-		desc.ColorAttchmentFormats[0] = TEX_FORMAT_RGBA;
-		desc.SamplingParams = TextureParams();
-		desc.NumColorAttachments = 1;
-		desc.Width = static_cast<uint32>(500);
-		desc.Height = static_cast<uint32>(500);
-		temp = new Framebuffer(desc);*/
-
 		ThreadHandler::Init();
 		ResourceHandler::LoadResources(this, prePath, useMultiThreading);
 		m_pGUIManager = new GUIManager(m_pGraphicsContext);
@@ -65,8 +54,6 @@ Application::~Application()
 	DeleteSafe(m_pGraphicsContext);
 	DeleteSafe(m_pGUIManager);
 	DeleteSafe(m_pAudioContext);
-
-	//DeleteSafe(temp);
 
 	glfwTerminate();
 
@@ -90,6 +77,11 @@ void Application::Exit() noexcept
 	m_ShouldRun = false;
 }
 
+void Application::ResetPrevTime() noexcept
+{
+	m_PrevTime = std::chrono::high_resolution_clock::now();
+}
+
 int32_t Application::Run()
 {
 	using namespace std;
@@ -98,10 +90,10 @@ int32_t Application::Run()
 	using duration = std::chrono::duration<float>;
 
 	auto currentTime = clock::now();
-	auto prevTime = clock::now();
+	m_PrevTime = clock::now();
 	float deltaTime = 0.0f;
 	float totalTime = 0.0f;
-	float accumulator = 0.0f;
+	float m_Accumulator = 0.0F;
 	int32 fps = 0;
 	int32 ups = 0;
 
@@ -125,8 +117,8 @@ int32_t Application::Run()
 		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH);
 
 		currentTime = clock::now();
-		deltaTime = std::chrono::duration_cast<duration>(currentTime - prevTime).count();
-		prevTime = currentTime;
+		deltaTime = std::chrono::duration_cast<duration>(currentTime - m_PrevTime).count();
+		m_PrevTime = currentTime;
 		totalTime += deltaTime;
 
 		if (totalTime > 1.0f)
@@ -142,18 +134,14 @@ int32_t Application::Run()
 			totalTime = 0.0f;
 		}
 
-		accumulator += deltaTime;
-		while (accumulator > timestep)
+		m_Accumulator += deltaTime;
+		while (m_Accumulator > timestep)
 		{
 			InternalOnUpdate(timestep);
-			accumulator -= timestep;
+			m_Accumulator -= timestep;
 
 			ups++;
 		}
-
-		/*m_pGraphicsContext->SetFramebuffer(temp);
-		m_pGraphicsContext->Clear(CLEAR_FLAG_COLOR);
-		m_pGraphicsContext->SetFramebuffer(nullptr);*/
 
 		InternalOnRender(deltaTime);
 		fps++;

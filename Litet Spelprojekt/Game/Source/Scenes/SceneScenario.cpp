@@ -89,11 +89,13 @@ void SceneScenario::OnDeactivated(SceneInternal* newScene) noexcept
 
 void SceneScenario::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 {
+	m_pAudioSourceSelect->Stop();
 	m_pAudioSourceSelect->Play();
 }
 
 void SceneScenario::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
 {
+	m_pAudioSourceDeselect->Stop();
 	m_pAudioSourceDeselect->Play();
 }
 
@@ -120,12 +122,13 @@ void SceneScenario::OnButtonReleased(Button* button)
 			ids.push_back(reinterpret_cast<int32>(button->GetUserData()));
 		}
 		ScenarioManager::SetEnabledScenarios(ids);
-		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneGame);
+		Game::GetGame()->StartGame();
 	}
 }
 
 void SceneScenario::OnButtonHovered(Button* button)
 {
+	m_pAudioSourceHover->Stop();
 	m_pAudioSourceHover->Play();
 }
 

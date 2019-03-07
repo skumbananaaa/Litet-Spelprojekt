@@ -44,6 +44,11 @@ void UIOrder::DisplayOrders(int32 x, int32 y, const std::vector<int32>& selected
 
 void UIOrder::DisplayOrders(int32 x, int32 y, UIOrder* uiOrder)
 {
+	if (uiOrder->m_Choices.empty())
+	{
+		return;
+	}
+
 	if (m_pPanel)
 	{
 		Game::GetGame()->GetGUIManager().Remove(m_pPanel);

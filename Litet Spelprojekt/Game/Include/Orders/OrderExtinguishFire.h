@@ -1,14 +1,14 @@
 #pragma once
 #include "OrderWalk.h"
 
-class GameObjectDoor;
+#define TIME_TO_EQUIP_GEAR 5.0f
+#define FIRE_EXTINGUISH_TEMP_REDUCTION 20.0f
 
-
-class OrderDoor : public OrderWalk
+class OrderExtinguishFire : public OrderWalk
 {
 public:
-	OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open);
-	virtual ~OrderDoor();
+	OrderExtinguishFire(const glm::ivec3& roomTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool hasGearEquipped);
+	virtual ~OrderExtinguishFire();
 
 	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
@@ -20,6 +20,8 @@ public:
 	virtual bool CanExecuteIfHurt() noexcept override;
 
 private:
-	GameObjectDoor* m_pGameObjectDoor;
-	bool m_Open;
+	uint32 m_RoomBurningId;
+	float m_EquippingGearTimer;
+	glm::ivec3 m_RoomTile;
+	glm::ivec3 m_BurningTile;
 };

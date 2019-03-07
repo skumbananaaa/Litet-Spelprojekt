@@ -7,6 +7,7 @@
 #include "../Include/Scenarios/ScenarioTorpedo.h"
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../Include/GameObjectDoor.h"
+#include "../Include/GameObjectFloor.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -76,6 +77,11 @@ GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
 	{
 		return new GameObjectDoor();
 	}
+	else if (gameobject == GAMEOBJECT::FLOOR)
+	{
+		GameObject* pGameObject = new GameObjectFloor();
+		return pGameObject;
+	}
 	return new GameObject();
 }
 
@@ -97,12 +103,6 @@ void Game::OnResourcesLoaded()
 	m_pSceneCredits = new SceneCredits();
 	m_pSceneOptions = new SceneOptions();
 	m_pSceneScenario = new SceneScenario();
-	m_pSceneGame = new SceneGame();
-
-	if (m_pSceneGame)
-	{
-		m_pSceneGame->GenerateShadows();
-	}
 
 	m_pScene->OnResourcesLoaded();
 }
@@ -136,7 +136,7 @@ void Game::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 	bool clickedOnGUI = false;
 	for (GUIObject* pObject : GetGUIManager().GetChildren())
 	{
-		if (pObject->OwnsPoint(position))
+		if (pObject->OwnsPoint(position) && pObject->IsVisible())
 		{
 			clickedOnGUI = true;
 			break;
@@ -175,6 +175,12 @@ void Game::OnUpdate(float dtS)
 		{
 			m_pScene->SetSkyBox(nullptr);
 			m_pScene->OnDeactivated(m_pSceneNext);
+
+			if (m_pScene == m_pSceneGame)
+			{
+				DeleteSafe(m_pSceneGame);
+				m_pScene = nullptr;
+			}
 		}
 
 		m_pSceneNext->OnActivated(m_pScene, m_pRenderer);
@@ -204,10 +210,6 @@ void Game::OnUpdate(float dtS)
 
 void Game::OnRender(float dtS)
 {
-	if (m_pSceneGame)
-	{
-		//m_pSceneGame->OnRender(dtS);
-	}
 	if (m_pScene)
 	{
 		m_pScene->OnRender(dtS);
@@ -226,6 +228,20 @@ void Game::SetScene(SceneInternal* scene) noexcept
 	{
 		m_pAudioSourceMenu->Play();
 	}
+}
+
+void Game::StartGame() noexcept
+{
+	if (!m_pSceneGame)
+	{
+		m_pSceneGame = new SceneGame();
+		if (m_pSceneGame)
+		{
+			m_pSceneGame->GenerateShadows();
+			ResetPrevTime();
+			SetScene(m_pSceneGame);
+		}
+	}	
 }
 
 Game* Game::GetGame()

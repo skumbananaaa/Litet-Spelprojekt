@@ -1,13 +1,11 @@
 #include "../../Include/Orders/OrderWalkMedicBay.h"
 #include <World/World.h>
-OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld): OrderWalk(pWorld->GetRoom(SICKBAY_CATEGORY_INDEX).GetCenter())
+OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld): OrderWalk(glm::ivec3(pWorld->GetRoom(SICKBAY_0).GetCenter()))
 {
-	glm::vec3 tst = pWorld->GetRoom(SICKBAY_CATEGORY_INDEX).GetCenter();
 }
 
 OrderWalkMedicBay::~OrderWalkMedicBay()
 {
-	OrderWalk::~OrderWalk();
 }
 
 /*void OrderWalkMedicBay::StartOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept

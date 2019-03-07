@@ -150,6 +150,7 @@
     <ClCompile Include="Source\GameObjectFloor.cpp" />
     <ClCompile Include="Source\GameObjectMissile.cpp" />
     <ClCompile Include="Source\GameObjectTorpedo.cpp" />
+    <ClCompile Include="Source\GUI\UISelectedCrew.cpp" />
     <ClCompile Include="Source\GUI\UIOrder.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
     <ClCompile Include="Source\Orders\OrderCloseDoor.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Include\GUI\UILog.h" />
     <ClInclude Include="Include\GUI\UIOrder.h" />
     <ClInclude Include="Include\GUI\UIPause.h" />
+    <ClInclude Include="Include\GUI\UISelectedCrew.h" />
     <ClInclude Include="Include\Orders\IOrder.h" />
     <ClInclude Include="Include\Orders\OrderCarry.h" />
     <ClInclude Include="Include\Orders\OrderCloseDoor.h" />

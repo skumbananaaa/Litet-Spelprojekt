@@ -2,6 +2,7 @@
 
 #include <Graphics/GameObject.h>
 #include "../Include/Orders/OrderHandler.h"
+#include "../Include/GUI/UISelectedCrew.h"
 
 #pragma message("INCLUDE" __FILE__)
 
@@ -68,6 +69,7 @@ public:
 	void SetAssisting(Crewmember* inNeed) noexcept;
 	void SetIdleing(bool value) noexcept;
 	void SetGroup(uint32 group) noexcept;
+	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
 
 	//GETS
@@ -143,6 +145,7 @@ private:
 	int32 m_Forgetfulness;
 
 	Crewmember* m_pAssisting;
+	UISelectedCrew* m_pUISelectedCrew;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept

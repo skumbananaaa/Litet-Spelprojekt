@@ -32,6 +32,8 @@ SceneGame::SceneGame() : SceneInternal(false),
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
 	GetCamera().SetMaxPitch(0.0f);
+
+	ScenarioManager::StartScenario(2);
 }
 
 SceneGame::~SceneGame()

@@ -7,7 +7,7 @@
 #include "../../Include/GameObjectDoor.h"
 #include <System/Random.h>
 
-OrderWalk::OrderWalk(glm::ivec3 goalTile):
+OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 	m_pPathFinder(nullptr),
 	m_pPath(nullptr),
 	m_IsPathReady(false)
@@ -175,4 +175,19 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 	}
 
 	return false;
+}
+
+void OrderWalk::RestartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, const glm::ivec3& goalTile) noexcept
+{
+	//Cleanup
+	DeleteSafe(m_pPathFinder);
+
+	//Reinit
+	m_pPathFinder = nullptr;
+	m_pPath = nullptr;
+	m_IsPathReady = false;
+	m_GoalTile = glm::ivec3(goalTile.x, goalTile.y / 2, goalTile.z);
+
+	//Start
+	StartOrder(pScene, pWorld, pCrewMembers);
 }

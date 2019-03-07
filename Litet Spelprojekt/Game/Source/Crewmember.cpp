@@ -10,7 +10,8 @@
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
-	m_OrderHandler(this)
+	m_OrderHandler(this),
+	m_GearIsEquipped(false)
 {
 	SetName(name);
 	m_pWorld = world;
@@ -332,6 +333,11 @@ void Crewmember::SetGroup(uint32 group) noexcept
 {
 	assert(group < NR_GROUPS);
 	m_Group = group;
+}
+
+void Crewmember::SetGearIsEquipped(bool value) noexcept
+{
+	m_GearIsEquipped = value;
 }
 
 void Crewmember::UpdateHealth(float dt)

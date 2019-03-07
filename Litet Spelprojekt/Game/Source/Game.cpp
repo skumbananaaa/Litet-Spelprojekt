@@ -7,6 +7,7 @@
 #include "../Include/Scenarios/ScenarioTorpedo.h"
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../Include/GameObjectDoor.h"
+#include "../Include/GameObjectFloor.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -75,6 +76,11 @@ GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
 	else if (gameobject == GAMEOBJECT::DOOR)
 	{
 		return new GameObjectDoor();
+	}
+	else if (gameobject == GAMEOBJECT::FLOOR)
+	{
+		GameObject* pGameObject = new GameObjectFloor();
+		return pGameObject;
 	}
 	return new GameObject();
 }

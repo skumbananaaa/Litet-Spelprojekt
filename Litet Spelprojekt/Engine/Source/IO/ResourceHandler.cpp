@@ -182,7 +182,7 @@ uint32 ResourceHandler::RegisterDecal(int32 texture, int32 normalMap)
 	return m_NrOfDecals++;
 }
 
-uint32 ResourceHandler::RegisterGameObject(std::string name, uint32 mesh, uint32 material, int32 decal)
+uint32 ResourceHandler::RegisterGameObject(std::string name, int32 mesh, int32 material, int32 decal)
 {
 	std::cout << "Creating GameObject" << std::endl;
 	m_pGameObjectFiles[m_NrOfGameObjects] = { name,  mesh,  material, decal };
@@ -321,9 +321,18 @@ GameObject* ResourceHandler::CreateGameObject(int32 gameObject)
 	}
 	GAMEOBJECT_DESC_INTERNAL desc = m_pGameObjectFiles[gameObject];
 	GameObject* pGameObject = m_pGameObjectCreator->CreateGameObject(gameObject);
-	pGameObject->SetMesh(desc.mesh);
-	pGameObject->SetMaterial(desc.material);
-	pGameObject->SetDecal(desc.decal);
+	if (desc.mesh != -1)
+	{
+		pGameObject->SetMesh(desc.mesh);
+	}
+	if (desc.material != -1)
+	{
+		pGameObject->SetMaterial(desc.material);
+	}
+	if (desc.decal != -1)
+	{
+		pGameObject->SetDecal(desc.decal);
+	}
 	pGameObject->SetTypeId(gameObject);
 	return pGameObject;
 }

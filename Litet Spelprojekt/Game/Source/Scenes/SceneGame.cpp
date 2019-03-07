@@ -548,19 +548,19 @@ void SceneGame::PickPosition()
 				glm::clamp(tile.x, 1, 10);
 				glm::clamp(tile.y, 0, 4);
 				glm::clamp(tile.z, 1, 40);
-				if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 2)
 				{
 					tile.x += 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 3)
 				{
 					tile.x -= 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 4)
 				{
 					tile.z += 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z])
+				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 5)
 				{
 					tile.z -= 1;
 				}

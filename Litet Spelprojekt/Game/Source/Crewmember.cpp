@@ -12,6 +12,7 @@
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
 	m_OrderHandler(this),
+	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false)
 {
 	SetName(name);
@@ -24,7 +25,6 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
-
 	m_LastKnownPosition = position;
 
 	//Test
@@ -67,7 +67,6 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderHandler.Update(pSceneGame, m_pWorld, pSceneGame->GetCrew(), deltaTime);
 	GameObject::Update(camera, deltaTime);
-	
 	UpdateTransform();
 
 	if (IsAlive())
@@ -84,6 +83,11 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		room.SetFireDetected(true);
 	}
 
+	if (m_pUISelectedCrew)
+	{
+		m_pUISelectedCrew->UpdatePosition(GetPosition());
+	}
+
 	if (IsIdleing() && !IsAbleToWork() && IsAbleToWalk() && room.GetCenter() != m_pWorld->GetRoom(SICKBAY_0).GetCenter())
 	{
 		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld), this);
@@ -92,16 +96,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	if (!m_IsPicked)
-	{
-		m_IsPicked = true;
-		Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
-	}
-	else
-	{
-		m_IsPicked = false;
-		Game::GetGame()->m_pSceneGame->GetCrew()->RemoveFromSelectedList(GetShipNumber());
-	}
+	SetIsPicked(!m_IsPicked);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -154,7 +149,7 @@ void Crewmember::GiveOrder(IOrder* order) noexcept
 	m_OrderHandler.GiveOrder(order, this);
 }
 
-void Crewmember::LookForDoor() noexcept
+void Crewmember::LookForDoor(uint32 doorColor) noexcept
 {
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
@@ -165,7 +160,7 @@ void Crewmember::LookForDoor() noexcept
 		{
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 
-			if (door->IsOpen())
+			if (door->IsOpen() && door->GetColor() <= doorColor)
 			{
 				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
 			}
@@ -201,6 +196,10 @@ bool Crewmember::Heal(int8 skillLevel, float dtS)
 	else if (HasInjurySmoke())
 	{
 		m_HasInjurySmoke -= (m_HasInjurySmoke - m_HasInjurySmoke / skillLevel) * dtS;
+	}
+	else if (HasInjuryBleed())
+	{
+		m_HasInjuryBleeding -= (m_HasInjuryBleeding - m_HasInjuryBleeding / skillLevel) * dtS;
 	}
 	else
 	{
@@ -339,6 +338,27 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	GameObject::SetPosition(position);
 }
 
+void Crewmember::SetIsPicked(bool picked) noexcept
+{
+	if (m_IsPicked != picked)
+	{
+		m_IsPicked = picked;
+
+		if (m_IsPicked)
+		{
+			m_pUISelectedCrew = new UISelectedCrew(GetName());
+			Game::GetGame()->GetGUIManager().Add(m_pUISelectedCrew);
+			Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
+		}
+		else
+		{
+			Game::GetGame()->GetGUIManager().Remove(m_pUISelectedCrew);
+			Game::GetGame()->m_pSceneGame->GetCrew()->RemoveFromSelectedList(GetShipNumber());
+			m_pUISelectedCrew = nullptr;
+		}
+	}
+}
+
 void Crewmember::SetDirection(const glm::vec3& direction) noexcept
 {
 	m_Direction = glm::normalize(direction);
@@ -372,6 +392,7 @@ void Crewmember::UpdateHealth(float dt)
 	//Tweak here!
 	float smokeDmgSpeed = 1.0f;
 	float burnDmgSpeed = 1.0f;
+	float bleedDmgSpeed = 1.0f;
 
 	if (HasInjurySmoke())
 	{
@@ -386,6 +407,11 @@ void Crewmember::UpdateHealth(float dt)
 	if (HasInjuryBoneBroken())
 	{
 		//m_Health -= m_HasInjuryBoneBroken * dt;
+	}
+
+	if (HasInjuryBleed())
+	{
+		m_Health -= (std::log10(m_HasInjuryBleeding)) * bleedDmgSpeed * dt;
 	}
 
 	if (m_Health <= 0.0f)

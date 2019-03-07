@@ -36,6 +36,11 @@ void GameObject::SetIsVisible(bool isVisible) noexcept
 	m_IsVisible = isVisible;
 }
 
+void GameObject::SetIsPicked(bool picked) noexcept
+{
+	m_IsPicked = picked;
+}
+
 void GameObject::SetPosition(const glm::vec3& position) noexcept
 {
 	m_Position = position;

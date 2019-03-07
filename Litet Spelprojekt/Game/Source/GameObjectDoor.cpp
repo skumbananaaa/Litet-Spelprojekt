@@ -9,7 +9,7 @@ GameObjectDoor::GameObjectDoor() noexcept
 	UpdateTransform();
 
 	m_Percentage = 0.0f;
-	m_Open = false;
+	m_Open = true;
 }
 
 GameObjectDoor::~GameObjectDoor()
@@ -30,6 +30,27 @@ bool GameObjectDoor::IsOpen() const noexcept
 bool GameObjectDoor::IsClosed() const noexcept
 {
 	return m_Percentage <= 0.0F;
+}
+
+bool GameObjectDoor::AccessRequest(uint32 shipNr) noexcept
+{
+	if (std::find(m_AccessQueue.begin(), m_AccessQueue.end(), shipNr) == m_AccessQueue.end())
+	{
+		m_AccessQueue.push_back(shipNr);
+		return m_AccessQueue.size() == 1;
+	}
+	return m_AccessQueue.empty();
+}
+
+bool GameObjectDoor::RemoveFromQueue(uint32 shipNr) noexcept
+{
+	std::vector<uint32>::iterator it = std::find(m_AccessQueue.begin(), m_AccessQueue.end(), shipNr);
+	if (it != m_AccessQueue.end())
+	{
+		m_AccessQueue.erase(it);
+		return m_AccessQueue.empty();
+	}
+	return false;
 }
 
 DOOR_COLOR GameObjectDoor::GetColor() const noexcept

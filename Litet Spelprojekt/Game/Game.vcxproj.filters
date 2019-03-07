@@ -117,6 +117,9 @@
     <ClCompile Include="Source\GameObjectFloor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUI\UISelectedCrew.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Orders\OrderSleep.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -231,6 +234,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GameObjectFloor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UISelectedCrew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Orders\OrderSleep.h">

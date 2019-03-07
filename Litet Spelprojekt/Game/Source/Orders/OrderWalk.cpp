@@ -46,7 +46,7 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 			// Open door before passing through
 			if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
 			{
-				if (door1->IsClosed())
+				if (door1->IsClosed() && door1->AccessRequest(GetCrewMember()->GetShipNumber()))
 				{
 					GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 					door1->SetOpen(true);
@@ -58,7 +58,7 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 				GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 			}
 		}
-		else if (!door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile && m_OopsIForgot > GetCrewMember()->GetForgetfulness())
+		else if (!door1->IsClosed() && door1->RemoveFromQueue(GetCrewMember()->GetShipNumber()) && GetCrewMember()->GetTile() != m_TargetTile && m_OopsIForgot > GetCrewMember()->GetForgetfulness())
 		{
 			// Close door after passing through
 			if (door1->IsOpen())

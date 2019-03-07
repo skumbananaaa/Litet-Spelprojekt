@@ -21,6 +21,7 @@ public:
 	
 	virtual void SetName(const std::string& name) noexcept;
 	virtual void SetIsVisible(bool isVisible) noexcept;
+	virtual void SetIsPicked(bool picked) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
 	virtual void SetAnimatedMesh(int32 mesh) noexcept;
 	virtual void UpdateAnimatedMesh(int32 mesh) noexcept;

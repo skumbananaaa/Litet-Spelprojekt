@@ -17,21 +17,21 @@ void UIOrder::AddChoice(const std::string& name, void* userData) noexcept
 	m_Choices.push_back(std::pair<std::string, void*>(name, userData));
 }
 
-void UIOrder::OnButtonPressed(Button * button)
+void UIOrder::OnButtonPressed(Button* button)
 {
 }
 
-void UIOrder::OnButtonReleased(Button * button)
+void UIOrder::OnButtonReleased(Button* button)
 {
 	OnOrderChosen(button->GetText(), button->GetUserData(), m_SelectedMembers);
 	m_pPanel->SetVisible(false);
 }
 
-void UIOrder::OnButtonHovered(Button * button)
+void UIOrder::OnButtonHovered(Button* button)
 {
 }
 
-void UIOrder::OnButtonNotHovered(Button * button)
+void UIOrder::OnButtonNotHovered(Button* button)
 {
 }
 

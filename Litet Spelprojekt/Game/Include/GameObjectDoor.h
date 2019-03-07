@@ -14,6 +14,9 @@ public:
 	bool IsOpen() const noexcept;
 	bool IsClosed() const noexcept;
 
+	bool AccessRequest(uint32 shipNr) noexcept;
+	bool RemoveFromQueue(uint32 shipNr) noexcept;
+
 	DOOR_COLOR GetColor() const noexcept;
 
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
@@ -29,4 +32,5 @@ public:
 private:
 	float m_Percentage;
 	bool m_Open;
+	std::vector<uint32> m_AccessQueue;
 };

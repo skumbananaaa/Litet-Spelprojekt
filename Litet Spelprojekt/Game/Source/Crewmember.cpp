@@ -82,7 +82,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	SetIsPicked(true);
+	SetIsPicked(!m_IsPicked);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -135,7 +135,7 @@ void Crewmember::GiveOrder(IOrder* order) noexcept
 	m_OrderHandler.GiveOrder(order, this);
 }
 
-void Crewmember::LookForDoor() noexcept
+void Crewmember::LookForDoor(uint32 doorColor) noexcept
 {
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
@@ -146,7 +146,7 @@ void Crewmember::LookForDoor() noexcept
 		{
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 
-			if (door->IsOpen())
+			if (door->IsOpen() && door->GetColor() <= doorColor)
 			{
 				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
 			}
@@ -182,6 +182,10 @@ bool Crewmember::Heal(int8 skillLevel, float dtS)
 	else if (HasInjurySmoke())
 	{
 		m_HasInjurySmoke -= (m_HasInjurySmoke - m_HasInjurySmoke / skillLevel) * dtS;
+	}
+	else if (HasInjuryBleed())
+	{
+		m_HasInjuryBleeding -= (m_HasInjuryBleeding - m_HasInjuryBleeding / skillLevel) * dtS;
 	}
 	else
 	{
@@ -332,6 +336,7 @@ void Crewmember::SetIsPicked(bool picked) noexcept
 		else
 		{
 			Game::GetGame()->GetGUIManager().Remove(m_pUISelectedCrew);
+			Game::GetGame()->m_pSceneGame->GetCrew()->RemoveFromSelectedList(GetShipNumber());
 			m_pUISelectedCrew = nullptr;
 		}
 	}
@@ -370,6 +375,7 @@ void Crewmember::UpdateHealth(float dt)
 	//Tweak here!
 	float smokeDmgSpeed = 1.0f;
 	float burnDmgSpeed = 1.0f;
+	float bleedDmgSpeed = 1.0f;
 
 	if (HasInjurySmoke())
 	{
@@ -384,6 +390,11 @@ void Crewmember::UpdateHealth(float dt)
 	if (HasInjuryBoneBroken())
 	{
 		//m_Health -= m_HasInjuryBoneBroken * dt;
+	}
+
+	if (HasInjuryBleed())
+	{
+		m_Health -= (std::log10(m_HasInjuryBleeding)) * bleedDmgSpeed * dt;
 	}
 
 	if (m_Health <= 0.0f)

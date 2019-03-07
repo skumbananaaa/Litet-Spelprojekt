@@ -40,7 +40,7 @@ void Crew::RemoveFromSelectedList(int32 crewIndex) noexcept
 	{
 		if (m_SelectedMembers[i] == crewIndex)
 		{
-			GetMember(m_SelectedMembers[i])->SetIsPicked(false);
+			//GetMember(m_SelectedMembers[i])->SetIsPicked(false);
 			m_SelectedMembers.erase(m_SelectedMembers.begin() + i);
 			return;
 		}

@@ -43,7 +43,7 @@ public:
 	//PATHFINDING (NOT SETS OR GETS)
 	void Move(const glm::vec3& dir, bool allowMult, float dtS);
 	void FindPath(const glm::ivec3& goalPos);
-	void LookForDoor() noexcept;
+	void LookForDoor(uint32 doorColor) noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
 	void GoToMedicBay(World* world);
 
@@ -205,12 +205,12 @@ inline bool Crewmember::IsAlive() const noexcept
 
 inline bool Crewmember::IsAbleToWork() const noexcept
 {
-	return !(m_HasInjurySmoke > 5.0f || (m_Health < 0.75*m_MaxHealth) || m_HasInjuryBoneBroken >= 3.0f || m_HasInjuryBurned > 3.0f);
+	return !(m_HasInjurySmoke > 5.0f || (m_Health < 0.75*m_MaxHealth) || m_HasInjuryBoneBroken >= 3.0f || m_HasInjuryBurned > 3.0f || m_HasInjuryBleeding > 3.0f);
 }
 
 inline bool Crewmember::IsAbleToWalk() const noexcept
 {
-	return !(m_HasInjuryBoneBroken > 5.0f || m_HasInjurySmoke > 10.0f || m_Health < 0.5f * m_MaxHealth || m_HasInjuryBurned > 10.0f);
+	return !(m_HasInjuryBoneBroken > 5.0f || m_HasInjurySmoke > 10.0f || m_Health < 0.5f * m_MaxHealth || m_HasInjuryBurned > 10.0f || m_HasInjuryBleeding > 6.0f);
 }
 
 inline bool Crewmember::HasInjuryBoneBroken() const noexcept

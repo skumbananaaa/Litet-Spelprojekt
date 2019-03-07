@@ -38,7 +38,7 @@ public:
 
 	void GenerateShadows();
 	void PickPosition();
-	void RequestDoorClosed();
+	void RequestDoorClosed(uint32 doorColor);
 	void Pick(bool hover, int32 positionX, int32 positionY);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 	void ShowCrewmember(uint32 crewmember);

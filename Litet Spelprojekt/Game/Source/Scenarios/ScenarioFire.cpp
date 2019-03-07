@@ -29,6 +29,12 @@ void ScenarioFire::Init(World* pWorld) noexcept
 	}
 }
 
+void ScenarioFire::Release() noexcept
+{
+	DeleteArrSafe(m_pppMap);
+	m_DiscoveredRooms.clear();
+}
+
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
 	/*uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
@@ -45,12 +51,11 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	Escalate(pos);*/
 
 	uint32 lvl = 4;
-	uint32 x = 2;
-	uint32 z = 18;
+	uint32 x = 10;
+	uint32 z = 1;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
 	Escalate(pos);
-
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept

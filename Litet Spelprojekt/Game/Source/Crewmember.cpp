@@ -6,6 +6,7 @@
 #include "../Include/Orders/OrderWalkMedicBay.h"
 #include <World/WorldLevel.h>
 #include "../Include/GameObjectDoor.h"
+#include "../Include/Orders/OrderSchedule.h"
 
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
@@ -45,7 +46,20 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 
 Crewmember::~Crewmember()
 {
+}
 
+void Crewmember::SetRoom(uint32 room) noexcept
+{
+	if (m_pWorld->GetRoom(GetRoom()).IsActive())
+	{
+		if (GetRoom() != room)
+		{
+			m_pWorld->SetRoomActive(GetRoom(), false);
+			m_pWorld->SetRoomActive(room, true);
+		}
+	}
+
+	GameObject::SetRoom(room);
 }
 
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
@@ -288,8 +302,10 @@ void Crewmember::OnAllOrdersFinished() noexcept
 	glm::ivec3 tile = GetTile();
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
 	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetActiveRoom(roomIndex);
+	m_pWorld->SetRoomActive(roomIndex, true);
 	m_Idleing = true;
+
+	GiveOrder(OrderSchedule::GetIdleOrder());
 }
 
 void Crewmember::OnAddedToScene(Scene* scene) noexcept
@@ -312,6 +328,7 @@ void Crewmember::OnNotHovered() noexcept
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
+	m_PlayerTile.z = m_PlayerTile.z < 0 ? 0 : m_PlayerTile.z;
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{
@@ -419,9 +436,15 @@ void Crewmember::UpdateHealth(float dt)
 	}
 }
 
-void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
+void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexcept
 {
 	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	{
+		return;
+	}
+
+	//HOT FIX
+	if (m_PlayerTile.z < 0)
 	{
 		return;
 	}
@@ -443,6 +466,12 @@ void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
 	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	{
+		return;
+	}
+
+	//HOT FIX
+	if (m_PlayerTile.z < 0)
 	{
 		return;
 	}

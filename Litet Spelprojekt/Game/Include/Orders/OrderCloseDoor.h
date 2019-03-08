@@ -3,8 +3,7 @@
 
 class GameObjectDoor;
 
-
-class OrderDoor : public OrderWalk
+class OrderDoor : public OrderWalk 
 {
 public:
 	OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open);

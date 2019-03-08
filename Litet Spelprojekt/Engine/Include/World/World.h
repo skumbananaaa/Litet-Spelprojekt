@@ -111,7 +111,7 @@ public:
 	void AddWorldObject(const WorldObject& object) noexcept;
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	void SetDoors(const glm::ivec3* doors, uint32 nrOfDoors);
-	void SetActiveRoom(uint32 roomID) noexcept;
+	void SetRoomActive(uint32 roomID, bool isActive) noexcept;
 
 	WorldLevel& GetLevel(uint32 level) noexcept;
 	const WorldLevel& GetLevel(uint32 level) const noexcept;

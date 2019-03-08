@@ -23,6 +23,7 @@ private:
 	bool StartOrder();
 	bool CanExecuteOrder(IOrder* order, Crewmember* crewMember) noexcept;
 
+private:
 	std::vector<IOrder*> m_OrderQueue;
 	std::vector<IOrder*> m_OrdersToAbort;
 	IOrderListener* m_pOrderListener;

@@ -115,6 +115,7 @@ private:
 		int32 mesh;
 		int32 material;
 		int32 decal;
+		uint32 count = 0;
 	};
 
 	struct SOUND_DESC_INTERNAL

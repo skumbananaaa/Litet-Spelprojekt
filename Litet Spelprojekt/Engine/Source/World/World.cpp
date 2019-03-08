@@ -323,22 +323,42 @@ void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 	}
 }
 
-void World::SetActiveRoom(uint32 roomID) noexcept
+void World::SetRoomActive(uint32 roomID, bool isActive) noexcept
 {
-	if (!m_Rooms[roomID].IsActive())
+	if (isActive)
 	{
-		if (m_ActiveRooms.size() >= MAX_ROOMS_VISIBLE)
+		if (!m_Rooms[roomID].IsActive())
 		{
-			m_Rooms[m_ActiveRooms[0]].SetActive(false);
-			m_RoomLights[m_ActiveRooms[0]]->SetIsVisible(false);
-			m_RoomLightsTimers[m_ActiveRooms[0]] = 0.0f;
-			m_ActiveRooms.erase(m_ActiveRooms.begin());
-		}
+			if (m_ActiveRooms.size() >= MAX_ROOMS_VISIBLE)
+			{
+				m_Rooms[m_ActiveRooms[0]].SetActive(false);
+				m_RoomLights[m_ActiveRooms[0]]->SetIsVisible(false);
+				m_RoomLightsTimers[m_ActiveRooms[0]] = 0.0f;
+				m_ActiveRooms.erase(m_ActiveRooms.begin());
+			}
 
-		m_Rooms[roomID].SetActive(true);
-		m_RoomLights[roomID]->SetIsVisible(true);
-		m_RoomLightsTimers[roomID] = 0.0f;
-		m_ActiveRooms.emplace_back(roomID);
+			m_Rooms[roomID].SetActive(true);
+			m_RoomLights[roomID]->SetIsVisible(true);
+			m_RoomLightsTimers[roomID] = 0.0f;
+			m_ActiveRooms.emplace_back(roomID);
+		}
+	}
+	else
+	{
+		if (m_Rooms[roomID].IsActive())
+		{
+			for (size_t i = 0; i < m_ActiveRooms.size(); i++)
+			{
+				if (roomID == m_ActiveRooms[i])
+				{
+					m_Rooms[m_ActiveRooms[i]].SetActive(false);
+					m_RoomLights[m_ActiveRooms[i]]->SetIsVisible(false);
+					m_RoomLightsTimers[m_ActiveRooms[i]] = 0.0f;
+					m_ActiveRooms.erase(m_ActiveRooms.begin() + i);
+					break;
+				}
+			}
+		}
 	}
 }
 

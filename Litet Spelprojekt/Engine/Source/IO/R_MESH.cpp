@@ -20,6 +20,7 @@ uint32 MESH::LAMP = 0;
 uint32 MESH::ANIMATED_MODEL_RUN = 0;
 uint32 MESH::ANIMATED_MODEL_IDLE = 0;
 uint32 MESH::ANIMATED_MODEL_OPENDOOR = 0;
+uint32 MESH::ANIMATED_MODEL_SITTING = 0;
 uint32 MESH::ANIMATED_MODEL_SLEEP = 0;
 uint32 MESH::DOOR = 0;
 uint32 MESH::DOOR_FRAME = 0;
@@ -59,6 +60,7 @@ void MESH::RegisterResources()
 	ANIMATED_MODEL_IDLE		= ResourceHandler::RegisterAnimatedMesh("CrewMemberIdle3.fbx");
 	ANIMATED_MODEL_OPENDOOR = ResourceHandler::RegisterAnimatedMesh("CrewMemberOpenDoor1.fbx");
 	ANIMATED_MODEL_SLEEP	= ResourceHandler::RegisterAnimatedMesh("CrewMemberSleeping1.fbx");
+	ANIMATED_MODEL_SITTING	= ResourceHandler::RegisterAnimatedMesh("CrewMemberSitting2.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");

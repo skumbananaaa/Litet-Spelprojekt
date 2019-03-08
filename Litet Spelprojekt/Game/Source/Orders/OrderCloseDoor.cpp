@@ -2,7 +2,8 @@
 #include "../../Include/GameObjectDoor.h"
 #include "../../Include/Crewmember.h"
 
-OrderDoor::OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open) : OrderWalk(doorTile)
+OrderDoor::OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open)
+	: OrderWalk(doorTile)
 {
 	m_pGameObjectDoor = door;
 	m_Open = open;
@@ -60,6 +61,3 @@ bool OrderDoor::CanExecuteIfHurt() noexcept
 {
 	return false;
 }
-
-
-

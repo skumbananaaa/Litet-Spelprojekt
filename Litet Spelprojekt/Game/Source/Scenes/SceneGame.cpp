@@ -4,6 +4,8 @@
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include "../../Include/GameObjectDoor.h"
+#include "../../Include/Orders/OrderSleep.h"
+#include "../../Include/Orders/OrderSchedule.h"
 
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
@@ -21,6 +23,7 @@ SceneGame::SceneGame() : SceneInternal(false),
 	CreateWorld();
 	CreateCrew();
 
+	OrderSchedule::Init(this);
 	LightManager::Init(this, 2);
 	ScenarioManager::Init(m_pWorld);
 
@@ -66,6 +69,13 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	m_pUICrew = new UICrew(0, window->GetHeight() - 50, 200, 500, &m_Crew);
 
 	SetPaused(false);
+
+
+	//m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
+	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+	{
+		m_Crew.GetMember(i)->GiveOrder(OrderSchedule::GetIdleOrder());
+	}
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
@@ -210,7 +220,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 	}
 }
 
-void SceneGame::OnMouseScroll(const glm::vec2 & offset, const glm::vec2 & position)
+void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
 	if (!IsPaused())
 	{
@@ -332,6 +342,11 @@ void SceneGame::OnKeyDown(KEY keycode)
 			case KEY_NUMPAD_3:
 			{
 				RequestDoorClosed(DOOR_COLOR::YELLOW);
+				break;
+			}
+			case KEY_G:
+			{
+				m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 				break;
 			}
 		}
@@ -683,7 +698,7 @@ void SceneGame::ShowCrewmember(uint32 crewmember)
 {
 	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
-	m_pWorld->SetActiveRoom(roomIndex);
+	m_pWorld->SetRoomActive(roomIndex, true);
 }
 
 GameObject* SceneGame::RayTestGameObjects()

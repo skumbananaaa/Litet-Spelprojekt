@@ -13,10 +13,12 @@ public:
 
 public:
 	static void Init(Scene* pScene);
+	static void Release();
 	static IOrder* GetIdleOrder(); 
 
 private:
 	static std::vector<GameObject*> s_Beds;
 	static std::vector<GameObject*> s_Toilets;
 	static std::vector<GameObject*> s_Instruments;
+	static std::vector<GameObject*> s_Chairs;
 };

@@ -79,14 +79,14 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 #endif
 
 	//pScene = importer->ReadFile(daeFile, aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType | aiProcess_ConvertToLeftHanded);
-	pRootNode = pScene->mRootNode;
 	if (!pScene)
 	{
-		std::cout << "Dae file couldn't be loaded" << std::endl;
+		std::cout << "File couldn't be loaded" << std::endl;
 		return nullptr;
 	}
 	else
 	{
+		pRootNode = pScene->mRootNode;
 
 		if (pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
 		{

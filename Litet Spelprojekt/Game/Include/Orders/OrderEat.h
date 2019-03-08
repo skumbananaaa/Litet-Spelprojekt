@@ -3,11 +3,11 @@
 
 class GameObject;
 
-class OrderToilet : public OrderWalk
+class OrderEat : public OrderWalk
 {
 public:
-	OrderToilet(const glm::ivec3& toiletTile, GameObject* pToilet);
-	virtual ~OrderToilet();
+	OrderEat(const glm::ivec3& chairTile, GameObject* pChair);
+	virtual ~OrderEat();
 
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual void OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
@@ -17,8 +17,8 @@ public:
 	virtual bool IsIdleOrder() noexcept;
 
 private:
-	GameObject* m_pToilet;
+	GameObject* m_pChair;
 	glm::vec3 m_Position;
 	float m_Timer;
-	bool m_IsAtToilet;
+	bool m_IsAtChair;
 };

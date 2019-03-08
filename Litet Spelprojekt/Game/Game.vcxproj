@@ -154,6 +154,7 @@
     <ClCompile Include="Source\GUI\UIOrder.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
     <ClCompile Include="Source\Orders\OrderCloseDoor.cpp" />
+    <ClCompile Include="Source\Orders\OrderEat.cpp" />
     <ClCompile Include="Source\Orders\OrderExtinguishFire.cpp" />
     <ClCompile Include="Source\Orders\OrderGiveAid.cpp" />
     <ClCompile Include="Source\Orders\OrderHandler.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Include\Orders\IOrder.h" />
     <ClInclude Include="Include\Orders\OrderCarry.h" />
     <ClInclude Include="Include\Orders\OrderCloseDoor.h" />
+    <ClInclude Include="Include\Orders\OrderEat.h" />
     <ClInclude Include="Include\Orders\OrderExtinguishFire.h" />
     <ClInclude Include="Include\Orders\OrderGiveAid.h" />
     <ClInclude Include="Include\Orders\OrderHandler.h" />

@@ -42,6 +42,7 @@ SceneGame::SceneGame() : SceneInternal(false),
 SceneGame::~SceneGame()
 {
 	ScenarioManager::Reset();
+	OrderSchedule::Release();
 
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);

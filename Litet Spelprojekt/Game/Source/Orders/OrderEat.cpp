@@ -1,36 +1,36 @@
-#include "../../Include/Orders/OrderToilet.h"
+#include "../../Include/Orders/OrderEat.h"
 #include "../../Include/Crewmember.h"
 
-OrderToilet::OrderToilet(const glm::ivec3& toiletTile, GameObject* pToilet)
-	: OrderWalk(toiletTile)
+OrderEat::OrderEat(const glm::ivec3& chairTile, GameObject* pChair)
+	: OrderWalk(chairTile)
 {
-	m_pToilet = pToilet;
+	m_pChair = pChair;
 	m_Position = glm::vec3(4.0f);
-	m_Timer = 15.0f;
-	m_IsAtToilet = false;
+	m_Timer = 2.0f;
+	m_IsAtChair = false;
 }
 
-OrderToilet::~OrderToilet()
+OrderEat::~OrderEat()
 {
 }
 
-void OrderToilet::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderEat::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
+bool OrderEat::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
-	if (!m_IsAtToilet)
+	if (!m_IsAtChair)
 	{
 		if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 		{
-			m_IsAtToilet = true;
+			m_IsAtChair = true;
 			m_Position = GetCrewMember()->GetPosition();
 
 			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SITTING);
 
-			float yaw = m_pToilet->GetRotation().w;
+			float yaw = m_pChair->GetRotation().w;
 			while (yaw > glm::two_pi<float>())
 			{
 				yaw -= glm::two_pi<float>();
@@ -41,7 +41,7 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 			}
 			yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
 			int rot = yaw / glm::half_pi<float>();
-			
+
 			if (rot == 0)
 			{
 				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.3f, 0.0f, 0.0f));
@@ -73,9 +73,9 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 	return false;
 }
 
-void OrderToilet::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderEat::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	if (m_IsAtToilet)
+	if (m_IsAtChair)
 	{
 		GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 		GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
@@ -87,17 +87,17 @@ void OrderToilet::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 	}
 }
 
-bool OrderToilet::CanBeStackedWithSameType() noexcept
+bool OrderEat::CanBeStackedWithSameType() noexcept
 {
 	return false;
 }
 
-std::string OrderToilet::GetName() noexcept
+std::string OrderEat::GetName() noexcept
 {
-	return "Order Toilet";
+	return "Order Eat";
 }
 
-bool OrderToilet::IsIdleOrder() noexcept
+bool OrderEat::IsIdleOrder() noexcept
 {
 	return true;
 }

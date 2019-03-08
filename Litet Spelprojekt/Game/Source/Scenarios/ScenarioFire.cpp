@@ -23,7 +23,7 @@ void ScenarioFire::Init(World* pWorld) noexcept
 		m_pppMap[i] = m_pWorld->GetLevel(i).GetLevel();
 	}
 
-	for (uint32 i = 0; i < m_pWorld->GetNumRooms(); i++)
+	for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
 	{
 		m_DiscoveredRooms.push_back(false);
 	}

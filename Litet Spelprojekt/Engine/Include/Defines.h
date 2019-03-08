@@ -33,6 +33,7 @@
 #define SHADOW_SIZE 512
 #define REFLECTION_SIZE 512
 
+#define MAX_NUM_ROOMS 128
 #define MAX_ROOMS_VISIBLE 5
 
 constexpr float WATER_UPDATE_LEVEL_INTERVAL = 0.02f;

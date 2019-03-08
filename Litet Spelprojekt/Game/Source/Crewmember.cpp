@@ -71,8 +71,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	if (IsAlive())
 	{
-		CheckSmokeDamage(m_pWorld->GetLevel(GetTile().y*2 + 1).GetLevelData(), deltaTime);
-		CheckFireDamage(m_pWorld->GetLevel(GetTile().y*2).GetLevelData(), deltaTime);
+		CheckSmokeDamage(m_pWorld->GetLevel(GetTile().y * 2 + 1).GetLevelData(), deltaTime);
+		CheckFireDamage(m_pWorld->GetLevel(GetTile().y * 2).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
 	}
 
@@ -88,9 +88,13 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		m_pUISelectedCrew->UpdatePosition(GetPosition());
 	}
 
-	if (IsIdleing() && !IsAbleToWork() && IsAbleToWalk() && room.GetCenter() != m_pWorld->GetRoom(SICKBAY_0).GetCenter())
+
+	if (!IsAbleToWork())
 	{
-		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld));
+		if (IsIdleing())
+		{
+			GoToMedicBay();
+		}
 	}
 }
 
@@ -169,11 +173,19 @@ void Crewmember::LookForDoor(uint32 doorColor) noexcept
 	//StartOrder(pScene, pWorld, this);
 }
 
-void Crewmember::GoToMedicBay(World* world)
+void Crewmember::GoToMedicBay()
 {
 	if (IsAbleToWalk())
 	{
-		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(world));
+		const glm::ivec3& currentTile = GetTile();
+		uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
+
+		if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
+		{
+			//m_pWorld->GetRoom(SICKBAY_0).GetCenter();
+
+			m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
+		}
 	}
 	else
 	{
@@ -460,6 +472,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 		if (isSmoked != HasInjurySmoke())
 		{
 			Logger::LogEvent(GetName() + " got smoked!" + std::to_string(m_HasInjurySmoke));
+			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::to_string(m_GearIsEquipped) << std::endl;
 		}
 	}
 }

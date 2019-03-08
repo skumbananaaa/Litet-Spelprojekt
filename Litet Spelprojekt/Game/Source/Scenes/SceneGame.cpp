@@ -120,9 +120,14 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		ScenarioManager::Update(dtS, m_pWorld, this);
 		UpdateCamera(dtS);
 
-		for (uint32 i = 0; i < m_pWorld->GetNumRooms(); i++)
+		for (uint32 i = 0; i < MAX_NUM_ROOMS; i++)
 		{
-			m_pWorld->GetRoom(i).SetFloodUpdated(false);
+			Room& room = m_pWorld->GetRoom(i);
+
+			if (room.IsRoomInitialized())
+			{
+				m_pWorld->GetRoom(i).SetFloodUpdated(false);
+			}
 		}
 
 		static float dist = 0.0f;
@@ -280,7 +285,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 				{
 					if (m_Crew.GetMember(i)->IsPicked())
 					{
-						m_Crew.GetMember(i)->GoToMedicBay(m_pWorld);
+						m_Crew.GetMember(i)->GoToMedicBay();
 					}
 				}
 				break;
@@ -533,7 +538,6 @@ void SceneGame::GenerateShadows()
 {
 	if (m_pWorld)
 	{
-		uint32 numRooms = m_pWorld->GetNumRooms();
 		m_pWorld->GenerateRoomShadows(*this);
 	}
 }

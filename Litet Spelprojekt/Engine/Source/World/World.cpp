@@ -6,7 +6,6 @@ World::World(WorldLevel* worldLevels[], uint32 numLevels, WorldObject* objects, 
 	m_Stairs(),
 	m_Objects(),
 	m_Doors(),
-	m_Rooms(0),
 	m_RoomLightsTimers(),
 	m_ActiveRooms()
 {
@@ -54,11 +53,6 @@ WorldLevel& const World::GetLevel(uint32 level) noexcept
 	return m_Levels[level];
 }
 
-uint32 World::GetNumRooms() const noexcept
-{
-	return m_Rooms.size();
-}
-
 uint32 World::GetNumLevels() const noexcept
 {
 	return m_Levels.size();
@@ -78,36 +72,57 @@ uint32 World::GetNumWorldObjects() const noexcept
 void World::GenerateRooms(Scene& scene) noexcept
 {
 	//Room generation
-	std::vector<glm::uvec4> m_RoomBounds;
-	std::vector<glm::uvec4> temp;
-	std::vector<glm::vec3> center;
+	std::vector<glm::uvec4> roomBounds;
+	std::vector<glm::vec3> centers;
+	std::vector<uint32> centerIDs;
+
+	glm::uvec4 emptyBounds = glm::uvec4(11, 0, 41, 0);
 
 	constexpr float centreOffsetY = 1.85f;
-	for (int32 level = 0; level < m_Levels.size(); level += 2)
+	for (uint32 level = 0; level < m_Levels.size(); level += 2)
 	{
-		m_Levels[level].GenerateRooms();
-		temp = m_Levels[level].GetRooms();
-		for (size_t i = 0; i < temp.size(); i++)
+		std::vector<glm::uvec4> roomBoundsLevel = m_Levels[level].GenerateRooms();
+		uint32 numRoomsInLevel = 0;
+
+		for (uint32 i = 2; i < roomBoundsLevel.size(); i++)
 		{
-			if (i >= m_RoomBounds.size())
+			glm::uvec4& bounds = roomBoundsLevel[i];
+
+			if (bounds != emptyBounds)
 			{
-				m_RoomBounds.push_back(temp[i]);
-				center.push_back(glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + centreOffsetY, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f));
-			}
-			else if (temp[i].x != 11)
-			{
-				center[i] = glm::vec3((float)temp[i].x + (temp[i].y - temp[i].x) / 2.0f, (float)level + centreOffsetY, (float)temp[i].z + (temp[i].w - temp[i].z) / 2.0f);
+				numRoomsInLevel++;
+
+				roomBounds.push_back(roomBoundsLevel[i]);
+				centers.push_back(glm::vec3((float)bounds.x + (bounds.y - bounds.x) / 2.0f, (float)level + centreOffsetY, (float)bounds.z + (bounds.w - bounds.z) / 2.0f));
+				centerIDs.push_back(i);
 			}
 		}
+
+		std::cout << "Level " << std::to_string(level) << " generated " << std::to_string(numRoomsInLevel) << " number of rooms!" << std::endl;
+
 	}
 	
 	//Rooms
-	m_Rooms.emplace_back(Room());
-	m_Rooms.emplace_back(Room());
-	for (size_t i = 2; i < center.size(); i++)
+	std::vector<uint32> roomsAdded;
+
+	for (uint32 i = 0; i < centers.size(); i++)
 	{
-		m_Rooms.emplace_back(Room(center[i]));
+		uint32 roomID = centerIDs[i];
+		
+		std::cout << "Room " << std::to_string(roomID) << " added!" << std::endl;
+
+		if (std::find(roomsAdded.begin(), roomsAdded.end(), roomID) == roomsAdded.end())
+		{
+			roomsAdded.push_back(roomID);
+			m_Rooms[roomID].Init(centers[i]);
+		}
+		else
+		{
+			std::cout << "Room " << std::to_string(roomID) << " already added!" << std::endl;
+		}
 	}
+
+	std::cout << "Generated " << std::to_string(roomsAdded.size()) << " number of rooms!" << std::endl;
 }
 
 void World::GenerateFloor(Scene& scene) noexcept
@@ -275,9 +290,12 @@ void World::PlaceStairs(Scene& scene) noexcept
 
 void World::GenerateRoomShadows(const Scene& scene) noexcept
 {
-	for (size_t i = 0; i < m_Rooms.size(); i++)
+	for (size_t i = 0; i < MAX_NUM_ROOMS; i++)
 	{
-		m_Rooms[i].GenerateShadows(scene);
+		if (m_Rooms[i].IsRoomInitialized())
+		{
+			m_Rooms[i].GenerateShadows(scene);
+		}
 	}
 }
 
@@ -293,7 +311,7 @@ void World::Generate(Scene& scene) noexcept
 	PlaceStairs(scene);
 
 	//Generate lights for rooms
-	for (size_t i = 0; i < m_Rooms.size(); i++)
+	for (size_t i = 0; i < MAX_NUM_ROOMS; i++)
 	{
 		PointLight* pLight = new PointLight(m_Rooms[i].GetCenter());
 		pLight->SetIsVisible(false);
@@ -374,13 +392,11 @@ const std::vector<glm::ivec3>& World::GetDoors() const noexcept
 
 Room& World::GetRoom(uint32 room) noexcept
 {
-	assert(room < m_Rooms.size());
 	return m_Rooms[room];
 }
 
 const Room& World::GetRoom(uint32 room) const noexcept
 {
-	assert(room < m_Rooms.size());
 	return m_Rooms[room];
 }
 

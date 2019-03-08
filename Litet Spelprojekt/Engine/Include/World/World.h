@@ -9,8 +9,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/string_cast.hpp>
 
-#define MAX_NUM_ROOMS 128
-
 enum DOOR_COLOR : uint32
 {
 	RED,
@@ -117,7 +115,6 @@ public:
 	WorldLevel& GetLevel(uint32 level) noexcept;
 	const WorldLevel& GetLevel(uint32 level) const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
-	uint32 GetNumRooms() const noexcept;
 	uint32 GetNumLevels() const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
 	Room& GetRoom(uint32 room) noexcept;
@@ -134,6 +131,8 @@ public:
 
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
+
+	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept;
 
 public:
 	static uint32 GetDoorMaterialFromColor(DOOR_COLOR color) noexcept;
@@ -155,11 +154,32 @@ private:
 	std::vector<WorldObject> m_Objects;
 	std::vector<glm::ivec3> m_Stairs;
 	std::vector<glm::ivec3> m_Doors;
-	std::vector<Room> m_Rooms;
+	Room m_Rooms[MAX_NUM_ROOMS];
 	std::vector<float> m_RoomLightsTimers;
 	std::vector<uint32> m_ActiveRooms;
 	std::vector<PointLight*> m_RoomLights;
 };
+
+inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept
+{
+	uint32 minDistSqrd = UINT32_MAX;
+	glm::ivec3 closestRoomCenter(-1);
+
+	for (uint32 i = startInterval; i <= endInterval; i++)
+	{
+		glm::ivec3 currentRoomCenter = glm::ivec3(m_Rooms[i].GetCenter());
+		glm::ivec3 toVector = currentTile - currentRoomCenter;
+		uint32 currentDistanceSqrd = toVector.x * toVector.x + toVector.y * toVector.y + toVector.z * toVector.z;
+
+		if (currentDistanceSqrd < minDistSqrd)
+		{
+			minDistSqrd = currentDistanceSqrd;
+			closestRoomCenter = currentRoomCenter;
+		}
+	}
+
+	return closestRoomCenter;
+}
 
 inline uint32 World::GetDoorMaterialFromColor(DOOR_COLOR color) noexcept
 {

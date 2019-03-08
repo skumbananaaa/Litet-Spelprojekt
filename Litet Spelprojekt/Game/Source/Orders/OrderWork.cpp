@@ -5,7 +5,7 @@ OrderWork::OrderWork(const glm::ivec3& instrumentTile, GameObject* pInstrument)
 	: OrderWalk(instrumentTile)
 {
 	m_pInstrument = pInstrument;
-	m_Position = glm::vec3(0.0f);
+	m_Position = glm::vec3(4.0f);
 	m_Timer = 15.0f;
 	m_IsAtInstrument = false;
 }
@@ -44,7 +44,7 @@ bool OrderWork::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 
 void OrderWork::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	//GetCrewMember()->SetPosition(m_Position);
 	//GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 
@@ -53,7 +53,7 @@ void OrderWork::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexc
 
 void OrderWork::AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	//GetCrewMember()->SetPosition(m_Position);
 	//GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 

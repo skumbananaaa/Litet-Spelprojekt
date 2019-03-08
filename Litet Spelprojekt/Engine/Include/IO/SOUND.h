@@ -12,6 +12,8 @@ public:
 	static uint32 UI_DESELECT;
 	static uint32 UI_HOVER;
 	static uint32 MONO_EXPLOSION;
+	static uint32 MONO_SCREAM;
+	static uint32 MONO_FIRE;
 
 private:
 	static void RegisterResourcesPreLoading();

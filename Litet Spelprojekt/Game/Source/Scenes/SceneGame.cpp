@@ -450,74 +450,84 @@ void SceneGame::CreateCrew() noexcept
 	int index = 0;
 	float x, y, z;
 
+	Crewmember* crewmember;
+
 	m_Crew.AddMember(m_pWorld, glm::vec3(10.0f, 4.0f, 10.0f), names[0], GroupType::SMOKE_DIVER);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::SMOKE_DIVER);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
 	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	m_Crew.GetMember(index)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	m_Crew.GetMember(index)->SetHidden(false);
-	m_Crew.GetMember(index)->UpdateTransform();
-	AddGameObject(m_Crew.GetMember(index++));
+	crewmember = m_Crew.GetMember(index++);
+	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+	crewmember->SetHidden(false);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 
 	for (int i = index; i < NUM_CREW; i++)
 	{
@@ -525,9 +535,10 @@ void SceneGame::CreateCrew() noexcept
 		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
 		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
 		m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[i % NUM_CREW], GroupType::NONE);
-		m_Crew.GetMember(i)->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-		m_Crew.GetMember(i)->SetHidden(false);
-		m_Crew.GetMember(i)->UpdateTransform();
+		crewmember = m_Crew.GetMember(i);
+		crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
+		crewmember->SetHidden(false);
+		crewmember->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
 	}
 }

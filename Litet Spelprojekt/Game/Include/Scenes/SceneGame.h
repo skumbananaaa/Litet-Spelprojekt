@@ -16,6 +16,7 @@
 #include <Graphics/Materials/WaterOutdoorMaterial.h>
 #include <Graphics/Materials/WaterIndoorMaterial.h>
 #include <World/Logger.h>
+#include <System/Random.h>
 
 class SceneGame : public SceneInternal
 {

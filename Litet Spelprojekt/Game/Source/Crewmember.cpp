@@ -42,10 +42,18 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_Idleing = true;
 
 	m_Forgetfulness = 3;
+
+	m_pAudioSourceScream = AudioSource::CreateSoundSource(SOUND::MONO_SCREAM);
+	m_pAudioSourceScream->SetPosition(position);
+	m_pAudioSourceScream->SetRollOffFactor(10.0f);
+	m_pAudioSourceScream->SetReferenceDistance(1.0f);
+	m_pAudioSourceScream->SetMaxDistance(100.0f);
+	m_pAudioSourceScream->SetLooping(false);
 }
 
 Crewmember::~Crewmember()
 {
+	DeleteSafe(m_pAudioSourceScream);
 }
 
 void Crewmember::SetRoom(uint32 room) noexcept
@@ -211,6 +219,10 @@ bool Crewmember::Heal(int8 skillLevel, float dtS)
 void Crewmember::ApplyBurnInjury(float burn)
 {
 	m_HasInjuryBurned += burn;
+	if (m_HasInjuryBurned > 0.9 && m_HasInjuryBurned < 1.1)
+	{
+		m_pAudioSourceScream->Play();
+	}
 }
 
 void Crewmember::ApplyBoneInjury(float boneBreak)
@@ -482,7 +494,7 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 	if (tileData.Temp >= tileData.BurnsAt)
 	{
 		bool isBurned = HasInjuryBurned();
-		m_HasInjuryBurned += (tileData.Temp / tileData.BurnsAt) * burnSpeed * dt;
+		ApplyBurnInjury((tileData.Temp / tileData.BurnsAt) * burnSpeed * dt);
 		if (isBurned != HasInjuryBurned())
 		{
 			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));

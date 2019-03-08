@@ -20,6 +20,7 @@ public:
 	static uint32 LAMP;
 	static uint32 ANIMATED_MODEL_RUN;
 	static uint32 ANIMATED_MODEL_IDLE;
+	static uint32 ANIMATED_MODEL_WORK;
 	static uint32 ANIMATED_MODEL_OPENDOOR;
 	static uint32 ANIMATED_MODEL_SLEEP;
 	static uint32 ANIMATED_MODEL_SITTING;

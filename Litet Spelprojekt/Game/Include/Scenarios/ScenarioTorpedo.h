@@ -29,5 +29,5 @@ public:
 private:
 	GameObjectTorpedo* m_pGameObjectTorpedo;
 	glm::vec3 m_Target;
-	AudioSource* pAudioSourceExplosion;
+	AudioSource* m_pAudioSourceExplosion;
 };

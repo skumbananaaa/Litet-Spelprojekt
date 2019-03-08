@@ -36,6 +36,7 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 
 		m_pGraphicsContext = new GLContext(width, height);
 		m_pAudioContext = IAudioContext::CreateContext();
+		m_pAudioContext->SetDistanceModel(DistanceModel::LINEAR_DISTANCE);
 
 		ThreadHandler::Init();
 		ResourceHandler::LoadResources(this, prePath, useMultiThreading);

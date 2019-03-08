@@ -132,6 +132,9 @@
     <ClCompile Include="Source\Orders\OrderWork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Orders\OrderEat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game.h">
@@ -249,6 +252,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Orders\OrderWork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderEat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

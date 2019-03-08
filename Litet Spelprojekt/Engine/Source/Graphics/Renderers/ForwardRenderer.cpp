@@ -67,33 +67,32 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	//Create batches
 	CreateBatches(scene, pWorld);
 
-	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
-
 	MaterialBuffer perBatch = {};
-	
+	/*
 #if defined(PRINT_CPU_DEBUG_DATA)
-	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_5);
+	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_7);
 #endif
 
 	bool roomIsActive = false;
 	for (uint32 i = 0; i < animatedGameObjects.size(); i++)
 	{
-		if (pWorld != nullptr)
+		if (animatedGameObjects[i]->IsVisible())
 		{
-			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
-		}
+			if (pWorld != nullptr)
+			{
+				roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
+			}
 
-		if (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()))
-		{
-			const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
-			const Material& material = *animatedGameObjects[i]->GetMaterial();
-
-			skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
+			if (roomIsActive || !animatedGameObjects[i]->IsHidden())
+			{
+				const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
+				skeleton.UpdateBoneTransforms(dtS, animatedGameObjects[i]->GetAnimatedMesh());
+			}
 		}
 	}
 #if defined(PRINT_CPU_DEBUG_DATA)
-	CPUProfiler::EndTimer("Animation Bone Update took %.3f ms", CPU_PROFILER_SLOT_5);
-#endif
+	CPUProfiler::EndTimer("Animation Bone Update took %.3f ms", CPU_PROFILER_SLOT_7);
+#endif*/
 
 	//Update lights
 	UpdateLightBuffer(scene);
@@ -121,6 +120,12 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
 
 	//Render scene
+	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
+	for (GameObject* pGameObject : animatedGameObjects)
+	{
+		pGameObject->Lock();
+	}
+
 	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
 	context.SetDepthFunc(FUNC_LESS);
 	DepthPrePass(mainCamera, scene, pWorld);
@@ -139,8 +144,15 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 
 	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
 	MainPass(mainCamera, scene, pWorld);
+
 	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
 	AnimationPass(dtS, scene, pWorld);
+
+	for (GameObject* pGameObject : animatedGameObjects)
+	{
+		pGameObject->Unlock();
+	}
+
 
 	if (pWorld != nullptr)
 	{
@@ -410,7 +422,7 @@ void ForwardRenderer::UpdateLightBuffer(const Scene& scene) const noexcept
 				break;
 			}
 
-			if (pointLights[i]->IsVisible())
+			if (spotLights[i]->IsVisible())
 			{
 				buff.SpotLights[spotlightIndex].Color = spotLights[i]->GetColor();
 				buff.SpotLights[spotlightIndex].Position = spotLights[i]->GetPosition();

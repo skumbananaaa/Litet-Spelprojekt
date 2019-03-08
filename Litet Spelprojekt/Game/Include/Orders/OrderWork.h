@@ -14,7 +14,6 @@ public:
 	virtual bool OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
 	virtual bool CanBeStackedWithSameType() noexcept override;
 	virtual std::string GetName() noexcept override;
-	virtual bool ReadyToAbort() noexcept override;
 	virtual bool IsIdleOrder() noexcept;
 
 private:

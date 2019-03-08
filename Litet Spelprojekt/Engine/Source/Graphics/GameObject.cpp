@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics\GameObject.h>
+#include <World/World.h>
 
 GameObject::GameObject() noexcept
 	: m_pMesh(nullptr),
@@ -111,6 +112,20 @@ void GameObject::UpdateTransform() noexcept
 		if (HasSkeleton())
 		{
 			m_pASkeleton->SetSkeletonTransform(m_transform);
+		}
+	}
+}
+
+void GameObject::UpdateParallel(float dtS) noexcept
+{
+	if (IsVisible())
+	{
+		if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
+		{
+			Lock();
+			const AnimatedSkeleton& skeleton = *GetSkeleton();
+			skeleton.UpdateBoneTransforms(dtS, GetAnimatedMesh());
+			Unlock();
 		}
 	}
 }

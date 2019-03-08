@@ -28,6 +28,11 @@ OrderHandler::~OrderHandler()
 
 void OrderHandler::GiveOrder(IOrder* order) noexcept
 {
+	if (!order)
+	{
+		return;
+	}
+
 	order->m_pCrewMember = m_pCrewmember;
 
 	if (!IsCrewMemberAbleToExecuteOrder(order))

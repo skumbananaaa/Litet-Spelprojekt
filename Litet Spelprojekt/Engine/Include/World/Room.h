@@ -1,6 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Textures/StaticShadowCube.h>
+#include <Audio/Sources/AudioSource.h>
 
 class API Room
 {
@@ -43,6 +44,7 @@ private:
 	bool m_FloodUpdatedThisFrame = false;
 	bool m_Initialized = false;
 	StaticShadowCube* m_pShadowMap;
+	AudioSource* m_pAudioSourceFire;
 };
 
 inline const StaticShadowCube* Room::GetShadowMap() const noexcept

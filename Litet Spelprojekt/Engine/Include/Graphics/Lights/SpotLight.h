@@ -21,9 +21,6 @@ public:
 	void SetOuterCutOffAngle(float angle) noexcept;
 	float GetOuterCutOffAngle() const noexcept;
 
-
-public:
-
 private:
 	glm::vec4 m_Color;
 	glm::vec3 m_Direction;

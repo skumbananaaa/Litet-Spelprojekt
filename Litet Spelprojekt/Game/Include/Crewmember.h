@@ -3,6 +3,7 @@
 #include <Graphics/GameObject.h>
 #include "../Include/Orders/OrderHandler.h"
 #include "../Include/GUI/UISelectedCrew.h"
+#include <Audio/Sources/AudioSource.h>
 
 #pragma message("INCLUDE" __FILE__)
 
@@ -113,7 +114,6 @@ private:
 
 private:
 	//UTILITY
-	World* m_pWorld;
 	glm::ivec3 m_PlayerTile;
 	glm::vec3 m_Direction;
 	bool m_IsPicked;
@@ -147,6 +147,8 @@ private:
 
 	Crewmember* m_pAssisting;
 	UISelectedCrew* m_pUISelectedCrew;
+
+	AudioSource* m_pAudioSourceScream;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept
@@ -229,12 +231,12 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 9.0f;
+	return m_HasInjuryBurned > 1.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 9.0f;
+	return m_HasInjurySmoke > 1.0f;
 }
 
 inline bool Crewmember::HasInjuryBleed() const noexcept

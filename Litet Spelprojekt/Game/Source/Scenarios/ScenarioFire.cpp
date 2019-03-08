@@ -33,6 +33,7 @@ void ScenarioFire::Release() noexcept
 {
 	DeleteArrSafe(m_pppMap);
 	m_DiscoveredRooms.clear();
+	m_OnFire.clear();
 }
 
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
@@ -75,7 +76,8 @@ void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
 	}
 	m_pWorld->GetRoom(m_pWorld->GetLevel(position.y).GetLevel()[position.x][position.z]).SetBurning(true);
 
-	tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(m_FireAlwaysVisible);
+	MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]);
+	emitter->SetIsVisible(m_FireAlwaysVisible);
 	m_OnFire.push_back(position);
 }
 
@@ -198,9 +200,10 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 				m_OnFire.push_back(pos);
 
+				MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(aboveData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]);
 				if (aboveData.WaterLevel < WATER_UPDATE_LEVEL_INTERVAL)
 				{
-					aboveData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(m_DiscoveredRooms[m_pWorld->GetLevel(aboveIndex).GetLevel()[pos.x][pos.z]] || m_FireAlwaysVisible);
+					emitter->SetIsVisible(m_DiscoveredRooms[m_pWorld->GetLevel(aboveIndex).GetLevel()[pos.x][pos.z]] || m_FireAlwaysVisible);
 				}
 			}
 		}
@@ -227,11 +230,12 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 	for (uint32 i = 0; i < toRemoveOnFireIDs.size(); i++)
 	{
 		WorldLevel& currentFireWorldLevel = m_pWorld->GetLevel(toRemoveOnFireIDs[i].y);
-		TileData * const * ppFireLevelData = currentFireWorldLevel.GetLevelData();
+		TileData& FireLevelData = currentFireWorldLevel.GetLevelData()[toRemoveOnFireIDs[i].x][toRemoveOnFireIDs[i].z];
+		MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(FireLevelData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]);
 
 		//Fire
-		ppFireLevelData[toRemoveOnFireIDs[i].x][toRemoveOnFireIDs[i].z].Burning = false;
-		ppFireLevelData[toRemoveOnFireIDs[i].x][toRemoveOnFireIDs[i].z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(false);
+		FireLevelData.Burning = false;
+		emitter->SetIsVisible(false);
 		m_OnFire.erase(std::remove(m_OnFire.begin(), m_OnFire.end(), toRemoveOnFireIDs[i]), m_OnFire.end());
 	}
 
@@ -346,12 +350,12 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 			room.SetBurning(true);
 		}
 
-		if (tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE] != nullptr)
+		MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]);
+		if (emitter != nullptr)
 		{
 			if (tileData.WaterLevel < WATER_UPDATE_LEVEL_INTERVAL)
 			{
-				tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->SetIsVisible(m_DiscoveredRooms[m_pppMap[tileTo.y][tileTo.x][tileTo.z]] || m_FireAlwaysVisible);
-				
+				emitter->SetIsVisible(m_DiscoveredRooms[m_pppMap[tileTo.y][tileTo.x][tileTo.z]] || m_FireAlwaysVisible);
 			}
 		}
 

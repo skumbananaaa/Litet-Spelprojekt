@@ -5,14 +5,14 @@
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioMissile::ScenarioMissile() : pAudioSourceExplosion(nullptr)
+ScenarioMissile::ScenarioMissile() : m_pAudioSourceExplosion(nullptr)
 {
 
 }
 
 ScenarioMissile::~ScenarioMissile()
 {
-	DeleteSafe(pAudioSourceExplosion);
+	DeleteSafe(m_pAudioSourceExplosion);
 }
 
 void ScenarioMissile::Init(World* pWorld) noexcept
@@ -71,12 +71,12 @@ bool ScenarioMissile::Update(float dtS, World* world, SceneGame* scene) noexcept
 			pMeshEmitter->SetIsVisible(true);
 			scene->AddGameObject(pMeshEmitter);
 
-			pAudioSourceExplosion = AudioSource::CreateSoundSource(SOUND::MONO_EXPLOSION);
-			pAudioSourceExplosion->SetRollOffFactor(10.0f);
-			pAudioSourceExplosion->SetReferenceDistance(0.0f);
-			pAudioSourceExplosion->SetMaxDistance(500.0f);
-			pAudioSourceExplosion->SetLooping(false);
-			pAudioSourceExplosion->Play();
+			m_pAudioSourceExplosion = AudioSource::CreateSoundSource(SOUND::MONO_EXPLOSION);
+			m_pAudioSourceExplosion->SetRollOffFactor(10.0f);
+			m_pAudioSourceExplosion->SetReferenceDistance(0.0f);
+			m_pAudioSourceExplosion->SetMaxDistance(500.0f);
+			m_pAudioSourceExplosion->SetLooping(false);
+			m_pAudioSourceExplosion->Play();
 
 			Crew* crew = scene->GetCrew();
 			for (int i = 0; i < crew->GetCount(); i++)
@@ -100,7 +100,7 @@ bool ScenarioMissile::Update(float dtS, World* world, SceneGame* scene) noexcept
 
 void ScenarioMissile::OnMeshEmitterKilled(MeshEmitter* emitter)
 {
-	DeleteSafe(pAudioSourceExplosion);
+	DeleteSafe(m_pAudioSourceExplosion);
 }
 
 std::string ScenarioMissile::GetName() noexcept

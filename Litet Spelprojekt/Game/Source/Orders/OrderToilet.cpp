@@ -92,11 +92,6 @@ std::string OrderToilet::GetName() noexcept
 	return "Order Toilet";
 }
 
-bool OrderToilet::ReadyToAbort() noexcept
-{
-	return OrderWalk::ReadyToAbort();
-}
-
 bool OrderToilet::IsIdleOrder() noexcept
 {
 	return true;

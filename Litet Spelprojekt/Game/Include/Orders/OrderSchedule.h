@@ -18,4 +18,5 @@ public:
 private:
 	static std::vector<GameObject*> s_Beds;
 	static std::vector<GameObject*> s_Toilets;
+	static std::vector<GameObject*> s_Instruments;
 };

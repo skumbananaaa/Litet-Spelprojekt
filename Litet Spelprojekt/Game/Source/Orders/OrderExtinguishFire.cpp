@@ -18,12 +18,12 @@ OrderExtinguishFire::~OrderExtinguishFire()
 {
 }
 
-void OrderExtinguishFire::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderExtinguishFire::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
+bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
 	Crewmember* pCrewMember = GetCrewMember();
 
@@ -32,7 +32,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 		if (!pCrewMember->HasGearEquipped())
 		{
 			//Run To Room
-			if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				if (m_EquippingGearTimer <= 0.00001f)
 				{
@@ -52,7 +52,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 		else
 		{
 			//Run To Room That is Burning
-			if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				const glm::ivec2& levelSize = glm::ivec2(pWorld->GetLevel(m_BurningTile.y).GetSizeX(), pWorld->GetLevel(m_BurningTile.y).GetSizeZ());
 				const uint32 * const * ppLevel = pWorld->GetLevel(m_BurningTile.y).GetLevel();
@@ -134,7 +134,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 		if (pCrewMember->HasGearEquipped())
 		{
 			//Run To Room
-			if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				if (m_EquippingGearTimer <= 0.00001f)
 				{
@@ -160,17 +160,12 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 	return false;
 }
 
-void OrderExtinguishFire::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderExtinguishFire::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 }
 
-void OrderExtinguishFire::AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
-{
-	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
-}
-
-bool OrderExtinguishFire::AllowsMultipleOrders() noexcept
+bool OrderExtinguishFire::CanBeStackedWithSameType() noexcept
 {
 	return false;
 }
@@ -188,4 +183,9 @@ bool OrderExtinguishFire::IsIdleOrder() noexcept
 bool OrderExtinguishFire::CanExecuteIfHurt() noexcept
 {
 	return false;
+}
+
+bool OrderExtinguishFire::HasPriority() noexcept
+{
+	return true;
 }

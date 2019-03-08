@@ -13,18 +13,18 @@ OrderDoor::~OrderDoor()
 {
 }
 
-void OrderDoor::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderDoor::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderDoor::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
+bool OrderDoor::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
 	if (m_pGameObjectDoor->IsOpen() == m_Open || m_pGameObjectDoor->IsClosed() == !m_Open)
 	{
 		return true;
 	}
-	else if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+	else if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 	{
 		m_pGameObjectDoor->SetOpen(m_Open);
 		return true;
@@ -32,17 +32,12 @@ bool OrderDoor::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 	return false;
 }
 
-void OrderDoor::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+void OrderDoor::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 }
 
-void OrderDoor::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
-{
-	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
-}
-
-bool OrderDoor::AllowsMultipleOrders() noexcept
+bool OrderDoor::CanBeStackedWithSameType() noexcept
 {
 	return true;
 }

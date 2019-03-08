@@ -18,17 +18,17 @@ OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 OrderWalk::~OrderWalk()
 {
 	DeleteSafe(m_pPathFinder);
-	std::cout << "Borta" << std::endl;
+	std::cout << "Borta: " << this << std::endl;
 }
 
-void OrderWalk::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroup() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
 	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);
 }
 
-bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
+bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
 	if (!m_IsPathReady)
 	{
@@ -96,18 +96,17 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	return FollowPath(dtS);
 }
 
-void OrderWalk::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-	std::cout << "End" << std::endl;
 }
 
-void OrderWalk::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+bool OrderWalk::CanBeStackedWithSameType() noexcept
 {
-	std::cout << "Abort" << std::endl;
+	return false;
 }
 
-bool OrderWalk::AllowsMultipleOrders() noexcept
+bool OrderWalk::HasPriority() noexcept
 {
 	return false;
 }

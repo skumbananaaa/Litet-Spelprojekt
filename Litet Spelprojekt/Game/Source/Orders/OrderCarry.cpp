@@ -11,20 +11,20 @@ OrderCarry::~OrderCarry()
 {
 }
 
-void OrderCarry::StartOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+void OrderCarry::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
-	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-void OrderCarry::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+void OrderCarry::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 	//GetCrewMember()->SetAssisting(nullptr);
 }
 
-bool OrderCarry::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
+bool OrderCarry::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+	if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 	{
 		GetCrewMember()->SetAssisting(m_pCarrying);
 		return true;
@@ -32,13 +32,7 @@ bool OrderCarry::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers
 	return false;
 }
 
-void OrderCarry::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
-{
-	GetCrewMember()->SetAssisting(nullptr);
-	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
-}
-
-bool OrderCarry::AllowsMultipleOrders() noexcept
+bool OrderCarry::CanBeStackedWithSameType() noexcept
 {
 	return false;
 }

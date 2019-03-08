@@ -14,16 +14,16 @@ OrderWork::~OrderWork()
 {
 }
 
-void OrderWork::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderWork::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderWork::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
+bool OrderWork::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
 	if (!m_IsAtInstrument)
 	{
-		if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+		if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 		{
 			m_IsAtInstrument = true;
 			m_Position = GetCrewMember()->GetPosition();
@@ -42,25 +42,16 @@ bool OrderWork::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 	return false;
 }
 
-void OrderWork::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderWork::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	//GetCrewMember()->SetPosition(m_Position);
 	//GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 }
 
-void OrderWork::AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
-{
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-	//GetCrewMember()->SetPosition(m_Position);
-	//GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
-
-	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
-}
-
-bool OrderWork::AllowsMultipleOrders() noexcept
+bool OrderWork::CanBeStackedWithSameType() noexcept
 {
 	return false;
 }

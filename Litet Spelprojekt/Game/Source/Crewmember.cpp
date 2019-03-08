@@ -90,7 +90,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	if (IsIdleing() && !IsAbleToWork() && IsAbleToWalk() && room.GetCenter() != m_pWorld->GetRoom(SICKBAY_0).GetCenter())
 	{
-		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld), this);
+		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld));
 	}
 }
 
@@ -141,12 +141,12 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 		Logger::LogEvent(GetName() + " cannot move!", true);
 	}*/
 
-	m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
+	m_OrderHandler.GiveOrder(new OrderWalk(goalPos));
 }
 
 void Crewmember::GiveOrder(IOrder* order) noexcept
 {
-	m_OrderHandler.GiveOrder(order, this);
+	m_OrderHandler.GiveOrder(order);
 }
 
 void Crewmember::LookForDoor(uint32 doorColor) noexcept
@@ -162,7 +162,7 @@ void Crewmember::LookForDoor(uint32 doorColor) noexcept
 
 			if (door->IsOpen() && door->GetColor() <= doorColor)
 			{
-				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
+				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false));
 			}
 		}
 	}
@@ -173,7 +173,7 @@ void Crewmember::GoToMedicBay(World* world)
 {
 	if (IsAbleToWalk())
 	{
-		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(world), this);
+		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(world));
 	}
 	else
 	{
@@ -497,5 +497,5 @@ void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
 {
 	GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-	m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
+	m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false));
 }

@@ -14,16 +14,16 @@ OrderToilet::~OrderToilet()
 {
 }
 
-void OrderToilet::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderToilet::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderToilet::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
+bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
 	if (!m_IsAtToilet)
 	{
-		if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+		if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 		{
 			m_IsAtToilet = true;
 			m_Position = GetCrewMember()->GetPosition();
@@ -73,25 +73,16 @@ bool OrderToilet::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, 
 	return false;
 }
 
-void OrderToilet::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderToilet::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	GetCrewMember()->SetPosition(m_Position);
 	GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 }
 
-void OrderToilet::AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
-{
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-	GetCrewMember()->SetPosition(m_Position);
-	GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
-
-	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
-}
-
-bool OrderToilet::AllowsMultipleOrders() noexcept
+bool OrderToilet::CanBeStackedWithSameType() noexcept
 {
 	return false;
 }

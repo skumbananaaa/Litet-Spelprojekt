@@ -2,9 +2,11 @@
 #include "../../Include/Game.h"
 #include "../../Include/Orders/OrderWalk.h"
 
-OrderHandler::OrderHandler(IOrderListener* pOrderListener)
+#define NOT_FOUND -1
+
+OrderHandler::OrderHandler(Crewmember* pCrewMember)
 {
-	m_pOrderListener = pOrderListener;
+	m_pCrewmember = pCrewMember;
 }
 
 OrderHandler::~OrderHandler()
@@ -15,133 +17,125 @@ OrderHandler::~OrderHandler()
 	}
 	m_OrderQueue.clear();
 
-	for (IOrder* order : m_OrdersToAbort)
+	for (IOrder* order : m_OrdersToDelete)
 	{
 		DeleteSafe(order);
 	}
-	m_OrdersToAbort.clear();
+	m_OrdersToDelete.clear();
 
 	std::cout << "Orders cleared" << std::endl;
 }
 
-void OrderHandler::GiveOrder(IOrder* order, Crewmember* crewMember) noexcept
+void OrderHandler::GiveOrder(IOrder* order) noexcept
 {
-	int index = -1;
-	if (!order->IsIdleOrder())
+	if (!IsCrewMemberAbleToExecuteOrder(order))
 	{
-		for (int32 i = m_OrderQueue.size() - 1; i >= 0; i--)
-		{
-			if (m_OrderQueue[i]->IsIdleOrder())
-			{
-				m_OrdersToAbort.push_back(m_OrderQueue[i]);
-				m_OrderQueue.erase(m_OrderQueue.begin() + i);
-			}
-		}
-	}
-
-	if (!CanExecuteOrder(order, crewMember))
-	{
-		m_OrdersToAbort.push_back(order);
+		DeleteSafe(order);
 		return;
 	}
-	else if (!order->AllowsMultipleOrders())
+
+	if (order->HasPriority())
 	{
-		for (int i = 0; i < m_OrderQueue.size(); i++)
-		{
-			if (m_OrderQueue[i]->GetName().compare(order->GetName()) == 0)
-			{
-				m_OrdersToAbort.push_back(m_OrderQueue[i]);
-				m_OrderQueue[i] = order;
-				index = i;
-				break;
-			}
-		}
-		if (index == -1)
-		{
-			index = m_OrderQueue.size();
-			m_OrderQueue.push_back(order);
-		}
+		RemoveAllOrders();
+		m_OrderQueue.push_back(order);
 	}
 	else
 	{
-		index = m_OrderQueue.size();
-		m_OrderQueue.push_back(order);
-	}
-	order->m_pCrewMember = crewMember;
+		if (!order->IsIdleOrder())
+		{
+			RemoveIdleOrders();
+		}
 
-	if (index == 0)
-	{
-		StartOrder();
+		if (!order->CanBeStackedWithSameType())
+		{
+			int index = ReplaceOrderOfSameType(order);
+			if (index > 0) //Order is put later in the stack
+			{
+				return;
+			}
+			else if (index == NOT_FOUND)
+			{
+				m_OrderQueue.push_back(order);
+				if (m_OrderQueue.size() > 1)
+				{
+					return;
+				}
+			}
+		}
+		else
+		{
+			m_OrderQueue.push_back(order);
+			if (m_OrderQueue.size() > 1)
+			{
+				return;
+			}
+		}
 	}
+
+	order->m_pCrewMember = m_pCrewmember;
+	StartNextExecutableOrder();
 }
 
 void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
-	//Abort all orders that wants to be deleted
-	for (int i = m_OrdersToAbort.size() - 1; i >= 0; i--)
-	{
-		if (m_OrdersToAbort[i]->ReadyToAbort())
-		{
-			m_OrdersToAbort[i]->AbortOrder(pScene, pWorld, pCrewMembers);
-			std::cout << "[" << m_OrdersToAbort[i]->GetName() << "] Order Aborted" << std::endl;
-			DeleteSafe(m_OrdersToAbort[i]);
-			m_OrdersToAbort.erase(m_OrdersToAbort.begin() + i);
-		}
-	}
-
+	DeleteRemovedOrders(pScene, pWorld, pCrewMembers);
+	
 	if (!m_OrderQueue.empty())
 	{
+		IOrder* pCurrentOrder = m_OrderQueue[0];
+
 		//Check if current order is still executable
-		if (!CanExecuteOrder(m_OrderQueue[0], m_OrderQueue[0]->GetCrewMember()))
+		if (!IsCrewMemberAbleToExecuteOrder(pCurrentOrder))
 		{
-			if (!StartOrder())
+			if (!StartNextExecutableOrder())
 			{
-				m_pOrderListener->OnAllOrdersFinished();
+				m_pCrewmember->OnAllOrdersFinished();
 			}
 			return;
 		}
 
 		//Update Current Order
-		if (m_OrderQueue[0]->UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+		if (pCurrentOrder->OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 		{
-			m_OrderQueue[0]->EndOrder(pScene, pWorld, pCrewMembers);
-			std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Ended" << std::endl;
-			//m_OrderQueue[0]->m_pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-			DeleteSafe(m_OrderQueue[0]);
-			m_OrderQueue.erase(m_OrderQueue.begin());
-
-			if (!StartOrder())
+			std::vector<IOrder*>::iterator iterator = std::find(m_OrderQueue.begin(), m_OrderQueue.end(), pCurrentOrder);
+			if (iterator != m_OrderQueue.end())
 			{
-				m_pOrderListener->OnAllOrdersFinished();
+				m_OrdersToDelete.push_back(pCurrentOrder);
+				m_OrderQueue.erase(iterator);
+				if (!StartNextExecutableOrder())
+				{
+					m_pCrewmember->OnAllOrdersFinished();
+				}
 			}
 		}
 	}
 }
 
-bool OrderHandler::StartOrder()
+bool OrderHandler::StartNextExecutableOrder()
 {
 	if (m_OrderQueue.empty())
 	{
 		return false;
 	}
-	else if (!CanExecuteOrder(m_OrderQueue[0], m_OrderQueue[0]->GetCrewMember()))
+	else if (!IsCrewMemberAbleToExecuteOrder(m_OrderQueue[0]))
 	{
-		m_OrdersToAbort.push_back(m_OrderQueue[0]);
+		m_OrdersToDelete.push_back(m_OrderQueue[0]);
 		m_OrderQueue.erase(m_OrderQueue.begin());
-		return StartOrder();
+		return StartNextExecutableOrder();
 	}
 
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
-	m_OrderQueue[0]->StartOrder(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
-	std::cout << "[" << m_OrderQueue[0]->GetName() << "] Order Started" << std::endl;
+	IOrder* pOrder = m_OrderQueue[0];
+	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
+	std::cout << "[" << pOrder->GetName() << "] Order Started" << std::endl;
 
-	m_pOrderListener->OnOrderStarted(m_OrderQueue[0]->IsIdleOrder());
+	m_pCrewmember->OnOrderStarted(pOrder->IsIdleOrder());
 	return true;
 }
 
-bool OrderHandler::CanExecuteOrder(IOrder* order, Crewmember* crewMember) noexcept
+bool OrderHandler::IsCrewMemberAbleToExecuteOrder(IOrder* order) noexcept
 {
-	if (!crewMember->IsAbleToWalk())
+	if (!m_pCrewmember->IsAbleToWalk())
 	{
 		OrderWalk* pOrderWalk = dynamic_cast<OrderWalk*>(order);
 		if (pOrderWalk)
@@ -149,7 +143,7 @@ bool OrderHandler::CanExecuteOrder(IOrder* order, Crewmember* crewMember) noexce
 			return false;
 		}
 	}
-	else if (!crewMember->IsAbleToWork())
+	else if (!m_pCrewmember->IsAbleToWork())
 	{
 		if (!order->CanExecuteIfHurt())
 		{
@@ -157,4 +151,54 @@ bool OrderHandler::CanExecuteOrder(IOrder* order, Crewmember* crewMember) noexce
 		}
 	}
 	return true;
+}
+
+void OrderHandler::RemoveIdleOrders() noexcept
+{
+	for (int32 i = m_OrderQueue.size() - 1; i >= 0; i--)
+	{
+		if (m_OrderQueue[i]->IsIdleOrder())
+		{
+			m_OrdersToDelete.push_back(m_OrderQueue[i]);
+			m_OrderQueue.erase(m_OrderQueue.begin() + i);
+		}
+	}
+}
+
+int OrderHandler::ReplaceOrderOfSameType(IOrder* order) noexcept
+{
+	for (int i = 0; i < m_OrderQueue.size(); i++)
+	{
+		if (m_OrderQueue[i]->GetName().compare(order->GetName()) == 0)
+		{
+			m_OrdersToDelete.push_back(m_OrderQueue[i]);
+			m_OrderQueue[i] = order;
+			return i;
+		}
+	}
+	return NOT_FOUND;
+}
+
+void OrderHandler::RemoveAllOrders() noexcept
+{
+	for (int i = 0; i < m_OrderQueue.size(); i++)
+	{
+		m_OrdersToDelete.push_back(m_OrderQueue[i]);
+	}
+	m_OrderQueue.clear();
+}
+
+void OrderHandler::DeleteRemovedOrders(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+{
+	for (int i = m_OrdersToDelete.size() - 1; i >= 0; i--)
+	{
+		IOrder* order = m_OrdersToDelete[i];
+		if (order->ReadyToAbort())
+		{
+			order->OnEnded(pScene, pWorld, pCrewMembers);
+			std::cout << "[" << order->GetName() << "] Order Ended" << std::endl;
+			DeleteSafe(order);
+			m_OrdersToDelete.erase(m_OrdersToDelete.begin() + i);
+		}
+	}
 }

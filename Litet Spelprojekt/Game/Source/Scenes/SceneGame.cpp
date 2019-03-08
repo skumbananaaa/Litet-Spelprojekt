@@ -42,6 +42,7 @@ SceneGame::SceneGame() : SceneInternal(false),
 SceneGame::~SceneGame()
 {
 	ScenarioManager::Reset();
+	OrderSchedule::Release();
 
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
@@ -70,11 +71,14 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	SetPaused(false);
 
-
 	//m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
-		m_Crew.GetMember(i)->GiveOrder(OrderSchedule::GetIdleOrder());
+		IOrder* pOrder = OrderSchedule::GetIdleOrder();
+		if (pOrder)
+		{
+			m_Crew.GetMember(i)->GiveOrder(pOrder);
+		}
 	}
 }
 

@@ -46,7 +46,7 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 
 			bool single = (m_pBed->GetMesh() == ResourceHandler::GetMesh(MESH::BED_SINGLE));
 			bool up = Random::GenerateBool();
-			float yOffset = (up && !single) ? 0.5f : -0.35f;
+			float yOffset = (up && !single) ? 0.6f : -0.35f;
 			if (rot == 0)
 			{
 				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, -0.4f));
@@ -80,11 +80,16 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 
 void OrderSleep::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
-	//GetCrewMember()->SetPosition(m_Position);
-	//GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
-
-	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+	if (m_IsAtBed)
+	{
+		GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+		GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
+		GetCrewMember()->SetPosition(m_Position);
+	}
+	else
+	{
+		OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+	}
 }
 
 bool OrderSleep::CanBeStackedWithSameType() noexcept

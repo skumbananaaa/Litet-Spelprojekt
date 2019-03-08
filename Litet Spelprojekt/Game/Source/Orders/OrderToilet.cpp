@@ -75,11 +75,16 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 
 void OrderToilet::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
-	//GetCrewMember()->SetPosition(m_Position);
-	//GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
-
-	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+	if (m_IsAtToilet)
+	{
+		GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+		GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
+		GetCrewMember()->SetPosition(m_Position);
+	}
+	else
+	{
+		OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+	}
 }
 
 bool OrderToilet::CanBeStackedWithSameType() noexcept

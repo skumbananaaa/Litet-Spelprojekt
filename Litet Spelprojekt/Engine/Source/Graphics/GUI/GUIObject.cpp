@@ -112,10 +112,6 @@ void GUIObject::Remove(GUIObject* objectToRemove) noexcept
 		objectToRemove->RemoveMouseListener(this);
 		objectToRemove->m_pParent = nullptr;
 
-		std::cout << "Deleting: ";
-		objectToRemove->PrintName();
-		std::cout << std::endl << objectToRemove << std::endl;
-
 		DeleteSafe(objectToRemove);
 	}
 	else

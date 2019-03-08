@@ -114,7 +114,6 @@ private:
 
 private:
 	//UTILITY
-	World* m_pWorld;
 	glm::ivec3 m_PlayerTile;
 	glm::vec3 m_Direction;
 	bool m_IsPicked;

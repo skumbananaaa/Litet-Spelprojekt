@@ -16,7 +16,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_GearIsEquipped(false)
 {
 	SetName(name);
-	m_pWorld = world;
+	SetWorld(world);
 	m_IsPicked = false;
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));

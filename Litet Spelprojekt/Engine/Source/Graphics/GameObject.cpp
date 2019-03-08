@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics\GameObject.h>
+#include <World/World.h>
 
 GameObject::GameObject() noexcept
 	: m_pMesh(nullptr),
@@ -119,14 +120,7 @@ void GameObject::UpdateParallel(float dtS) noexcept
 {
 	if (IsVisible())
 	{
-		/*if (pWorld != nullptr)
-		{
-			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
-		}*/
-
-		bool roomIsActive = true;
-
-		if (roomIsActive || !IsHidden())
+		if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
 		{
 			Lock();
 			const AnimatedSkeleton& skeleton = *GetSkeleton();

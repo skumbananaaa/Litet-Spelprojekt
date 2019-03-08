@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include <System/IMultiUpdater.h>
 
+class World;
 class Scene;
 
 class API GameObject : public IMultiUpdater
@@ -81,6 +82,7 @@ public:
 
 	void Lock() noexcept;
 	void Unlock() noexcept;
+	void SetWorld(World* pWorld) noexcept;
 
 protected:
 	bool m_IsDirty;
@@ -90,6 +92,7 @@ protected:
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
 	glm::vec3 m_Direction;
+	World* m_pWorld;
 
 private:
 	std::string m_Name;
@@ -281,4 +284,9 @@ inline void GameObject::Lock() noexcept
 inline void GameObject::Unlock() noexcept
 {
 	m_Mutex.unlock();
+}
+
+inline void GameObject::SetWorld(World* pWorld) noexcept
+{
+	m_pWorld = pWorld;
 }

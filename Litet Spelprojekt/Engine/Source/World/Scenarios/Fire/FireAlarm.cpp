@@ -24,7 +24,6 @@ void FireAlarm::SetPosition(const glm::vec3& position) noexcept
 {
 	GameObject::SetPosition(position);
 	m_pAudioSrc->SetPosition(position);
-	OnSmokeDetected();
 }
 
 bool FireAlarm::HasDetected() const noexcept
@@ -61,7 +60,7 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 
 void FireAlarm::OnSmokeDetected() noexcept
 {
-	//Logger::LogEvent("Smoke Detected!", true);
+	Logger::LogEvent("Smoke Detected!", true);
 
 	glm::mat4 transformObject(1.0f);
 	const glm::vec4& rotation = GetRotation();
@@ -73,5 +72,5 @@ void FireAlarm::OnSmokeDetected() noexcept
 	m_pSpotlight = LightManager::AcquireSpotlight(pos, glm::cos(glm::radians(20.5f)), glm::cos(glm::radians(40.5f)), glm::vec3(1, 0, 0), glm::vec4(1.0, 0.25, 0.0, 1.0));
 
 	m_Rotation = 0;
-	//m_pAudioSrc->Play();
+	m_pAudioSrc->Play();
 }

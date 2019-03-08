@@ -28,7 +28,14 @@ uint32 TEXTURE::ICON_CROSSED = 0;
 uint32 TEXTURE::SMOKE = 0;
 uint32 TEXTURE::SJOFAN_DIFF = 0;
 uint32 TEXTURE::WALL1 = 0;
-uint32 TEXTURE::FLOOR1 = 0;
+uint32 TEXTURE::FLOOR_NORMAL = 0;
+uint32 TEXTURE::FLOOR_SICKBAY = 0;
+uint32 TEXTURE::FLOOR_MACHINE1 = 0;
+uint32 TEXTURE::FLOOR_MACHINE2 = 0;
+uint32 TEXTURE::FLOOR_MACHINE3 = 0;
+uint32 TEXTURE::FLOOR_AMMUNITION1 = 0;
+uint32 TEXTURE::FLOOR_AMMUNITION2 = 0;
+uint32 TEXTURE::FLOOR_AMMUNITION3 = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -63,7 +70,14 @@ void TEXTURE::RegisterResources()
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
 	WALL1				= ResourceHandler::RegisterTexture2D("wallTexture.jpg", TEX_FORMAT_RGBA, true, false, params);
-	FLOOR1				= ResourceHandler::RegisterTexture2D("floorTexture.jpg", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_NORMAL		= ResourceHandler::RegisterTexture2D("normalFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_SICKBAY		= ResourceHandler::RegisterTexture2D("sickbayFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_MACHINE1		= ResourceHandler::RegisterTexture2D("machineFloorTexture1.png", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_MACHINE2		= ResourceHandler::RegisterTexture2D("machineFloorTexture2.png", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_MACHINE3		= ResourceHandler::RegisterTexture2D("machineFloorTexture3.png", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_AMMUNITION1	= ResourceHandler::RegisterTexture2D("ammunitionFloorTexture1.png", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_AMMUNITION2	= ResourceHandler::RegisterTexture2D("ammunitionFloorTexture2.png", TEX_FORMAT_RGBA, true, false, params);
+	FLOOR_AMMUNITION3	= ResourceHandler::RegisterTexture2D("ammunitionFloorTexture3.png", TEX_FORMAT_RGBA, true, false, params);
 
 	ICON_INJURY_BLEED	= ResourceHandler::RegisterTexture2D("Icons/InjuryBleed.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);

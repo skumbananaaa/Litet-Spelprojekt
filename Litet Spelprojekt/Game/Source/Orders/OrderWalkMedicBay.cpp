@@ -1,7 +1,7 @@
 #include "../../Include/Orders/OrderWalkMedicBay.h"
 #include <World/World.h>
 OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld): OrderWalk(glm::ivec3(pWorld->GetRoom(SICKBAY_0).GetCenter()))
-{
+{ 
 }
 
 OrderWalkMedicBay::~OrderWalkMedicBay()

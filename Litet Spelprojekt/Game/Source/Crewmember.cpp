@@ -439,7 +439,7 @@ void Crewmember::UpdateHealth(float dt)
 
 void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexcept
 {
-	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	if (m_Group == SMOKE_DIVER && m_GearIsEquipped)
 	{
 		return;
 	}
@@ -466,7 +466,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 
 void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
-	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	if (m_Group == SMOKE_DIVER && m_GearIsEquipped)
 	{
 		return;
 	}

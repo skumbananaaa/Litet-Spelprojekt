@@ -218,6 +218,8 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			tile.SmokeAmount -= spread * rest;
 		}
 
+		tile.SmokeAmount -= SMOKE_DISSOLVE_RATE * dtS;
+
 		((MeshEmitter*)tile.GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE])->SetParticlesPerSeconds(tile.SmokeAmount / 50);
 	}
 

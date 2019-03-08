@@ -4,6 +4,7 @@
 #include <World/Room.h>
 #include <Graphics/Scene.h>
 #include <System/Input.h>
+#include <System/Random.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/string_cast.hpp>
@@ -251,32 +252,66 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 {
 	if (globalIndex >= SICKBAY_INTERVAL_START && globalIndex <= SICKBAY_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_SICKBAY;
 	}
 	else if (globalIndex >= TOILET_INTERVAL_START && globalIndex <= TOILET_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 	else if (globalIndex >= MACHINE_ROOM_INTERVAL_START && globalIndex <= MACHINE_ROOM_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		float randomFloat = Random::GenerateFloat(0.0f, 1.0f);
+
+		if (randomFloat < 0.5f)
+		{
+			return MATERIAL::FLOOR_NORMAL;
+		}
+		else if (randomFloat < 0.667f)
+		{
+			return MATERIAL::FLOOR_MACHINE1;
+		}
+		else if (randomFloat < 0.833f)
+		{
+			return MATERIAL::FLOOR_MACHINE2;
+		}
+		else 
+		{
+			return MATERIAL::FLOOR_MACHINE3;
+		}
 	}
 	else if (globalIndex >= AMMUNITION_ROOM_INTERVAL_START && globalIndex <= AMMUNITION_ROOM_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		float randomFloat = Random::GenerateFloat(0.0f, 1.0f);
+
+		if (randomFloat < 0.5f)
+		{
+			return MATERIAL::FLOOR_NORMAL;
+		}
+		else if (randomFloat < 0.667f)
+		{
+			return MATERIAL::FLOOR_AMMUNITION1;
+		}
+		else if (randomFloat < 0.833f)
+		{
+			return MATERIAL::FLOOR_AMMUNITION2;
+		}
+		else
+		{
+			return MATERIAL::FLOOR_AMMUNITION3;
+		}
 	}
 	else if (globalIndex >= KITCHEN_INTERVAL_START && globalIndex <= KITCHEN_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 
-	return MATERIAL::FLOOR;
+	return MATERIAL::FLOOR_NORMAL;
 }

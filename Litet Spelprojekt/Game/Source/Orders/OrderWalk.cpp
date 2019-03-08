@@ -18,7 +18,6 @@ OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 OrderWalk::~OrderWalk()
 {
 	DeleteSafe(m_pPathFinder);
-	std::cout << "Borta: " << this << std::endl;
 }
 
 void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept

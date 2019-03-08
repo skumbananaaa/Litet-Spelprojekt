@@ -28,6 +28,8 @@ OrderHandler::~OrderHandler()
 
 void OrderHandler::GiveOrder(IOrder* order) noexcept
 {
+	order->m_pCrewMember = m_pCrewmember;
+
 	if (!IsCrewMemberAbleToExecuteOrder(order))
 	{
 		DeleteSafe(order);
@@ -71,8 +73,6 @@ void OrderHandler::GiveOrder(IOrder* order) noexcept
 			}
 		}
 	}
-
-	order->m_pCrewMember = m_pCrewmember;
 	StartNextExecutableOrder();
 }
 

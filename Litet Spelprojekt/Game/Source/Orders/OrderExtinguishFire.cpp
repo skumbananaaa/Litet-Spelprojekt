@@ -44,8 +44,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 				{
 					m_EquippingGearTimer = 0.0f;
 					pCrewMember->SetGearIsEquipped(true);
-					//pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, true));
-					OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_BurningTile);
+					pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
 					return false;
 				}
 			}
@@ -101,13 +100,14 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 						m_FireFullyExtinguished = true;
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
-						OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_RoomTile);
+						pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
 						return false;
 					}
 
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
-					OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_BurningTile);
+					pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
+					return false;
 				}
 
 				//Extinguish Fire
@@ -123,7 +123,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 				{
 					m_BurningTile = correctTargetTile;
 					m_RoomBurningId = ppLevel[correctTargetTile.x][correctTargetTile.z];
-					OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_BurningTile);
+					pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
 					return false;
 				}
 			}
@@ -144,9 +144,12 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 				//Equip Gear
 				if ((m_EquippingGearTimer += dtS) > TIME_TO_EQUIP_GEAR)
 				{
-					m_EquippingGearTimer = 0.0f;
-					pCrewMember->SetGearIsEquipped(false);
-					return true;
+					if (ReadyToAbort())
+					{
+						m_EquippingGearTimer = 0.0f;
+						pCrewMember->SetGearIsEquipped(false);
+						return true;
+					}
 				}
 			}
 		}

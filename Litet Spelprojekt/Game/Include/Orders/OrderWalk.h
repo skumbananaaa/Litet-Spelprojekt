@@ -26,7 +26,6 @@ public:
 
 protected:
 	bool FollowPath(float dtS) noexcept;
-	void RestartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, const glm::ivec3& goalTile) noexcept;
 
 protected:
 	glm::ivec3 m_GoalTile;

@@ -144,7 +144,9 @@ inline void GameObject::SetMesh(int32 mesh) noexcept
 
 inline void GameObject::SetAnimatedMesh(int32 mesh) noexcept
 {
-	UpdateAnimatedMesh(mesh);
+	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+
+	DeleteSafe(m_pASkeleton);
 	m_pASkeleton = new AnimatedSkeleton();
 }
 

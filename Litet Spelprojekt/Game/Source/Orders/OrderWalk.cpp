@@ -18,6 +18,7 @@ OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 OrderWalk::~OrderWalk()
 {
 	DeleteSafe(m_pPathFinder);
+	std::cout << "Borta" << std::endl;
 }
 
 void OrderWalk::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
@@ -98,12 +99,12 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 void OrderWalk::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-	DeleteSafe(m_pPathFinder);
+	std::cout << "End" << std::endl;
 }
 
 void OrderWalk::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
-	DeleteSafe(m_pPathFinder);
+	std::cout << "Abort" << std::endl;
 }
 
 bool OrderWalk::AllowsMultipleOrders() noexcept
@@ -179,19 +180,4 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 	}
 
 	return false;
-}
-
-void OrderWalk::RestartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, const glm::ivec3& goalTile) noexcept
-{
-	//Cleanup
-	DeleteSafe(m_pPathFinder);
-
-	//Reinit
-	m_pPathFinder = nullptr;
-	m_pPath = nullptr;
-	m_IsPathReady = false;
-	m_GoalTile = glm::ivec3(goalTile.x, goalTile.y / 2, goalTile.z);
-
-	//Start
-	StartOrder(pScene, pWorld, pCrewMembers);
 }

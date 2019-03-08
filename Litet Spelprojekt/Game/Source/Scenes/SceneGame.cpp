@@ -6,6 +6,7 @@
 #include "../../Include/GameObjectDoor.h"
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Orders/OrderSchedule.h"
+#include <Graphics/Materials/MaterialBase.h>
 
 SceneGame::SceneGame() : SceneInternal(false),
 	m_pWorld(nullptr),
@@ -18,13 +19,14 @@ SceneGame::SceneGame() : SceneInternal(false),
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
+	LightManager::Init(this, NUM_SPOT_LIGHTS);
+
 	CreateAudio();
 	CreateGameObjects();
 	CreateWorld();
 	CreateCrew();
 
 	OrderSchedule::Init(this);
-	LightManager::Init(this, 2);
 	ScenarioManager::Init(m_pWorld);
 
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
@@ -35,8 +37,6 @@ SceneGame::SceneGame() : SceneInternal(false),
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
 	GetCamera().SetMaxPitch(0.0f);
-
-	ScenarioManager::StartScenario(2);
 }
 
 SceneGame::~SceneGame()
@@ -70,11 +70,13 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	SetPaused(false);
 
-
-	//m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
-		m_Crew.GetMember(i)->GiveOrder(OrderSchedule::GetIdleOrder());
+		IOrder* pOrder = OrderSchedule::GetIdleOrder();
+		if (pOrder)
+		{
+			m_Crew.GetMember(i)->GiveOrder(pOrder);
+		}
 	}
 }
 

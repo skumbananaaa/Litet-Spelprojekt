@@ -152,7 +152,7 @@ void main()
 		float epsilon = g_SpotLights[i].Angle - g_SpotLights[i].OuterAngle;
 		float intensity = 10 * clamp((theta - g_SpotLights[i].OuterAngle) / epsilon, 0.0, 1.0);
 	
-		vec3 lightCol = g_SpotLights[i].Color.rgb * attenuation;
+		vec3 lightCol = g_SpotLights[i].Color.rgb * attenuation * intensity;
 		if(theta > g_SpotLights[i].OuterAngle)
 		{
 			lightColor += CalcLightContribution(lightDir, lightCol, normal);

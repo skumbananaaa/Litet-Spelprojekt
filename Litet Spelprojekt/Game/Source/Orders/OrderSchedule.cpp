@@ -25,12 +25,12 @@ IOrder* OrderSchedule::GetIdleOrder()
 {
 	uint32 order = Random::GenerateInt(0, 1);
 	GameObject* pGameObject = nullptr;
-	if (order == 0)
+	if (order == 0 && !s_Beds.empty())
 	{
 		pGameObject = s_Beds[Random::GenerateInt(0, s_Beds.size() - 1)];
 		return new OrderSleep(pGameObject->GetTile(), pGameObject);
 	}
-	else if (order == 1)
+	else if (order == 1 && !s_Toilets.empty())
 	{
 		pGameObject = s_Toilets[Random::GenerateInt(0, s_Toilets.size() - 1)];
 		return new OrderToilet(pGameObject->GetTile(), pGameObject);

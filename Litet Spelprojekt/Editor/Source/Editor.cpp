@@ -1722,6 +1722,7 @@ void Editor::OnKeyDown(KEY keycode)
 				GameObject* pGameObject = ResourceHandler::CreateGameObject(id);
 				pGameObject->SetPosition(original->GetPosition());
 				pGameObject->SetRotation(original->GetRotation());
+				pGameObject->UpdateTransform();
 				GetCurrentScene()->AddGameObject(pGameObject);
 
 				CreateMesh(pGameObject, ResourceHandler::GetGameObjectName(id));

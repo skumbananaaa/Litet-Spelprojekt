@@ -129,8 +129,8 @@ void UICrew::OnButtonNotHovered(Button* button)
 
 void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 {
-		progressButton->SetPercentage(0.0);
-		progressButton->SetTextColor(GUIContext::COLOR_WHITE);
+	progressButton->SetPercentage(0.0);
+	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
 	int32 shipnumber = reinterpret_cast<uint32>(progressButton->GetUserData());
 	Game::GetGame()->m_pSceneGame->ShowCrewmember(shipnumber);
 	Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipnumber);

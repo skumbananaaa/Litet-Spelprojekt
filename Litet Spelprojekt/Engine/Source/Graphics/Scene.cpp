@@ -16,6 +16,11 @@ Scene::~Scene()
 
 	DeleteSafe(m_pSkyBox);
 
+	for (size_t i = 0; i < m_AnimatedDrawables.size(); i++)
+	{
+		ThreadHandler::RemoveMultiUpdater(m_AnimatedDrawables[i]);
+	}
+
 	for (size_t i = 0; i < m_GameObjects.size(); i++)
 	{
 		DeleteSafe(m_GameObjects[i]);
@@ -111,6 +116,7 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	if (pGameObject->HasAnimatedMesh() && pGameObject->HasMaterial())
 	{
 		m_AnimatedDrawables.push_back(pGameObject);
+		ThreadHandler::AddMultiUpdater(pGameObject);
 	}
 	
 	if (pGameObject->HasDecal())
@@ -208,6 +214,7 @@ void Scene::RemoveGameObject(GameObject* pGameObject) noexcept
 		{
 			if (m_AnimatedDrawables[i] == pGameObject)
 			{
+				ThreadHandler::RemoveMultiUpdater(pGameObject);
 				m_AnimatedDrawables.erase(m_AnimatedDrawables.begin() + i);
 				break;
 			}

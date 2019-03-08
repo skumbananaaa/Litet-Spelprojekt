@@ -35,6 +35,7 @@ void LightManager::Release() noexcept
 		}
 	}
 	s_Spotlights.clear();
+	s_SpotlightsInUse.clear();
 }
 
 SpotLight* LightManager::AcquireSpotlight(const glm::vec3& pos, float innerAngle, float outerAngle, const glm::vec3& direction, const glm::vec4& color) noexcept
@@ -70,6 +71,7 @@ SpotLight* LightManager::AcquireSpotlight(const glm::vec3& pos, float innerAngle
 	result->SetOuterCutOffAngle(outerAngle);
 	result->SetDirection(direction);
 	result->SetColor(color);
+	result->UpdateTransform();
 	return result;
 }
 

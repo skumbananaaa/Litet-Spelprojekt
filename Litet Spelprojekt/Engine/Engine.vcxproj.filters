@@ -193,6 +193,7 @@
     <ClInclude Include="Include\Graphics\GUI\TextField.h" />
     <ClInclude Include="Include\Graphics\Textures\StaticShadowCube.h" />
     <ClInclude Include="Include\Graphics\IGLObject.h" />
+    <ClInclude Include="Include\System\IMultiUpdater.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

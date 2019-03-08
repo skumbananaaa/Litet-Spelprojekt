@@ -7,15 +7,17 @@
 #include <Graphics/Materials/Decal.h>
 #include <IO/ResourceHandler.h>
 #include "Camera.h"
+#include <System/IMultiUpdater.h>
 
 class Scene;
 
-class API GameObject
+class API GameObject : public IMultiUpdater
 {
 public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
+	virtual void UpdateParallel(float dtS) noexcept override;
 	virtual void Update(const Camera& camera, float deltaTime) noexcept;
 	virtual void UpdateTransform() noexcept;
 	
@@ -77,6 +79,9 @@ public:
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
 
+	void Lock() noexcept;
+	void Unlock() noexcept;
+
 protected:
 	bool m_IsDirty;
 	bool m_IsVisible;
@@ -100,6 +105,7 @@ private:
 	int32 m_TypeId;
 	int32 m_Room;
 	bool m_IsHidden = false;
+	std::mutex m_Mutex;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -144,10 +150,12 @@ inline void GameObject::SetMesh(int32 mesh) noexcept
 
 inline void GameObject::SetAnimatedMesh(int32 mesh) noexcept
 {
+	Lock();
 	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
 
 	DeleteSafe(m_pASkeleton);
 	m_pASkeleton = new AnimatedSkeleton();
+	Unlock();
 }
 
 inline void GameObject::UpdateAnimatedMesh(int32 mesh) noexcept
@@ -263,4 +271,14 @@ inline void GameObject::SetTypeId(int32 typeId) noexcept
 inline int32 GameObject::GetTypeId() const noexcept
 {
 	return m_TypeId;
+}
+
+inline void GameObject::Lock() noexcept
+{
+	m_Mutex.lock();
+}
+
+inline void GameObject::Unlock() noexcept
+{
+	m_Mutex.unlock();
 }

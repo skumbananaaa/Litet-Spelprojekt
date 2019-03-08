@@ -104,6 +104,7 @@
     <ClInclude Include="Include\System\Application.h" />
     <ClInclude Include="Include\Defines.h" />
     <ClInclude Include="Include\System\CPUProfiler.h" />
+    <ClInclude Include="Include\System\IMultiUpdater.h" />
     <ClInclude Include="Include\System\Input.h" />
     <ClInclude Include="Include\System\IRunnable.h" />
     <ClInclude Include="Include\System\Random.h" />

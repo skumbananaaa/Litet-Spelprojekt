@@ -115,6 +115,27 @@ void GameObject::UpdateTransform() noexcept
 	}
 }
 
+void GameObject::UpdateParallel(float dtS) noexcept
+{
+	if (IsVisible())
+	{
+		/*if (pWorld != nullptr)
+		{
+			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
+		}*/
+
+		bool roomIsActive = true;
+
+		if (roomIsActive || !IsHidden())
+		{
+			Lock();
+			const AnimatedSkeleton& skeleton = *GetSkeleton();
+			skeleton.UpdateBoneTransforms(dtS, GetAnimatedMesh());
+			Unlock();
+		}
+	}
+}
+
 void GameObject::Update(const Camera& camera, float deltaTime) noexcept
 {
 }

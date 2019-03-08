@@ -10,8 +10,8 @@ FireAlarm::FireAlarm(int32 source) : GameObject(),
 {
 	m_pAudioSrc = AudioSource::CreateSoundSource(source);
 	m_pAudioSrc->SetRollOffFactor(10.0f);
-	m_pAudioSrc->SetReferenceDistance(0.0f);
-	m_pAudioSrc->SetMaxDistance(500.0f);
+	m_pAudioSrc->SetReferenceDistance(2.0f);
+	m_pAudioSrc->SetMaxDistance(250.0f);
 	m_pAudioSrc->SetLooping(true);
 
 	//Set

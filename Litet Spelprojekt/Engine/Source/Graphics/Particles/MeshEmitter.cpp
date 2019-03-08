@@ -169,6 +169,12 @@ void MeshEmitter::SetConeAngle(float angleRad) noexcept
 	m_ConeAngle = abs(angleRad);
 }
 
+void MeshEmitter::SetPosition(const glm::vec3& position) noexcept
+{
+	GameObject::SetPosition(position);
+	m_IsDirty = true;
+}
+
 void MeshEmitter::SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept
 {
 	m_BeginScale = begin;

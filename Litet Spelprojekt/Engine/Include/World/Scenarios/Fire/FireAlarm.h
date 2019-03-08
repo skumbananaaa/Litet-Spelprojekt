@@ -18,7 +18,6 @@ public:
 	void TurnOff() noexcept;
 
 private:
-	bool m_FireDetected;
 	float m_Rotation;
 	AudioSource* m_pAudioSrc;
 	SpotLight* m_pSpotlight;

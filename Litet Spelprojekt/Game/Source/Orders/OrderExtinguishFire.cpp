@@ -25,26 +25,26 @@ void OrderExtinguishFire::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMem
 
 bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
-	Crewmember* pCrewMember = GetCrewMember();
+	Crewmember* pCrewmember = GetCrewMember();
 
 	if (!m_FireFullyExtinguished)
 	{
-		if (!pCrewMember->HasGearEquipped())
+		if (!pCrewmember->HasGearEquipped())
 		{
 			//Run To Room
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				if (m_EquippingGearTimer <= 0.00001f)
 				{
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 				}
 
 				//Equip Gear
 				if ((m_EquippingGearTimer += dtS) > TIME_TO_EQUIP_GEAR)
 				{
 					m_EquippingGearTimer = 0.0f;
-					pCrewMember->SetGearIsEquipped(true);
-					pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
+					pCrewmember->SetGearIsEquipped(true);
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
 					return false;
 				}
 			}
@@ -62,7 +62,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				if (!m_ExtinguishingFire)
 				{
 					m_ExtinguishingFire = true;
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
 				}
 
 				glm::ivec3 generalDirection = glm::round(GetCrewMember()->GetDirection());
@@ -90,7 +90,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				if (allFiresExtinguished)
 				{
 					m_ExtinguishingFire = false;
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 					glm::ivec2 newTarget = FindClosestBurningTile(ppLevel, ppLevelData, levelSize, glm::ivec2(m_BurningTile.x, m_BurningTile.z));
 
 					std::cout << "New Target: " << glm::to_string(newTarget) << std::endl;
@@ -100,13 +100,13 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_FireFullyExtinguished = true;
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
-						pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
+						pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
 						return false;
 					}
 
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
-					pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
 					return false;
 				}
 
@@ -123,7 +123,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				{
 					m_BurningTile = correctTargetTile;
 					m_RoomBurningId = ppLevel[correctTargetTile.x][correctTargetTile.z];
-					pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewMember->HasGearEquipped()));
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
 					return false;
 				}
 			}
@@ -131,14 +131,14 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 	}
 	else
 	{
-		if (pCrewMember->HasGearEquipped())
+		if (pCrewmember->HasGearEquipped())
 		{
 			//Run To Room
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				if (m_EquippingGearTimer <= 0.00001f)
 				{
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 				}
 
 				//Equip Gear
@@ -147,7 +147,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					if (ReadyToAbort())
 					{
 						m_EquippingGearTimer = 0.0f;
-						pCrewMember->SetGearIsEquipped(false);
+						pCrewmember->SetGearIsEquipped(false);
 						return true;
 					}
 				}

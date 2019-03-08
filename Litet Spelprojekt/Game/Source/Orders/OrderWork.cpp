@@ -26,9 +26,10 @@ bool OrderWork::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 		{
 			m_IsAtInstrument = true;
-			m_Position = GetCrewMember()->GetPosition();
+			Crewmember* pCrewmember = GetCrewMember();
+			m_Position = pCrewmember->GetPosition();
 
-			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
 
 			float yaw = m_pInstrument->GetRotation().w;
 			while (yaw > glm::two_pi<float>())
@@ -44,23 +45,23 @@ bool OrderWork::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			int rot = yaw / glm::half_pi<float>();
 			if (rot == 0)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.3f, 0.0f, 0.0));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.3f, 0.0f, 0.0));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 			else if (rot == 1)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.0, -0.3f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0, -0.3f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 			else if (rot == 2)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.3f, 0.0f, 0.0));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(-0.3f, 0.0f, 0.0));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 			else if (rot == 3)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.0, 0.3f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0, 0.3f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 		}
 	}
@@ -77,9 +78,10 @@ void OrderWork::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexce
 {
 	if (m_IsAtInstrument)
 	{
-		GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
-		GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
+		Crewmember* pCrewmember = GetCrewMember();
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 		GetCrewMember()->SetPosition(m_Position);
+		pCrewmember->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 	}
 	else
 	{

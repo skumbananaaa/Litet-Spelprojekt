@@ -60,10 +60,10 @@ void Crewmember::SetRoom(uint32 room) noexcept
 {
 	if (m_pWorld->GetRoom(GetRoom()).IsActive())
 	{
-		if (GetRoom() != room)
+		if (GetRoom() != room && m_IsPicked)
 		{
+			m_pWorld->SetRoomActive(room, true, GetRoom(), true);
 			m_pWorld->SetRoomActive(GetRoom(), false);
-			m_pWorld->SetRoomActive(room, true);
 		}
 	}
 
@@ -322,12 +322,14 @@ void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
-	
-	glm::ivec3 tile = GetTile();
+
+	/*glm::ivec3 tile = GetTile();
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
 	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetRoomActive(roomIndex, true);
+	m_pWorld->SetRoomActive(roomIndex, true);*/
 	m_Idleing = true;
+
+	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 
 	GiveOrder(OrderSchedule::GetIdleOrder());
 }

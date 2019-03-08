@@ -28,9 +28,10 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 		if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 		{
 			m_IsAtBed = true;
-			m_Position = GetCrewMember()->GetPosition();
+			Crewmember* pCrewmember = GetCrewMember();
+			m_Position = pCrewmember->GetPosition();
 			
-			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
 
 			float yaw = m_pBed->GetRotation().w;
 			while (yaw > glm::two_pi<float>())
@@ -49,23 +50,23 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 			float yOffset = (up && !single) ? 0.6f : -0.35f;
 			if (rot == 0)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, -0.4f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, yOffset, -0.4f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 1)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.4f, yOffset, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(-0.4f, yOffset, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 			else if (rot == 2)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, 0.4f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, yOffset, 0.4f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 			else if (rot == 3)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.4f, yOffset, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.4f, yOffset, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 		}
 	}
@@ -82,9 +83,10 @@ void OrderSleep::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexc
 {
 	if (m_IsAtBed)
 	{
-		GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
-		GetCrewMember()->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
+		Crewmember* pCrewmember = GetCrewMember();
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 		GetCrewMember()->SetPosition(m_Position);
+		pCrewmember->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 	}
 	else
 	{

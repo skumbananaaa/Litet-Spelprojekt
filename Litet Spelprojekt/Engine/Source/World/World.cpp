@@ -341,7 +341,7 @@ void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 	}
 }
 
-void World::SetRoomActive(uint32 roomID, bool isActive) noexcept
+void World::SetRoomActive(uint32 roomID, bool isActive, uint32 lastRoom, bool keepTimer) noexcept
 {
 	if (isActive)
 	{
@@ -357,7 +357,14 @@ void World::SetRoomActive(uint32 roomID, bool isActive) noexcept
 
 			m_Rooms[roomID].SetActive(true);
 			m_RoomLights[roomID]->SetIsVisible(true);
-			m_RoomLightsTimers[roomID] = 0.0f;
+			if (keepTimer)
+			{
+				m_RoomLightsTimers[roomID] = m_RoomLightsTimers[lastRoom];
+			}
+			else
+			{
+				m_RoomLightsTimers[roomID] = 0.0f;
+			}
 			m_ActiveRooms.emplace_back(roomID);
 		}
 	}

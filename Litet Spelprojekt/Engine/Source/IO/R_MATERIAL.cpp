@@ -22,7 +22,7 @@ uint32 MATERIAL::INSTRUMENT_1 = 0;
 uint32 MATERIAL::INSTRUMENT_2 = 0;
 uint32 MATERIAL::LAMP = 0;
 uint32 MATERIAL::CHAIR = 0;
-uint32 MATERIAL::CUBOARD = 0;
+uint32 MATERIAL::CUPBOARD = 0;
 uint32 MATERIAL::TABLE = 0;
 uint32 MATERIAL::TOILET = 0;
 uint32 MATERIAL::ANIMATED_MODEL = 0;
@@ -63,7 +63,7 @@ void MATERIAL::RegisterResources()
 	ANIMATED_MODEL		= ResourceHandler::RegisterMaterial(TEXTURE::SJOFAN_DIFF, SHADER::ANIMATION);
 	INSTRUMENT_1		= ResourceHandler::RegisterMaterial(TEXTURE::INSTRUMENT_1, SHADER::STANDARD_MATERIAL);
 	INSTRUMENT_2		= ResourceHandler::RegisterMaterial(TEXTURE::INSTRUMENT_2, SHADER::STANDARD_MATERIAL);
-	CUBOARD				= ResourceHandler::RegisterMaterial(TEXTURE::CUBOARD, SHADER::STANDARD_MATERIAL);
+	CUPBOARD			= ResourceHandler::RegisterMaterial(TEXTURE::CUPBOARD, SHADER::STANDARD_MATERIAL);
 	TABLE				= ResourceHandler::RegisterMaterial(TEXTURE::TABLE, SHADER::STANDARD_MATERIAL);
 	TOILET				= ResourceHandler::RegisterMaterial(TEXTURE::TOILET, SHADER::STANDARD_MATERIAL);
 	CHAIR				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);

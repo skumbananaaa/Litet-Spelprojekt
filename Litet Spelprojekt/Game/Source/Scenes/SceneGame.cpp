@@ -71,14 +71,14 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	SetPaused(false);
 
-	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+	/*for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
 		IOrder* pOrder = OrderSchedule::GetIdleOrder();
 		if (pOrder)
 		{
 			m_Crew.GetMember(i)->GiveOrder(pOrder);
 		}
-	}
+	}*/
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept

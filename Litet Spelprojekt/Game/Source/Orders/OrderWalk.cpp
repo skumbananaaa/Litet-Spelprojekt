@@ -65,9 +65,10 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 			}
 		}
-		else if (!door1->IsClosed() && door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && crewTile != m_TargetTile && m_OopsIForgot > pCrewmember->GetForgetfulness())
+		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && crewTile != m_TargetTile && m_OopsIForgot > pCrewmember->GetForgetfulness())
 		{
 			// Close door after passing through
+			door1->AccessRequest(pCrewmember->GetShipNumber());
 			if (door1->IsOpen())
 			{
 				pCrewmember->SetDirection(-pCrewmember->GetDirection());

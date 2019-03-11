@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenarios\ScenarioArtillery.h"
+﻿#include "..\..\Include\Scenarios\ScenarioArtillery.h"
 #include "..\..\Include\Scenarios\ScenarioManager.h"
 #include "..\..\Include\Game.h"
 #include <System/Random.h>

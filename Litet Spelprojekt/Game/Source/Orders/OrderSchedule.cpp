@@ -17,23 +17,23 @@ void OrderSchedule::Init(Scene* pScene)
 {
 	GameObject* pGameObject = nullptr;
 	//Find beds
-	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Bunk Bed" + std::to_string(i))) != nullptr; i++)
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Våningssäng" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Beds.push_back(pGameObject);
 	}
-	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Single Bed" + std::to_string(i))) != nullptr; i++)
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Enkelsäng" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Beds.push_back(pGameObject);
 	}
 
 	//Find toilets
-	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Toilet" + std::to_string(i))) != nullptr; i++)
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Toalett" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Toilets.push_back(pGameObject);
 	}
 
 	//Find chairs
-	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Chair" + std::to_string(i))) != nullptr; i++)
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Stol" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Chairs.push_back(pGameObject);
 	}
@@ -49,7 +49,7 @@ void OrderSchedule::Init(Scene* pScene)
 	}
 
 	//Find ovens
-	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Oven" + std::to_string(i))) != nullptr; i++)
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Ugn" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Ovens.push_back(pGameObject);
 	}

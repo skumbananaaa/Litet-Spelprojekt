@@ -4,6 +4,8 @@
 
 class Crew
 {
+	friend class Crewmember;
+
 public:
 	Crew();
 	~Crew();
@@ -12,14 +14,13 @@ public:
 	
 	// Adds
 	void AddMember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);
-	void AddToSelectedList(int32 crewIndex) noexcept;
 
 	// Gets
 	const std::vector<int32>& GetSelectedList() const noexcept;
 	const std::vector<uint32>& GetSquad(uint32 index) const noexcept;
 
 	void ClearSelectedList() noexcept;
-	void RemoveFromSelectedList(int32 crewIndex) noexcept;
+
 
 	// Crewmembers
 	Crewmember* GetMember(int index);
@@ -30,6 +31,9 @@ public:
 	const uint32 NrOfSquads() const;
 
 private:
+	void AddToSelectedList(int32 crewIndex) noexcept;
+	void RemoveFromSelectedList(int32 crewIndex) noexcept;
+
 	std::vector<Crewmember*> m_Members;
 
 	std::vector<int32> m_SelectedMembers;

@@ -41,6 +41,7 @@ uint32 TEXTURE::FLOOR_AMMUNITION3 = 0;
 uint32 TEXTURE::FLOOR_KITCHEN1 = 0;
 uint32 TEXTURE::FLOOR_DINING1 = 0;
 uint32 TEXTURE::FLOOR_CABOOSE1 = 0;
+uint32 TEXTURE::LOADING_CONTROLS = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -88,6 +89,7 @@ void TEXTURE::RegisterResources()
 	FLOOR_KITCHEN1		= ResourceHandler::RegisterTexture2D("kitchenFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_DINING1		= ResourceHandler::RegisterTexture2D("diningFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_CABOOSE1		= ResourceHandler::RegisterTexture2D("cabooseFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
+	LOADING_CONTROLS	= ResourceHandler::RegisterTexture2D("LoadingScreen.png", TEX_FORMAT_RGBA, false, true);
 
 	ICON_INJURY_BLEED	= ResourceHandler::RegisterTexture2D("Icons/InjuryBleed.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);

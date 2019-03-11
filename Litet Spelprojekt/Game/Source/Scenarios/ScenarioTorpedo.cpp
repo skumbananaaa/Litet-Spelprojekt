@@ -101,7 +101,7 @@ bool ScenarioTorpedo::Update(float dtS, World* world, SceneGame* scene) noexcept
 					crew->GetMember(i)->ApplyBurnInjury(10 - distance + 1);
 					crew->GetMember(i)->ApplyBoneInjury(10 - distance + 1);
 					crew->GetMember(i)->ApplyBleedInjury(10 - distance + 1);
-					Logger::LogEvent(crew->GetMember(i)->GetName() + " was hit!", false);
+					Logger::LogEvent(crew->GetMember(i)->GetName() + " blev träffad!", false);
 				}
 			}
 

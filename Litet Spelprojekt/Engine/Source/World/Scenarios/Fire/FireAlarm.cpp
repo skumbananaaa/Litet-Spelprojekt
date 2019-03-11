@@ -60,7 +60,7 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 
 void FireAlarm::OnSmokeDetected() noexcept
 {
-	Logger::LogEvent("Smoke Detected!", true);
+	Logger::LogEvent("Rök upptäckt!", true);
 
 	glm::mat4 transformObject(1.0f);
 	const glm::vec4& rotation = GetRotation();

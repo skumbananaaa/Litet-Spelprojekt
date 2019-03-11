@@ -44,6 +44,7 @@ public:
 	static uint32 FLOOR_DINING1;
 	static uint32 FLOOR_CABOOSE1;
 	static uint32 OVEN;
+	static uint32 LOADING_CONTROLS;
 
 private:
 	static void RegisterResourcesPreLoading();

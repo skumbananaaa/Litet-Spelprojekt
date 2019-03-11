@@ -11,6 +11,43 @@ Panel::~Panel()
 
 }
 
+void Panel::OnMouseMove(const glm::vec2& position)
+{
+	if (ContainsPoint(position))
+	{
+		if (!m_IsHovered)
+		{
+			m_IsHovered = true;
+			RequestRepaint();
+		}
+	}
+	else if (m_IsHovered)
+	{
+		m_IsHovered = false;
+		RequestRepaint();
+	}
+	TriggerSendUpdate(this);
+}
+
+void Panel::SetHovered(bool hovered)
+{
+	if (IsHovered() != hovered)
+	{
+		IHoverable::SetHovered(hovered);
+		RequestRepaint();
+	}
+}
+
+void Panel::OnAdded(GUIObject* parent)
+{
+	AddMouseListener(this);
+}
+
+void Panel::OnRemoved(GUIObject* parent)
+{
+	RemoveMouseListener(this);
+}
+
 void Panel::PrintName() const
 {
 	std::cout << "Panel";

@@ -36,7 +36,8 @@ SceneGame::SceneGame() : SceneInternal(false),
 
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
-	GetCamera().SetMaxPitch(0.0f);
+	GetCamera().SetMaxPitch(-glm::two_pi<float>() / 64.0f);
+	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 11.0f, 41.0f);
 }
 
 SceneGame::~SceneGame()
@@ -234,23 +235,40 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 	{
 		if (!m_CartesianCamera)
 		{
+			Camera& camera = GetCamera();
+
 			if (Input::IsKeyDown(KEY_LEFT_ALT))
 			{
 				if (offset.y > 0.0f)
 				{
-					GetCamera().MoveWorldCoords(glm::vec3(0.0f, 1.0f, 0.0f), true);
+					//FIXA SÅ ATT OM MAN ÄR EXTENDAD OCH DEEXTENDAR SÅ FLYTTAS KAMERAN RÄTT
+					if (camera.GetLookAt().y < 4.0f)
+					{
+						float xMove = (float)IsExtended() * 10.0f;
+						float lookAtBoundsOffset = xMove * (camera.GetLookAt().y / 2.0f + 1.0f);
+						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
+												   lookAtBoundsOffset + 11.0f, 41.0f);
+						camera.MoveWorldCoords(glm::vec3(xMove, 2.0f, 0.0f), true);
+					}
 				}
 				else
 				{
-					GetCamera().MoveWorldCoords(glm::vec3(0.0f, -1.0f, 0.0f), true);
+					if (camera.GetLookAt().y > 0.0f)
+					{
+						float xMove = -(float)IsExtended() * 10.0f;
+						float lookAtBoundsOffset = -xMove * (camera.GetLookAt().y / 2.0f - 1.0f);
+						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
+												   lookAtBoundsOffset + 11.0f, 41.0f);
+						camera.MoveWorldCoords(glm::vec3(xMove, -2.0f, 0.0f), true);
+					}
 				}
 			}
 			else
 			{
 				const float cameraZoomSensitivity = 0.1f;
-				const glm::vec2& cNearFar = GetCamera().GetMinMaxDistToLookAt();
-				float distanceBoost = glm::max(15.0f * GetCamera().GetDistanceToLookAt() / cNearFar.y, 1.0f);
-				GetCamera().MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
+				const glm::vec2& cNearFar = camera.GetMinMaxDistToLookAt();
+				float distanceBoost = glm::max(15.0f * camera.GetDistanceToLookAt() / cNearFar.y, 1.0f);
+				camera.MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
 			}
 		}
 	}

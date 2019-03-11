@@ -38,6 +38,7 @@ public:
 	static uint32 FLOOR_AMMUNITION1;
 	static uint32 FLOOR_AMMUNITION2;
 	static uint32 FLOOR_AMMUNITION3;
+	static uint32 OVEN;
 
 private:
 	static void RegisterResourcesPreLoading();

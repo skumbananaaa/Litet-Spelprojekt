@@ -331,7 +331,7 @@ void Crewmember::OnAllOrdersFinished() noexcept
 
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 
-	//GiveOrder(OrderSchedule::GetIdleOrder());
+	GiveOrder(OrderSchedule::GetIdleOrder());
 }
 
 void Crewmember::OnAddedToScene(Scene* scene) noexcept

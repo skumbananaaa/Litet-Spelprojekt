@@ -34,6 +34,7 @@ uint32 MATERIAL::FLOOR_MACHINE3 = 0;
 uint32 MATERIAL::FLOOR_AMMUNITION1 = 0;
 uint32 MATERIAL::FLOOR_AMMUNITION2 = 0;
 uint32 MATERIAL::FLOOR_AMMUNITION3 = 0;
+uint32 MATERIAL::OVEN = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -76,4 +77,5 @@ void MATERIAL::RegisterResources()
 	FLOOR_AMMUNITION1	= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_AMMUNITION1, SHADER::FLOOR);
 	FLOOR_AMMUNITION2	= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_AMMUNITION2, SHADER::FLOOR);
 	FLOOR_AMMUNITION3	= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_AMMUNITION3, SHADER::FLOOR);
+	OVEN				= ResourceHandler::RegisterMaterial(TEXTURE::OVEN, SHADER::STANDARD_MATERIAL);
 }

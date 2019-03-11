@@ -1,4 +1,4 @@
-#include "..\Include\Crewmember.h"
+﻿#include "..\Include\Crewmember.h"
 #include "..\Include\Game.h"
 #include <System/Random.h>
 #include "../Include/Orders/OrderWalk.h"
@@ -190,7 +190,7 @@ void Crewmember::GoToSickBay()
 		}
 		else
 		{
-			Logger::LogEvent(GetName() + " cannot move to Sick Bay!", true);
+			Logger::LogEvent(GetName() + " kan inte gå till sjukstugan!", true);
 		}
 	}
 }
@@ -357,6 +357,10 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	}
 
 	GameObject::SetPosition(position);
+	if (m_pAudioSourceScream)
+	{
+		m_pAudioSourceScream->SetPosition(position);
+	}
 }
 
 void Crewmember::SetIsPicked(bool picked) noexcept
@@ -437,7 +441,7 @@ void Crewmember::UpdateHealth(float dt)
 
 	if (m_Health <= 0.0f)
 	{
-		Logger::LogEvent(GetName() + " has fainted!", false);
+		Logger::LogEvent(GetName() + " har svimmat!", false);
 		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED;
 	}
 	else if (m_Health < m_MaxHealth)
@@ -487,7 +491,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 
 		if (isSmoked != HasInjurySmoke())
 		{
-			Logger::LogEvent(GetName() + " got smoked!" + std::to_string(m_HasInjurySmoke));
+			Logger::LogEvent(GetName() + " blev rökskadad!" + std::to_string(m_HasInjurySmoke));
 			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::to_string(m_GearIsEquipped) << std::endl;
 		}
 	}
@@ -514,7 +518,7 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 		ApplyBurnInjury((tileData.Temp / tileData.BurnsAt) * burnSpeed * dt);
 		if (isBurned != HasInjuryBurned())
 		{
-			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));
+			Logger::LogEvent(GetName() + " blev bränd!" + std::to_string(m_HasInjuryBurned));
 		}
 	}
 }

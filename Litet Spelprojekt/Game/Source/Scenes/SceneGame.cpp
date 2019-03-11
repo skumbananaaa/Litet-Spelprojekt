@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenes\SceneGame.h"
+﻿#include "..\..\Include\Scenes\SceneGame.h"
 #include "../../Include/Game.h"
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
@@ -388,6 +388,7 @@ void SceneGame::CreateAudio() noexcept
 {
 	AudioListener::SetPosition(glm::vec3(0.0f));
 	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
+	m_pTestAudioSource->SetVolume(0.4);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
 	m_pTestAudioSource->Play();

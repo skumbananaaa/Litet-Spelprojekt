@@ -1,16 +1,16 @@
-#include "..\..\Include\GUI\UICrewMember.h"
+﻿#include "..\..\Include\GUI\UICrewMember.h"
 #include "..\..\Include/Scenes/SceneGame.h"
 #include "..\..\Include/Game.h"
 
 UICrewMember::UICrewMember(float x, float y, float width, float height) : Panel(x, y, width, height),
 	m_Crewmember(nullptr)
 {
-	m_TextViewName = new TextView(0, height - 25, width, 25, "Name", true);
+	m_TextViewName = new TextView(0, height - 25, width, 25, "Namn", true);
 	m_TextViewName->SetBackgroundColor(GUIContext::COLOR_HOVER);
 	m_TextViewName->SetTextColor(GUIContext::COLOR_BLACK);
 
 	Add(m_TextViewName);
-	Add(new TextView(5, 85, 100, 40, "F�rdigheter"));
+	Add(new TextView(5, 85, 100, 40, "Färdigheter"));
 	Add(new TextView(5, 20, 100, 40, "Skador"));
 
 	SetVisible(false);

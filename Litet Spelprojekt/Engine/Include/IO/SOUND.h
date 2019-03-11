@@ -14,6 +14,7 @@ public:
 	static uint32 MONO_EXPLOSION;
 	static uint32 MONO_SCREAM;
 	static uint32 MONO_FIRE;
+	static uint32 MONO_CRASH;
 
 private:
 	static void RegisterResourcesPreLoading();

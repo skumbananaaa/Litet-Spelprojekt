@@ -10,6 +10,7 @@ uint32 SOUND::UI_HOVER = 0;
 uint32 SOUND::MONO_EXPLOSION = 0;
 uint32 SOUND::MONO_SCREAM = 0;
 uint32 SOUND::MONO_FIRE = 0;
+uint32 SOUND::MONO_CRASH = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -29,4 +30,5 @@ void SOUND::RegisterResources()
 	MONO_EXPLOSION				= ResourceHandler::RegisterSound("Mono/Explosion.wav");
 	MONO_SCREAM					= ResourceHandler::RegisterSound("Mono/WilhelmScream.wav");
 	MONO_FIRE					= ResourceHandler::RegisterSound("Mono/Fire.wav");
+	MONO_CRASH					= ResourceHandler::RegisterSound("Mono/Crash.wav");
 }

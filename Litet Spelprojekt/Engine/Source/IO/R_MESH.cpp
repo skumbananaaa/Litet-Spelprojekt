@@ -28,7 +28,7 @@ uint32 MESH::DOOR_FRAME = 0;
 uint32 MESH::LADDER = 0;
 uint32 MESH::MESH_PARTICLE = 0;
 uint32 MESH::WATER_QUAD = 0;
-uint32 MESH::CUBOARD = 0;
+uint32 MESH::CUPBOARD = 0;
 uint32 MESH::TABLE = 0;
 uint32 MESH::TOILET = 0;
 uint32 MESH::MISSILE = 0;
@@ -66,7 +66,7 @@ void MESH::RegisterResources()
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
-	CUBOARD					= ResourceHandler::RegisterMesh("Cuboard.obj");
+	CUPBOARD				= ResourceHandler::RegisterMesh("Cupboard.obj");
 	TABLE					= ResourceHandler::RegisterMesh("Table.obj");
 	TOILET					= ResourceHandler::RegisterMesh("Toilet.obj");
 	MISSILE					= ResourceHandler::RegisterMesh("Missile.obj");

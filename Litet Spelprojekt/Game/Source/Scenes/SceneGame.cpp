@@ -71,14 +71,14 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	SetPaused(false);
 
-	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+	/*for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
 		IOrder* pOrder = OrderSchedule::GetIdleOrder();
 		if (pOrder)
 		{
 			m_Crew.GetMember(i)->GiveOrder(pOrder);
 		}
-	}
+	}*/
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
@@ -454,13 +454,14 @@ void SceneGame::CreateCrew() noexcept
 
 	int index = 0;
 	float x, y, z;
+	bool hidden = false;
 
 	Crewmember* crewmember;
 
 	m_Crew.AddMember(m_pWorld, glm::vec3(10.0f, 4.0f, 10.0f), names[0], GroupType::SMOKE_DIVER);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -470,7 +471,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -480,7 +481,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -490,7 +491,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -500,7 +501,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::SMOKE_DIVER);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -510,7 +511,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -520,7 +521,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -530,7 +531,7 @@ void SceneGame::CreateCrew() noexcept
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(false);
+	crewmember->SetHidden(hidden);
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
@@ -542,7 +543,7 @@ void SceneGame::CreateCrew() noexcept
 		m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[i % NUM_CREW], GroupType::NONE);
 		crewmember = m_Crew.GetMember(i);
 		crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-		crewmember->SetHidden(false);
+		crewmember->SetHidden(hidden);
 		crewmember->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
 	}

@@ -11,7 +11,7 @@ uint32 GAMEOBJECT::INSTRUMENT_1 = 0;
 uint32 GAMEOBJECT::INSTRUMENT_2 = 0;
 uint32 GAMEOBJECT::LAMP = 0;
 uint32 GAMEOBJECT::FIREALARM = 0;
-uint32 GAMEOBJECT::CUBOARD = 0;
+uint32 GAMEOBJECT::CUPBOARD = 0;
 uint32 GAMEOBJECT::TABLE = 0;
 uint32 GAMEOBJECT::TOILET = 0;
 uint32 GAMEOBJECT::DOOR = 0;
@@ -34,7 +34,7 @@ void GAMEOBJECT::RegisterResources()
 	INSTRUMENT_2				= ResourceHandler::RegisterGameObject("Instrument 2", MESH::INSTRUMENT_2, MATERIAL::INSTRUMENT_2);
 	LAMP						= ResourceHandler::RegisterGameObject("Lamp", MESH::LAMP, MATERIAL::LAMP);
 	FIREALARM					= ResourceHandler::RegisterGameObject("Firealarm", MESH::LAMP, MATERIAL::RED);
-	CUBOARD						= ResourceHandler::RegisterGameObject("Cuboard", MESH::CUBOARD, MATERIAL::CUBOARD);
+	CUPBOARD					= ResourceHandler::RegisterGameObject("Cupboard", MESH::CUPBOARD, MATERIAL::CUPBOARD);
 	TABLE						= ResourceHandler::RegisterGameObject("Table", MESH::TABLE, MATERIAL::TABLE);
 	TOILET						= ResourceHandler::RegisterGameObject("Toilet", MESH::TOILET, MATERIAL::TOILET);
 	DOOR						= ResourceHandler::RegisterGameObject("Door", MESH::DOOR, MATERIAL::WHITE);

@@ -197,48 +197,52 @@ void World::PlaceDoors(Scene& scene) noexcept
 
 			if (glm::length(delta) <= 1.0)
 			{
-				glm::vec3 position = (door1 + door2) / 2.0F;
 
-				GameObject* pGameObject = new GameObject();
-				pGameObject->SetMaterial(MATERIAL::WHITE);
-				pGameObject->SetMesh(MESH::DOOR_FRAME);
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->SetDirection(glm::vec3((int)delta.z == 0, 0, -((int)delta.z == -1)));
-				pGameObject->UpdateTransform();
-				scene.AddGameObject(pGameObject);
-
-				pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::DOOR);
-				pGameObject->SetPosition(position);
-				pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
-				pGameObject->SetDirection(glm::vec3((int)delta.z == 0, 0, -((int)delta.z == -1)));
-				pGameObject->UpdateTransform();
-				scene.AddGameObject(pGameObject);
-
-				if (door1.y == 0 || (int32)position.z % 8 == 0)
+				if (level.GetLevel()[(uint32)door1.x][(uint32)door1.z] != level.GetLevel()[(uint32)door2.x][(uint32)door2.z])
 				{
-					pGameObject->SetMaterial(MATERIAL::RED);
-				}
-				else
-				{
-					DOOR_COLOR color1 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door1.x][(int32)door1.z]);
-					DOOR_COLOR color2 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door2.x][(int32)door2.z]);
+					glm::vec3 position = (door1 + door2) / 2.0F;
 
-					if (color1 < color2)
+					GameObject* pGameObject = new GameObject();
+					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMesh(MESH::DOOR_FRAME);
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->SetDirection(glm::vec3((int)delta.z == 0, 0, -((int)delta.z == -1)));
+					pGameObject->UpdateTransform();
+					scene.AddGameObject(pGameObject);
+
+					pGameObject = ResourceHandler::CreateGameObject(GAMEOBJECT::DOOR);
+					pGameObject->SetPosition(position);
+					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
+					pGameObject->SetDirection(glm::vec3((int)delta.z == 0, 0, -((int)delta.z == -1)));
+					pGameObject->UpdateTransform();
+					scene.AddGameObject(pGameObject);
+
+					if (door1.y == 0 || (int32)position.z % 8 == 0)
 					{
-						pGameObject->SetMaterial(GetDoorMaterialFromColor(color1));
+						pGameObject->SetMaterial(MATERIAL::RED);
 					}
 					else
 					{
-						pGameObject->SetMaterial(GetDoorMaterialFromColor(color2));
+						DOOR_COLOR color1 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door1.x][(int32)door1.z]);
+						DOOR_COLOR color2 = GetDoorColorFromGlobal(level.GetLevel()[(int32)door2.x][(int32)door2.z]);
+
+						if (color1 < color2)
+						{
+							pGameObject->SetMaterial(GetDoorMaterialFromColor(color1));
+						}
+						else
+						{
+							pGameObject->SetMaterial(GetDoorMaterialFromColor(color2));
+						}
+
 					}
-					
+
+					level.GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+					level.GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
+
+					break;
 				}
-
-				level.GetLevelData()[(int32)door1.x][(int32)door1.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-				level.GetLevelData()[(int32)door2.x][(int32)door2.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = pGameObject;
-
-				break;
 			}
 		}
 	}
@@ -341,7 +345,7 @@ void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 	}
 }
 
-void World::SetRoomActive(uint32 roomID, bool isActive) noexcept
+void World::SetRoomActive(uint32 roomID, bool isActive, uint32 lastRoom, bool keepTimer) noexcept
 {
 	if (isActive)
 	{
@@ -357,7 +361,14 @@ void World::SetRoomActive(uint32 roomID, bool isActive) noexcept
 
 			m_Rooms[roomID].SetActive(true);
 			m_RoomLights[roomID]->SetIsVisible(true);
-			m_RoomLightsTimers[roomID] = 0.0f;
+			if (keepTimer)
+			{
+				m_RoomLightsTimers[roomID] = m_RoomLightsTimers[lastRoom];
+			}
+			else
+			{
+				m_RoomLightsTimers[roomID] = 0.0f;
+			}
 			m_ActiveRooms.emplace_back(roomID);
 		}
 	}

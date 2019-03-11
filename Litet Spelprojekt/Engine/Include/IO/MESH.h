@@ -28,7 +28,7 @@ public:
 	static uint32 DOOR_FRAME;
 	static uint32 LADDER;
 	static uint32 MESH_PARTICLE;
-	static uint32 CUBOARD;
+	static uint32 CUPBOARD;
 	static uint32 TABLE;
 	static uint32 TOILET;
 	static uint32 WATER_QUAD;

@@ -8,8 +8,8 @@
 #include "../../Include/Orders/OrderSchedule.h"
 #include <Graphics/Materials/MaterialBase.h>
 
-SceneGame::SceneGame() : SceneInternal(false),
-	m_pWorld(nullptr),
+SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
+	m_pWorld(pWorld),
 	m_pTestAudioSource(nullptr),
 	m_CartesianCamera(false),
 	m_CurrentElevation(2),
@@ -20,11 +20,6 @@ SceneGame::SceneGame() : SceneInternal(false),
 	Window* window = &game->GetWindow();
 
 	LightManager::Init(this, NUM_SPOT_LIGHTS);
-
-	CreateAudio();
-	CreateGameObjects();
-	CreateWorld();
-	CreateCrew();
 
 	OrderSchedule::Init(this);
 	ScenarioManager::Init(m_pWorld);
@@ -56,6 +51,11 @@ SceneGame::~SceneGame()
 void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
 {
 	SceneInternal::OnActivated(lastScene, m_pRenderer);
+
+	CreateAudio();
+	CreateGameObjects();
+	CreateCrew();
+
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -565,14 +565,6 @@ void SceneGame::CreateCrew() noexcept
 		crewmember->SetHidden(hidden);
 		crewmember->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
-	}
-}
-
-void SceneGame::GenerateShadows()
-{
-	if (m_pWorld)
-	{
-		m_pWorld->GenerateRoomShadows(*this);
 	}
 }
 

@@ -122,7 +122,7 @@ void SceneScenario::OnButtonReleased(Button* button)
 			ids.push_back(reinterpret_cast<int32>(button->GetUserData()));
 		}
 		ScenarioManager::SetEnabledScenarios(ids);
-		Game::GetGame()->StartGame();
+		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneInstructions);
 	}
 }
 

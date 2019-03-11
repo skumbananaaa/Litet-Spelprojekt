@@ -26,7 +26,8 @@ Game::Game() noexcept
 	m_pSceneCredits(nullptr),
 	m_pSceneOptions(nullptr),
 	m_pSceneScenario(nullptr),
-	m_pSceneGame(nullptr)
+	m_pSceneGame(nullptr),
+	m_pSceneInstructions(nullptr)
 {
 	ResourceHandler::SetGameObjectCreator(this);
 
@@ -60,6 +61,7 @@ Game::~Game()
 	DeleteSafe(m_pSceneOptions);
 	DeleteSafe(m_pSceneScenario);
 	DeleteSafe(m_pSceneGame);
+	DeleteSafe(m_pSceneInstructions);
 
 	DeleteSafe(m_pRenderer);
 	DeleteSafe(m_pSkyBoxTex);
@@ -104,6 +106,7 @@ void Game::OnResourcesLoaded()
 	m_pSceneCredits = new SceneCredits();
 	m_pSceneOptions = new SceneOptions();
 	m_pSceneScenario = new SceneScenario();
+	m_pSceneInstructions = new SceneInstructions();
 
 	m_pScene->OnResourcesLoaded();
 }
@@ -231,14 +234,13 @@ void Game::SetScene(SceneInternal* scene) noexcept
 	}
 }
 
-void Game::StartGame() noexcept
+void Game::StartGame(SceneGame* pSceneGame) noexcept
 {
 	if (!m_pSceneGame)
 	{
-		m_pSceneGame = new SceneGame();
+		m_pSceneGame = pSceneGame;
 		if (m_pSceneGame)
 		{
-			m_pSceneGame->GenerateShadows();
 			ResetPrevTime();
 			SetScene(m_pSceneGame);
 		}

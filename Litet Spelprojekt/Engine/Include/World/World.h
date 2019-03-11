@@ -272,11 +272,11 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 {
 	if (globalIndex >= SICKBAY_INTERVAL_START && globalIndex <= SICKBAY_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR_SICKBAY;
+		return MATERIAL::FLOOR_SICKBAY1;
 	}
 	else if (globalIndex >= TOILET_INTERVAL_START && globalIndex <= TOILET_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR_NORMAL;
+		return MATERIAL::FLOOR_TOILET1;
 	}
 	else if (globalIndex >= MACHINE_ROOM_INTERVAL_START && globalIndex <= MACHINE_ROOM_INTERVAL_END)
 	{
@@ -322,15 +322,15 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 	}
 	else if (globalIndex >= KITCHEN_INTERVAL_START && globalIndex <= KITCHEN_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR_NORMAL;
+		return MATERIAL::FLOOR_KITCHEN1;
 	}
 	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR_NORMAL;
+		return MATERIAL::FLOOR_DINING1;
 	}
 	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR_NORMAL;
+		return MATERIAL::FLOOR_CABOOSE1;
 	}
 
 	return MATERIAL::FLOOR_NORMAL;

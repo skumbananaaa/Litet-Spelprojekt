@@ -3,7 +3,7 @@
 #include "../Include/Scenarios/ScenarioManager.h"
 #include "../Include/Scenarios/ScenarioFire.h"
 #include "../Include/Scenarios/ScenarioWater.h"
-#include "../Include/Scenarios/ScenarioMissile.h"
+#include "../Include/Scenarios/ScenarioArtillery.h"
 #include "../Include/Scenarios/ScenarioTorpedo.h"
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../Include/GameObjectDoor.h"
@@ -44,7 +44,7 @@ Game::Game() noexcept
 	m_pAudioSourceMenu->SetLooping(true);
 	m_pAudioSourceMenu->Play();
 
-	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioMissile());
+	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioArtillery());
 	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioTorpedo());
 	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(true));
 	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(true));

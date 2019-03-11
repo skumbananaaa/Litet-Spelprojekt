@@ -1,16 +1,16 @@
 #pragma once
 #include "IScenario.h"
-#include "../GameObjectMissile.h"
+#include "../GameObjectArtillery.h"
 
 #if defined(PRINT_CPU_DEBUG_DATA)
 #include <System/CPUProfiler.h>
 #endif
 
-class ScenarioMissile : public IScenario, public IMeshListener
+class ScenarioArtillery : public IScenario, public IMeshListener
 {
 public:
-	ScenarioMissile();
-	virtual ~ScenarioMissile();
+	ScenarioArtillery();
+	virtual ~ScenarioArtillery();
 
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void Release() noexcept override;
@@ -25,7 +25,7 @@ public:
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 
 private:
-	GameObjectMissile* m_pGameObjectMissile;
+	GameObjectArtillery* m_pGameObjectArtillery;
 	glm::vec3 m_Target;
 	AudioSource* m_pAudioSourceExplosion;
 };

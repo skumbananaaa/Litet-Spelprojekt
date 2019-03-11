@@ -1,7 +1,7 @@
-#include "..\Include\GameObjectTorpedo.h"
+#include "..\Include/GameObjectArtillery.h"
 #include <Graphics/Scene.h>
 
-GameObjectTorpedo::GameObjectTorpedo(const glm::vec3& pos, const glm::vec3& target) noexcept :
+GameObjectArtillery::GameObjectArtillery(const glm::vec3& pos, const glm::vec3& target) noexcept :
 	m_DistanceTraveled(0)
 {
 	SetMaterial(MATERIAL::WHITE);
@@ -23,7 +23,7 @@ GameObjectTorpedo::GameObjectTorpedo(const glm::vec3& pos, const glm::vec3& targ
 	}
 	else if (glm::abs(dot - (1.0f)) < 0.000001f)
 	{
-
+		
 	}
 	else
 	{
@@ -33,16 +33,16 @@ GameObjectTorpedo::GameObjectTorpedo(const glm::vec3& pos, const glm::vec3& targ
 		SetRotation(glm::vec4(rotAxis.x, rotAxis.y, rotAxis.z, rotAngle));
 	}
 
-
+	
 	UpdateTransform();
 }
 
-GameObjectTorpedo::~GameObjectTorpedo()
+GameObjectArtillery::~GameObjectArtillery()
 {
 
 }
 
-void GameObjectTorpedo::Update(const Camera& camera, float deltaTime) noexcept
+void GameObjectArtillery::Update(const Camera& camera, float deltaTime) noexcept
 {
 	float step = m_Velocity * deltaTime;
 	m_DistanceTraveled += step;
@@ -50,12 +50,12 @@ void GameObjectTorpedo::Update(const Camera& camera, float deltaTime) noexcept
 	UpdateTransform();
 }
 
-void GameObjectTorpedo::UpdateTransform() noexcept
+void GameObjectArtillery::UpdateTransform() noexcept
 {
 	GameObject::UpdateTransform();
 }
 
-bool GameObjectTorpedo::HasHitTarget() const noexcept
+bool GameObjectArtillery::HasHitTarget() const noexcept
 {
 	return m_DistanceTraveled >= m_TotalDistance;
 }

@@ -50,7 +50,9 @@ public:
 	const std::vector<DirectionalLight*>& GetDirectionalLights() const noexcept;
 	const std::vector<PointLight*>& GetPointLights() const noexcept;
 	const std::vector<SpotLight*>& GetSpotLights() const noexcept;
-	const float GetExtension() const noexcept;
+	float GetExtension() const noexcept;
+	bool IsExtending() const noexcept;
+	bool IsExtended() const noexcept;
 
 protected:
 	std::vector<GameObject*> m_PickableGameObjects;
@@ -149,7 +151,17 @@ inline const std::vector<SpotLight*>& Scene::GetSpotLights() const noexcept
 	return m_SpotLights;
 }
 
-inline const float Scene::GetExtension() const noexcept
+inline float Scene::GetExtension() const noexcept
 {
 	return m_Extension;
+}
+
+inline bool Scene::IsExtending() const noexcept
+{
+	return m_Extending;
+}
+
+inline bool Scene::IsExtended() const noexcept
+{
+	return m_Extended;
 }

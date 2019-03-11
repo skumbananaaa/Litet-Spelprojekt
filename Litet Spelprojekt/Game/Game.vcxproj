@@ -148,12 +148,13 @@
   <ItemGroup>
     <ClCompile Include="Source\GameObjectDoor.cpp" />
     <ClCompile Include="Source\GameObjectFloor.cpp" />
-    <ClCompile Include="Source\GameObjectMissile.cpp" />
+    <ClCompile Include="Source\GameObjectArtillery.cpp" />
     <ClCompile Include="Source\GameObjectTorpedo.cpp" />
     <ClCompile Include="Source\GUI\UISelectedCrew.cpp" />
     <ClCompile Include="Source\GUI\UIOrder.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
     <ClCompile Include="Source\Orders\OrderCloseDoor.cpp" />
+    <ClCompile Include="Source\Orders\OrderCook.cpp" />
     <ClCompile Include="Source\Orders\OrderEat.cpp" />
     <ClCompile Include="Source\Orders\OrderExtinguishFire.cpp" />
     <ClCompile Include="Source\Orders\OrderGiveAid.cpp" />
@@ -165,7 +166,7 @@
     <ClCompile Include="Source\Orders\OrderWalkMedicBay.cpp" />
     <ClCompile Include="Source\Orders\OrderWork.cpp" />
     <ClCompile Include="Source\Scenarios\IScenario.cpp" />
-    <ClCompile Include="Source\Scenarios\ScenarioMissile.cpp" />
+    <ClCompile Include="Source\Scenarios\ScenarioArtillery.cpp" />
     <ClCompile Include="Source\GUI\UILog.cpp" />
     <ClCompile Include="Source\GUI\UIPause.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioTorpedo.cpp" />
@@ -194,7 +195,7 @@
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\GameObjectDoor.h" />
     <ClInclude Include="Include\GameObjectFloor.h" />
-    <ClInclude Include="Include\GameObjectMissile.h" />
+    <ClInclude Include="Include\GameObjectArtillery.h" />
     <ClInclude Include="Include\GameObjectTorpedo.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />
     <ClInclude Include="Include\GUI\UICrewMember.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Include\Orders\IOrder.h" />
     <ClInclude Include="Include\Orders\OrderCarry.h" />
     <ClInclude Include="Include\Orders\OrderCloseDoor.h" />
+    <ClInclude Include="Include\Orders\OrderCook.h" />
     <ClInclude Include="Include\Orders\OrderEat.h" />
     <ClInclude Include="Include\Orders\OrderExtinguishFire.h" />
     <ClInclude Include="Include\Orders\OrderGiveAid.h" />
@@ -219,7 +221,7 @@
     <ClInclude Include="Include\Scenarios\IScenario.h" />
     <ClInclude Include="Include\Scenarios\ScenarioFire.h" />
     <ClInclude Include="Include\Scenarios\ScenarioManager.h" />
-    <ClInclude Include="Include\Scenarios\ScenarioMissile.h" />
+    <ClInclude Include="Include\Scenarios\ScenarioArtillery.h" />
     <ClInclude Include="Include\Scenarios\ScenarioTorpedo.h" />
     <ClInclude Include="Include\Scenarios\ScenarioWater.h" />
     <ClInclude Include="Include\Scenes\SceneCredits.h" />

@@ -1,15 +1,17 @@
+#include <Graphics/Scene.h>
+#include <System/Random.h>
 #include "..\..\Include\Orders\OrderSchedule.h"
 #include "..\..\Include\Orders\OrderSleep.h"
 #include "..\..\Include\Orders\OrderToilet.h"
 #include "..\..\Include\Orders\OrderWork.h"
 #include "..\..\Include\Orders\OrderEat.h"
-#include <Graphics/Scene.h>
-#include <System/Random.h>
+#include "..\..\Include\Orders\OrderCook.h"
 
 std::vector<GameObject*> OrderSchedule::s_Beds;
 std::vector<GameObject*> OrderSchedule::s_Toilets;
 std::vector<GameObject*> OrderSchedule::s_Instruments;
 std::vector<GameObject*> OrderSchedule::s_Chairs;
+std::vector<GameObject*> OrderSchedule::s_Ovens;
 
 void OrderSchedule::Init(Scene* pScene)
 {
@@ -45,6 +47,12 @@ void OrderSchedule::Init(Scene* pScene)
 	{
 		s_Instruments.push_back(pGameObject);
 	}
+
+	//Find ovens
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Oven" + std::to_string(i))) != nullptr; i++)
+	{
+		s_Ovens.push_back(pGameObject);
+	}
 }
 
 void OrderSchedule::Release()
@@ -53,31 +61,87 @@ void OrderSchedule::Release()
 	s_Toilets.clear();
 	s_Instruments.clear();
 	s_Chairs.clear();
+	s_Ovens.clear();
 }
 
 IOrder* OrderSchedule::GetIdleOrder()
 {
-	uint32 order = Random::GenerateInt(0, 3);
-	GameObject* pGameObject = nullptr;
-	if (order == 0 && !s_Beds.empty())
+	IOrder* pOrder = nullptr;
+	for (uint32 i = 0; i < 5 && pOrder == nullptr; i++)
 	{
-		pGameObject = s_Beds[Random::GenerateInt(0, s_Beds.size() - 1)];
+		uint32 order = Random::GenerateInt(0, 100);
+		if (order >= 60)
+		{
+			pOrder = GetOrderSleep();
+		}
+		else if (order >= 20)
+		{
+			pOrder = GetOrderWork();
+		}
+		else if (order >= 5)
+		{
+			pOrder = GetOrderCook();
+		}
+		else if (order >= 0)
+		{
+			pOrder = GetOrderToilet();
+		}
+	}
+
+	return pOrder;
+}
+
+IOrder* OrderSchedule::GetOrderEat()
+{
+	if (!s_Chairs.empty())
+	{
+		GameObject* pGameObject = s_Chairs[Random::GenerateInt(0, s_Chairs.size() - 1)];
+		return new OrderEat(pGameObject->GetTile(), pGameObject);
+	}
+
+	return nullptr;
+}
+
+IOrder* OrderSchedule::GetOrderSleep()
+{
+	if (!s_Beds.empty())
+	{
+		GameObject* pGameObject = s_Beds[Random::GenerateInt(0, s_Beds.size() - 1)];
 		return new OrderSleep(pGameObject->GetTile(), pGameObject);
 	}
-	else if (order == 1 && !s_Toilets.empty())
+
+	return nullptr;
+}
+
+IOrder* OrderSchedule::GetOrderCook()
+{
+	if (!s_Ovens.empty())
 	{
-		pGameObject = s_Toilets[Random::GenerateInt(0, s_Toilets.size() - 1)];
-		return new OrderToilet(pGameObject->GetTile(), pGameObject);
+		GameObject* pGameObject = s_Ovens[Random::GenerateInt(0, s_Ovens.size() - 1)];
+		return new OrderCook(pGameObject->GetTile(), pGameObject);
 	}
-	else if (order == 2 && !s_Instruments.empty())
+
+	return nullptr;
+}
+
+IOrder* OrderSchedule::GetOrderWork()
+{
+	if (!s_Instruments.empty())
 	{
-		pGameObject = s_Instruments[Random::GenerateInt(0, s_Instruments.size() - 1)];
+		GameObject* pGameObject = s_Instruments[Random::GenerateInt(0, s_Instruments.size() - 1)];
 		return new OrderWork(pGameObject->GetTile(), pGameObject);
 	}
-	else if (order == 3 && !s_Chairs.empty())
+
+	return nullptr;
+}
+
+IOrder* OrderSchedule::GetOrderToilet()
+{
+
+	if (!s_Toilets.empty())
 	{
-		pGameObject = s_Chairs[Random::GenerateInt(0, s_Chairs.size() - 1)];
-		return new OrderEat(pGameObject->GetTile(), pGameObject);
+		GameObject* pGameObject = s_Toilets[Random::GenerateInt(0, s_Toilets.size() - 1)];
+		return new OrderToilet(pGameObject->GetTile(), pGameObject);
 	}
 
 	return nullptr;

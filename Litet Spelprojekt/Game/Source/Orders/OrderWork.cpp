@@ -6,7 +6,7 @@ OrderWork::OrderWork(const glm::ivec3& instrumentTile, GameObject* pInstrument)
 {
 	m_pInstrument = pInstrument;
 	m_Position = glm::vec3(4.0f);
-	m_Timer = 15.0f;
+	m_Timer = 45.0f;
 	m_IsAtInstrument = false;
 }
 

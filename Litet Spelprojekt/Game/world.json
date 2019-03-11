@@ -6780,7 +6780,7 @@
         {
             "tileIdX": 4,
             "tileIdY": 4,
-            "tileIdZ": 33,
+            "tileIdZ": 32,
             "gameObject": 9,
             "rotation": 0.0
         },
@@ -7114,6 +7114,20 @@
             "rotation": 4.71238899230957
         },
         {
+            "tileIdX": 9,
+            "tileIdY": 4,
+            "tileIdZ": 28,
+            "gameObject": 12,
+            "rotation": 14.137166023254395
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 4,
+            "tileIdZ": 27,
+            "gameObject": 12,
+            "rotation": 26.703540802001954
+        },
+        {
             "tileIdX": 2,
             "tileIdY": 4,
             "tileIdZ": 20,
@@ -7147,27 +7161,6 @@
             "tileIdZ": 16,
             "gameObject": 0,
             "rotation": 4.71238899230957
-        },
-        {
-            "tileIdX": 0,
-            "tileIdY": 4,
-            "tileIdZ": 37,
-            "gameObject": 7,
-            "rotation": 0.0
-        },
-        {
-            "tileIdX": 9,
-            "tileIdY": 4,
-            "tileIdZ": 11,
-            "gameObject": 6,
-            "rotation": 9.42477798461914
-        },
-        {
-            "tileIdX": 0,
-            "tileIdY": 4,
-            "tileIdZ": 3,
-            "gameObject": 6,
-            "rotation": 12.566370010375977
         }
     ],
     "stairs": [
@@ -7266,6 +7259,11 @@
         [
             5,
             0,
+            20
+        ],
+        [
+            5,
+            0,
             21
         ],
         [
@@ -7316,7 +7314,7 @@
         [
             6,
             0,
-            19
+            20
         ],
         [
             6,
@@ -7511,6 +7509,11 @@
         [
             4,
             4,
+            34
+        ],
+        [
+            4,
+            4,
             35
         ],
         [
@@ -7561,7 +7564,7 @@
         [
             5,
             4,
-            35
+            34
         ],
         [
             5,

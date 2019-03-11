@@ -31,13 +31,18 @@ public:
 	static uint32 TOILET;
 	static uint32 ANIMATED_MODEL;
 	static uint32 FLOOR_NORMAL;
-	static uint32 FLOOR_SICKBAY;
+	static uint32 FLOOR_SICKBAY1;
+	static uint32 FLOOR_TOILET1;
 	static uint32 FLOOR_MACHINE1;
 	static uint32 FLOOR_MACHINE2;
 	static uint32 FLOOR_MACHINE3;
 	static uint32 FLOOR_AMMUNITION1;
 	static uint32 FLOOR_AMMUNITION2;
 	static uint32 FLOOR_AMMUNITION3;
+	static uint32 FLOOR_KITCHEN1;
+	static uint32 FLOOR_DINING1;
+	static uint32 FLOOR_CABOOSE1;
+	static uint32 OVEN;
 
 private:
 	static void RegisterResourcesPreLoading();

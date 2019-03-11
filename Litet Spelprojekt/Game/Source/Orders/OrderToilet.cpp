@@ -6,7 +6,7 @@ OrderToilet::OrderToilet(const glm::ivec3& toiletTile, GameObject* pToilet)
 {
 	m_pToilet = pToilet;
 	m_Position = glm::vec3(4.0f);
-	m_Timer = 15.0f;
+	m_Timer = 12.0f;
 	m_IsAtToilet = false;
 }
 
@@ -45,23 +45,23 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 			
 			if (rot == 0)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(-0.3f, 0.0f, 0.0f));
-				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.1f, 0.0f, 0.0f));
+				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 			else if (rot == 1)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, 0.3f));
-				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, 0.1f));
+				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 2)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(0.3f, 0.0f, 0.0f));
-				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.1f, 0.0f, 0.0f));
+				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 			else if (rot == 3)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, -0.3f));
-				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, -0.1f));
+				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 		}
 	}

@@ -51,6 +51,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_pAudioSourceScream->SetReferenceDistance(1.0f);
 	m_pAudioSourceScream->SetMaxDistance(100.0f);
 	m_pAudioSourceScream->SetLooping(false);
+
+	m_Group = groupType;
 }
 
 Crewmember::~Crewmember()
@@ -107,7 +109,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		}
 	}
 
-	if (m_Group == MEDIC && room.GetCenter == m_pWorld->GetRoom(SICKBAY_0) || room.GetCenter == m_pWorld->GetRoom(SICKBAY_0))
+	if (m_Group == MEDIC && room.GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || room.GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter())
 	{
 		// todo, make medic heal nearest injured crewmember.
 	}
@@ -206,7 +208,7 @@ void Crewmember::GoToMedicBay()
 	}
 }
 
-bool Crewmember::Heal(int8 skillLevel, float dtS)
+bool Crewmember::Heal(float skillLevel, float dtS)
 {
 	bool res = false;
 	/*//Broken Bone kan inte vara Bool
@@ -234,6 +236,7 @@ bool Crewmember::Heal(int8 skillLevel, float dtS)
 	m_Recovering += skillLevel * dtS;
 	if (HasRecovered())
 	{
+		Logger::LogEvent(GetName() + " has been healed!", true);
 		res = true;
 	}
 	return res;
@@ -412,12 +415,6 @@ void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
 void Crewmember::SetIdleing(bool value) noexcept
 {
 	m_Idleing = value;
-}
-
-void Crewmember::SetGroup(uint32 group) noexcept
-{
-	assert(group < NR_GROUPS);
-	m_Group = group;
 }
 
 void Crewmember::SetGearIsEquipped(bool value) noexcept

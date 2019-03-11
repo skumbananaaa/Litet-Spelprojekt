@@ -50,7 +50,7 @@ public:
 	void GoToMedicBay();
 
 	//GAMEPLAY (NOT SETS OR GETS)
-	bool Heal(int8 skillLevel, float dtS);
+	bool Heal(float skillLevel, float dtS);
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury(float boneBreak);
 	void ApplyBleedInjury(float bleed);
@@ -70,7 +70,6 @@ public:
 	void SetDirection(const glm::vec3& direction) noexcept;
 	void SetAssisting(Crewmember* inNeed) noexcept;
 	void SetIdleing(bool value) noexcept;
-	void SetGroup(uint32 group) noexcept;
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
 
@@ -81,7 +80,7 @@ public:
 	const glm::ivec3& GetTile() const noexcept;
 	float GetMovementSpeed() const noexcept;
 
-	uint32 GetGroup() const noexcept;
+	GroupType GetGroupType() const noexcept;
 	int32 GetForgetfulness() const noexcept;
 
 	//IS
@@ -130,7 +129,7 @@ private:
 	bool m_GearIsEquipped;
 
 	//--GROUP
-	uint32 m_Group;
+	GroupType m_Group;
 		
 	//--INJURIES
 	float m_HasInjuryBoneBroken;
@@ -178,7 +177,7 @@ inline float Crewmember::GetMovementSpeed() const noexcept
 	return m_MovementSpeed;
 }
 
-inline uint32 Crewmember::GetGroup() const noexcept
+inline GroupType Crewmember::GetGroupType() const noexcept
 {
 	return m_Group;
 }

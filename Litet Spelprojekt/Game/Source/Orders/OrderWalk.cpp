@@ -22,7 +22,7 @@ OrderWalk::~OrderWalk()
 
 void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroup() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
+	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroupType() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
 	Crewmember* pCrewmember = GetCrewMember();
 	pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);

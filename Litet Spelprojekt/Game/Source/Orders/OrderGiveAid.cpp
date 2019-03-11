@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderGiveAid.h"
 #include "../../Include/Crew.h"
+
 OrderGiveAid::OrderGiveAid(Crewmember* injuredMember): OrderWalk(injuredMember->GetTile())
 {
 	m_pAiding = injuredMember;
@@ -18,10 +19,10 @@ void OrderGiveAid::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) n
 bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
 	bool res = OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
-	uint32 healLevel = 0;
-	if (GetCrewMember()->GetGroup() == MEDIC)
+	float healLevel = 0;
+	if (GetCrewMember()->GetGroupType() == MEDIC)
 	{
-		healLevel = 0.2;
+		healLevel = 0.2f;
 	}
 	if (res)
 	{

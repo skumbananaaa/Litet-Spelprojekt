@@ -6,6 +6,7 @@
 #include "../../Include/GameObjectDoor.h"
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Orders/OrderSchedule.h"
+#include "../../Include/Orders/OrderGiveAid.h"
 #include <Graphics/Materials/MaterialBase.h>
 
 SceneGame::SceneGame() : SceneInternal(false),
@@ -356,6 +357,32 @@ void SceneGame::OnKeyDown(KEY keycode)
 			{
 				m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 				break;
+			}
+			case KEY_H:
+			{
+				Crewmember* medic = nullptr;
+				Crewmember* victim = nullptr;
+				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				{
+					Crewmember* member = m_Crew.GetMember(i);
+					if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
+					{
+						victim = member;
+					}
+					else if (member->GetGroupType() == MEDIC)
+					{
+						medic = member;
+					}
+
+					if (medic != nullptr && victim != nullptr)
+					{
+						break;
+					}
+				}
+				if (medic != nullptr && victim != nullptr)
+				{
+					medic->GiveOrder(new OrderGiveAid(victim));
+				}
 			}
 		}
 	}

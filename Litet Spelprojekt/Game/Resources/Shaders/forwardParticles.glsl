@@ -46,7 +46,7 @@ void main()
 
 	position.x += g_Extension * floor(clamp(g_InstancePosition.y, 0.0f, 5.9f) / 2.0f);
 
-	gl_ClipDistance[2] = dot(position, g_ClipPlane);
+	gl_ClipDistance[2] = dot(vec4(position, 1.0f), g_ClipPlane);
 
 	gl_Position = g_ProjectionView * vec4(position, 1.0f);
 }

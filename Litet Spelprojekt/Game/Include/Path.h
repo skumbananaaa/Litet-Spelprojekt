@@ -3,6 +3,7 @@
 #include <World/Grid.h>
 #include <World/Tile.h>
 #include <World/World.h>
+#include "GameObjectDoor.h"
 
 struct tls
 {

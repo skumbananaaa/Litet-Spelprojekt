@@ -346,10 +346,13 @@ void Crewmember::OnNotHovered() noexcept
 }
 
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
-{
+{ 
 	glm::vec3 pos = glm::vec3(glm::clamp(position.x, 1.0f, 10.0f), glm::clamp(position.y, 0.0f, 4.0f), glm::clamp(position.z, 1.0f, 40.0f));
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
 	//m_PlayerTile.z = m_PlayerTile.z < 0 ? 0 : m_PlayerTile.z;
+	
+	//HOT FIX (Gay?)
+	m_PlayerTile.y = (m_PlayerTile.y >= 3) ? 2 : m_PlayerTile.y;
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{

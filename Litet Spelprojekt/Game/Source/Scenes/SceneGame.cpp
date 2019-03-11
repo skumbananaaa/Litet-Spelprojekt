@@ -26,7 +26,6 @@ SceneGame::SceneGame() : SceneInternal(false),
 	CreateWorld();
 	CreateCrew();
 
-	OrderSchedule::Init(this);
 	ScenarioManager::Init(m_pWorld);
 
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
@@ -42,7 +41,6 @@ SceneGame::SceneGame() : SceneInternal(false),
 SceneGame::~SceneGame()
 {
 	ScenarioManager::Reset();
-	OrderSchedule::Release();
 
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
@@ -55,6 +53,7 @@ SceneGame::~SceneGame()
 void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
 {
 	SceneInternal::OnActivated(lastScene, m_pRenderer);
+	OrderSchedule::Init(this);
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -99,6 +98,9 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	GetCamera().SetMaxPitch(1.55334303f);
 
 	DeleteSafe(m_pUICrew);
+
+	OrderSchedule::Release();
+	ResourceHandler::ResetGameObjectCounters();
 }
 
 void SceneGame::OnUpdate(float dtS) noexcept

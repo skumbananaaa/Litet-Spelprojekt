@@ -47,25 +47,26 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 
 			bool single = (m_pBed->GetMesh() == ResourceHandler::GetMesh(MESH::BED_SINGLE));
 			bool up = Random::GenerateBool();
-			float yOffset = (up && !single) ? 0.55f : -0.30f;
+			float yOffset = (up && !single) ? 1.45f : 0.55f;
+
 			if (rot == 0)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, -0.55f));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, -0.45f));
 				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 1)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.55f, yOffset, 0.0f));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.45f, yOffset, 0.0f));
 				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 			else if (rot == 2)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, 0.55f));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, 0.45f));
 				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 			else if (rot == 3)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.55f, yOffset, 0.0f));
+				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.45f, yOffset, 0.0f));
 				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 		}

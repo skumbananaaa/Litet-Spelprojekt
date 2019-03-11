@@ -64,29 +64,18 @@ void UICrew::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 {
 	PanelExpandable* panel = (PanelExpandable*)selection;
 
+	Game::GetGame()->m_pSceneGame->GetCrew()->ClearSelectedList();
 	for (int i = 0; i < panel->GetChildren().size(); i++)
 	{
 		uint32 shipNumber = reinterpret_cast<uint32>(panel->GetChildren()[i]->GetUserData());
 		Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
-		if (!crewmember->IsPicked())
-		{
-			crewmember->OnPicked(Game::GetGame()->m_pSceneGame->GetCrew()->GetSelectedList(), 0, 0);
-		}
+		crewmember->SetIsPicked(true);
 	}
 }
 
 void UICrew::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
 {
-	PanelExpandable* panel = (PanelExpandable*)selection;
-	for (int i = 0; i < panel->GetChildren().size(); i++)
-	{
-		uint32 shipNumber = reinterpret_cast<uint32>(panel->GetChildren()[i]->GetUserData());
-		Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
-		if (crewmember->IsPicked())
-		{
-			crewmember->OnPicked(Game::GetGame()->m_pSceneGame->GetCrew()->GetSelectedList(), 0, 0);
-		}
-	}
+	Game::GetGame()->m_pSceneGame->GetCrew()->ClearSelectedList();
 }
 
 void UICrew::OnHovered(const HoveringHandler* handler, IHoverable* selection)

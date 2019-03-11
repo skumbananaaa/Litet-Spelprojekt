@@ -75,6 +75,7 @@ void SceneInstructions::OnButtonPressed(Button* button)
 void SceneInstructions::OnButtonReleased(Button* button)
 {
 	Game::GetGame()->StartGame(m_pSceneGame);
+	m_pSceneGame = nullptr;
 }
 
 void SceneInstructions::OnButtonHovered(Button* button)

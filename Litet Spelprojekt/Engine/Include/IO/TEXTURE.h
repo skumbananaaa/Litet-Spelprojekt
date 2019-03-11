@@ -32,6 +32,7 @@ public:
 	static uint32 SJOFAN_DIFF;
 	static uint32 WALL1;
 	static uint32 FLOOR1;
+	static uint32 OVEN;
 
 private:
 	static void RegisterResourcesPreLoading();

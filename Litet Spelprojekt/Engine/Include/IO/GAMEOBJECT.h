@@ -20,6 +20,7 @@ public:
 	static uint32 TOILET;
 	static uint32 DOOR;
 	static uint32 FLOOR;
+	static uint32 OVEN;
 
 private:
 	static void RegisterResourcesPreLoading();

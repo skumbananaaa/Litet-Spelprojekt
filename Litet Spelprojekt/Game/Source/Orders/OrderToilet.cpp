@@ -6,7 +6,7 @@ OrderToilet::OrderToilet(const glm::ivec3& toiletTile, GameObject* pToilet)
 {
 	m_pToilet = pToilet;
 	m_Position = glm::vec3(4.0f);
-	m_Timer = 15.0f;
+	m_Timer = 12.0f;
 	m_IsAtToilet = false;
 }
 

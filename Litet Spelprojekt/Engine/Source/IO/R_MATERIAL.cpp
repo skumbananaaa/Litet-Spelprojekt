@@ -27,6 +27,7 @@ uint32 MATERIAL::CUBOARD = 0;
 uint32 MATERIAL::TABLE = 0;
 uint32 MATERIAL::TOILET = 0;
 uint32 MATERIAL::ANIMATED_MODEL = 0;
+uint32 MATERIAL::OVEN = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -62,4 +63,5 @@ void MATERIAL::RegisterResources()
 	TOILET				= ResourceHandler::RegisterMaterial(TEXTURE::TOILET, SHADER::STANDARD_MATERIAL);
 	CHAIR				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	LAMP				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	OVEN				= ResourceHandler::RegisterMaterial(TEXTURE::OVEN, SHADER::STANDARD_MATERIAL);
 }

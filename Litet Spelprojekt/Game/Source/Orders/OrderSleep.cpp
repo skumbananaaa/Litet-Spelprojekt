@@ -8,7 +8,7 @@ OrderSleep::OrderSleep(const glm::ivec3& bedTile, GameObject* pBed)
 {
 	m_pBed = pBed;
 	m_Position = glm::vec3(4.0f);
-	m_Timer = 60.0f;
+	m_Timer = 90.0f;
 	m_IsAtBed = false;
 }
 

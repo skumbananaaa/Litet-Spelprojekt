@@ -6566,6 +6566,34 @@
             "tileIdZ": 21,
             "gameObject": 0,
             "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 7,
+            "tileIdY": 4,
+            "tileIdZ": 24,
+            "gameObject": 12,
+            "rotation": 3.1415927410125734
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 4,
+            "tileIdZ": 25,
+            "gameObject": 12,
+            "rotation": 7.853981971740723
+        },
+        {
+            "tileIdX": 6,
+            "tileIdY": 4,
+            "tileIdZ": 26,
+            "gameObject": 12,
+            "rotation": 23.561946868896486
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 4,
+            "tileIdZ": 31,
+            "gameObject": 12,
+            "rotation": 31.415931701660158
         }
     ],
     "stairs": [

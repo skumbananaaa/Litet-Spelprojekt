@@ -21,4 +21,5 @@ private:
 	static std::vector<GameObject*> s_Toilets;
 	static std::vector<GameObject*> s_Instruments;
 	static std::vector<GameObject*> s_Chairs;
+	static std::vector<GameObject*> s_Ovens;
 };

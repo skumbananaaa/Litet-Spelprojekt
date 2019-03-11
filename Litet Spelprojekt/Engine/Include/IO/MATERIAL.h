@@ -31,6 +31,7 @@ public:
 	static uint32 TABLE;
 	static uint32 TOILET;
 	static uint32 ANIMATED_MODEL;
+	static uint32 OVEN;
 
 private:
 	static void RegisterResourcesPreLoading();

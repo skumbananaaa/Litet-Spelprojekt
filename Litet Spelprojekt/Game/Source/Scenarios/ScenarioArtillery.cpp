@@ -1,59 +1,59 @@
-#include "..\..\Include\Scenarios\ScenarioMissile.h"
+#include "..\..\Include\Scenarios\ScenarioArtillery.h"
 #include "..\..\Include\Scenarios\ScenarioManager.h"
 #include "..\..\Include\Game.h"
 #include <System/Random.h>
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioMissile::ScenarioMissile() : m_pAudioSourceExplosion(nullptr)
+ScenarioArtillery::ScenarioArtillery() : m_pAudioSourceExplosion(nullptr)
 {
 
 }
 
-ScenarioMissile::~ScenarioMissile()
+ScenarioArtillery::~ScenarioArtillery()
 {
 	DeleteSafe(m_pAudioSourceExplosion);
 }
 
-void ScenarioMissile::Init(World* pWorld) noexcept
+void ScenarioArtillery::Init(World* pWorld) noexcept
 {
 
 }
 
-void ScenarioMissile::Release() noexcept
+void ScenarioArtillery::Release() noexcept
 {
 }
 
-void ScenarioMissile::OnStart(SceneGame* scene) noexcept
+void ScenarioArtillery::OnStart(SceneGame* scene) noexcept
 {
 	glm::vec3 pos = glm::vec3(Random::GenerateInt(-200, 200), 200, Random::GenerateInt(-200, 200));
 	m_Target = glm::vec3(Random::GenerateInt(2, 9), 4, Random::GenerateInt(2, 39));
-	m_pGameObjectMissile = new GameObjectMissile(pos, m_Target);
+	m_pGameObjectArtillery = new GameObjectArtillery(pos, m_Target);
 
-	scene->AddGameObject(m_pGameObjectMissile);
+	scene->AddGameObject(m_pGameObjectArtillery);
 }
 
-void ScenarioMissile::OnEnd(SceneGame* scene) noexcept
+void ScenarioArtillery::OnEnd(SceneGame* scene) noexcept
 {
-	scene->RemoveGameObject(m_pGameObjectMissile);
-	DeleteSafe(m_pGameObjectMissile);
+	scene->RemoveGameObject(m_pGameObjectArtillery);
+	DeleteSafe(m_pGameObjectArtillery);
 }
 
-void ScenarioMissile::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
+void ScenarioArtillery::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
 {
     
 }
 
-void ScenarioMissile::Escalate(const glm::ivec3& position) noexcept
+void ScenarioArtillery::Escalate(const glm::ivec3& position) noexcept
 {
 
 }
 
-bool ScenarioMissile::Update(float dtS, World* world, SceneGame* scene) noexcept
+bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexcept
 {
-	if (m_pGameObjectMissile)
+	if (m_pGameObjectArtillery)
 	{
-		if (m_pGameObjectMissile->HasHitTarget())
+		if (m_pGameObjectArtillery->HasHitTarget())
 		{
 			ScenarioManager::Escalate(Game::GetGame()->m_ScenarioFire, m_Target);
 
@@ -81,14 +81,17 @@ bool ScenarioMissile::Update(float dtS, World* world, SceneGame* scene) noexcept
 			Crew* crew = scene->GetCrew();
 			for (int i = 0; i < crew->GetCount(); i++)
 			{
-				float distance = glm::distance(crew->GetMember(i)->GetPosition(), m_Target);
-				if (distance <= 10)
+				if (crew->GetMember(i)->GetPosition().y >= 4)
 				{
-					crew->GetMember(i)->ApplyBurnInjury(10 - distance + 1);
-					crew->GetMember(i)->ApplyBoneInjury(10 - distance + 1);
-					crew->GetMember(i)->ApplyBleedInjury(10 - distance + 1);
-					Logger::LogEvent(crew->GetMember(i)->GetName() + " was hit!", false);
-				}
+					float distance = glm::distance(crew->GetMember(i)->GetPosition(), m_Target);
+					if (distance <= 4)
+					{
+						crew->GetMember(i)->ApplyBurnInjury(4 - distance + 1);
+						crew->GetMember(i)->ApplyBoneInjury(4 - distance + 1);
+						crew->GetMember(i)->ApplyBleedInjury(4 - distance + 1);
+						Logger::LogEvent(crew->GetMember(i)->GetName() + " blev träffad!", false);
+					}
+				}	
 			}
 
 			return true;
@@ -98,22 +101,22 @@ bool ScenarioMissile::Update(float dtS, World* world, SceneGame* scene) noexcept
 	return true;
 }
 
-void ScenarioMissile::OnMeshEmitterKilled(MeshEmitter* emitter)
+void ScenarioArtillery::OnMeshEmitterKilled(MeshEmitter* emitter)
 {
 	DeleteSafe(m_pAudioSourceExplosion);
 }
 
-std::string ScenarioMissile::GetName() noexcept
+std::string ScenarioArtillery::GetName() noexcept
 {
-	return "Missilträff";
+	return "Artilleriträff";
 }
 
-int32 ScenarioMissile::GetCooldownTime() noexcept
+int32 ScenarioArtillery::GetCooldownTime() noexcept
 {
 	return 100;
 }
 
-int32 ScenarioMissile::GetMaxTimeBeforeOutbreak() noexcept
+int32 ScenarioArtillery::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 60 * 5;
 }

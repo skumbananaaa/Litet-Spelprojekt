@@ -6,13 +6,20 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 	int newY = std::min(std::max(y + addY, 0), ((int)m_pWorld->GetNumLevels() / 2 - 1));
 	int newX = std::min(std::max(x + addX, 0), (m_pSize[newY].x - 1));
 	int newZ = std::min(std::max(z + addZ, 0), (m_pSize[newY].y - 1));
+
+
+	const TileData& tile1 = m_pWorld->GetLevel(y * 2).GetLevelData()[x][z];
+	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+	const TileData& tile2 = m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ];
+	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
 	if (addY == 0 || (addY == 1 && m_pppTiles[x][y][z].stairsUp) || (addY == -1 && m_pppTiles[x][y][z].stairsDown))
 	{
 		if (!(m_pppTiles[newX][newY][newZ].closed))
 		{
 			if (m_pppTiles[newX][newY][newZ].g == 0 || m_pppTiles[newX][newY][newZ].g > m_pppTiles[x][y][z].g)
 			{
-				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || (m_pWorld->GetLevel(y * 2).GetLevelData()[x][z].HasDoor() && m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].HasDoor()) || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
+				if ((m_pppMap[newY][newX][newZ] == m_pppMap[y][x][z] || (tile1.HasDoor() && door1 == door2) || addY != 0)  && m_pppMap[newY][newX][newZ] != 1)
 				{
 					m_pOpenList[m_NrOfTilesOpen++] = glm::ivec3(newX, newY, newZ);
 					m_pppTiles[newX][newY][newZ].parentTile = glm::ivec3(x, y, z);

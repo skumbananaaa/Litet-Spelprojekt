@@ -32,7 +32,7 @@ public:
 	static uint32 TABLE;
 	static uint32 TOILET;
 	static uint32 WATER_QUAD;
-	static uint32 MISSILE;
+	static uint32 ARTILLERY;
 
 private:
 	static void RegisterResourcesPreLoading();

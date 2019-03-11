@@ -372,7 +372,7 @@ void SceneGame::CreateAudio() noexcept
 	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
-	//m_pTestAudioSource->Play();
+	m_pTestAudioSource->Play();
 }
 
 void SceneGame::CreateGameObjects() noexcept

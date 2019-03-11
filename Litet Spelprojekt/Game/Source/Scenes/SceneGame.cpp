@@ -33,6 +33,7 @@ SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 
 	GetCamera().SetMaxPitch(-glm::two_pi<float>() / 64.0f);
 	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 11.0f, 41.0f);
+	UpdateMaterialClipPlanes();
 }
 
 SceneGame::~SceneGame()
@@ -225,7 +226,6 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 			{
 				if (offset.y > 0.0f)
 				{
-					//FIXA SÅ ATT OM MAN ÄR EXTENDAD OCH DEEXTENDAR SÅ FLYTTAS KAMERAN RÄTT
 					if (camera.GetLookAt().y < 4.0f)
 					{
 						float xMove = (float)IsExtended() * 10.0f;
@@ -233,6 +233,7 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
 												   lookAtBoundsOffset + 11.0f, 41.0f);
 						camera.MoveWorldCoords(glm::vec3(xMove, 2.0f, 0.0f), true);
+						UpdateMaterialClipPlanes();
 					}
 				}
 				else
@@ -244,6 +245,7 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
 												   lookAtBoundsOffset + 11.0f, 41.0f);
 						camera.MoveWorldCoords(glm::vec3(xMove, -2.0f, 0.0f), true);
+						UpdateMaterialClipPlanes();
 					}
 				}
 			}
@@ -326,6 +328,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 			case KEY_SPACE:
 			{
 				ExtendScene();
+				UpdateMaterialClipPlanes();
 				break;
 			}
 			case KEY_R:
@@ -336,22 +339,22 @@ void SceneGame::OnKeyDown(KEY keycode)
 			}
 			case KEY_NUMPAD_0:
 			{
-				RequestDoorClosed(DOOR_COLOR::RED);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_RED);
 				break;
 			}
 			case KEY_NUMPAD_1:
 			{
-				RequestDoorClosed(DOOR_COLOR::GREEN);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_GREEN);
 				break;
 			}
 			case KEY_NUMPAD_2:
 			{
-				RequestDoorClosed(DOOR_COLOR::BLUE);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_BLUE);
 				break;
 			}
 			case KEY_NUMPAD_3:
 			{
-				RequestDoorClosed(DOOR_COLOR::YELLOW);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_YELLOW);
 				break;
 			}
 			case KEY_G:
@@ -394,6 +397,11 @@ void SceneGame::OnResize(uint32 width, uint32 height)
 
 }
 
+void SceneGame::OnSceneExtensionComplete() noexcept
+{
+	UpdateMaterialClipPlanes();
+}
+
 void SceneGame::CreateAudio() noexcept
 {
 	AudioListener::SetPosition(glm::vec3(0.0f));
@@ -411,7 +419,7 @@ void SceneGame::CreateGameObjects() noexcept
 		////Bottom floor
 		//{
 		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::RED);
+		//	pGameObject->SetMaterial(MATERIAL::DOOR_RED);
 		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
 		//	pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
 		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
@@ -422,7 +430,7 @@ void SceneGame::CreateGameObjects() noexcept
 		////Middle floor
 		//{
 		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::GREEN);
+		//	pGameObject->SetMaterial(MATERIAL::DOOR_GREEN);
 		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
 		//	pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
 		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
@@ -433,7 +441,7 @@ void SceneGame::CreateGameObjects() noexcept
 		////Top floor
 		//{
 		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::BLUE);
+		//	pGameObject->SetMaterial(MATERIAL::DOOR_BLUE);
 		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
 		//	pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
 		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));

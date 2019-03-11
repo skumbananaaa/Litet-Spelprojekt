@@ -8,10 +8,10 @@ class API MATERIAL
 public:
 	static uint32 BLACK;
 	static uint32 WHITE;
-	static uint32 RED;
-	static uint32 GREEN;
-	static uint32 BLUE;
-	static uint32 YELLOW;
+	static uint32 DOOR_RED;
+	static uint32 DOOR_GREEN;
+	static uint32 DOOR_BLUE;
+	static uint32 DOOR_YELLOW;
 	static uint32 OCEAN_BLUE;
 	static uint32 BOAT;
 	static uint32 GROUND;
@@ -43,6 +43,7 @@ public:
 	static uint32 FLOOR_DINING1;
 	static uint32 FLOOR_CABOOSE1;
 	static uint32 OVEN;
+	//REMEMBER, WHEN ADDING NEW MATERIALS, ALSO ADD IT TO THE SceneGame UpdateMaterialClipPlanes() FUNCTION
 
 private:
 	static void RegisterResourcesPreLoading();

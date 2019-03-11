@@ -40,6 +40,19 @@ layout(std140, binding = 1) uniform LightBuffer
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
 };
 
+layout(std140, binding = 2) uniform MaterialBuffer
+{
+	vec4 g_Color;
+	vec4 g_ClipPlane;
+	float g_Specular;
+	float g_HasDiffuseMap;
+};
+
+layout(std140, binding = 4) uniform PlaneBuffer
+{
+	vec4 g_ReflectionClipPlane;
+};
+
 layout(std140, binding = 5) uniform Extension
 {
 	float g_Extension;
@@ -79,6 +92,9 @@ void main()
 	vec3 normal = normalize((g_InstanceModel * vec4(g_Normal, 0.0)).xyz);
 
 	worldPos.x += g_Extension * floor(clamp(g_InstanceModel[3].y, 0.0f, 5.9f) / 2.0f);
+
+	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
+	gl_ClipDistance[2] = dot(worldPos, g_ClipPlane);
 
 	//Viewdir
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);

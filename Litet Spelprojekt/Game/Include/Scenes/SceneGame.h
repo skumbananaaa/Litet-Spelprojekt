@@ -37,6 +37,7 @@ public:
 	virtual void OnKeyUp(KEY keycode) override;
 	virtual void OnKeyDown(KEY keycode) override;
 	virtual void OnResize(uint32 width, uint32 height) override;
+	virtual void OnSceneExtensionComplete() noexcept override;
 
 	void PickPosition();
 	void RequestDoorClosed(uint32 doorColor);
@@ -62,6 +63,7 @@ protected:
 	void CreateCrew() noexcept;
 
 	void UpdateCamera(float dtS) noexcept;
+	void UpdateMaterialClipPlanes() noexcept;
 
 private:
 	bool m_IsPaused;
@@ -80,3 +82,54 @@ private:
 
 	Crew m_Crew;
 };
+
+inline void SceneGame::UpdateMaterialClipPlanes() noexcept
+{
+	Camera& camera = GetCamera();
+	float extendedFactor = 1.0f - (float)(IsExtended() || IsExtending());
+	glm::vec4 standardClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 2.0f));
+	glm::vec4 wallClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.99f));
+	glm::vec4 floorClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.9f));
+
+	ResourceHandler::GetMaterial(MATERIAL::BLACK)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::WHITE)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::DOOR_RED)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::DOOR_GREEN)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::DOOR_BLUE)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::DOOR_YELLOW)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::OCEAN_BLUE)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)		->SetLevelClipPlane(wallClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)	->SetLevelClipPlane(wallClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::SINGLE_BED)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::BUNK_BED)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::INSTRUMENT_1)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::INSTRUMENT_2)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::LAMP)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::CHAIR)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::CUPBOARD)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::TABLE)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::TOILET)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::ANIMATED_MODEL)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_NORMAL)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_SICKBAY1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_TOILET1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_MACHINE1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_MACHINE2)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_MACHINE3)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_AMMUNITION1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_AMMUNITION2)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_AMMUNITION3)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_KITCHEN1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_DINING1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_CABOOSE1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::OVEN)				->SetLevelClipPlane(standardClipPlane);
+
+	IRenderer* renderer = GetRenderer();
+	if (renderer != nullptr)
+	{
+		renderer->SetParticleClipPlane(standardClipPlane);
+	}
+}

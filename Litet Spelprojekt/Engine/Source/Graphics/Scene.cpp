@@ -295,6 +295,10 @@ void Scene::RegisterPickableGameObject(GameObject* pickableObject) noexcept
 	m_PickableGameObjects.push_back(pickableObject);
 }
 
+void Scene::OnSceneExtensionComplete() noexcept
+{
+}
+
 void Scene::OnUpdate(float dtS) noexcept
 {
 	for (GameObject* pGameObject : m_GameObjects)
@@ -321,12 +325,14 @@ void Scene::OnUpdate(float dtS) noexcept
 			m_Extending = false;
 			m_Extension = 10.0f;
 			extensionOffset = 0.0f;
+			OnSceneExtensionComplete();
 		}
 		else if (m_Extension < 0.0f)
 		{
 			m_Extending = false;
 			m_Extension = 0.0f;
 			extensionOffset = 0.0f;
+			OnSceneExtensionComplete();
 		}
 
 		if (m_pCamera->GetLookAt().y > 0.0f)

@@ -432,7 +432,7 @@ void Editor::CreateWalls()
 		{
 			bulkhead = ppWorldLevels[level]->GetBulkhead(i);
 			GameObject* pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::RED);
+			pGameObject->SetMaterial(MATERIAL::DOOR_RED);
 			pGameObject->SetMesh(MESH::CUBE);
 			pGameObject->SetPosition(glm::vec3(bulkhead.x - halfWidth, 1.0f, bulkhead.y - halfHeight));
 			pGameObject->SetScale(glm::vec3(bulkhead.z + 0.1f, 2.01f, bulkhead.w + 0.2f));
@@ -1231,7 +1231,7 @@ void Editor::OnMousePressed(MouseButton mousebutton, const glm::vec2& position)
 
 						if (!pTile->HasDoor())
 						{
-							pTile->SetDefaultMaterial(MATERIAL::BLUE);
+							pTile->SetDefaultMaterial(MATERIAL::DOOR_BLUE);
 							pTile->SetHasStairs(true);
 						}
 					}
@@ -1878,7 +1878,7 @@ void Editor::OnButtonReleased(Button* button)
 			const glm::ivec3& stair = stairs[stairId];
 			Tile* pTile = editor->m_ppGrids[stair.y]->GetTile(glm::ivec2(stair.x - 1, stair.z - 1));
 			pTile->SetHasStairs(true);
-			pTile->SetDefaultMaterial(MATERIAL::BLUE);
+			pTile->SetDefaultMaterial(MATERIAL::DOOR_BLUE);
 		}
 
 		for (uint32 doorId = 0; doorId < pWorld->GetDoors().size(); doorId++)

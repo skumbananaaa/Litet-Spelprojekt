@@ -33,20 +33,24 @@ layout(std140, binding = 0) uniform CameraBuffer
 	vec3 g_CameraPosition;
 };
 
-layout(std140, binding = 2) uniform DefferedMaterialBuffer
-{
-	vec4 g_Color;
-	vec4 g_ClipPlane;
-	float g_Specular;
-	float g_HasDiffuseMap;
-	float g_HasSpecularMap;
-};
-
 layout(std140, binding = 1) uniform LightBuffer
 {
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+layout(std140, binding = 2) uniform MaterialBuffer
+{
+	vec4 g_Color;
+	vec4 g_ClipPlane;
+	float g_Specular;
+	float g_HasDiffuseMap;
+};
+
+layout(std140, binding = 4) uniform PlaneBuffer
+{
+	vec4 g_ReflectionClipPlane;
 };
 
 layout(std140, binding = 5) uniform Extension
@@ -97,6 +101,9 @@ void main()
 
 	//Do extension
 	worldPos.x += g_Extension * floor(clamp(g_InstanceModel[3].y, 0.0f, 5.9f) / 2.0f);
+
+	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
+	gl_ClipDistance[2] = dot(worldPos, g_ClipPlane);
 
 	//Viewdir
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);

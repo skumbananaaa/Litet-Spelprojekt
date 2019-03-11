@@ -32,6 +32,7 @@ public:
 	void RemoveGameObject(GameObject* pGameObject) noexcept;
 	void ExtendScene() noexcept;
 	void RegisterPickableGameObject(GameObject* pickableObject) noexcept;
+	virtual void OnSceneExtensionComplete() noexcept;
 
 	Camera& GetCamera() noexcept;
 	const Camera& GetCamera() const noexcept;

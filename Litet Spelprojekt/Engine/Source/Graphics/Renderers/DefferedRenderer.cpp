@@ -54,7 +54,7 @@ DefferedRenderer::~DefferedRenderer()
 	DeleteSafe(m_pQueries[1]);
 }
 
-void DefferedRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
+void DefferedRenderer::SetClipPlane(const glm::vec4& plane, uint32 index)
 {
 	assert(index < NUM_CLIP_DISTANCES);
 	m_ClipDistances[index] = plane;

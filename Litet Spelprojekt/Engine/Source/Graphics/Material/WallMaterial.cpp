@@ -20,8 +20,6 @@ void WallMaterial::Bind(const Framebuffer* pGBuffer) const noexcept
 	GLContext& context = GLContext::GetCurrentContext();
 
 	context.Enable(CLIP_DISTANCE0);
-	context.Enable(CLIP_DISTANCE1);
-	context.Enable(CLIP_DISTANCE2);
 
 	context.SetUniformBuffer(m_pDissolveBuffer, 3);
 
@@ -39,8 +37,6 @@ void WallMaterial::Unbind() const noexcept
 	GLContext& context = GLContext::GetCurrentContext();
 
 	context.Disable(CLIP_DISTANCE0);
-	context.Disable(CLIP_DISTANCE1);
-	context.Disable(CLIP_DISTANCE2);
 
 	context.SetUniformBuffer(nullptr, 3);
 	context.SetDepthFunc(m_LastDepthFunc);

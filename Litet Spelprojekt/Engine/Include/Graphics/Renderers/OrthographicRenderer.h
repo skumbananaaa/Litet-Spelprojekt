@@ -32,9 +32,9 @@ public:
 	OrthographicRenderer() noexcept;
 	~OrthographicRenderer();
 
-	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, const World* pWorld, float dtS) const override final;
 	void DrawBulkheads(const Scene& scene, const std::vector<GameObject*>& bulkheads, float dtS) const;
+	void SetParticleClipPlane(const glm::vec4& clipPlane) noexcept;
 
 private:
 	void Create() noexcept;

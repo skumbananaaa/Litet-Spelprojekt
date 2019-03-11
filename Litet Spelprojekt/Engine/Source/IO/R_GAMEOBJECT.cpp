@@ -29,8 +29,8 @@ void GAMEOBJECT::RegisterResourcesPreLoading()
 void GAMEOBJECT::RegisterResources()
 {
 	CHAIR						= ResourceHandler::RegisterGameObject("Stol", MESH::CHAIR, MATERIAL::CHAIR);
-	BED_BUNK					= ResourceHandler::RegisterGameObject("Våningssäng", MESH::BED_BUNK, MATERIAL::BUNK_BED);
-	BED_SINGLE					= ResourceHandler::RegisterGameObject("Enkelsäng", MESH::BED_SINGLE, MATERIAL::SINGLE_BED);
+	BED_BUNK					= ResourceHandler::RegisterGameObject("Bunkbed", MESH::BED_BUNK, MATERIAL::BUNK_BED);
+	BED_SINGLE					= ResourceHandler::RegisterGameObject("Singlebed", MESH::BED_SINGLE, MATERIAL::SINGLE_BED);
 	INSTRUMENT_1				= ResourceHandler::RegisterGameObject("Instrument 1", MESH::INSTRUMENT_1, MATERIAL::INSTRUMENT_1);
 	INSTRUMENT_2				= ResourceHandler::RegisterGameObject("Instrument 2", MESH::INSTRUMENT_2, MATERIAL::INSTRUMENT_2);
 	LAMP						= ResourceHandler::RegisterGameObject("Lampa", MESH::LAMP, MATERIAL::LAMP);

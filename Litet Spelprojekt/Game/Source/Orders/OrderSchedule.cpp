@@ -17,11 +17,11 @@ void OrderSchedule::Init(Scene* pScene)
 {
 	GameObject* pGameObject = nullptr;
 	//Find beds
-	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Våningssäng" + std::to_string(i))) != nullptr; i++)
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Bunkbed" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Beds.push_back(pGameObject);
 	}
-	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Enkelsäng" + std::to_string(i))) != nullptr; i++)
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Singlebed" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Beds.push_back(pGameObject);
 	}
@@ -69,7 +69,7 @@ IOrder* OrderSchedule::GetIdleOrder()
 	IOrder* pOrder = nullptr;
 	for (uint32 i = 0; i < 5 && pOrder == nullptr; i++)
 	{
-		uint32 order = 60;// Random::GenerateInt(0, 100);
+		uint32 order = Random::GenerateInt(0, 100);
 		if (order >= 60)
 		{
 			pOrder = GetOrderSleep();

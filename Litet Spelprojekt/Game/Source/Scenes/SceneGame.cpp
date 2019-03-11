@@ -21,7 +21,6 @@ SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 
 	LightManager::Init(this, NUM_SPOT_LIGHTS);
 
-	OrderSchedule::Init(this);
 	ScenarioManager::Init(m_pWorld);
 
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
@@ -50,12 +49,10 @@ SceneGame::~SceneGame()
 void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
 {
 	SceneInternal::OnActivated(lastScene, m_pRenderer);
-	OrderSchedule::Init(this);
 
 	CreateAudio();
 	CreateGameObjects();
 	CreateCrew();
-
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -72,6 +69,7 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	SetPaused(false);
 
+	OrderSchedule::Init(this);
 	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
 		IOrder* pOrder = OrderSchedule::GetIdleOrder();
@@ -161,24 +159,6 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 		AudioListener::SetPosition(GetCamera().GetPosition());
 		AudioListener::SetOrientation(GetCamera().GetFront(), GetCamera().GetUp());
-
-		if (Input::IsKeyPressed(KEY_NUMPAD_2))
-		{
-			if (m_CurrentElevation > 0)
-			{
-				m_CurrentElevation--;
-			}
-			std::cout << "Elevation: " << m_CurrentElevation << std::endl;
-		}
-
-		if (Input::IsKeyPressed(KEY_NUMPAD_8))
-		{
-			if (m_CurrentElevation < 2)
-			{
-				m_CurrentElevation++;
-			}
-			std::cout << "Elevation: " << m_CurrentElevation << std::endl;
-		}
 	}
 }
 

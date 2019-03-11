@@ -69,7 +69,16 @@ bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	else
 	{
 		m_Timer -= dtS;
-		return m_Timer <= 0.0f;
+		if (m_Timer <= 0.0f)
+		{
+			IOrder* pOrder = OrderSchedule::GetOrderEat();
+			if (pOrder)
+			{
+				GetCrewMember()->GiveOrder(pOrder);
+			}
+
+			return true;
+		}
 	}
 
 	return false;
@@ -77,15 +86,7 @@ bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 void OrderCook::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	if (m_IsAtOven)
-	{
-		IOrder* pOrder = OrderSchedule::GetOrderEat();
-		if (pOrder)
-		{
-			GetCrewMember()->GiveOrder(pOrder);
-		}
-	}
-	else
+	if (!m_IsAtOven)
 	{
 		OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 	}

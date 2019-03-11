@@ -312,17 +312,30 @@ void Scene::OnUpdate(float dtS) noexcept
 
 	if (m_Extending)
 	{
-		m_Extension += 20.0f * dtS * ((m_Extended * 2) - 1);
+		float extensionOffset = 20.0f * dtS * ((m_Extended * 2) - 1);
+
+		m_Extension += extensionOffset;
 
 		if (m_Extension > 10.0f)
 		{
 			m_Extending = false;
 			m_Extension = 10.0f;
+			extensionOffset = 0.0f;
 		}
 		else if (m_Extension < 0.0f)
 		{
 			m_Extending = false;
 			m_Extension = 0.0f;
+			extensionOffset = 0.0f;
+		}
+
+		if (m_pCamera->GetLookAt().y > 0.0f)
+		{
+			float heightFactor = m_pCamera->GetLookAt().y / 2.0f;
+			float lookAtBoundsOffset = m_Extension * heightFactor;
+			m_pCamera->SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
+				lookAtBoundsOffset + 11.0f, 41.0f);
+			m_pCamera->MoveWorldCoords(glm::vec3(extensionOffset * heightFactor, 0.0f, 0.0f), true);
 		}
 	}
 

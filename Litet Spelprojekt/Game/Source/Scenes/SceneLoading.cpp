@@ -21,7 +21,7 @@ void SceneLoading::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer)
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pTextViewFile = new TextView((window->GetWidth() - 300) / 2, (window->GetHeight() - 50) / 2 + 50, 300, 50, "Loading...");
+	m_pTextViewFile = new TextView((window->GetWidth() - 300) / 2, (window->GetHeight() - 50) / 2 + 50, 300, 50, "Laddar...");
 	m_pLoadingBar = new ProgressBar((window->GetWidth() - 300) / 2, (window->GetHeight() - 50) / 2, 300, 50);
 
 	game->GetGUIManager().Add(m_pTextViewFile);

@@ -7,6 +7,7 @@
 #include "Scenes/SceneCredits.h"
 #include "Scenes/SceneOptions.h"
 #include "Scenes/SceneScenario.h"
+#include "Scenes/SceneInstructions.h"
 #include <Graphics/Renderers/ForwardRenderer.h>
 #include <Audio/Sources/AudioSource.h>
 #include <IO/ResourceHandler.h>
@@ -38,7 +39,7 @@ public:
 	void OnRender(float dtS) override;
 	
 	void SetScene(SceneInternal* scene) noexcept;
-	void StartGame() noexcept;
+	void StartGame(SceneGame* pSceneGame) noexcept;
 
 	static Game* GetGame();
 
@@ -49,6 +50,7 @@ public:
 	SceneOptions* m_pSceneOptions;
 	SceneScenario* m_pSceneScenario;
 	SceneGame* m_pSceneGame;
+	SceneInstructions* m_pSceneInstructions;
 
 	int32 m_ScenarioFire;
 	int32 m_ScenarioWater;

@@ -1,4 +1,4 @@
-#include "..\..\Include\GUI\UICrew.h"
+﻿#include "..\..\Include\GUI\UICrew.h"
 #include "../../Include/Game.h"
 #include "../../Include/Scenes/SceneGame.h"
 #include <System/Random.h>
@@ -11,8 +11,8 @@ UICrew::UICrew(float x, float y, float width, float height, Crew* crew) :
 	static glm::vec2 textOffset = glm::vec2(10.0, 0.0);
 
 
-	m_Panels.push_back(CreateExpandable("Sjukv�rdare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_MEDIC, MEDIC, crew, buttonColor, textOffset));
-	m_Panels.push_back(CreateExpandable("R�kdykare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_FIRE, SMOKE_DIVER, crew, buttonColor, textOffset));
+	m_Panels.push_back(CreateExpandable("Sjukvårdare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_MEDIC, MEDIC, crew, buttonColor, textOffset));
+	m_Panels.push_back(CreateExpandable("Rökdykare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_FIRE, SMOKE_DIVER, crew, buttonColor, textOffset));
 
 	for (int i = m_Panels.size(); i < crew->NrOfSquads(); i++)
 	{
@@ -64,29 +64,18 @@ void UICrew::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 {
 	PanelExpandable* panel = (PanelExpandable*)selection;
 
+	Game::GetGame()->m_pSceneGame->GetCrew()->ClearSelectedList();
 	for (int i = 0; i < panel->GetChildren().size(); i++)
 	{
 		uint32 shipNumber = reinterpret_cast<uint32>(panel->GetChildren()[i]->GetUserData());
 		Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
-		if (!crewmember->IsPicked())
-		{
-			crewmember->OnPicked(Game::GetGame()->m_pSceneGame->GetCrew()->GetSelectedList(), 0, 0);
-		}
+		crewmember->SetIsPicked(true);
 	}
 }
 
 void UICrew::OnDeselected(const SelectionHandler* handler, ISelectable* selection)
 {
-	PanelExpandable* panel = (PanelExpandable*)selection;
-	for (int i = 0; i < panel->GetChildren().size(); i++)
-	{
-		uint32 shipNumber = reinterpret_cast<uint32>(panel->GetChildren()[i]->GetUserData());
-		Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
-		if (crewmember->IsPicked())
-		{
-			crewmember->OnPicked(Game::GetGame()->m_pSceneGame->GetCrew()->GetSelectedList(), 0, 0);
-		}
-	}
+	Game::GetGame()->m_pSceneGame->GetCrew()->ClearSelectedList();
 }
 
 void UICrew::OnHovered(const HoveringHandler* handler, IHoverable* selection)
@@ -108,7 +97,7 @@ void UICrew::OnButtonPressed(Button* button)
 {
 	ProgressButton* progressButton = (ProgressButton*)button;
 	progressButton->StartAnimation(Random::GenerateInt(3, 15));
-	progressButton->SetText("Inv�ntar svar");
+	progressButton->SetText("Inväntar svar");
 	progressButton->SetTextColor(GUIContext::COLOR_BLACK);
 }
 

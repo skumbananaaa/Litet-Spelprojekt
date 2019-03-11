@@ -12,12 +12,16 @@ OrderWalkMedicBay::~OrderWalkMedicBay()
 {
 	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
 }
-
-bool OrderWalkMedicBay::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
+*/
+bool OrderWalkMedicBay::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	return OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS);
+	if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
+	{
+		// Make it so that a crewmember goes to bed.
+	}
+	return false;
 }
-
+/*
 void OrderWalkMedicBay::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);

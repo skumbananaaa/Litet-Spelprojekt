@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenes\SceneGame.h"
+﻿#include "..\..\Include\Scenes\SceneGame.h"
 #include "../../Include/Game.h"
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
@@ -6,10 +6,11 @@
 #include "../../Include/GameObjectDoor.h"
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Orders/OrderSchedule.h"
+#include "../../Include/Orders/OrderGiveAid.h"
 #include <Graphics/Materials/MaterialBase.h>
 
-SceneGame::SceneGame() : SceneInternal(false),
-	m_pWorld(nullptr),
+SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
+	m_pWorld(pWorld),
 	m_pTestAudioSource(nullptr),
 	m_CartesianCamera(false),
 	m_CurrentElevation(2),
@@ -20,11 +21,6 @@ SceneGame::SceneGame() : SceneInternal(false),
 	Window* window = &game->GetWindow();
 
 	LightManager::Init(this, NUM_SPOT_LIGHTS);
-
-	CreateAudio();
-	CreateGameObjects();
-	CreateWorld();
-	CreateCrew();
 
 	OrderSchedule::Init(this);
 	ScenarioManager::Init(m_pWorld);
@@ -57,6 +53,11 @@ SceneGame::~SceneGame()
 void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
 {
 	SceneInternal::OnActivated(lastScene, m_pRenderer);
+
+	CreateAudio();
+	CreateGameObjects();
+	CreateCrew();
+
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -378,6 +379,32 @@ void SceneGame::OnKeyDown(KEY keycode)
 				m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 				break;
 			}
+			case KEY_H:
+			{
+				Crewmember* medic = nullptr;
+				Crewmember* victim = nullptr;
+				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				{
+					Crewmember* member = m_Crew.GetMember(i);
+					if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
+					{
+						victim = member;
+					}
+					else if (member->GetGroupType() == MEDIC)
+					{
+						medic = member;
+					}
+
+					if (medic != nullptr && victim != nullptr)
+					{
+						break;
+					}
+				}
+				if (medic != nullptr && victim != nullptr)
+				{
+					medic->GiveOrder(new OrderGiveAid(victim));
+				}
+			}
 		}
 	}
 }
@@ -396,6 +423,7 @@ void SceneGame::CreateAudio() noexcept
 {
 	AudioListener::SetPosition(glm::vec3(0.0f));
 	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
+	m_pTestAudioSource->SetVolume(0.4);
 	m_pTestAudioSource->SetPitch(1.0f);
 	m_pTestAudioSource->SetLooping(true);
 	m_pTestAudioSource->Play();
@@ -572,14 +600,6 @@ void SceneGame::CreateCrew() noexcept
 		crewmember->SetHidden(hidden);
 		crewmember->UpdateTransform();
 		AddGameObject(m_Crew.GetMember(i));
-	}
-}
-
-void SceneGame::GenerateShadows()
-{
-	if (m_pWorld)
-	{
-		m_pWorld->GenerateRoomShadows(*this);
 	}
 }
 

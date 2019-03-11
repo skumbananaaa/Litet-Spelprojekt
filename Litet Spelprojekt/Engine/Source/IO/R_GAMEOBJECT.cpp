@@ -28,17 +28,17 @@ void GAMEOBJECT::RegisterResourcesPreLoading()
 
 void GAMEOBJECT::RegisterResources()
 {
-	CHAIR						= ResourceHandler::RegisterGameObject("Chair", MESH::CHAIR, MATERIAL::CHAIR);
-	BED_BUNK					= ResourceHandler::RegisterGameObject("Bunk Bed", MESH::BED_BUNK, MATERIAL::BUNK_BED);
-	BED_SINGLE					= ResourceHandler::RegisterGameObject("Single Bed", MESH::BED_SINGLE, MATERIAL::SINGLE_BED);
+	CHAIR						= ResourceHandler::RegisterGameObject("Stol", MESH::CHAIR, MATERIAL::CHAIR);
+	BED_BUNK					= ResourceHandler::RegisterGameObject("Våningssäng", MESH::BED_BUNK, MATERIAL::BUNK_BED);
+	BED_SINGLE					= ResourceHandler::RegisterGameObject("Enkelsäng", MESH::BED_SINGLE, MATERIAL::SINGLE_BED);
 	INSTRUMENT_1				= ResourceHandler::RegisterGameObject("Instrument 1", MESH::INSTRUMENT_1, MATERIAL::INSTRUMENT_1);
 	INSTRUMENT_2				= ResourceHandler::RegisterGameObject("Instrument 2", MESH::INSTRUMENT_2, MATERIAL::INSTRUMENT_2);
-	LAMP						= ResourceHandler::RegisterGameObject("Lamp", MESH::LAMP, MATERIAL::LAMP);
-	FIREALARM					= ResourceHandler::RegisterGameObject("Firealarm", MESH::LAMP, MATERIAL::DOOR_RED);
-	CUPBOARD					= ResourceHandler::RegisterGameObject("Cupboard", MESH::CUPBOARD, MATERIAL::CUPBOARD);
-	TABLE						= ResourceHandler::RegisterGameObject("Table", MESH::TABLE, MATERIAL::TABLE);
-	TOILET						= ResourceHandler::RegisterGameObject("Toilet", MESH::TOILET, MATERIAL::TOILET);
-	DOOR						= ResourceHandler::RegisterGameObject("Door", MESH::DOOR, MATERIAL::WHITE);
-	FLOOR						= ResourceHandler::RegisterGameObject("Floor", MESH::CUBE);
-	OVEN						= ResourceHandler::RegisterGameObject("Oven", MESH::OVEN, MATERIAL::OVEN);
+	LAMP						= ResourceHandler::RegisterGameObject("Lampa", MESH::LAMP, MATERIAL::LAMP);
+	FIREALARM					= ResourceHandler::RegisterGameObject("Brandvarnare", MESH::LAMP, MATERIAL::DOOR_RED);
+	CUPBOARD					= ResourceHandler::RegisterGameObject("Skåp", MESH::CUPBOARD, MATERIAL::CUPBOARD);
+	TABLE						= ResourceHandler::RegisterGameObject("Bord", MESH::TABLE, MATERIAL::TABLE);
+	TOILET						= ResourceHandler::RegisterGameObject("Toalett", MESH::TOILET, MATERIAL::TOILET);
+	DOOR						= ResourceHandler::RegisterGameObject("Dörr", MESH::DOOR, MATERIAL::WHITE);
+	FLOOR						= ResourceHandler::RegisterGameObject("Golv", MESH::CUBE);
+	OVEN						= ResourceHandler::RegisterGameObject("Ugn", MESH::OVEN, MATERIAL::OVEN);
 }

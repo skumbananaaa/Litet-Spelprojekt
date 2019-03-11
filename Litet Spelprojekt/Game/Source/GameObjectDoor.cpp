@@ -92,6 +92,10 @@ void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept
 	const float lastPercentage = m_Percentage;
 	m_Percentage += deltaTime * (m_Open * 2 - 1);
 	m_Percentage = glm::clamp<float>(m_Percentage, 0.0F, 1.0F);
+	if (m_Percentage <= 0.0f)
+	{
+		m_AccessQueue.clear();
+	}
 	if (lastPercentage != m_Percentage)
 	{
 		m_IsDirty = true;

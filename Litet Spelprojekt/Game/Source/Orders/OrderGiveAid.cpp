@@ -1,5 +1,5 @@
 #include "../../Include/Orders/OrderGiveAid.h"
-#include "../../Include/Crewmember.h"
+#include "../../Include/Crew.h"
 OrderGiveAid::OrderGiveAid(Crewmember* injuredMember): OrderWalk(injuredMember->GetTile())
 {
 	m_pAiding = injuredMember;
@@ -18,10 +18,10 @@ void OrderGiveAid::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) n
 bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
 	bool res = OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
-	uint32 healLevel = 2;
+	uint32 healLevel = 0;
 	if (GetCrewMember()->GetGroup() == MEDIC)
 	{
-		healLevel = 5;
+		healLevel = 0.2;
 	}
 	if (res)
 	{
@@ -34,6 +34,16 @@ void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 	m_pAiding = nullptr;
+
+	for (uint32 i = 0; i < pCrewMembers->GetCount(); i++)
+	{
+		Crewmember* member = pCrewMembers->GetMember(i);
+		if (member->GetRoom() == GetCrewMember()->GetRoom() && !member->HasRecovered() && !member->IsAbleToWork())
+		{
+			GetCrewMember()->GiveOrder(new OrderGiveAid(member));
+			break;
+		}
+	}
 }
 
 bool OrderGiveAid::CanBeStackedWithSameType() noexcept

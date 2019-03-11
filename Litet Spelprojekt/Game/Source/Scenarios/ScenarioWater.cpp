@@ -236,11 +236,19 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 				if (waterIsVisible)
 				{
+					if (!pGameObject->IsVisible())
+					{
+						OnVisibilityChange(pWorld, pScene);
+					}
 					pGameObject->SetIsVisible(true);
 					pGameObject->UpdateTransform();
 				}
 				else
 				{
+					if (pGameObject->IsVisible())
+					{
+						OnVisibilityChange(pWorld, pScene);
+					}
 					pGameObject->SetIsVisible(false);
 				}
 			}

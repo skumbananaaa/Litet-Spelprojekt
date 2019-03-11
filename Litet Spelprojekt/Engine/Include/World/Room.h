@@ -1,6 +1,7 @@
 #pragma once
 #include <EnginePch.h>
 #include <Graphics/Textures/StaticShadowCube.h>
+#include <Audio/Sources/AudioSource.h>
 
 class API Room
 {
@@ -11,17 +12,9 @@ public:
 
 	Room(Room&& other);
 	Room() noexcept;
-	Room(glm::vec3 center) noexcept;
 	~Room();
 
-	const StaticShadowCube* GetShadowMap() const noexcept;
-	const glm::vec3& GetCenter() const noexcept;
-	const bool IsActive() const noexcept;
-	const bool IsBurning() const noexcept;
-	const bool IsFireDetected() const noexcept;
-	const bool IsFlooded() const noexcept;
-	const bool IsFloodDetected() const noexcept;
-	const bool IsFloodUpdatedThisFrame() const noexcept;
+	void Init(const glm::vec3& center) noexcept;
 
 	void SetActive(bool active) noexcept;
 	void SetBurning(bool burning) noexcept;
@@ -31,6 +24,16 @@ public:
 	void SetFloodUpdated(bool updated) noexcept;
 	void GenerateShadows(const Scene& scene) noexcept;
 
+	const StaticShadowCube* GetShadowMap() const noexcept;
+	const glm::vec3& GetCenter() const noexcept;
+	bool IsActive() const noexcept;
+	bool IsBurning() const noexcept;
+	bool IsFireDetected() const noexcept;
+	bool IsFlooded() const noexcept;
+	bool IsFloodDetected() const noexcept;
+	bool IsFloodUpdatedThisFrame() const noexcept;
+	bool IsRoomInitialized() const noexcept;
+
 private:
 	glm::vec3 m_Center;
 	bool m_Active = false;
@@ -39,5 +42,52 @@ private:
 	bool m_Flooded = false;
 	bool m_FloodDetected = false;
 	bool m_FloodUpdatedThisFrame = false;
+	bool m_Initialized = false;
 	StaticShadowCube* m_pShadowMap;
+	AudioSource* m_pAudioSourceFire;
 };
+
+inline const StaticShadowCube* Room::GetShadowMap() const noexcept
+{
+	return m_pShadowMap;
+}
+
+inline const glm::vec3& Room::GetCenter() const noexcept
+{
+	return m_Center;
+}
+
+inline bool Room::IsActive() const noexcept
+{
+	return m_Active;
+}
+
+inline bool Room::IsBurning() const noexcept
+{
+	return m_Burning;
+}
+
+inline bool Room::IsFireDetected() const noexcept
+{
+	return m_FireDetected;
+}
+
+inline bool Room::IsFlooded() const noexcept
+{
+	return m_Flooded;
+}
+
+inline bool Room::IsFloodDetected() const noexcept
+{
+	return m_FloodDetected;
+}
+
+inline bool Room::IsFloodUpdatedThisFrame() const noexcept
+{
+	return m_FloodUpdatedThisFrame;
+}
+
+inline bool Room::IsRoomInitialized() const noexcept
+{
+	return m_Initialized;
+}

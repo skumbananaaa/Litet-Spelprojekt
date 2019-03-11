@@ -1,6 +1,7 @@
 #pragma once
 #include <Graphics/GameObject.h>
 #include "ParticleData.h"
+#include <Audio/Sources/AudioSource.h>
 
 #define MAX_PARTICLES 1000
 
@@ -29,9 +30,11 @@ public:
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	virtual void UpdateTransform() noexcept override;
 
+
 	void SetMesh(uint32 meshID) noexcept;
 	void SetParticlesPerSeconds(uint32 numParticles) noexcept;
 	void SetConeAngle(float angleRad) noexcept;
+	void SetPosition(const glm::vec3& position) noexcept;
 	void SetScale(const glm::vec2& begin, const glm::vec2& end) noexcept;
 	void SetSpeed(float min, float max) noexcept;
 	void SetTimeToLive(float timeToLive) noexcept;

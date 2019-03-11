@@ -81,9 +81,8 @@ public:
 	const glm::vec4& GetBulkhead(uint32 index) const noexcept;
 	uint32 GetNrOfBulkheads() const noexcept;
 	uint32 GetTilesBetweenBulkheads() const noexcept;
-	const std::vector<glm::uvec4>& GetRooms() const noexcept;
 
-	void GenerateRooms(uint32 tilesBetweenBulkheads = 8);
+	std::vector<glm::uvec4> GenerateRooms(uint32 tilesBetweenBulkheads = 8);
 	void GenerateScenarioObjects(Scene* pScene, uint32 levelHeight);
 
 private:
@@ -94,5 +93,4 @@ private:
 	uint32** m_ppLevel;
 	std::vector<glm::vec4> m_Walls;
 	std::vector<glm::vec4> m_Bulkheads;
-	std::vector<glm::uvec4> m_RoomBounds;
 };

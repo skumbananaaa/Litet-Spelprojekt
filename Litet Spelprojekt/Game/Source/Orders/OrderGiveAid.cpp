@@ -10,14 +10,14 @@ OrderGiveAid::~OrderGiveAid()
 {
 }
 
-void OrderGiveAid::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderGiveAid::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderGiveAid::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
+bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	bool res = OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS);
+	bool res = OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
 	uint32 healLevel = 2;
 	if (GetCrewMember()->GetGroup() == MEDIC)
 	{
@@ -30,20 +30,13 @@ bool OrderGiveAid::UpdateOrder(Scene * pScene, World * pWorld, Crew * pCrewMembe
 	return res;
 }
 
-void OrderGiveAid::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
-
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 	m_pAiding = nullptr;
 }
 
-void OrderGiveAid::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
-{
-	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
-	m_pAiding = nullptr;
-}
-
-bool OrderGiveAid::AllowsMultipleOrders() noexcept
+bool OrderGiveAid::CanBeStackedWithSameType() noexcept
 {
 	return false;
 }

@@ -18,34 +18,33 @@ OrderExtinguishFire::~OrderExtinguishFire()
 {
 }
 
-void OrderExtinguishFire::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderExtinguishFire::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::StartOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
 }
 
-bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
+bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
-	Crewmember* pCrewMember = GetCrewMember();
+	Crewmember* pCrewmember = GetCrewMember();
 
 	if (!m_FireFullyExtinguished)
 	{
-		if (!pCrewMember->HasGearEquipped())
+		if (!pCrewmember->HasGearEquipped())
 		{
 			//Run To Room
-			if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				if (m_EquippingGearTimer <= 0.00001f)
 				{
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 				}
 
 				//Equip Gear
 				if ((m_EquippingGearTimer += dtS) > TIME_TO_EQUIP_GEAR)
 				{
 					m_EquippingGearTimer = 0.0f;
-					pCrewMember->SetGearIsEquipped(true);
-					//pCrewMember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, true));
-					OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_BurningTile);
+					pCrewmember->SetGearIsEquipped(true);
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
 					return false;
 				}
 			}
@@ -53,7 +52,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 		else
 		{
 			//Run To Room That is Burning
-			if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				const glm::ivec2& levelSize = glm::ivec2(pWorld->GetLevel(m_BurningTile.y).GetSizeX(), pWorld->GetLevel(m_BurningTile.y).GetSizeZ());
 				const uint32 * const * ppLevel = pWorld->GetLevel(m_BurningTile.y).GetLevel();
@@ -63,7 +62,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 				if (!m_ExtinguishingFire)
 				{
 					m_ExtinguishingFire = true;
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
 				}
 
 				glm::ivec3 generalDirection = glm::round(GetCrewMember()->GetDirection());
@@ -91,7 +90,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 				if (allFiresExtinguished)
 				{
 					m_ExtinguishingFire = false;
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 					glm::ivec2 newTarget = FindClosestBurningTile(ppLevel, ppLevelData, levelSize, glm::ivec2(m_BurningTile.x, m_BurningTile.z));
 
 					std::cout << "New Target: " << glm::to_string(newTarget) << std::endl;
@@ -101,13 +100,14 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 						m_FireFullyExtinguished = true;
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
-						OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_RoomTile);
+						pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
 						return false;
 					}
 
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
-					OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_BurningTile);
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
+					return false;
 				}
 
 				//Extinguish Fire
@@ -123,7 +123,7 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 				{
 					m_BurningTile = correctTargetTile;
 					m_RoomBurningId = ppLevel[correctTargetTile.x][correctTargetTile.z];
-					OrderWalk::RestartOrder(pScene, pWorld, pCrewMembers, m_BurningTile);
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped()));
 					return false;
 				}
 			}
@@ -131,22 +131,25 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 	}
 	else
 	{
-		if (pCrewMember->HasGearEquipped())
+		if (pCrewmember->HasGearEquipped())
 		{
 			//Run To Room
-			if (OrderWalk::UpdateOrder(pScene, pWorld, pCrewMembers, dtS))
+			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				if (m_EquippingGearTimer <= 0.00001f)
 				{
-					pCrewMember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 				}
 
 				//Equip Gear
 				if ((m_EquippingGearTimer += dtS) > TIME_TO_EQUIP_GEAR)
 				{
-					m_EquippingGearTimer = 0.0f;
-					pCrewMember->SetGearIsEquipped(false);
-					return true;
+					if (ReadyToAbort())
+					{
+						m_EquippingGearTimer = 0.0f;
+						pCrewmember->SetGearIsEquipped(false);
+						return true;
+					}
 				}
 			}
 		}
@@ -157,17 +160,12 @@ bool OrderExtinguishFire::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewM
 	return false;
 }
 
-void OrderExtinguishFire::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderExtinguishFire::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 }
 
-void OrderExtinguishFire::AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
-{
-	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
-}
-
-bool OrderExtinguishFire::AllowsMultipleOrders() noexcept
+bool OrderExtinguishFire::CanBeStackedWithSameType() noexcept
 {
 	return false;
 }
@@ -185,4 +183,9 @@ bool OrderExtinguishFire::IsIdleOrder() noexcept
 bool OrderExtinguishFire::CanExecuteIfHurt() noexcept
 {
 	return false;
+}
+
+bool OrderExtinguishFire::HasPriority() noexcept
+{
+	return true;
 }

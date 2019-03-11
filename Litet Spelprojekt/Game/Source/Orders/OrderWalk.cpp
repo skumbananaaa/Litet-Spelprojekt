@@ -20,21 +20,24 @@ OrderWalk::~OrderWalk()
 	DeleteSafe(m_pPathFinder);
 }
 
-void OrderWalk::StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroup() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+	Crewmember* pCrewmember = GetCrewMember();
+	pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);
 }
 
-bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
+bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
 	if (!m_IsPathReady)
 	{
 		return false;
 	}
 
-	TileData& tile1 = pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevelData()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z];
+	Crewmember* pCrewmember = GetCrewMember();
+	const glm::ivec3& crewTile = pCrewmember->GetTile();
+	TileData& tile1 = pWorld->GetLevel(crewTile.y * 2).GetLevelData()[crewTile.x][crewTile.z];
 	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 	TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
 	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
@@ -44,38 +47,42 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 		if (door1 == door2)
 		{
 			// Open door before passing through
-			if (!door1->IsOpen() && !door2->IsOpen() && GetCrewMember()->GetTile() != m_TargetTile)
+			if (!door1->IsOpen() && !door2->IsOpen() && crewTile != m_TargetTile)
 			{
-				if (door1->IsClosed())
+				if (door1->IsClosed() && door1->AccessRequest(pCrewmember->GetShipNumber()))
 				{
-					GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 					door1->SetOpen(true);
+				}
+				else if (pCrewmember->GetAnimatedMesh() != ResourceHandler::GetAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR))
+				{
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 				}
 				return false;
 			}
 			else
 			{
-				GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 			}
 		}
-		else if ((!door1->IsClosed() && GetCrewMember()->GetTile() != m_TargetTile) && (m_OopsIForgot > GetCrewMember()->GetForgetfulness()))
+		else if (!door1->IsClosed() && door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && crewTile != m_TargetTile && m_OopsIForgot > pCrewmember->GetForgetfulness())
 		{
 			// Close door after passing through
 			if (door1->IsOpen())
 			{
-				GetCrewMember()->SetDirection(-GetCrewMember()->GetDirection());
-				GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
+				pCrewmember->SetDirection(-pCrewmember->GetDirection());
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 				door1->SetOpen(false);
 			}
 			return false;
 		}
 		else
 		{
-			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 		}
 	}
 
-	Room& room = pWorld->GetRoom(pWorld->GetLevel(GetCrewMember()->GetTile().y * 2).GetLevel()[GetCrewMember()->GetTile().x][GetCrewMember()->GetTile().z]);
+	Room& room = pWorld->GetRoom(pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z]);
 
 	if (room.IsBurning())
 	{
@@ -83,30 +90,30 @@ bool OrderWalk::UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, fl
 		{
 			room.SetFireDetected(true);
 		}
-		GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+		//GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
-		GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 
 	return FollowPath(dtS);
 }
 
-void OrderWalk::EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-	DeleteSafe(m_pPathFinder);
+	Crewmember* pCrewmember = GetCrewMember();
+	//pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 }
 
-void OrderWalk::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+bool OrderWalk::CanBeStackedWithSameType() noexcept
 {
-	DeleteSafe(m_pPathFinder);
+	return false;
 }
 
-bool OrderWalk::AllowsMultipleOrders() noexcept
+bool OrderWalk::HasPriority() noexcept
 {
 	return false;
 }
@@ -142,12 +149,12 @@ bool OrderWalk::CanExecuteIfHurt() noexcept
 
 bool OrderWalk::FollowPath(float dtS) noexcept
 {
-	Crewmember* crewmember = GetCrewMember();
+	Crewmember* pCrewmember = GetCrewMember();
 
-	const glm::vec3& position = crewmember->GetPosition();
+	const glm::vec3& position = pCrewmember->GetPosition();
 	if (m_NrOfTilesLeft > 0)
 	{
-		if (crewmember->GetTile() == m_TargetTile)
+		if (pCrewmember->GetTile() == m_TargetTile)
 		{
 			m_directionTile = m_pPath[m_NrOfTilesLeft - 1];
 			m_TargetTile = m_pPath[--m_NrOfTilesLeft];
@@ -163,14 +170,14 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		if (std::abs(move.y) > 0.1)
 		{
 			move.y /= std::abs(move.y);
-			crewmember->SetDirection(glm::vec3(1, 0, 0));
-			crewmember->Move(glm::vec3(0, move.y, 0), false, dtS);
+			pCrewmember->SetDirection(glm::vec3(1, 0, 0));
+			pCrewmember->Move(glm::vec3(0, move.y, 0), false, dtS);
 		}
 		else
 		{
-			crewmember->SetDirection(glm::vec3(move.x, 0, move.z));
-			crewmember->Move(crewmember->GetDirection(), true, dtS);
-			crewmember->SetPosition(glm::vec3(crewmember->GetPosition().x, m_TargetPos.y, crewmember->GetPosition().z));
+			pCrewmember->SetDirection(glm::vec3(move.x, 0, move.z));
+			pCrewmember->Move(pCrewmember->GetDirection(), true, dtS);
+			pCrewmember->SetPosition(glm::vec3(pCrewmember->GetPosition().x, m_TargetPos.y, pCrewmember->GetPosition().z));
 		}
 	}
 	else
@@ -179,19 +186,4 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 	}
 
 	return false;
-}
-
-void OrderWalk::RestartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, const glm::ivec3& goalTile) noexcept
-{
-	//Cleanup
-	DeleteSafe(m_pPathFinder);
-
-	//Reinit
-	m_pPathFinder = nullptr;
-	m_pPath = nullptr;
-	m_IsPathReady = false;
-	m_GoalTile = glm::ivec3(goalTile.x, goalTile.y / 2, goalTile.z);
-
-	//Start
-	StartOrder(pScene, pWorld, pCrewMembers);
 }

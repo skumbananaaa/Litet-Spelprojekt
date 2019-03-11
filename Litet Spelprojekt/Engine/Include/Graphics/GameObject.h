@@ -7,15 +7,18 @@
 #include <Graphics/Materials/Decal.h>
 #include <IO/ResourceHandler.h>
 #include "Camera.h"
+#include <System/IMultiUpdater.h>
 
+class World;
 class Scene;
 
-class API GameObject
+class API GameObject : public IMultiUpdater
 {
 public:
 	GameObject() noexcept;
 	virtual ~GameObject();
 
+	virtual void UpdateParallel(float dtS) noexcept override;
 	virtual void Update(const Camera& camera, float deltaTime) noexcept;
 	virtual void UpdateTransform() noexcept;
 	
@@ -61,7 +64,6 @@ public:
 	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept;
 	virtual void OnHovered() noexcept;
 	virtual void OnNotHovered() noexcept;
-
 	
 	bool HasMaterial() const noexcept;
 	bool HasDecal() const noexcept;
@@ -78,6 +80,10 @@ public:
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
 
+	void Lock() noexcept;
+	void Unlock() noexcept;
+	void SetWorld(World* pWorld) noexcept;
+
 protected:
 	bool m_IsDirty;
 	bool m_IsVisible;
@@ -86,6 +92,7 @@ protected:
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
 	glm::vec3 m_Direction;
+	World* m_pWorld;
 
 private:
 	std::string m_Name;
@@ -99,8 +106,9 @@ private:
 	glm::vec3 m_Scale;
 	float m_ExtendPosX;
 	int32 m_TypeId;
-	int32 m_Room = 1;
+	int32 m_Room;
 	bool m_IsHidden = false;
+	std::mutex m_Mutex;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -145,8 +153,12 @@ inline void GameObject::SetMesh(int32 mesh) noexcept
 
 inline void GameObject::SetAnimatedMesh(int32 mesh) noexcept
 {
-	UpdateAnimatedMesh(mesh);
+	Lock();
+	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+
+	DeleteSafe(m_pASkeleton);
 	m_pASkeleton = new AnimatedSkeleton();
+	Unlock();
 }
 
 inline void GameObject::UpdateAnimatedMesh(int32 mesh) noexcept
@@ -262,4 +274,19 @@ inline void GameObject::SetTypeId(int32 typeId) noexcept
 inline int32 GameObject::GetTypeId() const noexcept
 {
 	return m_TypeId;
+}
+
+inline void GameObject::Lock() noexcept
+{
+	m_Mutex.lock();
+}
+
+inline void GameObject::Unlock() noexcept
+{
+	m_Mutex.unlock();
+}
+
+inline void GameObject::SetWorld(World* pWorld) noexcept
+{
+	m_pWorld = pWorld;
 }

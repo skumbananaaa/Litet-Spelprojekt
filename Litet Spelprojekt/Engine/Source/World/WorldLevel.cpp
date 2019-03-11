@@ -10,14 +10,12 @@ WorldLevel::WorldLevel(WorldLevel&& other)
 	m_ppLevel = other.m_ppLevel;
 	m_ppLevelData = other.m_ppLevelData;
 
-	m_RoomBounds.swap(other.m_RoomBounds);
 	m_Walls.swap(other.m_Walls);
 	m_Bulkheads.swap(other.m_Bulkheads);
 }
 
 WorldLevel::WorldLevel(const WorldLevel& other)
 {
-	m_RoomBounds = other.m_RoomBounds;
 	m_Walls = other.m_Walls;
 	m_Bulkheads = other.m_Bulkheads;
 
@@ -144,12 +142,7 @@ uint32 WorldLevel::GetTilesBetweenBulkheads() const noexcept
 	return m_TilesBetweenBulkheads;
 }
 
-const std::vector<glm::uvec4>& WorldLevel::GetRooms() const noexcept
-{
-	return m_RoomBounds;
-}
-
-void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
+std::vector<glm::uvec4> WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 {
 	bool wallH = false;
 	bool wallV = false;
@@ -159,15 +152,13 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 	glm::vec2 startWallV(0, 0);
 	glm::vec2 endWallV(0, 0);
 
-	uint32 maxRoomNum = 0;
+	std::vector<glm::uvec4> roomBounds;
 
 	//Generate walls along the Z Axis
 	for (uint32 i = 0; i < m_SizeX - 1; i++) 
 	{
 		for (uint32 j = 0; j < m_SizeZ; j++) 
 		{
-			maxRoomNum = glm::max(maxRoomNum, m_ppLevel[i][j]);
-
 			wallH = (m_ppLevel[i][j] != m_ppLevel[i + 1][j]);
 			if ((!wallH || (m_ppLevelData[i][j].HasDoor() && m_ppLevelData[i + 1][j].HasDoor()) || m_ppLevel[i][j] != m_ppLevel[i][j - 1] || m_ppLevel[i + 1][j] != m_ppLevel[i + 1][j - 1]) && startWallH != glm::vec2(0, 0))
 			{
@@ -183,9 +174,9 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 		}
 	}
 
-	for (uint32 i = m_RoomBounds.size(); i <= maxRoomNum; i++)
+	for (uint32 i = 0; i <= MAX_NUM_ROOMS; i++)
 	{
-		m_RoomBounds.push_back(glm::uvec4(11, 0, 41, 0));
+		roomBounds.push_back(glm::uvec4(11, 0, 41, 0));
 	}
 
 	//Generate walls along the X Axis
@@ -193,10 +184,10 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 	{
 		for (uint32 j = 0; j < m_SizeX; j++) 
 		{
-			m_RoomBounds[m_ppLevel[j][i]].x = glm::min(m_RoomBounds[m_ppLevel[j][i]].x, j);
-			m_RoomBounds[m_ppLevel[j][i]].y = glm::max(m_RoomBounds[m_ppLevel[j][i]].y, j);
-			m_RoomBounds[m_ppLevel[j][i]].z = glm::min(m_RoomBounds[m_ppLevel[j][i]].z, i);
-			m_RoomBounds[m_ppLevel[j][i]].w = glm::max(m_RoomBounds[m_ppLevel[j][i]].w, i);
+			roomBounds[m_ppLevel[j][i]].x = glm::min(roomBounds[m_ppLevel[j][i]].x, j);
+			roomBounds[m_ppLevel[j][i]].y = glm::max(roomBounds[m_ppLevel[j][i]].y, j);
+			roomBounds[m_ppLevel[j][i]].z = glm::min(roomBounds[m_ppLevel[j][i]].z, i);
+			roomBounds[m_ppLevel[j][i]].w = glm::max(roomBounds[m_ppLevel[j][i]].w, i);
 
 			wallV = (m_ppLevel[j][i] != m_ppLevel[j][i + 1]);
 			if ((!wallV || (m_ppLevelData[j][i].HasDoor() && m_ppLevelData[j][i + 1].HasDoor()) || m_ppLevel[j][i] != m_ppLevel[j - 1][i] || (m_ppLevel[j][i + 1] != m_ppLevel[j - 1][i + 1])) && startWallV != glm::vec2(0, 0))
@@ -290,6 +281,8 @@ void WorldLevel::GenerateRooms(uint32 tilesBetweenBulkheads)
 		currentBulkheadX += tilesBetweenBulkheads;
 		createBulkhead = true;
 	}
+
+	return roomBounds;
 }
 
 void WorldLevel::GenerateScenarioObjects(Scene* pScene, uint32 levelHeight)

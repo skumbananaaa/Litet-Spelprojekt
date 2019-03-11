@@ -6,6 +6,7 @@
 #include "../Include/Orders/OrderWalkMedicBay.h"
 #include <World/WorldLevel.h>
 #include "../Include/GameObjectDoor.h"
+#include "../Include/Orders/OrderSchedule.h"
 
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
@@ -15,7 +16,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_GearIsEquipped(false)
 {
 	SetName(name);
-	m_pWorld = world;
+	SetWorld(world);
 	m_IsPicked = false;
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
@@ -41,11 +42,32 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_Idleing = true;
 
 	m_Forgetfulness = 3;
+
+	m_pAudioSourceScream = AudioSource::CreateSoundSource(SOUND::MONO_SCREAM);
+	m_pAudioSourceScream->SetPosition(position);
+	m_pAudioSourceScream->SetRollOffFactor(10.0f);
+	m_pAudioSourceScream->SetReferenceDistance(1.0f);
+	m_pAudioSourceScream->SetMaxDistance(100.0f);
+	m_pAudioSourceScream->SetLooping(false);
 }
 
 Crewmember::~Crewmember()
 {
+	DeleteSafe(m_pAudioSourceScream);
+}
 
+void Crewmember::SetRoom(uint32 room) noexcept
+{
+	if (m_pWorld->GetRoom(GetRoom()).IsActive())
+	{
+		if (GetRoom() != room && m_IsPicked)
+		{
+			m_pWorld->SetRoomActive(room, true, GetRoom(), true);
+			m_pWorld->SetRoomActive(GetRoom(), false);
+		}
+	}
+
+	GameObject::SetRoom(room);
 }
 
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
@@ -57,8 +79,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	if (IsAlive())
 	{
-		CheckSmokeDamage(m_pWorld->GetLevel(GetTile().y*2 + 1).GetLevelData(), deltaTime);
-		CheckFireDamage(m_pWorld->GetLevel(GetTile().y*2).GetLevelData(), deltaTime);
+		CheckSmokeDamage(m_pWorld->GetLevel(GetTile().y * 2 + 1).GetLevelData(), deltaTime);
+		CheckFireDamage(m_pWorld->GetLevel(GetTile().y * 2).GetLevelData(), deltaTime);
 		UpdateHealth(deltaTime);
 	}
 
@@ -74,15 +96,19 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		m_pUISelectedCrew->UpdatePosition(GetPosition());
 	}
 
-	if (IsIdleing() && !IsAbleToWork() && IsAbleToWalk() && room.GetCenter() != m_pWorld->GetRoom(SICKBAY_0).GetCenter())
+
+	if (!IsAbleToWork())
 	{
-		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld), this);
+		if (IsIdleing())
+		{
+			GoToMedicBay();
+		}
 	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	SetIsPicked(true);
+	SetIsPicked(!m_IsPicked);
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -127,15 +153,15 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 		Logger::LogEvent(GetName() + " cannot move!", true);
 	}*/
 
-	m_OrderHandler.GiveOrder(new OrderWalk(goalPos), this);
+	m_OrderHandler.GiveOrder(new OrderWalk(goalPos));
 }
 
 void Crewmember::GiveOrder(IOrder* order) noexcept
 {
-	m_OrderHandler.GiveOrder(order, this);
+	m_OrderHandler.GiveOrder(order);
 }
 
-void Crewmember::LookForDoor() noexcept
+void Crewmember::LookForDoor(uint32 doorColor) noexcept
 {
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
@@ -146,20 +172,28 @@ void Crewmember::LookForDoor() noexcept
 		{
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 
-			if (door->IsOpen())
+			if (door->IsOpen() && door->GetColor() <= doorColor)
 			{
-				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
+				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false));
 			}
 		}
 	}
 	//StartOrder(pScene, pWorld, this);
 }
 
-void Crewmember::GoToMedicBay(World* world)
+void Crewmember::GoToMedicBay()
 {
 	if (IsAbleToWalk())
 	{
-		m_OrderHandler.GiveOrder(new OrderWalkMedicBay(world), this);
+		const glm::ivec3& currentTile = GetTile();
+		uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
+
+		if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
+		{
+			//m_pWorld->GetRoom(SICKBAY_0).GetCenter();
+
+			m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
+		}
 	}
 	else
 	{
@@ -183,6 +217,10 @@ bool Crewmember::Heal(int8 skillLevel, float dtS)
 	{
 		m_HasInjurySmoke -= (m_HasInjurySmoke - m_HasInjurySmoke / skillLevel) * dtS;
 	}
+	else if (HasInjuryBleed())
+	{
+		m_HasInjuryBleeding -= (m_HasInjuryBleeding - m_HasInjuryBleeding / skillLevel) * dtS;
+	}
 	else
 	{
 		res = true;
@@ -193,6 +231,10 @@ bool Crewmember::Heal(int8 skillLevel, float dtS)
 void Crewmember::ApplyBurnInjury(float burn)
 {
 	m_HasInjuryBurned += burn;
+	if (m_HasInjuryBurned > 0.9 && m_HasInjuryBurned < 1.1)
+	{
+		m_pAudioSourceScream->Play();
+	}
 }
 
 void Crewmember::ApplyBoneInjury(float boneBreak)
@@ -280,12 +322,16 @@ void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
-	
-	glm::ivec3 tile = GetTile();
+
+	/*glm::ivec3 tile = GetTile();
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
 	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetActiveRoom(roomIndex);
+	m_pWorld->SetRoomActive(roomIndex, true);*/
 	m_Idleing = true;
+
+	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+
+	//GiveOrder(OrderSchedule::GetIdleOrder());
 }
 
 void Crewmember::OnAddedToScene(Scene* scene) noexcept
@@ -307,7 +353,9 @@ void Crewmember::OnNotHovered() noexcept
 
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 {
+	glm::vec3 pos = glm::vec3(glm::clamp(position.x, 1.0f, 10.0f), glm::clamp(position.y, 0.0f, 4.0f), glm::clamp(position.z, 1.0f, 40.0f));
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
+	//m_PlayerTile.z = m_PlayerTile.z < 0 ? 0 : m_PlayerTile.z;
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{
@@ -332,6 +380,7 @@ void Crewmember::SetIsPicked(bool picked) noexcept
 		else
 		{
 			Game::GetGame()->GetGUIManager().Remove(m_pUISelectedCrew);
+			Game::GetGame()->m_pSceneGame->GetCrew()->RemoveFromSelectedList(GetShipNumber());
 			m_pUISelectedCrew = nullptr;
 		}
 	}
@@ -370,6 +419,7 @@ void Crewmember::UpdateHealth(float dt)
 	//Tweak here!
 	float smokeDmgSpeed = 1.0f;
 	float burnDmgSpeed = 1.0f;
+	float bleedDmgSpeed = 1.0f;
 
 	if (HasInjurySmoke())
 	{
@@ -384,6 +434,11 @@ void Crewmember::UpdateHealth(float dt)
 	if (HasInjuryBoneBroken())
 	{
 		//m_Health -= m_HasInjuryBoneBroken * dt;
+	}
+
+	if (HasInjuryBleed())
+	{
+		m_Health -= (std::log10(m_HasInjuryBleeding)) * bleedDmgSpeed * dt;
 	}
 
 	if (m_Health <= 0.0f)
@@ -408,9 +463,15 @@ void Crewmember::UpdateHealth(float dt)
 	}
 }
 
-void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
+void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexcept
 {
-	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	if (m_Group == SMOKE_DIVER && m_GearIsEquipped)
+	{
+		return;
+	}
+
+	//HOT FIX
+	if (m_PlayerTile.z < 0)
 	{
 		return;
 	}
@@ -425,13 +486,20 @@ void Crewmember::CheckSmokeDamage(const TileData*const* data, float dt) noexcept
 		if (isSmoked != HasInjurySmoke())
 		{
 			Logger::LogEvent(GetName() + " got smoked!" + std::to_string(m_HasInjurySmoke));
+			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::to_string(m_GearIsEquipped) << std::endl;
 		}
 	}
 }
 
 void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexcept
 {
-	if ((m_Group == SMOKE_DIVER || !strcmp(GetName().c_str(), "Granfeldt")) && m_GearIsEquipped)
+	if (m_Group == SMOKE_DIVER && m_GearIsEquipped)
+	{
+		return;
+	}
+
+	//HOT FIX
+	if (m_PlayerTile.z < 0)
 	{
 		return;
 	}
@@ -441,7 +509,7 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 	if (tileData.Temp >= tileData.BurnsAt)
 	{
 		bool isBurned = HasInjuryBurned();
-		m_HasInjuryBurned += (tileData.Temp / tileData.BurnsAt) * burnSpeed * dt;
+		ApplyBurnInjury((tileData.Temp / tileData.BurnsAt) * burnSpeed * dt);
 		if (isBurned != HasInjuryBurned())
 		{
 			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));
@@ -457,5 +525,5 @@ void Crewmember::SetShipNumber(int32 shipnumber) noexcept
 void Crewmember::CloseDoorOrder(glm::ivec3 doorTile)
 {
 	GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
-	m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false), this);
+	m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false));
 }

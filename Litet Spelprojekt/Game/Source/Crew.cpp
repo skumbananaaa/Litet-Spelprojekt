@@ -40,7 +40,7 @@ void Crew::RemoveFromSelectedList(int32 crewIndex) noexcept
 	{
 		if (m_SelectedMembers[i] == crewIndex)
 		{
-			GetMember(m_SelectedMembers[i])->SetIsPicked(false);
+			//GetMember(m_SelectedMembers[i])->SetIsPicked(false);
 			m_SelectedMembers.erase(m_SelectedMembers.begin() + i);
 			return;
 		}
@@ -70,7 +70,7 @@ void Crew::AddMember(World* world, const glm::vec3& position, const std::string&
 
 	if (groupType != NONE)
 	{
-		m_Squads[groupType].push_back(m_Members.size());
+		m_Squads[groupType].push_back(member->GetShipNumber());
 	}
 
 	int32 squad = m_Members.size() / 2 + 2;
@@ -78,7 +78,7 @@ void Crew::AddMember(World* world, const glm::vec3& position, const std::string&
 	{
 		m_Squads.push_back(std::vector<uint32>());
 	}
-	m_Squads[squad].push_back(m_Members.size());
+	m_Squads[squad].push_back(member->GetShipNumber());
 
 	m_Members.push_back(member);
 }

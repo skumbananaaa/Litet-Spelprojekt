@@ -13,11 +13,11 @@ public:
 	OrderWalk(const glm::ivec3& goalTile);
 	virtual ~OrderWalk();
 
-	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
-	virtual bool UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
-	virtual void EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
-	virtual void AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
-	virtual bool AllowsMultipleOrders() noexcept override;
+	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual void OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual bool OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
+	virtual bool CanBeStackedWithSameType() noexcept override;
+	virtual bool HasPriority() noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual bool ReadyToAbort() noexcept override;
 	virtual bool IsIdleOrder() noexcept override;
@@ -26,7 +26,6 @@ public:
 
 protected:
 	bool FollowPath(float dtS) noexcept;
-	void RestartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, const glm::ivec3& goalTile) noexcept;
 
 protected:
 	glm::ivec3 m_GoalTile;

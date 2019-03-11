@@ -4,11 +4,10 @@
 #include <World/Room.h>
 #include <Graphics/Scene.h>
 #include <System/Input.h>
+#include <System/Random.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/string_cast.hpp>
-
-#define MAX_NUM_ROOMS 128
 
 enum DOOR_COLOR : uint32
 {
@@ -111,12 +110,11 @@ public:
 	void AddWorldObject(const WorldObject& object) noexcept;
 	void SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs);
 	void SetDoors(const glm::ivec3* doors, uint32 nrOfDoors);
-	void SetActiveRoom(uint32 roomID) noexcept;
+	void SetRoomActive(uint32 roomID, bool isActive, uint32 lastRoom = 0, bool keepTimer = false) noexcept;
 
 	WorldLevel& GetLevel(uint32 level) noexcept;
 	const WorldLevel& GetLevel(uint32 level) const noexcept;
 	const WorldObject& GetWorldObject(uint32 index) const noexcept;
-	uint32 GetNumRooms() const noexcept;
 	uint32 GetNumLevels() const noexcept;
 	uint32 GetNumWorldObjects() const noexcept;
 	Room& GetRoom(uint32 room) noexcept;
@@ -133,6 +131,8 @@ public:
 
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
+
+	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept;
 
 public:
 	static uint32 GetDoorMaterialFromColor(DOOR_COLOR color) noexcept;
@@ -154,11 +154,32 @@ private:
 	std::vector<WorldObject> m_Objects;
 	std::vector<glm::ivec3> m_Stairs;
 	std::vector<glm::ivec3> m_Doors;
-	std::vector<Room> m_Rooms;
+	Room m_Rooms[MAX_NUM_ROOMS];
 	std::vector<float> m_RoomLightsTimers;
 	std::vector<uint32> m_ActiveRooms;
 	std::vector<PointLight*> m_RoomLights;
 };
+
+inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept
+{
+	uint32 minDistSqrd = UINT32_MAX;
+	glm::ivec3 closestRoomCenter(-1);
+
+	for (uint32 i = startInterval; i <= endInterval; i++)
+	{
+		glm::ivec3 currentRoomCenter = glm::ivec3(m_Rooms[i].GetCenter());
+		glm::ivec3 toVector = currentTile - currentRoomCenter;
+		uint32 currentDistanceSqrd = toVector.x * toVector.x + toVector.y * toVector.y + toVector.z * toVector.z;
+
+		if (currentDistanceSqrd < minDistSqrd)
+		{
+			minDistSqrd = currentDistanceSqrd;
+			closestRoomCenter = currentRoomCenter;
+		}
+	}
+
+	return closestRoomCenter;
+}
 
 inline uint32 World::GetDoorMaterialFromColor(DOOR_COLOR color) noexcept
 {
@@ -251,32 +272,66 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 {
 	if (globalIndex >= SICKBAY_INTERVAL_START && globalIndex <= SICKBAY_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_SICKBAY;
 	}
 	else if (globalIndex >= TOILET_INTERVAL_START && globalIndex <= TOILET_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 	else if (globalIndex >= MACHINE_ROOM_INTERVAL_START && globalIndex <= MACHINE_ROOM_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		float randomFloat = Random::GenerateFloat(0.0f, 1.0f);
+
+		if (randomFloat < 0.5f)
+		{
+			return MATERIAL::FLOOR_NORMAL;
+		}
+		else if (randomFloat < 0.667f)
+		{
+			return MATERIAL::FLOOR_MACHINE1;
+		}
+		else if (randomFloat < 0.833f)
+		{
+			return MATERIAL::FLOOR_MACHINE2;
+		}
+		else 
+		{
+			return MATERIAL::FLOOR_MACHINE3;
+		}
 	}
 	else if (globalIndex >= AMMUNITION_ROOM_INTERVAL_START && globalIndex <= AMMUNITION_ROOM_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		float randomFloat = Random::GenerateFloat(0.0f, 1.0f);
+
+		if (randomFloat < 0.5f)
+		{
+			return MATERIAL::FLOOR_NORMAL;
+		}
+		else if (randomFloat < 0.667f)
+		{
+			return MATERIAL::FLOOR_AMMUNITION1;
+		}
+		else if (randomFloat < 0.833f)
+		{
+			return MATERIAL::FLOOR_AMMUNITION2;
+		}
+		else
+		{
+			return MATERIAL::FLOOR_AMMUNITION3;
+		}
 	}
 	else if (globalIndex >= KITCHEN_INTERVAL_START && globalIndex <= KITCHEN_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
 	{
-		return MATERIAL::FLOOR;
+		return MATERIAL::FLOOR_NORMAL;
 	}
 
-	return MATERIAL::FLOOR;
+	return MATERIAL::FLOOR_NORMAL;
 }

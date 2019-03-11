@@ -2,28 +2,25 @@
 #include "IOrder.h"
 #include <vector>
 
-class IOrderListener
-{
-public:
-	virtual ~IOrderListener() {};
-	virtual void OnOrderStarted(bool idleOrder) noexcept = 0;
-	virtual void OnAllOrdersFinished() noexcept = 0;
-};
-
 class OrderHandler
 {
 public:
-	OrderHandler(IOrderListener* pOrderListener);
+	OrderHandler(Crewmember* pCrewMember);
 	~OrderHandler();
 
-	void GiveOrder(IOrder* order, Crewmember* crewMember) noexcept;
+	void GiveOrder(IOrder* order) noexcept;
 	void Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept;
 
 private:
-	bool StartOrder();
-	bool CanExecuteOrder(IOrder* order, Crewmember* crewMember) noexcept;
+	bool StartNextExecutableOrder();
+	bool IsCrewMemberAbleToExecuteOrder(IOrder* order) noexcept;
+	void RemoveIdleOrders() noexcept;
+	int ReplaceOrderOfSameType(IOrder* order) noexcept;
+	void RemoveAllOrders() noexcept;
+	void DeleteRemovedOrders(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept;
 
+private:
+	Crewmember* m_pCrewmember;
 	std::vector<IOrder*> m_OrderQueue;
-	std::vector<IOrder*> m_OrdersToAbort;
-	IOrderListener* m_pOrderListener;
+	std::vector<IOrder*> m_OrdersToDelete;
 };

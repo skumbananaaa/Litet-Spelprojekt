@@ -27,5 +27,5 @@ public:
 private:
 	GameObjectMissile* m_pGameObjectMissile;
 	glm::vec3 m_Target;
-	AudioSource* pAudioSourceExplosion;
+	AudioSource* m_pAudioSourceExplosion;
 };

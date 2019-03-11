@@ -6,13 +6,12 @@
 #include <World/Logger.h>
 
 FireAlarm::FireAlarm(int32 source) : GameObject(),
-	m_FireDetected(false),
 	m_pSpotlight(nullptr)
 {
 	m_pAudioSrc = AudioSource::CreateSoundSource(source);
 	m_pAudioSrc->SetRollOffFactor(10.0f);
-	m_pAudioSrc->SetReferenceDistance(0.0f);
-	m_pAudioSrc->SetMaxDistance(500.0f);
+	m_pAudioSrc->SetReferenceDistance(2.0f);
+	m_pAudioSrc->SetMaxDistance(250.0f);
 	m_pAudioSrc->SetLooping(true);
 }
 
@@ -29,12 +28,12 @@ void FireAlarm::SetPosition(const glm::vec3& position) noexcept
 
 bool FireAlarm::HasDetected() const noexcept
 {
-	return m_FireDetected;
+	return m_pSpotlight;
 }
 
 void FireAlarm::TurnOff() noexcept
 {
-	m_FireDetected = false;
+	LightManager::ReturnSpotlight(m_pSpotlight);
 	m_pSpotlight = nullptr;
 	m_pAudioSrc->Stop();
 }
@@ -72,7 +71,6 @@ void FireAlarm::OnSmokeDetected() noexcept
 
 	m_pSpotlight = LightManager::AcquireSpotlight(pos, glm::cos(glm::radians(20.5f)), glm::cos(glm::radians(40.5f)), glm::vec3(1, 0, 0), glm::vec4(1.0, 0.25, 0.0, 1.0));
 
-	m_FireDetected = true;
 	m_Rotation = 0;
 	m_pAudioSrc->Play();
 }

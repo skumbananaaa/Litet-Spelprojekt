@@ -9,7 +9,7 @@ public:
 
 /*	virtual void StartOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool UpdateOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
-	virtual void EndOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual void OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept = 0;
 	virtual void AbortOrder(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool AllowsMultipleOrders() noexcept override;*/
 	virtual std::string GetName() noexcept override;

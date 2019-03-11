@@ -3,6 +3,7 @@
 #include <Graphics/GameObject.h>
 #include "../Include/Orders/OrderHandler.h"
 #include "../Include/GUI/UISelectedCrew.h"
+#include <Audio/Sources/AudioSource.h>
 
 #pragma message("INCLUDE" __FILE__)
 
@@ -28,7 +29,7 @@ enum GroupType : uint32
 
 class TileData;
 
-class Crewmember : public GameObject, public IOrderListener
+class Crewmember : public GameObject
 {
 	friend class Crew;
 
@@ -36,16 +37,17 @@ public:
 	Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);
 	~Crewmember();
 	
+	virtual void SetRoom(uint32 room) noexcept override;
 	//UPDATES
-	void Update(const Camera& camera, float deltaTime) noexcept override;
+	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	void UpdateLastKnownPosition() noexcept;
 
 	//PATHFINDING (NOT SETS OR GETS)
 	void Move(const glm::vec3& dir, bool allowMult, float dtS);
 	void FindPath(const glm::ivec3& goalPos);
-	void LookForDoor() noexcept;
+	void LookForDoor(uint32 doorColor) noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
-	void GoToMedicBay(World* world);
+	void GoToMedicBay();
 
 	//GAMEPLAY (NOT SETS OR GETS)
 	bool Heal(int8 skillLevel, float dtS);
@@ -53,14 +55,14 @@ public:
 	void ApplyBoneInjury(float boneBreak);
 	void ApplyBleedInjury(float bleed);
 
-	void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
+	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
-	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
-	virtual void OnOrderStarted(bool idleOrder) noexcept override;
-	virtual void OnAllOrdersFinished() noexcept override;
+	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
+	virtual void OnOrderStarted(bool idleOrder) noexcept;
+	virtual void OnAllOrdersFinished() noexcept;
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
-	void OnHovered() noexcept override;
-	void OnNotHovered() noexcept override;
+	virtual void OnHovered() noexcept override;
+	virtual void OnNotHovered() noexcept override;
 	void GiveOrder(IOrder* order) noexcept;
 
 	//SETS
@@ -84,8 +86,8 @@ public:
 
 	//IS
 	bool IsIdleing() const noexcept;
-	bool IsHovered() const noexcept override;
-	bool IsPicked() const noexcept override;
+	virtual bool IsHovered() const noexcept override;
+	virtual bool IsPicked() const noexcept override;
 	bool IsAlive() const noexcept;
 	bool IsAbleToWork() const noexcept;
 	bool IsAbleToWalk() const noexcept;
@@ -112,7 +114,6 @@ private:
 
 private:
 	//UTILITY
-	World* m_pWorld;
 	glm::ivec3 m_PlayerTile;
 	glm::vec3 m_Direction;
 	bool m_IsPicked;
@@ -146,6 +147,8 @@ private:
 
 	Crewmember* m_pAssisting;
 	UISelectedCrew* m_pUISelectedCrew;
+
+	AudioSource* m_pAudioSourceScream;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept
@@ -205,12 +208,20 @@ inline bool Crewmember::IsAlive() const noexcept
 
 inline bool Crewmember::IsAbleToWork() const noexcept
 {
-	return !(m_HasInjurySmoke > 5.0f || (m_Health < 0.75*m_MaxHealth) || m_HasInjuryBoneBroken >= 3.0f || m_HasInjuryBurned > 3.0f);
+	return !(m_HasInjurySmoke > 5.0f || 
+		(m_Health < 0.75  *m_MaxHealth) || 
+		m_HasInjuryBoneBroken >= 3.0f ||
+		m_HasInjuryBurned > 3.0f || 
+		m_HasInjuryBleeding > 3.0f);
 }
 
 inline bool Crewmember::IsAbleToWalk() const noexcept
 {
-	return !(m_HasInjuryBoneBroken > 5.0f || m_HasInjurySmoke > 10.0f || m_Health < 0.5f * m_MaxHealth || m_HasInjuryBurned > 10.0f);
+	return !(m_HasInjuryBoneBroken > 5.0f ||
+		m_HasInjurySmoke > 10.0f ||
+		m_Health < 0.5f * m_MaxHealth ||
+		m_HasInjuryBurned > 10.0f ||
+		m_HasInjuryBleeding > 6.0f);
 }
 
 inline bool Crewmember::HasInjuryBoneBroken() const noexcept
@@ -220,12 +231,12 @@ inline bool Crewmember::HasInjuryBoneBroken() const noexcept
 
 inline bool Crewmember::HasInjuryBurned() const noexcept
 {
-	return m_HasInjuryBurned > 9.0f;
+	return m_HasInjuryBurned > 1.0f;
 }
 
 inline bool Crewmember::HasInjurySmoke() const noexcept
 {
-	return m_HasInjurySmoke > 9.0f;
+	return m_HasInjurySmoke > 1.0f;
 }
 
 inline bool Crewmember::HasInjuryBleed() const noexcept

@@ -357,6 +357,10 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	}
 
 	GameObject::SetPosition(position);
+	if (m_pAudioSourceScream)
+	{
+		m_pAudioSourceScream->SetPosition(position);
+	}
 }
 
 void Crewmember::SetIsPicked(bool picked) noexcept

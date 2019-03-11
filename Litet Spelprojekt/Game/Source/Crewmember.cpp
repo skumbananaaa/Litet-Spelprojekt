@@ -325,7 +325,7 @@ void Crewmember::OnAllOrdersFinished() noexcept
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	m_HasTriedToWalkToSickbay = false;
 
-	//GiveOrder(OrderSchedule::GetIdleOrder());
+	GiveOrder(OrderSchedule::GetIdleOrder());
 }
 
 void Crewmember::OnAddedToScene(Scene* scene) noexcept

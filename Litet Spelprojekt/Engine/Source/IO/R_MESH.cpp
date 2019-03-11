@@ -20,6 +20,7 @@ uint32 MESH::LAMP = 0;
 uint32 MESH::ANIMATED_MODEL_RUN = 0;
 uint32 MESH::ANIMATED_MODEL_IDLE = 0;
 uint32 MESH::ANIMATED_MODEL_WORK = 0;
+uint32 MESH::ANIMATED_MODEL_EAT = 0;
 uint32 MESH::ANIMATED_MODEL_OPENDOOR = 0;
 uint32 MESH::ANIMATED_MODEL_SITTING = 0;
 uint32 MESH::ANIMATED_MODEL_SLEEP = 0;
@@ -31,6 +32,7 @@ uint32 MESH::WATER_QUAD = 0;
 uint32 MESH::CUPBOARD = 0;
 uint32 MESH::TABLE = 0;
 uint32 MESH::TOILET = 0;
+uint32 MESH::OVEN = 0;
 uint32 MESH::ARTILLERY = 0;
 
 
@@ -63,6 +65,7 @@ void MESH::RegisterResources()
 	ANIMATED_MODEL_OPENDOOR = ResourceHandler::RegisterAnimatedMesh("CrewMemberOpenDoor2.fbx");
 	ANIMATED_MODEL_SLEEP	= ResourceHandler::RegisterAnimatedMesh("CrewMemberSleeping2.fbx");
 	ANIMATED_MODEL_SITTING	= ResourceHandler::RegisterAnimatedMesh("CrewMemberSitting3.fbx");
+	ANIMATED_MODEL_EAT		= ResourceHandler::RegisterAnimatedMesh("CrewMemberSitting4.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");
 	DOOR_FRAME				= ResourceHandler::RegisterMesh("DoorFrame.obj");
 	LADDER					= ResourceHandler::RegisterMesh("Ladder.obj");
@@ -70,4 +73,5 @@ void MESH::RegisterResources()
 	TABLE					= ResourceHandler::RegisterMesh("Table.obj");
 	TOILET					= ResourceHandler::RegisterMesh("Toilet.obj");
 	ARTILLERY				= ResourceHandler::RegisterMesh("Artillery.obj");
+	OVEN					= ResourceHandler::RegisterMesh("Oven.obj");
 }

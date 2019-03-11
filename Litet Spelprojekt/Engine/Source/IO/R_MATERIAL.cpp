@@ -38,6 +38,7 @@ uint32 MATERIAL::FLOOR_AMMUNITION3 = 0;
 uint32 MATERIAL::FLOOR_KITCHEN1 = 0;
 uint32 MATERIAL::FLOOR_DINING1 = 0;
 uint32 MATERIAL::FLOOR_CABOOSE1 = 0;
+uint32 MATERIAL::OVEN = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -84,4 +85,5 @@ void MATERIAL::RegisterResources()
 	FLOOR_KITCHEN1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_KITCHEN1, SHADER::FLOOR);
 	FLOOR_DINING1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_DINING1, SHADER::FLOOR);
 	FLOOR_CABOOSE1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_CABOOSE1, SHADER::FLOOR);
+	OVEN				= ResourceHandler::RegisterMaterial(TEXTURE::OVEN, SHADER::STANDARD_MATERIAL);
 }

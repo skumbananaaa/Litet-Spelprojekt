@@ -95,15 +95,6 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	{
 		m_pUISelectedCrew->UpdatePosition(GetPosition());
 	}
-
-
-	if (!IsAbleToWork())
-	{
-		if (IsIdleing())
-		{
-			GoToMedicBay();
-		}
-	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
@@ -181,30 +172,32 @@ void Crewmember::LookForDoor(uint32 doorColor) noexcept
 	//StartOrder(pScene, pWorld, this);
 }
 
-void Crewmember::GoToMedicBay()
+void Crewmember::GoToSickBay()
 {
-	if (IsAbleToWalk())
+	if (!m_HasTriedToWalkToSickbay)
 	{
-		const glm::ivec3& currentTile = GetTile();
-		uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
+		m_HasTriedToWalkToSickbay = true;
 
-		if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
+		if (IsAbleToWalk())
 		{
-			//m_pWorld->GetRoom(SICKBAY_0).GetCenter();
+			const glm::ivec3& currentTile = GetTile();
+			uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
 
-			m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
+			if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
+			{
+				m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
+			}
 		}
-	}
-	else
-	{
-		Logger::LogEvent(GetName() + " cannot move to Med Bay!", true);
+		else
+		{
+			Logger::LogEvent(GetName() + " cannot move to Sick Bay!", true);
+		}
 	}
 }
 
 bool Crewmember::Heal(int8 skillLevel, float dtS)
 {
 	bool res = false;
-	//Broken Bone kan inte vara Bool
 	if (HasInjuryBoneBroken())
 	{
 		m_HasInjuryBoneBroken -= (m_HasInjuryBoneBroken - m_HasInjuryBoneBroken / skillLevel) * dtS;
@@ -330,6 +323,7 @@ void Crewmember::OnAllOrdersFinished() noexcept
 	m_Idleing = true;
 
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	m_HasTriedToWalkToSickbay = false;
 
 	GiveOrder(OrderSchedule::GetIdleOrder());
 }
@@ -460,6 +454,14 @@ void Crewmember::UpdateHealth(float dt)
 	else
 	{
 		m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
+	}
+
+	if (!IsAbleToWork())
+	{
+		if (IsIdleing())
+		{
+			GoToSickBay();
+		}
 	}
 }
 

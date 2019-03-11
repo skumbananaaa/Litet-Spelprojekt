@@ -288,7 +288,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 				{
 					if (m_Crew.GetMember(i)->IsPicked())
 					{
-						m_Crew.GetMember(i)->GoToMedicBay();
+						m_Crew.GetMember(i)->GoToSickBay();
 					}
 				}
 				break;

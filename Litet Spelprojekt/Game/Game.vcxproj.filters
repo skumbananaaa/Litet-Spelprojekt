@@ -129,10 +129,16 @@
     <ClCompile Include="Source\Orders\OrderEat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Orders\OrderCook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\GameObjectArtillery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scenarios\ScenarioArtillery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scenes\SceneInstructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -251,10 +257,16 @@
     <ClInclude Include="Include\Orders\OrderEat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Orders\OrderCook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Include\GameObjectArtillery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scenarios\ScenarioArtillery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Scenes\SceneInstructions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

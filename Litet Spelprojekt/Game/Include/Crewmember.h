@@ -47,7 +47,7 @@ public:
 	void FindPath(const glm::ivec3& goalPos);
 	void LookForDoor(uint32 doorColor) noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
-	void GoToMedicBay();
+	void GoToSickBay();
 
 	//GAMEPLAY (NOT SETS OR GETS)
 	bool Heal(float skillLevel, float dtS);
@@ -55,8 +55,8 @@ public:
 	void ApplyBoneInjury(float boneBreak);
 	void ApplyBleedInjury(float bleed);
 
-	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
+	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 	virtual void OnOrderStarted(bool idleOrder) noexcept;
 	virtual void OnAllOrdersFinished() noexcept;
@@ -138,6 +138,7 @@ private:
 	float m_HasInjuryBleeding;
 	float m_MaxHealth;
 	float m_Health;
+	bool m_HasTriedToWalkToSickbay;
 	float m_Recovering;
 
 	//--MOVEMENT

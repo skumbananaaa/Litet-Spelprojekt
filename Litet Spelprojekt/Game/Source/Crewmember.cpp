@@ -1,4 +1,4 @@
-#include "..\Include\Crewmember.h"
+﻿#include "..\Include\Crewmember.h"
 #include "..\Include\Game.h"
 #include <System/Random.h>
 #include "../Include/Orders/OrderWalk.h"
@@ -100,19 +100,14 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		m_pUISelectedCrew->UpdatePosition(GetPosition());
 	}
 
-
 	if (!IsAbleToWork())
 	{
 		if (IsIdleing())
 		{
-			GoToMedicBay();
+			GoToSickBay();
 		}
 	}
 
-	if (m_Group == MEDIC && room.GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || room.GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter())
-	{
-		// todo, make medic heal nearest injured crewmember.
-	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
@@ -190,21 +185,26 @@ void Crewmember::LookForDoor(uint32 doorColor) noexcept
 	//StartOrder(pScene, pWorld, this);
 }
 
-void Crewmember::GoToMedicBay()
+void Crewmember::GoToSickBay()
 {
-	if (IsAbleToWalk())
+	if (!m_HasTriedToWalkToSickbay)
 	{
-		const glm::ivec3& currentTile = GetTile();
-		uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
+		m_HasTriedToWalkToSickbay = true;
 
-		if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
+		if (IsAbleToWalk())
 		{
-			m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
+			const glm::ivec3& currentTile = GetTile();
+			uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
+
+			if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
+			{
+				m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
+			}
 		}
-	}
-	else
-	{
-		//Logger::LogEvent(GetName() + " cannot move to Med Bay!", true);
+		else
+		{
+			Logger::LogEvent(GetName() + " kan inte gå till sjukstugan!", true);
+		}
 	}
 }
 
@@ -344,8 +344,9 @@ void Crewmember::OnAllOrdersFinished() noexcept
 	m_Idleing = true;
 
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	m_HasTriedToWalkToSickbay = false;
 
-	//GiveOrder(OrderSchedule::GetIdleOrder());
+	GiveOrder(OrderSchedule::GetIdleOrder());
 }
 
 void Crewmember::OnAddedToScene(Scene* scene) noexcept
@@ -377,6 +378,10 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	}
 
 	GameObject::SetPosition(position);
+	if (m_pAudioSourceScream)
+	{
+		m_pAudioSourceScream->SetPosition(position);
+	}
 }
 
 void Crewmember::SetIsPicked(bool picked) noexcept
@@ -453,7 +458,7 @@ void Crewmember::UpdateHealth(float dt)
 
 	if (m_Health <= 0.0f)
 	{
-		Logger::LogEvent(GetName() + " has fainted!", false);
+		Logger::LogEvent(GetName() + " har svimmat!", false);
 		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED;
 	}
 	else if (m_Health < m_MaxHealth)
@@ -470,6 +475,14 @@ void Crewmember::UpdateHealth(float dt)
 	else
 	{
 		m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
+	}
+
+	if (!IsAbleToWork())
+	{
+		if (IsIdleing())
+		{
+			GoToSickBay();
+		}
 	}
 }
 
@@ -495,7 +508,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 
 		if (isSmoked != HasInjurySmoke())
 		{
-			Logger::LogEvent(GetName() + " got smoked!" + std::to_string(m_HasInjurySmoke));
+			Logger::LogEvent(GetName() + " blev rökskadad!" + std::to_string(m_HasInjurySmoke));
 			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::to_string(m_GearIsEquipped) << std::endl;
 		}
 	}
@@ -522,7 +535,7 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 		ApplyBurnInjury((tileData.Temp / tileData.BurnsAt) * burnSpeed * dt);
 		if (isBurned != HasInjuryBurned())
 		{
-			Logger::LogEvent(GetName() + " got burned!" + std::to_string(m_HasInjuryBurned));
+			Logger::LogEvent(GetName() + " blev bränd!" + std::to_string(m_HasInjuryBurned));
 		}
 	}
 }

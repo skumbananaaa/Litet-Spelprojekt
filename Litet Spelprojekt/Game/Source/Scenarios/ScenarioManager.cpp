@@ -51,7 +51,7 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 		IScenario* scenario = s_Scenarios[s_ActiveScenarios[i]];
 		if (scenario->Update(dtS, world, scene))
 		{
-			Logger::LogEvent("Scenario [" + scenario->GetName() + "] Ended!");
+			Logger::LogEvent("Scenario [" + scenario->GetName() + "] avslutades!");
 			scenario->OnEnd(scene);
 			SetAsNonActive(s_ActiveScenarios[i]);
 			s_ActiveScenarios.erase(s_ActiveScenarios.begin() + i);
@@ -71,7 +71,7 @@ bool ScenarioManager::StartScenario(int32 index) noexcept
 	{
 		if (index == s_NonActiveScenarios[i])
 		{
-			Logger::LogEvent("Scenario [" + s_Scenarios[index]->GetName() + "] Started!");
+			Logger::LogEvent("Scenario [" + s_Scenarios[index]->GetName() + "] startade!");
 			s_Scenarios[index]->OnStart(Game::GetGame()->m_pSceneGame);
 			s_ActiveScenarios.push_back(index);
 			s_NonActiveScenarios.erase(s_NonActiveScenarios.begin() + i);

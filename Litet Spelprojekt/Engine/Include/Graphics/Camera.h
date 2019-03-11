@@ -44,6 +44,7 @@ public:
 	void SetMaxPitch(float max) noexcept;
 	void SetMinDistToLookAt(float min) noexcept;
 	void SetMaxDistToLookAt(float max) noexcept;
+	void SetMinXZMaxXZLookAt(float minX, float minZ, float maxX, float maxZ) noexcept;
 
 	const glm::mat4& GetViewMatrix() const noexcept;
 	const glm::mat4& GetProjectionMatrix() const noexcept;
@@ -59,6 +60,7 @@ public:
 
 	const glm::vec2& GetMinMaxPitch() const noexcept;
 	const glm::vec2& GetMinMaxDistToLookAt() const noexcept;
+	const glm::vec4& GetMinXZMaxXZLookAt() const noexcept;
 
 	float GetYaw() const noexcept;
 	float GetPitch() const noexcept;
@@ -70,6 +72,7 @@ private:
 	void CalcInverses();
 	void UpdateFromPitchYawInternal() noexcept;
 	void UpdateFromLookAtInternal() noexcept;
+	bool IsLookAtInBounds(const glm::vec3& newLookAt) const noexcept;
 
 private:
 	glm::mat4 m_ViewMatrix;
@@ -87,6 +90,7 @@ private:
 
 	glm::vec2 m_MinMaxPitch;
 	glm::vec2 m_MinMaxDistanceToLookAt;
+	glm::vec4 m_MinXZMaxXZLookAt;
 
 	float m_Yaw;
 	float m_Pitch;
@@ -158,6 +162,11 @@ inline const glm::vec2& Camera::GetMinMaxDistToLookAt() const noexcept
 	return m_MinMaxDistanceToLookAt;
 }
 
+inline const glm::vec4& Camera::GetMinXZMaxXZLookAt() const noexcept
+{
+	return m_MinXZMaxXZLookAt;
+}
+
 inline float Camera::GetYaw() const noexcept
 {
 	return m_Yaw;
@@ -181,4 +190,12 @@ inline float Camera::GetNearPlane() const noexcept
 inline float Camera::GetDistanceToLookAt() const noexcept
 {
 	return m_DistanceToLookAt;
+}
+
+inline bool Camera::IsLookAtInBounds(const glm::vec3& newLookAt) const noexcept
+{
+	return	newLookAt.x > m_MinXZMaxXZLookAt.x &&
+			newLookAt.z > m_MinXZMaxXZLookAt.y &&
+			newLookAt.x < m_MinXZMaxXZLookAt.z &&
+			newLookAt.z < m_MinXZMaxXZLookAt.w;
 }

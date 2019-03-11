@@ -21,6 +21,7 @@
 class SceneGame : public SceneInternal
 {
 	friend class Game;
+	friend class SceneInstructions;
 
 public:
 	virtual ~SceneGame();
@@ -37,7 +38,6 @@ public:
 	virtual void OnKeyDown(KEY keycode) override;
 	virtual void OnResize(uint32 width, uint32 height) override;
 
-	void GenerateShadows();
 	void PickPosition();
 	void RequestDoorClosed(uint32 doorColor);
 	void Pick(bool hover, int32 positionX, int32 positionY);
@@ -54,7 +54,7 @@ public:
 	bool IsPaused() const noexcept;
 
 protected:
-	SceneGame();
+	SceneGame(World* pWorld);
 
 	void CreateAudio() noexcept;
 	void CreateGameObjects() noexcept;

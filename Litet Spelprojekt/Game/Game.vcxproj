@@ -169,6 +169,7 @@
     <ClCompile Include="Source\GUI\UILog.cpp" />
     <ClCompile Include="Source\GUI\UIPause.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioTorpedo.cpp" />
+    <ClCompile Include="Source\Scenes\SceneInstructions.cpp" />
     <ClCompile Include="Source\Scenes\SceneInternal.cpp" />
     <ClCompile Include="Source\Crew.cpp" />
     <ClCompile Include="Source\Crewmember.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="Include\Scenarios\ScenarioWater.h" />
     <ClInclude Include="Include\Scenes\SceneCredits.h" />
     <ClInclude Include="Include\Scenes\SceneGame.h" />
+    <ClInclude Include="Include\Scenes\SceneInstructions.h" />
     <ClInclude Include="Include\Scenes\SceneInternal.h" />
     <ClInclude Include="Include\Scenes\SceneLoading.h" />
     <ClInclude Include="Include\Scenes\SceneMenu.h" />

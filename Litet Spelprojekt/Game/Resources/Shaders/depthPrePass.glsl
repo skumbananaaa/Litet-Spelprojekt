@@ -31,7 +31,8 @@ void main()
 	vec4 position = g_InstanceModel * vec4(g_Position, 1.0);
 	position.x += g_Extension * floor(g_InstanceModel[3].y / 2.0f);
 
-	gl_ClipDistance[0] = dot(position, g_ClipPlane);
+	gl_ClipDistance[2] = dot(position, g_ClipPlane);
+
 	gl_Position = g_ProjectionView * position;
 }
 

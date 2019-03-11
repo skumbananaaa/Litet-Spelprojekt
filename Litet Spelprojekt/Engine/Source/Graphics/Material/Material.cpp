@@ -49,7 +49,7 @@ void Material::Bind(const Framebuffer* pGBuffer) const noexcept
 		context.Disable(CULL_FACE);
 	}
 
-	context.Enable(CLIP_DISTANCE0);
+	context.Enable(CLIP_DISTANCE2);
 
 	context.SetUniformBuffer(m_Data.pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_Data.pLightBuffer, LIGHT_BUFFER_BINDING_SLOT);
@@ -64,7 +64,7 @@ void Material::Unbind() const noexcept
 {
 	GLContext& context = GLContext::GetCurrentContext();
 
-	context.Disable(CLIP_DISTANCE0);
+	context.Disable(CLIP_DISTANCE2);
 	context.Disable(STENCIL_TEST);
 
 	context.SetUniformBuffer(nullptr, CAMERA_BUFFER_BINDING_SLOT);

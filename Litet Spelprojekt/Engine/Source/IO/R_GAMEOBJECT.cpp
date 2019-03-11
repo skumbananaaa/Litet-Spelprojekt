@@ -34,7 +34,7 @@ void GAMEOBJECT::RegisterResources()
 	INSTRUMENT_1				= ResourceHandler::RegisterGameObject("Instrument 1", MESH::INSTRUMENT_1, MATERIAL::INSTRUMENT_1);
 	INSTRUMENT_2				= ResourceHandler::RegisterGameObject("Instrument 2", MESH::INSTRUMENT_2, MATERIAL::INSTRUMENT_2);
 	LAMP						= ResourceHandler::RegisterGameObject("Lamp", MESH::LAMP, MATERIAL::LAMP);
-	FIREALARM					= ResourceHandler::RegisterGameObject("Firealarm", MESH::LAMP, MATERIAL::RED);
+	FIREALARM					= ResourceHandler::RegisterGameObject("Firealarm", MESH::LAMP, MATERIAL::DOOR_RED);
 	CUPBOARD					= ResourceHandler::RegisterGameObject("Cupboard", MESH::CUPBOARD, MATERIAL::CUPBOARD);
 	TABLE						= ResourceHandler::RegisterGameObject("Table", MESH::TABLE, MATERIAL::TABLE);
 	TOILET						= ResourceHandler::RegisterGameObject("Toilet", MESH::TOILET, MATERIAL::TOILET);

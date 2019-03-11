@@ -39,6 +39,7 @@ Game::Game() noexcept
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 	m_pAudioSourceMenu = AudioSource::CreateMusicSource(MUSIC::MENU);
+	m_pAudioSourceMenu->SetVolume(0.1f);
 	m_pAudioSourceMenu->SetPitch(1.0f);
 	m_pAudioSourceMenu->SetLooping(true);
 	m_pAudioSourceMenu->Play();

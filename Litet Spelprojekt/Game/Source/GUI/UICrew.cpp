@@ -1,4 +1,4 @@
-#include "..\..\Include\GUI\UICrew.h"
+﻿#include "..\..\Include\GUI\UICrew.h"
 #include "../../Include/Game.h"
 #include "../../Include/Scenes/SceneGame.h"
 #include <System/Random.h>
@@ -11,8 +11,8 @@ UICrew::UICrew(float x, float y, float width, float height, Crew* crew) :
 	static glm::vec2 textOffset = glm::vec2(10.0, 0.0);
 
 
-	m_Panels.push_back(CreateExpandable("Sjukv�rdare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_MEDIC, MEDIC, crew, buttonColor, textOffset));
-	m_Panels.push_back(CreateExpandable("R�kdykare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_FIRE, SMOKE_DIVER, crew, buttonColor, textOffset));
+	m_Panels.push_back(CreateExpandable("Sjukvårdare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_MEDIC, MEDIC, crew, buttonColor, textOffset));
+	m_Panels.push_back(CreateExpandable("Rökdykare", x, y, width, buttonHeight, TEXTURE::ICON_SKILL_FIRE, SMOKE_DIVER, crew, buttonColor, textOffset));
 
 	for (int i = m_Panels.size(); i < crew->NrOfSquads(); i++)
 	{
@@ -108,7 +108,7 @@ void UICrew::OnButtonPressed(Button* button)
 {
 	ProgressButton* progressButton = (ProgressButton*)button;
 	progressButton->StartAnimation(Random::GenerateInt(3, 15));
-	progressButton->SetText("Inv�ntar svar");
+	progressButton->SetText("Inväntar svar");
 	progressButton->SetTextColor(GUIContext::COLOR_BLACK);
 }
 

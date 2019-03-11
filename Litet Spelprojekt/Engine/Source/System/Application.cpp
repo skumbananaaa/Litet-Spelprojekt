@@ -29,7 +29,7 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 	}
 	else
 	{
-		m_pWindow = new Window("Small Game Project", width, height, fullscreen);
+		m_pWindow = new Window("Kris", width, height, fullscreen);
 
 		float width = static_cast<float>(m_pWindow->GetWidth());
 		float height = static_cast<float>(m_pWindow->GetHeight());
@@ -124,7 +124,7 @@ int32_t Application::Run()
 
 		if (totalTime > 1.0f)
 		{
-			std::string title = "Small Game Project [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
+			std::string title = "Kris [FPS: " + std::to_string(fps) + "] [UPS: " + std::to_string(ups) + ']';
 
 			m_pWindow->SetTitle(title.c_str());
 

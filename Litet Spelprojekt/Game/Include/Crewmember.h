@@ -98,6 +98,7 @@ public:
 	bool HasInjurySmoke() const noexcept;
 	bool HasInjuryBleed() const noexcept;
 	bool HasGearEquipped() const noexcept;
+	bool HasRecovered() const noexcept;
 
 private:
 	//UPDATES
@@ -138,6 +139,7 @@ private:
 	float m_HasInjuryBleeding;
 	float m_MaxHealth;
 	float m_Health;
+	float m_Recovering;
 
 	//--MOVEMENT
 	float m_MovementSpeed;
@@ -247,4 +249,9 @@ inline bool Crewmember::HasInjuryBleed() const noexcept
 inline bool Crewmember::HasGearEquipped() const noexcept
 {
 	return m_GearIsEquipped;
+}
+
+inline bool Crewmember::HasRecovered() const noexcept
+{
+	return m_Recovering > 1.0f;
 }

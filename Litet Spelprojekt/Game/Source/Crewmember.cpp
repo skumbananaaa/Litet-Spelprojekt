@@ -190,14 +190,12 @@ void Crewmember::GoToMedicBay()
 
 		if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
 		{
-			//m_pWorld->GetRoom(SICKBAY_0).GetCenter();
-
 			m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
 		}
 	}
 	else
 	{
-		Logger::LogEvent(GetName() + " cannot move to Med Bay!", true);
+		//Logger::LogEvent(GetName() + " cannot move to Med Bay!", true);
 	}
 }
 

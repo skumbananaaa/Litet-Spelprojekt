@@ -149,6 +149,18 @@ void Camera::MoveLocalCoords(const glm::vec3& localCoords, bool moveLookAt) noex
 	}
 }
 
+glm::vec3 Camera::GetMoveWorldFromLocal(const glm::vec3& localCoords) noexcept
+{
+	glm::vec3 worldCoords(0.0f);
+	glm::vec3 right = glm::normalize(glm::cross(m_Front, m_WorldUp));
+	glm::vec3 up = glm::normalize(glm::cross(m_Front, right));
+
+	worldCoords -= right * localCoords.x;
+	worldCoords -= up * localCoords.y;
+	worldCoords += m_Front * localCoords.z;
+	return worldCoords;
+}
+
 void Camera::MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept
 {
 	m_IsDirty = true;

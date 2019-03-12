@@ -37,6 +37,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjuryBleeding = 0.0f;
 	m_Recovering = 0.0f;
+	m_Resting = false;
 	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);*/
@@ -96,6 +97,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	if (room.IsBurning() && !room.IsFireDetected())
 	{
 		room.SetFireDetected(true);
+		Logger::LogEvent(GetName() + " larmar om eld!", true);
 	}
 
 	if (m_pUISelectedCrew)
@@ -103,12 +105,9 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		m_pUISelectedCrew->UpdatePosition(m_LastKnownPosition);
 	}
 
-	if (!IsAbleToWork())
+	if (!IsAbleToWork() && !IsResting())
 	{
-		if (IsIdleing())
-		{
-			GoToSickBay();
-		}
+		GoToSickBay();
 	}
 	
 	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
@@ -166,7 +165,8 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 
 void Crewmember::GiveOrder(IOrder* order) noexcept
 {
-	m_OrderHandler.GiveOrder(order);
+	if(!IsResting())
+		m_OrderHandler.GiveOrder(order);
 }
 
 void Crewmember::LookForDoor(uint32 doorColor) noexcept
@@ -202,7 +202,7 @@ void Crewmember::GoToSickBay()
 
 			if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
 			{
-				m_OrderHandler.GiveOrder(new OrderWalk(m_pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currentTile)));
+				m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld, currentTile));
 			}
 		}
 		else
@@ -345,7 +345,7 @@ void Crewmember::OnAllOrdersFinished() noexcept
 	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
 	m_LastKnownPosition = GetPosition();
 	m_pWorld->SetRoomActive(roomIndex, true);*/
-	m_Idleing = true;
+	SetIdleing(true);
 
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	m_HasTriedToWalkToSickbay = false;
@@ -427,11 +427,20 @@ void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
 void Crewmember::SetIdleing(bool value) noexcept
 {
 	m_Idleing = value;
+	if (!IsAbleToWork())
+	{
+		m_Idleing = false;
+	}
 }
 
 void Crewmember::SetGearIsEquipped(bool value) noexcept
 {
 	m_GearIsEquipped = value;
+}
+
+void Crewmember::SetResting(bool value) noexcept
+{
+	m_Resting = value;
 }
 
 void Crewmember::UpdateHealth(float dt)

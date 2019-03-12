@@ -8,6 +8,7 @@ class API MATERIAL
 public:
 	static uint32 BLACK;
 	static uint32 WHITE;
+	static uint32 ARTILLERY;
 	static uint32 DOOR_RED;
 	static uint32 DOOR_GREEN;
 	static uint32 DOOR_BLUE;

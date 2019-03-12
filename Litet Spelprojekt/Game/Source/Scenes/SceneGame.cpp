@@ -181,13 +181,15 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		{
 			if (!m_CartesianCamera)
 			{
+				Camera& camera = GetCamera();
+
 				if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 				{
 					const float cameraRotationSensitivity = 0.005f;
 					glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
 
-					GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
-					GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
+					camera.MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
+					camera.MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
 
 					m_pUICrewMember->SetCrewMember(nullptr);
 				}
@@ -197,11 +199,34 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 					const float cameraMoveSensitivityX = 0.5f;
 					const float cameraMoveSensitivityY = 0.025f;
 					glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
-					glm::vec3 forward(0.0f);
-					forward.x = GetCamera().GetFront().x;
-					forward.z = GetCamera().GetFront().z;
-					GetCamera().MoveWorldCoords(-glm::normalize(forward) * deltaPosition.y, true);
-					GetCamera().MoveLocalCoords(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f), true);
+					glm::vec3 moveOffset(0.0f);
+					moveOffset.x = camera.GetFront().x;
+					moveOffset.z = camera.GetFront().z;
+					moveOffset = glm::normalize(moveOffset) *  -deltaPosition.y;
+					moveOffset += camera.GetMoveWorldFromLocal(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f));
+
+					if (IsExtended())
+					{
+						glm::vec3 oldLookAt = camera.GetLookAt();
+						glm::vec3 newLookAt = oldLookAt + moveOffset;
+
+						if (!camera.IsLookAtInBounds(newLookAt) &&
+							newLookAt.x >= 1.0f && newLookAt.x <= 31.0f &&
+							newLookAt.z >= 1.0f && newLookAt.z <= 41.0f)
+						{
+							float xMove = -(float)IsExtended() * 10.0f;
+							float yOffset = -2.0f * (glm::floor(((((uint32)newLookAt.x - 1) % 10) / 5.0f)) - 0.5f);
+							float newY =  (oldLookAt.y / 2.0f) + yOffset;
+							float lookAtBoundsOffset = -xMove * newY;
+
+							camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
+								lookAtBoundsOffset + 11.0f, 41.0f);
+
+							moveOffset.y = 2.0f * yOffset;
+						}
+					}
+
+					camera.MoveWorldCoords(moveOffset, true);
 
 					m_pUICrewMember->SetCrewMember(nullptr);
 				}

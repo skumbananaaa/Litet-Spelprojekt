@@ -13,9 +13,10 @@ SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 	m_pWorld(pWorld),
 	m_pTestAudioSource(nullptr),
 	m_CartesianCamera(false),
-	m_CurrentElevation(2),
 	m_pUIPause(nullptr),
-	m_IsPaused(false)
+	m_IsPaused(false),
+	m_IsGameOver(false),
+	m_GameTimer(0.0f)
 {
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -123,6 +124,12 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 	if (!IsPaused())
 	{
+		m_GameTimer += dtS;
+		if (m_GameTimer >= 5.0f)
+		{
+			m_IsGameOver = true;
+		}
+
 		SceneInternal::OnUpdate(dtS);
 		ScenarioManager::Update(dtS, m_pWorld, this);
 		UpdateCamera(dtS);
@@ -161,6 +168,11 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 		AudioListener::SetPosition(GetCamera().GetPosition());
 		AudioListener::SetOrientation(GetCamera().GetFront(), GetCamera().GetUp());
+	}
+
+	if (m_IsGameOver)
+	{
+		SetPaused(true);
 	}
 }
 
@@ -425,6 +437,11 @@ void SceneGame::OnResize(uint32 width, uint32 height)
 void SceneGame::OnSceneExtensionComplete() noexcept
 {
 	UpdateMaterialClipPlanes();
+}
+
+void SceneGame::OnGameOver() noexcept
+{
+	std::cout << "GAME OVER" << std::endl;
 }
 
 void SceneGame::CreateAudio() noexcept

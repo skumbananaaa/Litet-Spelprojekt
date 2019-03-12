@@ -15,7 +15,12 @@ public:
 	~AnimatedSkeleton();
 
 	void SetSkeletonTransform(const glm::mat4& transform) const noexcept;
+	void SetAnimationTimeSeconds(float animationTimeSeconds) const noexcept;
+	void SetAnimationTimeTicks(float animationTimeTicks) const noexcept;
+
 	const SkeletonBuffer& GetSkeletonBuffer() const noexcept;
+	float GetAnimationTimeSeconds() const noexcept;
+	float GetAnimationTimeTicks() const noexcept;
 
 	void UpdateBoneTransforms(float dtS, const AnimatedMesh* mesh) const;
 
@@ -34,3 +39,18 @@ private:
 	mutable float m_AnimationTimeSeconds;
 	mutable float m_AnimationTimeTicks;
 };
+
+inline const SkeletonBuffer& AnimatedSkeleton::GetSkeletonBuffer() const noexcept
+{
+	return m_SkeletonBuffer;
+}
+
+inline float AnimatedSkeleton::GetAnimationTimeSeconds() const noexcept
+{
+	return m_AnimationTimeSeconds;
+}
+
+inline float AnimatedSkeleton::GetAnimationTimeTicks() const noexcept
+{
+	return m_AnimationTimeTicks;
+}

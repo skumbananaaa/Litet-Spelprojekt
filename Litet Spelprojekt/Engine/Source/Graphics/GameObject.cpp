@@ -4,8 +4,6 @@
 
 GameObject::GameObject() noexcept
 	: m_pMesh(nullptr),
-	m_pAMesh(nullptr),
-	m_pASkeleton(nullptr),
 	m_pDecal(nullptr),
 	m_pMaterial(nullptr),
 	m_Position(0.0f),
@@ -18,9 +16,11 @@ GameObject::GameObject() noexcept
 	m_IsTickable(false),
 	m_TypeId(-1),
 	m_Room(0),
-	m_AnimationLocked(false),
+	m_pAMesh(nullptr),
 	m_pAMeshNext(nullptr),
-	m_pASkeletonNext(nullptr)
+	m_pASkeleton(nullptr),
+	m_pALastUpdatedSkeleton(nullptr),
+	m_AnimationLocked(false)
 {
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	UpdateTransform();
@@ -130,19 +130,21 @@ void GameObject::UpdateParallel(float dtS) noexcept
 			m_pAMeshNext = nullptr;
 		}
 
-		if (m_pASkeletonNext != nullptr)
-		{
-			DeleteSafe(m_pASkeleton);
-			m_pASkeleton = m_pASkeletonNext;
-			m_pASkeletonNext = nullptr;
-		}
-
 		if (IsVisible())
 		{
 			if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
 			{
-				const AnimatedSkeleton& skeleton = *GetSkeleton();
-				skeleton.UpdateBoneTransforms(dtS, GetAnimatedMesh());
+				m_pASkeleton->UpdateBoneTransforms(dtS, GetAnimatedMesh());
+
+				if (!m_AnimationLocked)
+				{
+					AnimatedSkeleton* newLastUpdatedSkeleton = m_pASkeleton;
+					m_pALastUpdatedSkeleton->SetAnimationTimeSeconds(m_pASkeleton->GetAnimationTimeSeconds());
+					m_pALastUpdatedSkeleton->SetAnimationTimeTicks(m_pASkeleton->GetAnimationTimeTicks());
+
+					m_pASkeleton = m_pALastUpdatedSkeleton;
+					m_pALastUpdatedSkeleton = newLastUpdatedSkeleton;
+				}
 			}
 		}
 	}

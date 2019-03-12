@@ -26,7 +26,7 @@ public:
 	virtual void SetIsVisible(bool isVisible) noexcept;
 	virtual void SetIsPicked(bool picked) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
-	virtual void SetAnimatedMesh(int32 mesh) noexcept;
+	virtual void InitAnimation(int32 mesh) noexcept;
 	virtual void UpdateAnimatedMesh(int32 mesh) noexcept;
 	virtual void SetMaterial(int32 material) noexcept;
 	virtual void SetDecal(int32 decal) noexcept;
@@ -98,10 +98,8 @@ protected:
 private:
 	std::string m_Name;
 	const IndexedMesh* m_pMesh;
-	const AnimatedMesh* m_pAMesh;
 	const Material* m_pMaterial;
 	const Decal* m_pDecal;
-	AnimatedSkeleton* m_pASkeleton;
 	glm::vec3 m_Position;
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
@@ -109,13 +107,12 @@ private:
 	int32 m_TypeId;
 	int32 m_Room;
 	bool m_IsHidden = false;
-	bool m_AnimationLocked;
 
+	const AnimatedMesh* m_pAMesh;
 	const AnimatedMesh* m_pAMeshNext;
-	AnimatedSkeleton* m_pASkeletonNext;
-
-private:
-	static std::vector<GameObject> s_GameObjects;
+	AnimatedSkeleton* m_pASkeleton;
+	AnimatedSkeleton* m_pALastUpdatedSkeleton;
+	bool m_AnimationLocked;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -163,28 +160,15 @@ inline void GameObject::SetMesh(int32 mesh) noexcept
 	m_pMesh = ResourceHandler::GetMesh(mesh);
 }
 
-inline void GameObject::SetAnimatedMesh(int32 mesh) noexcept
+inline void GameObject::InitAnimation(int32 mesh) noexcept
 {
-	if (!m_AnimationLocked)
-	{
 		m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
 		m_pAMeshNext = nullptr;
 
 		DeleteSafe(m_pASkeleton);
-		DeleteSafe(m_pASkeletonNext);
+		DeleteSafe(m_pALastUpdatedSkeleton);
 		m_pASkeleton = new AnimatedSkeleton();
-	}
-	else
-	{
-		m_pAMeshNext = ResourceHandler::GetAnimatedMesh(mesh);
-
-		if (m_pASkeletonNext != nullptr)
-		{
-			DeleteSafe(m_pASkeletonNext);
-		}
-
-		m_pASkeletonNext = new AnimatedSkeleton();
-	}
+		m_pALastUpdatedSkeleton = new AnimatedSkeleton();
 }
 
 inline void GameObject::UpdateAnimatedMesh(int32 mesh) noexcept
@@ -241,8 +225,8 @@ inline const AnimatedMesh* GameObject::GetAnimatedMesh() const noexcept
 
 inline const AnimatedSkeleton* GameObject::GetSkeleton() const noexcept
 {
-	assert(m_pASkeleton != nullptr);
-	return m_pASkeleton;
+	assert(m_pALastUpdatedSkeleton != nullptr);
+	return m_pALastUpdatedSkeleton;
 }
 
 inline const glm::mat4& GameObject::GetTransform() const noexcept

@@ -12,7 +12,8 @@ glm::ivec3 startTarget(const glm::ivec3& roomTile, const glm::ivec3& holeTile, b
 
 OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, uint32 roomFloodingId, bool hasGearEquipped)
 	: OrderWalk(startTarget(roomTile, holeTile, hasGearEquipped)),
-	m_EquippingGearTimer(EQUIPTIME)
+	m_EquippingGearTimer(EQUIPTIME),
+	m_PluggingTimer(PLUGTIME)
 {
 	m_RoomTile = roomTile;
 	m_HoleTile = holeTile;
@@ -43,6 +44,13 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			{
 				m_PluggingHole = true;
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
+			}
+
+			m_PluggingTimer -= dtS;
+
+			if (m_PluggingTimer <= 0.0001)
+			{
+				m_HolePlugged = true;
 			}
 		}
 	}

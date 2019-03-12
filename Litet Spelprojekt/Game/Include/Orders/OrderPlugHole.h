@@ -1,6 +1,7 @@
 #pragma once
 #include "OrderWalk.h"
 #define EQUIPTIME 5.0f
+#define PLUGTIME 5.0f
 class OrderPlugHole : public OrderWalk
 {
 public:
@@ -19,5 +20,6 @@ private:
 	glm::ivec3 m_HoleTile;
 	float m_EquippingGearTimer;
 	bool m_PluggingHole;
+	float m_PluggingTimer;
 	bool m_HolePlugged;
 };

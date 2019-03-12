@@ -94,10 +94,18 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 
+	uint32 index = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
+
 	if (room.IsBurning() && !room.IsFireDetected())
 	{
 		room.SetFireDetected(true);
-		Logger::LogEvent(GetName() + " larmar om eld!", true);
+		Logger::LogEvent(GetName() + " larmar om eld i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+	}
+
+	if (room.IsFlooded() && !room.IsFloodDetected())
+	{
+		room.SetFloodDetected(true);
+		Logger::LogEvent(GetName() + " larmar om vattenläcka i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
 	}
 
 	if (m_pUISelectedCrew)
@@ -248,21 +256,35 @@ bool Crewmember::Heal(float skillLevel, float dtS)
 
 void Crewmember::ApplyBurnInjury(float burn)
 {
+	bool lastState = HasInjuryBurned();
 	m_HasInjuryBurned += burn;
-	if (m_HasInjuryBurned > 0.9 && m_HasInjuryBurned < 1.1)
+	if (lastState != HasInjuryBurned())
 	{
+		Logger::LogEvent(GetName() + " fick brännskador", false);
 		m_pAudioSourceScream->Play();
 	}
 }
 
 void Crewmember::ApplyBoneInjury(float boneBreak)
 {
+	bool lastState = HasInjuryBoneBroken();
 	m_HasInjuryBoneBroken += boneBreak;
+	if (lastState != HasInjuryBoneBroken())
+	{
+		Logger::LogEvent(GetName() + " fick benbrott", false);
+		m_pAudioSourceScream->Play();
+	}
 }
 
 void Crewmember::ApplyBleedInjury(float bleed)
 {
+	bool lastState = HasInjuryBleed();
 	m_HasInjuryBleeding += bleed;
+	if (lastState != HasInjuryBleed())
+	{
+		Logger::LogEvent(GetName() + " fick köttsår", false);
+		m_pAudioSourceScream->Play();
+	}
 }
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
@@ -529,7 +551,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 
 		if (isSmoked != HasInjurySmoke())
 		{
-			Logger::LogEvent(GetName() + " blev rökskadad!" + std::to_string(m_HasInjurySmoke));
+			Logger::LogEvent(GetName() + " blev rökskadad!");
 			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::to_string(m_GearIsEquipped) << std::endl;
 		}
 	}
@@ -552,12 +574,7 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.Temp >= tileData.BurnsAt)
 	{
-		bool isBurned = HasInjuryBurned();
 		ApplyBurnInjury((tileData.Temp / tileData.BurnsAt) * burnSpeed * dt);
-		if (isBurned != HasInjuryBurned())
-		{
-			Logger::LogEvent(GetName() + " blev bränd!" + std::to_string(m_HasInjuryBurned));
-		}
 	}
 }
 

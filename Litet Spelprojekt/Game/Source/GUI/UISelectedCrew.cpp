@@ -15,8 +15,8 @@ UISelectedCrew::~UISelectedCrew()
 void UISelectedCrew::UpdatePosition(const glm::vec3 & position) noexcept
 {
 	Camera& camera = Game::GetGame()->m_pSceneGame->GetCamera();
-	glm::vec3 crewWorldPos = position + glm::vec3(0.0f, 1.9f, 0.0f);
-	crewWorldPos.y = glm::clamp(crewWorldPos.y, std::floor(position.y), std::floor(position.y) + 1.9f);
+	glm::vec3 crewWorldPos = position + glm::vec3(0.0f, 2.0f, 0.0f);
+	crewWorldPos.y = glm::clamp(crewWorldPos.y, std::floor(position.y), std::floor(position.y / 2) * 2 + 1.9f);
 	crewWorldPos.x += Game::GetGame()->m_pSceneGame->GetExtension() * glm::floor(crewWorldPos.y / 2.0f);
 	glm::vec4 pos = camera.GetCombinedMatrix() * glm::vec4(crewWorldPos, 1);
 	pos = pos / pos.w;

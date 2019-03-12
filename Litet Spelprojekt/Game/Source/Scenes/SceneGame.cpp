@@ -60,7 +60,7 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Window* window = &game->GetWindow();
 
 	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
-	m_pUILog = new UILog(window->GetWidth() - 350, window->GetHeight() - 450, 350, 450);
+	m_pUILog = new UILog(window->GetWidth() - 450, window->GetHeight() - 450, 450, 450);
 	
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_pUILog);

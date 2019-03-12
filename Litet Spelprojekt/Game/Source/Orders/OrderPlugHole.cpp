@@ -22,6 +22,10 @@ OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeT
 	m_HolePlugged = false;
 }
 
+OrderPlugHole::~OrderPlugHole()
+{
+}
+
 void OrderPlugHole::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
@@ -81,4 +85,19 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 		}
 	}
 	return res;
+}
+
+bool OrderPlugHole::CanBeStackedWithSameType() noexcept
+{
+	return false;
+}
+
+std::string OrderPlugHole::GetName() noexcept
+{
+	return "Plug hole";
+}
+
+bool OrderPlugHole::IsIdleOrder() noexcept
+{
+	return false;
 }

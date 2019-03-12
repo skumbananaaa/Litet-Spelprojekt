@@ -1,5 +1,4 @@
-﻿#include "..\..\Include\Scenes\SceneGame.h"
-#include "../../Include/Game.h"
+﻿#include "../../Include/Game.h"
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
@@ -8,6 +7,8 @@
 #include "../../Include/Orders/OrderSchedule.h"
 #include "../../Include/Orders/OrderGiveAid.h"
 #include <Graphics/Materials/MaterialBase.h>
+#include "../../Include/Orders/OrderPlugHole.h"
+#include "../../Include/Scenarios/ScenarioWater.h"
 
 SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 	m_pWorld(pWorld),
@@ -412,6 +413,13 @@ void SceneGame::OnKeyDown(KEY keycode)
 				{
 					medic->GiveOrder(new OrderGiveAid(victim));
 				}
+			}
+			case KEY_M:
+			{
+				ScenarioWater* water = (ScenarioWater*)ScenarioManager::GetScenarios()[Game::GetGame()->m_ScenarioWater];
+				//TODO!!!! Get Inlet tile position!!
+
+				//m_Crew.GetMember(0)->GiveOrder(new OrderPlugHole())
 			}
 		}
 	}

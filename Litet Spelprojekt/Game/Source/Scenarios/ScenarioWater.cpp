@@ -286,12 +286,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 #endif
 	for (uint32 i = 0; i < m_InletsToRemove.size(); i++)
 	{
-		m_InletTiles.erase(m_InletTiles.begin + m_InletsToRemove[i] - i);
-	}
-
-	if (m_InletsToRemove.size() == 0)
-	{
-		return true;
+		m_InletTiles.erase(m_InletTiles.begin() + m_InletsToRemove[i] - i);
 	}
 
 	return false;

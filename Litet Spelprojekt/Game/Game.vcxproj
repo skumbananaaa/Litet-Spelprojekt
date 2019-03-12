@@ -149,7 +149,6 @@
     <ClCompile Include="Source\GameObjectDoor.cpp" />
     <ClCompile Include="Source\GameObjectFloor.cpp" />
     <ClCompile Include="Source\GameObjectArtillery.cpp" />
-    <ClCompile Include="Source\GameObjectTorpedo.cpp" />
     <ClCompile Include="Source\GUI\UISelectedCrew.cpp" />
     <ClCompile Include="Source\GUI\UIOrder.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
@@ -169,8 +168,8 @@
     <ClCompile Include="Source\Scenarios\ScenarioArtillery.cpp" />
     <ClCompile Include="Source\GUI\UILog.cpp" />
     <ClCompile Include="Source\GUI\UIPause.cpp" />
-    <ClCompile Include="Source\Scenarios\ScenarioTorpedo.cpp" />
     <ClCompile Include="Source\Scenes\SceneInstructions.cpp" />
+    <ClCompile Include="Source\Scenarios\ScenarioIceberg.cpp" />
     <ClCompile Include="Source\Scenes\SceneInternal.cpp" />
     <ClCompile Include="Source\Crew.cpp" />
     <ClCompile Include="Source\Crewmember.cpp" />
@@ -196,7 +195,6 @@
     <ClInclude Include="Include\GameObjectDoor.h" />
     <ClInclude Include="Include\GameObjectFloor.h" />
     <ClInclude Include="Include\GameObjectArtillery.h" />
-    <ClInclude Include="Include\GameObjectTorpedo.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />
     <ClInclude Include="Include\GUI\UICrewMember.h" />
     <ClInclude Include="Include\GUI\UILog.h" />
@@ -222,7 +220,7 @@
     <ClInclude Include="Include\Scenarios\ScenarioFire.h" />
     <ClInclude Include="Include\Scenarios\ScenarioManager.h" />
     <ClInclude Include="Include\Scenarios\ScenarioArtillery.h" />
-    <ClInclude Include="Include\Scenarios\ScenarioTorpedo.h" />
+    <ClInclude Include="Include\Scenarios\ScenarioIceberg.h" />
     <ClInclude Include="Include\Scenarios\ScenarioWater.h" />
     <ClInclude Include="Include\Scenes\SceneCredits.h" />
     <ClInclude Include="Include\Scenes\SceneGame.h" />

@@ -54,7 +54,7 @@ layout(std140, binding = 1) uniform LightBuffer
 layout(std140, binding = 6) uniform WaterBuffer
 {
 	vec2 g_WaveFactor;
-	vec2 g_TorpedoPosition;
+	vec2 g_IcebergPosition;
 };
 
 //OUT
@@ -157,17 +157,18 @@ void main()
 	vec3 currentVertex = vec3(g_Position.x, 0.0f, g_Position.y);
 	vec3 vertex1 = currentVertex + vec3(g_Indicators.x, 0.0f, g_Indicators.y);
 	vec3 vertex2 = currentVertex + vec3(g_Indicators.z, 0.0f, g_Indicators.w);
-	vs_out.FoamFactor = min(1.0f, 2.0f / length(g_TorpedoPosition - currentVertex.xz));
-	currentVertex.y += 2.0f * vs_out.FoamFactor;
-	vertex1.y += 2.0f * min(1.0f, 2.0f / length(g_TorpedoPosition - vertex1.xz));
-	vertex2.y += 2.0f * min(1.0f, 2.0f / length(g_TorpedoPosition - vertex2.xz));
+	vs_out.FoamFactor = float(length(g_IcebergPosition - currentVertex.xz) < 8.0f);
+	currentVertex.y += 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - currentVertex.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - currentVertex.xz)));
+	vertex1.y 		+= 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex1.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex1.xz)));
+	vertex2.y 		+= 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex2.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex2.xz)));
 	
 	vs_out.ClipSpaceGrid = g_ProjectionView * vec4(currentVertex, 1.0f);
 	
 	//Apply distortion to all 3 vertices
-	currentVertex.y += waveScalingFactor * snoise(currentVertex.xz + g_WaveFactor);
-	vertex1 += waveScalingFactor * snoise(vertex1.xz + g_WaveFactor);
-	vertex2 += waveScalingFactor * snoise(vertex2.xz + g_WaveFactor);
+	float oneMinusFoamFactor = 1.0f - vs_out.FoamFactor;
+	currentVertex.y += waveScalingFactor * snoise(currentVertex.xz + g_WaveFactor) * oneMinusFoamFactor;
+	vertex1 += waveScalingFactor * snoise(vertex1.xz + g_WaveFactor) * oneMinusFoamFactor;
+	vertex2 += waveScalingFactor * snoise(vertex2.xz + g_WaveFactor) * oneMinusFoamFactor;
 	
 	vec3 normal = CalcNormal(currentVertex, vertex1, vertex2);
 	vs_out.Normal = normal;
@@ -258,7 +259,7 @@ void main()
 	reflectColour = mix(reflectColour, waterColour, minBlueness);
 	
 	vec3 finalColour = mix(reflectColour, refractColour, CalculateFresnel());
-	finalColour = mix(finalColour, vec3(0.09f, 0.34f, 0.49f), fs_in.FoamFactor);
+	finalColour = mix(finalColour, vec3(1.0F, 1.0F, 1.0F), fs_in.FoamFactor);
 	finalColour = finalColour * fs_in.LightColor + fs_in.Specular;
 	
 	g_OutColor = vec4(finalColour, 1.0f);

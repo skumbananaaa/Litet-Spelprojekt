@@ -5,6 +5,7 @@
 #include "../../Include/Crew.h"
 #include "../../Include/Path.h"
 #include "../../Include/GameObjectDoor.h"
+#include <World/Logger.h>
 #include <System/Random.h>
 
 OrderWalk::OrderWalk(const glm::ivec3& goalTile):
@@ -93,6 +94,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		if (!room.IsFireDetected())
 		{
 			room.SetFireDetected(true);
+			Logger::LogEvent(GetCrewMember()->GetName() + " larmar om eld!", true);
 		}
 		//GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}

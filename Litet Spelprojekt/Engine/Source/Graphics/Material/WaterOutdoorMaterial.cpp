@@ -9,7 +9,7 @@ WaterOutdoorMaterial::WaterOutdoorMaterial() : Material(SHADER::WATER_OUTDOOR_MA
 	m_Buffer()
 {
 	m_Buffer.WaveFactor = glm::vec2(0.0f);
-	m_Buffer.TorpedoPos = glm::vec2(FLT_MAX, FLT_MAX);
+	m_Buffer.IcebergPos = glm::vec2(FLT_MAX, FLT_MAX);
 	m_pWaterBuffer = new UniformBuffer(&m_Buffer, 1, sizeof(WaterOutdoorBuffer));
 	SetIncludeInDepthPrePass(false);
 	SetIsReflectable(true);
@@ -66,8 +66,8 @@ void WaterOutdoorMaterial::SetWaveFactor(const glm::vec2& waveFactor) const
 	m_pWaterBuffer->UpdateData(&m_Buffer);
 }
 
-void WaterOutdoorMaterial::SetTorpedoPosition(const glm::vec2& pos) const
+void WaterOutdoorMaterial::SetIcebergPosition(const glm::vec2& pos) const
 {
-	m_Buffer.TorpedoPos = pos;
+	m_Buffer.IcebergPos = pos;
 	m_pWaterBuffer->UpdateData(&m_Buffer);
 }

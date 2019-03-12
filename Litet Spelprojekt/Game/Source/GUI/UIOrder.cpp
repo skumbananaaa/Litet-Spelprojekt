@@ -45,6 +45,7 @@ void UIOrder::OnDehovered(const HoveringHandler * handler, IHoverable * selectio
 {
 	if (m_pPanel)
 	{
+		s_HoveringHandler.Release();
 		Game::GetGame()->GetGUIManager().Remove(m_pPanel);
 		m_pPanel = nullptr;
 	}
@@ -66,29 +67,26 @@ void UIOrder::DisplayOrders(int32 x, int32 y, UIOrder* uiOrder)
 
 	if (m_pPanel)
 	{
+		s_HoveringHandler.Release();
 		Game::GetGame()->GetGUIManager().Remove(m_pPanel);
 		m_pPanel = nullptr;
 	}
 
-	s_HoveringHandler.Release();
 	s_HoveringHandler.AddHoveringListener(uiOrder);
 
 	int mouseOffsetArea = 50;
 
-	m_pPanel = new Panel(x - mouseOffsetArea, y - mouseOffsetArea, 200 + mouseOffsetArea, uiOrder->m_Choices.size() * 30 + mouseOffsetArea);
+	m_pPanel = new Panel(x - mouseOffsetArea, y - mouseOffsetArea, 200 + mouseOffsetArea * 2, uiOrder->m_Choices.size() * 30 + mouseOffsetArea * 2);
 	m_pPanel->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	s_HoveringHandler.AddHoverable(m_pPanel);
 
-	Panel* pPanel2 = new Panel(mouseOffsetArea, mouseOffsetArea, 200, uiOrder->m_Choices.size() * 30);
-	m_pPanel->Add(pPanel2);
-
 	for (int i = 0; i < uiOrder->m_Choices.size(); i++)
 	{
-		Button* button = new Button(0, i * 30, m_pPanel->GetWidth(), 30, uiOrder->m_Choices[i].first);
+		Button* button = new Button(mouseOffsetArea, i * 30 + mouseOffsetArea, m_pPanel->GetWidth() - mouseOffsetArea * 2, 30, uiOrder->m_Choices[i].first);
 		button->SetUserData(uiOrder->m_Choices[i].second);
 		button->SetTextCentered(false);
 		button->AddButtonListener(uiOrder);
-		pPanel2->Add(button);
+		m_pPanel->Add(button);
 	}
 	Game::GetGame()->GetGUIManager().Add(m_pPanel);
 }

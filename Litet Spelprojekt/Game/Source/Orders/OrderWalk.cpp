@@ -89,19 +89,22 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 	Room& room = pWorld->GetRoom(pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z]);
 
+	uint32 index = pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z];
+
 	if (room.IsBurning())
 	{
 		if (!room.IsFireDetected())
 		{
 			room.SetFireDetected(true);
-			Logger::LogEvent(GetCrewMember()->GetName() + " larmar om eld!", true);
+			Logger::LogEvent(GetCrewMember()->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index) + "!", true);
+			GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 		}
-		//GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
+		Logger::LogEvent(GetCrewMember()->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index) + "!", true);
 		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 

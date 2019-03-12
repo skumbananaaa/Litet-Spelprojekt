@@ -49,29 +49,6 @@ private:
 	std::vector<bool> m_DiscoveredRooms;
 };
 
-inline float ScenarioFire::CalculateDoorSpreadFactor(
-	const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo,
-	bool spreadingThroughBulkhead, float rateOfNormalDoorSpread, float rateOfBulkheadDoorSpreadFactor, float rateOfBulkheadSpreadFactor) const noexcept
-{
-	if (ppLevelData[tileFrom.x][tileFrom.y].HasDoor() && ppLevelData[tileTo.x][tileTo.y].HasDoor())
-	{
-		bool doorIsOpen = !reinterpret_cast<GameObjectDoor*>(ppLevelData[tileTo.x][tileTo.y].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR])->IsClosed();
-
-		//If the smallest of the tiles x coordinates is a multiple of "tilesBetweenBulkheads", the water is trying to flood over a bulkhead.
-		//Since CanSpreadTo returns 0 if there isnt a door when the water is trying to flood to a different room we know its trying to flood over a door.
-		if (spreadingThroughBulkhead)
-		{
-			return doorIsOpen ? 1.0f / rateOfBulkheadSpreadFactor : rateOfBulkheadDoorSpreadFactor;
-		}
-
-		//If the water is trying to flood over a door that is not in a bulkhead, reduce the flood factor.
-		return doorIsOpen ? 1.0f : rateOfNormalDoorSpread;
-	}
-
-	//Water is not trying to flood to a different room but tileTo has a door.
-	return 1.0f;
-}
-
 inline float ScenarioFire::CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept
 {
 	return spreadingThroughBulkhead ? rateOfBulkheadSpreadFactor : 1.0f;
@@ -82,39 +59,5 @@ inline void ScenarioFire::EvaporateWater(TileData& tile, float dtS) const noexce
 	if (tile.AlreadyFlooded)
 	{
 		tile.WaterLevelChange -= tile.Temp * WATER_EVAPORATION_BY_FIRE_RATE * dtS;
-	}
-}
-
-inline void ScenarioFire::SetFireVisible(uint32 roomId, bool show) noexcept
-{
-	for (uint32 i = 0; i < m_OnFire.size(); i++)
-	{
-		glm::ivec3 pos = m_OnFire[i];
-		uint32 tileID = m_pWorld->GetLevel(pos.y).GetLevel()[pos.x][pos.z];
-		if (roomId == tileID)
-		{
-			GameObject* pObject = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE];
-			if (pObject)
-			{
-				pObject->SetIsVisible(show);
-			}
-		}
-	}
-}
-
-inline void ScenarioFire::SetSmokeVisible(uint32 roomId, bool show) noexcept
-{
-	for (uint32 i = 0; i < m_Smoke.size(); i++)
-	{
-		glm::ivec3 pos = m_Smoke[i];
-		
-		if (roomId == m_pWorld->GetLevel(pos.y).GetLevel()[pos.x][pos.z])
-		{
-			GameObject* pObject = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE];
-			if (pObject)
-			{
-				pObject->SetIsVisible(show);
-			}
-		}
 	}
 }

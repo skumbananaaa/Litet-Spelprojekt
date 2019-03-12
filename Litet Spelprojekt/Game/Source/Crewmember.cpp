@@ -25,7 +25,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
-	SetAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	InitAnimation(MESH::ANIMATED_MODEL_IDLE);
 	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();

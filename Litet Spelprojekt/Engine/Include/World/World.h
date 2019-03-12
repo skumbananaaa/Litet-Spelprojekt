@@ -135,6 +135,7 @@ public:
 	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept;
 
 public:
+	static std::string GetNameFromGlobal(uint32 globalIndex) noexcept;
 	static uint32 GetDoorMaterialFromColor(DOOR_COLOR color) noexcept;
 	static DOOR_COLOR GetDoorColorFromGlobal(uint32 globalIndex) noexcept;
 	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromGlobal(uint32 globalIndex) noexcept;
@@ -179,6 +180,39 @@ inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 
 	}
 
 	return closestRoomCenter;
+}
+
+inline std::string World::GetNameFromGlobal(uint32 globalIndex) noexcept
+{
+	if (globalIndex >= SICKBAY_INTERVAL_START && globalIndex <= SICKBAY_INTERVAL_END)
+	{
+		return "sjukstuga " + std::to_string((globalIndex + 1) - SICKBAY_INTERVAL_START);
+	}
+	else if (globalIndex >= TOILET_INTERVAL_START && globalIndex <= TOILET_INTERVAL_END)
+	{
+		return "toalett " + std::to_string((globalIndex + 1) - TOILET_INTERVAL_START);
+	}
+	else if (globalIndex >= MACHINE_ROOM_INTERVAL_START && globalIndex <= MACHINE_ROOM_INTERVAL_END)
+	{
+		return "maskinrum " + std::to_string((globalIndex + 1) - MACHINE_ROOM_INTERVAL_START);
+	}
+	else if (globalIndex >= AMMUNITION_ROOM_INTERVAL_START && globalIndex <= AMMUNITION_ROOM_INTERVAL_END)
+	{
+		return "ammunitionsrum " + std::to_string((globalIndex + 1) - AMMUNITION_ROOM_INTERVAL_START);
+	}
+	else if (globalIndex >= KITCHEN_INTERVAL_START && globalIndex <= KITCHEN_INTERVAL_END)
+	{
+		return "kabyss " + std::to_string((globalIndex + 1) - KITCHEN_INTERVAL_START);
+	}
+	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
+	{
+		return "mäss " + std::to_string((globalIndex + 1) - DINING_ROOM_INTERVAL_START);
+	}
+	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
+	{
+		return "hytt " + std::to_string((globalIndex + 1) - CABOOSE_INTERVAL_START);
+	}
+	return "rum " + std::to_string(globalIndex);
 }
 
 inline uint32 World::GetDoorMaterialFromColor(DOOR_COLOR color) noexcept

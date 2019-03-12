@@ -151,6 +151,18 @@ vec3 CalcNormal(vec3 vertex0, vec3 vertex1, vec3 vertex2)
 	return normalize(cross(tangent, bitangent));
 }
 
+// Returns -1 if the x cooridnate should get lowered, otherwise returns 0
+float GetDepthFromX(float x)
+{
+	return 1.0F - min(round((abs(x) - 1) / 5.0F), 1.0F);
+}
+
+// Returns -1 if the z cooridnate should get lowered, otherwise returns 0
+float GetDepthFromZ(float z)
+{
+	return 1.0F - min(floor(abs(z) / 19.0F), 1.0F);
+}
+
 void main()
 {
 	//Get the grid position of all 3 vertices in the triangle
@@ -162,6 +174,26 @@ void main()
 	vertex1.y 		+= 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex1.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex1.xz)));
 	vertex2.y 		+= 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex2.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex2.xz)));
 	
+	float depth = 30.0F;
+	float xOffset = 5.0F;
+	float zOffset = 20.0F;
+
+	float moveDown1 = GetDepthFromX(currentVertex.x - xOffset) * GetDepthFromZ(currentVertex.z - zOffset);
+	currentVertex.x += clamp(currentVertex.x - xOffset, -1.0F, 1.0F) * moveDown1 * 2;
+	currentVertex.z += clamp(currentVertex.z - zOffset, -1.0F, 1.0F) * moveDown1 * 2;
+	currentVertex.y -= moveDown1 * depth;
+
+	float moveDown2 = GetDepthFromX(vertex1.x - xOffset) * GetDepthFromZ(vertex1.z - zOffset);
+	vertex1.x += clamp(vertex1.x - xOffset, -1.0F, 1.0F) * moveDown2 * 2;
+	vertex1.z += clamp(vertex1.z - zOffset, -1.0F, 1.0F) * moveDown2 * 2;
+	vertex1.y -= moveDown2 * depth;
+
+	float moveDown3 = GetDepthFromX(vertex2.x - xOffset) * GetDepthFromZ(vertex2.z - zOffset);
+	vertex2.x += clamp(vertex2.x - xOffset, -1.0F, 1.0F) * moveDown3 * 2;
+	vertex2.z += clamp(vertex2.z - zOffset, -1.0F, 1.0F) * moveDown3 * 2;
+	vertex2.y -= moveDown3 * depth;
+
+
 	vs_out.ClipSpaceGrid = g_ProjectionView * vec4(currentVertex, 1.0f);
 	
 	//Apply distortion to all 3 vertices

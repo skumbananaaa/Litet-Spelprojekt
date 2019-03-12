@@ -7,7 +7,7 @@
 #endif
 
 constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 10000.0f;
-constexpr float SMOKE_DISSOLVE_RATE = 10.0f;
+constexpr float SMOKE_DISSOLVE_RATE = 250.0f;
 
 class ScenarioFire : public IScenario
 {

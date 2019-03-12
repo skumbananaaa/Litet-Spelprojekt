@@ -20,6 +20,7 @@ uint32 GAMEOBJECT::OVEN = 0;
 uint32 GAMEOBJECT::SHELF_EMPTY = 0;
 uint32 GAMEOBJECT::SHELF_AMMUNITION = 0;
 uint32 GAMEOBJECT::GENERATOR = 0;
+uint32 GAMEOBJECT::FIRE_EXTINGUISHER = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -47,4 +48,5 @@ void GAMEOBJECT::RegisterResources()
 	SHELF_EMPTY					= ResourceHandler::RegisterGameObject("Hylla", MESH::SHELF_EMPTY, MATERIAL::SHELF_EMPTY);
 	SHELF_AMMUNITION			= ResourceHandler::RegisterGameObject("Ammunitionshylla", MESH::SHELF_AMMUNITION, MATERIAL::SHELF_AMMUNITION);
 	GENERATOR					= ResourceHandler::RegisterGameObject("Generator", MESH::GENERATOR, MATERIAL::GENERATOR);
+	FIRE_EXTINGUISHER			= ResourceHandler::RegisterGameObject("Brandsläckare", MESH::FIRE_EXTINGUISHER, MATERIAL::FIRE_EXTINGUISHER);
 }

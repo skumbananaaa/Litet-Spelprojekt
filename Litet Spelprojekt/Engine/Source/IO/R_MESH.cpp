@@ -37,6 +37,7 @@ uint32 MESH::ARTILLERY = 0;
 uint32 MESH::SHELF_AMMUNITION = 0;
 uint32 MESH::SHELF_EMPTY = 0;
 uint32 MESH::GENERATOR = 0;
+uint32 MESH::FIRE_EXTINGUISHER = 0;
 
 
 /*
@@ -80,4 +81,5 @@ void MESH::RegisterResources()
 	SHELF_AMMUNITION		= ResourceHandler::RegisterMesh("AmmunitionShelf.obj");
 	SHELF_EMPTY				= ResourceHandler::RegisterMesh("EmptyShelf.obj");
 	GENERATOR				= ResourceHandler::RegisterMesh("Generator.obj");
+	FIRE_EXTINGUISHER		= ResourceHandler::RegisterMesh("FireExtinguisher.obj");
 }

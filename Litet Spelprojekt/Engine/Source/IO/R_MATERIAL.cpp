@@ -5,10 +5,12 @@
 uint32 MATERIAL::BLACK = 0;
 uint32 MATERIAL::WHITE = 0;
 uint32 MATERIAL::ARTILLERY = 0;
+uint32 MATERIAL::DOOR_FRAME = 0;
 uint32 MATERIAL::DOOR_RED = 0;
 uint32 MATERIAL::DOOR_GREEN = 0;
 uint32 MATERIAL::DOOR_BLUE = 0;
 uint32 MATERIAL::DOOR_YELLOW = 0;
+uint32 MATERIAL::LADDER = 0;
 uint32 MATERIAL::OCEAN_BLUE = 0;
 uint32 MATERIAL::BOAT = 0;
 uint32 MATERIAL::GROUND = 0;
@@ -60,10 +62,12 @@ void MATERIAL::RegisterResources()
 	BLACK				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	WHITE				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	ARTILLERY			= ResourceHandler::RegisterMaterial(glm::vec4(0.545f, 0.271, 0.075f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
+	DOOR_FRAME			= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	DOOR_RED			= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	DOOR_GREEN			= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	DOOR_BLUE			= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	DOOR_YELLOW			= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	LADDER				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(TEXTURE::WALL1						, 256.0f);

@@ -25,7 +25,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
-	SetAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	InitAnimation(MESH::ANIMATED_MODEL_IDLE);
 	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
@@ -256,21 +256,35 @@ bool Crewmember::Heal(float skillLevel, float dtS)
 
 void Crewmember::ApplyBurnInjury(float burn)
 {
+	bool lastState = HasInjuryBurned();
 	m_HasInjuryBurned += burn;
-	if (m_HasInjuryBurned > 0.9 && m_HasInjuryBurned < 1.1)
+	if (lastState != HasInjuryBurned())
 	{
+		Logger::LogEvent(GetName() + " fick brännskador", false);
 		m_pAudioSourceScream->Play();
 	}
 }
 
 void Crewmember::ApplyBoneInjury(float boneBreak)
 {
+	bool lastState = HasInjuryBoneBroken();
 	m_HasInjuryBoneBroken += boneBreak;
+	if (lastState != HasInjuryBoneBroken())
+	{
+		Logger::LogEvent(GetName() + " fick benbrott", false);
+		m_pAudioSourceScream->Play();
+	}
 }
 
 void Crewmember::ApplyBleedInjury(float bleed)
 {
+	bool lastState = HasInjuryBleed();
 	m_HasInjuryBleeding += bleed;
+	if (lastState != HasInjuryBleed())
+	{
+		Logger::LogEvent(GetName() + " fick köttsår", false);
+		m_pAudioSourceScream->Play();
+	}
 }
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
@@ -560,12 +574,7 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.Temp >= tileData.BurnsAt)
 	{
-		bool isBurned = HasInjuryBurned();
 		ApplyBurnInjury((tileData.Temp / tileData.BurnsAt) * burnSpeed * dt);
-		if (isBurned != HasInjuryBurned())
-		{
-			Logger::LogEvent(GetName() + " blev bränd!");
-		}
 	}
 }
 

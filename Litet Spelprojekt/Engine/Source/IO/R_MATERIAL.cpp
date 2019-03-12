@@ -4,10 +4,10 @@
 
 uint32 MATERIAL::BLACK = 0;
 uint32 MATERIAL::WHITE = 0;
-uint32 MATERIAL::RED = 0;
-uint32 MATERIAL::GREEN = 0;
-uint32 MATERIAL::BLUE = 0;
-uint32 MATERIAL::YELLOW = 0;
+uint32 MATERIAL::DOOR_RED = 0;
+uint32 MATERIAL::DOOR_GREEN = 0;
+uint32 MATERIAL::DOOR_BLUE = 0;
+uint32 MATERIAL::DOOR_YELLOW = 0;
 uint32 MATERIAL::OCEAN_BLUE = 0;
 uint32 MATERIAL::BOAT = 0;
 uint32 MATERIAL::GROUND = 0;
@@ -27,13 +27,18 @@ uint32 MATERIAL::TABLE = 0;
 uint32 MATERIAL::TOILET = 0;
 uint32 MATERIAL::ANIMATED_MODEL = 0;
 uint32 MATERIAL::FLOOR_NORMAL = 0;
-uint32 MATERIAL::FLOOR_SICKBAY = 0;
+uint32 MATERIAL::FLOOR_SICKBAY1 = 0;
+uint32 MATERIAL::FLOOR_TOILET1 = 0;
 uint32 MATERIAL::FLOOR_MACHINE1 = 0;
 uint32 MATERIAL::FLOOR_MACHINE2 = 0;
 uint32 MATERIAL::FLOOR_MACHINE3 = 0;
 uint32 MATERIAL::FLOOR_AMMUNITION1 = 0;
 uint32 MATERIAL::FLOOR_AMMUNITION2 = 0;
 uint32 MATERIAL::FLOOR_AMMUNITION3 = 0;
+uint32 MATERIAL::FLOOR_KITCHEN1 = 0;
+uint32 MATERIAL::FLOOR_DINING1 = 0;
+uint32 MATERIAL::FLOOR_CABOOSE1 = 0;
+uint32 MATERIAL::OVEN = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -49,10 +54,10 @@ void MATERIAL::RegisterResources()
 	OCEAN_BLUE			= ResourceHandler::RegisterMaterial(glm::vec4(0.09f, 0.34f, 0.49f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
 	BLACK				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	WHITE				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
-	RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
-	GREEN				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
-	BLUE				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
-	YELLOW				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	DOOR_RED					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	DOOR_GREEN				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	DOOR_BLUE				= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	DOOR_YELLOW				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	GROUND				= ResourceHandler::RegisterMaterial(glm::vec4(0.471f, 0.282f, 0.11f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
 	CREW_STANDARD		= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	WALL_STANDARD		= ResourceHandler::RegisterWallMaterial(TEXTURE::WALL1						, 256.0f);
@@ -69,11 +74,16 @@ void MATERIAL::RegisterResources()
 	CHAIR				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	LAMP				= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.5f, 0.2f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	FLOOR_NORMAL		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_NORMAL, SHADER::FLOOR);
-	FLOOR_SICKBAY		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_SICKBAY, SHADER::FLOOR);
+	FLOOR_SICKBAY1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_SICKBAY1, SHADER::FLOOR);
+	FLOOR_TOILET1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_TOILET1, SHADER::FLOOR);
 	FLOOR_MACHINE1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_MACHINE1, SHADER::FLOOR);
 	FLOOR_MACHINE2		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_MACHINE2, SHADER::FLOOR);
 	FLOOR_MACHINE3		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_MACHINE3, SHADER::FLOOR);
 	FLOOR_AMMUNITION1	= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_AMMUNITION1, SHADER::FLOOR);
 	FLOOR_AMMUNITION2	= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_AMMUNITION2, SHADER::FLOOR);
 	FLOOR_AMMUNITION3	= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_AMMUNITION3, SHADER::FLOOR);
+	FLOOR_KITCHEN1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_KITCHEN1, SHADER::FLOOR);
+	FLOOR_DINING1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_DINING1, SHADER::FLOOR);
+	FLOOR_CABOOSE1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_CABOOSE1, SHADER::FLOOR);
+	OVEN				= ResourceHandler::RegisterMaterial(TEXTURE::OVEN, SHADER::STANDARD_MATERIAL);
 }

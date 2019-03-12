@@ -35,7 +35,7 @@ public:
 	DefferedRenderer();
 	~DefferedRenderer();
 
-	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
+	void SetClipPlane(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, const World* pWorld, float dtS) const override final;
 
 private:

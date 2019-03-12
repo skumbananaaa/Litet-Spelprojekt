@@ -220,7 +220,7 @@ void World::PlaceDoors(Scene& scene) noexcept
 
 					if (door1.y == 0 || (int32)position.z % 8 == 0)
 					{
-						pGameObject->SetMaterial(MATERIAL::RED);
+						pGameObject->SetMaterial(MATERIAL::DOOR_RED);
 					}
 					else
 					{

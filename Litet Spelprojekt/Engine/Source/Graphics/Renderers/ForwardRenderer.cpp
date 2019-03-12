@@ -213,6 +213,11 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	m_FrameCounter++;
 }
 
+void ForwardRenderer::SetParticleClipPlane(const glm::vec4& clipPlane) noexcept
+{
+	m_ParticleClipPlaneBuffer.ClipPlane = clipPlane;
+}
+
 void ForwardRenderer::Create() noexcept
 {
 	std::cout << "Creating forward renderer" << std::endl;
@@ -247,6 +252,7 @@ void ForwardRenderer::Create() noexcept
 	{
 		MaterialBuffer buff = {};
 		buff.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		buff.ClipPlane = glm::vec4(0.0f);
 
 		m_pMaterialBuffer = new UniformBuffer(&buff, 1, sizeof(MaterialBuffer));
 	}
@@ -437,10 +443,6 @@ void ForwardRenderer::UpdateLightBuffer(const Scene& scene) const noexcept
 	}
 }
 
-void ForwardRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
-{
-}
-
 void ForwardRenderer::UpdateCameraBuffer(const Camera& camera) const noexcept
 {
 	{
@@ -505,11 +507,11 @@ void ForwardRenderer::ReflectionPass(const Scene& scene, const World* const pWor
 	reflectionCam.InvertPitch();
 	reflectionCam.UpdateFromPitchYawNoInverse();
 
-	PlaneBuffer planeBuffer = {};
-
 	UpdateCameraBuffer(reflectionCam);
 
 	context.Enable(CLIP_DISTANCE1);
+
+	PlaneBuffer planeBuffer = {};
 	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
 
 	const std::vector<PlanarReflector*>& reflectors = scene.GetPlanarReflectors();
@@ -567,8 +569,8 @@ void ForwardRenderer::ReflectionPass(const Scene& scene, const World* const pWor
 		}
 	}
 
-	context.SetUniformBuffer(nullptr, PLANE_BUFFER_BINDING_SLOT);
 	context.Disable(CLIP_DISTANCE1);
+	context.SetUniformBuffer(nullptr, PLANE_BUFFER_BINDING_SLOT);
 }
 
 void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, const World* pWorld) const noexcept
@@ -578,7 +580,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 	context.SetProgram(m_pDepthPrePassProgram);
 
 	context.SetColorMask(0, 0, 0, 0);
-	context.Enable(CLIP_DISTANCE0);
+	context.Enable(CLIP_DISTANCE2);
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
@@ -655,7 +657,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 		context.DrawAnimatedMesh(*animatedGameObjects[i]->GetAnimatedMesh());
 	}
 
-	context.Disable(CLIP_DISTANCE0);
+	context.Disable(CLIP_DISTANCE2);
 	context.SetColorMask(1, 1, 1, 1);
 }
 
@@ -747,11 +749,15 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 
 	context.Disable(CULL_FACE);
 	context.Enable(BLEND);
+	context.Enable(CLIP_DISTANCE2);
 
 	context.SetProgram(m_pParticleProgram);
 
 	context.SetUniformBuffer(m_pCameraBuffer, CAMERA_BUFFER_BINDING_SLOT);
+	context.SetUniformBuffer(m_pPlaneBuffer, PLANE_BUFFER_BINDING_SLOT);
 	context.SetUniformBuffer(m_pExtensionBuffer, EXTENSION_BUFFER_BINDING_SLOT);
+
+	m_pPlaneBuffer->UpdateData(&m_ParticleClipPlaneBuffer);
 
 	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
@@ -793,6 +799,7 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 
 	context.SetDepthMask(false);
 	context.SetDepthFunc(FUNC_LESS_EQUAL);
+	context.Disable(CLIP_DISTANCE2);
 }
 
 void ForwardRenderer::SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept

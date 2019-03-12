@@ -9,7 +9,11 @@ class GUIObject;
 class API IExternalUIRenderer
 {
 public:
+	virtual ~IExternalUIRenderer() {};
 	virtual void OnRenderGUIObject(GUIContext* context, GUIObject* object) = 0;
+
+protected:
+	IExternalUIRenderer() {};
 };
 
 class API GUIObject

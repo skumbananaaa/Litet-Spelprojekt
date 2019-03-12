@@ -82,6 +82,8 @@ public:
 
 	static void SetGameObjectCreator(IGameObjectCreator* creator);
 
+	static void ResetGameObjectCounters();
+
 private:
 	static void Load();
 	static void Construct();

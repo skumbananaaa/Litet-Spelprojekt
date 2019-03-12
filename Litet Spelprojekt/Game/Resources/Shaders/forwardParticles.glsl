@@ -17,6 +17,11 @@ layout(location = 2) in vec3 g_InstancePosition;
 layout(location = 3) in vec4 g_InstanceColor;
 layout(location = 4) in vec2 g_InstanceScale;
 
+layout(std140, binding = 4) uniform PlaneBuffer
+{
+	vec4 g_ClipPlane;
+};
+
 layout(std140, binding = 5) uniform Extension
 {
 	float g_Extension;
@@ -40,6 +45,8 @@ void main()
 	vec3 position = g_InstancePosition + (cameraRight * quadPosition.x) + (cameraUp * quadPosition.y);
 
 	position.x += g_Extension * floor(clamp(g_InstancePosition.y, 0.0f, 5.9f) / 2.0f);
+
+	gl_ClipDistance[2] = dot(vec4(position, 1.0f), g_ClipPlane);
 
 	gl_Position = g_ProjectionView * vec4(position, 1.0f);
 }

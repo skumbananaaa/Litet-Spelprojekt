@@ -32,13 +32,19 @@ public:
 	static uint32 SJOFAN_DIFF;
 	static uint32 WALL1;
 	static uint32 FLOOR_NORMAL;
-	static uint32 FLOOR_SICKBAY;
+	static uint32 FLOOR_SICKBAY1;
+	static uint32 FLOOR_TOILET1;
 	static uint32 FLOOR_MACHINE1;
 	static uint32 FLOOR_MACHINE2;
 	static uint32 FLOOR_MACHINE3;
 	static uint32 FLOOR_AMMUNITION1;
 	static uint32 FLOOR_AMMUNITION2;
 	static uint32 FLOOR_AMMUNITION3;
+	static uint32 FLOOR_KITCHEN1;
+	static uint32 FLOOR_DINING1;
+	static uint32 FLOOR_CABOOSE1;
+	static uint32 OVEN;
+	static uint32 LOADING_CONTROLS;
 
 private:
 	static void RegisterResourcesPreLoading();

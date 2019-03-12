@@ -221,7 +221,7 @@ void GUIObject::SetBackgroundTexture(Texture2D* texture)
 {
 	if (m_pBackgroundTexture != texture)
 	{
-		m_pBackgroundTexture = GetDefaultTexture();
+		m_pBackgroundTexture = texture;
 		RequestRepaint();
 	}
 }

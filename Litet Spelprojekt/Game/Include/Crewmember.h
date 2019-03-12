@@ -47,16 +47,16 @@ public:
 	void FindPath(const glm::ivec3& goalPos);
 	void LookForDoor(uint32 doorColor) noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
-	void GoToMedicBay();
+	void GoToSickBay();
 
 	//GAMEPLAY (NOT SETS OR GETS)
-	bool Heal(int8 skillLevel, float dtS);
+	bool Heal(float skillLevel, float dtS);
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury(float boneBreak);
 	void ApplyBleedInjury(float bleed);
 
-	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	//UTILITY (NOT SETS OR GETS)
+	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
 	virtual void OnOrderStarted(bool idleOrder) noexcept;
 	virtual void OnAllOrdersFinished() noexcept;
@@ -70,7 +70,6 @@ public:
 	void SetDirection(const glm::vec3& direction) noexcept;
 	void SetAssisting(Crewmember* inNeed) noexcept;
 	void SetIdleing(bool value) noexcept;
-	void SetGroup(uint32 group) noexcept;
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
 
@@ -81,7 +80,7 @@ public:
 	const glm::ivec3& GetTile() const noexcept;
 	float GetMovementSpeed() const noexcept;
 
-	uint32 GetGroup() const noexcept;
+	GroupType GetGroupType() const noexcept;
 	int32 GetForgetfulness() const noexcept;
 
 	//IS
@@ -98,6 +97,7 @@ public:
 	bool HasInjurySmoke() const noexcept;
 	bool HasInjuryBleed() const noexcept;
 	bool HasGearEquipped() const noexcept;
+	bool HasRecovered() const noexcept;
 
 private:
 	//UPDATES
@@ -129,7 +129,7 @@ private:
 	bool m_GearIsEquipped;
 
 	//--GROUP
-	uint32 m_Group;
+	GroupType m_Group;
 		
 	//--INJURIES
 	float m_HasInjuryBoneBroken;
@@ -138,6 +138,8 @@ private:
 	float m_HasInjuryBleeding;
 	float m_MaxHealth;
 	float m_Health;
+	bool m_HasTriedToWalkToSickbay;
+	float m_Recovering;
 
 	//--MOVEMENT
 	float m_MovementSpeed;
@@ -176,7 +178,7 @@ inline float Crewmember::GetMovementSpeed() const noexcept
 	return m_MovementSpeed;
 }
 
-inline uint32 Crewmember::GetGroup() const noexcept
+inline GroupType Crewmember::GetGroupType() const noexcept
 {
 	return m_Group;
 }
@@ -247,4 +249,9 @@ inline bool Crewmember::HasInjuryBleed() const noexcept
 inline bool Crewmember::HasGearEquipped() const noexcept
 {
 	return m_GearIsEquipped;
+}
+
+inline bool Crewmember::HasRecovered() const noexcept
+{
+	return m_Recovering > 1.0f;
 }

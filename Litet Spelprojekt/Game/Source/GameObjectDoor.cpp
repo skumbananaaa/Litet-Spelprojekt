@@ -55,23 +55,23 @@ bool GameObjectDoor::RemoveFromQueue(uint32 shipNr) noexcept
 
 DOOR_COLOR GameObjectDoor::GetColor() const noexcept
 {
-	if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::RED))
+	if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::DOOR_RED))
 	{
-		return RED;
+		return DOOR_COLOR_RED;
 	}
-	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::GREEN))
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::DOOR_GREEN))
 	{
-		return GREEN;
+		return DOOR_COLOR_GREEN;
 	}
-	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::BLUE))
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::DOOR_BLUE))
 	{
-		return BLUE;
+		return DOOR_COLOR_BLUE;
 	}
-	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::YELLOW))
+	else if (GetMaterial() == ResourceHandler::GetMaterial(MATERIAL::DOOR_YELLOW))
 	{
-		return YELLOW;
+		return DOOR_COLOR_YELLOW;
 	}
-	return YELLOW;
+	return DOOR_COLOR_YELLOW;
 }
 
 void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept
@@ -92,6 +92,10 @@ void GameObjectDoor::Update(const Camera& camera, float deltaTime) noexcept
 	const float lastPercentage = m_Percentage;
 	m_Percentage += deltaTime * (m_Open * 2 - 1);
 	m_Percentage = glm::clamp<float>(m_Percentage, 0.0F, 1.0F);
+	if (m_Percentage <= 0.0f)
+	{
+		m_AccessQueue.clear();
+	}
 	if (lastPercentage != m_Percentage)
 	{
 		m_IsDirty = true;

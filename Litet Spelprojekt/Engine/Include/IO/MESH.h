@@ -21,6 +21,7 @@ public:
 	static uint32 ANIMATED_MODEL_RUN;
 	static uint32 ANIMATED_MODEL_IDLE;
 	static uint32 ANIMATED_MODEL_WORK;
+	static uint32 ANIMATED_MODEL_EAT;
 	static uint32 ANIMATED_MODEL_OPENDOOR;
 	static uint32 ANIMATED_MODEL_SLEEP;
 	static uint32 ANIMATED_MODEL_SITTING;
@@ -33,6 +34,7 @@ public:
 	static uint32 TOILET;
 	static uint32 WATER_QUAD;
 	static uint32 ARTILLERY;
+	static uint32 OVEN;
 
 private:
 	static void RegisterResourcesPreLoading();

@@ -33,20 +33,24 @@ layout(std140, binding = 0) uniform CameraBuffer
 	vec3 g_CameraPosition;
 };
 
-layout(std140, binding = 2) uniform DefferedMaterialBuffer
-{
-	vec4 g_Color;
-	vec4 g_ClipPlane;
-	float g_Specular;
-	float g_HasDiffuseMap;
-	float g_HasSpecularMap;
-};
-
 layout(std140, binding = 1) uniform LightBuffer
 {
 	DirectionalLight g_DirLights[NUM_DIRECTIONAL_LIGHTS];
 	PointLight g_PointLights[NUM_POINT_LIGHTS];
 	SpotLight g_SpotLights[NUM_SPOT_LIGHTS];
+};
+
+layout(std140, binding = 2) uniform MaterialBuffer
+{
+	vec4 g_Color;
+	vec4 g_ClipPlane;
+	float g_Specular;
+	float g_HasDiffuseMap;
+};
+
+layout(std140, binding = 4) uniform PlaneBuffer
+{
+	vec4 g_ReflectionClipPlane;
 };
 
 layout(std140, binding = 5) uniform Extension
@@ -117,8 +121,8 @@ void main()
 
 	//CLIPPING
 	gl_ClipDistance[0] = cutWalls;
-	//gl_ClipDistance[1] = dot(worldPos, g_ClipDistances[1]); //DEPENDING ON LEVEL
-	//gl_ClipDistance[2] = dot(worldPos, g_ClipDistances[2]); //DEPENDING ON LEVEL
+	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
+	gl_ClipDistance[2] = dot(worldPos, g_ClipPlane);
 
 	//Calculate light
 	vec3 specular = vec3(0.0f);

@@ -1,8 +1,9 @@
 #pragma once
 #include <Graphics/GUI/Panel.h>
 #include <Graphics/GUI/Button.h>
+#include <Graphics/GUI/HoveringHandler.h>
 
-class UIOrder : public IButtonListener
+class UIOrder : public IButtonListener, public IHoveringListener
 {
 public:
 	UIOrder();
@@ -17,6 +18,9 @@ public:
 	virtual void OnButtonHovered(Button* button) override;
 	virtual void OnButtonNotHovered(Button* button) override;
 
+	virtual void OnHovered(const HoveringHandler* handler, IHoverable* selection) override;
+	virtual void OnDehovered(const HoveringHandler* handler, IHoverable* selection) override;
+
 	void DisplayOrders(int32 x, int32 y, const std::vector<int32>& selectedMembers);
 
 protected:
@@ -25,6 +29,7 @@ private:
 	static void DisplayOrders(int32 x, int32 y, UIOrder* uiOrder);
 
 	static Panel* m_pPanel;
+	static HoveringHandler s_HoveringHandler;
 	std::vector<std::pair<std::string, void*>> m_Choices;
 	std::vector<int32> m_SelectedMembers;
 };

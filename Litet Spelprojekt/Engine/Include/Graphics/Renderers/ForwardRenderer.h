@@ -24,8 +24,8 @@ public:
 	ForwardRenderer();
 	~ForwardRenderer();
 
-	void SetClipDistance(const glm::vec4& plane, uint32 index) override final;
 	void DrawScene(const Scene& scene, const World* pWorld, float dtS) const override final;
+	void SetParticleClipPlane(const glm::vec4& clipPlane) noexcept override final;
 
 private:
 	void Create() noexcept;
@@ -42,6 +42,8 @@ private:
 	void SkyBoxPass(const Camera& camera, const Scene& scene) const noexcept;
 
 private:
+	PlaneBuffer m_ParticleClipPlaneBuffer;
+
 	UniformBuffer* m_pLightBuffer;
 	UniformBuffer* m_pCameraBuffer;
 	UniformBuffer* m_pMaterialBuffer;

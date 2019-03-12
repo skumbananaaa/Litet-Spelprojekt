@@ -5,6 +5,7 @@
 #include "../../Include/Crew.h"
 #include "../../Include/Path.h"
 #include "../../Include/GameObjectDoor.h"
+#include <World/Logger.h>
 #include <System/Random.h>
 
 OrderWalk::OrderWalk(const glm::ivec3& goalTile):
@@ -22,7 +23,7 @@ OrderWalk::~OrderWalk()
 
 void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroup() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
+	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroupType() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
 	Crewmember* pCrewmember = GetCrewMember();
 	pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);
@@ -47,14 +48,17 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		if (door1 == door2)
 		{
 			// Open door before passing through
-			if (!door1->IsOpen() && !door2->IsOpen() && crewTile != m_TargetTile)
+			if (!door1->IsOpen() && crewTile != m_TargetTile)
 			{
-				if (door1->IsClosed() && door1->AccessRequest(pCrewmember->GetShipNumber()))
+				//if (door1->IsClosed())
 				{
-					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
-					door1->SetOpen(true);
+					if (door1->AccessRequest(pCrewmember->GetShipNumber()))
+					{
+						pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
+						door1->SetOpen(true);
+					}
 				}
-				else if (pCrewmember->GetAnimatedMesh() != ResourceHandler::GetAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR))
+				/*else*/ if (pCrewmember->GetAnimatedMesh() != ResourceHandler::GetAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR))
 				{
 					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 				}
@@ -90,6 +94,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		if (!room.IsFireDetected())
 		{
 			room.SetFireDetected(true);
+			Logger::LogEvent(GetCrewMember()->GetName() + " larmar om eld!", true);
 		}
 		//GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
@@ -98,6 +103,11 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	{
 		room.SetFloodDetected(true);
 		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+	}
+
+	if (room.IsActive())
+	{
+		pCrewmember->UpdateLastKnownPosition();
 	}
 
 	return FollowPath(dtS);

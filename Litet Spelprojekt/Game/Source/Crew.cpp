@@ -27,7 +27,7 @@ void Crew::AddToSelectedList(int32 crewIndex) noexcept
 
 void Crew::ClearSelectedList() noexcept
 {
-	for (int i = 0; i < m_SelectedMembers.size(); i++)
+	for (int i = m_SelectedMembers.size() - 1; i >= 0; i--)
 	{
 		GetMember(m_SelectedMembers[i])->SetIsPicked(false);
 	}

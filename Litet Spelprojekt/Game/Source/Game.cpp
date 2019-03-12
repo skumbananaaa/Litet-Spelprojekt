@@ -26,7 +26,8 @@ Game::Game() noexcept
 	m_pSceneCredits(nullptr),
 	m_pSceneOptions(nullptr),
 	m_pSceneScenario(nullptr),
-	m_pSceneGame(nullptr)
+	m_pSceneGame(nullptr),
+	m_pSceneInstructions(nullptr)
 {
 	ResourceHandler::SetGameObjectCreator(this);
 
@@ -39,6 +40,7 @@ Game::Game() noexcept
 
 	AudioListener::SetPosition(glm::vec3(0.0f));
 	m_pAudioSourceMenu = AudioSource::CreateMusicSource(MUSIC::MENU);
+	m_pAudioSourceMenu->SetVolume(0.1f);
 	m_pAudioSourceMenu->SetPitch(1.0f);
 	m_pAudioSourceMenu->SetLooping(true);
 	m_pAudioSourceMenu->Play();
@@ -59,6 +61,7 @@ Game::~Game()
 	DeleteSafe(m_pSceneOptions);
 	DeleteSafe(m_pSceneScenario);
 	DeleteSafe(m_pSceneGame);
+	DeleteSafe(m_pSceneInstructions);
 
 	DeleteSafe(m_pRenderer);
 	DeleteSafe(m_pSkyBoxTex);
@@ -103,6 +106,7 @@ void Game::OnResourcesLoaded()
 	m_pSceneCredits = new SceneCredits();
 	m_pSceneOptions = new SceneOptions();
 	m_pSceneScenario = new SceneScenario();
+	m_pSceneInstructions = new SceneInstructions();
 
 	m_pScene->OnResourcesLoaded();
 }
@@ -230,14 +234,13 @@ void Game::SetScene(SceneInternal* scene) noexcept
 	}
 }
 
-void Game::StartGame() noexcept
+void Game::StartGame(SceneGame* pSceneGame) noexcept
 {
 	if (!m_pSceneGame)
 	{
-		m_pSceneGame = new SceneGame();
+		m_pSceneGame = pSceneGame;
 		if (m_pSceneGame)
 		{
-			m_pSceneGame->GenerateShadows();
 			ResetPrevTime();
 			SetScene(m_pSceneGame);
 		}

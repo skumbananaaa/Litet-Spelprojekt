@@ -23,6 +23,7 @@ public:
 	void SetFloodDetected(bool detected) noexcept;
 	void SetFloodUpdated(bool updated) noexcept;
 	void GenerateShadows(const Scene& scene) noexcept;
+	void ExtendAudioPos(float extension) noexcept;
 
 	const StaticShadowCube* GetShadowMap() const noexcept;
 	const glm::vec3& GetCenter() const noexcept;

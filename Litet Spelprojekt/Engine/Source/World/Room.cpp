@@ -87,3 +87,7 @@ void Room::GenerateShadows(const Scene& scene) noexcept
 	m_pShadowMap = new StaticShadowCube(m_Center, scene);
 }
 
+void Room::ExtendAudioPos(float extension) noexcept
+{
+	m_pAudioSourceFire->SetPosition(m_Center + glm::vec3(extension * glm::floor(m_Center.y / 2), 0.0f, 0.0f));
+}

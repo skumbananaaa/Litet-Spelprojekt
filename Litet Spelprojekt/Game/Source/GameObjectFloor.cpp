@@ -86,7 +86,7 @@ void GameObjectFloor::OnPicked(const std::vector<int32>& selectedMembers, int32 
 
 	if (pLowerTile->Temp > pLowerTile->BurnsAt)
 	{
-		AddChoice("Extinguish Fire", nullptr);
+		AddChoice("Släck eld", nullptr);
 	}
 
 	//if (!IsOpen())

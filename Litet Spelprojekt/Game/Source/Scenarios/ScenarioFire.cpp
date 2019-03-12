@@ -131,6 +131,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			m_DiscoveredRooms[id] = true;
 			SetFireVisible(id, true);
 			SetSmokeVisible(id, true);
+			room.ExtendAudioPos(pScene->GetExtension());
 		}
 
 		if (currentTile.WaterLevel < 0.5f * WATER_MAX_LEVEL)

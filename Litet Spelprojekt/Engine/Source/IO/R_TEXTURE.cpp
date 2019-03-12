@@ -45,6 +45,7 @@ uint32 TEXTURE::LOADING_CONTROLS = 0;
 uint32 TEXTURE::SHELF_AMMUNITION = 0;
 uint32 TEXTURE::SHELF_EMPTY = 0;
 uint32 TEXTURE::GENERATOR = 0;
+uint32 TEXTURE::FIRE_EXTINGUISHER = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -78,6 +79,7 @@ void TEXTURE::RegisterResources()
 	TOILET				= ResourceHandler::RegisterTexture2D("uv_Toilet.jpg", TEX_FORMAT_RGBA);
 	SHELF_AMMUNITION	= ResourceHandler::RegisterTexture2D("uv_AmmunitionShelf.jpg", TEX_FORMAT_RGBA);
 	SHELF_EMPTY			= ResourceHandler::RegisterTexture2D("uv_EmptyShelf.jpg", TEX_FORMAT_RGBA);
+	FIRE_EXTINGUISHER	= ResourceHandler::RegisterTexture2D("uv_FireExtinguisher.jpg", TEX_FORMAT_RGBA);
 	GENERATOR			= ResourceHandler::RegisterTexture2D("uv_Generator.jpg", TEX_FORMAT_RGBA);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);

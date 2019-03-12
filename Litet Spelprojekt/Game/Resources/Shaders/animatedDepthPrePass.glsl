@@ -1,5 +1,3 @@
-#define MAX_BONES 60
-
 #if defined(VERTEX_SHADER)
 layout(location = 0) in vec3 g_Position;
 layout(location = 1) in vec3 g_Normal;
@@ -31,7 +29,7 @@ layout(std140, binding = 5) uniform Extension
 
 layout(std140, binding = 7) uniform BoneBuffer
 {
-	mat4 g_Bones[MAX_BONES];
+	mat4 g_Bones[MAX_NUM_BONES];
 	mat4 g_Model;
 };
 

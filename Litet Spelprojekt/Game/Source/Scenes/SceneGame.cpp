@@ -632,7 +632,7 @@ void SceneGame::PickPosition()
 			pointOnSurface = rayOrigin + rayDir * t;
 
 			float extension = GetExtension();
-			if (pointOnSurface.x > extension * d / 2.0f)
+			if (pointOnSurface.x > extension * d / 2.0f && (glm::floor(pointOnSurface.y / 2) == glm::floor(GetCamera().GetLookAt().y / 2) || extension > 0))
 			{
 				pointOnSurface.x -= extension * floor(pointOnSurface.y / 2.0f);
 				lastT = t;
@@ -778,13 +778,14 @@ GameObject* SceneGame::RayTestGameObjects()
 {
 	glm::vec3 rayDir = GetRay(Input::GetMousePosition(), Game::GetGame()->GetWindow().GetWidth(), Game::GetGame()->GetWindow().GetHeight());
 	glm::vec3 rayOrigin = GetCamera().GetPosition();
+	float elevation = GetCamera().GetLookAt().y;
 
 	float lastT = -1;
 	uint32 id = -1;
 
 	for (int i = 0; i < m_PickableGameObjects.size(); i++)
 	{
-		int32 t = m_PickableGameObjects[i]->TestAgainstRay(rayDir, rayOrigin, GetExtension());
+		int32 t = m_PickableGameObjects[i]->TestAgainstRay(rayDir, rayOrigin, elevation, GetExtension());
 
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{

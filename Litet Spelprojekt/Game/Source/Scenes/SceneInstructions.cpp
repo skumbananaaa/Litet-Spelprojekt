@@ -20,10 +20,11 @@ void SceneInstructions::OnActivated(SceneInternal* lastScene, IRenderer* m_pRend
 	m_pPanel->AddExternalRenderer(this);
 	m_HasRenderedUI = false;
 
-	m_pButtonContinue = new Button(m_pPanel->GetWidth() -250, 75, 150, 100, "Fortsätt");
+	m_pButtonContinue = new Button(m_pPanel->GetWidth() -311, 95, 200, 100, "Fortsätt");
 
 	m_pButtonContinue->AddButtonListener(this);
 	m_pButtonContinue->SetVisible(false);
+	m_pButtonContinue->SetTextColor(GUIContext::COLOR_BLACK);
 
 	m_pPanel->Add(m_pButtonContinue);
 

@@ -72,6 +72,7 @@ public:
 	void SetIdleing(bool value) noexcept;
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
+	void SetResting(bool value) noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;
@@ -90,6 +91,7 @@ public:
 	bool IsAlive() const noexcept;
 	bool IsAbleToWork() const noexcept;
 	bool IsAbleToWalk() const noexcept;
+	bool IsResting() const noexcept;
 
 	//HAS
 	bool HasInjuryBoneBroken() const noexcept;
@@ -144,6 +146,7 @@ private:
 	//--MOVEMENT
 	float m_MovementSpeed;
 	bool m_Idleing;
+	bool m_Resting;
 
 	int32 m_Forgetfulness;
 
@@ -224,6 +227,11 @@ inline bool Crewmember::IsAbleToWalk() const noexcept
 		m_Health < 0.5f * m_MaxHealth ||
 		m_HasInjuryBurned > 10.0f ||
 		m_HasInjuryBleeding > 6.0f);
+}
+
+inline bool Crewmember::IsResting() const noexcept
+{
+	return m_Resting;
 }
 
 inline bool Crewmember::HasInjuryBoneBroken() const noexcept

@@ -91,8 +91,6 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	glm::vec4 wallClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.99f));
 	glm::vec4 floorClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.9f));
 
-	ResourceHandler::GetMaterial(MATERIAL::BLACK)				->SetLevelClipPlane(standardClipPlane);
-	ResourceHandler::GetMaterial(MATERIAL::WHITE)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_RED)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_GREEN)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_BLUE)			->SetLevelClipPlane(standardClipPlane);
@@ -126,6 +124,9 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_DINING1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_CABOOSE1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::OVEN)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::SHELF_AMMUNITION)	->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::SHELF_EMPTY)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::GENERATOR)			->SetLevelClipPlane(standardClipPlane);
 
 	IRenderer* renderer = GetRenderer();
 	if (renderer != nullptr)

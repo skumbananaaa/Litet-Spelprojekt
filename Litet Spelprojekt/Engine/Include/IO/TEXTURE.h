@@ -45,6 +45,9 @@ public:
 	static uint32 FLOOR_CABOOSE1;
 	static uint32 OVEN;
 	static uint32 LOADING_CONTROLS;
+	static uint32 SHELF_AMMUNITION;
+	static uint32 SHELF_EMPTY;
+	static uint32 GENERATOR;
 
 private:
 	static void RegisterResourcesPreLoading();

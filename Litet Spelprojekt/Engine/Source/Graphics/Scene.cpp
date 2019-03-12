@@ -108,22 +108,35 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 
 	pGameObject->OnAddedToScene(this);
 	m_GameObjects.push_back(pGameObject);
+
+	//Add gameobjects that should be called in onupdate
+	if (pGameObject->IsTickable())
+	{
+		m_UpdateAbles.push_back(pGameObject);
+
+		std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
+	}
+
+	//Add gameobjects that has a mesh and material aka is drawable
 	if (pGameObject->HasMaterial() && pGameObject->HasMesh())
 	{
 		m_Drawables.push_back(pGameObject);
 	}
 
+	//Add gameobjects that has a animatedmesh and material aka is animateddrawable
 	if (pGameObject->HasAnimatedMesh() && pGameObject->HasMaterial())
 	{
 		m_AnimatedDrawables.push_back(pGameObject);
 		ThreadHandler::AddMultiUpdater(pGameObject);
 	}
 	
-	if (pGameObject->HasDecal())
-	{
-		m_Decals.push_back(pGameObject);
-	}
+	//Add gameobjects that has a decal
+	//if (pGameObject->HasDecal())
+	//{
+	//	m_Decals.push_back(pGameObject);
+	//}
 
+	//Add gameobjects that has a reflectable material
 	if (pGameObject->HasMaterial())
 	{
 		if (pGameObject->GetMaterial()->IsReflectable())
@@ -132,18 +145,21 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 		}
 	}
 
+	//Add particleemitters
 	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);
 	if (pEmitter != nullptr)
 	{
 		m_ParticleEmitters.push_back(pEmitter);
 	}
 
+	//Add meshemitters
 	MeshEmitter* pMeshEmitter = dynamic_cast<MeshEmitter*>(pGameObject);
 	if (pMeshEmitter != nullptr)
 	{
 		m_MeshEmitters.push_back(pMeshEmitter);
 	}
 
+	//Add named objects into a hashtable
 	const std::string& name = pGameObject->GetName();
 	if (name != "")
 	{
@@ -153,16 +169,31 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 
 void Scene::AddDirectionalLight(DirectionalLight* pLight) noexcept
 {
+	if (pLight->IsTickable())
+	{
+		m_UpdateAbles.push_back(pLight);
+	}
+
 	m_DirectionalLights.push_back(pLight);
 }
 
 void Scene::AddPointLight(PointLight* pLight) noexcept
 {
+	if (pLight->IsTickable())
+	{
+		m_UpdateAbles.push_back(pLight);
+	}
+
 	m_PointLights.push_back(pLight);
 }
 
 void Scene::AddSpotLight(SpotLight* pLight) noexcept
 {
+	if (pLight->IsTickable())
+	{
+		m_UpdateAbles.push_back(pLight);
+	}
+
 	m_SpotLights.push_back(pLight);
 }
 
@@ -248,6 +279,20 @@ void Scene::RemoveGameObject(GameObject* pGameObject) noexcept
 		}
 	}
 
+	if (pGameObject->IsTickable())
+	{
+		for (int i = 0; i < m_UpdateAbles.size(); i++)
+		{
+			if (m_UpdateAbles[i] == pGameObject)
+			{
+				m_UpdateAbles.erase(m_UpdateAbles.begin() + i);
+				break;
+			}
+		}
+
+		std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
+	}
+
 	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);
 	if (pEmitter != nullptr)
 	{
@@ -301,17 +346,9 @@ void Scene::OnSceneExtensionComplete() noexcept
 
 void Scene::OnUpdate(float dtS) noexcept
 {
-	for (GameObject* pGameObject : m_GameObjects)
+	for (GameObject* pGameObject : m_UpdateAbles)
 	{
 		pGameObject->Update(*m_pCamera, dtS);
-	}
-	for (SpotLight* pSpotLight : m_SpotLights)
-	{
-		pSpotLight->Update(*m_pCamera, dtS);
-	}
-	for (PointLight* pPointLight : m_PointLights)
-	{
-		pPointLight->Update(*m_pCamera, dtS);
 	}
 
 	if (m_Extending)
@@ -346,5 +383,5 @@ void Scene::OnUpdate(float dtS) noexcept
 	}
 
 	//Sort particleemitters so that the one furthest away gets rendered first
-	std::sort(m_ParticleEmitters.begin(), m_ParticleEmitters.end(), ParticleEmitter::DistGreater);
+	//std::sort(m_ParticleEmitters.begin(), m_ParticleEmitters.end(), ParticleEmitter::DistGreater);
 }

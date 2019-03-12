@@ -20,7 +20,6 @@ public:
 	
 	void SetSkyBox(SkyBox* pSkyBox) noexcept;
 	void SetCamera(Camera* pCamera, uint32 index = 0) noexcept;
-	void SetConceal(bool conceal) noexcept;
 	
 	void SelectCamera(uint32 index);
 	void AddGameObject(GameObject* pGameObject) noexcept;
@@ -67,6 +66,7 @@ private:
 	std::vector<GameObject*> m_AnimatedDrawables;
 	std::vector<GameObject*> m_Decals;
 	std::vector<GameObject*> m_Reflectables;
+	std::vector<GameObject*> m_UpdateAbles;
 	std::vector<ParticleEmitter*> m_ParticleEmitters;
 	std::vector<MeshEmitter*> m_MeshEmitters;
 	std::vector<PlanarReflector*> m_PlanarReflectors;

@@ -28,11 +28,12 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
-
 private:
+	World* m_pWorld;
 	bool m_WaterAlwaysVisible;
 	std::vector<glm::ivec2>* m_FloodingIDs;
 	std::vector<glm::ivec3> m_InletTiles;
+	std::vector<uint32> m_InletsToRemove;
 
 private:
 	//Scenario Spread Helper Functions

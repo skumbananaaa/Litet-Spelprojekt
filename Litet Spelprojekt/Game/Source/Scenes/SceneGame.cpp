@@ -317,7 +317,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			case KEY_O:
 			{
-				m_CartesianCamera = !m_CartesianCamera;
+				//m_CartesianCamera = !m_CartesianCamera;
 				break;
 			}
 			case KEY_P:
@@ -491,7 +491,7 @@ void SceneGame::CreateCrew() noexcept
 
 	int index = 0;
 	float x, y, z;
-	bool hidden = false;
+	bool hidden = true;
 
 	Crewmember* crewmember;
 

@@ -97,7 +97,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	if (m_pUISelectedCrew)
 	{
-		m_pUISelectedCrew->UpdatePosition(GetPosition());
+		m_pUISelectedCrew->UpdatePosition(m_LastKnownPosition);
 	}
 
 	if (!IsAbleToWork())
@@ -107,7 +107,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 			GoToSickBay();
 		}
 	}
-
+	
+	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept

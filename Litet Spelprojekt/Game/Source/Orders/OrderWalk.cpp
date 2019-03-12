@@ -103,6 +103,11 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 
+	if (room.IsActive())
+	{
+		pCrewmember->UpdateLastKnownPosition();
+	}
+
 	return FollowPath(dtS);
 }
 

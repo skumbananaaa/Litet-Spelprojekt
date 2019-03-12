@@ -76,7 +76,7 @@ void GameObject::OnPicked(const std::vector<int32>& selectedMembers, int32 x, in
 	//m_IsPicked = true;
 }
 
-int32 GameObject::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept
+int32 GameObject::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
 {
 	return true;
 }

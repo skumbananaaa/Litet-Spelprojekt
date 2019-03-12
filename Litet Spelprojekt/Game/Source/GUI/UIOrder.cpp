@@ -36,14 +36,14 @@ void UIOrder::OnButtonNotHovered(Button* button)
 {
 }
 
-void UIOrder::OnHovered(const HoveringHandler * handler, IHoverable * selection)
+void UIOrder::OnHovered(const HoveringHandler* handler, IHoverable* selection)
 {
 
 }
 
-void UIOrder::OnDehovered(const HoveringHandler * handler, IHoverable * selection)
+void UIOrder::OnDehovered(const HoveringHandler* handler, IHoverable* selection)
 {
-	if (m_pPanel)
+	if (m_pPanel == selection)
 	{
 		s_HoveringHandler.Release();
 		Game::GetGame()->GetGUIManager().Remove(m_pPanel);

@@ -281,7 +281,7 @@ inline bool GameObject::HasAnimatedMesh() const noexcept
 
 inline bool GameObject::HasSkeleton() const noexcept
 {
-	return (m_pASkeleton != nullptr);
+	return (m_pALastUpdatedSkeleton != nullptr);
 }
 
 inline void GameObject::SetTypeId(int32 typeId) noexcept

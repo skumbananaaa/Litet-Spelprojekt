@@ -613,6 +613,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
 	for (size_t i = 0; i < animatedGameObjects.size(); i++)
 	{
+
 		if (pWorld)
 		{
 			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
@@ -623,6 +624,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 		bool isVisible = (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()));
 		if (!material.IncludeInDepthPrePass() || !isVisible)
 		{
+
 			continue;
 		}
 

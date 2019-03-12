@@ -29,6 +29,7 @@ GameObject::GameObject() noexcept
 GameObject::~GameObject()
 {
 	DeleteSafe(m_pASkeleton);
+	DeleteSafe(m_pALastUpdatedSkeleton);
 }
 
 void GameObject::SetName(const std::string& name) noexcept
@@ -116,6 +117,7 @@ void GameObject::UpdateTransform() noexcept
 		if (HasSkeleton())
 		{
 			m_pASkeleton->SetSkeletonTransform(m_transform);
+			m_pALastUpdatedSkeleton->SetSkeletonTransform(m_transform);
 		}
 	}
 }
@@ -129,22 +131,22 @@ void GameObject::UpdateParallel(float dtS) noexcept
 			m_pAMesh = m_pAMeshNext;
 			m_pAMeshNext = nullptr;
 		}
+	}
 
-		if (IsVisible())
+	if (IsVisible())
+	{
+		if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
 		{
-			if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
+			m_pASkeleton->UpdateBoneTransforms(dtS, GetAnimatedMesh());
+
+			if (!m_AnimationLocked)
 			{
-				m_pASkeleton->UpdateBoneTransforms(dtS, GetAnimatedMesh());
+				AnimatedSkeleton* newLastUpdatedSkeleton = m_pASkeleton;
+				m_pALastUpdatedSkeleton->SetAnimationTimeSeconds(m_pASkeleton->GetAnimationTimeSeconds());
+				m_pALastUpdatedSkeleton->SetAnimationTimeTicks(m_pASkeleton->GetAnimationTimeTicks());
 
-				if (!m_AnimationLocked)
-				{
-					AnimatedSkeleton* newLastUpdatedSkeleton = m_pASkeleton;
-					m_pALastUpdatedSkeleton->SetAnimationTimeSeconds(m_pASkeleton->GetAnimationTimeSeconds());
-					m_pALastUpdatedSkeleton->SetAnimationTimeTicks(m_pASkeleton->GetAnimationTimeTicks());
-
-					m_pASkeleton = m_pALastUpdatedSkeleton;
-					m_pALastUpdatedSkeleton = newLastUpdatedSkeleton;
-				}
+				m_pASkeleton = m_pALastUpdatedSkeleton;
+				m_pALastUpdatedSkeleton = newLastUpdatedSkeleton;
 			}
 		}
 	}

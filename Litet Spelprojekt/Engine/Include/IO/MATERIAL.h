@@ -47,6 +47,7 @@ public:
 	static uint32 SHELF_EMPTY;
 	static uint32 SHELF_AMMUNITION;
 	static uint32 GENERATOR;
+	static uint32 FIRE_EXTINGUISHER;
 	//REMEMBER, WHEN ADDING NEW MATERIALS, ALSO ADD IT TO THE SceneGame UpdateMaterialClipPlanes() FUNCTION
 
 private:

@@ -1,0 +1,23 @@
+#pragma once
+#include "OrderWalk.h"
+#define EQUIPTIME 5.0f
+class OrderPlugHole : public OrderWalk
+{
+public:
+	OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, uint32 roomFloodingId, bool hasGearEquipped);
+	virtual ~OrderPlugHole();
+	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual void OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual bool OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
+	virtual bool CanBeStackedWithSameType() noexcept override;
+	virtual std::string GetName() noexcept override;
+	virtual bool IsIdleOrder() noexcept;
+
+private:
+	uint32 m_RoomFloodingId;
+	glm::ivec3 m_RoomTile;
+	glm::ivec3 m_HoleTile;
+	float m_EquippingGearTimer;
+	bool m_PluggingHole;
+	bool m_HolePlugged;
+};

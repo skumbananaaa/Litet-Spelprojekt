@@ -44,6 +44,9 @@ public:
 	static uint32 FLOOR_DINING1;
 	static uint32 FLOOR_CABOOSE1;
 	static uint32 OVEN;
+	static uint32 SHELF_EMPTY;
+	static uint32 SHELF_AMMUNITION;
+	static uint32 GENERATOR;
 	//REMEMBER, WHEN ADDING NEW MATERIALS, ALSO ADD IT TO THE SceneGame UpdateMaterialClipPlanes() FUNCTION
 
 private:

@@ -21,6 +21,9 @@ public:
 	static uint32 DOOR;
 	static uint32 FLOOR;
 	static uint32 OVEN;
+	static uint32 SHELF_EMPTY;
+	static uint32 SHELF_AMMUNITION;
+	static uint32 GENERATOR;
 
 private:
 	static void RegisterResourcesPreLoading();

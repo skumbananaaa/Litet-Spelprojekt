@@ -57,6 +57,8 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 		{
 			ScenarioManager::Escalate(Game::GetGame()->m_ScenarioFire, m_Target);
 
+			Logger::LogEvent("Båte blev träffad av artilleri!", false);
+
 			MeshEmitter* pMeshEmitter = new MeshEmitter(1.0F, this);
 			pMeshEmitter->SetMesh(MESH::MESH_PARTICLE);
 			pMeshEmitter->SetTimeToLive(2.0f);
@@ -86,10 +88,10 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 					float distance = glm::distance(crew->GetMember(i)->GetPosition(), m_Target);
 					if (distance <= 4)
 					{
+						Logger::LogEvent(crew->GetMember(i)->GetName() + " blev skadad av artilleri!", false);
 						crew->GetMember(i)->ApplyBurnInjury(4 - distance + 1);
 						crew->GetMember(i)->ApplyBoneInjury(4 - distance + 1);
 						crew->GetMember(i)->ApplyBleedInjury(4 - distance + 1);
-						Logger::LogEvent(crew->GetMember(i)->GetName() + " blev träffad!", false);
 					}
 				}	
 			}

@@ -633,17 +633,16 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
 		const Material& material = *animatedGameObjects[i]->GetMaterial();
 
-		if (!material.IncludeInDepthPrePass())
+		bool isVisible = (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()));
+		if (!material.IncludeInDepthPrePass() || !isVisible)
 		{
 			continue;
 		}
 
 		buff.ClipPlane = material.GetLevelClipPlane();
 		m_pPlaneBuffer->UpdateData(&buff);
-		if (animatedGameObjects[i]->IsVisible() && (roomIsActive || !animatedGameObjects[i]->IsHidden()))
-		{
-			m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
-		}
+		m_pBoneBuffer->UpdateData(&skeleton.GetSkeletonBuffer());
+
 		if (material.GetCullMode() != CULL_MODE_NONE)
 		{
 			context.Enable(CULL_FACE);

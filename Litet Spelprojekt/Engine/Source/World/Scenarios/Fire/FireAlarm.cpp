@@ -8,6 +8,9 @@
 FireAlarm::FireAlarm(int32 source) : GameObject(),
 	m_pSpotlight(nullptr)
 {
+	//Set particleemitters to be updated
+	m_IsTickable = true;
+
 	m_pAudioSrc = AudioSource::CreateSoundSource(source);
 	m_pAudioSrc->SetRollOffFactor(10.0f);
 	m_pAudioSrc->SetReferenceDistance(2.0f);

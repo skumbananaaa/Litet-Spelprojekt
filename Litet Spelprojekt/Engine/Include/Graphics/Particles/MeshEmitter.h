@@ -3,7 +3,7 @@
 #include "ParticleData.h"
 #include <Audio/Sources/AudioSource.h>
 
-#define MAX_PARTICLES 1000
+#define MAX_PARTICLES 500
 
 class MeshEmitter;
 

@@ -23,6 +23,9 @@ ParticleEmitter::ParticleEmitter()
 	m_Particles(),
 	m_ParticleInstances()
 {
+	//Set particleemitters to be updated
+	m_IsTickable = true;
+
 	for (uint32 i = 0; i < MAX_PARTICLES; i++)
 	{
 		m_LivingParticles[i] = i;

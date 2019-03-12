@@ -93,6 +93,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	if (room.IsBurning() && !room.IsFireDetected())
 	{
 		room.SetFireDetected(true);
+		Logger::LogEvent(GetName() + " larmar om eld!", true);
 	}
 
 	if (m_pUISelectedCrew)

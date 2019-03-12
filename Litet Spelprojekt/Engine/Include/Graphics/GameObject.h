@@ -57,7 +57,7 @@ public:
 	bool IsDirty() const noexcept;
 	bool IsVisible() const noexcept;
 
-	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
+	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept;
 
 	virtual bool IsHovered() const noexcept;
 	virtual bool IsPicked() const noexcept;

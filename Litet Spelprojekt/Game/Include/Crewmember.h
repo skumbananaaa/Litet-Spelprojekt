@@ -57,7 +57,7 @@ public:
 
 	//UTILITY (NOT SETS OR GETS)
 	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
-	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept override;
+	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept override;
 	virtual void OnOrderStarted(bool idleOrder) noexcept;
 	virtual void OnAllOrdersFinished() noexcept;
 	virtual void OnAddedToScene(Scene* scene) noexcept override;

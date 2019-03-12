@@ -35,6 +35,10 @@ public:
 	static uint32 WATER_QUAD;
 	static uint32 ARTILLERY;
 	static uint32 OVEN;
+	static uint32 SHELF_AMMUNITION;
+	static uint32 SHELF_EMPTY;
+	static uint32 GENERATOR;
+	static uint32 FIRE_EXTINGUISHER;
 
 private:
 	static void RegisterResourcesPreLoading();

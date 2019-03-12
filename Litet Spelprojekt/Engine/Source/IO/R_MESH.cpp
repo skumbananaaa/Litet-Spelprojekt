@@ -34,6 +34,10 @@ uint32 MESH::TABLE = 0;
 uint32 MESH::TOILET = 0;
 uint32 MESH::OVEN = 0;
 uint32 MESH::ARTILLERY = 0;
+uint32 MESH::SHELF_AMMUNITION = 0;
+uint32 MESH::SHELF_EMPTY = 0;
+uint32 MESH::GENERATOR = 0;
+uint32 MESH::FIRE_EXTINGUISHER = 0;
 
 
 /*
@@ -74,4 +78,8 @@ void MESH::RegisterResources()
 	TOILET					= ResourceHandler::RegisterMesh("Toilet.obj");
 	ARTILLERY				= ResourceHandler::RegisterMesh("Artillery.obj");
 	OVEN					= ResourceHandler::RegisterMesh("Oven.obj");
+	SHELF_AMMUNITION		= ResourceHandler::RegisterMesh("AmmunitionShelf.obj");
+	SHELF_EMPTY				= ResourceHandler::RegisterMesh("EmptyShelf.obj");
+	GENERATOR				= ResourceHandler::RegisterMesh("Generator.obj");
+	FIRE_EXTINGUISHER		= ResourceHandler::RegisterMesh("FireExtinguisher.obj");
 }

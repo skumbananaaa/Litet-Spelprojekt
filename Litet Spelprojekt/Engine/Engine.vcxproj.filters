@@ -4,7 +4,6 @@
     <ClCompile Include="Source\Graphics\Camera.cpp" />
     <ClCompile Include="Source\Graphics\GameObject.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\Mesh.cpp" />
-    <ClCompile Include="Source\Graphics\Renderers\DefferedRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Scene.cpp" />
     <ClCompile Include="Source\Graphics\Textures\Framebuffer.cpp" />
     <ClCompile Include="Source\System\Input.cpp" />
@@ -167,7 +166,6 @@
     <ClInclude Include="Include\System\Random.h" />
     <ClInclude Include="Include\Graphics\GUI\PanelExpandable.h" />
     <ClInclude Include="Include\Graphics\Geometry\Particle.h" />
-    <ClInclude Include="Include\Graphics\Renderers\DefferedRenderer.h" />
     <ClInclude Include="Include\Graphics\Renderers\GLContext.h" />
     <ClInclude Include="Include\Graphics\Particles\ParticleEmitter.h" />
     <ClInclude Include="Include\Graphics\Renderers\ForwardRenderer.h" />

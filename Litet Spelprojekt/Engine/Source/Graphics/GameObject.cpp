@@ -16,7 +16,10 @@ GameObject::GameObject() noexcept
 	m_IsHovered(false),
 	m_IsPicked(false),
 	m_TypeId(-1),
-	m_Room(0)
+	m_Room(0),
+	m_AnimationLocked(false),
+	m_pAMeshNext(nullptr),
+	m_pASkeletonNext(nullptr)
 {
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	UpdateTransform();
@@ -118,14 +121,28 @@ void GameObject::UpdateTransform() noexcept
 
 void GameObject::UpdateParallel(float dtS) noexcept
 {
-	if (IsVisible())
+	if (!m_AnimationLocked)
 	{
-		//if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
+		if (m_pAMeshNext != nullptr)
 		{
-			Lock();
-			const AnimatedSkeleton& skeleton = *GetSkeleton();
-			skeleton.UpdateBoneTransforms(dtS, GetAnimatedMesh());
-			Unlock();
+			m_pAMesh = m_pAMeshNext;
+			m_pAMeshNext = nullptr;
+		}
+
+		if (m_pASkeletonNext != nullptr)
+		{
+			DeleteSafe(m_pASkeleton);
+			m_pASkeleton = m_pASkeletonNext;
+			m_pASkeletonNext = nullptr;
+		}
+
+		if (IsVisible())
+		{
+			if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
+			{
+				const AnimatedSkeleton& skeleton = *GetSkeleton();
+				skeleton.UpdateBoneTransforms(dtS, GetAnimatedMesh());
+			}
 		}
 	}
 }

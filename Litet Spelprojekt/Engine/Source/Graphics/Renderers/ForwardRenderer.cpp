@@ -120,12 +120,6 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
 
 	//Render scene
-	const std::vector<GameObject*>& animatedGameObjects = scene.GetAnimatedDrawables();
-	for (GameObject* pGameObject : animatedGameObjects)
-	{
-		pGameObject->Lock();
-	}
-
 	glQueryCounter(m_pCurrentQuery->pQueries[2], GL_TIMESTAMP);
 	context.SetDepthFunc(FUNC_LESS);
 	DepthPrePass(mainCamera, scene, pWorld);
@@ -147,12 +141,6 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 
 	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
 	AnimationPass(dtS, scene, pWorld);
-
-	for (GameObject* pGameObject : animatedGameObjects)
-	{
-		pGameObject->Unlock();
-	}
-
 
 	if (pWorld != nullptr)
 	{
@@ -630,13 +618,15 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 			roomIsActive = pWorld->GetRoom(animatedGameObjects[i]->GetRoom()).IsActive();
 		}
 
-		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
 		const Material& material = *animatedGameObjects[i]->GetMaterial();
 
 		if (!material.IncludeInDepthPrePass())
 		{
 			continue;
 		}
+
+		animatedGameObjects[i]->LockAnimation();
+		const AnimatedSkeleton& skeleton = *animatedGameObjects[i]->GetSkeleton();
 
 		buff.ClipPlane = material.GetLevelClipPlane();
 		m_pPlaneBuffer->UpdateData(&buff);
@@ -740,6 +730,8 @@ void ForwardRenderer::AnimationPass(float dtS, const Scene& scene, const World* 
 
 			material.Unbind();
 		}
+
+		animatedGameObjects[i]->UnlockAnimation();
 	}
 }
 

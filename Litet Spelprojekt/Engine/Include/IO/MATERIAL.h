@@ -9,10 +9,12 @@ public:
 	static uint32 BLACK;
 	static uint32 WHITE;
 	static uint32 ARTILLERY;
+	static uint32 DOOR_FRAME;
 	static uint32 DOOR_RED;
 	static uint32 DOOR_GREEN;
 	static uint32 DOOR_BLUE;
 	static uint32 DOOR_YELLOW;
+	static uint32 LADDER;
 	static uint32 OCEAN_BLUE;
 	static uint32 BOAT;
 	static uint32 GROUND;

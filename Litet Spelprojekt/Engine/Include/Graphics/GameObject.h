@@ -80,8 +80,8 @@ public:
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
 
-	void Lock() noexcept;
-	void Unlock() noexcept;
+	void LockAnimation() noexcept;
+	void UnlockAnimation() noexcept;
 	void SetWorld(World* pWorld) noexcept;
 
 protected:
@@ -108,7 +108,10 @@ private:
 	int32 m_TypeId;
 	int32 m_Room;
 	bool m_IsHidden = false;
-	std::mutex m_Mutex;
+	bool m_AnimationLocked;
+
+	const AnimatedMesh* m_pAMeshNext;
+	AnimatedSkeleton* m_pASkeletonNext;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -153,17 +156,39 @@ inline void GameObject::SetMesh(int32 mesh) noexcept
 
 inline void GameObject::SetAnimatedMesh(int32 mesh) noexcept
 {
-	Lock();
-	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+	if (!m_AnimationLocked)
+	{
+		m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+		m_pAMeshNext = nullptr;
 
-	DeleteSafe(m_pASkeleton);
-	m_pASkeleton = new AnimatedSkeleton();
-	Unlock();
+		DeleteSafe(m_pASkeleton);
+		DeleteSafe(m_pASkeletonNext);
+		m_pASkeleton = new AnimatedSkeleton();
+	}
+	else
+	{
+		m_pAMeshNext = ResourceHandler::GetAnimatedMesh(mesh);
+
+		if (m_pASkeletonNext != nullptr)
+		{
+			DeleteSafe(m_pASkeletonNext);
+		}
+
+		m_pASkeletonNext = new AnimatedSkeleton();
+	}
 }
 
 inline void GameObject::UpdateAnimatedMesh(int32 mesh) noexcept
 {
-	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+	if (!m_AnimationLocked)
+	{
+		m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+		m_pAMeshNext = nullptr;
+	}
+	else
+	{
+		m_pAMeshNext = ResourceHandler::GetAnimatedMesh(mesh);
+	}
 }
 
 inline void GameObject::SetDecal(int32 decal) noexcept
@@ -276,14 +301,14 @@ inline int32 GameObject::GetTypeId() const noexcept
 	return m_TypeId;
 }
 
-inline void GameObject::Lock() noexcept
+inline void GameObject::LockAnimation() noexcept
 {
-	m_Mutex.lock();
+	m_AnimationLocked = true;
 }
 
-inline void GameObject::Unlock() noexcept
+inline void GameObject::UnlockAnimation() noexcept
 {
-	m_Mutex.unlock();
+	m_AnimationLocked = false;
 }
 
 inline void GameObject::SetWorld(World* pWorld) noexcept

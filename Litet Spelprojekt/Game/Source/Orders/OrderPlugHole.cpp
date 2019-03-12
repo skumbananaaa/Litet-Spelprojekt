@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Crewmember.h"
+#include <World/World.h>
 glm::ivec3 startTarget(const glm::ivec3& roomTile, const glm::ivec3& holeTile, bool hasGearEquipped)
 {
 	if (hasGearEquipped)
@@ -51,6 +52,9 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			if (m_PluggingTimer <= 0.0001)
 			{
 				m_HolePlugged = true;
+				glm::ivec3 tile = GetCrewMember()->GetTile();
+				pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.y].WaterInlet = false;
+				res = true;
 			}
 		}
 	}
@@ -71,7 +75,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			{
 				pCrewmember->SetGearIsEquipped(true);
 				pCrewmember->GiveOrder(new OrderPlugHole(m_RoomTile, m_HoleTile, m_RoomFloodingId, pCrewmember->HasGearEquipped()));
-				return false;
+				res = false;
 			}
 
 		}

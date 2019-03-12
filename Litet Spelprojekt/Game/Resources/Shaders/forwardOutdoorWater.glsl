@@ -166,7 +166,7 @@ float GetDepthFromZ(float z)
 void main()
 {
 	//Get the grid position of all 3 vertices in the triangle
-	vec3 currentVertex = vec3(g_Position.x, 0.0f, g_Position.y);
+	vec3 currentVertex = vec3(g_Position.x, 1.3f, g_Position.y);
 	vec3 vertex1 = currentVertex + vec3(g_Indicators.x, 0.0f, g_Indicators.y);
 	vec3 vertex2 = currentVertex + vec3(g_Indicators.z, 0.0f, g_Indicators.w);
 	vs_out.FoamFactor = float(length(g_IcebergPosition - currentVertex.xz) < 8.0f);

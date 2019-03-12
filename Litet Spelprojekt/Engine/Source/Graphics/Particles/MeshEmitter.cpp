@@ -22,6 +22,9 @@ MeshEmitter::MeshEmitter(float autoDeleteTimer, IMeshListener* listerner)
 	m_ParticleInstances(),
 	m_pScene(nullptr)
 {
+	//Set meshemitters to be updated
+	m_IsTickable = true;
+
 	for (uint32 i = 0; i < MAX_PARTICLES; i++)
 	{
 		m_LivingParticles[i] = i;

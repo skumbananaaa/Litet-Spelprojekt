@@ -16,6 +16,9 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false)
 {
+	//Set crewmembers to be updated
+	m_IsTickable = true;
+
 	SetName(name);
 	SetWorld(world);
 	m_IsPicked = false;

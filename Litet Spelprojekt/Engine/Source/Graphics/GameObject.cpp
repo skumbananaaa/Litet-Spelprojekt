@@ -15,6 +15,7 @@ GameObject::GameObject() noexcept
 	m_IsVisible(true),
 	m_IsHovered(false),
 	m_IsPicked(false),
+	m_IsTickable(false),
 	m_TypeId(-1),
 	m_Room(0),
 	m_AnimationLocked(false),

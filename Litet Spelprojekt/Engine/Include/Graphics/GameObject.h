@@ -53,7 +53,7 @@ public:
 	uint32 GetRoom() const noexcept;
 
 	bool IsHidden() const noexcept;
-
+	bool IsTickable() const noexcept;
 	bool IsDirty() const noexcept;
 	bool IsVisible() const noexcept;
 
@@ -89,6 +89,7 @@ protected:
 	bool m_IsVisible;
 	bool m_IsHovered;
 	bool m_IsPicked;
+	bool m_IsTickable;
 	glm::mat4 m_transform;
 	glm::mat4 m_InverseTransform;
 	glm::vec3 m_Direction;
@@ -112,6 +113,9 @@ private:
 
 	const AnimatedMesh* m_pAMeshNext;
 	AnimatedSkeleton* m_pASkeletonNext;
+
+private:
+	static std::vector<GameObject> s_GameObjects;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -147,6 +151,11 @@ inline uint32 GameObject::GetRoom() const noexcept
 inline bool GameObject::IsHidden() const noexcept
 {
 	return m_IsHidden;
+}
+
+inline bool GameObject::IsTickable() const noexcept
+{
+	return m_IsTickable;
 }
 
 inline void GameObject::SetMesh(int32 mesh) noexcept

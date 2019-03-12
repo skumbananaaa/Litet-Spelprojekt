@@ -125,7 +125,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	if (!IsPaused())
 	{
 		m_GameTimer += dtS;
-		if (m_GameTimer >= 5.0f)
+		if (m_GameTimer >= 500.0f)
 		{
 			m_IsGameOver = true;
 		}
@@ -663,8 +663,7 @@ void SceneGame::PickPosition()
 
 	if (pointOnSurface != glm::vec3(0.0f, 0.0f, 0.0f))
 	{
-		std::vector<int32> selectedList = m_Crew.GetSelectedList();
-
+		const std::vector<int32>& selectedList = m_Crew.GetSelectedList();
 		for (int32 i = 0; i < selectedList.size(); i++)
 		{
 			glm::ivec3 tile = glm::round(pointOnSurface);
@@ -673,43 +672,46 @@ void SceneGame::PickPosition()
 				tile.x = glm::clamp(tile.x, 1, 10);
 				tile.y = glm::clamp(tile.y, 0, 4);
 				tile.z = glm::clamp(tile.z, 1, 40);
-				if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 2)
+
+				WorldLevel& level = m_pWorld->GetLevel(tile.y);
+				if (level.GetLevel()[tile.x + 1][tile.z] == level.GetLevel()[tile.x][tile.z] && i < 2)
 				{
 					tile.x += 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 3)
+				else if (level.GetLevel()[tile.x - 1][tile.z] == level.GetLevel()[tile.x][tile.z] && i < 3)
 				{
 					tile.x -= 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 4)
+				else if (level.GetLevel()[tile.x][tile.z + 1] == level.GetLevel()[tile.x][tile.z] && i < 4)
 				{
 					tile.z += 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 5)
+				else if (level.GetLevel()[tile.x][tile.z - 1] == level.GetLevel()[tile.x][tile.z] && i < 5)
 				{
 					tile.z -= 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 6)
+				else if (level.GetLevel()[tile.x + 1][tile.z + 1] == level.GetLevel()[tile.x][tile.z] && i < 6)
 				{
 					tile.x += 1;
 					tile.z += 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 7)
+				else if (level.GetLevel()[tile.x - 1][tile.z - 1] == level.GetLevel()[tile.x][tile.z] && i < 7)
 				{
 					tile.x -= 1;
 					tile.z -= 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x - 1][tile.z + 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 8)
+				else if (level.GetLevel()[tile.x - 1][tile.z + 1] == level.GetLevel()[tile.x][tile.z] && i < 8)
 				{
 					tile.x -= 1;
 					tile.z += 1;
 				}
-				else if (m_pWorld->GetLevel(tile.y).GetLevel()[tile.x + 1][tile.z - 1] == m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z] && i < 9)
+				else if (level.GetLevel()[tile.x + 1][tile.z - 1] == level.GetLevel()[tile.x][tile.z] && i < 9)
 				{
 					tile.x += 1;
 					tile.z -= 1;
 				}
 			}
+
 			m_Crew.GetMember(selectedList[i])->FindPath(tile);
 		}
 	}
@@ -802,7 +804,6 @@ GameObject* SceneGame::RayTestGameObjects()
 	for (int i = 0; i < m_PickableGameObjects.size(); i++)
 	{
 		int32 t = m_PickableGameObjects[i]->TestAgainstRay(rayDir, rayOrigin, GetExtension());
-
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{
 			lastT = t;

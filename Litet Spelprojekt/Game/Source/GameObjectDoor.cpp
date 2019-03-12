@@ -187,7 +187,6 @@ void GameObjectDoor::UpdateTransform() noexcept
 
 		transform = glm::scale(transform, GetScale());
 		m_transform = transform;
-		m_InverseTransform = glm::inverse(m_transform);
 
 		m_IsDirty = false;
 	}

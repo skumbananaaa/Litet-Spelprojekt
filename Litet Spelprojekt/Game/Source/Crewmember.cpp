@@ -516,7 +516,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 	}
 
 	float smokeDmgSpeed = 0.1f;
-	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	const TileData& tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
 		bool isSmoked = HasInjurySmoke();
@@ -525,7 +525,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 		if (isSmoked != HasInjurySmoke())
 		{
 			Logger::LogEvent(GetName() + " blev rökskadad!" + std::to_string(m_HasInjurySmoke));
-			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::to_string(m_GearIsEquipped) << std::endl;
+			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::boolalpha << std::to_string(m_GearIsEquipped) << std::endl;
 		}
 	}
 }
@@ -544,7 +544,7 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 	}
 
 	float burnSpeed = 0.1f;
-	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	const TileData& tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.Temp >= tileData.BurnsAt)
 	{
 		bool isBurned = HasInjuryBurned();

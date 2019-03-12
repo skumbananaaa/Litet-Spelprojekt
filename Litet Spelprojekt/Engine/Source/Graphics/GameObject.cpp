@@ -106,7 +106,6 @@ void GameObject::UpdateTransform() noexcept
 		transform = glm::rotate(transform, m_Rotation.w, glm::vec3(m_Rotation.x, m_Rotation.y, m_Rotation.z));
 		transform = glm::scale(transform, m_Scale);
 		m_transform = transform;
-		m_InverseTransform = glm::inverse(m_transform);
 		
 		m_IsDirty = false;
 

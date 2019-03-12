@@ -17,7 +17,7 @@ ScenarioIceberg::~ScenarioIceberg()
 
 void ScenarioIceberg::Init(World* pWorld) noexcept
 {
-	m_pAudioSourceExplosion = AudioSource::CreateSoundSource(SOUND::MONO_EXPLOSION);
+	m_pAudioSourceExplosion = AudioSource::CreateSoundSource(SOUND::MONO_CRASH);
 	m_pAudioSourceExplosion->SetRollOffFactor(10.0f);
 	m_pAudioSourceExplosion->SetReferenceDistance(0.0f);
 	m_pAudioSourceExplosion->SetMaxDistance(500.0f);
@@ -88,9 +88,7 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 			m_TotalDistance = 150;
 			m_DistanceTraveled = 0.0F;
 			m_HasBounced = true;
-		}
-		else
-		{
+
 			glm::vec3 target = glm::vec3(glm::clamp(m_Target.x, 1.0f, 10.0f), m_Target.y, glm::clamp(m_Target.z, 1.0f, 40.0f));
 
 			ScenarioManager::Escalate(Game::GetGame()->m_ScenarioWater, target);
@@ -112,6 +110,9 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 					}
 				}
 			}
+		}
+		else
+		{
 			return true;
 		}
 	}

@@ -149,7 +149,6 @@
     <ClCompile Include="Source\GameObjectDoor.cpp" />
     <ClCompile Include="Source\GameObjectFloor.cpp" />
     <ClCompile Include="Source\GameObjectArtillery.cpp" />
-    <ClCompile Include="Source\GameObjectTorpedo.cpp" />
     <ClCompile Include="Source\GUI\UISelectedCrew.cpp" />
     <ClCompile Include="Source\GUI\UIOrder.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
@@ -196,7 +195,6 @@
     <ClInclude Include="Include\GameObjectDoor.h" />
     <ClInclude Include="Include\GameObjectFloor.h" />
     <ClInclude Include="Include\GameObjectArtillery.h" />
-    <ClInclude Include="Include\GameObjectTorpedo.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />
     <ClInclude Include="Include\GUI\UICrewMember.h" />
     <ClInclude Include="Include\GUI\UILog.h" />

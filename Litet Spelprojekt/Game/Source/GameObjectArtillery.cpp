@@ -4,6 +4,9 @@
 GameObjectArtillery::GameObjectArtillery(const glm::vec3& pos, const glm::vec3& target) noexcept :
 	m_DistanceTraveled(0)
 {
+	//Set artillery to be updated
+	m_IsTickable = true;
+
 	SetMaterial(MATERIAL::WHITE);
 	SetMesh(MESH::ARTILLERY);
 

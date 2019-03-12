@@ -6,6 +6,9 @@
 
 GameObjectDoor::GameObjectDoor() noexcept
 {
+	//Set doors to be updated
+	m_IsTickable = true;
+
 	UpdateTransform();
 
 	m_Percentage = 0.0f;

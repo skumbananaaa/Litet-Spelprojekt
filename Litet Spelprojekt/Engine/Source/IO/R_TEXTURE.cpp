@@ -42,6 +42,8 @@ uint32 TEXTURE::FLOOR_KITCHEN1 = 0;
 uint32 TEXTURE::FLOOR_DINING1 = 0;
 uint32 TEXTURE::FLOOR_CABOOSE1 = 0;
 uint32 TEXTURE::LOADING_CONTROLS = 0;
+uint32 TEXTURE::SHELF_AMMUNITION = 0;
+uint32 TEXTURE::SHELF_EMPTY = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -73,6 +75,8 @@ void TEXTURE::RegisterResources()
 	CUPBOARD			= ResourceHandler::RegisterTexture2D("uv_Cupboard.jpg", TEX_FORMAT_RGBA);
 	TABLE				= ResourceHandler::RegisterTexture2D("uv_Table.jpg", TEX_FORMAT_RGBA);
 	TOILET				= ResourceHandler::RegisterTexture2D("uv_Toilet.jpg", TEX_FORMAT_RGBA);
+	SHELF_AMMUNITION	= ResourceHandler::RegisterTexture2D("uv_AmmunitionShelf.jpg", TEX_FORMAT_RGBA);
+	SHELF_EMPTY			= ResourceHandler::RegisterTexture2D("uv_EmptyShelf.jpg", TEX_FORMAT_RGBA);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
 	WALL1				= ResourceHandler::RegisterTexture2D("wallTexture.png", TEX_FORMAT_RGBA, true, false, params);

@@ -6386,6 +6386,90 @@
             "rotation": 0.0
         },
         {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 25,
+            "gameObject": 14,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 28,
+            "gameObject": 14,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 26,
+            "gameObject": 14,
+            "rotation": 12.566370010375977
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 24,
+            "gameObject": 14,
+            "rotation": 15.707962036132813
+        },
+        {
+            "tileIdX": 1,
+            "tileIdY": 0,
+            "tileIdZ": 29,
+            "gameObject": 13,
+            "rotation": 6.2831854820251469
+        },
+        {
+            "tileIdX": 1,
+            "tileIdY": 0,
+            "tileIdZ": 27,
+            "gameObject": 13,
+            "rotation": 9.42477798461914
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 26,
+            "gameObject": 14,
+            "rotation": 12.566370010375977
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 27,
+            "gameObject": 14,
+            "rotation": 15.707962036132813
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 0,
+            "tileIdZ": 28,
+            "gameObject": 14,
+            "rotation": 20.420352935791017
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 29,
+            "gameObject": 13,
+            "rotation": 6.2831854820251469
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 0,
+            "tileIdZ": 25,
+            "gameObject": 13,
+            "rotation": 7.853981971740723
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 24,
+            "gameObject": 13,
+            "rotation": 9.42477798461914
+        },
+        {
             "tileIdX": 6,
             "tileIdY": 2,
             "tileIdZ": 19,

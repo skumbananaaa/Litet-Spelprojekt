@@ -33,7 +33,6 @@ void SHADER::RegisterResourcesPreLoading()
 	EQUIREC_TO_CUBEMAP			= ResourceHandler::RegisterShader("VShaderEquirecToCubemap.glsl", "FShaderEquirecToCubemap.glsl");
 	SKYBOX_PASS					= ResourceHandler::RegisterShader("skybox.glsl", "skybox.glsl");
 	DEPTH_PRE_PASS				= ResourceHandler::RegisterShader("depthPrePass.glsl", "depthPrePass.glsl");
-	ANIMATION_DEPTH_PRE_PASS	= ResourceHandler::RegisterShader("animatedDepthPrePass.glsl", "animatedDepthPrePass.glsl");
 	PARTICLES					= ResourceHandler::RegisterShader("forwardParticles.glsl", "forwardParticles.glsl");
 	MESH_PARTICLES				= ResourceHandler::RegisterShader("forwardMeshParticles.glsl", "forwardMeshParticles.glsl");
 	SHADOW						= ResourceHandler::RegisterShader("shadow.glsl", "shadow.glsl");
@@ -63,6 +62,20 @@ void SHADER::RegisterResourcesPreLoading()
 
 		STANDARD_MATERIAL			= ResourceHandler::RegisterShader("forwardMaterial.glsl", "forwardMaterial.glsl", defines);
 		WATER_OUTDOOR_MATERIAL		= ResourceHandler::RegisterShader("forwardOutdoorWater.glsl", "forwardOutdoorWater.glsl", defines);
+	}
+
+	{
+		std::string maxBones = (TO_STRING(MAX_NUM_BONES)) + std::string(" ") + std::to_string(MAX_NUM_BONES);
+		const char* pDefines[] =
+		{
+			maxBones.c_str(),
+		};
+
+		ShaderDefines defines = {};
+		defines.ppDefines = pDefines;
+		defines.NumDefines = _countof(pDefines);
+
+		ANIMATION_DEPTH_PRE_PASS = ResourceHandler::RegisterShader("animatedDepthPrePass.glsl", "animatedDepthPrePass.glsl", defines);
 	}
 }
 

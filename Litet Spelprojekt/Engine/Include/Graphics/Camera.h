@@ -27,7 +27,8 @@ public:
 
 	void MoveWorldCoords(const glm::vec3& worldCoords, bool moveLookAt = false) noexcept;
 	void MoveLocalCoords(const glm::vec3& localCoords, bool moveLookAt = false) noexcept;
-	
+	glm::vec3 GetMoveWorldFromLocal(const glm::vec3& localCoords) noexcept;
+
 	void MoveRelativeLookAt(PosRelativeLookAt dir, float amount) noexcept;
 
 	void OffsetYaw(float amount) noexcept;
@@ -68,11 +69,12 @@ public:
 	float GetNearPlane() const noexcept;
 	float GetDistanceToLookAt() const noexcept;
 
+	bool IsLookAtInBounds(const glm::vec3& newLookAt) const noexcept;
+
 private:
 	void CalcInverses();
 	void UpdateFromPitchYawInternal() noexcept;
 	void UpdateFromLookAtInternal() noexcept;
-	bool IsLookAtInBounds(const glm::vec3& newLookAt) const noexcept;
 
 private:
 	glm::mat4 m_ViewMatrix;

@@ -42,6 +42,7 @@ uint32 MATERIAL::FLOOR_CABOOSE1 = 0;
 uint32 MATERIAL::OVEN = 0;
 uint32 MATERIAL::SHELF_EMPTY = 0;
 uint32 MATERIAL::SHELF_AMMUNITION = 0;
+uint32 MATERIAL::GENERATOR = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -91,5 +92,6 @@ void MATERIAL::RegisterResources()
 	FLOOR_CABOOSE1		= ResourceHandler::RegisterMaterial(TEXTURE::FLOOR_CABOOSE1, SHADER::FLOOR);
 	OVEN				= ResourceHandler::RegisterMaterial(TEXTURE::OVEN, SHADER::STANDARD_MATERIAL);
 	SHELF_AMMUNITION	= ResourceHandler::RegisterMaterial(TEXTURE::SHELF_AMMUNITION, SHADER::STANDARD_MATERIAL);
-	SHELF_EMPTY = ResourceHandler::RegisterMaterial(TEXTURE::SHELF_EMPTY, SHADER::STANDARD_MATERIAL);
+	SHELF_EMPTY			= ResourceHandler::RegisterMaterial(TEXTURE::SHELF_EMPTY, SHADER::STANDARD_MATERIAL);
+	GENERATOR			= ResourceHandler::RegisterMaterial(TEXTURE::GENERATOR, SHADER::STANDARD_MATERIAL);
 }

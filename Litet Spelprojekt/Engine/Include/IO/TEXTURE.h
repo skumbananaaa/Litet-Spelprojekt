@@ -47,6 +47,7 @@ public:
 	static uint32 LOADING_CONTROLS;
 	static uint32 SHELF_AMMUNITION;
 	static uint32 SHELF_EMPTY;
+	static uint32 GENERATOR;
 
 private:
 	static void RegisterResourcesPreLoading();

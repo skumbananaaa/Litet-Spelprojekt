@@ -6470,6 +6470,34 @@
             "rotation": 9.42477798461914
         },
         {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 35,
+            "gameObject": 15,
+            "rotation": 1.5707963705062867
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 37,
+            "gameObject": 15,
+            "rotation": 10.995573997497559
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 37,
+            "gameObject": 15,
+            "rotation": 18.84955596923828
+        },
+        {
+            "tileIdX": 1,
+            "tileIdY": 0,
+            "tileIdZ": 39,
+            "gameObject": 15,
+            "rotation": 21.99114990234375
+        },
+        {
             "tileIdX": 6,
             "tileIdY": 2,
             "tileIdZ": 19,

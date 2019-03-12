@@ -7,6 +7,7 @@
 #include <World/WorldLevel.h>
 #include "../Include/GameObjectDoor.h"
 #include "../Include/Orders/OrderSchedule.h"
+#include "../Include/Orders/OrderGiveAid.h"
 
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
@@ -32,6 +33,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_HasInjuryBurned = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjurySmoke = 0.0f; // Random::GenerateFloat(0.0f, 10.0f);
 	m_HasInjuryBleeding = 0.0f;
+	m_Recovering = 0.0f;
 	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);*/
@@ -49,6 +51,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_pAudioSourceScream->SetReferenceDistance(1.0f);
 	m_pAudioSourceScream->SetMaxDistance(100.0f);
 	m_pAudioSourceScream->SetLooping(false);
+
+	m_Group = groupType;
 }
 
 Crewmember::~Crewmember()
@@ -93,8 +97,18 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	if (m_pUISelectedCrew)
 	{
-		m_pUISelectedCrew->UpdatePosition(GetPosition());
+		m_pUISelectedCrew->UpdatePosition(m_LastKnownPosition);
 	}
+
+	if (!IsAbleToWork())
+	{
+		if (IsIdleing())
+		{
+			GoToSickBay();
+		}
+	}
+	
+	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
@@ -195,9 +209,10 @@ void Crewmember::GoToSickBay()
 	}
 }
 
-bool Crewmember::Heal(int8 skillLevel, float dtS)
+bool Crewmember::Heal(float skillLevel, float dtS)
 {
 	bool res = false;
+	/*//Broken Bone kan inte vara Bool
 	if (HasInjuryBoneBroken())
 	{
 		m_HasInjuryBoneBroken -= (m_HasInjuryBoneBroken - m_HasInjuryBoneBroken / skillLevel) * dtS;
@@ -216,6 +231,13 @@ bool Crewmember::Heal(int8 skillLevel, float dtS)
 	}
 	else
 	{
+		res = true;
+	}*/
+
+	m_Recovering += skillLevel * dtS;
+	if (HasRecovered())
+	{
+		Logger::LogEvent(GetName() + " has been healed!", true);
 		res = true;
 	}
 	return res;
@@ -346,10 +368,13 @@ void Crewmember::OnNotHovered() noexcept
 }
 
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
-{
+{ 
 	glm::vec3 pos = glm::vec3(glm::clamp(position.x, 1.0f, 10.0f), glm::clamp(position.y, 0.0f, 4.0f), glm::clamp(position.z, 1.0f, 40.0f));
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
 	//m_PlayerTile.z = m_PlayerTile.z < 0 ? 0 : m_PlayerTile.z;
+	
+	//HOT FIX (Gay?)
+	m_PlayerTile.y = (m_PlayerTile.y >= 3) ? 2 : m_PlayerTile.y;
 
 	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{
@@ -401,12 +426,6 @@ void Crewmember::SetIdleing(bool value) noexcept
 	m_Idleing = value;
 }
 
-void Crewmember::SetGroup(uint32 group) noexcept
-{
-	assert(group < NR_GROUPS);
-	m_Group = group;
-}
-
 void Crewmember::SetGearIsEquipped(bool value) noexcept
 {
 	m_GearIsEquipped = value;
@@ -418,25 +437,27 @@ void Crewmember::UpdateHealth(float dt)
 	float smokeDmgSpeed = 1.0f;
 	float burnDmgSpeed = 1.0f;
 	float bleedDmgSpeed = 1.0f;
-
-	if (HasInjurySmoke())
+	if (HasRecovered())
 	{
-		m_Health -= (std::log10(m_HasInjurySmoke)) * smokeDmgSpeed * dt;
-	}
+		if (HasInjurySmoke())
+		{
+			m_Health -= (std::log10(m_HasInjurySmoke) - std::log10(1.0)) * smokeDmgSpeed * dt;
+		}
 
-	if (HasInjuryBurned())
-	{
-		m_Health -= (std::log10(m_HasInjuryBurned)) * burnDmgSpeed * dt;
-	}
+		if (HasInjuryBurned())
+		{
+			m_Health -= (std::log10(m_HasInjuryBurned) - std::log10(1.0)) * burnDmgSpeed * dt;
+		}
 
-	if (HasInjuryBoneBroken())
-	{
-		//m_Health -= m_HasInjuryBoneBroken * dt;
-	}
+		if (HasInjuryBoneBroken())
+		{
+			//m_Health -= m_HasInjuryBoneBroken * dt;
+		}
 
-	if (HasInjuryBleed())
-	{
-		m_Health -= (std::log10(m_HasInjuryBleeding)) * bleedDmgSpeed * dt;
+		if (HasInjuryBleed())
+		{
+			m_Health -= (std::log10(m_HasInjuryBleeding) - std::log10(1.0)) * bleedDmgSpeed * dt;
+		}
 	}
 
 	if (m_Health <= 0.0f)

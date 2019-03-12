@@ -63,7 +63,7 @@ void MESH::RegisterResources()
 	ANIMATED_MODEL_IDLE		= ResourceHandler::RegisterAnimatedMesh("CrewMemberIdle4.fbx");
 	ANIMATED_MODEL_WORK		= ResourceHandler::RegisterAnimatedMesh("CrewMemberWork1.fbx");
 	ANIMATED_MODEL_OPENDOOR = ResourceHandler::RegisterAnimatedMesh("CrewMemberOpenDoor2.fbx");
-	ANIMATED_MODEL_SLEEP	= ResourceHandler::RegisterAnimatedMesh("CrewMemberSleeping2.fbx");
+	ANIMATED_MODEL_SLEEP	= ResourceHandler::RegisterAnimatedMesh("CrewMemberSleeping3.fbx");
 	ANIMATED_MODEL_SITTING	= ResourceHandler::RegisterAnimatedMesh("CrewMemberSitting3.fbx");
 	ANIMATED_MODEL_EAT		= ResourceHandler::RegisterAnimatedMesh("CrewMemberSitting4.fbx");
 	DOOR					= ResourceHandler::RegisterMesh("Door.obj");

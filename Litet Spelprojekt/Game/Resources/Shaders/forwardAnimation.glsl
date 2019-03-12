@@ -118,6 +118,7 @@ void main()
 
 	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
 	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
+	gl_ClipDistance[2] = dot(worldPos, g_ClipPlane);
 
 	//Calculate light
 	vec3 specular = vec3(0.0f);

@@ -120,7 +120,7 @@ void GameObject::UpdateParallel(float dtS) noexcept
 {
 	if (IsVisible())
 	{
-		if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
+		//if (m_pWorld->GetRoom(GetRoom()).IsActive() || !IsHidden())
 		{
 			Lock();
 			const AnimatedSkeleton& skeleton = *GetSkeleton();

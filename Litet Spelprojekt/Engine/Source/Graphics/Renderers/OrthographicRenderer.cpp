@@ -17,10 +17,6 @@ OrthographicRenderer::~OrthographicRenderer()
 	DeleteSafe(m_pOrthoPerObject);
 }
 
-void OrthographicRenderer::SetClipDistance(const glm::vec4& plane, uint32 index)
-{
-}
-
 void OrthographicRenderer::DrawScene(const Scene& scene, const World* pWorld, float dtS) const
 {
 	GLContext& context = Application::GetInstance().GetGraphicsContext();
@@ -114,6 +110,10 @@ void OrthographicRenderer::DrawBulkheads(const Scene& scene, const std::vector<G
 			context.DrawIndexedMesh(*gameobject.GetMesh());
 		}
 	}
+}
+
+void OrthographicRenderer::SetParticleClipPlane(const glm::vec4 & clipPlane) noexcept
+{
 }
 
 void OrthographicRenderer::Create() noexcept

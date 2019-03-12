@@ -6,6 +6,7 @@
 #include "../../Include/GameObjectDoor.h"
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Orders/OrderSchedule.h"
+#include "../../Include/Orders/OrderGiveAid.h"
 #include <Graphics/Materials/MaterialBase.h>
 
 SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
@@ -21,7 +22,6 @@ SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 
 	LightManager::Init(this, NUM_SPOT_LIGHTS);
 
-	OrderSchedule::Init(this);
 	ScenarioManager::Init(m_pWorld);
 
 	ResourceHandler::GetMaterial(MATERIAL::BOAT)->SetStencilTest(true, FUNC_ALWAYS, 0xff, 1, 0xff);
@@ -33,12 +33,12 @@ SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 
 	GetCamera().SetMaxPitch(-glm::two_pi<float>() / 64.0f);
 	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 11.0f, 41.0f);
+	UpdateMaterialClipPlanes();
 }
 
 SceneGame::~SceneGame()
 {
 	ScenarioManager::Reset();
-	OrderSchedule::Release();
 
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
@@ -56,7 +56,6 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	CreateGameObjects();
 	CreateCrew();
 
-
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
@@ -72,6 +71,7 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	SetPaused(false);
 
+	OrderSchedule::Init(this);
 	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
 		IOrder* pOrder = OrderSchedule::GetIdleOrder();
@@ -100,6 +100,9 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	GetCamera().SetMaxPitch(1.55334303f);
 
 	DeleteSafe(m_pUICrew);
+
+	OrderSchedule::Release();
+	ResourceHandler::ResetGameObjectCounters();
 }
 
 void SceneGame::OnUpdate(float dtS) noexcept
@@ -158,24 +161,6 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 		AudioListener::SetPosition(GetCamera().GetPosition());
 		AudioListener::SetOrientation(GetCamera().GetFront(), GetCamera().GetUp());
-
-		if (Input::IsKeyPressed(KEY_NUMPAD_2))
-		{
-			if (m_CurrentElevation > 0)
-			{
-				m_CurrentElevation--;
-			}
-			std::cout << "Elevation: " << m_CurrentElevation << std::endl;
-		}
-
-		if (Input::IsKeyPressed(KEY_NUMPAD_8))
-		{
-			if (m_CurrentElevation < 2)
-			{
-				m_CurrentElevation++;
-			}
-			std::cout << "Elevation: " << m_CurrentElevation << std::endl;
-		}
 	}
 }
 
@@ -241,7 +226,6 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 			{
 				if (offset.y > 0.0f)
 				{
-					//FIXA SÅ ATT OM MAN ÄR EXTENDAD OCH DEEXTENDAR SÅ FLYTTAS KAMERAN RÄTT
 					if (camera.GetLookAt().y < 4.0f)
 					{
 						float xMove = (float)IsExtended() * 10.0f;
@@ -249,6 +233,7 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
 												   lookAtBoundsOffset + 11.0f, 41.0f);
 						camera.MoveWorldCoords(glm::vec3(xMove, 2.0f, 0.0f), true);
+						UpdateMaterialClipPlanes();
 					}
 				}
 				else
@@ -260,6 +245,7 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
 												   lookAtBoundsOffset + 11.0f, 41.0f);
 						camera.MoveWorldCoords(glm::vec3(xMove, -2.0f, 0.0f), true);
+						UpdateMaterialClipPlanes();
 					}
 				}
 			}
@@ -331,7 +317,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			case KEY_O:
 			{
-				m_CartesianCamera = !m_CartesianCamera;
+				//m_CartesianCamera = !m_CartesianCamera;
 				break;
 			}
 			case KEY_P:
@@ -342,6 +328,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 			case KEY_SPACE:
 			{
 				ExtendScene();
+				UpdateMaterialClipPlanes();
 				break;
 			}
 			case KEY_R:
@@ -352,28 +339,54 @@ void SceneGame::OnKeyDown(KEY keycode)
 			}
 			case KEY_NUMPAD_0:
 			{
-				RequestDoorClosed(DOOR_COLOR::RED);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_RED);
 				break;
 			}
 			case KEY_NUMPAD_1:
 			{
-				RequestDoorClosed(DOOR_COLOR::GREEN);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_GREEN);
 				break;
 			}
 			case KEY_NUMPAD_2:
 			{
-				RequestDoorClosed(DOOR_COLOR::BLUE);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_BLUE);
 				break;
 			}
 			case KEY_NUMPAD_3:
 			{
-				RequestDoorClosed(DOOR_COLOR::YELLOW);
+				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_YELLOW);
 				break;
 			}
 			case KEY_G:
 			{
 				m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 				break;
+			}
+			case KEY_H:
+			{
+				Crewmember* medic = nullptr;
+				Crewmember* victim = nullptr;
+				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				{
+					Crewmember* member = m_Crew.GetMember(i);
+					if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
+					{
+						victim = member;
+					}
+					else if (member->GetGroupType() == MEDIC)
+					{
+						medic = member;
+					}
+
+					if (medic != nullptr && victim != nullptr)
+					{
+						break;
+					}
+				}
+				if (medic != nullptr && victim != nullptr)
+				{
+					medic->GiveOrder(new OrderGiveAid(victim));
+				}
 			}
 		}
 	}
@@ -382,6 +395,11 @@ void SceneGame::OnKeyDown(KEY keycode)
 void SceneGame::OnResize(uint32 width, uint32 height)
 {
 
+}
+
+void SceneGame::OnSceneExtensionComplete() noexcept
+{
+	UpdateMaterialClipPlanes();
 }
 
 void SceneGame::CreateAudio() noexcept
@@ -401,7 +419,7 @@ void SceneGame::CreateGameObjects() noexcept
 		////Bottom floor
 		//{
 		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::RED);
+		//	pGameObject->SetMaterial(MATERIAL::DOOR_RED);
 		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
 		//	pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
 		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
@@ -412,7 +430,7 @@ void SceneGame::CreateGameObjects() noexcept
 		////Middle floor
 		//{
 		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::GREEN);
+		//	pGameObject->SetMaterial(MATERIAL::DOOR_GREEN);
 		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
 		//	pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
 		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
@@ -423,7 +441,7 @@ void SceneGame::CreateGameObjects() noexcept
 		////Top floor
 		//{
 		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::BLUE);
+		//	pGameObject->SetMaterial(MATERIAL::DOOR_BLUE);
 		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
 		//	pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
 		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
@@ -473,7 +491,7 @@ void SceneGame::CreateCrew() noexcept
 
 	int index = 0;
 	float x, y, z;
-	bool hidden = false;
+	bool hidden = true;
 
 	Crewmember* crewmember;
 

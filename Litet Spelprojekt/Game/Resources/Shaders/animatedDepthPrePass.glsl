@@ -46,7 +46,8 @@ void main()
 	vec4 worldPos = finalModel * vec4(g_Position, 1.0);
 	worldPos.x += g_Extension * floor(g_Model[3].y / 2.0f);
 
-	gl_ClipDistance[0] = dot(worldPos, g_ClipPlane);
+	gl_ClipDistance[2] = dot(worldPos, g_ClipPlane);
+
 	gl_Position = g_ProjectionView * worldPos;
 }
 

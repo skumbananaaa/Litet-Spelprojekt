@@ -627,3 +627,11 @@ void ResourceHandler::SetGameObjectCreator(IGameObjectCreator * creator)
 {
 	m_pGameObjectCreator = creator;
 }
+
+void ResourceHandler::ResetGameObjectCounters()
+{
+	for (uint32 i = 0; i < 64; i++)
+	{
+		m_pGameObjectFiles[i].count = 0;
+	}
+}

@@ -22,7 +22,7 @@ OrderWalk::~OrderWalk()
 
 void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroup() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
+	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroupType() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
 	Crewmember* pCrewmember = GetCrewMember();
 	pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 	ThreadHandler::RequestExecution(this);
@@ -101,6 +101,11 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	{
 		room.SetFloodDetected(true);
 		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+	}
+
+	if (room.IsActive())
+	{
+		pCrewmember->UpdateLastKnownPosition();
 	}
 
 	return FollowPath(dtS);

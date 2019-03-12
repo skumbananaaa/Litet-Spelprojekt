@@ -1,7 +1,9 @@
 #include "../../Include/Orders/OrderWalkMedicBay.h"
+#include "../../Include/Crewmember.h"
 #include <World/World.h>
-OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld): OrderWalk(glm::ivec3())
-{ 
+OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld, const glm::ivec3& currtile)
+	: OrderWalk(pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currtile))
+{
 }
 
 OrderWalkMedicBay::~OrderWalkMedicBay()
@@ -15,18 +17,19 @@ OrderWalkMedicBay::~OrderWalkMedicBay()
 */
 bool OrderWalkMedicBay::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
+	/*if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 	{
 		// Make it so that a crewmember goes to bed.
-	}
-	return false;
-}
-/*
-void OrderWalkMedicBay::EndOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
-{
-	OrderWalk::EndOrder(pScene, pWorld, pCrewMembers);
+	}*/
+	return OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
 }
 
+void OrderWalkMedicBay::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
+{
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+	GetCrewMember()->SetResting(true);
+}
+/*
 void OrderWalkMedicBay::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::AbortOrder(pScene, pWorld, pCrewMembers);
@@ -36,6 +39,11 @@ bool OrderWalkMedicBay::AllowsMultipleOrders() noexcept
 {
 	return OrderWalk::AllowsMultipleOrders();
 }*/
+
+bool OrderWalkMedicBay::HasPriority() noexcept
+{
+	return true;
+}
 
 std::string OrderWalkMedicBay::GetName() noexcept
 {

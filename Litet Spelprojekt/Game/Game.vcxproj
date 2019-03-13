@@ -162,6 +162,9 @@
     <ClCompile Include="Source\Orders\OrderGiveAid.cpp" />
     <ClCompile Include="Source\Orders\OrderHandler.cpp" />
     <ClCompile Include="Source\Orders\OrderPlugHole.cpp" />
+    <ClCompile Include="Source\Orders\OrderPumpWater.cpp">
+      <DeploymentContent>false</DeploymentContent>
+    </ClCompile>
     <ClCompile Include="Source\Orders\OrderSchedule.cpp" />
     <ClCompile Include="Source\Orders\OrderSleep.cpp" />
     <ClCompile Include="Source\Orders\OrderToilet.cpp" />
@@ -216,6 +219,7 @@
     <ClInclude Include="Include\Orders\OrderGiveAid.h" />
     <ClInclude Include="Include\Orders\OrderHandler.h" />
     <ClInclude Include="Include\Orders\OrderPlugHole.h" />
+    <ClInclude Include="Include\Orders\OrderPumpWater.h" />
     <ClInclude Include="Include\Orders\OrderSchedule.h" />
     <ClInclude Include="Include\Orders\OrderSleep.h" />
     <ClInclude Include="Include\Orders\OrderToilet.h" />

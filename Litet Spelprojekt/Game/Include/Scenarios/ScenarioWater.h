@@ -9,7 +9,7 @@
 constexpr float WATER_EVAPORATION_RATE = 1.0f / 1000.0f;
 constexpr float WATER_AGING_DENOMINATOR = 1.0f;
 constexpr float WATER_INV_TIME_FOR_WATER_TO_LEVEL = 1.0f;
-constexpr float FIRE_EXTINGUISH_BY_WATER_RATE = 500.0f;
+constexpr float FIRE_EXTINGUISH_BY_WATER_RATE = 500.0f * RATE_OF_FIRE_SPREAD;
 constexpr float SMOKE_EXTINGUISH_BY_WATER_RATE = 1000.0f;
 
 class ScenarioWater : public IScenario

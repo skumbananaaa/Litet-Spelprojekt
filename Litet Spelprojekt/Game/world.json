@@ -7427,6 +7427,20 @@
             "tileIdZ": 4,
             "gameObject": 6,
             "rotation": 3.1415927410125734
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 4,
+            "tileIdZ": 11,
+            "gameObject": 17,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 4,
+            "tileIdZ": 4,
+            "gameObject": 17,
+            "rotation": 0.0
         }
     ],
     "stairs": [

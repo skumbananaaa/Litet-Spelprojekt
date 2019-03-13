@@ -558,14 +558,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
 		bool isSmoked = HasInjurySmoke();
-		Appl
-		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt;
-
-		if (isSmoked != HasInjurySmoke())
-		{
-			Logger::LogEvent(GetName() + " blev rökskadad!");
-			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::boolalpha << std::to_string(m_GearIsEquipped) << std::endl;
-		}
+		ApplySmokeInjury((tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt);
 	}
 }
 

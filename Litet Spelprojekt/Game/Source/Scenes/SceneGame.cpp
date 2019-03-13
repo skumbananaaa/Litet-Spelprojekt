@@ -795,9 +795,7 @@ glm::vec3 SceneGame::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint
 
 void SceneGame::ShowCrewmember(uint32 crewmember)
 {
-	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
-	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
-	m_pWorld->SetRoomActive(roomIndex, true);
+	m_Crew.GetMember(crewmember)->ReportPosition();
 }
 
 GameObject* SceneGame::RayTestGameObjects()

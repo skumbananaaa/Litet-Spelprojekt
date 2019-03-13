@@ -74,6 +74,7 @@ public:
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
+	void ReportPosition() noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;

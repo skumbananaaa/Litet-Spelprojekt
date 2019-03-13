@@ -93,11 +93,6 @@ void GameObjectFloor::OnPicked(const std::vector<int32>& selectedMembers, int32 
 		AddChoice("Släck eld", nullptr);
 	}
 
-	//if (!IsOpen())
-	//{
-	//	AddChoice("Öppna", reinterpret_cast<void*>(true));
-	//}
-
 	DisplayOrders(x, y, selectedMembers);
 }
 
@@ -108,12 +103,19 @@ void GameObjectFloor::OnAddedToScene(Scene* scene) noexcept
 
 void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept
 {
-	Crew* crew = Game::GetGame()->m_pSceneGame->GetCrew();
+	Crew* pCrew = Game::GetGame()->m_pSceneGame->GetCrew();
+	World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
+
 	for (uint32 i = 0; i < selectedMembers.size(); i++)
 	{
 		const glm::ivec3& tile = GetTile();
-		Crewmember* pCrewmember = crew->GetMember(selectedMembers[i]);
-		pCrewmember->GiveOrder(new OrderExtinguishFire(glm::ivec3(1, 4, 1), tile,
-			Game::GetGame()->m_pSceneGame->GetWorld()->GetLevel(tile.y).GetLevel()[tile.x][tile.z], pCrewmember->HasGearEquipped()));
+		Crewmember* pCrewmember = pCrew->GetMember(selectedMembers[i]);
+
+		pCrewmember->GiveOrder(new OrderExtinguishFire(
+			pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
+			tile,
+			pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z],
+			pCrewmember->HasGearEquipped(),
+			false));
 	}
 }

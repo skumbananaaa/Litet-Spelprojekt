@@ -166,13 +166,13 @@ float GetDepthFromZ(float z)
 void main()
 {
 	//Get the grid position of all 3 vertices in the triangle
-	vec3 currentVertex = vec3(g_Position.x, 0.0f, g_Position.y);
+	vec3 currentVertex = vec3(g_Position.x, 1.3f, g_Position.y);
 	vec3 vertex1 = currentVertex + vec3(g_Indicators.x, 0.0f, g_Indicators.y);
 	vec3 vertex2 = currentVertex + vec3(g_Indicators.z, 0.0f, g_Indicators.w);
 	vs_out.FoamFactor = float(length(g_IcebergPosition - currentVertex.xz) < 8.0f);
-	currentVertex.y += 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - currentVertex.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - currentVertex.xz)));
-	vertex1.y 		+= 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex1.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex1.xz)));
-	vertex2.y 		+= 10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex2.xz)) + vs_out.FoamFactor * snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex2.xz)));
+	currentVertex.y += vs_out.FoamFactor * (10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - currentVertex.xz)) + snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - currentVertex.xz))));
+	vertex1.y 		+= vs_out.FoamFactor * (10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex1.xz)) + snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex1.xz))));
+	vertex2.y 		+= vs_out.FoamFactor * (10.0f * min(1.0f, 4.0f / length(g_IcebergPosition - vertex2.xz)) + snoise(min(vec2(10.0f), roundEven(g_IcebergPosition - vertex2.xz))));
 	
 	float depth = 30.0F;
 	float xOffset = 5.0F;

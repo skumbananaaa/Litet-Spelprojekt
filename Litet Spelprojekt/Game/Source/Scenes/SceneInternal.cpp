@@ -36,7 +36,7 @@ SceneInternal::SceneInternal(bool autoRotateCamera) :
 	}
 
 	//Reflector for water
-	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 1.01f);
+	PlanarReflector* pReflector = new PlanarReflector(glm::vec3(0.0f, 1.0f, 0.0f), 2.31f);
 	AddPlanarReflector(pReflector);
 	
 	DirectionalLight* pDirectionalLight = new DirectionalLight(glm::vec4(0.3f), glm::vec3(1.0f, 1.0f, 0.0f));

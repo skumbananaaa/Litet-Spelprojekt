@@ -3,7 +3,8 @@
 
 OrderExtinguishFire::OrderExtinguishFire(const glm::ivec3& roomTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool hasGearEquipped, bool fireFullyExtinguished) :
 	OrderWalk(hasGearEquipped != fireFullyExtinguished ? burningTile : roomTile),
-	m_EquippingGearTimer(0.0f)
+	m_EquippingGearTimer(0.0f),
+	m_ExtinguishingIntensity(FIRE_EXTINGUISH_BY_CREW_RATE)
 {
 	//hasGearEquipped T fireFullyExtinguished F : T
 	//hasGearEquipped F fireFullyExtinguished T : ~
@@ -69,21 +70,21 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					m_ExtinguishingFire = true;
 				}
 
-				glm::ivec3 generalDirection = glm::round(GetCrewMember()->GetDirection());
-				glm::ivec3 generalRight = glm::round(glm::normalize(glm::cross(UP_VECTOR, GetCrewMember()->GetDirection())));
+				glm::vec3 direction = GetCrewMember()->GetDirection();
+				glm::vec3 right = glm::normalize(glm::cross(UP_VECTOR, GetCrewMember()->GetDirection()));
 
-				glm::ivec3 tileR = m_BurningTile + generalDirection + generalRight;
-				glm::ivec3 tileM = m_BurningTile + generalDirection;
-				glm::ivec3 tileL = m_BurningTile + generalDirection - generalRight;
+				glm::ivec3 tileR = m_BurningTile + glm::ivec3(glm::round(direction + right));
+				glm::ivec3 tileM = m_BurningTile + glm::ivec3(glm::round(direction));
+				glm::ivec3 tileL = m_BurningTile + glm::ivec3(glm::round(direction - right));
 
 				bool tileRInWorld = CheckIfTileInWorld(levelSize, tileR);
 				bool tileMInWorld = CheckIfTileInWorld(levelSize, tileM);
 				bool tileLInWorld = CheckIfTileInWorld(levelSize, tileL);
 
-				bool tileTargetExtinguished = ExtinguishIfInWorld(ppLevelData, m_BurningTile, true);
-				bool tileRExtinguished = ExtinguishIfInWorld(ppLevelData, tileR, tileRInWorld);
-				bool tileMExtinguished = ExtinguishIfInWorld(ppLevelData, tileM, tileMInWorld);
-				bool tileLExtinguished = ExtinguishIfInWorld(ppLevelData, tileL, tileLInWorld);
+				bool tileTargetExtinguished = ExtinguishIfInWorld(ppLevelData, m_BurningTile, true, dtS);
+				bool tileRExtinguished = ExtinguishIfInWorld(ppLevelData, tileR, tileRInWorld, dtS);
+				bool tileMExtinguished = ExtinguishIfInWorld(ppLevelData, tileM, tileMInWorld, dtS);
+				bool tileLExtinguished = ExtinguishIfInWorld(ppLevelData, tileL, tileLInWorld, dtS);
 
 				bool allFiresExtinguished =
 					tileTargetExtinguished &&
@@ -114,6 +115,10 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
 					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped(), false));
 					return false;
+				}
+				else
+				{
+					m_ExtinguishingIntensity * 1.1f;
 				}
 			}
 			else
@@ -168,6 +173,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 void OrderExtinguishFire::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+
+	GetCrewMember()->ReportPosition();
 }
 
 bool OrderExtinguishFire::CanBeStackedWithSameType() noexcept

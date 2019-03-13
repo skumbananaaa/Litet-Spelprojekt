@@ -19,6 +19,8 @@ void OrderCarry::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 void OrderCarry::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+
+	GetCrewMember()->ReportPosition();
 	//GetCrewMember()->SetAssisting(nullptr);
 }
 

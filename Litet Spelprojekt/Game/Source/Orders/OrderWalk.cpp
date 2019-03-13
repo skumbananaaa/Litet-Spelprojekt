@@ -42,6 +42,8 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 	TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
 	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+	uint32 index1 = pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z];
+	uint32 index2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevel()[m_TargetTile.x][m_TargetTile.z];
 
 	if (door1)
 	{
@@ -89,14 +91,13 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 	Room& room = pWorld->GetRoom(pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z]);
 
-	uint32 index = pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z];
 
 	if (room.IsBurning())
 	{
 		if (!room.IsFireDetected())
 		{
 			room.SetFireDetected(true);
-			Logger::LogEvent(pCrewmember->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index) + "!", true);
+			Logger::LogEvent(pCrewmember->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index1) + "!", true);
 			pCrewmember->ReportPosition();
 			GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 		}
@@ -105,7 +106,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
-		Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index) + "!", true);
+		Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
 		pCrewmember->ReportPosition();
 		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
@@ -114,7 +115,15 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	{
 		pCrewmember->UpdateLastKnownPosition();
 	}
+	
+	if (m_NewRoom && index1 == index2)
+	{
+		m_NewRoom = false;
+		pCrewmember->LookForDoor();
+	}
 
+	m_NewRoom = index1 != index2;
+	
 	return FollowPath(dtS);
 }
 

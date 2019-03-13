@@ -34,7 +34,9 @@ void OrderPlugHole::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMember
 
 void OrderPlugHole::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 
+	GetCrewMember()->ReportPosition();
 }
 
 bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept

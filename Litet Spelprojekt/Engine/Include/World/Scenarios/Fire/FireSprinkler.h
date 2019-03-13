@@ -25,8 +25,24 @@ public:
 	virtual void OnAddedToScene(Scene* pScene) noexcept override;
 
 private:
+	bool IsInsideBoundingBox(const glm::ivec2& pos) const noexcept;
+
+private:
 	Scene* m_pScene;
 	bool m_HasDetectedSmoke;
 	AudioSource* m_pAudioSrc;
 	MeshEmitter* m_pParticleEmitter;
+	glm::vec3 m_MinBounds;
+	glm::vec3 m_MaxBounds;
 };
+
+inline bool FireSprinkler::IsInsideBoundingBox(const glm::ivec2& pos) const noexcept
+{
+	if (m_MinBounds == m_MaxBounds)
+	{
+		return true;
+	}
+
+	return	pos.x >= m_MinBounds.x && pos.y >= m_MinBounds.z &&
+			pos.x <= m_MaxBounds.x && pos.y <= m_MaxBounds.z;
+}

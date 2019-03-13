@@ -38,5 +38,7 @@ protected:
 	int32 m_NrOfTilesLeft;
 	bool m_IsPathReady;
 	int32 m_OopsIForgot;
+
+	bool m_NewRoom = false;
 };
 

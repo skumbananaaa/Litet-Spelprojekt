@@ -54,9 +54,27 @@ inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelD
 		return true;
 	}
 
-	if (ppLevelData[tile.x][tile.z].Temp > ppLevelData[tile.x][tile.z].BurnsAt)
+	TileData& tileData = ppLevelData[tile.x][tile.z];
+
+	if (tileData.Temp > tileData.BurnsAt)
 	{
-		ppLevelData[tile.x][tile.z].Temp = -273.15f;
+		tileData.Temp = -273.15f;
+		
+		for (uint32 i = 0; i < tileData.GameObjects.size(); i++)
+		{
+			if (dynamic_cast <FireAlarm*>(tileData.GameObjects[i]))
+			{
+				FireAlarm* pFireAlarm = (FireAlarm*)tileData.GameObjects[i];
+
+				if (pFireAlarm != nullptr)
+				{
+					if (pFireAlarm->HasDetectedSmoke())
+					{
+						pFireAlarm->TurnOff();
+					}
+				}
+			}
+		}
 	}
 
 	return ppLevelData[tile.x][tile.z].Temp < ppLevelData[tile.x][tile.z].BurnsAt;

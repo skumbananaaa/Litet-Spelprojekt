@@ -17,6 +17,7 @@ SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 	m_pUIPause(nullptr),
 	m_IsPaused(false),
 	m_IsGameOver(false),
+	m_pUIRequest(nullptr),
 	m_GameTimer(0.0f)
 {
 	Game* game = Game::GetGame();
@@ -63,10 +64,11 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Window* window = &game->GetWindow();
 
 	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
+	m_pUIRequest = new UICrewRequest(window->GetWidth() / 4, window->GetHeight() - 50, 200, 50);
 	m_pUILog = new UILog(window->GetWidth() - 600, window->GetHeight() - 700, 600, 700);
-	
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_pUILog);
+	game->GetGUIManager().Add(m_pUIRequest);
 
 	Logger::SetListener(m_pUILog);
 
@@ -102,8 +104,6 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	}
 
 	GetCamera().SetMaxPitch(1.55334303f);
-
-	DeleteSafe(m_pUICrew);
 
 	OrderSchedule::Release();
 	ResourceHandler::ResetGameObjectCounters();
@@ -799,9 +799,7 @@ glm::vec3 SceneGame::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint
 
 void SceneGame::ShowCrewmember(uint32 crewmember)
 {
-	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
-	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
-	m_pWorld->SetRoomActive(roomIndex, true);
+	m_Crew.GetMember(crewmember)->ReportPosition();
 }
 
 GameObject* SceneGame::RayTestGameObjects()

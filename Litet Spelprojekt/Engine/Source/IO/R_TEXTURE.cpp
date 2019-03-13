@@ -25,6 +25,10 @@ uint32 TEXTURE::ICON_SKILL_STRENGTH = 0;
 uint32 TEXTURE::ICON_CIRCLE = 0;
 uint32 TEXTURE::ICON_CHECKED = 0;
 uint32 TEXTURE::ICON_CROSSED = 0;
+uint32 TEXTURE::ICON_RED_DOOR = 0;
+uint32 TEXTURE::ICON_YELLOW_DOOR = 0;
+uint32 TEXTURE::ICON_BLUE_DOOR = 0;
+uint32 TEXTURE::ICON_GREEN_DOOR = 0;
 uint32 TEXTURE::ICON_NOTIFICATION_TRIANGLE = 0;
 uint32 TEXTURE::SMOKE = 0;
 uint32 TEXTURE::SJOFAN_DIFF = 0;
@@ -114,4 +118,8 @@ void TEXTURE::RegisterResources()
 	ICON_CROSSED					= ResourceHandler::RegisterTexture2D("Icons/Crossed.png", TEX_FORMAT_RGBA, false, true);
 	ICON_NOTIFICATION_TRIANGLE		= ResourceHandler::RegisterTexture2D("Icons/NotificationTriangle.png", TEX_FORMAT_RGBA, false, true);
 	ICON_LOGBOOK					= ResourceHandler::RegisterTexture2D("Icons/NoteBook.png", TEX_FORMAT_RGBA, false, true);
+	ICON_GREEN_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/GreenDoor.png", TEX_FORMAT_RGBA, false, true);
+	ICON_BLUE_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/BlueDoor.png", TEX_FORMAT_RGBA, false, true);
+	ICON_YELLOW_DOOR	            = ResourceHandler::RegisterTexture2D("Icons/YellowDoor.png", TEX_FORMAT_RGBA, false, true);
+	ICON_RED_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/RedDoor.png", TEX_FORMAT_RGBA, false, true);
 }

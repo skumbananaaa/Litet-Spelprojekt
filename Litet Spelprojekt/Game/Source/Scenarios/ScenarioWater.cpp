@@ -289,6 +289,8 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		m_InletTiles.erase(m_InletTiles.begin() + m_InletsToRemove[i] - i);
 	}
 
+	m_InletsToRemove.clear();
+
 	return false;
 }
 
@@ -305,4 +307,9 @@ int32 ScenarioWater::GetCooldownTime() noexcept
 int32 ScenarioWater::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 1;
+}
+
+const std::vector<glm::ivec3> ScenarioWater::GetWaterInlets() const noexcept
+{
+	return m_InletTiles;
 }

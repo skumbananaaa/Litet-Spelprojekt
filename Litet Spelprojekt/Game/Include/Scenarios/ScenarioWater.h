@@ -28,6 +28,7 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	const std::vector<glm::ivec3> GetWaterInlets() const noexcept;
 private:
 	World* m_pWorld;
 	bool m_WaterAlwaysVisible;

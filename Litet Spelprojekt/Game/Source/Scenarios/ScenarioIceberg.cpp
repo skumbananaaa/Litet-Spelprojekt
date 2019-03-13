@@ -94,20 +94,17 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 			ScenarioManager::Escalate(Game::GetGame()->m_ScenarioWater, target);
 
 			m_pAudioSourceExplosion->Play();
+			Logger::LogEvent("Båten fick hål i skrovet av ett isberg", false);
 
 			Crew* crew = scene->GetCrew();
 			for (int i = 0; i < crew->GetCount(); i++)
 			{
-				if (crew->GetMember(i)->GetPosition().y <= 1)
+				float distance = glm::distance(crew->GetMember(i)->GetPosition(), target);
+				if (distance <= 2)
 				{
-					float distance = glm::distance(crew->GetMember(i)->GetPosition(), target);
-					if (distance <= 2)
-					{
-						Logger::LogEvent(crew->GetMember(i)->GetName() + " blev träffad av ett Isberg!", false);
-						crew->GetMember(i)->ApplyBurnInjury(2 - distance + 1);
-						crew->GetMember(i)->ApplyBoneInjury(2 - distance + 1);
-						crew->GetMember(i)->ApplyBleedInjury(2 - distance + 1);
-					}
+					Logger::LogEvent(crew->GetMember(i)->GetName() + " blev skadad av ett isberg!", false);
+					crew->GetMember(i)->ApplyBoneInjury(2 - distance + 1);
+					crew->GetMember(i)->ApplyBleedInjury(2 - distance + 1);
 				}
 			}
 		}

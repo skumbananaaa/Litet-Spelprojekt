@@ -8,6 +8,9 @@
 FireAlarm::FireAlarm(int32 source) : GameObject(),
 	m_pSpotlight(nullptr)
 {
+	//Set particleemitters to be updated
+	m_IsTickable = true;
+
 	m_pAudioSrc = AudioSource::CreateSoundSource(source);
 	m_pAudioSrc->SetRollOffFactor(10.0f);
 	m_pAudioSrc->SetReferenceDistance(2.0f);
@@ -26,7 +29,7 @@ void FireAlarm::SetPosition(const glm::vec3& position) noexcept
 	m_pAudioSrc->SetPosition(position);
 }
 
-bool FireAlarm::HasDetected() const noexcept
+bool FireAlarm::HasDetectedSmoke() const noexcept
 {
 	return m_pSpotlight;
 }

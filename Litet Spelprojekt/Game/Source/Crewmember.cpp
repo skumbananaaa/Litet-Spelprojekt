@@ -16,13 +16,16 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false)
 {
+	//Set crewmembers to be updated
+	m_IsTickable = true;
+
 	SetName(name);
 	SetWorld(world);
 	m_IsPicked = false;
 	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2),std::round(position.z));
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
-	SetAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	InitAnimation(MESH::ANIMATED_MODEL_IDLE);
 	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
@@ -91,10 +94,18 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 
+	uint32 index = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
+
 	if (room.IsBurning() && !room.IsFireDetected())
 	{
 		room.SetFireDetected(true);
-		Logger::LogEvent(GetName() + " larmar om eld!", true);
+		Logger::LogEvent(GetName() + " larmar om eld i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+	}
+
+	if (room.IsFlooded() && !room.IsFloodDetected())
+	{
+		room.SetFloodDetected(true);
+		Logger::LogEvent(GetName() + " larmar om vattenläcka i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
 	}
 
 	if (m_pUISelectedCrew)
@@ -245,84 +256,103 @@ bool Crewmember::Heal(float skillLevel, float dtS)
 
 void Crewmember::ApplyBurnInjury(float burn)
 {
+	bool lastState = HasInjuryBurned();
 	m_HasInjuryBurned += burn;
-	if (m_HasInjuryBurned > 0.9 && m_HasInjuryBurned < 1.1)
+	if (lastState != HasInjuryBurned())
 	{
+		Logger::LogEvent(GetName() + " fick brännskador", false);
 		m_pAudioSourceScream->Play();
 	}
 }
 
 void Crewmember::ApplyBoneInjury(float boneBreak)
 {
+	bool lastState = HasInjuryBoneBroken();
 	m_HasInjuryBoneBroken += boneBreak;
+	if (lastState != HasInjuryBoneBroken())
+	{
+		Logger::LogEvent(GetName() + " fick benbrott", false);
+		m_pAudioSourceScream->Play();
+	}
 }
 
 void Crewmember::ApplyBleedInjury(float bleed)
 {
+	bool lastState = HasInjuryBleed();
 	m_HasInjuryBleeding += bleed;
+	if (lastState != HasInjuryBleed())
+	{
+		Logger::LogEvent(GetName() + " fick köttsår", false);
+		m_pAudioSourceScream->Play();
+	}
 }
 
-int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept
+int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
 {
 	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
 	centre.x += extension * glm::floor(centre.y / 2.0f);
 
-	glm::vec3 normals[]{
-		m_Direction,
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::normalize(glm::cross(normals[0], normals[1]))
-	};
-
-	float h[] = {
-		0.1,
-		0.9,
-		0.25
-	};
-
-	float d1[] = {
-		glm::dot(centre - normals[0] * h[0], normals[0]),
-		glm::dot(centre - normals[1] * h[1], normals[1]),
-		glm::dot(centre - normals[2] * h[2], normals[2])
-	};
-	float d2[] = {
-		glm::dot(centre + normals[0] * h[0], normals[0]),
-		glm::dot(centre + normals[1] * h[1], normals[1]),
-		glm::dot(centre + normals[2] * h[2], normals[2])
-	};
-
-	float t1[3];
-	float t2[3];
-	float t_min[3];
-	float t_max[3];
-
 	float t = -1;
-	float min_t, max_t;
 
-	for (int j = 0; j < 3; j++)
+	if (glm::floor(centre.y / 2) == glm::floor(elevation / 2) || extension > 0)
 	{
-		if (std::abs(glm::dot(normals[j], ray)) > 0.01)
+
+		glm::vec3 normals[]{
+			m_Direction,
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			glm::normalize(glm::cross(normals[0], normals[1]))
+		};
+
+		float h[] = {
+			0.1,
+			0.9,
+			0.25
+		};
+
+		float d1[] = {
+			glm::dot(centre - normals[0] * h[0], normals[0]),
+			glm::dot(centre - normals[1] * h[1], normals[1]),
+			glm::dot(centre - normals[2] * h[2], normals[2])
+		};
+		float d2[] = {
+			glm::dot(centre + normals[0] * h[0], normals[0]),
+			glm::dot(centre + normals[1] * h[1], normals[1]),
+			glm::dot(centre + normals[2] * h[2], normals[2])
+		};
+
+		float t1[3];
+		float t2[3];
+		float t_min[3];
+		float t_max[3];
+
+		float min_t, max_t;
+
+		for (int j = 0; j < 3; j++)
 		{
-			t1[j] = (d1[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
-			t2[j] = (d2[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
+			if (std::abs(glm::dot(normals[j], ray)) > 0.01)
+			{
+				t1[j] = (d1[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
+				t2[j] = (d2[j] - glm::dot(normals[j], origin)) / glm::dot(normals[j], ray);
 
-			t_min[j] = std::min(t1[j], t2[j]);
-			t_max[j] = std::max(t1[j], t2[j]);
+				t_min[j] = std::min(t1[j], t2[j]);
+				t_max[j] = std::max(t1[j], t2[j]);
+			}
+			else if (-glm::dot(normals[0], centre - origin) - h[j] > 0 || -glm::dot(normals[0], centre - origin) + h[j] < 0)
+				return -1;
 		}
-		else if (-glm::dot(normals[0], centre - origin) - h[j] > 0 || -glm::dot(normals[0], centre - origin) + h[j] < 0)
-			return -1;
-	}
 
-	min_t = std::max(t_min[0], t_min[1]);
-	min_t = std::max(min_t, t_min[2]);
-	max_t = std::min(t_max[0], t_max[1]);
-	max_t = std::min(max_t, t_max[2]);
+		min_t = std::max(t_min[0], t_min[1]);
+		min_t = std::max(min_t, t_min[2]);
+		max_t = std::min(t_max[0], t_max[1]);
+		max_t = std::min(max_t, t_max[2]);
 
-	if (min_t <= max_t && max_t >= 0)
-	{
-		if (t_min > 0)
-			t = min_t;
-		else
-			t = max_t;
+		if (min_t <= max_t && max_t >= 0)
+		{
+			if (t_min > 0)
+				t = min_t;
+			else
+				t = max_t;
+		}
 	}
 
 	return t;
@@ -513,7 +543,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 	}
 
 	float smokeDmgSpeed = 0.1f;
-	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	const TileData& tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
 		bool isSmoked = HasInjurySmoke();
@@ -521,8 +551,8 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 
 		if (isSmoked != HasInjurySmoke())
 		{
-			Logger::LogEvent(GetName() + " blev rökskadad!" + std::to_string(m_HasInjurySmoke));
-			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::to_string(m_GearIsEquipped) << std::endl;
+			Logger::LogEvent(GetName() + " blev rökskadad!");
+			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::boolalpha << std::to_string(m_GearIsEquipped) << std::endl;
 		}
 	}
 }
@@ -541,15 +571,10 @@ void Crewmember::CheckFireDamage(const TileData * const * data, float dt) noexce
 	}
 
 	float burnSpeed = 0.1f;
-	TileData tileData = data[m_PlayerTile.x][m_PlayerTile.z];
+	const TileData& tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.Temp >= tileData.BurnsAt)
 	{
-		bool isBurned = HasInjuryBurned();
 		ApplyBurnInjury((tileData.Temp / tileData.BurnsAt) * burnSpeed * dt);
-		if (isBurned != HasInjuryBurned())
-		{
-			Logger::LogEvent(GetName() + " blev bränd!" + std::to_string(m_HasInjuryBurned));
-		}
 	}
 }
 

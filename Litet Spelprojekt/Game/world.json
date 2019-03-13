@@ -6386,6 +6386,188 @@
             "rotation": 0.0
         },
         {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 25,
+            "gameObject": 14,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 28,
+            "gameObject": 14,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 26,
+            "gameObject": 14,
+            "rotation": 12.566370010375977
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 24,
+            "gameObject": 14,
+            "rotation": 15.707962036132813
+        },
+        {
+            "tileIdX": 1,
+            "tileIdY": 0,
+            "tileIdZ": 29,
+            "gameObject": 13,
+            "rotation": 6.2831854820251469
+        },
+        {
+            "tileIdX": 1,
+            "tileIdY": 0,
+            "tileIdZ": 27,
+            "gameObject": 13,
+            "rotation": 9.42477798461914
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 26,
+            "gameObject": 14,
+            "rotation": 12.566370010375977
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 27,
+            "gameObject": 14,
+            "rotation": 15.707962036132813
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 0,
+            "tileIdZ": 28,
+            "gameObject": 14,
+            "rotation": 20.420352935791017
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 29,
+            "gameObject": 13,
+            "rotation": 6.2831854820251469
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 0,
+            "tileIdZ": 25,
+            "gameObject": 13,
+            "rotation": 7.853981971740723
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 24,
+            "gameObject": 13,
+            "rotation": 9.42477798461914
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 35,
+            "gameObject": 15,
+            "rotation": 1.5707963705062867
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 37,
+            "gameObject": 15,
+            "rotation": 10.995573997497559
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 37,
+            "gameObject": 15,
+            "rotation": 18.84955596923828
+        },
+        {
+            "tileIdX": 1,
+            "tileIdY": 0,
+            "tileIdZ": 39,
+            "gameObject": 15,
+            "rotation": 21.99114990234375
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 0,
+            "tileIdZ": 16,
+            "gameObject": 16,
+            "rotation": 6.2831854820251469
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 0,
+            "tileIdZ": 13,
+            "gameObject": 16,
+            "rotation": 10.995573997497559
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 12,
+            "gameObject": 16,
+            "rotation": 10.995573997497559
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 0,
+            "tileIdZ": 6,
+            "gameObject": 16,
+            "rotation": 10.995573997497559
+        },
+        {
+            "tileIdX": 8,
+            "tileIdY": 0,
+            "tileIdZ": 0,
+            "gameObject": 16,
+            "rotation": 18.84955596923828
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 9,
+            "gameObject": 16,
+            "rotation": 23.561946868896486
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 20,
+            "gameObject": 16,
+            "rotation": 28.274337768554689
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 26,
+            "gameObject": 16,
+            "rotation": 29.845134735107423
+        },
+        {
+            "tileIdX": 3,
+            "tileIdY": 0,
+            "tileIdZ": 39,
+            "gameObject": 16,
+            "rotation": 34.557525634765628
+        },
+        {
+            "tileIdX": 3,
+            "tileIdY": 0,
+            "tileIdZ": 32,
+            "gameObject": 16,
+            "rotation": 37.699119567871097
+        },
+        {
             "tileIdX": 6,
             "tileIdY": 2,
             "tileIdZ": 19,
@@ -6769,6 +6951,41 @@
             "tileIdZ": 2,
             "gameObject": 6,
             "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 2,
+            "tileIdZ": 24,
+            "gameObject": 16,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 2,
+            "tileIdZ": 32,
+            "gameObject": 16,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 4,
+            "tileIdY": 2,
+            "tileIdZ": 16,
+            "gameObject": 16,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 6,
+            "tileIdY": 2,
+            "tileIdZ": 10,
+            "gameObject": 16,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 4,
+            "tileIdY": 2,
+            "tileIdZ": 0,
+            "gameObject": 16,
+            "rotation": 12.566370010375977
         },
         {
             "tileIdX": 5,
@@ -7161,6 +7378,55 @@
             "tileIdZ": 16,
             "gameObject": 0,
             "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 4,
+            "tileIdZ": 20,
+            "gameObject": 16,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 4,
+            "tileIdZ": 26,
+            "gameObject": 16,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 3,
+            "tileIdY": 4,
+            "tileIdZ": 34,
+            "gameObject": 16,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 6,
+            "tileIdY": 4,
+            "tileIdZ": 37,
+            "gameObject": 16,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 4,
+            "tileIdZ": 29,
+            "gameObject": 16,
+            "rotation": 10.995573997497559
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 4,
+            "tileIdZ": 12,
+            "gameObject": 6,
+            "rotation": 3.1415927410125734
+        },
+        {
+            "tileIdX": 9,
+            "tileIdY": 4,
+            "tileIdZ": 4,
+            "gameObject": 6,
+            "rotation": 3.1415927410125734
         }
     ],
     "stairs": [
@@ -7362,6 +7628,11 @@
             15
         ],
         [
+            1,
+            2,
+            18
+        ],
+        [
             2,
             2,
             16
@@ -7370,6 +7641,11 @@
             2,
             2,
             17
+        ],
+        [
+            2,
+            2,
+            18
         ],
         [
             3,

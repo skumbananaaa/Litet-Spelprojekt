@@ -35,9 +35,14 @@ void AnimatedSkeleton::SetSkeletonTransform(const glm::mat4& transform) const no
 	m_SkeletonBuffer.Model = transform;
 }
 
-const SkeletonBuffer& AnimatedSkeleton::GetSkeletonBuffer() const noexcept
+void AnimatedSkeleton::SetAnimationTimeSeconds(float animationTimeSeconds) const noexcept
 {
-	return m_SkeletonBuffer;
+	m_AnimationTimeSeconds = animationTimeSeconds;
+}
+
+void AnimatedSkeleton::SetAnimationTimeTicks(float animationTimeTicks) const noexcept
+{
+	m_AnimationTimeTicks = animationTimeTicks;
 }
 
 void AnimatedSkeleton::UpdateBoneTransforms(float dtS, const AnimatedMesh* mesh) const

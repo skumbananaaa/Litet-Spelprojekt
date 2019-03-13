@@ -203,7 +203,7 @@ void World::PlaceDoors(Scene& scene) noexcept
 					glm::vec3 position = (door1 + door2) / 2.0F;
 
 					GameObject* pGameObject = new GameObject();
-					pGameObject->SetMaterial(MATERIAL::WHITE);
+					pGameObject->SetMaterial(MATERIAL::DOOR_FRAME);
 					pGameObject->SetMesh(MESH::DOOR_FRAME);
 					pGameObject->SetPosition(position);
 					pGameObject->SetRotation(glm::vec4(0, 1, 0, delta.z * glm::half_pi<float>()));
@@ -283,7 +283,7 @@ void World::PlaceStairs(Scene& scene) noexcept
 		}
 
 		GameObject* pGameObject = new GameObject();
-		pGameObject->SetMaterial(MATERIAL::WHITE);
+		pGameObject->SetMaterial(MATERIAL::LADDER);
 		pGameObject->SetMesh(MESH::LADDER);
 		pGameObject->SetPosition(position);
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));

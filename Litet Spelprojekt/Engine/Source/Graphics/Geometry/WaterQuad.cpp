@@ -99,7 +99,7 @@ WaterQuad* WaterQuad::CreateWaterQuad(glm::vec2& pos, const glm::vec2 centerHole
 	{
 		for (float col = colStart; col < colEnd; col += scale)
 		{
-			if (row < minHoleCoords.x || row > maxHoleCoords.x || col < minHoleCoords.y || col > maxHoleCoords.y)
+			//if (row < minHoleCoords.x || row > maxHoleCoords.x || col < minHoleCoords.y || col > maxHoleCoords.y)
 			{
 				StoreGridSquare(col, row, scale, vertices);
 			}

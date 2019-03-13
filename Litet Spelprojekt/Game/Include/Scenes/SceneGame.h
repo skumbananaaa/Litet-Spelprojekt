@@ -38,6 +38,7 @@ public:
 	virtual void OnKeyDown(KEY keycode) override;
 	virtual void OnResize(uint32 width, uint32 height) override;
 	virtual void OnSceneExtensionComplete() noexcept override;
+	void OnGameOver() noexcept;
 
 	void PickPosition();
 	void RequestDoorClosed(uint32 doorColor);
@@ -67,9 +68,11 @@ protected:
 
 private:
 	bool m_IsPaused;
+	bool m_IsGameOver;
 	bool m_CartesianCamera;
 	
-	int32 m_CurrentElevation;
+	float m_GameTimer;
+
 	uint32 m_CurrentLight = 0;
 
 	UICrewMember* m_pUICrewMember;
@@ -91,10 +94,12 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	glm::vec4 wallClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.99f));
 	glm::vec4 floorClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.9f));
 
+	ResourceHandler::GetMaterial(MATERIAL::DOOR_FRAME)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_RED)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_GREEN)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_BLUE)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_YELLOW)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::LADDER)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::OCEAN_BLUE)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR)		->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR)		->SetLevelClipPlane(standardClipPlane);
@@ -124,6 +129,11 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_DINING1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_CABOOSE1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::OVEN)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::SHELF_AMMUNITION)	->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::SHELF_EMPTY)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::GENERATOR)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FIRE_EXTINGUISHER)	->SetLevelClipPlane(standardClipPlane);
+
 
 	IRenderer* renderer = GetRenderer();
 	if (renderer != nullptr)

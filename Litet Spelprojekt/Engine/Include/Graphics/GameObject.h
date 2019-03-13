@@ -26,7 +26,7 @@ public:
 	virtual void SetIsVisible(bool isVisible) noexcept;
 	virtual void SetIsPicked(bool picked) noexcept;
 	virtual void SetMesh(int32 mesh) noexcept;
-	virtual void SetAnimatedMesh(int32 mesh) noexcept;
+	virtual void InitAnimation(int32 mesh) noexcept;
 	virtual void UpdateAnimatedMesh(int32 mesh) noexcept;
 	virtual void SetMaterial(int32 material) noexcept;
 	virtual void SetDecal(int32 decal) noexcept;
@@ -44,7 +44,6 @@ public:
 	const AnimatedMesh* GetAnimatedMesh() const noexcept;
 	const AnimatedSkeleton* GetSkeleton() const noexcept;
 	const glm::mat4& GetTransform() const noexcept;
-	const glm::mat4& GetInverseTransform() const noexcept;
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
@@ -53,11 +52,11 @@ public:
 	uint32 GetRoom() const noexcept;
 
 	bool IsHidden() const noexcept;
-
+	bool IsTickable() const noexcept;
 	bool IsDirty() const noexcept;
 	bool IsVisible() const noexcept;
 
-	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float extension) noexcept;
+	virtual int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept;
 
 	virtual bool IsHovered() const noexcept;
 	virtual bool IsPicked() const noexcept;
@@ -79,9 +78,10 @@ public:
 	virtual void OnFireDetected() noexcept {};
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
+	virtual bool HasDetectedSmoke() const noexcept;
 
-	void Lock() noexcept;
-	void Unlock() noexcept;
+	void LockAnimation() noexcept;
+	void UnlockAnimation() noexcept;
 	void SetWorld(World* pWorld) noexcept;
 
 protected:
@@ -89,18 +89,16 @@ protected:
 	bool m_IsVisible;
 	bool m_IsHovered;
 	bool m_IsPicked;
+	bool m_IsTickable;
 	glm::mat4 m_transform;
-	glm::mat4 m_InverseTransform;
 	glm::vec3 m_Direction;
 	World* m_pWorld;
 
 private:
 	std::string m_Name;
 	const IndexedMesh* m_pMesh;
-	const AnimatedMesh* m_pAMesh;
 	const Material* m_pMaterial;
 	const Decal* m_pDecal;
-	AnimatedSkeleton* m_pASkeleton;
 	glm::vec3 m_Position;
 	glm::vec4 m_Rotation;
 	glm::vec3 m_Scale;
@@ -108,7 +106,12 @@ private:
 	int32 m_TypeId;
 	int32 m_Room;
 	bool m_IsHidden = false;
-	std::mutex m_Mutex;
+
+	const AnimatedMesh* m_pAMesh;
+	const AnimatedMesh* m_pAMeshNext;
+	AnimatedSkeleton* m_pASkeleton;
+	AnimatedSkeleton* m_pALastUpdatedSkeleton;
+	bool m_AnimationLocked;
 };
 
 inline const glm::vec3& GameObject::GetPosition() const noexcept
@@ -146,24 +149,38 @@ inline bool GameObject::IsHidden() const noexcept
 	return m_IsHidden;
 }
 
+inline bool GameObject::IsTickable() const noexcept
+{
+	return m_IsTickable;
+}
+
 inline void GameObject::SetMesh(int32 mesh) noexcept
 {
 	m_pMesh = ResourceHandler::GetMesh(mesh);
 }
 
-inline void GameObject::SetAnimatedMesh(int32 mesh) noexcept
+inline void GameObject::InitAnimation(int32 mesh) noexcept
 {
-	Lock();
-	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+		m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+		m_pAMeshNext = nullptr;
 
-	DeleteSafe(m_pASkeleton);
-	m_pASkeleton = new AnimatedSkeleton();
-	Unlock();
+		DeleteSafe(m_pASkeleton);
+		DeleteSafe(m_pALastUpdatedSkeleton);
+		m_pASkeleton = new AnimatedSkeleton();
+		m_pALastUpdatedSkeleton = new AnimatedSkeleton();
 }
 
 inline void GameObject::UpdateAnimatedMesh(int32 mesh) noexcept
 {
-	m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+	if (!m_AnimationLocked)
+	{
+		m_pAMesh = ResourceHandler::GetAnimatedMesh(mesh);
+		m_pAMeshNext = nullptr;
+	}
+	else
+	{
+		m_pAMeshNext = ResourceHandler::GetAnimatedMesh(mesh);
+	}
 }
 
 inline void GameObject::SetDecal(int32 decal) noexcept
@@ -207,18 +224,13 @@ inline const AnimatedMesh* GameObject::GetAnimatedMesh() const noexcept
 
 inline const AnimatedSkeleton* GameObject::GetSkeleton() const noexcept
 {
-	assert(m_pASkeleton != nullptr);
-	return m_pASkeleton;
+	assert(m_pALastUpdatedSkeleton != nullptr);
+	return m_pALastUpdatedSkeleton;
 }
 
 inline const glm::mat4& GameObject::GetTransform() const noexcept
 {
 	return m_transform;
-}
-
-inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
-{
-	return m_InverseTransform;
 }
 
 inline bool GameObject::IsDirty() const noexcept
@@ -263,7 +275,7 @@ inline bool GameObject::HasAnimatedMesh() const noexcept
 
 inline bool GameObject::HasSkeleton() const noexcept
 {
-	return (m_pASkeleton != nullptr);
+	return (m_pALastUpdatedSkeleton != nullptr);
 }
 
 inline void GameObject::SetTypeId(int32 typeId) noexcept
@@ -276,14 +288,19 @@ inline int32 GameObject::GetTypeId() const noexcept
 	return m_TypeId;
 }
 
-inline void GameObject::Lock() noexcept
+inline bool GameObject::HasDetectedSmoke() const noexcept
 {
-	m_Mutex.lock();
+	return true;
 }
 
-inline void GameObject::Unlock() noexcept
+inline void GameObject::LockAnimation() noexcept
 {
-	m_Mutex.unlock();
+	m_AnimationLocked = true;
+}
+
+inline void GameObject::UnlockAnimation() noexcept
+{
+	m_AnimationLocked = false;
 }
 
 inline void GameObject::SetWorld(World* pWorld) noexcept

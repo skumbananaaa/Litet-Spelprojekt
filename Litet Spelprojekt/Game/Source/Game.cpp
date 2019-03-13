@@ -6,6 +6,7 @@
 #include "../Include/Scenarios/ScenarioArtillery.h"
 #include "../Include/Scenarios/ScenarioIceberg.h"
 #include <World/Scenarios/Fire/FireAlarm.h>
+#include <World/Scenarios/Fire/FireSprinkler.h>
 #include "../Include/GameObjectDoor.h"
 #include "../Include/GameObjectFloor.h"
 
@@ -75,6 +76,10 @@ GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
 	if (gameobject == GAMEOBJECT::FIREALARM)
 	{
 		return new FireAlarm(SOUND::MONO_FIREALARM);
+	}
+	else if (gameobject == GAMEOBJECT::FIRESPRINKLER)
+	{
+		return new FireSprinkler(SOUND::MONO_FIREALARM);
 	}
 	else if (gameobject == GAMEOBJECT::DOOR)
 	{

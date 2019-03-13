@@ -1,7 +1,10 @@
 #include <EnginePch.h>
 #include <World/Scenarios/Fire/FireSprinkler.h>
+#include <World/World.h>
 
-FireSprinkler::FireSprinkler(int32 source)
+FireSprinkler::FireSprinkler(int32 source) : GameObject(),
+	m_WaterReservoir(100.0f),
+	m_HasDetectedSmoke(false)
 {
 	//Set particleemitters to be updated
 	m_IsTickable = true;
@@ -24,9 +27,9 @@ void FireSprinkler::SetPosition(const glm::vec3& position) noexcept
 	m_pAudioSrc->SetPosition(position);
 }
 
-bool FireSprinkler::HasDetected() const noexcept
+bool FireSprinkler::HasDetectedSmoke() const noexcept
 {
-	return true;
+	return m_HasDetectedSmoke;
 }
 
 void FireSprinkler::TurnOff() noexcept
@@ -36,37 +39,47 @@ void FireSprinkler::TurnOff() noexcept
 
 void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 {
-	//GameObject::Update(camera, dt);
+	if (!m_HasDetectedSmoke)
+	{
+		m_WaterReservoir += WATER_RESERVOIR_RECOVERY_PER_SECOND * dt;
+		m_WaterReservoir = glm::min(m_WaterReservoir, WATER_RESERVOIR_MAX);
+		return;
+	}
 
-	//if (m_pSpotlight)
-	//{
-	//	glm::mat4 transformObject(1.0f);
-	//	glm::mat4 transformLight(1.0f);
-	//	const glm::vec4& rotation = GetRotation();
-	//	transformObject = glm::rotate(transformObject, rotation.w, glm::vec3(rotation.x, rotation.y, rotation.z));
-	//	transformLight = glm::rotate(transformLight, m_Rotation, glm::vec3(1, 0, 0));
+	glm::ivec3 tilePos = GetTile();
+	tilePos.y -= tilePos.y % 2;
 
-	//	glm::mat4 result = transformObject * transformLight;
-	//	glm::vec4 dir = result * glm::vec4(0, 1, 0, 1);
+	if (m_WaterReservoir > 0.0f)
+	{
+		WorldLevel& worldLevel = m_pWorld->GetLevel(tilePos.y);
+		uint32 levelSizeX = worldLevel.GetSizeX();
+		uint32 levelSizeZ = worldLevel.GetSizeZ();
 
-	//	m_Rotation += dt * 10;
-	//	m_pSpotlight->SetDirection(glm::vec3(dir.x, dir.y, dir.z));
-	//}
+		TileData* const * ppLevelData = worldLevel.GetLevelData();
+
+		for (uint32 x = 0; x < levelSizeX; x++)
+		{
+			for (uint32 z = 0; z < levelSizeZ; z++)
+			{
+				TileData& tile = ppLevelData[x][z];
+
+				if (tile.Temp > tile.BurnsAt)
+				{
+					glm::vec2 toVector = glm::vec2(tilePos.x - x, tilePos.z - z);
+
+					if (glm::length2(toVector) < SPRINKLER_RADIUS_SQRD)
+					{
+						tile.Temp -= FIRE_EXTINGUISH_BY_SPRINKLER_RATE * dt;
+					}
+				}
+			}
+		}
+
+		m_WaterReservoir -= WATER_SPRINKLED_PER_SECOND * dt;
+	}
 }
 
 void FireSprinkler::OnSmokeDetected() noexcept
 {
-	//Logger::LogEvent("Rök upptäckt!", true);
-
-	//glm::mat4 transformObject(1.0f);
-	//const glm::vec4& rotation = GetRotation();
-	//transformObject = glm::rotate(transformObject, rotation.w, glm::vec3(rotation.x, rotation.y, rotation.z));
-	//transformObject = glm::translate(transformObject, glm::vec3(-0.4F, 1.64, 0));
-	//glm::vec4 pos = transformObject * glm::vec4(0, 0, 0, 1);
-	//pos += glm::vec4(GetPosition(), 1);
-
-	//m_pSpotlight = LightManager::AcquireSpotlight(pos, glm::cos(glm::radians(20.5f)), glm::cos(glm::radians(40.5f)), glm::vec3(1, 0, 0), glm::vec4(1.0, 0.25, 0.0, 1.0));
-
-	//m_Rotation = 0;
-	//m_pAudioSrc->Play();
+	m_HasDetectedSmoke = true;
 }

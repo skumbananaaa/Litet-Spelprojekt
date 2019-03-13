@@ -173,6 +173,7 @@ void World::PlaceGameObjects(Scene& scene) noexcept
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		pGameObject->SetRoom(m_Levels[pos.y].GetLevel()[pos.x][pos.z]);
 		pGameObject->UpdateTransform();
+		pGameObject->SetWorld(this);
 		
 		scene.AddGameObject(pGameObject);
 		m_Levels[pos.y].GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);

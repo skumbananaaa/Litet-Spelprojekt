@@ -45,9 +45,7 @@ void UIOrder::OnDehovered(const HoveringHandler* handler, IHoverable* selection)
 {
 	if (m_pPanel == selection)
 	{
-		s_HoveringHandler.Release();
-		Game::GetGame()->GetGUIManager().Remove(m_pPanel);
-		m_pPanel = nullptr;
+		DeleteUI();
 	}
 }
 
@@ -65,12 +63,7 @@ void UIOrder::DisplayOrders(int32 x, int32 y, UIOrder* uiOrder)
 		return;
 	}
 
-	if (m_pPanel)
-	{
-		s_HoveringHandler.Release();
-		Game::GetGame()->GetGUIManager().Remove(m_pPanel);
-		m_pPanel = nullptr;
-	}
+	DeleteUI();
 
 	s_HoveringHandler.AddHoveringListener(uiOrder);
 
@@ -89,4 +82,14 @@ void UIOrder::DisplayOrders(int32 x, int32 y, UIOrder* uiOrder)
 		m_pPanel->Add(button);
 	}
 	Game::GetGame()->GetGUIManager().Add(m_pPanel);
+}
+
+void UIOrder::DeleteUI() noexcept
+{
+	if (m_pPanel)
+	{
+		s_HoveringHandler.Release();
+		Game::GetGame()->GetGUIManager().Remove(m_pPanel);
+		m_pPanel = nullptr;
+	}
 }

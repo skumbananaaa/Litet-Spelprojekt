@@ -28,6 +28,10 @@ public:
 	static uint32 ICON_CIRCLE;
 	static uint32 ICON_CHECKED;
 	static uint32 ICON_CROSSED;
+	static uint32 ICON_RED_DOOR;
+	static uint32 ICON_YELLOW_DOOR;
+	static uint32 ICON_BLUE_DOOR;
+	static uint32 ICON_GREEN_DOOR;
 	static uint32 SMOKE;
 	static uint32 SJOFAN_DIFF;
 	static uint32 WALL1;

@@ -2,6 +2,7 @@
 #include "IOrder.h"
 #include <System/ThreadHandler.h>
 #include <GLM/glm.hpp>
+#include <World/Scenarios/Fire/FireAlarm.h>
 
 class Path;
 

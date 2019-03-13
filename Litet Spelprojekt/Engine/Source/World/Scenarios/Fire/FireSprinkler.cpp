@@ -79,6 +79,22 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 					tile.Temp -= FIRE_EXTINGUISH_BY_SPRINKLER_RATE * dt;
 				}
 			}
+
+			for (uint32 i = 0; i < tile.GameObjects.size(); i++)
+			{
+				if (dynamic_cast <FireAlarm*>(tile.GameObjects[i]))
+				{
+					FireAlarm* pFireAlarm = (FireAlarm*)tile.GameObjects[i];
+
+					if (pFireAlarm != nullptr)
+					{
+						if (pFireAlarm->HasDetectedSmoke())
+						{
+							pFireAlarm->TurnOff();
+						}
+					}
+				}
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #include <Audio/Sources/AudioSource.h>
 #include <Graphics/Particles/MeshEmitter.h>
 #include <Graphics/GameObject.h>
+#include <World/Scenarios/Fire/FireAlarm.h>
 
 class API FireSprinkler : public GameObject
 {

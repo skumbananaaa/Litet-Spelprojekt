@@ -1,6 +1,7 @@
 #include "../Include/GameObjectFloor.h"
 #include "../Include/Game.h"
 #include "../Include/Orders/OrderExtinguishFire.h"
+#include "../Include/Orders/OrderPlugHole.h"
 #include <World/World.h>
 
 GameObjectFloor::GameObjectFloor()
@@ -110,17 +111,32 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 	Crew* pCrew = Game::GetGame()->m_pSceneGame->GetCrew();
 	World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
 
-	for (uint32 i = 0; i < selectedMembers.size(); i++)
+	if (name == "Släck eld")
 	{
 		const glm::ivec3& tile = GetTile();
-		Crewmember* pCrewmember = pCrew->GetMember(selectedMembers[i]);
+		for (uint32 i = 0; i < selectedMembers.size(); i++)
+		{
+			Crewmember* pCrewmember = pCrew->GetMember(selectedMembers[i]);
 
-		pCrewmember->GiveOrder(new OrderExtinguishFire(
-			pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
-			tile,
-			pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z],
-			pCrewmember->HasGearEquipped(),
-			false));
+			pCrewmember->GiveOrder(new OrderExtinguishFire(
+				pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
+				tile,
+				pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z],
+				pCrewmember->HasGearEquipped(),
+				false));
+		}
+	}
+	else if (name == "Plugga hål")
+	{
+		const glm::ivec3& tile = GetTile();
+		for (uint32 i = 0; i < selectedMembers.size(); i++)
+		{
+			Crewmember* pCrewmember = pCrew->GetMember(selectedMembers[i]);
+			pCrewmember->GiveOrder(new OrderPlugHole(
+				pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
+				tile,
+				pCrewmember->HasGearEquipped()));
+		}
 	}
 	/*if (reinterpret_cast<int>(userData) == 1)
 	{

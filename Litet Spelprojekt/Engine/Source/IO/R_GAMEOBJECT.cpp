@@ -50,5 +50,5 @@ void GAMEOBJECT::RegisterResources()
 	SHELF_AMMUNITION			= ResourceHandler::RegisterGameObject("Ammunitionshylla", MESH::SHELF_AMMUNITION, MATERIAL::SHELF_AMMUNITION);
 	GENERATOR					= ResourceHandler::RegisterGameObject("Generator", MESH::GENERATOR, MATERIAL::GENERATOR);
 	FIRE_EXTINGUISHER			= ResourceHandler::RegisterGameObject("Brandsläckare", MESH::FIRE_EXTINGUISHER, MATERIAL::FIRE_EXTINGUISHER);
-	FIRESPRINKLER				= ResourceHandler::RegisterGameObject("Sprinkler", MESH::LAMP, MATERIAL::CHAIR);
+	FIRESPRINKLER				= ResourceHandler::RegisterGameObject("Sprinkler", MESH::FIRESPRINKLER, MATERIAL::FIRESPRINKLER);
 }

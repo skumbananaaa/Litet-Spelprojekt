@@ -147,6 +147,9 @@
     <ClCompile Include="Source\GUI\UINotification.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Orders\OrderPumpWater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game.h">
@@ -279,6 +282,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GUI\UINotification.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderPumpWater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

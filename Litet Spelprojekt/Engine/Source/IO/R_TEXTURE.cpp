@@ -85,7 +85,7 @@ void TEXTURE::RegisterResources()
 	SHELF_AMMUNITION	= ResourceHandler::RegisterTexture2D("uv_AmmunitionShelf.jpg", TEX_FORMAT_RGBA);
 	SHELF_EMPTY			= ResourceHandler::RegisterTexture2D("uv_EmptyShelf.jpg", TEX_FORMAT_RGBA);
 	FIRE_EXTINGUISHER	= ResourceHandler::RegisterTexture2D("uv_FireExtinguisher.jpg", TEX_FORMAT_RGBA);
-	FIRESPRINKLER		= ResourceHandler::RegisterTexture2D("uv_Sprinkler.jpg", TEX_FORMAT_RGBA);
+	FIRESPRINKLER		= ResourceHandler::RegisterTexture2D("uv_Sprinkler.png", TEX_FORMAT_RGBA);
 	GENERATOR			= ResourceHandler::RegisterTexture2D("uv_Generator.jpg", TEX_FORMAT_RGBA);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);

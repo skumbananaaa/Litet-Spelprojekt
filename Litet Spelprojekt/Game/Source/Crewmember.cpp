@@ -287,6 +287,17 @@ void Crewmember::ApplyBleedInjury(float bleed)
 	}
 }
 
+void Crewmember::ApplySmokeInjury(float smoke)
+{
+	bool lastState = HasInjurySmoke();
+	m_HasInjurySmoke += smoke;
+	if (lastState != HasInjurySmoke())
+	{
+		Logger::LogEvent(GetName() + " fick rökskador", false);
+		m_pAudioSourceScream->Play();
+	}
+}
+
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
 {
 	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
@@ -547,6 +558,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
 		bool isSmoked = HasInjurySmoke();
+		Appl
 		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt;
 
 		if (isSmoked != HasInjurySmoke())

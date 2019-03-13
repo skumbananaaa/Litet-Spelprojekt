@@ -57,7 +57,7 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 		{
 			ScenarioManager::Escalate(Game::GetGame()->m_ScenarioFire, m_Target);
 
-			Logger::LogEvent("Båte blev träffad av artilleri!", false);
+			Logger::LogEvent("Båten blev träffad av artilleri!", false);
 
 			MeshEmitter* pMeshEmitter = new MeshEmitter(1.0F, this);
 			pMeshEmitter->SetMesh(MESH::MESH_PARTICLE);

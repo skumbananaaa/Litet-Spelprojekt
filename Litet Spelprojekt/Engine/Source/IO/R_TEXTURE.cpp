@@ -29,6 +29,7 @@ uint32 TEXTURE::ICON_RED_DOOR = 0;
 uint32 TEXTURE::ICON_YELLOW_DOOR = 0;
 uint32 TEXTURE::ICON_BLUE_DOOR = 0;
 uint32 TEXTURE::ICON_GREEN_DOOR = 0;
+uint32 TEXTURE::ICON_NOTIFICATION_TRIANGLE = 0;
 uint32 TEXTURE::SMOKE = 0;
 uint32 TEXTURE::SJOFAN_DIFF = 0;
 uint32 TEXTURE::WALL1 = 0;
@@ -50,6 +51,8 @@ uint32 TEXTURE::SHELF_AMMUNITION = 0;
 uint32 TEXTURE::SHELF_EMPTY = 0;
 uint32 TEXTURE::GENERATOR = 0;
 uint32 TEXTURE::FIRE_EXTINGUISHER = 0;
+uint32 TEXTURE::ICON_LOGBOOK = 0;
+
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -103,19 +106,20 @@ void TEXTURE::RegisterResources()
 	FLOOR_CABOOSE1		= ResourceHandler::RegisterTexture2D("cabooseFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	LOADING_CONTROLS	= ResourceHandler::RegisterTexture2D("LoadingScreen.png", TEX_FORMAT_RGBA, false, true);
 
-	ICON_INJURY_BLEED	= ResourceHandler::RegisterTexture2D("Icons/InjuryBleed.png", TEX_FORMAT_RGBA, false, true);
-	ICON_INJURY_BONE	= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);
-	ICON_INJURY_BURN	= ResourceHandler::RegisterTexture2D("Icons/InjuryBurn.png", TEX_FORMAT_RGBA, false, true);
-	ICON_INJURY_SMOKE	= ResourceHandler::RegisterTexture2D("Icons/InjurySmoke.png", TEX_FORMAT_RGBA, false, true);
-	ICON_SKILL_FIRE		= ResourceHandler::RegisterTexture2D("Icons/SkillFire.png", TEX_FORMAT_RGBA, false, true);
-	ICON_SKILL_MEDIC	= ResourceHandler::RegisterTexture2D("Icons/SkillMedic.png", TEX_FORMAT_RGBA, false, true);
-	ICON_SKILL_STRENGTH = ResourceHandler::RegisterTexture2D("Icons/SkillStrength.png", TEX_FORMAT_RGBA, false, true);
-	ICON_CIRCLE			= ResourceHandler::RegisterTexture2D("Icons/Circle.png", TEX_FORMAT_RGBA, false, true);
-	ICON_CHECKED		= ResourceHandler::RegisterTexture2D("Icons/Checked.png", TEX_FORMAT_RGBA, false, true);
-	ICON_CROSSED		= ResourceHandler::RegisterTexture2D("Icons/Crossed.png", TEX_FORMAT_RGBA, false, true);
-	ICON_RED_DOOR		= ResourceHandler::RegisterTexture2D("Icons/RedDoor.png", TEX_FORMAT_RGBA, false, true);
-	ICON_YELLOW_DOOR	= ResourceHandler::RegisterTexture2D("Icons/YellowDoor.png", TEX_FORMAT_RGBA, false, true);
-	ICON_BLUE_DOOR		= ResourceHandler::RegisterTexture2D("Icons/BlueDoor.png", TEX_FORMAT_RGBA, false, true);
-	ICON_GREEN_DOOR		= ResourceHandler::RegisterTexture2D("Icons/GreenDoor.png", TEX_FORMAT_RGBA, false, true);
-
+	ICON_INJURY_BLEED				= ResourceHandler::RegisterTexture2D("Icons/InjuryBleed.png", TEX_FORMAT_RGBA, false, true);
+	ICON_INJURY_BONE				= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);
+	ICON_INJURY_BURN				= ResourceHandler::RegisterTexture2D("Icons/InjuryBurn.png", TEX_FORMAT_RGBA, false, true);
+	ICON_INJURY_SMOKE				= ResourceHandler::RegisterTexture2D("Icons/InjurySmoke.png", TEX_FORMAT_RGBA, false, true);
+	ICON_SKILL_FIRE					= ResourceHandler::RegisterTexture2D("Icons/SkillFire.png", TEX_FORMAT_RGBA, false, true);
+	ICON_SKILL_MEDIC				= ResourceHandler::RegisterTexture2D("Icons/SkillMedic.png", TEX_FORMAT_RGBA, false, true);
+	ICON_SKILL_STRENGTH				= ResourceHandler::RegisterTexture2D("Icons/SkillStrength.png", TEX_FORMAT_RGBA, false, true);
+	ICON_CIRCLE						= ResourceHandler::RegisterTexture2D("Icons/Circle.png", TEX_FORMAT_RGBA, false, true);
+	ICON_CHECKED					= ResourceHandler::RegisterTexture2D("Icons/Checked.png", TEX_FORMAT_RGBA, false, true);
+	ICON_CROSSED					= ResourceHandler::RegisterTexture2D("Icons/Crossed.png", TEX_FORMAT_RGBA, false, true);
+	ICON_NOTIFICATION_TRIANGLE		= ResourceHandler::RegisterTexture2D("Icons/NotificationTriangle.png", TEX_FORMAT_RGBA, false, true);
+	ICON_LOGBOOK					= ResourceHandler::RegisterTexture2D("Icons/NoteBook.png", TEX_FORMAT_RGBA, false, true);
+	ICON_GREEN_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/GreenDoor.png", TEX_FORMAT_RGBA, false, true);
+	ICON_BLUE_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/BlueDoor.png", TEX_FORMAT_RGBA, false, true);
+	ICON_YELLOW_DOOR	            = ResourceHandler::RegisterTexture2D("Icons/YellowDoor.png", TEX_FORMAT_RGBA, false, true);
+	ICON_RED_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/RedDoor.png", TEX_FORMAT_RGBA, false, true);
 }

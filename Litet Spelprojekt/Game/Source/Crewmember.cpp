@@ -100,12 +100,14 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	{
 		room.SetFireDetected(true);
 		Logger::LogEvent(GetName() + " larmar om eld i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+		ReportPosition();
 	}
 
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
 		Logger::LogEvent(GetName() + " larmar om vattenläcka i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+		ReportPosition();
 	}
 
 	if (m_pUISelectedCrew)
@@ -379,10 +381,7 @@ void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
 
-	/*glm::ivec3 tile = GetTile();
-	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
-	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetRoomActive(roomIndex, true);*/
+	ReportPosition();
 	SetIdleing(true);
 
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
@@ -479,6 +478,13 @@ void Crewmember::SetGearIsEquipped(bool value) noexcept
 void Crewmember::SetResting(bool value) noexcept
 {
 	m_Resting = value;
+}
+
+void Crewmember::ReportPosition() noexcept
+{
+	uint32 roomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
+	m_LastKnownPosition = GetPosition();
+	m_pWorld->SetRoomActive(roomIndex, true);
 }
 
 void Crewmember::UpdateHealth(float dt)

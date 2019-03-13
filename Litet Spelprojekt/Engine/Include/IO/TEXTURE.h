@@ -53,6 +53,8 @@ public:
 	static uint32 SHELF_EMPTY;
 	static uint32 GENERATOR;
 	static uint32 FIRE_EXTINGUISHER;
+	static uint32 ICON_NOTIFICATION_TRIANGLE;
+	static uint32 ICON_LOGBOOK;
 
 private:
 	static void RegisterResourcesPreLoading();

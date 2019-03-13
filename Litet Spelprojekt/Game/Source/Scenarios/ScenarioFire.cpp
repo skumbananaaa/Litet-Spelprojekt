@@ -359,22 +359,17 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	Room& room = m_pWorld->GetRoom(toLevel.GetLevel()[tileTo.x][tileTo.z]);
 	uint32 tilesBetweenBulkheads = originLevel.GetTilesBetweenBulkheads();
 	//TWEAK HERE
-	float rateOfSpread = 0.9f;//0.35f;
-	float rateOfWallSpread = 0.00002f;
-	float rateOfNormalDoorSpread = 0.02f;
-	float rateOfFloorSpread = 0.003f;
-	float rateOfBulkheadSpreadFactor = 0.01f;
-	float rateOfBulkheadDoorSpreadFactor = 1.25f; //This spread is relative to the "rateOfBulkheadSpreadFactor"
 
+	float rateOfSpread = RATE_OF_FIRE_SPREAD;
 	uint32 mapTo = m_pppMap[tileTo.y][tileTo.x][tileTo.z];
 	rateOfSpread *= (mapTo == m_pppMap[origin.y][origin.x][origin.z]) || (originTile.HasDoor() && tileData.HasDoor());
-	rateOfSpread += (rateOfWallSpread * (offset.y + 1) + rateOfFloorSpread) * (mapTo != 1);
+	rateOfSpread += (RATE_OF_FIRE_WALL_SPREAD * (offset.y + 1) + RATE_OF_FIRE_FLOOR_SPREAD) * (mapTo != 1);
 	
 	if (offset.y == 0)
 	{
 		bool spreadingThroughBulkhead = glm::min<uint32>(origin.z, tileTo.z) % tilesBetweenBulkheads == 0;
-		rateOfSpread *= CalculateDoorSpreadFactor(originLevel.GetLevelData(), origin, tileTo, spreadingThroughBulkhead, rateOfNormalDoorSpread, rateOfBulkheadDoorSpreadFactor, rateOfBulkheadSpreadFactor);
-		rateOfSpread *= CalculateBulkheadSpreadFactor(spreadingThroughBulkhead, rateOfBulkheadSpreadFactor);
+		rateOfSpread *= CalculateDoorSpreadFactor(originLevel.GetLevelData(), origin, tileTo, spreadingThroughBulkhead);
+		rateOfSpread *= CalculateBulkheadSpreadFactor(spreadingThroughBulkhead);
 	}
 
 	rateOfSpread /= (1.0f + (tileData.Temp / 100.0f));
@@ -468,7 +463,7 @@ bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, cons
 
 float ScenarioFire::CalculateDoorSpreadFactor(
 	const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo,
-	bool spreadingThroughBulkhead, float rateOfNormalDoorSpread, float rateOfBulkheadDoorSpreadFactor, float rateOfBulkheadSpreadFactor) const noexcept
+	bool spreadingThroughBulkhead) const noexcept
 {
 	if (ppLevelData[tileFrom.x][tileFrom.y].HasDoor() && ppLevelData[tileTo.x][tileTo.y].HasDoor())
 	{
@@ -478,11 +473,11 @@ float ScenarioFire::CalculateDoorSpreadFactor(
 		//Since CanSpreadTo returns 0 if there isnt a door when the water is trying to flood to a different room we know its trying to flood over a door.
 		if (spreadingThroughBulkhead)
 		{
-			return doorIsOpen ? 1.0f / rateOfBulkheadSpreadFactor : rateOfBulkheadDoorSpreadFactor;
+			return doorIsOpen ? 1.0f / RATE_OF_FIRE_BULKHEAD_SPREAD : RATE_OF_FIRE_BULKHEAD_DOOR_SPREAD;
 		}
 
 		//If the water is trying to flood over a door that is not in a bulkhead, reduce the flood factor.
-		return doorIsOpen ? 1.0f : rateOfNormalDoorSpread;
+		return doorIsOpen ? 1.0f : RATE_OF_RIRE_NORMAL_DOOR_SPREAD;
 	}
 
 	//Water is not trying to flood to a different room but tileTo has a door.

@@ -7431,15 +7431,15 @@
         {
             "tileIdX": 5,
             "tileIdY": 4,
-            "tileIdZ": 4,
-            "gameObject": 7,
+            "tileIdZ": 11,
+            "gameObject": 17,
             "rotation": 0.0
         },
         {
             "tileIdX": 5,
             "tileIdY": 4,
-            "tileIdZ": 12,
-            "gameObject": 7,
+            "tileIdZ": 4,
+            "gameObject": 17,
             "rotation": 0.0
         }
     ],

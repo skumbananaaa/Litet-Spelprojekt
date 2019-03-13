@@ -15,7 +15,6 @@ public:
 	static uint32 INSTRUMENT_2;
 	static uint32 LAMP;
 	static uint32 FIREALARM;
-	static uint32 FIRESPRINKLER;
 	static uint32 CUPBOARD;
 	static uint32 TABLE;
 	static uint32 TOILET;
@@ -26,6 +25,7 @@ public:
 	static uint32 SHELF_AMMUNITION;
 	static uint32 GENERATOR;
 	static uint32 FIRE_EXTINGUISHER;
+	static uint32 FIRESPRINKLER;
 
 private:
 	static void RegisterResourcesPreLoading();

@@ -11,7 +11,6 @@ uint32 GAMEOBJECT::INSTRUMENT_1 = 0;
 uint32 GAMEOBJECT::INSTRUMENT_2 = 0;
 uint32 GAMEOBJECT::LAMP = 0;
 uint32 GAMEOBJECT::FIREALARM = 0;
-uint32 GAMEOBJECT::FIRESPRINKLER = 0;
 uint32 GAMEOBJECT::CUPBOARD = 0;
 uint32 GAMEOBJECT::TABLE = 0;
 uint32 GAMEOBJECT::TOILET = 0;
@@ -22,6 +21,7 @@ uint32 GAMEOBJECT::SHELF_EMPTY = 0;
 uint32 GAMEOBJECT::SHELF_AMMUNITION = 0;
 uint32 GAMEOBJECT::GENERATOR = 0;
 uint32 GAMEOBJECT::FIRE_EXTINGUISHER = 0;
+uint32 GAMEOBJECT::FIRESPRINKLER = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -40,7 +40,6 @@ void GAMEOBJECT::RegisterResources()
 	INSTRUMENT_2				= ResourceHandler::RegisterGameObject("Instrument 2", MESH::INSTRUMENT_2, MATERIAL::INSTRUMENT_2);
 	LAMP						= ResourceHandler::RegisterGameObject("Lampa", MESH::LAMP, MATERIAL::LAMP);
 	FIREALARM					= ResourceHandler::RegisterGameObject("Brandvarnare", MESH::LAMP, MATERIAL::FIRE_RELATED);
-	FIRESPRINKLER				= ResourceHandler::RegisterGameObject("Sprinkler", MESH::LAMP, MATERIAL::CHAIR);
 	CUPBOARD					= ResourceHandler::RegisterGameObject("Skåp", MESH::CUPBOARD, MATERIAL::CUPBOARD);
 	TABLE						= ResourceHandler::RegisterGameObject("Bord", MESH::TABLE, MATERIAL::TABLE);
 	TOILET						= ResourceHandler::RegisterGameObject("Toalett", MESH::TOILET, MATERIAL::TOILET);
@@ -51,4 +50,5 @@ void GAMEOBJECT::RegisterResources()
 	SHELF_AMMUNITION			= ResourceHandler::RegisterGameObject("Ammunitionshylla", MESH::SHELF_AMMUNITION, MATERIAL::SHELF_AMMUNITION);
 	GENERATOR					= ResourceHandler::RegisterGameObject("Generator", MESH::GENERATOR, MATERIAL::GENERATOR);
 	FIRE_EXTINGUISHER			= ResourceHandler::RegisterGameObject("Brandsläckare", MESH::FIRE_EXTINGUISHER, MATERIAL::FIRE_EXTINGUISHER);
+	FIRESPRINKLER				= ResourceHandler::RegisterGameObject("Sprinkler", MESH::LAMP, MATERIAL::CHAIR);
 }

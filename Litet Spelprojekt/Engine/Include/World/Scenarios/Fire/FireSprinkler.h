@@ -6,11 +6,8 @@
 
 class API FireSprinkler : public GameObject
 {
-	static constexpr float SPRINKLER_RADIUS_SQRD = 25.0f;
-	static constexpr float FIRE_EXTINGUISH_BY_SPRINKLER_RATE = 500.0f;
-	static constexpr float WATER_SPRINKLED_PER_SECOND = 50.0f;
-	static constexpr float WATER_RESERVOIR_MAX = 50.0f;
-	static constexpr float WATER_RESERVOIR_RECOVERY_PER_SECOND = 50.0f;
+	static constexpr float SPRINKLER_RADIUS_SQRD = 49.0f;
+	static constexpr float FIRE_EXTINGUISH_BY_SPRINKLER_RATE = 500.0f * RATE_OF_FIRE_SPREAD;
 
 public:
 	FireSprinkler(int32 source);
@@ -24,6 +21,5 @@ public:
 
 private:
 	bool m_HasDetectedSmoke;
-	float m_WaterReservoir;
 	AudioSource* m_pAudioSrc;
 };

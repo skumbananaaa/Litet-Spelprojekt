@@ -11,7 +11,7 @@ glm::ivec3 startTarget(const glm::ivec3& roomTile, const glm::ivec3& holeTile, b
 	return roomTile;
 }
 
-OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, uint32 roomFloodingId, bool hasGearEquipped)
+OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, bool hasGearEquipped)
 	: OrderWalk(startTarget(roomTile, holeTile, hasGearEquipped)),
 	m_EquippingGearTimer(EQUIPTIME),
 	m_PluggingTimer(PLUGTIME)
@@ -44,6 +44,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 		// Run to hole
 		if (res)
 		{
+			res = false;
 			// if reached, plug the hole!
 			if (!m_PluggingHole)
 			{
@@ -57,7 +58,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			{
 				m_HolePlugged = true;
 				glm::ivec3 tile = GetCrewMember()->GetTile();
-				pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.y].WaterInlet = false;
+				pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
 				res = true;
 			}
 		}
@@ -67,8 +68,8 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 		// Run to equipment room
 		if (res)
 		{
+			res = false;
 			//if reached equipment, equip it!
-			
 			if (m_EquippingGearTimer >= EQUIPTIME)
 			{
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
@@ -78,8 +79,8 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			if (m_EquippingGearTimer <= 0.0000001)
 			{
 				pCrewmember->SetGearIsEquipped(true);
-				pCrewmember->GiveOrder(new OrderPlugHole(m_RoomTile, m_HoleTile, m_RoomFloodingId, pCrewmember->HasGearEquipped()));
-				res = false;
+				pCrewmember->GiveOrder(new OrderPlugHole(m_RoomTile, m_HoleTile, pCrewmember->HasGearEquipped()));
+				res = true;
 			}
 
 		}

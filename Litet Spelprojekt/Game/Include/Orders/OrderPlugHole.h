@@ -5,7 +5,7 @@
 class OrderPlugHole : public OrderWalk
 {
 public:
-	OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, uint32 roomFloodingId, bool hasGearEquipped);
+	OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, bool hasGearEquipped);
 	virtual ~OrderPlugHole();
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual void OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;

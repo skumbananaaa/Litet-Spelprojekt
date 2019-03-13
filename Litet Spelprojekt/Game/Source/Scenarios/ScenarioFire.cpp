@@ -358,12 +358,9 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	rateOfSpread *= (mapTo == m_pppMap[origin.y][origin.x][origin.z]) || (originTile.HasDoor() && tileData.HasDoor());
 	rateOfSpread += (RATE_OF_FIRE_WALL_SPREAD * (offset.y + 1) + RATE_OF_FIRE_FLOOR_SPREAD) * (mapTo != 1);
 	
-	if (offset.y == 0)
-	{
-		bool spreadingThroughBulkhead = glm::min<uint32>(origin.z, tileTo.z) % tilesBetweenBulkheads == 0;
-		rateOfSpread *= CalculateDoorSpreadFactor(originLevel.GetLevelData(), origin, tileTo, spreadingThroughBulkhead);
-		rateOfSpread *= CalculateBulkheadSpreadFactor(spreadingThroughBulkhead);
-	}
+	bool spreadingThroughBulkhead = glm::min<uint32>(origin.z, tileTo.z) % tilesBetweenBulkheads == 0;
+	rateOfSpread *= CalculateDoorSpreadFactor(originTile, tileData, spreadingThroughBulkhead);
+	rateOfSpread *= CalculateBulkheadSpreadFactor(spreadingThroughBulkhead);
 
 	rateOfSpread /= (1.0f + (tileData.Temp / 100.0f));
 	tileData.Temp += std::max((originTile.Temp - tileData.BurnsAt) * rateOfSpread * dtS, 0.0f);
@@ -450,29 +447,6 @@ bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, cons
 	}
 
 	return res;
-}
-
-float ScenarioFire::CalculateDoorSpreadFactor(
-	const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo,
-	bool spreadingThroughBulkhead) const noexcept
-{
-	if (ppLevelData[tileFrom.x][tileFrom.y].HasDoor() && ppLevelData[tileTo.x][tileTo.y].HasDoor())
-	{
-		bool doorIsOpen = !reinterpret_cast<GameObjectDoor*>(ppLevelData[tileTo.x][tileTo.y].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR])->IsClosed();
-
-		//If the smallest of the tiles x coordinates is a multiple of "tilesBetweenBulkheads", the water is trying to flood over a bulkhead.
-		//Since CanSpreadTo returns 0 if there isnt a door when the water is trying to flood to a different room we know its trying to flood over a door.
-		if (spreadingThroughBulkhead)
-		{
-			return doorIsOpen ? 1.0f / RATE_OF_FIRE_BULKHEAD_SPREAD : RATE_OF_FIRE_BULKHEAD_DOOR_SPREAD;
-		}
-
-		//If the water is trying to flood over a door that is not in a bulkhead, reduce the flood factor.
-		return doorIsOpen ? 1.0f : RATE_OF_RIRE_NORMAL_DOOR_SPREAD;
-	}
-
-	//Water is not trying to flood to a different room but tileTo has a door.
-	return 1.0f;
 }
 
 void ScenarioFire::SetFireVisible(uint32 roomId, bool show) noexcept

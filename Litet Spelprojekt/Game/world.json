@@ -7429,16 +7429,16 @@
             "rotation": 3.1415927410125734
         },
         {
-            "tileIdX": 5,
+            "tileIdX": 8,
             "tileIdY": 4,
-            "tileIdZ": 11,
+            "tileIdZ": 13,
             "gameObject": 17,
             "rotation": 0.0
         },
         {
-            "tileIdX": 5,
+            "tileIdX": 3,
             "tileIdY": 4,
-            "tileIdZ": 4,
+            "tileIdZ": 10,
             "gameObject": 17,
             "rotation": 0.0
         }

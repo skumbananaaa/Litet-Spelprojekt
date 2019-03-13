@@ -17,6 +17,7 @@ SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
 	m_pUIPause(nullptr),
 	m_IsPaused(false),
 	m_IsGameOver(false),
+	m_pUIRequest(nullptr),
 	m_GameTimer(0.0f)
 {
 	Game* game = Game::GetGame();
@@ -63,9 +64,11 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
 	m_pUILog = new UILog(window->GetWidth() - 450, window->GetHeight() - 450, 450, 450);
-	
+	m_pUIRequest = new UICrewRequest(window->GetWidth() / 4, window->GetHeight() - 50, 200, 50);
+
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_pUILog);
+	game->GetGUIManager().Add(m_pUIRequest);
 
 	Logger::SetListener(m_pUILog);
 
@@ -100,8 +103,6 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	}
 
 	GetCamera().SetMaxPitch(1.55334303f);
-
-	DeleteSafe(m_pUICrew);
 
 	OrderSchedule::Release();
 	ResourceHandler::ResetGameObjectCounters();

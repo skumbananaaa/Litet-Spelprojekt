@@ -4,6 +4,7 @@
 #include "../GUI/UILog.h"
 #include "../GUI/UICrewMember.h"
 #include "../GUI/UIPause.h"
+#include "../GUI/UICrewRequest.h"
 #include <Audio/Listeners/AudioListener.h>
 #include <Audio/Sources/AudioSource.h>
 #include <Audio/SoundEffect.h>
@@ -79,6 +80,7 @@ private:
 	UICrew* m_pUICrew;
 	UILog* m_pUILog;
 	UIPause* m_pUIPause;
+	UICrewRequest* m_pUIRequest;
 
 	AudioSource* m_pTestAudioSource;
 	World* m_pWorld;

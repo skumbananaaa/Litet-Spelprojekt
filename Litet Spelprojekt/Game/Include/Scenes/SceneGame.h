@@ -38,6 +38,7 @@ public:
 	virtual void OnKeyDown(KEY keycode) override;
 	virtual void OnResize(uint32 width, uint32 height) override;
 	virtual void OnSceneExtensionComplete() noexcept override;
+	void OnGameOver() noexcept;
 
 	void PickPosition();
 	void RequestDoorClosed(uint32 doorColor);
@@ -67,9 +68,11 @@ protected:
 
 private:
 	bool m_IsPaused;
+	bool m_IsGameOver;
 	bool m_CartesianCamera;
 	
-	int32 m_CurrentElevation;
+	float m_GameTimer;
+
 	uint32 m_CurrentLight = 0;
 
 	UICrewMember* m_pUICrewMember;

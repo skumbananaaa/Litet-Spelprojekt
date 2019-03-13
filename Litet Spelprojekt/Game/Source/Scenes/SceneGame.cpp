@@ -20,7 +20,8 @@ SceneGame::SceneGame(World* pWorld)
 	m_pUIEndScreen(nullptr),
 	m_IsPaused(false),
 	m_pUIRequest(nullptr),
-	m_IsGameOver(false)
+	m_IsGameOver(false),
+	m_pLookAt(nullptr)
 {
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -477,38 +478,19 @@ void SceneGame::CreateGameObjects() noexcept
 {
 	GameObject* pGameObject = nullptr;
 	{
-		////Bottom floor
-		//{
-		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::DOOR_RED);
-		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
-		//	pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
-		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-		//	pGameObject->UpdateTransform();
-		//	AddGameObject(pGameObject);
-		//}
-
-		////Middle floor
-		//{
-		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::DOOR_GREEN);
-		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
-		//	pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
-		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-		//	pGameObject->UpdateTransform();
-		//	AddGameObject(pGameObject);
-		//}
-
-		////Top floor
-		//{
-		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::DOOR_BLUE);
-		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
-		//	pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
-		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-		//	pGameObject->UpdateTransform();
-		//	AddGameObject(pGameObject);
-		//}
+		//Look at
+		{
+			pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::BOAT);
+			pGameObject->SetMesh(MESH::QUAD);
+			pGameObject->SetPosition(GetCamera().GetLookAt() + glm::vec3(0.0f, 0.06f, 0.0f));
+			pGameObject->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+			pGameObject->UpdateTransform();
+			pGameObject->SetWorld(m_pWorld);
+			AddGameObject(pGameObject);
+			m_pLookAt = pGameObject;
+			pGameObject = nullptr;
+		}
 	}
 }
 
@@ -935,6 +917,11 @@ void SceneGame::UpdateCamera(float dtS) noexcept
 	{
 		GetCamera().UpdateFromLookAt();
 	}
+
+	glm::vec3 newPosition(GetCamera().GetLookAt() + glm::vec3(0.0f, 0.06f, 0.0f));
+	newPosition.x -= GetExtension() * glm::floor(newPosition.y / 2);
+	m_pLookAt->SetPosition(newPosition);
+	m_pLookAt->UpdateTransform();
 }
 
 void SceneGame::SetPaused(bool paused) noexcept

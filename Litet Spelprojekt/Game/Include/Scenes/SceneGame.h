@@ -133,7 +133,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::SHELF_EMPTY)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::GENERATOR)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FIRE_EXTINGUISHER)	->SetLevelClipPlane(standardClipPlane);
-	ResourceHandler::GetMaterial(MATERIAL::WHITE)				->SetLevelClipPlane(standardClipPlane);
+
 
 	IRenderer* renderer = GetRenderer();
 	if (renderer != nullptr)

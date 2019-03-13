@@ -75,7 +75,6 @@ public:
 
 	virtual void OnAddedToScene(Scene* scene) noexcept {};
 	virtual void OnRemovedFromScene(Scene* scene) noexcept {};
-	virtual void OnFireDetected() noexcept {};
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
 	virtual bool HasDetectedSmoke() const noexcept;

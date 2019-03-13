@@ -36,8 +36,8 @@ private:
 
 	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
 	bool SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
-	float CalculateDoorSpreadFactor(const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, bool spreadingThroughBulkhead, float rateOfNormalDoorSpread, float rateOfBulkheadDoorSpreadFactor, float rateOfBulkheadSpreadFactor) const noexcept;
-	float CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept;
+	float CalculateDoorSpreadFactor(const TileData * const * ppLevelData, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, bool spreadingThroughBulkhead) const noexcept;
+	float CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead) const noexcept;
 
 	void EvaporateWater(TileData& tile, float dtS) const noexcept;
 	void SetFireVisible(uint32 roomId, bool show = true) noexcept;
@@ -49,9 +49,9 @@ private:
 	std::vector<bool> m_DiscoveredRooms;
 };
 
-inline float ScenarioFire::CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead, float rateOfBulkheadSpreadFactor) const noexcept
+inline float ScenarioFire::CalculateBulkheadSpreadFactor(bool spreadingThroughBulkhead) const noexcept
 {
-	return spreadingThroughBulkhead ? rateOfBulkheadSpreadFactor : 1.0f;
+	return spreadingThroughBulkhead ? RATE_OF_FIRE_BULKHEAD_SPREAD : 1.0f;
 }
 
 inline void ScenarioFire::EvaporateWater(TileData& tile, float dtS) const noexcept

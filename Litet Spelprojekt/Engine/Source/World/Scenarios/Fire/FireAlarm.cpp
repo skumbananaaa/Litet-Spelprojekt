@@ -64,9 +64,16 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 
 void FireAlarm::OnSmokeDetected() noexcept
 {
-	const glm::ivec3& tile = GetTile();
-	uint32 index = m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z];
-	Logger::LogEvent("Brandvarnare i " + m_pWorld->GetNameFromGlobal(index) + " ljuder!", true);
+	glm::ivec3 tilePos = GetTile();
+	WorldLevel& worldLevel = m_pWorld->GetLevel(tilePos.y);
+	uint32 levelSizeX = worldLevel.GetSizeX();
+	uint32 levelSizeZ = worldLevel.GetSizeZ();
+
+	const uint32* const * ppLevel = worldLevel.GetLevel();
+	TileData* const * ppLevelData = worldLevel.GetLevelData();
+
+	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
+	Logger::LogEvent("Brandvarnare i " + m_pWorld->GetNameFromGlobal(currentRoomIndex) + " ljuder!", true);
 
 	glm::mat4 transformObject(1.0f);
 	const glm::vec4& rotation = GetRotation();
@@ -79,4 +86,26 @@ void FireAlarm::OnSmokeDetected() noexcept
 
 	m_Rotation = 0;
 	m_pAudioSrc->Play();
+
+	for (int32 x = 0; x < levelSizeX; x++)
+	{
+		for (int32 z = 0; z < levelSizeZ; z++)
+		{
+			if (currentRoomIndex == ppLevel[x][z])
+			{
+				TileData& tile = ppLevelData[x][z];
+
+				for (uint32 i = 0; i < tile.GameObjects.size(); i++)
+				{
+					if (tile.GameObjects[i] != nullptr)
+					{
+						if (!tile.GameObjects[i]->HasDetectedSmoke())
+						{
+							tile.GameObjects[i]->OnSmokeDetected();
+						}
+					}
+				}
+			}
+		}
+	}
 }

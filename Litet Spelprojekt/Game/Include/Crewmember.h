@@ -54,6 +54,7 @@ public:
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury(float boneBreak);
 	void ApplyBleedInjury(float bleed);
+	void ApplySmokeInjury(float smoke);
 
 	//UTILITY (NOT SETS OR GETS)
 	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;

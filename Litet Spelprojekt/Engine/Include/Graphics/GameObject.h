@@ -44,7 +44,6 @@ public:
 	const AnimatedMesh* GetAnimatedMesh() const noexcept;
 	const AnimatedSkeleton* GetSkeleton() const noexcept;
 	const glm::mat4& GetTransform() const noexcept;
-	const glm::mat4& GetInverseTransform() const noexcept;
 	const glm::vec3& GetPosition() const noexcept;
 	const glm::vec4& GetRotation() const noexcept;
 	const glm::vec3& GetScale() const noexcept;
@@ -91,7 +90,6 @@ protected:
 	bool m_IsPicked;
 	bool m_IsTickable;
 	glm::mat4 m_transform;
-	glm::mat4 m_InverseTransform;
 	glm::vec3 m_Direction;
 	World* m_pWorld;
 
@@ -232,11 +230,6 @@ inline const AnimatedSkeleton* GameObject::GetSkeleton() const noexcept
 inline const glm::mat4& GameObject::GetTransform() const noexcept
 {
 	return m_transform;
-}
-
-inline const glm::mat4& GameObject::GetInverseTransform() const noexcept
-{
-	return m_InverseTransform;
 }
 
 inline bool GameObject::IsDirty() const noexcept

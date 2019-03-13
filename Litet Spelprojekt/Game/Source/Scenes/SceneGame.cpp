@@ -45,6 +45,7 @@ SceneGame::~SceneGame()
 
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
+	DeleteSafe(m_pUINotification);
 	DeleteSafe(m_pTestAudioSource);
 
 	Logger::Save();
@@ -63,9 +64,8 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Window* window = &game->GetWindow();
 
 	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
-	m_pUILog = new UILog(window->GetWidth() - 450, window->GetHeight() - 450, 450, 450);
 	m_pUIRequest = new UICrewRequest(window->GetWidth() / 4, window->GetHeight() - 50, 200, 50);
-
+	m_pUILog = new UILog(window->GetWidth() - 600, window->GetHeight() - 700, 600, 700);
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_pUILog);
 	game->GetGUIManager().Add(m_pUIRequest);
@@ -73,6 +73,7 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Logger::SetListener(m_pUILog);
 
 	m_pUICrew = new UICrew(0, window->GetHeight() - 50, 200, 500, &m_Crew);
+	m_pUINotification = new UINotification(window->GetWidth() - 560, window->GetHeight(), 500, 50, 8.0F);
 
 	SetPaused(false);
 
@@ -131,6 +132,8 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		{
 			m_IsGameOver = true;
 		}
+
+		m_pUINotification->Update(dtS);
 
 		SceneInternal::OnUpdate(dtS);
 		ScenarioManager::Update(dtS, m_pWorld, this);
@@ -838,6 +841,11 @@ Crew* SceneGame::GetCrew() noexcept
 UICrewMember* SceneGame::GetUICrewMember() noexcept
 {
 	return m_pUICrewMember;
+}
+
+UINotification * SceneGame::GetUINotification() noexcept
+{
+	return m_pUINotification;
 }
 
 World* SceneGame::GetWorld() noexcept

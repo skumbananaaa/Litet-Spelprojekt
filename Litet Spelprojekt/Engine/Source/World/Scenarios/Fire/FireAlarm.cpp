@@ -73,7 +73,7 @@ void FireAlarm::OnSmokeDetected() noexcept
 	TileData* const * ppLevelData = worldLevel.GetLevelData();
 
 	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
-	Logger::LogEvent("Brandvarnare i " + m_pWorld->GetNameFromGlobal(currentRoomIndex) + " ljuder!", true);
+	Logger::LogEvent("Brandvarnare i " + m_pWorld->GetNameFromGlobal(currentRoomIndex) + " utlöste!", true);
 
 	glm::mat4 transformObject(1.0f);
 	const glm::vec4& rotation = GetRotation();

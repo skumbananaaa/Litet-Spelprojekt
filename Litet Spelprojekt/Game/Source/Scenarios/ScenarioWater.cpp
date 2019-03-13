@@ -1,4 +1,5 @@
 ﻿#include "../../Include/Scenarios/ScenarioWater.h"
+#include "../../Include/GameState.h"
 
 ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
 {
@@ -291,6 +292,14 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 	m_InletsToRemove.clear();
 
+	constexpr float total = 40.0 * 10.0f;
+	float amount = 0.0f;
+	for (uint32 i = 0; i < 3; i++)
+	{
+		amount += (m_FloodingIDs[i].size() / total);
+	}
+
+	GameState::SetWaterLeakAmount(amount);
 	return false;
 }
 

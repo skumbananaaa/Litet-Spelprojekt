@@ -6,19 +6,21 @@
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Orders/OrderSchedule.h"
 #include "../../Include/Orders/OrderGiveAid.h"
+#include "../../Include/GameState.h"
 #include <Graphics/Materials/MaterialBase.h>
 #include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Scenarios/ScenarioWater.h"
 
-SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
+SceneGame::SceneGame(World* pWorld) 
+	: SceneInternal(false),
 	m_pWorld(pWorld),
 	m_pTestAudioSource(nullptr),
 	m_CartesianCamera(false),
 	m_pUIPause(nullptr),
+	m_pUIEndScreen(nullptr),
 	m_IsPaused(false),
-	m_IsGameOver(false),
 	m_pUIRequest(nullptr),
-	m_GameTimer(0.0f)
+	m_IsGameOver(false)
 {
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -86,6 +88,8 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 			m_Crew.GetMember(i)->GiveOrder(pOrder);
 		}
 	}
+
+	GameState::Reset();
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
@@ -125,10 +129,19 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		m_pUIPause = nullptr;
 	}
 
-	if (!IsPaused())
+	if (m_IsGameOver && !m_pUIEndScreen)
 	{
-		m_GameTimer += dtS;
-		if (m_GameTimer >= 500.0f)
+		Game* game = Game::GetGame();
+		Window* window = &game->GetWindow();
+		game->GetGUIManager().DeleteChildren();
+
+		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800) / 2, (window->GetHeight() - 800) / 2, 800, 800, true);
+		game->GetGUIManager().Add(m_pUIEndScreen);
+	}
+
+	if (!IsPaused() && !m_IsGameOver)
+	{
+		if (GameState::GetWaterLeakAmount() > 1.0f || GameState::GetBurningAmount() > 0.3f || GameState::GetCrewHealth() < 0.5f)
 		{
 			m_IsGameOver = true;
 		}
@@ -173,11 +186,6 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 		AudioListener::SetPosition(GetCamera().GetPosition());
 		AudioListener::SetOrientation(GetCamera().GetFront(), GetCamera().GetUp());
-	}
-
-	if (m_IsGameOver)
-	{
-		SetPaused(true);
 	}
 }
 

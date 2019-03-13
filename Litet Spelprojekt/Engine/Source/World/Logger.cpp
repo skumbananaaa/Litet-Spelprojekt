@@ -42,4 +42,16 @@ void Logger::Save() noexcept
 	FILE* file = fopen("Game_Session_Log.txt", "w");
 	fputs(finalText.c_str(), file);
 	fclose(file);
+
+	s_Logs.clear();
+}
+
+uint32 Logger::GetNumEntries()
+{
+	return (uint32)s_Logs.size();
+}
+
+const std::string& Logger::GetEntry(uint32 index)
+{
+	return s_Logs[index];
 }

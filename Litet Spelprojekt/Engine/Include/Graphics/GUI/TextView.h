@@ -5,7 +5,7 @@
 class API TextView : public GUIObject
 {
 public:
-	TextView(float x, float y, float width, float height, const std::string& text, bool center = false, int size = 100);
+	TextView(float x, float y, float width, float height, const std::string& text, bool center = false, int size = 55);
 	virtual ~TextView();
 
 	void SetText(const std::string& text);

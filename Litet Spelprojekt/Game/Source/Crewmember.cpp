@@ -8,7 +8,7 @@
 #include "../Include/GameObjectDoor.h"
 #include "../Include/Orders/OrderSchedule.h"
 #include "../Include/Orders/OrderGiveAid.h"
-
+#include "../Include/GameState.h"
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
@@ -545,6 +545,7 @@ void Crewmember::UpdateHealth(float dt)
 
 	if (!IsAbleToWork())
 	{
+		GameState::SetCrewHealth(GameState::GetCrewHealth() - (1.0f / NUM_CREW));
 		if (IsIdling())
 		{
 			GoToSickBay();

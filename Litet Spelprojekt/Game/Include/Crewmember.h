@@ -19,6 +19,7 @@
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
 #define NR_GROUPS 3
+#define NUM_CREW 16
 
 enum GroupType : uint32
 {

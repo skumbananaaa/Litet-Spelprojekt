@@ -4,6 +4,7 @@
 #include "../GUI/UILog.h"
 #include "../GUI/UICrewMember.h"
 #include "../GUI/UIPause.h"
+#include "../GUI/UIEndScreen.h"
 #include "../GUI/UICrewRequest.h"
 #include <Audio/Listeners/AudioListener.h>
 #include <Audio/Sources/AudioSource.h>
@@ -74,8 +75,6 @@ private:
 	bool m_IsPaused;
 	bool m_IsGameOver;
 	bool m_CartesianCamera;
-	
-	float m_GameTimer;
 
 	uint32 m_CurrentLight = 0;
 
@@ -85,6 +84,7 @@ private:
 	UIPause* m_pUIPause;
 	UICrewRequest* m_pUIRequest;
 	UINotification* m_pUINotification;
+	UIEndScreen* m_pUIEndScreen;
 
 	AudioSource* m_pTestAudioSource;
 	World* m_pWorld;

@@ -147,11 +147,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GameState.cpp" />
     <ClCompile Include="Source\GameObjectDoor.cpp" />
     <ClCompile Include="Source\GameObjectFloor.cpp" />
     <ClCompile Include="Source\GameObjectArtillery.cpp" />
     <ClCompile Include="Source\GUI\UICrewRequest.cpp" />
     <ClCompile Include="Source\GUI\UINotification.cpp" />
+    <ClCompile Include="Source\GUI\UIEndScreen.cpp" />
     <ClCompile Include="Source\GUI\UISelectedCrew.cpp" />
     <ClCompile Include="Source\GUI\UIOrder.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
@@ -202,9 +204,11 @@
     <ClInclude Include="Include\GameObjectDoor.h" />
     <ClInclude Include="Include\GameObjectFloor.h" />
     <ClInclude Include="Include\GameObjectArtillery.h" />
+    <ClInclude Include="Include\GameState.h" />
     <ClInclude Include="Include\GUI\UICrew.h" />
     <ClInclude Include="Include\GUI\UICrewMember.h" />
     <ClInclude Include="Include\GUI\UICrewRequest.h" />
+    <ClInclude Include="Include\GUI\UIEndScreen.h" />
     <ClInclude Include="Include\GUI\UILog.h" />
     <ClInclude Include="Include\GUI\UINotification.h" />
     <ClInclude Include="Include\GUI\UIOrder.h" />

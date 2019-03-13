@@ -9,7 +9,8 @@
 #include "../../Include/Orders/OrderGiveAid.h"
 #include <Graphics/Materials/MaterialBase.h>
 
-SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
+SceneGame::SceneGame(World* pWorld) 
+	: SceneInternal(false),
 	m_pWorld(pWorld),
 	m_pTestAudioSource(nullptr),
 	m_CartesianCamera(false),

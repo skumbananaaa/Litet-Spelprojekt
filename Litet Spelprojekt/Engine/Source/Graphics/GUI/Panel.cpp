@@ -18,12 +18,14 @@ void Panel::OnMouseMove(const glm::vec2& position)
 		if (!m_IsHovered)
 		{
 			m_IsHovered = true;
+			OnHovered(position);
 			RequestRepaint();
 		}
 	}
 	else if (m_IsHovered)
 	{
 		m_IsHovered = false;
+		OnNotHovered(position);
 		RequestRepaint();
 	}
 	TriggerSendUpdate(this);

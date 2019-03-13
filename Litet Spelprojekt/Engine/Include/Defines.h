@@ -39,3 +39,10 @@
 constexpr float WATER_UPDATE_LEVEL_INTERVAL = 0.02f;
 constexpr float WATER_ROUNDING_FACTOR = 50.0f;
 constexpr float WATER_MAX_LEVEL = 2.0f;
+
+constexpr float RATE_OF_FIRE_SPREAD = 0.9f;
+constexpr float RATE_OF_FIRE_WALL_SPREAD = 0.00002f;
+constexpr float RATE_OF_RIRE_NORMAL_DOOR_SPREAD = 0.02f;
+constexpr float RATE_OF_FIRE_FLOOR_SPREAD = 0.003f;
+constexpr float RATE_OF_FIRE_BULKHEAD_SPREAD = 0.01f;
+constexpr float RATE_OF_FIRE_BULKHEAD_DOOR_SPREAD = 1.25f; //This spread is relative to the "rateOfBulkheadSpreadFactor"

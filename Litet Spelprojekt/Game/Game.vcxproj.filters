@@ -138,6 +138,18 @@
     <ClCompile Include="Source\Scenes\SceneInstructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Orders\OrderPlugHole.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GUI\UICrewRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GUI\UINotification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Orders\OrderPumpWater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\GUI\UIEndScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -267,6 +279,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scenarios\ScenarioIceberg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderPlugHole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UICrewRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UINotification.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderPumpWater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GUI\UIEndScreen.h">

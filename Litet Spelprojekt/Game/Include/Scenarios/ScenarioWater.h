@@ -8,8 +8,8 @@
 
 constexpr float WATER_EVAPORATION_RATE = 1.0f / 1000.0f;
 constexpr float WATER_AGING_DENOMINATOR = 1.0f;
-constexpr float WATER_INV_TIME_FOR_WATER_TO_LEVEL = 30.0f;
-constexpr float FIRE_EXTINGUISH_BY_WATER_RATE = 500.0f;
+constexpr float WATER_INV_TIME_FOR_WATER_TO_LEVEL = 1.0f;
+constexpr float FIRE_EXTINGUISH_BY_WATER_RATE = 500.0f * RATE_OF_FIRE_SPREAD;
 constexpr float SMOKE_EXTINGUISH_BY_WATER_RATE = 1000.0f;
 
 class ScenarioWater : public IScenario
@@ -28,11 +28,13 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
-
+	const std::vector<glm::ivec3> GetWaterInlets() const noexcept;
 private:
+	World* m_pWorld;
 	bool m_WaterAlwaysVisible;
 	std::vector<glm::ivec2>* m_FloodingIDs;
 	std::vector<glm::ivec3> m_InletTiles;
+	std::vector<uint32> m_InletsToRemove;
 
 private:
 	//Scenario Spread Helper Functions

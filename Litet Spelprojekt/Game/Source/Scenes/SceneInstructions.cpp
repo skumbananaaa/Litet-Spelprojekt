@@ -20,10 +20,10 @@ void SceneInstructions::OnActivated(SceneInternal* lastScene, IRenderer* m_pRend
 	m_pPanel->AddExternalRenderer(this);
 	m_HasRenderedUI = false;
 
-	m_pButtonContinue = new Button(m_pPanel->GetWidth() -311, 95, 200, 100, "Fortsätt");
+	m_pButtonContinue = new Button(m_pPanel->GetWidth() - 311, 95, 200, 100, "Laddar...");
 
 	m_pButtonContinue->AddButtonListener(this);
-	m_pButtonContinue->SetVisible(false);
+	m_pButtonContinue->SetVisible(true);
 	m_pButtonContinue->SetTextColor(GUIContext::COLOR_BLACK);
 
 	m_pPanel->Add(m_pButtonContinue);
@@ -49,6 +49,7 @@ void SceneInstructions::CreateWorld() noexcept
 	pWorld->GenerateRoomShadows(*m_pSceneGame);
 
 	m_pButtonContinue->SetVisible(true);
+	m_pButtonContinue->SetText("Fortsätt");
 }
 
 void SceneInstructions::OnUpdate(float dtS) noexcept

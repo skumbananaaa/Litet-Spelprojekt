@@ -13,10 +13,10 @@ HoveringHandler::~HoveringHandler()
 
 void HoveringHandler::Release()
 {
-	for (IHoverable* object : m_Hoverables)
+	/*for (IHoverable* object : m_Hoverables)
 	{
 		object->RemoveHoveringListener(this);
-	}
+	}*/
 	m_Hoverables.clear();
 	m_HoveringListeners.clear();
 }

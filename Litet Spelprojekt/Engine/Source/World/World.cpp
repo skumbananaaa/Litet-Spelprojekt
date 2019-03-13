@@ -122,6 +122,20 @@ void World::GenerateRooms(Scene& scene) noexcept
 		}
 	}
 
+	for (uint32 y = 0; y < m_Levels.size(); y++)
+	{
+		WorldLevel * lvl = &m_Levels[y];
+		const uint32* const* Ids = lvl->GetLevel();
+		TileData*const* data = lvl->GetLevelData();
+		for (uint32 x = 0; x < lvl->GetSizeX(); x++)
+		{
+			for (uint32 z = 0; z < lvl->GetSizeZ(); z++)
+			{
+				m_Rooms[Ids[x][z]].AddTile(glm::ivec3(x,y,z), &data[x][z]);
+			}
+		}
+	}
+
 	std::cout << "Generated " << std::to_string(roomsAdded.size()) << " number of rooms!" << std::endl;
 }
 
@@ -173,6 +187,7 @@ void World::PlaceGameObjects(Scene& scene) noexcept
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, worldObject.Rotation));
 		pGameObject->SetRoom(m_Levels[pos.y].GetLevel()[pos.x][pos.z]);
 		pGameObject->UpdateTransform();
+		pGameObject->SetWorld(this);
 		
 		scene.AddGameObject(pGameObject);
 		m_Levels[pos.y].GetLevelData()[pos.x][pos.z].GameObjects.push_back(pGameObject);

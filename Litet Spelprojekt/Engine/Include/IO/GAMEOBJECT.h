@@ -25,6 +25,7 @@ public:
 	static uint32 SHELF_AMMUNITION;
 	static uint32 GENERATOR;
 	static uint32 FIRE_EXTINGUISHER;
+	static uint32 FIRESPRINKLER;
 
 private:
 	static void RegisterResourcesPreLoading();

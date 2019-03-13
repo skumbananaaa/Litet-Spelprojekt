@@ -2,7 +2,7 @@
 #include <System/Application.h>
 #include <System/Input.h>
 
-constexpr float timestep = 1.0f / 30.0f;
+constexpr float timestep = 1.0f / 60.0f;
 Application* Application::s_Instance = nullptr;
 
 Application::Application(bool fullscreen, uint32 width, uint32 height, const std::string& prePath, bool useMultiThreading)

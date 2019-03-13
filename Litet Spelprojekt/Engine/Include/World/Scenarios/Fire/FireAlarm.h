@@ -14,7 +14,7 @@ public:
 	virtual void Update(const Camera& camera, float dt) noexcept override;
 	virtual void OnSmokeDetected() noexcept override;
 	virtual void SetPosition(const glm::vec3& position) noexcept override;
-	bool HasDetected() const noexcept;
+	virtual bool HasDetectedSmoke() const noexcept override;
 	void TurnOff() noexcept;
 
 private:

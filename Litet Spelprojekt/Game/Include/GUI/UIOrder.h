@@ -27,6 +27,7 @@ protected:
 
 private:
 	static void DisplayOrders(int32 x, int32 y, UIOrder* uiOrder);
+	static void DeleteUI() noexcept;
 
 	static Panel* m_pPanel;
 	static HoveringHandler s_HoveringHandler;

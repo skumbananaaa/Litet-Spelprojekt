@@ -5,6 +5,7 @@
 #include "../GUI/UICrewMember.h"
 #include "../GUI/UIPause.h"
 #include "../GUI/UIEndScreen.h"
+#include "../GUI/UICrewRequest.h"
 #include <Audio/Listeners/AudioListener.h>
 #include <Audio/Sources/AudioSource.h>
 #include <Audio/SoundEffect.h>
@@ -18,6 +19,7 @@
 #include <Graphics/Materials/WaterIndoorMaterial.h>
 #include <World/Logger.h>
 #include <System/Random.h>
+#include "../GUI/UINotification.h"
 
 class SceneGame : public SceneInternal
 {
@@ -51,6 +53,7 @@ public:
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	Crew* GetCrew() noexcept;
 	UICrewMember* GetUICrewMember() noexcept;
+	UINotification* GetUINotification() noexcept;
 	World* GetWorld() noexcept;
 
 	void SetPaused(bool paused) noexcept;
@@ -78,6 +81,8 @@ private:
 	UICrew* m_pUICrew;
 	UILog* m_pUILog;
 	UIPause* m_pUIPause;
+	UICrewRequest* m_pUIRequest;
+	UINotification* m_pUINotification;
 	UIEndScreen* m_pUIEndScreen;
 
 	AudioSource* m_pTestAudioSource;
@@ -90,15 +95,19 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 {
 	Camera& camera = GetCamera();
 	float extendedFactor = 1.0f - (float)(IsExtended() || IsExtending());
-	glm::vec4 standardClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 2.0f));
-	glm::vec4 wallClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.99f));
-	glm::vec4 floorClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.9f));
+	float levelClipFactor = glm::round(glm::clamp<float>(4.0f - camera.GetLookAt().y, 0.0f, 1.0f));
+	float factorProduct = extendedFactor * levelClipFactor;
+	glm::vec4 standardClipPlane(0.0f, factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 2.0f));
+	glm::vec4 wallClipPlane(0.0f,	  factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 1.99f));
+	glm::vec4 floorClipPlane(0.0f,	  factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 1.9f));
+	glm::vec4 particleClipPlane(0.0f, factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 2.0f));
 
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_FRAME)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_RED)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_GREEN)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_BLUE)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_YELLOW)			->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FIRE_RELATED)		->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::LADDER)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::OCEAN_BLUE)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR)		->SetLevelClipPlane(standardClipPlane);
@@ -133,6 +142,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::SHELF_EMPTY)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::GENERATOR)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FIRE_EXTINGUISHER)	->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FIRESPRINKLER)		->SetLevelClipPlane(standardClipPlane);
 
 
 	IRenderer* renderer = GetRenderer();

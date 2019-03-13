@@ -781,13 +781,10 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	const std::vector<MeshEmitter*>& meshEmitters= scene.GetMeshEmitters();
 	for (size_t i = 0; i < meshEmitters.size(); i++)
 	{
-		if (meshEmitters[i]->IsVisible())
-		{
-			const MeshParticle& mesh = (*meshEmitters[i]->GetMesh());
+		const MeshParticle& mesh = (*meshEmitters[i]->GetMesh());
 
-			mesh.SetInstances(meshEmitters[i]->GetParticleInstances(), meshEmitters[i]->GetNumParticles());
-			context.DrawMeshParticle(mesh);
-		}
+		mesh.SetInstances(meshEmitters[i]->GetParticleInstances(), meshEmitters[i]->GetNumParticles());
+		context.DrawMeshParticle(mesh);
 	}
 
 	context.SetDepthMask(false);

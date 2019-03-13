@@ -1,4 +1,3 @@
-﻿#include "..\..\Include\Scenes\SceneGame.h"
 #include "../../Include/Game.h"
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
@@ -9,6 +8,8 @@
 #include "../../Include/Orders/OrderGiveAid.h"
 #include "../../Include/GameState.h"
 #include <Graphics/Materials/MaterialBase.h>
+#include "../../Include/Orders/OrderPlugHole.h"
+#include "../../Include/Scenarios/ScenarioWater.h"
 
 SceneGame::SceneGame(World* pWorld) 
 	: SceneInternal(false),
@@ -18,6 +19,7 @@ SceneGame::SceneGame(World* pWorld)
 	m_pUIPause(nullptr),
 	m_pUIEndScreen(nullptr),
 	m_IsPaused(false),
+	m_pUIRequest(nullptr),
 	m_IsGameOver(false)
 {
 	Game* game = Game::GetGame();
@@ -45,6 +47,7 @@ SceneGame::~SceneGame()
 
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
+	DeleteSafe(m_pUINotification);
 	DeleteSafe(m_pTestAudioSource);
 
 	Logger::Save();
@@ -63,14 +66,16 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Window* window = &game->GetWindow();
 
 	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
-	m_pUILog = new UILog(window->GetWidth() - 450, window->GetHeight() - 450, 450, 450);
-	
+	m_pUIRequest = new UICrewRequest(window->GetWidth() / 4, window->GetHeight() - 50, 200, 50);
+	m_pUILog = new UILog(window->GetWidth() - 600, window->GetHeight() - 700, 600, 700);
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_pUILog);
+	game->GetGUIManager().Add(m_pUIRequest);
 
 	Logger::SetListener(m_pUILog);
 
 	m_pUICrew = new UICrew(0, window->GetHeight() - 50, 200, 500, &m_Crew);
+	m_pUINotification = new UINotification(window->GetWidth() - 560, window->GetHeight(), 500, 50, 8.0F);
 
 	SetPaused(false);
 
@@ -103,8 +108,6 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 	}
 
 	GetCamera().SetMaxPitch(1.55334303f);
-
-	DeleteSafe(m_pUICrew);
 
 	OrderSchedule::Release();
 	ResourceHandler::ResetGameObjectCounters();
@@ -142,6 +145,8 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		{
 			m_IsGameOver = true;
 		}
+
+		m_pUINotification->Update(dtS);
 
 		SceneInternal::OnUpdate(dtS);
 		ScenarioManager::Update(dtS, m_pWorld, this);
@@ -432,6 +437,12 @@ void SceneGame::OnKeyDown(KEY keycode)
 				{
 					medic->GiveOrder(new OrderGiveAid(victim));
 				}
+			}
+			case KEY_M:
+			{
+				ScenarioWater* water = (ScenarioWater*)ScenarioManager::GetScenarios()[Game::GetGame()->m_ScenarioWater];
+				//TODO!!!! Get Inlet tile position!!
+				m_Crew.GetMember(0)->GiveOrder(new OrderPlugHole(glm::ivec3(3, 3, 3), water->GetWaterInlets()[0], m_Crew.GetMember(0)->HasGearEquipped()));
 			}
 		}
 	}
@@ -796,9 +807,7 @@ glm::vec3 SceneGame::GetRay(const glm::vec2 & mousepos, uint32 windowWidth, uint
 
 void SceneGame::ShowCrewmember(uint32 crewmember)
 {
-	glm::ivec3 tile = m_Crew.GetMember(crewmember)->GetTile();
-	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
-	m_pWorld->SetRoomActive(roomIndex, true);
+	m_Crew.GetMember(crewmember)->ReportPosition();
 }
 
 GameObject* SceneGame::RayTestGameObjects()
@@ -840,6 +849,11 @@ Crew* SceneGame::GetCrew() noexcept
 UICrewMember* SceneGame::GetUICrewMember() noexcept
 {
 	return m_pUICrewMember;
+}
+
+UINotification * SceneGame::GetUINotification() noexcept
+{
+	return m_pUINotification;
 }
 
 World* SceneGame::GetWorld() noexcept

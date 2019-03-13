@@ -100,12 +100,14 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	{
 		room.SetFireDetected(true);
 		Logger::LogEvent(GetName() + " larmar om eld i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+		ReportPosition();
 	}
 
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
 		Logger::LogEvent(GetName() + " larmar om vattenläcka i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+		ReportPosition();
 	}
 
 	if (m_pUISelectedCrew)
@@ -287,6 +289,17 @@ void Crewmember::ApplyBleedInjury(float bleed)
 	}
 }
 
+void Crewmember::ApplySmokeInjury(float smoke)
+{
+	bool lastState = HasInjurySmoke();
+	m_HasInjurySmoke += smoke;
+	if (lastState != HasInjurySmoke())
+	{
+		Logger::LogEvent(GetName() + " fick rökskador", false);
+		m_pAudioSourceScream->Play();
+	}
+}
+
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
 {
 	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
@@ -368,10 +381,7 @@ void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
 
-	/*glm::ivec3 tile = GetTile();
-	uint32 roomIndex = m_pWorld->GetLevel(tile.y * 2).GetLevel()[tile.x][tile.z];
-	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetRoomActive(roomIndex, true);*/
+	ReportPosition();
 	SetIdleing(true);
 
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
@@ -470,6 +480,13 @@ void Crewmember::SetResting(bool value) noexcept
 	m_Resting = value;
 }
 
+void Crewmember::ReportPosition() noexcept
+{
+	uint32 roomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
+	m_LastKnownPosition = GetPosition();
+	m_pWorld->SetRoomActive(roomIndex, true);
+}
+
 void Crewmember::UpdateHealth(float dt)
 {
 	//Tweak here!
@@ -548,13 +565,7 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
 		bool isSmoked = HasInjurySmoke();
-		m_HasInjurySmoke += (tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt;
-
-		if (isSmoked != HasInjurySmoke())
-		{
-			Logger::LogEvent(GetName() + " blev rökskadad!");
-			std::cout << "Group: " << std::to_string(m_Group) << " GearIsEquipped: " << std::boolalpha << std::to_string(m_GearIsEquipped) << std::endl;
-		}
+		ApplySmokeInjury((tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt);
 	}
 }
 

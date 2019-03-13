@@ -55,6 +55,7 @@ public:
 	void ApplyBurnInjury(float burn);
 	void ApplyBoneInjury(float boneBreak);
 	void ApplyBleedInjury(float bleed);
+	void ApplySmokeInjury(float smoke);
 
 	//UTILITY (NOT SETS OR GETS)
 	virtual void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
@@ -74,6 +75,7 @@ public:
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
+	void ReportPosition() noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;

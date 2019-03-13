@@ -1,24 +1,21 @@
 #pragma once
+
 #include <EnginePch.h>
 #include <Audio/Sources/AudioSource.h>
 #include <Graphics/GameObject.h>
 
-class SpotLight;
-
-class API FireAlarm : public GameObject
+class API FireSprinkler : public GameObject
 {
 public:
-	FireAlarm(int32 source);
-	~FireAlarm();
+	FireSprinkler(int32 source);
+	~FireSprinkler();
 
 	virtual void Update(const Camera& camera, float dt) noexcept override;
 	virtual void OnSmokeDetected() noexcept override;
 	virtual void SetPosition(const glm::vec3& position) noexcept override;
-	virtual bool HasDetectedSmoke() const noexcept override;
+	bool HasDetected() const noexcept;
 	void TurnOff() noexcept;
 
 private:
-	float m_Rotation;
 	AudioSource* m_pAudioSrc;
-	SpotLight* m_pSpotlight;
 };

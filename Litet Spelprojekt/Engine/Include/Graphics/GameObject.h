@@ -78,6 +78,7 @@ public:
 	virtual void OnFireDetected() noexcept {};
 	virtual void OnSmokeDetected() noexcept {};
 	virtual void OnWaterDetected() noexcept {};
+	virtual bool HasDetectedSmoke() const noexcept;
 
 	void LockAnimation() noexcept;
 	void UnlockAnimation() noexcept;
@@ -285,6 +286,11 @@ inline void GameObject::SetTypeId(int32 typeId) noexcept
 inline int32 GameObject::GetTypeId() const noexcept
 {
 	return m_TypeId;
+}
+
+inline bool GameObject::HasDetectedSmoke() const noexcept
+{
+	return true;
 }
 
 inline void GameObject::LockAnimation() noexcept

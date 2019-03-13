@@ -20,6 +20,7 @@ struct TileData
 	float WaterLevelChange;
 	float WaterLevelLastUpdated;
 	float WaterLevelAge;
+	bool WaterInlet;
 	bool AlreadyFlooded;
 	bool Burning;
 

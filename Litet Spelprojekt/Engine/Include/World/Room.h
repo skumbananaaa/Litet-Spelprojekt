@@ -17,13 +17,15 @@ public:
 	void Init(const glm::vec3& center) noexcept;
 
 	void SetActive(bool active) noexcept;
-	void SetBurning(bool burning) noexcept;
 	void SetFireDetected(bool detected) noexcept;
 	void SetFlooded(bool flooded) noexcept;
 	void SetFloodDetected(bool detected) noexcept;
 	void SetFloodUpdated(bool updated) noexcept;
 	void GenerateShadows(const Scene& scene) noexcept;
 	void ExtendAudioPos(float extension) noexcept;
+
+	void SetTileOnFire(const glm::ivec3& tile) noexcept;
+	void RemoveTileOnFire(const glm::ivec3& tile) noexcept;
 
 	const StaticShadowCube* GetShadowMap() const noexcept;
 	const glm::vec3& GetCenter() const noexcept;
@@ -35,10 +37,10 @@ public:
 	bool IsFloodUpdatedThisFrame() const noexcept;
 	bool IsRoomInitialized() const noexcept;
 
+
 private:
 	glm::vec3 m_Center;
 	bool m_Active = false;
-	bool m_Burning = false;
 	bool m_FireDetected = false;
 	bool m_Flooded = false;
 	bool m_FloodDetected = false;
@@ -46,6 +48,8 @@ private:
 	bool m_Initialized = false;
 	StaticShadowCube* m_pShadowMap;
 	AudioSource* m_pAudioSourceFire;
+
+	std::vector<glm::ivec3> m_OnFire;
 };
 
 inline const StaticShadowCube* Room::GetShadowMap() const noexcept
@@ -65,7 +69,7 @@ inline bool Room::IsActive() const noexcept
 
 inline bool Room::IsBurning() const noexcept
 {
-	return m_Burning;
+	return !m_OnFire.empty();
 }
 
 inline bool Room::IsFireDetected() const noexcept
@@ -92,3 +96,4 @@ inline bool Room::IsRoomInitialized() const noexcept
 {
 	return m_Initialized;
 }
+

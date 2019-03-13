@@ -1,15 +1,18 @@
 #pragma once
+
 #include <EnginePch.h>
 #include <Audio/Sources/AudioSource.h>
 #include <Graphics/GameObject.h>
+#include <World/Scenarios/Fire/FireAlarm.h>
 
-class SpotLight;
-
-class API FireAlarm : public GameObject
+class API FireSprinkler : public GameObject
 {
+	static constexpr float SPRINKLER_RADIUS_SQRD = 49.0f;
+	static constexpr float FIRE_EXTINGUISH_BY_SPRINKLER_RATE = 500.0f * RATE_OF_FIRE_SPREAD;
+
 public:
-	FireAlarm(int32 source);
-	~FireAlarm();
+	FireSprinkler(int32 source);
+	~FireSprinkler();
 
 	virtual void Update(const Camera& camera, float dt) noexcept override;
 	virtual void OnSmokeDetected() noexcept override;
@@ -18,7 +21,6 @@ public:
 	void TurnOff() noexcept;
 
 private:
-	float m_Rotation;
+	bool m_HasDetectedSmoke;
 	AudioSource* m_pAudioSrc;
-	SpotLight* m_pSpotlight;
 };

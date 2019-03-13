@@ -114,6 +114,7 @@
     <ClInclude Include="Include\World\LightManager.h" />
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\World\Room.h" />
+    <ClInclude Include="Include\World\Scenarios\Fire\FireSprinkler.h" />
     <ClInclude Include="Include\World\Tile.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\World.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="Source\World\LightManager.cpp" />
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
+    <ClCompile Include="Source\World\Scenarios\Fire\FireSprinkler.cpp" />
     <ClCompile Include="Source\World\Tile.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\World.cpp" />

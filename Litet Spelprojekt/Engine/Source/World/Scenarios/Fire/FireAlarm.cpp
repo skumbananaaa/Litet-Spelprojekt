@@ -4,6 +4,7 @@
 #include <Graphics/Lights/SpotLight.h>
 #include <Graphics/Scene.h>
 #include <World/Logger.h>
+#include <World/World.h>
 
 FireAlarm::FireAlarm(int32 source) : GameObject(),
 	m_pSpotlight(nullptr)
@@ -29,7 +30,7 @@ void FireAlarm::SetPosition(const glm::vec3& position) noexcept
 	m_pAudioSrc->SetPosition(position);
 }
 
-bool FireAlarm::HasDetected() const noexcept
+bool FireAlarm::HasDetectedSmoke() const noexcept
 {
 	return m_pSpotlight;
 }
@@ -63,7 +64,9 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 
 void FireAlarm::OnSmokeDetected() noexcept
 {
-	Logger::LogEvent("Rök upptäckt!", true);
+	const glm::ivec3& tile = GetTile();
+	uint32 index = m_pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z];
+	Logger::LogEvent("Brandvarnare i " + m_pWorld->GetNameFromGlobal(index) + " ljuder!", true);
 
 	glm::mat4 transformObject(1.0f);
 	const glm::vec4& rotation = GetRotation();

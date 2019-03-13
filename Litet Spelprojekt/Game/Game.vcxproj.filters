@@ -138,6 +138,9 @@
     <ClCompile Include="Source\Scenes\SceneInstructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Orders\OrderPlugHole.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\GUI\UICrewRequest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -264,6 +267,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scenarios\ScenarioIceberg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\OrderPlugHole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GUI\UICrewRequest.h">

@@ -11,7 +11,7 @@ GameObjectDoor::GameObjectDoor() noexcept
 
 	UpdateTransform();
 
-	m_Percentage = 1.0f;
+	m_Percentage = 0.0f;
 	m_Open = true;
 }
 
@@ -42,7 +42,7 @@ bool GameObjectDoor::AccessRequest(uint32 shipNr) noexcept
 		m_AccessQueue.push_back(shipNr);
 		return m_AccessQueue.size() == 1;
 	}
-	return m_AccessQueue.empty();
+	return false;
 }
 
 bool GameObjectDoor::RemoveFromQueue(uint32 shipNr) noexcept

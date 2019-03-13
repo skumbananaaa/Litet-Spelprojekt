@@ -50,6 +50,7 @@ void SceneInstructions::CreateWorld() noexcept
 
 	m_pButtonContinue->SetVisible(true);
 	m_pButtonContinue->SetText("Fortsätt");
+	m_pButtonContinue->SetBackgroundColor(m_pButtonContinue->GetOnHoverColor());
 }
 
 void SceneInstructions::OnUpdate(float dtS) noexcept

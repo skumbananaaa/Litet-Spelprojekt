@@ -168,6 +168,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 void OrderExtinguishFire::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+
+	GetCrewMember()->ReportPosition();
 }
 
 bool OrderExtinguishFire::CanBeStackedWithSameType() noexcept

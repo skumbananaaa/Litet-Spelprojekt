@@ -41,7 +41,10 @@ void UICrewRequest::OnButtonPressed(Button* button)
 
 void UICrewRequest::OnButtonReleased(Button* button)
 {
-	Game::GetGame()->m_pSceneGame->RequestDoorClosed(reinterpret_cast<uint32>(button->GetUserData()));
+	uint32 color = reinterpret_cast<uint32>(button->GetUserData());
+	Game* pGame = Game::GetGame();
+	
+	pGame->m_pSceneGame->RequestDoorClosed(color);
 }
 
 void UICrewRequest::OnButtonHovered(Button* button)

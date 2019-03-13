@@ -1,4 +1,4 @@
-#include "../../Include/Game.h"
+﻿#include "../../Include/Game.h"
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
@@ -729,7 +729,9 @@ void SceneGame::RequestDoorClosed(uint32 doorColor)
 {
 	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
-		m_Crew.GetMember(i)->LookForDoor(doorColor);
+		Crewmember* pCrewmember = m_Crew.GetMember(i);
+		pCrewmember->SetCloseColor(doorColor);
+		pCrewmember->LookForDoor();
 	}
 }
 

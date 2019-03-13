@@ -18,7 +18,7 @@ public:
 class API Button : public TextView, public ISelectable, public IHoverable
 {
 public:
-	Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*) = nullptr, void(*onReleasedCallback)(Button*) = nullptr, int textSize = 100);
+	Button(float x, float y, float width, float height, const std::string& text, void(*onPressedCallback)(Button*) = nullptr, void(*onReleasedCallback)(Button*) = nullptr, int textSize = 55);
 	virtual ~Button();
 
 	Texture2D* GetOnPressedTexture() const noexcept;

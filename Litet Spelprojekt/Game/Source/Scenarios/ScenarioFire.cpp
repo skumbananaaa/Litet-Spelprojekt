@@ -1,6 +1,7 @@
 #include "..\..\Include\Scenarios\ScenarioFire.h"
 #include <System/Random.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
+#include "../../Include/GameState.h"
 
 ScenarioFire::ScenarioFire(bool fireAlwaysVisible)
 {
@@ -291,7 +292,9 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::EndTimer("Fire Scenario Update took %.3f ms", CPU_PROFILER_SLOT_4);
 #endif
-	return false;
+
+	constexpr float totalAmount = 40.0f * 10.0f * 3.0f;
+	GameState::SetBurningAmount(m_OnFire.size() / totalAmount);
 	return m_OnFire.empty();
 }
 

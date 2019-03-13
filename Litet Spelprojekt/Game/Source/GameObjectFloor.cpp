@@ -88,6 +88,10 @@ void GameObjectFloor::OnPicked(const std::vector<int32>& selectedMembers, int32 
 	{
 		AddChoice("Släck eld", nullptr);
 	}
+	if (pLowerTile->WaterInlet)
+	{
+		AddChoice("Plugga hål", nullptr);
+	}
 
 	//if (!IsOpen())
 	//{
@@ -112,4 +116,8 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 		pCrewmember->GiveOrder(new OrderExtinguishFire(glm::ivec3(1, 4, 1), tile,
 			Game::GetGame()->m_pSceneGame->GetWorld()->GetLevel(tile.y).GetLevel()[tile.x][tile.z], pCrewmember->HasGearEquipped()));
 	}
+	/*if (reinterpret_cast<int>(userData) == 1)
+	{
+		Logger::LogEvent("YAAS", true);
+	}*/
 }

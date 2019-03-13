@@ -1,4 +1,4 @@
-﻿#include "../../Include/Game.h"
+#include "../../Include/Game.h"
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
@@ -418,8 +418,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 			{
 				ScenarioWater* water = (ScenarioWater*)ScenarioManager::GetScenarios()[Game::GetGame()->m_ScenarioWater];
 				//TODO!!!! Get Inlet tile position!!
-
-				//m_Crew.GetMember(0)->GiveOrder(new OrderPlugHole())
+				m_Crew.GetMember(0)->GiveOrder(new OrderPlugHole(glm::ivec3(3, 3, 3), water->GetWaterInlets()[0], m_Crew.GetMember(0)->HasGearEquipped()));
 			}
 		}
 	}

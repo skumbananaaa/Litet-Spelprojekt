@@ -15,6 +15,9 @@ public:
 protected:
 	virtual void PrintName() const override;
 
+	virtual void OnHovered(const glm::vec2& position) {};
+	virtual void OnNotHovered(const glm::vec2& position) {};
+
 	virtual void OnAdded(GUIObject* parent) override;
 	virtual void OnRemoved(GUIObject* parent) override;
 };

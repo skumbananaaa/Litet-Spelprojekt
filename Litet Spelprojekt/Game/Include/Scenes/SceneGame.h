@@ -17,6 +17,7 @@
 #include <Graphics/Materials/WaterIndoorMaterial.h>
 #include <World/Logger.h>
 #include <System/Random.h>
+#include "../GUI/UINotification.h"
 
 class SceneGame : public SceneInternal
 {
@@ -50,6 +51,7 @@ public:
 	Crewmember* GetCrewmember(uint32 shipNumber);
 	Crew* GetCrew() noexcept;
 	UICrewMember* GetUICrewMember() noexcept;
+	UINotification* GetUINotification() noexcept;
 	World* GetWorld() noexcept;
 
 	void SetPaused(bool paused) noexcept;
@@ -79,6 +81,7 @@ private:
 	UICrew* m_pUICrew;
 	UILog* m_pUILog;
 	UIPause* m_pUIPause;
+	UINotification* m_pUINotification;
 
 	AudioSource* m_pTestAudioSource;
 	World* m_pWorld;

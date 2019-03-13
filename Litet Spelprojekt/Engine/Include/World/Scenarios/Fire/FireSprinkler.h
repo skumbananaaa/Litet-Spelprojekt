@@ -3,6 +3,7 @@
 #include <EnginePch.h>
 #include <Audio/Sources/AudioSource.h>
 #include <Graphics/GameObject.h>
+#include <World/Scenarios/Fire/FireAlarm.h>
 
 class API FireSprinkler : public GameObject
 {

@@ -28,6 +28,7 @@ Room::~Room()
 	}
 	DeleteSafe(m_pAudioSourceFire);
 	DeleteSafe(m_pShadowMap);
+	m_OnFire.clear();
 }
 
 void Room::Init(const glm::vec3& center) noexcept
@@ -46,11 +47,6 @@ void Room::Init(const glm::vec3& center) noexcept
 void Room::SetActive(bool active) noexcept
 {
 	m_Active = active;
-}
-
-void Room::SetBurning(bool burning) noexcept
-{
-	m_Burning = burning;
 }
 
 void Room::SetFireDetected(bool detected) noexcept
@@ -90,4 +86,21 @@ void Room::GenerateShadows(const Scene& scene) noexcept
 void Room::ExtendAudioPos(float extension) noexcept
 {
 	m_pAudioSourceFire->SetPosition(m_Center + glm::vec3(extension * glm::floor(m_Center.y / 2), 0.0f, 0.0f));
+}
+
+void Room::SetTileOnFire(const glm::ivec3 & tile) noexcept
+{
+	if (std::find(m_OnFire.begin(), m_OnFire.end(), tile) == m_OnFire.end())
+	{
+		m_OnFire.push_back(tile);
+	}
+}
+
+void Room::RemoveTileOnFire(const glm::ivec3 & tile) noexcept
+{
+	m_OnFire.erase(std::remove(m_OnFire.begin(), m_OnFire.end(), tile), m_OnFire.end());
+	if (m_OnFire.empty())
+	{
+		SetFireDetected(false);
+	}
 }

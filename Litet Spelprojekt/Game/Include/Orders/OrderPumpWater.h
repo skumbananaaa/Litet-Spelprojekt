@@ -21,4 +21,5 @@ public:
 
 private:
 	uint32 m_RoomToPump;
+	bool m_Pumping;
 };

@@ -6,7 +6,9 @@
 FireSprinkler::FireSprinkler(int32 source) : GameObject(),
 	m_pScene(nullptr),
 	m_HasDetectedSmoke(false),
-	m_pParticleEmitter(nullptr)
+	m_pParticleEmitter(nullptr),
+	m_MinBounds(FLT_MAX, 0.0f, FLT_MAX),
+	m_MaxBounds(-FLT_MAX, 0.0f, -FLT_MAX)
 {
 	//Set particleemitters to be updated
 	m_IsTickable = true;
@@ -70,27 +72,30 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 		{
 			TileData& tile = ppLevelData[x][z];
 
-			if (tile.Temp > tile.BurnsAt)
+			if (IsInsideBoundingBox(glm::ivec2(x, z)))
 			{
-				glm::vec2 toVector = glm::vec2(tilePos.x - x, tilePos.z - z);
-
-				if (glm::length2(toVector) < SPRINKLER_RADIUS_SQRD)
+				if (tile.Temp > tile.BurnsAt)
 				{
-					tile.Temp -= FIRE_EXTINGUISH_BY_SPRINKLER_RATE * dt;
-				}
-			}
+					glm::vec2 toVector = glm::vec2(tilePos.x - x, tilePos.z - z);
 
-			for (uint32 i = 0; i < tile.GameObjects.size(); i++)
-			{
-				if (dynamic_cast <FireAlarm*>(tile.GameObjects[i]))
-				{
-					FireAlarm* pFireAlarm = (FireAlarm*)tile.GameObjects[i];
-
-					if (pFireAlarm != nullptr)
-					{
-						if (pFireAlarm->HasDetectedSmoke())
+						if (glm::length2(toVector) < SPRINKLER_RADIUS_SQRD)
 						{
-							pFireAlarm->TurnOff();
+							tile.Temp -= FIRE_EXTINGUISH_BY_SPRINKLER_RATE * dt;
+						}
+				}
+
+				for (uint32 i = 0; i < tile.GameObjects.size(); i++)
+				{
+					if (dynamic_cast <FireAlarm*>(tile.GameObjects[i]))
+					{
+						FireAlarm* pFireAlarm = (FireAlarm*)tile.GameObjects[i];
+
+						if (pFireAlarm != nullptr)
+						{
+							if (pFireAlarm->HasDetectedSmoke())
+							{
+								pFireAlarm->TurnOff();
+							}
 						}
 					}
 				}
@@ -112,8 +117,7 @@ void FireSprinkler::OnSmokeDetected() noexcept
 	TileData* const * ppLevelData = worldLevel.GetLevelData();
 
 	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
-	glm::vec3 minBounds(FLT_MAX, 0.0f, FLT_MAX);
-	glm::vec3 maxBounds(-FLT_MAX, 0.0f, -FLT_MAX);
+
 
 	for (int32 x = 0; x < levelSizeX; x++)
 	{
@@ -123,10 +127,10 @@ void FireSprinkler::OnSmokeDetected() noexcept
 			{
 				TileData& tile = ppLevelData[x][z];
 
-				minBounds.x = glm::min<float>(minBounds.x, x);
-				minBounds.z = glm::min<float>(minBounds.z, z);
-				maxBounds.x = glm::max<float>(maxBounds.x, x);
-				maxBounds.z = glm::max<float>(maxBounds.z, z);
+				m_MinBounds.x = glm::min<float>(m_MinBounds.x, x);
+				m_MinBounds.z = glm::min<float>(m_MinBounds.z, z);
+				m_MaxBounds.x = glm::max<float>(m_MaxBounds.x, x);
+				m_MaxBounds.z = glm::max<float>(m_MaxBounds.z, z);
 
 				for (uint32 i = 0; i < tile.GameObjects.size(); i++)
 				{
@@ -147,8 +151,8 @@ void FireSprinkler::OnSmokeDetected() noexcept
 		if (m_pParticleEmitter == nullptr)
 		{
 			glm::vec3 emitterPos = GetPosition();
-			minBounds.y = emitterPos.y + 0.2f;
-			maxBounds.y = emitterPos.y + 1.9f;
+			m_MinBounds.y = emitterPos.y + 0.2f;
+			m_MaxBounds.y = emitterPos.y + 1.9f;
 			emitterPos.y += 1.85f;
 			m_pParticleEmitter = new MeshEmitter();
 			m_pParticleEmitter->SetMesh(MESH::MESH_PARTICLE);
@@ -161,7 +165,7 @@ void FireSprinkler::OnSmokeDetected() noexcept
 			m_pParticleEmitter->SetPosition(emitterPos);
 			m_pParticleEmitter->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(180.0f)));
 			m_pParticleEmitter->SetParticlesPerSeconds(300);
-			m_pParticleEmitter->SetBoundingBox(minBounds, maxBounds);
+			m_pParticleEmitter->SetBoundingBox(m_MinBounds, m_MaxBounds);
 			m_pParticleEmitter->UpdateTransform();
 			m_pScene->AddGameObject(m_pParticleEmitter);
 		}

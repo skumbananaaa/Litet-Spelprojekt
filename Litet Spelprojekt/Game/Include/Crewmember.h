@@ -87,6 +87,7 @@ public:
 
 	GroupType GetGroupType() const noexcept;
 	int32 GetForgetfulness() const noexcept;
+	Crewmember* GetAssisting() const noexcept;
 
 	//IS
 	bool IsIdling() const noexcept;
@@ -195,6 +196,11 @@ inline GroupType Crewmember::GetGroupType() const noexcept
 inline int32 Crewmember::GetForgetfulness() const noexcept
 {
 	return m_Forgetfulness;
+}
+
+inline Crewmember * Crewmember::GetAssisting() const noexcept
+{
+	return m_pAssisting;
 }
 
 inline bool Crewmember::IsIdling() const noexcept

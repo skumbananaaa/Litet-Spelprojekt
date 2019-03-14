@@ -90,6 +90,8 @@ private:
 	World* m_pWorld;
 
 	Crew m_Crew;
+
+	GameObject* m_pLookAt;
 };
 
 inline void SceneGame::UpdateMaterialClipPlanes() noexcept

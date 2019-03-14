@@ -22,6 +22,7 @@ public:
 	void SetFlooded(bool flooded) noexcept;
 	void SetFloodDetected(bool detected) noexcept;
 	void SetFloodUpdated(bool updated) noexcept;
+	void SetPumping(bool pumping) noexcept;
 
 	void GenerateShadows(const Scene& scene) noexcept;
 	void ExtendAudioPos(float extension) noexcept;
@@ -38,6 +39,7 @@ public:
 	bool IsFloodDetected() const noexcept;
 	bool IsFloodUpdatedThisFrame() const noexcept;
 	bool IsRoomInitialized() const noexcept;
+	bool IsPumping() const noexcept;
 
 	void AddTile(glm::ivec3 tile, TileData* data) noexcept;
 	const std::vector<glm::ivec3> GetRoomTiles() const noexcept;
@@ -51,6 +53,7 @@ private:
 	bool m_FloodDetected = false;
 	bool m_FloodUpdatedThisFrame = false;
 	bool m_Initialized = false;
+	bool m_Pumping = false;
 	StaticShadowCube* m_pShadowMap;
 	AudioSource* m_pAudioSourceFire;
 	std::vector<glm::ivec3> m_Tiles;
@@ -101,6 +104,11 @@ inline bool Room::IsFloodUpdatedThisFrame() const noexcept
 inline bool Room::IsRoomInitialized() const noexcept
 {
 	return m_Initialized;
+}
+
+inline bool Room::IsPumping() const noexcept
+{
+	return m_Pumping;
 }
 
 inline void Room::AddTile(glm::ivec3 tile, TileData* data) noexcept

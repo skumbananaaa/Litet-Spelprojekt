@@ -20,10 +20,10 @@ UILog::~UILog()
 
 }
 
-void UILog::OnLogged(const std::string& text) noexcept
+void UILog::OnLogged(const std::string& time, const std::string& text) noexcept
 {
 	glm::vec4 color = m_ListScrollableLog->GetNrOfChildren() % 2 == 0 ? glm::vec4(0.2F, 0.2F, 0.2F, 1.0F) : glm::vec4(0.3F, 0.3F, 0.3F, 1.0F);
-	TextView* textView = new TextView(0, 0, m_ListScrollableLog->GetClientWidth(), 40, text);
+	TextView* textView = new TextView(0, 0, m_ListScrollableLog->GetClientWidth(), 40, time + text);
 	textView->SetBackgroundColor(color);
 	m_ListScrollableLog->Add(textView);
 

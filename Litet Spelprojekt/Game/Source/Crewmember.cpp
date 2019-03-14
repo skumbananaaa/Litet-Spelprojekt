@@ -38,12 +38,12 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_HasInjuryBleeding = 0.0f;
 	m_Recovering = 0.0f;
 	m_Resting = false;
+	m_HasChangedTexture = false;
 	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);*/
 
-	m_MaxHealth = 100.0f;
-	m_Health = m_MaxHealth;
+	m_Health = MAX_HEALTH;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 	m_Idleing = true;
 
@@ -120,6 +120,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		GoToSickBay();
 	}
 	
+	ChangeTexture();
+
 	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
 }
 
@@ -487,6 +489,15 @@ void Crewmember::ReportPosition() noexcept
 	m_pWorld->SetRoomActive(roomIndex, true);
 }
 
+void Crewmember::ChangeTexture() noexcept
+{
+	if (!IsAbleToWalk() && !m_HasChangedTexture)
+	{
+		SetMaterial(MATERIAL::CREW_INJURED);
+		m_HasChangedTexture = true;
+	}
+}
+
 void Crewmember::UpdateHealth(float dt)
 {
 	//Tweak here!
@@ -521,9 +532,9 @@ void Crewmember::UpdateHealth(float dt)
 		Logger::LogEvent(GetName() + " har svimmat!", false);
 		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED;
 	}
-	else if (m_Health < m_MaxHealth)
+	else if (m_Health < MAX_HEALTH)
 	{
-		if (m_Health > 0.5f * m_MaxHealth)
+		if (m_Health > 0.5f * MAX_HEALTH)
 		{
 			m_MovementSpeed = CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED;
 		}

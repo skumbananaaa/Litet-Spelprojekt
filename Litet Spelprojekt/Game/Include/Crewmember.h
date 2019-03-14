@@ -19,6 +19,7 @@
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
 #define NR_GROUPS 3
+#define MAX_HEALTH 100.0f
 
 enum GroupType : uint32
 {
@@ -75,6 +76,7 @@ public:
 	void SetGearIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
 	void ReportPosition() noexcept;
+	void ChangeTexture() noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;
@@ -140,9 +142,9 @@ private:
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
 	float m_HasInjuryBleeding;
-	float m_MaxHealth;
 	float m_Health;
 	bool m_HasTriedToWalkToSickbay;
+	bool m_HasChangedTexture;
 	float m_Recovering;
 
 	//--MOVEMENT
@@ -216,7 +218,7 @@ inline bool Crewmember::IsAlive() const noexcept
 inline bool Crewmember::IsAbleToWork() const noexcept
 {
 	return !(m_HasInjurySmoke > 5.0f || 
-		(m_Health < 0.75  *m_MaxHealth) || 
+		(m_Health < 0.75  *MAX_HEALTH) ||
 		m_HasInjuryBoneBroken >= 3.0f ||
 		m_HasInjuryBurned > 3.0f || 
 		m_HasInjuryBleeding > 3.0f);
@@ -226,7 +228,7 @@ inline bool Crewmember::IsAbleToWalk() const noexcept
 {
 	return !(m_HasInjuryBoneBroken > 5.0f ||
 		m_HasInjurySmoke > 10.0f ||
-		m_Health < 0.5f * m_MaxHealth ||
+		m_Health < 0.5f * MAX_HEALTH ||
 		m_HasInjuryBurned > 10.0f ||
 		m_HasInjuryBleeding > 6.0f);
 }

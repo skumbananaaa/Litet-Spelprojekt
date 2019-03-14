@@ -32,6 +32,7 @@ uint32 TEXTURE::ICON_GREEN_DOOR = 0;
 uint32 TEXTURE::ICON_NOTIFICATION_TRIANGLE = 0;
 uint32 TEXTURE::SMOKE = 0;
 uint32 TEXTURE::SJOFAN_DIFF = 0;
+uint32 TEXTURE::CREW_INJURY = 0;
 uint32 TEXTURE::WALL1 = 0;
 uint32 TEXTURE::OVEN = 0;
 uint32 TEXTURE::FLOOR_NORMAL = 0;
@@ -90,6 +91,7 @@ void TEXTURE::RegisterResources()
 	GENERATOR			= ResourceHandler::RegisterTexture2D("uv_Generator.jpg", TEX_FORMAT_RGBA);
 	SMOKE				= ResourceHandler::RegisterTexture2D("smoke.png", TEX_FORMAT_RGBA, true, false, params);
 	SJOFAN_DIFF			= ResourceHandler::RegisterTexture2D("CrewMember_diff.jpg", TEX_FORMAT_RGBA, true, false, params);
+	CREW_INJURY			= ResourceHandler::RegisterTexture2D("CrewMemberInjured_diff.png", TEX_FORMAT_RGBA, true, false, params);
 	WALL1				= ResourceHandler::RegisterTexture2D("wallTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	OVEN				= ResourceHandler::RegisterTexture2D("oven.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_NORMAL		= ResourceHandler::RegisterTexture2D("normalFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);

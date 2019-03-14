@@ -201,7 +201,7 @@ void SceneGame::OnRender(float dtS) noexcept
 
 void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& position)
 {
-	if (!IsPaused())
+	if (!IsPaused() && !m_IsGameOver)
 	{
 		if (Input::IsKeyDown(KEY_LEFT_ALT))
 		{
@@ -267,7 +267,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 
 void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position)
 {
-	if (!IsPaused())
+	if (!IsPaused() && !m_IsGameOver)
 	{
 		if (!m_CartesianCamera)
 		{
@@ -317,7 +317,7 @@ void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2& positio
 
 void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
-	if (!IsPaused())
+	if (!IsPaused() && !m_IsGameOver)
 	{
 		switch (mousebutton)
 		{
@@ -358,14 +358,16 @@ void SceneGame::OnKeyUp(KEY keycode)
 
 void SceneGame::OnKeyDown(KEY keycode)
 {
-	if (keycode == KEY_ESCAPE)
+	if (!m_IsGameOver)
 	{
-		SetPaused(!IsPaused());
-	}
-	else if (!IsPaused())
-	{
-		switch (keycode)
+		if (keycode == KEY_ESCAPE)
 		{
+			SetPaused(!IsPaused());
+		}
+		else if (!IsPaused())
+		{
+			switch (keycode)
+			{
 			case KEY_O:
 			{
 				//m_CartesianCamera = !m_CartesianCamera;
@@ -444,6 +446,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 				ScenarioWater* water = (ScenarioWater*)ScenarioManager::GetScenarios()[Game::GetGame()->m_ScenarioWater];
 				//TODO!!!! Get Inlet tile position!!
 				m_Crew.GetMember(0)->GiveOrder(new OrderPlugHole(glm::ivec3(3, 3, 3), water->GetWaterInlets()[0], m_Crew.GetMember(0)->HasGearEquipped()));
+			}
 			}
 		}
 	}

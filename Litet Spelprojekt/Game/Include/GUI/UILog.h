@@ -10,7 +10,7 @@ public:
 	UILog(float x, float y, float width, float height);
 	virtual ~UILog();
 
-	virtual void OnLogged(const std::string& text) noexcept override;
+	virtual void OnLogged(const std::string& time, const std::string& text) noexcept override;
 
 protected:
 	virtual void OnUpdate(float dtS) override;

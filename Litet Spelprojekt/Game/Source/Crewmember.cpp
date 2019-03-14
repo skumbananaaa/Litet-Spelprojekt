@@ -159,6 +159,11 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 
 	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
 	SetPosition(res);
+
+	if (m_pAssisting)
+	{
+		m_pAssisting->SetPosition(res);
+	}
 }
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)

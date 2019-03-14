@@ -24,7 +24,7 @@ public:
 	MeshEmitter& operator=(MeshEmitter&& other) = delete;
 	MeshEmitter& operator=(const MeshEmitter& other) = delete;
 
-	MeshEmitter(float autoDeleteTimer = -1, IMeshListener* listerner = nullptr);
+	MeshEmitter(float autoDeleteTimer = -FLT_MAX , IMeshListener* listerner = nullptr);
 	~MeshEmitter();
 
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;

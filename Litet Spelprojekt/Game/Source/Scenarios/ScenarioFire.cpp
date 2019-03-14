@@ -76,6 +76,12 @@ void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
 	emitter->SetIsVisible(m_FireAlwaysVisible);
 	m_OnFire.push_back(position);
 	room.SetTileOnFire(position);
+
+	if (tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR] != nullptr)
+	{
+		tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->SetMaterial(
+			World::ConvertExtToNonExtFloorMaterial(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->GetMaterial()));
+	}
 }
 
 void ScenarioFire::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
@@ -165,13 +171,13 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 				TileData& lowerTileData = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z];
 
-				for (uint32 i = 0; i < lowerTileData.GameObjects.size(); i++)
+				for (uint32 i = lowerTileData.NrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
 				{
 					GameObject* pGameObject = lowerTileData.GameObjects[i];
 
 					if (pGameObject != nullptr)
 					{
-						if (!pGameObject->HasDetectedSmoke())
+						if (!pGameObject->HasDetectedSmoke() && !room.IsFireDetected())
 						{
 							pGameObject->OnSmokeDetected();
 							//ShowInRoom(m_pWorld->GetLevel(pos.y + (pos.y + 1) % 2)->GetLevel()[pos.x][pos.z]);
@@ -179,6 +185,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 							//SetFireVisible(id, true);
 							//SetSmokeVisible(id, true);
 
+							room.SetFireDetected(true);
 
 							if (id == tileID)
 							{
@@ -220,6 +227,8 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			Room& aboveRoom = m_pWorld->GetRoom(m_pWorld->GetLevel(aboveIndex).GetLevel()[smokePos.x][smokePos.z]);
 			// TWEAK HERE
  			aboveData.Temp += glm::max(tile.SmokeAmount - tile.SmokeLimit, 0.0f) * dtS * 0.1f / aboveData.BurnsAt;
+			aboveData.Temp = std::min(aboveData.Temp, MAX_TILE_TEMP);
+
 			if (aboveData.Temp > aboveData.BurnsAt && !aboveData.Burning)
 			{
 				glm::ivec3 pos = smokePos + glm::ivec3(0.0f, 1.0f, 0.0f);
@@ -232,6 +241,12 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 				if (aboveData.WaterLevel < WATER_UPDATE_LEVEL_INTERVAL)
 				{
 					emitter->SetIsVisible(m_DiscoveredRooms[m_pWorld->GetLevel(aboveIndex).GetLevel()[pos.x][pos.z]] || m_FireAlwaysVisible);
+
+					if (aboveData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR] != nullptr)
+					{
+						aboveData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->SetMaterial(
+							World::ConvertExtToNonExtFloorMaterial(aboveData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->GetMaterial()));
+					}
 				}
 			}
 		}
@@ -289,7 +304,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 	constexpr float totalAmount = 40.0f * 10.0f * 3.0f;
 	GameState::SetBurningAmount(m_OnFire.size() / totalAmount);
-	return m_OnFire.empty();
+	return m_OnFire.empty() && m_Smoke.empty();
 }
 
 std::string ScenarioFire::GetName() noexcept
@@ -367,7 +382,7 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 
 	rateOfSpread /= (1.0f + (tileData.Temp / 100.0f));
 	tileData.Temp += std::max((originTile.Temp - tileData.BurnsAt) * rateOfSpread * dtS, 0.0f);
-	tileData.Temp = std::min(tileData.Temp, 1000.0f);
+	tileData.Temp = std::min(tileData.Temp, MAX_TILE_TEMP);
 
 	if (tileData.Temp >= tileData.BurnsAt && !tileData.Burning)
 	{
@@ -382,6 +397,12 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 			{
 				emitter->SetIsVisible(m_DiscoveredRooms[mapTo] || m_FireAlwaysVisible);
 			}
+		}
+
+		if (tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR] != nullptr)
+		{
+			tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->SetMaterial(
+				World::ConvertExtToNonExtFloorMaterial(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->GetMaterial()));
 		}
 	}
 }
@@ -422,23 +443,23 @@ bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, cons
 					}
 				}
 
-				for (uint32 i = 0; i < lowerTileData.GameObjects.size(); i++)
-				{
-					GameObject* pGameObject = lowerTileData.GameObjects[i];
+				//for (uint32 i = lowerTileData.NrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
+				//{
+				//	GameObject* pGameObject = lowerTileData.GameObjects[i];
 
-					if (pGameObject != nullptr)
-					{
-						if (!pGameObject->HasDetectedSmoke() && !room.IsFireDetected())
-						{
-							pGameObject->OnSmokeDetected();
-							//ShowInRoom(m_pppMap[tileTo.y][tileTo.x][tileTo.z]);
-							uint32 id = mapTo;
-							m_DiscoveredRooms[id] = true;
-							SetFireVisible(id, true);
-							SetSmokeVisible(id, true);
-						}
-					}
-				}
+				//	if (pGameObject != nullptr)
+				//	{
+				//		if (!pGameObject->HasDetectedSmoke() && !room.IsFireDetected())
+				//		{
+				//			pGameObject->OnSmokeDetected();
+				//			//ShowInRoom(m_pppMap[tileTo.y][tileTo.x][tileTo.z]);
+				//			uint32 id = mapTo;
+				//			m_DiscoveredRooms[id] = true;
+				//			SetFireVisible(id, true);
+				//			SetSmokeVisible(id, true);
+				//		}
+				//	}
+				//}
 			}
 
 			res = true;

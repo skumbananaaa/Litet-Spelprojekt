@@ -124,6 +124,11 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		GoToSickBay();
 	}
 	
+	if (m_pWorld->GetRoom(GetRoom()).IsActive())
+	{
+		UpdateLastKnownPosition();
+	}
+
 	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
 }
 
@@ -161,6 +166,11 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 
 	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
 	SetPosition(res);
+
+	if (m_pAssisting)
+	{
+		m_pAssisting->SetPosition(res);
+	}
 }
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
@@ -424,7 +434,7 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	//HOT FIX (Gay?)
 	m_PlayerTile.y = (m_PlayerTile.y >= 3) ? 2 : m_PlayerTile.y;
 
-	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11 && !m_Idling)
+	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)// && !m_Idling)
 	{
 		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 	}

@@ -16,7 +16,7 @@
 #define CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED 0.8f
 #define CREWMEMBER_DEAD_MOVEMENT_SPEED 0.0f
 
-#define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
+#define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.5f
 
 #define NR_GROUPS 3
 #define NUM_CREW 16
@@ -87,6 +87,7 @@ public:
 
 	GroupType GetGroupType() const noexcept;
 	int32 GetForgetfulness() const noexcept;
+	Crewmember* GetAssisting() const noexcept;
 
 	//IS
 	bool IsIdling() const noexcept;
@@ -196,6 +197,11 @@ inline GroupType Crewmember::GetGroupType() const noexcept
 inline int32 Crewmember::GetForgetfulness() const noexcept
 {
 	return m_Forgetfulness;
+}
+
+inline Crewmember * Crewmember::GetAssisting() const noexcept
+{
+	return m_pAssisting;
 }
 
 inline bool Crewmember::IsIdling() const noexcept

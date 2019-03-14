@@ -28,8 +28,15 @@ void OrderWalkMedicBay::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMemb
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 
-	GetCrewMember()->ReportPosition();
-	GetCrewMember()->SetResting(true);
+	Crewmember* pMember = GetCrewMember();
+	pMember->ReportPosition();
+	pMember->SetResting(!pMember->IsAbleToWork());
+	Crewmember* assisted = pMember->GetAssisting();
+	if (assisted)
+	{
+		assisted->SetResting(true);
+		pMember->SetAssisting(nullptr);
+	}
 }
 /*
 void OrderWalkMedicBay::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept

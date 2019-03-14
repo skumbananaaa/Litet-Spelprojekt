@@ -47,6 +47,18 @@ public:
 	static uint32 FLOOR_KITCHEN1;
 	static uint32 FLOOR_DINING1;
 	static uint32 FLOOR_CABOOSE1;
+	static uint32 FLOOR_EXT_NORMAL;
+	static uint32 FLOOR_EXT_SICKBAY1;
+	static uint32 FLOOR_EXT_TOILET1;
+	static uint32 FLOOR_EXT_MACHINE1;
+	static uint32 FLOOR_EXT_MACHINE2;
+	static uint32 FLOOR_EXT_MACHINE3;
+	static uint32 FLOOR_EXT_AMMUNITION1;
+	static uint32 FLOOR_EXT_AMMUNITION2;
+	static uint32 FLOOR_EXT_AMMUNITION3;
+	static uint32 FLOOR_EXT_KITCHEN1;
+	static uint32 FLOOR_EXT_DINING1;
+	static uint32 FLOOR_EXT_CABOOSE1;
 	static uint32 OVEN;
 	static uint32 SHELF_EMPTY;
 	static uint32 SHELF_AMMUNITION;

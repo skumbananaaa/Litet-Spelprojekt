@@ -38,6 +38,7 @@ bool FireSprinkler::HasDetectedSmoke() const noexcept
 
 void FireSprinkler::TurnOff() noexcept
 {
+	m_HasDetectedSmoke = false;
 	m_pAudioSrc->Stop();
 
 	if (m_pParticleEmitter != nullptr)
@@ -64,7 +65,11 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 	uint32 levelSizeX = worldLevel.GetSizeX();
 	uint32 levelSizeZ = worldLevel.GetSizeZ();
 
+	const uint32* const * ppLevel = worldLevel.GetLevel();
 	TileData* const * ppLevelData = worldLevel.GetLevelData();
+
+	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
+	bool allFireInRoomExtinguished = true;
 
 	for (int32 x = 0; x < levelSizeX; x++)
 	{
@@ -100,7 +105,20 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 					}
 				}
 			}
+
+			if (currentRoomIndex == ppLevel[x][z])
+			{
+				if (tile.Temp > tile.BurnsAt)
+				{
+					allFireInRoomExtinguished = false;
+				}
+			}
 		}
+	}
+
+	if (allFireInRoomExtinguished)
+	{
+		TurnOff();
 	}
 }
 
@@ -132,13 +150,15 @@ void FireSprinkler::OnSmokeDetected() noexcept
 				m_MaxBounds.x = glm::max<float>(m_MaxBounds.x, x);
 				m_MaxBounds.z = glm::max<float>(m_MaxBounds.z, z);
 
-				for (uint32 i = 0; i < tile.GameObjects.size(); i++)
+				for (uint32 i = tile.NrOfBaseGameObjects; i < tile.GameObjects.size(); i++)
 				{
-					if (tile.GameObjects[i] != nullptr)
+					FireSprinkler* pFireSprinkler = dynamic_cast<FireSprinkler*>(tile.GameObjects[i]);
+
+					if (pFireSprinkler != nullptr)
 					{
-						if (!tile.GameObjects[i]->HasDetectedSmoke())
+						if (!pFireSprinkler->HasDetectedSmoke())
 						{
-							tile.GameObjects[i]->OnSmokeDetected();
+							pFireSprinkler->OnSmokeDetected();
 						}
 					}
 				}

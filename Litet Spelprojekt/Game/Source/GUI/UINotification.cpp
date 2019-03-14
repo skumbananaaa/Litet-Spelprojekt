@@ -6,10 +6,17 @@ UINotification::UINotification(float x, float y, float width, float height, floa
 {
 	m_Time = time;
 	m_PixelsToMove = 0;
+
+	m_pAudioSourceSelect = AudioSource::CreateSoundSource(SOUND::UI_SELECT);
+	m_pAudioSourceSelect->SetRollOffFactor(10.0f);
+	m_pAudioSourceSelect->SetReferenceDistance(0.0f);
+	m_pAudioSourceSelect->SetMaxDistance(500.0f);
+	m_pAudioSourceSelect->SetLooping(false);
 }
 
 UINotification::~UINotification()
 {
+	DeleteSafe(m_pAudioSourceSelect);
 }
 
 void UINotification::Update(float dtS) noexcept
@@ -86,4 +93,6 @@ void UINotification::CreateNotification(const std::string& text)
 	Game::GetGame()->GetGUIManager().Add(pPanel);
 
 	m_PixelsToMove += 60;
+
+	m_pAudioSourceSelect->Play();
 }

@@ -4,7 +4,7 @@
 class API ILogListener
 {
 public:
-	virtual void OnLogged(const std::string& text) noexcept = 0;
+	virtual void OnLogged(const std::string& time, const std::string& text) noexcept = 0;
 };
 
 class API Logger

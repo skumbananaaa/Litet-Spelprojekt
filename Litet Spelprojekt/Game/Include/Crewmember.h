@@ -19,6 +19,7 @@
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
 #define NR_GROUPS 3
+#define NUM_CREW 16
 #define MAX_HEALTH 100.0f
 
 enum GroupType : uint32
@@ -46,7 +47,8 @@ public:
 	//PATHFINDING (NOT SETS OR GETS)
 	void Move(const glm::vec3& dir, bool allowMult, float dtS);
 	void FindPath(const glm::ivec3& goalPos);
-	void LookForDoor(uint32 doorColor) noexcept;
+	void SetCloseColor(uint32 doorColor);
+	void LookForDoor() noexcept;
 	void CloseDoorOrder(glm::ivec3 doorTile);
 	void GoToSickBay();
 
@@ -71,7 +73,7 @@ public:
 	void SetPosition(const glm::vec3& position) noexcept;
 	void SetDirection(const glm::vec3& direction) noexcept;
 	void SetAssisting(Crewmember* inNeed) noexcept;
-	void SetIdleing(bool value) noexcept;
+	void SetIdling(bool value) noexcept;
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
@@ -89,7 +91,7 @@ public:
 	int32 GetForgetfulness() const noexcept;
 
 	//IS
-	bool IsIdleing() const noexcept;
+	bool IsIdling() const noexcept;
 	virtual bool IsHovered() const noexcept override;
 	virtual bool IsPicked() const noexcept override;
 	bool IsAlive() const noexcept;
@@ -149,7 +151,7 @@ private:
 
 	//--MOVEMENT
 	float m_MovementSpeed;
-	bool m_Idleing;
+	bool m_Idling;
 	bool m_Resting;
 
 	int32 m_Forgetfulness;
@@ -158,6 +160,8 @@ private:
 	UISelectedCrew* m_pUISelectedCrew;
 
 	AudioSource* m_pAudioSourceScream;
+
+	uint32 m_CloseColor;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept
@@ -195,9 +199,9 @@ inline int32 Crewmember::GetForgetfulness() const noexcept
 	return m_Forgetfulness;
 }
 
-inline bool Crewmember::IsIdleing() const noexcept
+inline bool Crewmember::IsIdling() const noexcept
 {
-	return m_Idleing;
+	return m_Idling;
 }
 
 inline bool Crewmember::IsHovered() const noexcept

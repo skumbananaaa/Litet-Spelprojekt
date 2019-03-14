@@ -8,7 +8,7 @@
 #include "../Include/GameObjectDoor.h"
 #include "../Include/Orders/OrderSchedule.h"
 #include "../Include/Orders/OrderGiveAid.h"
-
+#include "../Include/GameState.h"
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
@@ -45,7 +45,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 
 	m_Health = MAX_HEALTH;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
-	m_Idleing = true;
+	m_Idling = true;
 
 	m_Forgetfulness = 3;
 
@@ -57,6 +57,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_pAudioSourceScream->SetLooping(false);
 
 	m_Group = groupType;
+
+	m_CloseColor = DOOR_COLOR_RED;
 }
 
 Crewmember::~Crewmember()
@@ -151,7 +153,7 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 			movementSpeedMultiplier *= glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(yPos).GetLevelData()[tilePos.x][tilePos.z].WaterLevel / WATER_MAX_LEVEL));
 		}
 
-		if (m_Idleing)
+		if (m_Idling)
 		{
 			movementSpeedMultiplier *= CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER;
 		}
@@ -175,13 +177,18 @@ void Crewmember::FindPath(const glm::ivec3& goalPos)
 	m_OrderHandler.GiveOrder(new OrderWalk(goalPos));
 }
 
+void Crewmember::SetCloseColor(uint32 doorColor)
+{
+	m_CloseColor = doorColor;
+}
+
 void Crewmember::GiveOrder(IOrder* order) noexcept
 {
 	if(!IsResting())
 		m_OrderHandler.GiveOrder(order);
 }
 
-void Crewmember::LookForDoor(uint32 doorColor) noexcept
+void Crewmember::LookForDoor() noexcept
 {
 	uint32 crewRoomIndex = m_pWorld->GetLevel(GetTile().y * 2).GetLevel()[GetTile().x][GetTile().z];
 	for (int j = 0; j < m_pWorld->GetDoors().size(); j++)
@@ -192,7 +199,7 @@ void Crewmember::LookForDoor(uint32 doorColor) noexcept
 		{
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 
-			if (door->IsOpen() && door->GetColor() <= doorColor)
+			if (door->IsOpen() && door->GetColor() <= m_CloseColor)
 			{
 				m_OrderHandler.GiveOrder(new OrderDoor(door, doorTile, false));
 			}
@@ -376,15 +383,14 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 {
 	std::cout << GetName() << " started order!" << std::endl;
-	m_Idleing = idleOrder;
+	m_Idling = idleOrder;
 }
 
 void Crewmember::OnAllOrdersFinished() noexcept
 {
 	std::cout << GetName() << " finished all order(s)!" << std::endl;
 
-	ReportPosition();
-	SetIdleing(true);
+	SetIdling(true);
 
 	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 	m_HasTriedToWalkToSickbay = false;
@@ -418,7 +424,7 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	//HOT FIX (Gay?)
 	m_PlayerTile.y = (m_PlayerTile.y >= 3) ? 2 : m_PlayerTile.y;
 
-	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
+	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11 && !m_Idling)
 	{
 		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 	}
@@ -463,12 +469,12 @@ void Crewmember::SetAssisting(Crewmember* inNeed) noexcept
 	m_pAssisting = inNeed;
 }
 
-void Crewmember::SetIdleing(bool value) noexcept
+void Crewmember::SetIdling(bool value) noexcept
 {
-	m_Idleing = value;
+	m_Idling = value;
 	if (!IsAbleToWork())
 	{
-		m_Idleing = false;
+		m_Idling = false;
 	}
 }
 
@@ -550,7 +556,8 @@ void Crewmember::UpdateHealth(float dt)
 
 	if (!IsAbleToWork())
 	{
-		if (IsIdleing())
+		GameState::SetCrewHealth(GameState::GetCrewHealth() - (1.0f / NUM_CREW));
+		if (IsIdling())
 		{
 			GoToSickBay();
 		}

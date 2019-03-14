@@ -16,7 +16,6 @@
 #include <System/CPUProfiler.h>
 #endif
 
-#define NUM_CREW 16
 #define MAX_ROOMS_VISIBLE 3
 
 class Game : public Application, public IGameObjectCreator

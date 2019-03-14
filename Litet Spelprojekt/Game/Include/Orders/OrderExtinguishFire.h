@@ -8,6 +8,8 @@
 
 class OrderExtinguishFire : public OrderWalk
 {
+	static constexpr float FIRE_EXTINGUISH_BY_CREW_RATE = 800.0f * RATE_OF_FIRE_SPREAD;
+
 public:
 	OrderExtinguishFire(const glm::ivec3& roomTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool hasGearEquipped, bool fireFullyExtinguished);
 	virtual ~OrderExtinguishFire();
@@ -25,7 +27,7 @@ protected:
 	bool CheckIfTileInWorld(const glm::ivec2& levelSize, const glm::ivec3& tile) const noexcept;
 
 private:
-	bool ExtinguishIfInWorld(TileData * const * ppLevelData, const glm::ivec3& tile, bool inWorld) const noexcept;
+	bool ExtinguishIfInWorld(TileData * const * ppLevelData, const glm::ivec3& tile, bool inWorld, float dtS) const noexcept;
 	glm::ivec2 FindClosestBurningTile(const uint32 * const * ppLevel, TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& currentTile) const noexcept;
 
 private:
@@ -33,6 +35,7 @@ private:
 	glm::ivec3 m_RoomTile;
 	glm::ivec3 m_BurningTile;
 	float m_EquippingGearTimer;
+	float m_ExtinguishingIntensity;
 	bool m_ExtinguishingFire;
 	bool m_FireFullyExtinguished;
 };
@@ -47,7 +50,7 @@ inline bool OrderExtinguishFire::CheckIfTileInWorld(const glm::ivec2& levelSize,
 	return true;
 }
 
-inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelData, const glm::ivec3& tile, bool inWorld) const noexcept
+inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelData, const glm::ivec3& tile, bool inWorld, float dtS) const noexcept
 {
 	if (!inWorld)
 	{
@@ -58,7 +61,8 @@ inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelD
 
 	if (tileData.Temp > tileData.BurnsAt)
 	{
-		tileData.Temp = -273.15f;
+		tileData.Temp -= m_ExtinguishingIntensity * dtS;
+		tileData.BurnsAt *= 1.1f;
 		
 		for (uint32 i = 0; i < tileData.GameObjects.size(); i++)
 		{

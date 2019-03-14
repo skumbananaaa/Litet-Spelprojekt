@@ -45,6 +45,8 @@ void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 			break;
 		}
 	}
+
+	GetCrewMember()->ReportPosition();
 }
 
 bool OrderGiveAid::CanBeStackedWithSameType() noexcept

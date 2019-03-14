@@ -1,4 +1,4 @@
-#include "../../Include/Game.h"
+﻿#include "../../Include/Game.h"
 #include <World/LightManager.h>
 #include <Graphics/Textures/StaticShadowCube.h>
 #include "../../Include/Scenarios/ScenarioManager.h"
@@ -6,19 +6,22 @@
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Orders/OrderSchedule.h"
 #include "../../Include/Orders/OrderGiveAid.h"
+#include "../../Include/GameState.h"
 #include <Graphics/Materials/MaterialBase.h>
 #include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Scenarios/ScenarioWater.h"
 
-SceneGame::SceneGame(World* pWorld) : SceneInternal(false),
+SceneGame::SceneGame(World* pWorld) 
+	: SceneInternal(false),
 	m_pWorld(pWorld),
 	m_pTestAudioSource(nullptr),
 	m_CartesianCamera(false),
 	m_pUIPause(nullptr),
+	m_pUIEndScreen(nullptr),
 	m_IsPaused(false),
-	m_IsGameOver(false),
 	m_pUIRequest(nullptr),
-	m_GameTimer(0.0f)
+	m_IsGameOver(false),
+	m_pLookAt(nullptr)
 {
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -86,6 +89,8 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 			m_Crew.GetMember(i)->GiveOrder(pOrder);
 		}
 	}
+
+	GameState::Reset();
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
@@ -125,10 +130,19 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		m_pUIPause = nullptr;
 	}
 
-	if (!IsPaused())
+	if (m_IsGameOver && !m_pUIEndScreen)
 	{
-		m_GameTimer += dtS;
-		if (m_GameTimer >= 500.0f)
+		Game* game = Game::GetGame();
+		Window* window = &game->GetWindow();
+		game->GetGUIManager().DeleteChildren();
+
+		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800) / 2, (window->GetHeight() - 800) / 2, 800, 800, true);
+		game->GetGUIManager().Add(m_pUIEndScreen);
+	}
+
+	if (!IsPaused() && !m_IsGameOver)
+	{
+		if (GameState::GetWaterLeakAmount() > 1.0f || GameState::GetBurningAmount() > 0.3f || GameState::GetCrewHealth() < 0.5f)
 		{
 			m_IsGameOver = true;
 		}
@@ -173,11 +187,6 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 		AudioListener::SetPosition(GetCamera().GetPosition());
 		AudioListener::SetOrientation(GetCamera().GetFront(), GetCamera().GetUp());
-	}
-
-	if (m_IsGameOver)
-	{
-		SetPaused(true);
 	}
 }
 
@@ -469,38 +478,19 @@ void SceneGame::CreateGameObjects() noexcept
 {
 	GameObject* pGameObject = nullptr;
 	{
-		////Bottom floor
-		//{
-		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::DOOR_RED);
-		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
-		//	pGameObject->SetPosition(glm::vec3(5.5f, 0.0f, 20.5f));
-		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-		//	pGameObject->UpdateTransform();
-		//	AddGameObject(pGameObject);
-		//}
-
-		////Middle floor
-		//{
-		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::DOOR_GREEN);
-		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
-		//	pGameObject->SetPosition(glm::vec3(5.5f, 2.0f, 20.5f));
-		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-		//	pGameObject->UpdateTransform();
-		//	AddGameObject(pGameObject);
-		//}
-
-		////Top floor
-		//{
-		//	pGameObject = new GameObject();
-		//	pGameObject->SetMaterial(MATERIAL::DOOR_BLUE);
-		//	pGameObject->SetMesh(MESH::CUBE_OBJ);
-		//	pGameObject->SetPosition(glm::vec3(5.5f, 4.0f, 20.5f));
-		//	pGameObject->SetScale(glm::vec3(10.0f, 0.1f, 40.0f));
-		//	pGameObject->UpdateTransform();
-		//	AddGameObject(pGameObject);
-		//}
+		//Look at
+		{
+			pGameObject = new GameObject();
+			pGameObject->SetMaterial(MATERIAL::BOAT);
+			pGameObject->SetMesh(MESH::QUAD);
+			pGameObject->SetPosition(GetCamera().GetLookAt() + glm::vec3(0.0f, 0.06f, 0.0f));
+			pGameObject->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+			pGameObject->UpdateTransform();
+			pGameObject->SetWorld(m_pWorld);
+			AddGameObject(pGameObject);
+			m_pLookAt = pGameObject;
+			pGameObject = nullptr;
+		}
 	}
 }
 
@@ -732,7 +722,9 @@ void SceneGame::RequestDoorClosed(uint32 doorColor)
 {
 	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
-		m_Crew.GetMember(i)->LookForDoor(doorColor);
+		Crewmember* pCrewmember = m_Crew.GetMember(i);
+		pCrewmember->SetCloseColor(doorColor);
+		pCrewmember->LookForDoor();
 	}
 }
 
@@ -925,6 +917,11 @@ void SceneGame::UpdateCamera(float dtS) noexcept
 	{
 		GetCamera().UpdateFromLookAt();
 	}
+
+	glm::vec3 newPosition(GetCamera().GetLookAt() + glm::vec3(0.0f, 0.06f, 0.0f));
+	newPosition.x -= GetExtension() * glm::floor(newPosition.y / 2);
+	m_pLookAt->SetPosition(newPosition);
+	m_pLookAt->UpdateTransform();
 }
 
 void SceneGame::SetPaused(bool paused) noexcept

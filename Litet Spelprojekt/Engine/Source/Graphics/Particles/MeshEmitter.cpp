@@ -20,7 +20,9 @@ MeshEmitter::MeshEmitter(float autoDeleteTimer, IMeshListener* listerner)
 	m_LivingParticles(),
 	m_Particles(),
 	m_ParticleInstances(),
-	m_pScene(nullptr)
+	m_pScene(nullptr),
+	m_MinPos(0.0f),
+	m_MaxPos(0.0f)
 {
 	//Set meshemitters to be updated
 	m_IsTickable = true;
@@ -62,32 +64,30 @@ void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 		}
 	}
 
-	if (!m_IsVisible)
-	{
-		return;
-	}
-
 	GameObject::Update(camera, deltaTime);
 
 	//Spawn particles
-	if (m_AutoDeleteTimer != 0.0F)
+	if (m_IsVisible)
 	{
-		float particlesThisFrame = m_ParticleBacklog + (m_ParticlesPerSecond * deltaTime);
-		for (; particlesThisFrame >= 1.0f; particlesThisFrame -= 1.0f)
+		if (m_AutoDeleteTimer != 0.0F)
 		{
-			SpawnParticle();
+			float particlesThisFrame = m_ParticleBacklog + (m_ParticlesPerSecond * deltaTime);
+			for (; particlesThisFrame >= 1.0f; particlesThisFrame -= 1.0f)
+			{
+				SpawnParticle();
+			}
+			m_ParticleBacklog = particlesThisFrame;
 		}
-		m_ParticleBacklog = particlesThisFrame;
-	}
-	else if (GetNumParticles() == 0)
-	{
-		m_pScene->RemoveGameObject(this);
-		if (m_pListener)
+		else if (GetNumParticles() == 0)
 		{
-			m_pListener->OnMeshEmitterKilled(this);
+			m_pScene->RemoveGameObject(this);
+			if (m_pListener)
+			{
+				m_pListener->OnMeshEmitterKilled(this);
+			}
+			delete this;
+			return;
 		}
-		delete this;
-		return;
 	}
 
 	//Update and sort particles
@@ -96,7 +96,7 @@ void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 		//Update
 		ParticleData& particle = GetLivingParticle(i);
 		particle.TimeLived += deltaTime;
-		if (particle.TimeLived > m_TimeToLive)
+		if (particle.TimeLived > m_TimeToLive || !IsInsideBoundingBox(particle))
 		{
 			KillParticle(i);
 			i--;
@@ -249,6 +249,12 @@ void MeshEmitter::SetEndColor(const glm::vec4& color) noexcept
 
 	Node<glm::vec4> node = { color, 1.0f };
 	m_ColorNodes.push_back(node);
+}
+
+void MeshEmitter::SetBoundingBox(const glm::vec3& minPos, const glm::vec3& maxPos) noexcept
+{
+	m_MinPos = minPos;
+	m_MaxPos = maxPos;
 }
 
 uint32 MeshEmitter::GetNumParticles() const noexcept

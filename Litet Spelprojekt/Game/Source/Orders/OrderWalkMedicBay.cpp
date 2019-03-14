@@ -27,6 +27,8 @@ bool OrderWalkMedicBay::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMem
 void OrderWalkMedicBay::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+
+	GetCrewMember()->ReportPosition();
 	GetCrewMember()->SetResting(true);
 }
 /*

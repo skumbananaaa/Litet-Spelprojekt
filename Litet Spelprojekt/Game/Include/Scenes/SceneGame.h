@@ -4,6 +4,7 @@
 #include "../GUI/UILog.h"
 #include "../GUI/UICrewMember.h"
 #include "../GUI/UIPause.h"
+#include "../GUI/UIEndScreen.h"
 #include "../GUI/UICrewRequest.h"
 #include <Audio/Listeners/AudioListener.h>
 #include <Audio/Sources/AudioSource.h>
@@ -44,6 +45,7 @@ public:
 
 	void PickPosition();
 	void RequestDoorClosed(uint32 doorColor);
+
 	void Pick(bool hover, int32 positionX, int32 positionY);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
 	void ShowCrewmember(uint32 crewmember);
@@ -73,8 +75,6 @@ private:
 	bool m_IsPaused;
 	bool m_IsGameOver;
 	bool m_CartesianCamera;
-	
-	float m_GameTimer;
 
 	uint32 m_CurrentLight = 0;
 
@@ -84,20 +84,26 @@ private:
 	UIPause* m_pUIPause;
 	UICrewRequest* m_pUIRequest;
 	UINotification* m_pUINotification;
+	UIEndScreen* m_pUIEndScreen;
 
 	AudioSource* m_pTestAudioSource;
 	World* m_pWorld;
 
 	Crew m_Crew;
+
+	GameObject* m_pLookAt;
 };
 
 inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 {
 	Camera& camera = GetCamera();
 	float extendedFactor = 1.0f - (float)(IsExtended() || IsExtending());
-	glm::vec4 standardClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 2.0f));
-	glm::vec4 wallClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.99f));
-	glm::vec4 floorClipPlane(0.0f, extendedFactor * -1.0f, 0.0f, extendedFactor * (camera.GetLookAt().y + 1.9f));
+	float levelClipFactor = glm::round(glm::clamp<float>(4.0f - camera.GetLookAt().y, 0.0f, 1.0f));
+	float factorProduct = extendedFactor * levelClipFactor;
+	glm::vec4 standardClipPlane(0.0f, factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 2.0f));
+	glm::vec4 wallClipPlane(0.0f,	  factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 1.99f));
+	glm::vec4 floorClipPlane(0.0f,	  factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 1.9f));
+	glm::vec4 particleClipPlane(0.0f, factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 2.0f));
 
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_FRAME)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_RED)			->SetLevelClipPlane(standardClipPlane);
@@ -139,6 +145,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::SHELF_EMPTY)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::GENERATOR)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FIRE_EXTINGUISHER)	->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FIRESPRINKLER)		->SetLevelClipPlane(standardClipPlane);
 
 
 	IRenderer* renderer = GetRenderer();

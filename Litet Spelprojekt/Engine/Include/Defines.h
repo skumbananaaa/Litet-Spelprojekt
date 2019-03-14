@@ -40,7 +40,7 @@ constexpr float WATER_UPDATE_LEVEL_INTERVAL = 0.02f;
 constexpr float WATER_ROUNDING_FACTOR = 50.0f;
 constexpr float WATER_MAX_LEVEL = 2.0f;
 
-constexpr float RATE_OF_FIRE_SPREAD = 0.35f;
+constexpr float RATE_OF_FIRE_SPREAD = 0.9f;
 constexpr float RATE_OF_FIRE_WALL_SPREAD = 0.00002f;
 constexpr float RATE_OF_RIRE_NORMAL_DOOR_SPREAD = 0.02f;
 constexpr float RATE_OF_FIRE_FLOOR_SPREAD = 0.003f;

@@ -30,7 +30,6 @@ public:
 	virtual void Update(const Camera& camera, float deltaTime) noexcept override;
 	virtual void UpdateTransform() noexcept override;
 
-
 	void SetMesh(uint32 meshID) noexcept;
 	void SetParticlesPerSeconds(uint32 numParticles) noexcept;
 	void SetConeAngle(float angleRad) noexcept;
@@ -40,6 +39,7 @@ public:
 	void SetTimeToLive(float timeToLive) noexcept;
 	void SetBeginColor(const glm::vec4& color) noexcept;
 	void SetEndColor(const glm::vec4& color) noexcept;
+	void SetBoundingBox(const glm::vec3& minPos, const glm::vec3& maxPos) noexcept;
 
 	Node<glm::vec4>& GetColorNode(uint32 index) noexcept;
 	const Node<glm::vec4>& GetColorNode(uint32 index) const noexcept;
@@ -55,6 +55,7 @@ private:
 	ParticleData& GetLivingParticle(uint32 index) noexcept;
 	void KillParticle(uint32 index) noexcept;
 	const MeshParticle* GetMesh() const noexcept;
+	bool IsInsideBoundingBox(const ParticleData& particle) const noexcept;
 
 private:
 	const MeshParticle* m_pMesh;
@@ -75,4 +76,17 @@ private:
 	Scene* m_pScene;
 	float m_AutoDeleteTimer;
 	IMeshListener* m_pListener;
+	glm::vec3 m_MinPos;
+	glm::vec3 m_MaxPos;
 };
+
+inline bool MeshEmitter::IsInsideBoundingBox(const ParticleData& particle) const noexcept
+{
+	if (m_MinPos == m_MaxPos)
+	{
+		return true;
+	}
+
+	return	particle.Position.x >= m_MinPos.x && particle.Position.y >= m_MinPos.y && particle.Position.z >= m_MinPos.z &&
+			particle.Position.x <= m_MaxPos.x && particle.Position.y <= m_MaxPos.y && particle.Position.z <= m_MaxPos.z;
+}

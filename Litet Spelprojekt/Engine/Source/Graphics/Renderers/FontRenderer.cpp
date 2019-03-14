@@ -183,7 +183,7 @@ FontRenderer* FontRenderer::CreateFontRenderer(const char* font, int width, int 
 		return nullptr;
 	}
 
-	FT_Set_Pixel_Sizes(face, 0, 18);
+	FT_Set_Pixel_Sizes(face, 0, 36);
 
 	FontRenderer* fontRenderer = new FontRenderer(&face);
 	fontRenderer->UpdateBuffer(width, height, glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));

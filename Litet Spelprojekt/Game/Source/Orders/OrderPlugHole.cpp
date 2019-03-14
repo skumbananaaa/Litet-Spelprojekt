@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Crewmember.h"
+#include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
 glm::ivec3 startTarget(const glm::ivec3& roomTile, const glm::ivec3& holeTile, bool hasGearEquipped)
 {
@@ -33,6 +34,9 @@ void OrderPlugHole::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMember
 
 void OrderPlugHole::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
+	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
+
+	GetCrewMember()->ReportPosition();
 }
 
 bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
@@ -53,12 +57,15 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			}
 
 			m_PluggingTimer -= dtS;
-
 			if (m_PluggingTimer <= 0.0001)
 			{
 				m_HolePlugged = true;
 				glm::ivec3 tile = GetCrewMember()->GetTile();
-				pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
+				if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
+				{
+					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
+					pCrewmember->GiveOrder(new OrderPumpWater(GetCrewMember()->GetRoom(), glm::ivec3(3, 3, 3)));
+				}
 				res = true;
 			}
 		}

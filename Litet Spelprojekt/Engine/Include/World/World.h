@@ -141,6 +141,8 @@ public:
 	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromGlobal(uint32 globalIndex) noexcept;
 	static glm::uvec3 GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept;
 	static uint32 GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) noexcept;
+	static uint32 ConvertExtToNonExtFloorMaterial(const Material* pMaterial) noexcept;
+	static uint32 ConvertNonExtToExtFloorMaterial(const Material* pMaterial) noexcept;
 
 private:
 	void GenerateRooms(Scene& scene) noexcept;
@@ -373,4 +375,116 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 	}
 
 	return MATERIAL::FLOOR_NORMAL;
+}
+
+inline uint32 World::ConvertNonExtToExtFloorMaterial(const Material * pMaterial) noexcept
+{
+	int32 material = ResourceHandler::GetMaterial(pMaterial);
+
+	if (material == MATERIAL::FLOOR_NORMAL)
+	{
+		return MATERIAL::FLOOR_EXT_NORMAL;
+	}
+	else if (material == MATERIAL::FLOOR_SICKBAY1)
+	{
+		return MATERIAL::FLOOR_EXT_SICKBAY1;
+	}
+	else if (material == MATERIAL::FLOOR_TOILET1)
+	{
+		return MATERIAL::FLOOR_EXT_TOILET1;
+	}
+	else if (material == MATERIAL::FLOOR_MACHINE1)
+	{
+		return MATERIAL::FLOOR_EXT_MACHINE1;
+	}
+	else if (material == MATERIAL::FLOOR_MACHINE2)
+	{
+		return MATERIAL::FLOOR_EXT_MACHINE2;
+	}
+	else if (material == MATERIAL::FLOOR_MACHINE3)
+	{
+		return MATERIAL::FLOOR_EXT_MACHINE3;
+	}
+	else if (material == MATERIAL::FLOOR_AMMUNITION1)
+	{
+		return MATERIAL::FLOOR_EXT_AMMUNITION1;
+	}
+	else if (material == MATERIAL::FLOOR_AMMUNITION2)
+	{
+		return MATERIAL::FLOOR_EXT_AMMUNITION2;
+	}
+	else if (material == MATERIAL::FLOOR_AMMUNITION3)
+	{
+		return MATERIAL::FLOOR_EXT_AMMUNITION3;
+	}
+	else if (material == MATERIAL::FLOOR_KITCHEN1)
+	{
+		return MATERIAL::FLOOR_EXT_KITCHEN1;
+	}
+	else if (material == MATERIAL::FLOOR_DINING1)
+	{
+		return MATERIAL::FLOOR_EXT_DINING1;
+	}
+	else if (material == MATERIAL::FLOOR_CABOOSE1)
+	{
+		return MATERIAL::FLOOR_EXT_CABOOSE1;
+	}
+
+	return material;
+}
+
+inline uint32 World::ConvertExtToNonExtFloorMaterial(const Material* pMaterial) noexcept
+{
+	int32 material = ResourceHandler::GetMaterial(pMaterial);
+	
+	if (material == MATERIAL::FLOOR_EXT_NORMAL)
+	{
+		return MATERIAL::FLOOR_NORMAL;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_SICKBAY1)
+	{
+		return MATERIAL::FLOOR_SICKBAY1;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_TOILET1)
+	{
+		return MATERIAL::FLOOR_TOILET1;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_MACHINE1)
+	{
+		return MATERIAL::FLOOR_MACHINE1;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_MACHINE2)
+	{
+		return MATERIAL::FLOOR_MACHINE2;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_MACHINE3)
+	{
+		return MATERIAL::FLOOR_MACHINE3;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_AMMUNITION1)
+	{
+		return MATERIAL::FLOOR_AMMUNITION1;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_AMMUNITION2)
+	{
+		return MATERIAL::FLOOR_AMMUNITION2;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_AMMUNITION3)
+	{
+		return MATERIAL::FLOOR_AMMUNITION3;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_KITCHEN1)
+	{
+		return MATERIAL::FLOOR_KITCHEN1;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_DINING1)
+	{
+		return MATERIAL::FLOOR_DINING1;
+	}
+	else if (material == MATERIAL::FLOOR_EXT_CABOOSE1)
+	{
+		return MATERIAL::FLOOR_CABOOSE1;
+	}
+
+	return material;
 }

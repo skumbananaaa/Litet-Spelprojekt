@@ -54,6 +54,7 @@ public:
 	static uint32 RegisterWaterOutdoorMaterial();
 	static uint32 RegisterWaterIndoorMaterial();
 	static uint32 RegisterWallMaterial(int32 texture, float specular);
+	static uint32 RegisterLookAtMaterial(int32 texture, int32 shader = -1);
 	static uint32 RegisterDecal(int32 texture, int32 normalMap);
 	static uint32 RegisterGameObject(std::string name, int32 mesh = -1, int32 material = -1, int32 decal = -1);
 	static uint32 RegisterSound(const std::string filename);

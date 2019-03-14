@@ -68,6 +68,7 @@ public:
 	static uint32 FIRESPRINKLER;
 	static uint32 ICON_NOTIFICATION_TRIANGLE;
 	static uint32 ICON_LOGBOOK;
+	static uint32 LOOK_AT;
 
 private:
 	static void RegisterResourcesPreLoading();

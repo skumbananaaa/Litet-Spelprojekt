@@ -60,6 +60,7 @@ uint32 MATERIAL::SHELF_AMMUNITION = 0;
 uint32 MATERIAL::GENERATOR = 0;
 uint32 MATERIAL::FIRE_EXTINGUISHER = 0;
 uint32 MATERIAL::FIRESPRINKLER = 0;
+uint32 MATERIAL::LOOK_AT = 0;
 
 /*
 * Used for preloading resources needed in the loading screen
@@ -128,4 +129,5 @@ void MATERIAL::RegisterResources()
 	GENERATOR			= ResourceHandler::RegisterMaterial(TEXTURE::GENERATOR, SHADER::STANDARD_MATERIAL);
 	FIRE_EXTINGUISHER	= ResourceHandler::RegisterMaterial(TEXTURE::FIRE_EXTINGUISHER, SHADER::STANDARD_MATERIAL);
 	FIRESPRINKLER		= ResourceHandler::RegisterMaterial(TEXTURE::FIRESPRINKLER, SHADER::STANDARD_MATERIAL);
+	LOOK_AT				= ResourceHandler::RegisterLookAtMaterial(TEXTURE::LOOK_AT, SHADER::STANDARD_MATERIAL);
 }

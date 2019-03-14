@@ -14,7 +14,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	: m_pAssisting(nullptr),
 	m_OrderHandler(this),
 	m_pUISelectedCrew(nullptr),
-	m_GearIsEquipped(false)
+	m_GearIsEquipped(false),
+	m_HasEquippedExtinguisher(false)
 {
 	//Set crewmembers to be updated
 	m_IsTickable = true;
@@ -481,6 +482,11 @@ void Crewmember::SetIdling(bool value) noexcept
 void Crewmember::SetGearIsEquipped(bool value) noexcept
 {
 	m_GearIsEquipped = value;
+}
+
+void Crewmember::SetExtinguisherIsEquipped(bool value) noexcept
+{
+	m_HasEquippedExtinguisher = value;
 }
 
 void Crewmember::SetResting(bool value) noexcept

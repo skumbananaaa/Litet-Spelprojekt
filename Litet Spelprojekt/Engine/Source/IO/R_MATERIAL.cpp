@@ -79,7 +79,7 @@ void MATERIAL::RegisterResources()
 	WATER_INDOOR		= ResourceHandler::RegisterWaterIndoorMaterial();
 	SINGLE_BED			= ResourceHandler::RegisterMaterial(TEXTURE::SINGLE_BED, SHADER::STANDARD_MATERIAL);
 	BUNK_BED			= ResourceHandler::RegisterMaterial(TEXTURE::BUNK_BED, SHADER::STANDARD_MATERIAL);
-	CREW_INJURED		= ResourceHandler::RegisterMaterial(TEXTURE::SJOFAN_DIFF, SHADER::ANIMATION);
+	CREW_INJURED		= ResourceHandler::RegisterMaterial(TEXTURE::CREW_INJURY, SHADER::ANIMATION);
 	ANIMATED_MODEL		= ResourceHandler::RegisterMaterial(TEXTURE::SJOFAN_DIFF, SHADER::ANIMATION);
 	INSTRUMENT_1		= ResourceHandler::RegisterMaterial(TEXTURE::INSTRUMENT_1, SHADER::STANDARD_MATERIAL);
 	INSTRUMENT_2		= ResourceHandler::RegisterMaterial(TEXTURE::INSTRUMENT_2, SHADER::STANDARD_MATERIAL);

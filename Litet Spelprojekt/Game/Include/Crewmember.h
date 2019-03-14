@@ -76,6 +76,7 @@ public:
 	void SetIdling(bool value) noexcept;
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
+	void SetExtinguisherIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
 	void ReportPosition() noexcept;
 	void ChangeTexture() noexcept;
@@ -105,6 +106,7 @@ public:
 	bool HasInjurySmoke() const noexcept;
 	bool HasInjuryBleed() const noexcept;
 	bool HasGearEquipped() const noexcept;
+	bool HasExtinguisherEquipped() const noexcept;
 	bool HasRecovered() const noexcept;
 
 private:
@@ -147,6 +149,7 @@ private:
 	float m_Health;
 	bool m_HasTriedToWalkToSickbay;
 	bool m_HasChangedTexture;
+	bool m_HasEquippedExtinguisher;
 	float m_Recovering;
 
 	//--MOVEMENT
@@ -265,6 +268,11 @@ inline bool Crewmember::HasInjuryBleed() const noexcept
 inline bool Crewmember::HasGearEquipped() const noexcept
 {
 	return m_GearIsEquipped;
+}
+
+inline bool Crewmember::HasExtinguisherEquipped() const noexcept
+{
+	return m_HasEquippedExtinguisher;
 }
 
 inline bool Crewmember::HasRecovered() const noexcept

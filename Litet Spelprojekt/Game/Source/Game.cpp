@@ -9,6 +9,7 @@
 #include <World/Scenarios/Fire/FireSprinkler.h>
 #include "../Include/GameObjectDoor.h"
 #include "../Include/GameObjectFloor.h"
+#include "../Include/GameObjectExtinguisher.h"
 
 #if defined(_DEBUG)
 //#define DRAW_DEBUG_BOXES
@@ -89,6 +90,10 @@ GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
 	{
 		GameObject* pGameObject = new GameObjectFloor();
 		return pGameObject;
+	}
+	else if (gameobject == GAMEOBJECT::FIRE_EXTINGUISHER)
+	{
+		return new GameObjectExtinguisher();
 	}
 	return new GameObject();
 }

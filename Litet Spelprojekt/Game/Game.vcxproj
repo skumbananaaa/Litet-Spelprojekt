@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GameObjectExtinguisher.cpp" />
     <ClCompile Include="Source\GameState.cpp" />
     <ClCompile Include="Source\GameObjectDoor.cpp" />
     <ClCompile Include="Source\GameObjectFloor.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="Include\Crewmember.h" />
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\GameObjectDoor.h" />
+    <ClInclude Include="Include\GameObjectExtinguisher.h" />
     <ClInclude Include="Include\GameObjectFloor.h" />
     <ClInclude Include="Include\GameObjectArtillery.h" />
     <ClInclude Include="Include\GameState.h" />

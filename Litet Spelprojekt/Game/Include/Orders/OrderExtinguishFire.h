@@ -1,6 +1,7 @@
 #pragma once
 #include "OrderWalk.h"
 #include <World/World.h>
+#include "../Game.h"
 
 #define TIME_TO_EQUIP_GEAR 5.0f
 #define FIRE_EXTINGUISH_TEMP_REDUCTION 100.0f
@@ -11,7 +12,7 @@ class OrderExtinguishFire : public OrderWalk
 	static constexpr float FIRE_EXTINGUISH_BY_CREW_RATE = 800.0f * RATE_OF_FIRE_SPREAD;
 
 public:
-	OrderExtinguishFire(const glm::ivec3& roomTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool hasGearEquipped, bool fireFullyExtinguished);
+	OrderExtinguishFire(const glm::ivec3& roomTile, const glm::ivec3& burningTile, const glm::ivec3& extinguisherTile, uint32 roomBurningId, bool hasGearEquipped, bool fireFullyExtinguished, bool hasExtinguisher);
 	virtual ~OrderExtinguishFire();
 
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
@@ -34,6 +35,7 @@ private:
 	uint32 m_RoomBurningId;
 	glm::ivec3 m_RoomTile;
 	glm::ivec3 m_BurningTile;
+	glm::ivec3 m_ExtinguisherTile;
 	float m_EquippingGearTimer;
 	float m_ExtinguishingIntensity;
 	bool m_ExtinguishingFire;

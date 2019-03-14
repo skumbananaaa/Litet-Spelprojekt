@@ -534,7 +534,7 @@ void SceneGame::CreateCrew() noexcept
 
 	int index = 0;
 	float x, y, z;
-	bool hidden = true;
+	bool hidden = false;
 
 	Crewmember* crewmember;
 

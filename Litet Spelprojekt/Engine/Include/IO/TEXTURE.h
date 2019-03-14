@@ -6,10 +6,6 @@ class API TEXTURE
 	friend class ResourceHandler;
 
 public:
-	static uint32 BLOOD;
-	static uint32 BLOOD_NORMAL;
-	static uint32 SHIP;
-	static uint32 SHIP_NORMAL;
 	static uint32 HDR;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;
@@ -34,6 +30,7 @@ public:
 	static uint32 ICON_GREEN_DOOR;
 	static uint32 SMOKE;
 	static uint32 SJOFAN_DIFF;
+	static uint32 SJOFAN_DIFF_EXTINGUISH;
 	static uint32 WALL1;
 	static uint32 FLOOR_NORMAL;
 	static uint32 FLOOR_SICKBAY1;

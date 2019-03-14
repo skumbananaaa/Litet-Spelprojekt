@@ -227,7 +227,7 @@ void Crewmember::GoToSickBay()
 		if (IsAbleToWalk())
 		{
 			const glm::ivec3& currentTile = GetTile();
-			uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
+			uint32 currentTileID = m_pWorld->GetLevel(currentTile.y * 2).GetLevel()[currentTile.x][currentTile.z];
 
 			if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
 			{

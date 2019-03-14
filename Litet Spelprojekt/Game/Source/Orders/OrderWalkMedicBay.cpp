@@ -37,6 +37,9 @@ void OrderWalkMedicBay::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMemb
 		assisted->SetResting(true);
 		pMember->SetAssisting(nullptr);
 	}
+
+	Logger::LogEvent(GetCrewMember()->GetName() + " gick till sjukstugan!", true);
+	GetCrewMember()->ReportPosition();
 }
 /*
 void OrderWalkMedicBay::AbortOrder(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept

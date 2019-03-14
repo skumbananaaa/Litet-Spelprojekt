@@ -21,6 +21,9 @@ void OrderPumpWater::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 	pWorld->GetRoom(m_RoomToPump).SetPumping(false);
+
+	Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med pumpning!", true);
+	GetCrewMember()->ReportPosition();
 }
 
 bool OrderPumpWater::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept

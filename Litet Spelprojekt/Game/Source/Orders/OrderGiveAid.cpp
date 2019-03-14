@@ -34,7 +34,6 @@ bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
-	m_pAiding = nullptr;
 
 	for (uint32 i = 0; i < pCrewMembers->GetCount(); i++)
 	{
@@ -46,7 +45,10 @@ void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 		}
 	}
 
+	Logger::LogEvent(GetCrewMember()->GetName() + " gav hjälp till " + m_pAiding->GetName() + "!", true);
 	GetCrewMember()->ReportPosition();
+
+	m_pAiding = nullptr;
 }
 
 bool OrderGiveAid::CanBeStackedWithSameType() noexcept

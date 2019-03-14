@@ -174,7 +174,7 @@ inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 
 
 		if (room.IsRoomInitialized())
 		{
-			glm::ivec3 currentRoomCenter = glm::ivec3(room.GetCenter() - 1.0f);
+			glm::ivec3 currentRoomCenter = glm::ivec3(room.GetCenter() - glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::ivec3 toVector = currentTile - currentRoomCenter;
 			uint32 currentDistanceSqrd = toVector.x * toVector.x + (10.0f * toVector.y * toVector.y) + toVector.z * toVector.z;
 

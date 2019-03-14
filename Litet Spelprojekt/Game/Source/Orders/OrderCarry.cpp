@@ -20,6 +20,7 @@ void OrderCarry::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) no
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 
+	Logger::LogEvent(GetCrewMember()->GetName() + " bar " + m_pCarrying->GetName() + " till sjukstugan!", true);
 	GetCrewMember()->ReportPosition();
 	//GetCrewMember()->SetAssisting(nullptr);
 }

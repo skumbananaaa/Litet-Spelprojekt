@@ -19,6 +19,8 @@ public:
 	static uint32 INSTRUMENT_2;
 	static uint32 LAMP;
 	static uint32 ANIMATED_MODEL_RUN;
+	static uint32 ANIMATED_MODEL_EXTINGUISH;
+	static uint32 ANIMATED_MODEL_WALK;
 	static uint32 ANIMATED_MODEL_IDLE;
 	static uint32 ANIMATED_MODEL_WORK;
 	static uint32 ANIMATED_MODEL_EAT;

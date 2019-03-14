@@ -152,6 +152,7 @@ private:
 	float m_MovementSpeed;
 	bool m_Idling;
 	bool m_Resting;
+	bool m_WasAbleToWork;
 
 	int32 m_Forgetfulness;
 

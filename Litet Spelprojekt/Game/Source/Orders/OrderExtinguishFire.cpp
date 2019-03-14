@@ -57,6 +57,10 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 		}
 		else
 		{
+			Crewmember* pCrewmember = GetCrewMember();
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH_RUN);
+			pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
+
 			//Run To Room That is Burning
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
@@ -143,6 +147,10 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 	{
 		if (pCrewmember->HasGearEquipped())
 		{
+			Crewmember* pCrewmember = GetCrewMember();
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
+
 			//Run To Room
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
@@ -166,7 +174,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 	}
 
 	//Run out if dying or our fire out of control
-
 	return false;
 }
 

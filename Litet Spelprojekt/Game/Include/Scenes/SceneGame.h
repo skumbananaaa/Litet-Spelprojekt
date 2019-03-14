@@ -23,7 +23,7 @@
 
 #define MIN_CREWHEALTH 0.4f
 #define MAX_SHIPDAMAGE 0.3f
-#define MAX_WATERLEAKAGE 1.0f
+#define MAX_WATERLEAKAGE 0.7f
 
 class SceneGame : public SceneInternal
 {

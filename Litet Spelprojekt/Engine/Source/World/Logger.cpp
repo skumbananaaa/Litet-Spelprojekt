@@ -14,15 +14,14 @@ void Logger::LogEvent(const std::string& text, bool showInUI) noexcept
 	strftime(buf, sizeof(buf), "%X - ", &tstruct);
 
 	std::string line = buf;
-	line += text;
 
-	std::cout << line << std::endl;
-	s_Logs.push_back(line);
+	std::cout << (line + text) << std::endl;
+	s_Logs.push_back(line + text);
 	if (showInUI || debugUIOverride)
 	{
 		if (s_Listener)
 		{
-			s_Listener->OnLogged(line);
+			s_Listener->OnLogged(line, text);
 		}
 	}
 }

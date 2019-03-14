@@ -34,6 +34,7 @@ public:
 	static uint32 TABLE;
 	static uint32 TOILET;
 	static uint32 ANIMATED_MODEL;
+	static uint32 ANIMATED_MODEL_EXTINGUISH;
 	static uint32 FLOOR_NORMAL;
 	static uint32 FLOOR_SICKBAY1;
 	static uint32 FLOOR_TOILET1;

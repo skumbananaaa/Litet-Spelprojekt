@@ -82,6 +82,8 @@ void Crewmember::SetRoom(uint32 room) noexcept
 
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 {
+	m_WasAbleToWork = IsAbleToWork();
+
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderHandler.Update(pSceneGame, m_pWorld, pSceneGame->GetCrew(), deltaTime);
 	GameObject::Update(camera, deltaTime);
@@ -164,6 +166,11 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 
 	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
 	SetPosition(res);
+
+	if (m_pAssisting)
+	{
+		m_pAssisting->SetPosition(res);
+	}
 }
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
@@ -550,10 +557,15 @@ void Crewmember::UpdateHealth(float dt)
 
 	if (!IsAbleToWork())
 	{
-		GameState::SetCrewHealth(GameState::GetCrewHealth() - (1.0f / NUM_CREW));
 		if (IsIdling())
 		{
 			GoToSickBay();
+		}
+
+		if (m_WasAbleToWork)
+		{
+			GameState::SetCrewHealth(GameState::GetCrewHealth() - (1.0f / NUM_CREW));
+			std::cout << "Crewmemeber marked as incapacitated" << std::endl;
 		}
 	}
 }

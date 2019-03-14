@@ -142,7 +142,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 	if (!IsPaused() && !m_IsGameOver)
 	{
-		if (GameState::GetWaterLeakAmount() > 1.0f || GameState::GetBurningAmount() > 0.3f /*|| GameState::GetCrewHealth() < 0.5f*/)
+		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH)
 		{
 			m_IsGameOver = true;
 		}

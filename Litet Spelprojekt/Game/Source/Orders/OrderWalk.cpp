@@ -38,10 +38,13 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 	Crewmember* pCrewmember = GetCrewMember();
 	const glm::ivec3& crewTile = pCrewmember->GetTile();
+
 	TileData& tile1 = pWorld->GetLevel(crewTile.y * 2).GetLevelData()[crewTile.x][crewTile.z];
 	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
 	TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
 	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
 	uint32 index1 = pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z];
 	uint32 index2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevel()[m_TargetTile.x][m_TargetTile.z];
 
@@ -71,7 +74,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 			}
 		}
-		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && crewTile != m_TargetTile && m_OopsIForgot > pCrewmember->GetForgetfulness())
+		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && m_OopsIForgot > pCrewmember->GetForgetfulness())
 		{
 			// Close door after passing through
 			door1->AccessRequest(pCrewmember->GetShipNumber());

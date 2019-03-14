@@ -58,7 +58,7 @@ void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 	if (m_AutoDeleteTimer > 0.0F)
 	{
 		m_AutoDeleteTimer -= deltaTime;
-		if (m_AutoDeleteTimer < 0.0F)
+		if (m_AutoDeleteTimer < 0.0F && m_AutoDeleteTimer > -FLT_MAX)
 		{
 			m_AutoDeleteTimer = 0.0F;
 		}

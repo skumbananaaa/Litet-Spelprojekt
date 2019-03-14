@@ -26,7 +26,9 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 
 					int fireFactorMultiplier = m_HasSmokeDiverGear ? 1 : 10000;
 					int fireFactor = m_pWorld->GetLevel(newY * 2 + 1).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->IsVisible() * fireFactorMultiplier;
-					int waterFactor = m_pWorld->GetLevel(newY * 2).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (m_pWorld->GetLevel(newY).GetLevelData()[newX][newZ].WaterLevel / WATER_MAX_LEVEL));
+					int waterFactor = tile2.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (tile2.WaterLevel / WATER_MAX_LEVEL));
+					int waterFactorCurrent = tile1.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (tile1.WaterLevel / WATER_MAX_LEVEL));
+					int waterFactorDoor = std::max(waterFactor, waterFactorCurrent) * (tile1.HasDoor() && door1 == door2) * 1000;
 					int cornerFactor = 1;
 
 					if ((m_pppMap[y][x][z] != m_pppMap[y][x][newZ] || m_pppMap[y][x][z] != m_pppMap[y][newX][z]) && std::abs(addX) == std::abs(addZ))
@@ -34,7 +36,7 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 						cornerFactor = 1000;
 					}
 
-					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + (std::abs(addX) + std::abs(addZ)) * cornerFactor + std::abs(addY) * 2 + fireFactor + waterFactor; //crashade här en gång, hann inte kolla, sprang o laga mat
+					m_pppTiles[newX][newY][newZ].g = m_pppTiles[x][y][z].g + (std::abs(addX) + std::abs(addZ)) * cornerFactor + std::abs(addY) * 2 + fireFactor + waterFactor + waterFactorDoor; //crashade här en gång, hann inte kolla, sprang o laga mat
 					
 					int h = std::abs(m_GoalTile.x - newX) + std::abs(m_GoalTile.y - newY) + std::abs(m_GoalTile.z - newZ);
 					m_pppTiles[newX][newY][newZ].f = m_pppTiles[newX][newY][newZ].g + h;

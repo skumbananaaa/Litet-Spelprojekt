@@ -7,14 +7,16 @@
 #include <World/WorldLevel.h>
 #include "../Include/GameObjectDoor.h"
 #include "../Include/Orders/OrderSchedule.h"
-#include "../Include/Orders/OrderGiveAid.h"
+#include "../Include/Orders/OrderCarry.h"
 #include "../Include/GameState.h"
+#include "../Include/Scenes/SceneGame.h"
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
 	m_OrderHandler(this),
 	m_pUISelectedCrew(nullptr),
-	m_GearIsEquipped(false)
+	m_GearIsEquipped(false),
+	m_IsCarried(false)
 {
 	//Set crewmembers to be updated
 	m_IsTickable = true;
@@ -134,7 +136,15 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	SetIsPicked(!m_IsPicked);
+	if (!IsAbleToWalk() && !m_IsCarried)
+	{
+		AddChoice("assist", (void*)this);
+		DisplayOrders(x, y, selectedMembers);
+	}
+	else
+	{
+		SetIsPicked(!m_IsPicked);
+	}
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -196,6 +206,29 @@ void Crewmember::GiveOrder(IOrder* order) noexcept
 {
 	if(!IsResting())
 		m_OrderHandler.GiveOrder(order);
+}
+
+void Crewmember::OnOrderChosen(const std::string & name, void * userData, const std::vector<int32>& selectedMembers) noexcept
+{
+	if (name == "assist")
+	{
+		Crewmember* assister = nullptr;
+		for (uint32 i = 0; i < selectedMembers.size(); i++)
+		{
+			assister = Game::GetGame()->m_pSceneGame->GetCrew()->GetMember(selectedMembers[i]);
+
+			if (assister->IsIdling())
+			{
+				break;
+			}
+		}
+		
+		if (assister)
+		{
+			assister->GiveOrder(new OrderCarry(reinterpret_cast<Crewmember*>(userData)));
+			m_IsCarried = true;
+		}
+	}
 }
 
 void Crewmember::LookForDoor() noexcept

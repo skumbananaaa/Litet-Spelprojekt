@@ -1,7 +1,7 @@
 #include "../../Include/Orders/OrderCarry.h"
 #include "../../Include/Crew.h"
 
-OrderCarry::OrderCarry(Crewmember * inNeedOfAssist) : OrderWalk(inNeedOfAssist->GetTile())
+OrderCarry::OrderCarry(Crewmember * inNeedOfAssist) : OrderWalk(inNeedOfAssist->GetTile() * glm::ivec3(1, 2, 1))
 {
 	m_pCarrying = inNeedOfAssist;
 }
@@ -19,7 +19,8 @@ void OrderCarry::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 void OrderCarry::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
-
+	GetCrewMember()->SetAssisting(m_pCarrying);
+	GetCrewMember()->GoToSickBay();
 	Logger::LogEvent(GetCrewMember()->GetName() + " bar " + m_pCarrying->GetName() + " till sjukstugan!", true);
 	GetCrewMember()->ReportPosition();
 	//GetCrewMember()->SetAssisting(nullptr);
@@ -29,8 +30,6 @@ bool OrderCarry::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, f
 {
 	if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 	{
-		GetCrewMember()->SetAssisting(m_pCarrying);
-		GetCrewMember()->GoToSickBay();
 		return true;
 	}
 	return false;

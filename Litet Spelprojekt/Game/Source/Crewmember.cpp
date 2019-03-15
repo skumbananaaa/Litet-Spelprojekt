@@ -16,6 +16,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_OrderHandler(this),
 	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false),
+	m_HasEquippedExtinguisher(false),
 	m_IsCarried(false)
 {
 	//Set crewmembers to be updated
@@ -40,12 +41,12 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_HasInjuryBleeding = 0.0f;
 	m_Recovering = 0.0f;
 	m_Resting = false;
+	m_HasChangedTexture = false;
 	/*m_SkillFire = Random::GenerateInt(1, 3);
 	m_SkillMedic = Random::GenerateInt(1, 3);
 	m_SkillStrength = Random::GenerateInt(1, 3);*/
 
-	m_MaxHealth = 100.0f;
-	m_Health = m_MaxHealth;
+	m_Health = MAX_HEALTH;
 	m_MovementSpeed = CREWMEMBER_FULL_HEALTH_MOVEMENT_SPEED;
 	m_Idling = true;
 
@@ -126,6 +127,8 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		GoToSickBay();
 	}
 	
+	ChangeTexture();
+
 	if (m_pWorld->GetRoom(GetRoom()).IsActive())
 	{
 		UpdateLastKnownPosition();
@@ -531,6 +534,11 @@ void Crewmember::SetGearIsEquipped(bool value) noexcept
 	m_GearIsEquipped = value;
 }
 
+void Crewmember::SetExtinguisherIsEquipped(bool value) noexcept
+{
+	m_HasEquippedExtinguisher = value;
+}
+
 void Crewmember::SetResting(bool value) noexcept
 {
 	m_Resting = value;
@@ -541,6 +549,15 @@ void Crewmember::ReportPosition() noexcept
 	uint32 roomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
 	m_LastKnownPosition = GetPosition();
 	m_pWorld->SetRoomActive(roomIndex, true);
+}
+
+void Crewmember::ChangeTexture() noexcept
+{
+	if (!IsAbleToWalk() && !m_HasChangedTexture)
+	{
+		SetMaterial(MATERIAL::CREW_INJURED);
+		m_HasChangedTexture = true;
+	}
 }
 
 void Crewmember::UpdateHealth(float dt)
@@ -574,9 +591,9 @@ void Crewmember::UpdateHealth(float dt)
 		UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
 		
 	}
-	else if (m_Health < m_MaxHealth)
+	else if (m_Health < MAX_HEALTH)
 	{
-		if (m_Health > 0.5f * m_MaxHealth)
+		if (m_Health > 0.5f * MAX_HEALTH)
 		{
 			m_MovementSpeed = CREWMEMBER_LIGHTLY_INJURED_MOVEMENT_SPEED;
 		}

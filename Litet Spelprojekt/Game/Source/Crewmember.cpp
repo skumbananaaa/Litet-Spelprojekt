@@ -17,7 +17,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false),
 	m_HasEquippedExtinguisher(false),
-	m_IsCarried(false)
+	m_IsCarried(false),
+	m_HasTriedToWalkToSickbay(false)
 {
 	//Set crewmembers to be updated
 	m_IsTickable = true;
@@ -553,7 +554,7 @@ void Crewmember::ReportPosition() noexcept
 
 void Crewmember::ChangeTexture() noexcept
 {
-	if (!IsAbleToWork() && !m_HasChangedTexture)
+	if (!IsAbleToWalk() && !m_HasChangedTexture)
 	{
 		SetMaterial(MATERIAL::CREW_INJURED);
 		m_HasChangedTexture = true;

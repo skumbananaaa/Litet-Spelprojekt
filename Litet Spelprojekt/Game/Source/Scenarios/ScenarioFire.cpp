@@ -277,6 +277,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 		//Fire
 		FireLevelData.Burning = false;
+		FireLevelData.MarkedForExtinguish = false;
 		emitter->SetIsVisible(false);
 		m_OnFire.erase(std::remove(m_OnFire.begin(), m_OnFire.end(), toRemoveOnFireIDs[i]), m_OnFire.end());
 		room.RemoveTileOnFire(toRemoveOnFireIDs[i]);

@@ -24,6 +24,7 @@ struct TileData
 	bool WaterInlet;
 	bool AlreadyFlooded;
 	bool Burning;
+	bool MarkedForExtinguish;
 
 	uint32 NrOfBaseGameObjects;
 	

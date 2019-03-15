@@ -126,7 +126,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_FireFullyExtinguished = true;
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
-						Logger::LogEvent(GetCrewMember()->GetName() + " blev f�rdig med eldsl�ckning!", true);
+						Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med eldsläckning!", true);
 						pCrewmember->GiveOrder(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, m_BurningTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
 						return false;
 					}
@@ -150,8 +150,9 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				const uint32 * const * ppLevel = pWorld->GetLevel(correctTargetTile.y).GetLevel();
 				TileData& targetTile = pWorld->GetLevel(correctTargetTile.y).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
 
-				if (targetTile.Temp > targetTile.BurnsAt && m_BurningTile != correctTargetTile)
+				if (targetTile.Temp > targetTile.BurnsAt && m_BurningTile != correctTargetTile && !targetTile.MarkedForExtinguish)
 				{
+					targetTile.MarkedForExtinguish = true;
 					m_BurningTile = correctTargetTile;
 					m_RoomBurningId = ppLevel[correctTargetTile.x][correctTargetTile.z];
 					pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
@@ -180,7 +181,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_EquippingGearTimer = 0.0f;
 						pCrewmember->SetGearIsEquipped(false);
 						pCrewmember->SetExtinguisherIsEquipped(false);
-						Logger::LogEvent(GetCrewMember()->GetName() + " tog av sig r�kdykarutrustning!", true);
+						Logger::LogEvent(GetCrewMember()->GetName() + " tog av sig rökdykarutrustning!", true);
 						return true;
 					}
 				}

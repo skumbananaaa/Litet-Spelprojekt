@@ -116,7 +116,9 @@ inline glm::ivec2 OrderExtinguishFire::FindClosestBurningTile(const uint32 * con
 			glm::ivec2 toVector = currentTile - currentTileBeingChecked;
 			uint32 distSqrdToCheck = (uint32)(toVector.x * toVector.x + toVector.y * toVector.y);
 
-			if (ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y].Temp > ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y].BurnsAt)
+			TileData& currentTileData = ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y];
+
+			if (currentTileData.Temp > currentTileData.BurnsAt)
 			{
 				if (m_RoomBurningId == ppLevel[currentTileBeingChecked.x][currentTileBeingChecked.y])
 				{

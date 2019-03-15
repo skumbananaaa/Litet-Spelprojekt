@@ -78,6 +78,11 @@ void Room::SetFloodUpdated(bool updated) noexcept
 	m_FloodUpdatedThisFrame = updated;
 }
 
+void Room::SetPumping(bool pumping) noexcept
+{
+	m_Pumping = pumping;
+}
+
 void Room::GenerateShadows(const Scene& scene) noexcept
 {
 	m_pShadowMap = new StaticShadowCube(m_Center, scene);

@@ -4,6 +4,7 @@
 #include "../Include/Orders/OrderHandler.h"
 #include "../Include/GUI/UISelectedCrew.h"
 #include <Audio/Sources/AudioSource.h>
+#include "../Include/GUI/UIOrder.h"
 
 #pragma message("INCLUDE" __FILE__)
 
@@ -16,7 +17,7 @@
 #define CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED 0.8f
 #define CREWMEMBER_DEAD_MOVEMENT_SPEED 0.0f
 
-#define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
+#define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.5f
 
 #define NR_GROUPS 3
 #define NUM_CREW 16
@@ -31,7 +32,7 @@ enum GroupType : uint32
 
 class TileData;
 
-class Crewmember : public GameObject
+class Crewmember : public GameObject, public UIOrder
 {
 	friend class Crew;
 
@@ -69,6 +70,8 @@ public:
 	virtual void OnNotHovered() noexcept override;
 	void GiveOrder(IOrder* order) noexcept;
 
+	virtual void OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept;
+
 	//SETS
 	void SetPosition(const glm::vec3& position) noexcept;
 	void SetDirection(const glm::vec3& direction) noexcept;
@@ -90,6 +93,7 @@ public:
 
 	GroupType GetGroupType() const noexcept;
 	int32 GetForgetfulness() const noexcept;
+	Crewmember* GetAssisting() const noexcept;
 
 	//IS
 	bool IsIdling() const noexcept;
@@ -151,11 +155,13 @@ private:
 	bool m_HasChangedTexture;
 	bool m_HasEquippedExtinguisher;
 	float m_Recovering;
+	bool m_IsCarried;
 
 	//--MOVEMENT
 	float m_MovementSpeed;
 	bool m_Idling;
 	bool m_Resting;
+	bool m_WasAbleToWork;
 
 	int32 m_Forgetfulness;
 
@@ -200,6 +206,11 @@ inline GroupType Crewmember::GetGroupType() const noexcept
 inline int32 Crewmember::GetForgetfulness() const noexcept
 {
 	return m_Forgetfulness;
+}
+
+inline Crewmember * Crewmember::GetAssisting() const noexcept
+{
+	return m_pAssisting;
 }
 
 inline bool Crewmember::IsIdling() const noexcept

@@ -29,8 +29,10 @@ public:
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 	const std::vector<glm::ivec3> GetWaterInlets() const noexcept;
+
 private:
 	World* m_pWorld;
+	float m_TotalWaterLevel;
 	bool m_WaterAlwaysVisible;
 	std::vector<glm::ivec2>* m_FloodingIDs;
 	std::vector<glm::ivec3> m_InletTiles;

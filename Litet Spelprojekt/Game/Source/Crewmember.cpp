@@ -7,8 +7,9 @@
 #include <World/WorldLevel.h>
 #include "../Include/GameObjectDoor.h"
 #include "../Include/Orders/OrderSchedule.h"
-#include "../Include/Orders/OrderGiveAid.h"
+#include "../Include/Orders/OrderCarry.h"
 #include "../Include/GameState.h"
+#include "../Include/Scenes/SceneGame.h"
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
@@ -16,6 +17,7 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false),
 	m_HasEquippedExtinguisher(false)
+	m_IsCarried(false)
 {
 	//Set crewmembers to be updated
 	m_IsTickable = true;
@@ -83,6 +85,8 @@ void Crewmember::SetRoom(uint32 room) noexcept
 
 void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 {
+	m_WasAbleToWork = IsAbleToWork();
+
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	m_OrderHandler.Update(pSceneGame, m_pWorld, pSceneGame->GetCrew(), deltaTime);
 	GameObject::Update(camera, deltaTime);
@@ -125,12 +129,25 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	ChangeTexture();
 
+	if (m_pWorld->GetRoom(GetRoom()).IsActive())
+	{
+		UpdateLastKnownPosition();
+	}
+
 	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
 {
-	SetIsPicked(!m_IsPicked);
+	if (!IsAbleToWalk() && !m_IsCarried)
+	{
+		AddChoice("Assistera", (void*)this);
+		DisplayOrders(x, y, selectedMembers);
+	}
+	else
+	{
+		SetIsPicked(!m_IsPicked);
+	}
 }
 
 void Crewmember::UpdateLastKnownPosition() noexcept
@@ -162,6 +179,11 @@ void Crewmember::Move(const glm::vec3& dir, bool allowMult, float dtS)
 
 	glm::vec3 res = GetPosition() + dir * m_MovementSpeed * movementSpeedMultiplier * dtS;
 	SetPosition(res);
+
+	if (m_pAssisting)
+	{
+		m_pAssisting->SetPosition(res);
+	}
 }
 
 void Crewmember::FindPath(const glm::ivec3& goalPos)
@@ -185,8 +207,33 @@ void Crewmember::SetCloseColor(uint32 doorColor)
 
 void Crewmember::GiveOrder(IOrder* order) noexcept
 {
-	if(!IsResting())
+	if (!IsResting())
+	{
 		m_OrderHandler.GiveOrder(order);
+	}
+}
+
+void Crewmember::OnOrderChosen(const std::string & name, void * userData, const std::vector<int32>& selectedMembers) noexcept
+{
+	if (name == "Assistera")
+	{
+		Crewmember* assister = nullptr;
+		for (uint32 i = 0; i < selectedMembers.size(); i++)
+		{
+			assister = Game::GetGame()->m_pSceneGame->GetCrew()->GetMember(selectedMembers[i]);
+
+			if (assister->IsIdling())
+			{
+				break;
+			}
+		}
+		
+		if (assister)
+		{
+			assister->GiveOrder(new OrderCarry(reinterpret_cast<Crewmember*>(userData)));
+			m_IsCarried = true;
+		}
+	}
 }
 
 void Crewmember::LookForDoor() noexcept
@@ -218,7 +265,7 @@ void Crewmember::GoToSickBay()
 		if (IsAbleToWalk())
 		{
 			const glm::ivec3& currentTile = GetTile();
-			uint32 currentTileID = m_pWorld->GetLevel(currentTile.y).GetLevel()[currentTile.x][currentTile.z];
+			uint32 currentTileID = m_pWorld->GetLevel(currentTile.y * 2).GetLevel()[currentTile.x][currentTile.z];
 
 			if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
 			{
@@ -425,7 +472,7 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	//HOT FIX (Gay?)
 	m_PlayerTile.y = (m_PlayerTile.y >= 3) ? 2 : m_PlayerTile.y;
 
-	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11 && !m_Idling)
+	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)// && !m_Idling)
 	{
 		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 	}
@@ -562,10 +609,15 @@ void Crewmember::UpdateHealth(float dt)
 
 	if (!IsAbleToWork())
 	{
-		GameState::SetCrewHealth(GameState::GetCrewHealth() - (1.0f / NUM_CREW));
 		if (IsIdling())
 		{
 			GoToSickBay();
+		}
+
+		if (m_WasAbleToWork)
+		{
+			GameState::SetCrewHealth(GameState::GetCrewHealth() - (1.0f / NUM_CREW));
+			std::cout << "Crewmemeber marked as incapacitated" << std::endl;
 		}
 	}
 }

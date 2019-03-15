@@ -20,7 +20,6 @@ OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeT
 	m_RoomTile = roomTile;
 	m_HoleTile = holeTile;
 	m_PluggingHole = false;
-	m_HolePlugged = false;
 }
 
 OrderPlugHole::~OrderPlugHole()
@@ -36,6 +35,7 @@ void OrderPlugHole::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers)
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 
+	Logger::LogEvent(GetCrewMember()->GetName() + " pluggade igen hålet!", true);
 	GetCrewMember()->ReportPosition();
 }
 
@@ -59,12 +59,14 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			m_PluggingTimer -= dtS;
 			if (m_PluggingTimer <= 0.0001)
 			{
-				m_HolePlugged = true;
 				glm::ivec3 tile = GetCrewMember()->GetTile();
 				if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 				{
 					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
-					pCrewmember->GiveOrder(new OrderPumpWater(GetCrewMember()->GetRoom(), glm::ivec3(3, 3, 3)));
+					if (!pWorld->GetRoom(GetCrewMember()->GetRoom()).IsPumping())
+					{
+						pCrewmember->GiveOrder(new OrderPumpWater(GetCrewMember()->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
+					}
 				}
 				res = true;
 			}

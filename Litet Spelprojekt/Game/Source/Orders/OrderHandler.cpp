@@ -33,6 +33,12 @@ void OrderHandler::GiveOrder(IOrder* order) noexcept
 		return;
 	}
 
+	if (!m_OrderQueue.empty() && m_OrderQueue[0]->HasPriority())
+	{
+		DeleteSafe(order);
+		return;
+	}
+
 	order->m_pCrewMember = m_pCrewmember;
 
 	if (!IsCrewMemberAbleToExecuteOrder(order))

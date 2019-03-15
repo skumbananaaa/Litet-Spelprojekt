@@ -21,6 +21,10 @@
 #include <System/Random.h>
 #include "../GUI/UINotification.h"
 
+#define MIN_CREWHEALTH 0.4f
+#define MAX_SHIPDAMAGE 0.3f
+#define MAX_WATERLEAKAGE 0.7f
+
 class SceneGame : public SceneInternal
 {
 	friend class Game;
@@ -141,6 +145,18 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_KITCHEN1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_DINING1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_CABOOSE1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_NORMAL)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_SICKBAY1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_TOILET1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_MACHINE1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_MACHINE2)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_MACHINE3)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_AMMUNITION1)->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_AMMUNITION2)->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_AMMUNITION3)->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_KITCHEN1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_DINING1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_CABOOSE1)	->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::OVEN)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::SHELF_AMMUNITION)	->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::SHELF_EMPTY)			->SetLevelClipPlane(standardClipPlane);

@@ -222,6 +222,11 @@ void main()
 	vec3 uniformColor = g_Color.rgb * (1.0f - g_HasDiffuseMap);
 	vec3 color = mappedColor + uniformColor;
 
+	if (color == vec3(1.0f, 0.0f, 1.0f))
+	{
+		discard;
+	}
+
 	//Final lightcalculation
 	vec3 ambient = color * vec3(0.2f);
 	vec3 diffuse = color * fs_in.LightColor;

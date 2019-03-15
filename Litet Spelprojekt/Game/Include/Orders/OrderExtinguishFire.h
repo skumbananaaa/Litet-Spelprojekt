@@ -67,18 +67,29 @@ inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelD
 	{
 		tileData.Temp -= m_ExtinguishingIntensity * dtS;
 		tileData.BurnsAt *= 1.1f;
-		
-		for (uint32 i = 0; i < tileData.GameObjects.size(); i++)
-		{
-			if (dynamic_cast <FireAlarm*>(tileData.GameObjects[i]))
-			{
-				FireAlarm* pFireAlarm = (FireAlarm*)tileData.GameObjects[i];
+		tileData.BurnsAt = glm::min(tileData.BurnsAt, MAX_TILE_TEMP - 10.0f);
 
-				if (pFireAlarm != nullptr)
+		if (tileData.Temp < tileData.BurnsAt)
+		{
+			if (tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR] != nullptr)
+			{
+				tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->SetMaterial(
+					World::ConvertNonExtToExtFloorMaterial(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->GetMaterial()));
+			}
+
+
+			for (uint32 i = tileData.NrOfBaseGameObjects; i < tileData.GameObjects.size(); i++)
+			{
+				if (dynamic_cast <FireAlarm*>(tileData.GameObjects[i]))
 				{
-					if (pFireAlarm->HasDetectedSmoke())
+					FireAlarm* pFireAlarm = (FireAlarm*)tileData.GameObjects[i];
+
+					if (pFireAlarm != nullptr)
 					{
-						pFireAlarm->TurnOff();
+						if (pFireAlarm->HasDetectedSmoke())
+						{
+							pFireAlarm->TurnOff();
+						}
 					}
 				}
 			}

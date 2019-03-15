@@ -177,13 +177,11 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 					if (pGameObject != nullptr)
 					{
-						if (!pGameObject->HasDetectedSmoke() && !room.IsFireDetected())
+						if (!pGameObject->HasDetectedSmoke())// && !room.IsFireDetected())
 						{
 							pGameObject->OnSmokeDetected();
 							//ShowInRoom(m_pWorld->GetLevel(pos.y + (pos.y + 1) % 2)->GetLevel()[pos.x][pos.z]);
 							m_DiscoveredRooms[id] = true;
-							//SetFireVisible(id, true);
-							//SetSmokeVisible(id, true);
 
 							room.SetFireDetected(true);
 

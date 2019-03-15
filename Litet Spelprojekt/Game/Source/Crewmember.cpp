@@ -204,8 +204,10 @@ void Crewmember::SetCloseColor(uint32 doorColor)
 
 void Crewmember::GiveOrder(IOrder* order) noexcept
 {
-	if(!IsResting())
+	if (!IsResting())
+	{
 		m_OrderHandler.GiveOrder(order);
+	}
 }
 
 void Crewmember::OnOrderChosen(const std::string & name, void * userData, const std::vector<int32>& selectedMembers) noexcept

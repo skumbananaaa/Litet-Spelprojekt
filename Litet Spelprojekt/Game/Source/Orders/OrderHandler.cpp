@@ -138,10 +138,10 @@ bool OrderHandler::StartNextExecutableOrder()
 
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	IOrder* pOrder = m_OrderQueue[0];
-	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	std::cout << "[" << pOrder->GetName() << "] Order Started" << std::endl;
 
 	m_pCrewmember->OnOrderStarted(pOrder->IsIdleOrder());
+	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	return true;
 }
 

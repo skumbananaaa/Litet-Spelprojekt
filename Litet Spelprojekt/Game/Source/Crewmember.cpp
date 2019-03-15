@@ -243,7 +243,7 @@ void Crewmember::LookForDoor() noexcept
 	{
 		glm::ivec3 doorTile = m_pWorld->GetDoor(j);
 		uint32 doorRoomIndex = m_pWorld->GetLevel(doorTile.y).GetLevel()[doorTile.x][doorTile.z];
-		if (doorRoomIndex == crewRoomIndex)
+		if (doorRoomIndex == crewRoomIndex && doorTile != (m_PlayerTile * glm::ivec3(1, 2, 1)))
 		{
 			GameObjectDoor* door = (GameObjectDoor*)m_pWorld->GetLevel(doorTile.y).GetLevelData()[doorTile.x][doorTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
 
@@ -253,7 +253,6 @@ void Crewmember::LookForDoor() noexcept
 			}
 		}
 	}
-	//StartOrder(pScene, pWorld, this);
 }
 
 void Crewmember::GoToSickBay()
@@ -307,7 +306,7 @@ bool Crewmember::Heal(float skillLevel, float dtS)
 	m_Recovering += skillLevel * dtS;
 	if (HasRecovered())
 	{
-		Logger::LogEvent(GetName() + " has been healed!", true);
+		Logger::LogEvent(GetName() + " har fått medicinsk hjälp!", true);
 		res = true;
 	}
 	return res;
@@ -317,6 +316,7 @@ void Crewmember::ApplyBurnInjury(float burn)
 {
 	bool lastState = HasInjuryBurned();
 	m_HasInjuryBurned += burn;
+	m_Recovering = 0.0f;
 	if (lastState != HasInjuryBurned())
 	{
 		Logger::LogEvent(GetName() + " fick brännskador", false);
@@ -328,6 +328,7 @@ void Crewmember::ApplyBoneInjury(float boneBreak)
 {
 	bool lastState = HasInjuryBoneBroken();
 	m_HasInjuryBoneBroken += boneBreak;
+	m_Recovering = 0.0f;
 	if (lastState != HasInjuryBoneBroken())
 	{
 		Logger::LogEvent(GetName() + " fick benbrott", false);
@@ -339,6 +340,7 @@ void Crewmember::ApplyBleedInjury(float bleed)
 {
 	bool lastState = HasInjuryBleed();
 	m_HasInjuryBleeding += bleed;
+	m_Recovering = 0.0f;
 	if (lastState != HasInjuryBleed())
 	{
 		Logger::LogEvent(GetName() + " fick köttsår", false);
@@ -350,6 +352,7 @@ void Crewmember::ApplySmokeInjury(float smoke)
 {
 	bool lastState = HasInjurySmoke();
 	m_HasInjurySmoke += smoke;
+	m_Recovering = 0.0f;
 	if (lastState != HasInjurySmoke())
 	{
 		Logger::LogEvent(GetName() + " fick rökskador", false);
@@ -472,7 +475,7 @@ void Crewmember::SetPosition(const glm::vec3& position) noexcept
 	//HOT FIX (Gay?)
 	m_PlayerTile.y = (m_PlayerTile.y >= 3) ? 2 : m_PlayerTile.y;
 
-	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)// && !m_Idling)
+	if (m_PlayerTile.x >= 0 && m_PlayerTile.x <= 11)
 	{
 		SetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
 	}
@@ -550,7 +553,7 @@ void Crewmember::ReportPosition() noexcept
 
 void Crewmember::ChangeTexture() noexcept
 {
-	if (!IsAbleToWalk() && !m_HasChangedTexture)
+	if (!IsAbleToWork() && !m_HasChangedTexture)
 	{
 		SetMaterial(MATERIAL::CREW_INJURED);
 		m_HasChangedTexture = true;
@@ -563,7 +566,7 @@ void Crewmember::UpdateHealth(float dt)
 	float smokeDmgSpeed = 1.0f;
 	float burnDmgSpeed = 1.0f;
 	float bleedDmgSpeed = 1.0f;
-	if (HasRecovered())
+	if (!HasRecovered())
 	{
 		if (HasInjurySmoke())
 		{
@@ -573,11 +576,6 @@ void Crewmember::UpdateHealth(float dt)
 		if (HasInjuryBurned())
 		{
 			m_Health -= (std::log10(m_HasInjuryBurned) - std::log10(1.0)) * burnDmgSpeed * dt;
-		}
-
-		if (HasInjuryBoneBroken())
-		{
-			//m_Health -= m_HasInjuryBoneBroken * dt;
 		}
 
 		if (HasInjuryBleed())
@@ -590,6 +588,8 @@ void Crewmember::UpdateHealth(float dt)
 	{
 		Logger::LogEvent(GetName() + " har svimmat!", false);
 		m_MovementSpeed = CREWMEMBER_DEAD_MOVEMENT_SPEED;
+		UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SLEEP);
+		
 	}
 	else if (m_Health < MAX_HEALTH)
 	{

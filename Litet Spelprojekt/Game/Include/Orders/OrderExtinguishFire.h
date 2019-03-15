@@ -76,23 +76,6 @@ inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelD
 				tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->SetMaterial(
 					World::ConvertNonExtToExtFloorMaterial(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->GetMaterial()));
 			}
-
-
-			for (uint32 i = tileData.NrOfBaseGameObjects; i < tileData.GameObjects.size(); i++)
-			{
-				if (dynamic_cast <FireAlarm*>(tileData.GameObjects[i]))
-				{
-					FireAlarm* pFireAlarm = (FireAlarm*)tileData.GameObjects[i];
-
-					if (pFireAlarm != nullptr)
-					{
-						if (pFireAlarm->HasDetectedSmoke())
-						{
-							pFireAlarm->TurnOff();
-						}
-					}
-				}
-			}
 		}
 	}
 

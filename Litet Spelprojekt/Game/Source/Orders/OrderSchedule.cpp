@@ -12,6 +12,7 @@ std::vector<GameObject*> OrderSchedule::s_Toilets;
 std::vector<GameObject*> OrderSchedule::s_Instruments;
 std::vector<GameObject*> OrderSchedule::s_Chairs;
 std::vector<GameObject*> OrderSchedule::s_Ovens;
+std::vector<GameObject*> OrderSchedule::s_Extinguishers;
 
 void OrderSchedule::Init(Scene* pScene)
 {
@@ -46,6 +47,11 @@ void OrderSchedule::Init(Scene* pScene)
 	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Instrument 2" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Instruments.push_back(pGameObject);
+	}
+
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Extinguisher" + std::to_string(i))) != nullptr; i++)
+	{
+		s_Extinguishers.push_back(pGameObject);
 	}
 
 	//Find ovens

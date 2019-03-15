@@ -172,7 +172,7 @@ void OrderWalk::RunParallel()
 
 bool OrderWalk::CanExecuteIfHurt() noexcept
 {
-	return true;
+	return false;
 }
 
 bool OrderWalk::FollowPath(float dtS) noexcept

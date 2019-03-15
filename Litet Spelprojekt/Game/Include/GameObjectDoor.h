@@ -26,7 +26,6 @@ public:
 	void OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept override;
 
 	virtual void OnAddedToScene(Scene* scene) noexcept override;
-
 	virtual void OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept override;
 
 private:

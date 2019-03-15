@@ -44,6 +44,7 @@ WorldLevel::WorldLevel(const WorldLevel& other)
 			m_ppLevelData[x][z].AlreadyFlooded = other.m_ppLevelData[x][z].AlreadyFlooded;
 			m_ppLevelData[x][z].Burning = other.m_ppLevelData[x][z].Burning;
 			m_ppLevelData[x][z].WaterInlet = other.m_ppLevelData[x][z].WaterInlet;
+			m_ppLevelData[x][z].MarkedForExtinguish = other.m_ppLevelData[x][z].MarkedForExtinguish;
 		}
 	}
 }
@@ -76,6 +77,7 @@ WorldLevel::WorldLevel(uint32 levelHeight, const uint32* const levelIndexes, uin
 			m_ppLevelData[x][z].AlreadyFlooded = false;
 			m_ppLevelData[x][z].Burning = false;
 			m_ppLevelData[x][z].WaterInlet = false;
+			m_ppLevelData[x][z].MarkedForExtinguish = false;
 		}
 	}
 }

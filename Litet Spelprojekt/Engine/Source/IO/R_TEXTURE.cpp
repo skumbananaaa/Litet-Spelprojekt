@@ -3,6 +3,7 @@
 #include <IO/ResourceHandler.h>
 #include <Graphics/Textures/Texture2D.h>
 
+uint32 TEXTURE::SHIP = 0;
 uint32 TEXTURE::HDR = 0;
 uint32 TEXTURE::SINGLE_BED = 0;
 uint32 TEXTURE::BUNK_BED = 0;
@@ -76,7 +77,8 @@ void TEXTURE::RegisterResourcesPreLoading()
 	params.MagFilter = TEX_PARAM_LINEAR;
 	params.Wrap = TEX_PARAM_EDGECLAMP;
 
-	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, true, false, params);
+	SHIP				= ResourceHandler::RegisterTexture2D("boat_diff.png", TEX_FORMAT_RGBA, true, false, params);
+	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, false, false, params);
 }
 
 void TEXTURE::RegisterResources()

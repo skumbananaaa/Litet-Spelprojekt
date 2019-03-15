@@ -70,7 +70,7 @@ uint32 MATERIAL::LOOK_AT = 0;
 void MATERIAL::RegisterResourcesPreLoading()
 {
 	WATER_OUTDOOR		= ResourceHandler::RegisterWaterOutdoorMaterial();
-	BOAT				= ResourceHandler::RegisterMaterial(glm::vec4(2.2f, 2.5f, 2.4f, 1.0f), 256.0f, SHADER::STANDARD_MATERIAL);
+	BOAT				= ResourceHandler::RegisterMaterial(TEXTURE::SHIP, SHADER::STANDARD_MATERIAL);
 }
 
 void MATERIAL::RegisterResources()

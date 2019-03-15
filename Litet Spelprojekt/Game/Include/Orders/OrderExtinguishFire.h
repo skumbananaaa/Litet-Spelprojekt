@@ -76,23 +76,6 @@ inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelD
 				tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->SetMaterial(
 					World::ConvertNonExtToExtFloorMaterial(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR]->GetMaterial()));
 			}
-
-
-			for (uint32 i = tileData.NrOfBaseGameObjects; i < tileData.GameObjects.size(); i++)
-			{
-				if (dynamic_cast <FireAlarm*>(tileData.GameObjects[i]))
-				{
-					FireAlarm* pFireAlarm = (FireAlarm*)tileData.GameObjects[i];
-
-					if (pFireAlarm != nullptr)
-					{
-						if (pFireAlarm->HasDetectedSmoke())
-						{
-							pFireAlarm->TurnOff();
-						}
-					}
-				}
-			}
 		}
 	}
 
@@ -116,7 +99,9 @@ inline glm::ivec2 OrderExtinguishFire::FindClosestBurningTile(const uint32 * con
 			glm::ivec2 toVector = currentTile - currentTileBeingChecked;
 			uint32 distSqrdToCheck = (uint32)(toVector.x * toVector.x + toVector.y * toVector.y);
 
-			if (ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y].Temp > ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y].BurnsAt)
+			TileData& currentTileData = ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y];
+
+			if (currentTileData.Temp > currentTileData.BurnsAt)
 			{
 				if (m_RoomBurningId == ppLevel[currentTileBeingChecked.x][currentTileBeingChecked.y])
 				{

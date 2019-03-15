@@ -6,6 +6,7 @@ class API TEXTURE
 	friend class ResourceHandler;
 
 public:
+	static uint32 SHIP;
 	static uint32 HDR;
 	static uint32 SINGLE_BED;
 	static uint32 BUNK_BED;

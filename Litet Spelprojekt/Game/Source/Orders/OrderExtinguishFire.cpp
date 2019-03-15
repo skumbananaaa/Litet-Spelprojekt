@@ -27,6 +27,16 @@ OrderExtinguishFire::~OrderExtinguishFire()
 void OrderExtinguishFire::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
+	Crewmember* pCrewmember = GetCrewMember();
+
+	if (pCrewmember->HasExtinguisherEquipped())
+	{
+		pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
+	}
+	else
+	{
+		pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
+	}
 }
 
 bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
@@ -69,7 +79,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			{
 				pCrewmember->SetExtinguisherIsEquipped(true);
 				//change animatio
-				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH);
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH_RUN);
 				pScene->RemoveGameObject(pScene->GetGameObject(m_ExtinguisherName));
 
 				pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
@@ -79,7 +89,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 		{
 			Crewmember* pCrewmember = GetCrewMember();
 			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH_RUN);
-			pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
 
 			//Run To Room That is Burning
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
@@ -130,7 +139,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_FireFullyExtinguished = true;
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
-						Logger::LogEvent(GetCrewMember()->GetName() + " blev f�rdig med eldsl�ckning!", true);
+						Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med eldsläckning!", true);
 						pCrewmember->GiveOrder(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, m_BurningTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
 						return false;
 					}

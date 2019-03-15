@@ -138,7 +138,7 @@ void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, in
 {
 	if (!IsAbleToWalk() && !m_IsCarried)
 	{
-		AddChoice("assist", (void*)this);
+		AddChoice("Assistera", (void*)this);
 		DisplayOrders(x, y, selectedMembers);
 	}
 	else
@@ -210,7 +210,7 @@ void Crewmember::GiveOrder(IOrder* order) noexcept
 
 void Crewmember::OnOrderChosen(const std::string & name, void * userData, const std::vector<int32>& selectedMembers) noexcept
 {
-	if (name == "assist")
+	if (name == "Assistera")
 	{
 		Crewmember* assister = nullptr;
 		for (uint32 i = 0; i < selectedMembers.size(); i++)

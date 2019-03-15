@@ -71,7 +71,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			}
 			else
 			{
-				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+				if (pCrewmember->HasExtinguisherEquipped())
+				{
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH);
+				}
+				else
+				{
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+				}
 			}
 		}
 		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && m_OopsIForgot > pCrewmember->GetForgetfulness())
@@ -88,7 +95,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		}
 		else
 		{
-			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			if (pCrewmember->HasExtinguisherEquipped())
+			{
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH);
+			}
+			else
+			{
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			}
 		}
 	}
 

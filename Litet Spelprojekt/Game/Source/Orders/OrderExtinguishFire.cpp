@@ -68,8 +68,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				pCrewmember->SetExtinguisherIsEquipped(true);
-				//change animation
-				//delete object
+				//change animatio
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH);
 				pScene->RemoveGameObject(pScene->GetGameObject(m_ExtinguisherName));
 
 				pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));

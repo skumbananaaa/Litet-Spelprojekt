@@ -1,6 +1,7 @@
 #include "../../Include/Orders/OrderHandler.h"
 #include "../../Include/Game.h"
 #include "../../Include/Orders/OrderWalk.h"
+#include "../../Include/Orders/OrderWalkMedicBay.h"
 
 #define NOT_FOUND -1
 
@@ -33,7 +34,7 @@ void OrderHandler::GiveOrder(IOrder* order) noexcept
 		return;
 	}
 
-	if (!m_OrderQueue.empty() && m_OrderQueue[0]->HasPriority())
+	if (!m_OrderQueue.empty() && dynamic_cast<OrderWalkMedicBay*>(m_OrderQueue[0]))
 	{
 		DeleteSafe(order);
 		return;

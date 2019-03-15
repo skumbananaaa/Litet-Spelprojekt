@@ -75,6 +75,7 @@ void TEXTURE::RegisterResourcesPreLoading()
 	params.MinFilter = TEX_PARAM_LINEAR;
 	params.MagFilter = TEX_PARAM_LINEAR;
 	params.Wrap = TEX_PARAM_EDGECLAMP;
+
 	HDR					= ResourceHandler::RegisterTexture2D("SkyBoxTextures/ocean.hdr", TEX_FORMAT_RGB16F, true, false, params);
 }
 

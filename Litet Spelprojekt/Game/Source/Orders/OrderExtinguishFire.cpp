@@ -50,6 +50,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				{
 					m_EquippingGearTimer = 0.0f;
 					pCrewmember->SetGearIsEquipped(true);
+					Logger::LogEvent(GetCrewMember()->GetName() + " satte på sig rökdykarutrustning!", true);
 					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped(), false));
 					return false;
 				}
@@ -110,6 +111,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_FireFullyExtinguished = true;
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
+						Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med eldsläckning!", true);
 						pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_RoomBurningId, pCrewmember->HasGearEquipped(), true));
 						return false;
 					}
@@ -166,6 +168,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					{
 						m_EquippingGearTimer = 0.0f;
 						pCrewmember->SetGearIsEquipped(false);
+						Logger::LogEvent(GetCrewMember()->GetName() + " tog av sig rökdykarutrustning!", true);
 						return true;
 					}
 				}

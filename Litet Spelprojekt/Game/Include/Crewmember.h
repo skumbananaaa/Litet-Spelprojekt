@@ -4,6 +4,7 @@
 #include "../Include/Orders/OrderHandler.h"
 #include "../Include/GUI/UISelectedCrew.h"
 #include <Audio/Sources/AudioSource.h>
+#include "../Include/GUI/UIOrder.h"
 
 #pragma message("INCLUDE" __FILE__)
 
@@ -30,7 +31,7 @@ enum GroupType : uint32
 
 class TileData;
 
-class Crewmember : public GameObject
+class Crewmember : public GameObject, public UIOrder
 {
 	friend class Crew;
 
@@ -67,6 +68,8 @@ public:
 	virtual void OnHovered() noexcept override;
 	virtual void OnNotHovered() noexcept override;
 	void GiveOrder(IOrder* order) noexcept;
+
+	virtual void OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept;
 
 	//SETS
 	void SetPosition(const glm::vec3& position) noexcept;
@@ -147,6 +150,7 @@ private:
 	float m_Health;
 	bool m_HasTriedToWalkToSickbay;
 	float m_Recovering;
+	bool m_IsCarried;
 
 	//--MOVEMENT
 	float m_MovementSpeed;

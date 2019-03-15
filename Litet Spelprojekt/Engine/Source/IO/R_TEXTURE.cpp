@@ -62,6 +62,7 @@ uint32 TEXTURE::GENERATOR = 0;
 uint32 TEXTURE::FIRE_EXTINGUISHER = 0;
 uint32 TEXTURE::FIRESPRINKLER = 0;
 uint32 TEXTURE::ICON_LOGBOOK = 0;
+uint32 TEXTURE::LOOK_AT = 0;
 
 
 /*
@@ -143,4 +144,9 @@ void TEXTURE::RegisterResources()
 	ICON_BLUE_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/BlueDoor.png", TEX_FORMAT_RGBA, false, true);
 	ICON_YELLOW_DOOR	            = ResourceHandler::RegisterTexture2D("Icons/YellowDoor.png", TEX_FORMAT_RGBA, false, true);
 	ICON_RED_DOOR		            = ResourceHandler::RegisterTexture2D("Icons/RedDoor.png", TEX_FORMAT_RGBA, false, true);
+
+	params.MagFilter = TEX_PARAM_NEAREST;
+	params.MinFilter = TEX_PARAM_NEAREST;
+
+	LOOK_AT							= ResourceHandler::RegisterTexture2D("LookAt.png", TEX_FORMAT_RGBA, false, false, params);
 }

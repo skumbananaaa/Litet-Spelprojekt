@@ -166,6 +166,16 @@ uint32 ResourceHandler::RegisterWallMaterial(int32 texture, float specular)
 	return m_NrOfMaterials++;
 }
 
+uint32 ResourceHandler::RegisterLookAtMaterial(int32 texture, int32 shader)
+{
+	std::cout << "Creating LookAt Material" << std::endl;
+	Material* material = new Material(shader);
+	material->SetDiffuseMap(GetTexture2D(texture));
+	material->SetIncludeInDepthPrePass(false);
+	m_pMaterials[m_NrOfMaterials] = material;
+	return m_NrOfMaterials++;
+}
+
 uint32 ResourceHandler::RegisterDecal(int32 texture, int32 normalMap)
 {
 	std::cout << "Creating Decal" << std::endl;

@@ -484,7 +484,7 @@ void SceneGame::CreateGameObjects() noexcept
 		//Look at
 		{
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::BOAT);
+			pGameObject->SetMaterial(MATERIAL::LOOK_AT);
 			pGameObject->SetMesh(MESH::QUAD);
 			pGameObject->SetPosition(GetCamera().GetLookAt() + glm::vec3(0.0f, 0.06f, 0.0f));
 			pGameObject->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -537,7 +537,7 @@ void SceneGame::CreateCrew() noexcept
 
 	int index = 0;
 	float x, y, z;
-	bool hidden = true;
+	bool hidden = false;
 
 	Crewmember* crewmember;
 

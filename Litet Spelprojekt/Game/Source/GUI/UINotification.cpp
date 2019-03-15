@@ -47,7 +47,7 @@ void UINotification::Update(float dtS) noexcept
 	for (int i = m_NotificationsToDelete.size() - 1; i >= 0; i--)
 	{
 		Panel* pPanel = m_NotificationsToDelete[i];
-		pPanel->SetPosition(pPanel->GetX() + dtS * 400.0f, pPanel->GetY());
+		pPanel->SetPosition(pPanel->GetX() + dtS * 500.0f, pPanel->GetY());
 		if (pPanel->GetX() > Game::GetGame()->GetWindow().GetWidth())
 		{
 			pPanel->RemoveExternalRenderer(this);

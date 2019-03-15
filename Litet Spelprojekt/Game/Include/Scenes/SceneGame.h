@@ -132,6 +132,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::TABLE)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::TOILET)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::ANIMATED_MODEL)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::CREW_INJURED)		->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_NORMAL)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_SICKBAY1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_TOILET1)		->SetLevelClipPlane(floorClipPlane);

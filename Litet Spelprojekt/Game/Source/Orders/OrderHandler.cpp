@@ -1,6 +1,7 @@
 #include "../../Include/Orders/OrderHandler.h"
 #include "../../Include/Game.h"
 #include "../../Include/Orders/OrderWalk.h"
+#include "../../Include/Orders/OrderWalkMedicBay.h"
 
 #define NOT_FOUND -1
 
@@ -30,6 +31,12 @@ void OrderHandler::GiveOrder(IOrder* order) noexcept
 {
 	if (!order)
 	{
+		return;
+	}
+
+	if (!m_OrderQueue.empty() && dynamic_cast<OrderWalkMedicBay*>(m_OrderQueue[0]))
+	{
+		DeleteSafe(order);
 		return;
 	}
 
@@ -131,10 +138,10 @@ bool OrderHandler::StartNextExecutableOrder()
 
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	IOrder* pOrder = m_OrderQueue[0];
-	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	std::cout << "[" << pOrder->GetName() << "] Order Started" << std::endl;
 
 	m_pCrewmember->OnOrderStarted(pOrder->IsIdleOrder());
+	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	return true;
 }
 

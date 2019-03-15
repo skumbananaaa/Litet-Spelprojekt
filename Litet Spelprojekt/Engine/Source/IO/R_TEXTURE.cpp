@@ -28,6 +28,7 @@ uint32 TEXTURE::ICON_GREEN_DOOR = 0;
 uint32 TEXTURE::ICON_NOTIFICATION_TRIANGLE = 0;
 uint32 TEXTURE::SMOKE = 0;
 uint32 TEXTURE::SJOFAN_DIFF = 0;
+uint32 TEXTURE::CREW_INJURY = 0;
 uint32 TEXTURE::SJOFAN_DIFF_EXTINGUISH = 0;
 uint32 TEXTURE::WALL1 = 0;
 uint32 TEXTURE::OVEN = 0;
@@ -127,6 +128,7 @@ void TEXTURE::RegisterResources()
 	FLOOR_EXT_KITCHEN1			= ResourceHandler::RegisterTexture2D("kitchenFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_EXT_DINING1			= ResourceHandler::RegisterTexture2D("diningFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_EXT_CABOOSE1			= ResourceHandler::RegisterTexture2D("cabooseFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
+	CREW_INJURY					= ResourceHandler::RegisterTexture2D("CrewMemberInjured_diff.png", TEX_FORMAT_RGBA, true, false, params);
 
 	ICON_INJURY_BLEED				= ResourceHandler::RegisterTexture2D("Icons/InjuryBleed.png", TEX_FORMAT_RGBA, false, true);
 	ICON_INJURY_BONE				= ResourceHandler::RegisterTexture2D("Icons/InjuryBone.png", TEX_FORMAT_RGBA, false, true);

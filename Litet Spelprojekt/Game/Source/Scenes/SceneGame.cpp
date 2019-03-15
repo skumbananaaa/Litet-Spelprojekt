@@ -368,58 +368,58 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			switch (keycode)
 			{
-			case KEY_O:
-			{
+				case KEY_O:
+				{
 				//m_CartesianCamera = !m_CartesianCamera;
 				break;
 			}
-			case KEY_P:
-			{
+				case KEY_P:
+				{
 				m_pTestAudioSource->TogglePause();
 				break;
 			}
-			case KEY_SPACE:
-			{
+				case KEY_SPACE:
+				{
 				ExtendScene();
 				UpdateMaterialClipPlanes();
 				break;
 			}
-			case KEY_R:
-			{
+				case KEY_R:
+				{
 				ShowCrewmember(0);
 				ScenarioManager::OnVisibilityChange(m_pWorld, this);
 				break;
 			}
-			case KEY_NUMPAD_0:
-			{
+				case KEY_NUMPAD_0:
+				{
 				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_RED);
 				break;
 			}
-			case KEY_NUMPAD_1:
-			{
+				case KEY_NUMPAD_1:
+				{
 				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_GREEN);
 				break;
 			}
-			case KEY_NUMPAD_2:
-			{
+				case KEY_NUMPAD_2:
+				{
 				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_BLUE);
 				break;
 			}
-			case KEY_NUMPAD_3:
-			{
+				case KEY_NUMPAD_3:
+				{
 				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_YELLOW);
 				break;
 			}
-			case KEY_G:
-			{
-				m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
-				break;
-			}
-			case KEY_H:
-			{
-				Crewmember* medic = nullptr;
-				Crewmember* victim = nullptr;
-				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				case KEY_G:
+				{
+					m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
+					break;
+				}
+				case KEY_H:
+				{
+					Crewmember* medic = nullptr;
+					Crewmember* victim = nullptr;
+					for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 				{
 					Crewmember* member = m_Crew.GetMember(i);
 					if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
@@ -436,17 +436,12 @@ void SceneGame::OnKeyDown(KEY keycode)
 						break;
 					}
 				}
-				if (medic != nullptr && victim != nullptr)
+					if (medic != nullptr && victim != nullptr)
 				{
 					medic->GiveOrder(new OrderGiveAid(victim));
 				}
-			}
-			case KEY_M:
-			{
-				ScenarioWater* water = (ScenarioWater*)ScenarioManager::GetScenarios()[Game::GetGame()->m_ScenarioWater];
-				//TODO!!!! Get Inlet tile position!!
-				m_Crew.GetMember(0)->GiveOrder(new OrderPlugHole(glm::ivec3(3, 3, 3), water->GetWaterInlets()[0], m_Crew.GetMember(0)->HasGearEquipped()));
-			}
+					break;
+				}
 			}
 		}
 	}

@@ -25,7 +25,15 @@ void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 {
 	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroupType() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
 	Crewmember* pCrewmember = GetCrewMember();
-	pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+	if (pCrewmember->IsIdling())
+	{
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
+	}
+	else
+	{
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+	}
+
 	ThreadHandler::RequestExecution(this);
 }
 
@@ -71,7 +79,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			}
 			else
 			{
-				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+				if (pCrewmember->IsIdling())
+				{
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
+				}
+				else
+				{
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+				}
 			}
 		}
 		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && m_OopsIForgot > pCrewmember->GetForgetfulness())
@@ -88,7 +103,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		}
 		else
 		{
-			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			if (pCrewmember->IsIdling())
+			{
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
+			}
+			else
+			{
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			}
 		}
 	}
 

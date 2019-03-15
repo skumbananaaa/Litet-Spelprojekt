@@ -9,6 +9,7 @@
 #include "../Include/Orders/OrderSchedule.h"
 #include "../Include/Orders/OrderGiveAid.h"
 #include "../Include/GameState.h"
+#include "../Include/ReplayHandler.h"
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
@@ -219,7 +220,7 @@ void Crewmember::GoToSickBay()
 
 			if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
 			{
-				m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld, currentTile));
+				m_OrderHandler.GiveOrder(new OrderWalkMedicBay(currentTile));
 			}
 		}
 		else
@@ -380,20 +381,20 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 
 void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 {
-	std::cout << GetName() << " started order!" << std::endl;
 	m_Idling = idleOrder;
 }
 
 void Crewmember::OnAllOrdersFinished() noexcept
 {
-	std::cout << GetName() << " finished all order(s)!" << std::endl;
+	if (!ReplayHandler::IsReplaying())
+	{
+		SetIdling(true);
 
-	SetIdling(true);
+		UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+		m_HasTriedToWalkToSickbay = false;
 
-	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-	m_HasTriedToWalkToSickbay = false;
-
-	GiveOrder(OrderSchedule::GetIdleOrder());
+		GiveOrder(OrderSchedule::GetIdleOrder());
+	}
 }
 
 void Crewmember::OnAddedToScene(Scene* scene) noexcept

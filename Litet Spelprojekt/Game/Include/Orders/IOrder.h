@@ -1,17 +1,20 @@
 #pragma once
+#include <EnginePch.h>
 #include <string>
+#include "../IReplayable.h"
 
 class Scene;
 class World;
 class Crew;
 class Crewmember;
 
-class IOrder
+class IOrder : public IReplayable
 {
 	friend class OrderHandler;
 
 protected:
-	IOrder() : m_pCrewMember(nullptr){};
+	IOrder(IOrder* other);
+	IOrder() : m_pCrewMember(nullptr), m_IsInbred(false){};
 	Crewmember* GetCrewMember() noexcept 
 	{
 		return m_pCrewMember;
@@ -30,6 +33,15 @@ public:
 	virtual bool IsIdleOrder() noexcept = 0;
 	virtual bool CanExecuteIfHurt() noexcept = 0;
 
+	virtual IOrder* Clone() noexcept = 0;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+protected:
+	void GiveOrder(IOrder* order) noexcept;
+
 private:
 	Crewmember* m_pCrewMember;
+
+	//Replay
+	uint32 m_ShipId;
+	bool m_IsInbred;
 };

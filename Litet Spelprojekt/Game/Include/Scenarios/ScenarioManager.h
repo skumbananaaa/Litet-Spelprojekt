@@ -10,6 +10,7 @@ public:
 	static void Update(float dtS, World* world, SceneGame* scene) noexcept;
 	static void SetEnabledScenarios(const std::vector<int>& ids) noexcept;
 	static bool StartScenario(int32 index) noexcept;
+	static bool StartScenario(IScenario* pScenario) noexcept;
 	static void Escalate(int32 index, const glm::ivec3& position) noexcept;
 	static void Init(World* pWorld);
 	static void Reset() noexcept;

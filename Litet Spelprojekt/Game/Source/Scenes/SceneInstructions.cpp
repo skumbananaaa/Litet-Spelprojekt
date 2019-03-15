@@ -1,5 +1,7 @@
 #include "..\..\Include\Scenes\SceneInstructions.h"
 #include "../../Include/Game.h"
+#include "../../Include/Orders/OrderSchedule.h"
+#include "../../Include/Scenarios/ScenarioManager.h"
 
 SceneInstructions::SceneInstructions() : 
 	m_pPanel(nullptr),
@@ -23,7 +25,6 @@ void SceneInstructions::OnActivated(SceneInternal* lastScene, IRenderer* m_pRend
 	m_pButtonContinue = new Button(m_pPanel->GetWidth() - 311, 95, 200, 100, "Laddar...");
 
 	m_pButtonContinue->AddButtonListener(this);
-	m_pButtonContinue->SetVisible(true);
 	m_pButtonContinue->SetTextColor(GUIContext::COLOR_BLACK);
 
 	m_pPanel->Add(m_pButtonContinue);
@@ -33,6 +34,7 @@ void SceneInstructions::OnActivated(SceneInternal* lastScene, IRenderer* m_pRend
 
 void SceneInstructions::CreateWorld() noexcept
 {
+	ResourceHandler::ResetGameObjectCounters();
 	World* pWorld = WorldSerializer::Read("world.json");
 
 	////Enable clipplane for wallmaterial
@@ -41,14 +43,13 @@ void SceneInstructions::CreateWorld() noexcept
 
 	//SetClipPlanes(0);
 
-	m_pSceneGame = new SceneGame(pWorld);
+	m_pSceneGame = new SceneGame(pWorld, false);
 
 	// Generate rooms
 	pWorld->Generate(*m_pSceneGame);
 
 	pWorld->GenerateRoomShadows(*m_pSceneGame);
 
-	m_pButtonContinue->SetVisible(true);
 	m_pButtonContinue->SetText("Fortsätt");
 	m_pButtonContinue->SetBackgroundColor(m_pButtonContinue->GetOnHoverColor());
 }
@@ -77,8 +78,13 @@ void SceneInstructions::OnButtonPressed(Button* button)
 
 void SceneInstructions::OnButtonReleased(Button* button)
 {
-	Game::GetGame()->StartGame(m_pSceneGame);
-	m_pSceneGame = nullptr;
+	if (m_pSceneGame)
+	{
+		OrderSchedule::Release();
+		ScenarioManager::Reset();
+		Game::GetGame()->StartGame(m_pSceneGame);
+		m_pSceneGame = nullptr;
+	}
 }
 
 void SceneInstructions::OnButtonHovered(Button* button)

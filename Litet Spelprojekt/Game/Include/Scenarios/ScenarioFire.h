@@ -15,6 +15,8 @@ public:
 	ScenarioFire(bool fireAlwaysVisible = false);
 	virtual ~ScenarioFire();
 
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
@@ -29,11 +31,6 @@ public:
 	void ShowInRoom(uint32 roomID) noexcept;
 
 private:
-	World* m_pWorld;
-	bool m_FireAlwaysVisible;
-
-	const uint32* const** m_pppMap;
-
 	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
 	bool SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
 	float CalculateDoorSpreadFactor(const TileData& tileFrom, const TileData& tileTo, bool spreadingThroughBulkhead) const noexcept;
@@ -42,6 +39,14 @@ private:
 	void EvaporateWater(TileData& tile, float dtS) const noexcept;
 	void SetFireVisible(uint32 roomId, bool show = true) noexcept;
 	void SetSmokeVisible(uint32 roomId, bool show = true) noexcept;
+
+	void StartFire(const glm::ivec3& position) noexcept;
+
+private:
+	World* m_pWorld;
+	bool m_FireAlwaysVisible;
+
+	const uint32* const** m_pppMap;
 
 	// x, y, z = x, level, z
 	std::vector<glm::ivec3> m_OnFire;

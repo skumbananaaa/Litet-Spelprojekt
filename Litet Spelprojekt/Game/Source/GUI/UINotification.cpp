@@ -36,7 +36,6 @@ void UINotification::Update(float dtS) noexcept
 		if (pair.second <= 0)
 		{
 			m_NotificationsToDelete.push_back(pair.first);
-			m_Notifications.erase(m_Notifications.begin() + i);
 		}
 	}
 
@@ -50,6 +49,15 @@ void UINotification::Update(float dtS) noexcept
 		pPanel->SetPosition(pPanel->GetX() + dtS * 400.0f, pPanel->GetY());
 		if (pPanel->GetX() > Game::GetGame()->GetWindow().GetWidth())
 		{
+			for (int j = m_Notifications.size() - 1; j >= 0; j--)
+			{
+				if (m_Notifications[j].first == pPanel)
+				{
+					m_Notifications.erase(m_Notifications.begin() + j);
+					break;
+				}
+			}
+
 			pPanel->RemoveExternalRenderer(this);
 			Game::GetGame()->GetGUIManager().Remove(pPanel);
 			m_NotificationsToDelete.erase(m_NotificationsToDelete.begin() + i);

@@ -1,6 +1,12 @@
 #include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
 #include "../../Include/Crewmember.h"
+OrderPumpWater::OrderPumpWater(OrderPumpWater * other) : OrderWalk(other),
+	m_RoomToPump(other->m_RoomToPump)
+{
+
+}
+
 OrderPumpWater::OrderPumpWater(uint32 roomToPump, glm::ivec3 pumpControl)
 	: OrderWalk(pumpControl),
 	m_RoomToPump(roomToPump)
@@ -83,4 +89,14 @@ void OrderPumpWater::RunParallel()
 bool OrderPumpWater::CanExecuteIfHurt() noexcept
 {
 	return false;
+}
+
+IOrder * OrderPumpWater::Clone() noexcept
+{
+	return new OrderPumpWater(this);
+}
+
+void OrderPumpWater::BeginReplay(SceneGame * pScene, void * userData) noexcept
+{
+	OrderWalk::BeginReplay(pScene, userData);
 }

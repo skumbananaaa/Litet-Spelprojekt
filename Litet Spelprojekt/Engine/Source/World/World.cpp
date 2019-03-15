@@ -318,6 +318,17 @@ void World::GenerateRoomShadows(const Scene& scene) noexcept
 	}
 }
 
+void World::CopyRoomShadows(const Scene& scene, World* pWorld) noexcept
+{
+	for (size_t i = 0; i < MAX_NUM_ROOMS; i++)
+	{
+		if (m_Rooms[i].IsRoomInitialized())
+		{
+			m_Rooms[i].CopyShadows(scene, &(pWorld->m_Rooms[i]));
+		}
+	}
+}
+
 void World::Generate(Scene& scene) noexcept
 {
 	PlaceDoors(scene);

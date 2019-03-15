@@ -346,9 +346,9 @@ void Scene::OnSceneExtensionComplete() noexcept
 
 void Scene::OnUpdate(float dtS) noexcept
 {
-	for (GameObject* pGameObject : m_UpdateAbles)
+	for (int i = 0; i < m_UpdateAbles.size(); i++)
 	{
-		pGameObject->Update(*m_pCamera, dtS);
+		m_UpdateAbles[i]->Update(*m_pCamera, dtS);
 	}
 
 	if (m_Extending)

@@ -63,7 +63,7 @@ const std::vector<uint32>& Crew::GetSquad(uint32 index) const noexcept
 	return m_Squads[index];
 }
 
-void Crew::AddMember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
+Crewmember* Crew::AddMember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 {
 	Crewmember* member = new Crewmember(world, position, name, groupType);
 	member->SetShipNumber(m_Members.size());
@@ -81,6 +81,7 @@ void Crew::AddMember(World* world, const glm::vec3& position, const std::string&
 	m_Squads[squad].push_back(member->GetShipNumber());
 
 	m_Members.push_back(member);
+	return member;
 }
 
 Crewmember* Crew::GetMember(int index)

@@ -18,6 +18,8 @@ public:
 	ScenarioWater(bool waterAlwaysVisible = false);
 	~ScenarioWater();
 
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
@@ -37,6 +39,8 @@ private:
 	std::vector<uint32> m_InletsToRemove;
 
 private:
+	void StartWater(const glm::ivec3& position) noexcept;
+
 	//Scenario Spread Helper Functions
 	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept;
 
@@ -54,6 +58,13 @@ private:
 	void Evaporate(Scene* pScene, TileData * const * ppLevelData, const uint32* const * ppLevel, std::vector<glm::ivec2>& toRemoveFloodingIDs, const glm::ivec2& tile, float dtS) const noexcept;
 	void ExtinguishFire(TileData * const * ppLevelData, TileData * const * ppLevelDataAbove, const glm::ivec2& currentTile, float dtS) const noexcept;
 };
+
+inline void ScenarioWater::StartWater(const glm::ivec3 & position) noexcept
+{
+	m_InletTiles.push_back(position);
+	m_FloodingIDs[position.y / 2].push_back(glm::ivec2(position.x, position.z));
+	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].WaterInlet = true;
+}
 
 inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept
 {

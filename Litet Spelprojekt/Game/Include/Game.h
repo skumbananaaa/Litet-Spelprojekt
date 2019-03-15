@@ -8,6 +8,7 @@
 #include "Scenes/SceneOptions.h"
 #include "Scenes/SceneScenario.h"
 #include "Scenes/SceneInstructions.h"
+#include "Scenes/SceneReplay.h"
 #include <Graphics/Renderers/ForwardRenderer.h>
 #include <Audio/Sources/AudioSource.h>
 #include <IO/ResourceHandler.h>

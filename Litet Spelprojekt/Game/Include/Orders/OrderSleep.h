@@ -6,6 +6,7 @@ class GameObject;
 class OrderSleep : public OrderWalk
 {
 public:
+	OrderSleep(OrderSleep* other);
 	OrderSleep(const glm::ivec3& bedTile, GameObject* pBed);
 	virtual ~OrderSleep();
 
@@ -16,9 +17,15 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual bool IsIdleOrder() noexcept;
 
+	virtual IOrder* Clone() noexcept override;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 private:
 	GameObject* m_pBed;
 	glm::vec3 m_Position;
 	float m_Timer;
 	bool m_IsAtBed;
+
+	//Replay
+	std::string m_Name;
 };

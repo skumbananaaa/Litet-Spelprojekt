@@ -13,7 +13,7 @@ public:
 	bool HasSelectedMembers() const noexcept;
 	
 	// Adds
-	void AddMember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);
+	Crewmember* AddMember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);
 
 	// Gets
 	const std::vector<int32>& GetSelectedList() const noexcept;

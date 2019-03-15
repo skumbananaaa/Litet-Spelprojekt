@@ -11,6 +11,7 @@ class OrderWalk : public IOrder, public IRunnable
 protected:
 
 public:
+	OrderWalk(OrderWalk* other);
 	OrderWalk(const glm::ivec3& goalTile);
 	virtual ~OrderWalk();
 
@@ -24,6 +25,9 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual void RunParallel() override;
 	virtual bool CanExecuteIfHurt() noexcept override;
+
+	virtual IOrder* Clone() noexcept override;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 
 protected:
 	bool FollowPath(float dtS) noexcept;

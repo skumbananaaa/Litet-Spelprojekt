@@ -24,6 +24,7 @@ public:
 	void SetFloodUpdated(bool updated) noexcept;
 
 	void GenerateShadows(const Scene& scene) noexcept;
+	void CopyShadows(const Scene& scene, Room* pRoom) noexcept;
 	void ExtendAudioPos(float extension) noexcept;
 
 	void SetTileOnFire(const glm::ivec3& tile) noexcept;

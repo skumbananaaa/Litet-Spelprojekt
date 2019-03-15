@@ -6,7 +6,8 @@ class GameObject;
 class OrderCook : public OrderWalk
 {
 public:
-	OrderCook(const glm::ivec3& chairTile, GameObject* pChair);
+	OrderCook(OrderCook* other);
+	OrderCook(const glm::ivec3& ovenTile, GameObject* pOven);
 	virtual ~OrderCook();
 
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
@@ -16,9 +17,15 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual bool IsIdleOrder() noexcept;
 
+	virtual IOrder* Clone() noexcept override;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 private:
 	GameObject* m_pOven;
 	glm::vec3 m_Position;
 	float m_Timer;
 	bool m_IsAtOven;
+
+	//Replay
+	std::string m_Name;
 };

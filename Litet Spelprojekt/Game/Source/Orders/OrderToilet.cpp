@@ -1,9 +1,19 @@
 #include "../../Include/Orders/OrderToilet.h"
 #include "../../Include/Crewmember.h"
+#include "../../Include/Scenes/SceneGame.h"
+
+OrderToilet::OrderToilet(OrderToilet* other) : OrderWalk(other)
+{
+	m_Name = other->m_Name;
+	m_Position = glm::vec3(4.0f);
+	m_Timer = 12.0f;
+	m_IsAtToilet = false;
+}
 
 OrderToilet::OrderToilet(const glm::ivec3& toiletTile, GameObject* pToilet)
 	: OrderWalk(toiletTile)
 {
+	m_Name = pToilet->GetName();
 	m_pToilet = pToilet;
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 12.0f;
@@ -102,4 +112,15 @@ std::string OrderToilet::GetName() noexcept
 bool OrderToilet::IsIdleOrder() noexcept
 {
 	return true;
+}
+
+IOrder * OrderToilet::Clone() noexcept
+{
+	return new OrderToilet(this);
+}
+
+void OrderToilet::BeginReplay(SceneGame * pScene, void * userData) noexcept
+{
+	m_pToilet = pScene->GetGameObject(m_Name);
+	OrderWalk::BeginReplay(pScene, userData);
 }

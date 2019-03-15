@@ -4,6 +4,7 @@
 class OrderGiveAid : public OrderWalk
 {
 public:
+	OrderGiveAid(OrderGiveAid* other);
 	OrderGiveAid(Crewmember* injuredMember);
 	virtual ~OrderGiveAid();
 
@@ -16,7 +17,14 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual void RunParallel() override;
 	virtual bool CanExecuteIfHurt() noexcept override;
+
+	virtual IOrder* Clone() noexcept override;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 protected:
 	Crewmember* m_pAiding;
 	glm::ivec3 m_Target;
+
+	//Replay
+	uint32 m_InjuredMember;
 };

@@ -1,5 +1,6 @@
 ﻿#include "../../Include/Scenarios/ScenarioWater.h"
 #include "../../Include/GameState.h"
+#include "../../Include/Scenarios/ScenarioManager.h"
 
 ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
 {
@@ -9,6 +10,12 @@ ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
 ScenarioWater::~ScenarioWater()
 {
 	DeleteArrSafe(m_FloodingIDs);
+}
+
+void ScenarioWater::BeginReplay(SceneGame* pScene, void* userData) noexcept
+{
+	StartWater(*((glm::ivec3*)userData));
+	ScenarioManager::StartScenario(this);
 }
 
 void ScenarioWater::Init(World* pWorld) noexcept
@@ -35,9 +42,11 @@ void ScenarioWater::OnEnd(SceneGame* scene) noexcept
 
 void ScenarioWater::Escalate(const glm::ivec3& position) noexcept
 {
-	m_InletTiles.push_back(position);
-	m_FloodingIDs[position.y / 2].push_back(glm::ivec2(position.x, position.z));
-	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].WaterInlet = true;
+	if (!IsReplaying())
+	{
+		StartWater(position);
+		RegisterReplayEvent(new glm::ivec3(position));
+	}
 }
 
 void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)

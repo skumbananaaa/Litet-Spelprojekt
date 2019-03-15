@@ -4,7 +4,7 @@
 class OrderPumpWater : public OrderWalk
 {
 public:
-
+	OrderPumpWater(OrderPumpWater* other);
 	OrderPumpWater(uint32 roomToPump, glm::ivec3 pumpControl);
 	virtual ~OrderPumpWater();
 
@@ -18,6 +18,9 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual void RunParallel() override;
 	virtual bool CanExecuteIfHurt() noexcept override;
+
+	virtual IOrder* Clone() noexcept override;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 
 private:
 	uint32 m_RoomToPump;

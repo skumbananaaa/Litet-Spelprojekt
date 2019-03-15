@@ -8,6 +8,14 @@
 #include <World/Logger.h>
 #include <System/Random.h>
 
+OrderWalk::OrderWalk(OrderWalk* other) : IOrder(other),
+	m_pPathFinder(nullptr),
+	m_pPath(nullptr),
+	m_IsPathReady(false)
+{
+	m_GoalTile = other->m_GoalTile;
+}
+
 OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 	m_pPathFinder(nullptr),
 	m_pPath(nullptr),
@@ -71,7 +79,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 			}
 		}
-		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && crewTile != m_TargetTile && m_OopsIForgot > pCrewmember->GetForgetfulness())
+		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && crewTile != m_TargetTile /*&& m_OopsIForgot > pCrewmember->GetForgetfulness()*/)
 		{
 			// Close door after passing through
 			door1->AccessRequest(pCrewmember->GetShipNumber());
@@ -99,7 +107,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			room.SetFireDetected(true);
 			Logger::LogEvent(pCrewmember->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index1) + "!", true);
 			pCrewmember->ReportPosition();
-			GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+			GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 		}
 	}
 
@@ -108,7 +116,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		room.SetFloodDetected(true);
 		Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
 		pCrewmember->ReportPosition();
-		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+		GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
 
 	if (room.IsActive())
@@ -170,6 +178,16 @@ void OrderWalk::RunParallel()
 bool OrderWalk::CanExecuteIfHurt() noexcept
 {
 	return true;
+}
+
+IOrder* OrderWalk::Clone() noexcept
+{
+	return new OrderWalk(this);
+}
+
+void OrderWalk::BeginReplay(SceneGame * pScene, void * userData) noexcept
+{
+	IOrder::BeginReplay(pScene, userData);
 }
 
 bool OrderWalk::FollowPath(float dtS) noexcept

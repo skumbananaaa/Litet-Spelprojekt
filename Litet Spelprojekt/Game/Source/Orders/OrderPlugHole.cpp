@@ -12,6 +12,16 @@ glm::ivec3 startTarget(const glm::ivec3& roomTile, const glm::ivec3& holeTile, b
 	return roomTile;
 }
 
+OrderPlugHole::OrderPlugHole(OrderPlugHole* other) : OrderWalk(other),
+	m_EquippingGearTimer(EQUIPTIME),
+	m_PluggingTimer(PLUGTIME)
+{
+	m_RoomTile = other->m_RoomTile;
+	m_HoleTile = other->m_HoleTile;
+	m_PluggingHole = false;
+	m_HolePlugged = false;
+}
+
 OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, bool hasGearEquipped)
 	: OrderWalk(startTarget(roomTile, holeTile, hasGearEquipped)),
 	m_EquippingGearTimer(EQUIPTIME),
@@ -57,14 +67,16 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			}
 
 			m_PluggingTimer -= dtS;
+
 			if (m_PluggingTimer <= 0.0001)
 			{
 				m_HolePlugged = true;
 				glm::ivec3 tile = GetCrewMember()->GetTile();
+
 				if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 				{
 					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
-					pCrewmember->GiveOrder(new OrderPumpWater(GetCrewMember()->GetRoom(), glm::ivec3(3, 3, 3)));
+					GiveOrder(new OrderPumpWater(GetCrewMember()->GetRoom(), glm::ivec3(3, 3, 3)));
 				}
 				res = true;
 			}
@@ -86,7 +98,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			if (m_EquippingGearTimer <= 0.0000001)
 			{
 				pCrewmember->SetGearIsEquipped(true);
-				pCrewmember->GiveOrder(new OrderPlugHole(m_RoomTile, m_HoleTile, pCrewmember->HasGearEquipped()));
+				GiveOrder(new OrderPlugHole(m_RoomTile, m_HoleTile, pCrewmember->HasGearEquipped()));
 				res = true;
 			}
 
@@ -108,4 +120,14 @@ std::string OrderPlugHole::GetName() noexcept
 bool OrderPlugHole::IsIdleOrder() noexcept
 {
 	return false;
+}
+
+IOrder * OrderPlugHole::Clone() noexcept
+{
+	return new OrderPlugHole(this);
+}
+
+void OrderPlugHole::BeginReplay(SceneGame * pScene, void * userData) noexcept
+{
+	OrderWalk::BeginReplay(pScene, userData);
 }

@@ -2,8 +2,9 @@
 #include <EnginePch.h>
 #include <World/World.h>
 #include "../Scenes/SceneGame.h"
+#include "../IReplayable.h"
 
-class IScenario
+class IScenario : public IReplayable
 {
 protected:
 	IScenario();

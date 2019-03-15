@@ -1,8 +1,10 @@
 #include "../../Include/Orders/OrderHandler.h"
 #include "../../Include/Game.h"
 #include "../../Include/Orders/OrderWalk.h"
+#include "../../Include/ReplayHandler.h"
 
 #define NOT_FOUND -1
+std::vector<IOrder*> OrderHandler::s_OrderCopies[NUM_CREW];
 
 OrderHandler::OrderHandler(Crewmember* pCrewMember)
 {
@@ -35,7 +37,7 @@ void OrderHandler::GiveOrder(IOrder* order) noexcept
 
 	order->m_pCrewMember = m_pCrewmember;
 
-	if (!IsCrewMemberAbleToExecuteOrder(order))
+	if (ReplayHandler::IsReplaying() || !IsCrewMemberAbleToExecuteOrder(order))
 	{
 		DeleteSafe(order);
 		return;
@@ -116,6 +118,29 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 	}
 }
 
+void OrderHandler::Reset() noexcept
+{
+	for (int i = 0; i < NUM_CREW; i++)
+	{
+		for (int j = 0; j < s_OrderCopies[i].size(); j++)
+		{
+			DeleteSafe(s_OrderCopies[i][j]);
+		}
+		s_OrderCopies[i].clear();
+	}
+}
+
+void OrderHandler::ForceOrder(IOrder* order) noexcept
+{
+	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
+	{
+		m_OrdersToDelete.push_back(m_OrderQueue[i]);
+	}
+	m_OrderQueue.clear();
+	m_OrderQueue.push_back(order);
+	StartNextExecutableOrder();
+}
+
 bool OrderHandler::StartNextExecutableOrder()
 {
 	if (m_OrderQueue.empty())
@@ -132,7 +157,17 @@ bool OrderHandler::StartNextExecutableOrder()
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	IOrder* pOrder = m_OrderQueue[0];
 	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
-	std::cout << "[" << pOrder->GetName() << "] Order Started" << std::endl;
+	std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Started" << std::endl;
+
+	if (!ReplayHandler::IsReplaying())
+	{
+		if (!pOrder->m_IsInbred)
+		{
+			IOrder* pOrderClone = pOrder->Clone();
+			pOrderClone->RegisterReplayEvent(nullptr);
+			s_OrderCopies[m_pCrewmember->GetShipNumber()].push_back(pOrderClone);
+		}
+	}
 
 	m_pCrewmember->OnOrderStarted(pOrder->IsIdleOrder());
 	return true;
@@ -197,12 +232,12 @@ void OrderHandler::DeleteRemovedOrders(Scene* pScene, World* pWorld, Crew* pCrew
 {
 	for (int i = m_OrdersToDelete.size() - 1; i >= 0; i--)
 	{
-		IOrder* order = m_OrdersToDelete[i];
-		if (order->ReadyToAbort())
+		IOrder* pOrder = m_OrdersToDelete[i];
+		if (pOrder->ReadyToAbort())
 		{
-			order->OnEnded(pScene, pWorld, pCrewMembers);
-			std::cout << "[" << order->GetName() << "] Order Ended" << std::endl;
-			DeleteSafe(order);
+			pOrder->OnEnded(pScene, pWorld, pCrewMembers);
+			std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Ended" << std::endl;
+			DeleteSafe(pOrder);
 			m_OrdersToDelete.erase(m_OrdersToDelete.begin() + i);
 		}
 	}

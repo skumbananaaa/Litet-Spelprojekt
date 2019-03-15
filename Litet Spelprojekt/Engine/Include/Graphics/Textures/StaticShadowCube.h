@@ -9,12 +9,12 @@ class Scene;
 class API StaticShadowCube
 {
 public:
-	StaticShadowCube(StaticShadowCube&& other) = delete;
 	StaticShadowCube(const StaticShadowCube& other) = delete;
 	StaticShadowCube& operator=(StaticShadowCube&& other) = delete;
 	StaticShadowCube& operator=(const StaticShadowCube& other) = delete;
 
 	StaticShadowCube(const glm::vec3& position, const Scene& scene);
+	StaticShadowCube(StaticShadowCube&& other);
 	~StaticShadowCube();
 
 	const TextureCube* GetCubeTexture() const;

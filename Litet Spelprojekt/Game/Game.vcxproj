@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\IReplayable.cpp" />
     <ClCompile Include="Source\GameState.cpp" />
     <ClCompile Include="Source\GameObjectDoor.cpp" />
     <ClCompile Include="Source\GameObjectFloor.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Source\GUI\UIEndScreen.cpp" />
     <ClCompile Include="Source\GUI\UISelectedCrew.cpp" />
     <ClCompile Include="Source\GUI\UIOrder.cpp" />
+    <ClCompile Include="Source\Orders\IOrder.cpp" />
     <ClCompile Include="Source\Orders\OrderCarry.cpp" />
     <ClCompile Include="Source\Orders\OrderCloseDoor.cpp" />
     <ClCompile Include="Source\Orders\OrderCook.cpp" />
@@ -173,6 +175,7 @@
     <ClCompile Include="Source\Orders\OrderWalk.cpp" />
     <ClCompile Include="Source\Orders\OrderWalkMedicBay.cpp" />
     <ClCompile Include="Source\Orders\OrderWork.cpp" />
+    <ClCompile Include="Source\ReplayHandler.cpp" />
     <ClCompile Include="Source\Scenarios\IScenario.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioArtillery.cpp" />
     <ClCompile Include="Source\GUI\UILog.cpp" />
@@ -195,6 +198,7 @@
     <ClCompile Include="Source\Scenes\SceneLoading.cpp" />
     <ClCompile Include="Source\Scenes\SceneMenu.cpp" />
     <ClCompile Include="Source\Scenes\SceneOptions.cpp" />
+    <ClCompile Include="Source\Scenes\SceneReplay.cpp" />
     <ClCompile Include="Source\Scenes\SceneScenario.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +218,7 @@
     <ClInclude Include="Include\GUI\UIOrder.h" />
     <ClInclude Include="Include\GUI\UIPause.h" />
     <ClInclude Include="Include\GUI\UISelectedCrew.h" />
+    <ClInclude Include="Include\IReplayable.h" />
     <ClInclude Include="Include\Orders\IOrder.h" />
     <ClInclude Include="Include\Orders\OrderCarry.h" />
     <ClInclude Include="Include\Orders\OrderCloseDoor.h" />
@@ -231,6 +236,7 @@
     <ClInclude Include="Include\Orders\OrderWalkMedicBay.h" />
     <ClInclude Include="Include\Orders\OrderWork.h" />
     <ClInclude Include="Include\Path.h" />
+    <ClInclude Include="Include\ReplayHandler.h" />
     <ClInclude Include="Include\Scenarios\IScenario.h" />
     <ClInclude Include="Include\Scenarios\ScenarioFire.h" />
     <ClInclude Include="Include\Scenarios\ScenarioManager.h" />
@@ -244,6 +250,7 @@
     <ClInclude Include="Include\Scenes\SceneLoading.h" />
     <ClInclude Include="Include\Scenes\SceneMenu.h" />
     <ClInclude Include="Include\Scenes\SceneOptions.h" />
+    <ClInclude Include="Include\Scenes\SceneReplay.h" />
     <ClInclude Include="Include\Scenes\SceneScenario.h" />
   </ItemGroup>
   <ItemGroup>

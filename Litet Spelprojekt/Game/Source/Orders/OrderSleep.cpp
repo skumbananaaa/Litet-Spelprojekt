@@ -2,10 +2,20 @@
 #include "../../Include/Crewmember.h"
 #include <System/Random.h>
 #include <IO/ResourceHandler.h>
+#include "../../Include/Scenes/SceneGame.h"
+
+OrderSleep::OrderSleep(OrderSleep * other) : OrderWalk(other)
+{
+	m_Name = other->m_Name;
+	m_Position = glm::vec3(4.0f);
+	m_Timer = 90.0f;
+	m_IsAtBed = false;
+}
 
 OrderSleep::OrderSleep(const glm::ivec3& bedTile, GameObject* pBed)
 	: OrderWalk(bedTile)
 {
+	m_Name = pBed->GetName();
 	m_pBed = pBed;
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 90.0f;
@@ -108,4 +118,15 @@ std::string OrderSleep::GetName() noexcept
 bool OrderSleep::IsIdleOrder() noexcept
 {
 	return true;
+}
+
+IOrder * OrderSleep::Clone() noexcept
+{
+	return new OrderSleep(this);
+}
+
+void OrderSleep::BeginReplay(SceneGame* pScene, void* userData) noexcept
+{
+	m_pBed = pScene->GetGameObject(m_Name);
+	OrderWalk::BeginReplay(pScene, userData);
 }

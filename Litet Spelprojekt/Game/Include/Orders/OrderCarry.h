@@ -4,7 +4,8 @@
 class OrderCarry : public OrderWalk
 {
 public:
-	OrderCarry(Crewmember* pInNeedOfAssist);
+	OrderCarry(OrderCarry* other);
+	OrderCarry(Crewmember* inNeedOfAssist);
 	virtual ~OrderCarry();
 
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
@@ -16,6 +17,12 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual bool CanExecuteIfHurt() noexcept override;
 
+	virtual IOrder* Clone() noexcept override;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 protected:
 	Crewmember* m_pCarrying;
+
+	//Replay
+	uint32 m_InNeedOfAssist;
 };

@@ -185,13 +185,16 @@ void Game::OnUpdate(float dtS)
 			m_pScene->SetSkyBox(nullptr);
 			m_pScene->OnDeactivated(m_pSceneNext);
 
-			if (m_pScene == m_pSceneGame)
+			if (dynamic_cast<SceneGame*>(m_pScene))
 			{
-				DeleteSafe(m_pSceneGame);
+				DeleteSafe(m_pScene);
 				m_pScene = nullptr;
+				if (!dynamic_cast<SceneGame*>(m_pSceneNext))
+				{
+					m_pSceneGame = nullptr;
+				}
 			}
 		}
-
 		m_pSceneNext->OnActivated(m_pScene, m_pRenderer);
 		m_pSceneNext->SetSkyBox(m_pSkyBox);
 
@@ -241,15 +244,12 @@ void Game::SetScene(SceneInternal* scene) noexcept
 
 void Game::StartGame(SceneGame* pSceneGame) noexcept
 {
-	if (!m_pSceneGame)
+	m_pSceneGame = pSceneGame;
+	if (m_pSceneGame)
 	{
-		m_pSceneGame = pSceneGame;
-		if (m_pSceneGame)
-		{
-			ResetPrevTime();
-			SetScene(m_pSceneGame);
-		}
-	}	
+		ResetPrevTime();
+		SetScene(m_pSceneGame);
+	}
 }
 
 Game* Game::GetGame()

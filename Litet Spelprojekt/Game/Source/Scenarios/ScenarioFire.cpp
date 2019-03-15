@@ -2,6 +2,7 @@
 #include <System/Random.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../../Include/GameState.h"
+#include "../../Include/Scenarios/ScenarioManager.h"
 
 ScenarioFire::ScenarioFire(bool fireAlwaysVisible)
 {
@@ -11,6 +12,12 @@ ScenarioFire::ScenarioFire(bool fireAlwaysVisible)
 ScenarioFire::~ScenarioFire()
 {
 	DeleteArrSafe(m_pppMap);
+}
+
+void ScenarioFire::BeginReplay(SceneGame* pScene, void* userData) noexcept
+{
+	StartFire(*((glm::ivec3*)userData));
+	ScenarioManager::StartScenario(this);
 }
 
 void ScenarioFire::Init(World* pWorld) noexcept
@@ -35,26 +42,14 @@ void ScenarioFire::Release() noexcept
 	DeleteArrSafe(m_pppMap);
 	m_DiscoveredRooms.clear();
 	m_OnFire.clear();
+	m_Smoke.clear();
 }
 
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
-	/*uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
-	lvl += lvl % 2;
-	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 1);
-	lvl = 0;
+	uint32 lvl = Random::GenerateInt(0, 2) * 2;
 	uint32 x = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeX() - 2);
-	x = m_pWorld->GetLevel(lvl).GetSizeX() / 2;
-	x -= 2;
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeZ() - 2);
-	z = m_pWorld->GetLevel(lvl).GetSizeZ() / 2;
-	glm::ivec3 pos = glm::ivec3(x, lvl, z);
-
-	Escalate(pos);*/
-
-	uint32 lvl = 4;
-	uint32 x = 10;
-	uint32 z = 1;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
 	Escalate(pos);
@@ -67,15 +62,11 @@ void ScenarioFire::OnEnd(SceneGame* scene) noexcept
 
 void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
 {
-	TileData& tileData = m_pWorld->GetLevel(position.y).GetLevelData()[position.x][position.z];
-	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(position.y).GetLevel()[position.x][position.z]);
-	tileData.Temp = tileData.BurnsAt + 0.1f;
-	tileData.Burning = true;
-
-	MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]);
-	emitter->SetIsVisible(m_FireAlwaysVisible);
-	m_OnFire.push_back(position);
-	room.SetTileOnFire(position);
+	if (!IsReplaying())
+	{
+		StartFire(position);
+		RegisterReplayEvent(new glm::ivec3(position));
+	}
 }
 
 void ScenarioFire::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
@@ -485,4 +476,17 @@ void ScenarioFire::SetSmokeVisible(uint32 roomId, bool show) noexcept
 			}
 		}
 	}
+}
+
+void ScenarioFire::StartFire(const glm::ivec3 & position) noexcept
+{
+	TileData& tileData = m_pWorld->GetLevel(position.y).GetLevelData()[position.x][position.z];
+	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(position.y).GetLevel()[position.x][position.z]);
+	tileData.Temp = tileData.BurnsAt + 0.1f;
+	tileData.Burning = true;
+
+	MeshEmitter* emitter = dynamic_cast<MeshEmitter*>(tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]);
+	emitter->SetIsVisible(m_FireAlwaysVisible);
+	m_OnFire.push_back(position);
+	room.SetTileOnFire(position);
 }

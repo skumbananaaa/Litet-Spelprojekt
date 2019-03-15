@@ -5,6 +5,7 @@
 class OrderPlugHole : public OrderWalk
 {
 public:
+	OrderPlugHole(OrderPlugHole* other);
 	OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, bool hasGearEquipped);
 	virtual ~OrderPlugHole();
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
@@ -13,6 +14,9 @@ public:
 	virtual bool CanBeStackedWithSameType() noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual bool IsIdleOrder() noexcept;
+
+	virtual IOrder* Clone() noexcept override;
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 
 private:
 	uint32 m_RoomFloodingId;

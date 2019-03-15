@@ -19,7 +19,6 @@
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
 
 #define NR_GROUPS 3
-#define NUM_CREW 16
 
 enum GroupType : uint32
 {
@@ -33,6 +32,7 @@ class TileData;
 class Crewmember : public GameObject
 {
 	friend class Crew;
+	friend class IOrder;
 
 public:
 	Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);

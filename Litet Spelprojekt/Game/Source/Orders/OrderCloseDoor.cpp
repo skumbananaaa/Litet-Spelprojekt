@@ -1,12 +1,20 @@
 #include "../../Include/Orders/OrderCloseDoor.h"
 #include "../../Include/GameObjectDoor.h"
 #include "../../Include/Crewmember.h"
+#include "../../Include/Game.h"
+
+OrderDoor::OrderDoor(OrderDoor* other) : OrderWalk(other)
+{
+	m_DoorName = other->m_DoorName;
+	m_Open = other->m_Open;
+}
 
 OrderDoor::OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open)
 	: OrderWalk(doorTile)
 {
 	m_pGameObjectDoor = door;
 	m_Open = open;
+	m_DoorName = door->GetName();
 }
 
 OrderDoor::~OrderDoor()
@@ -61,4 +69,15 @@ bool OrderDoor::IsIdleOrder() noexcept
 bool OrderDoor::CanExecuteIfHurt() noexcept
 {
 	return false;
+}
+
+IOrder * OrderDoor::Clone() noexcept
+{
+	return new OrderDoor(this);
+}
+
+void OrderDoor::BeginReplay(SceneGame* pScene, void* userData) noexcept
+{
+	m_pGameObjectDoor = reinterpret_cast<GameObjectDoor*>(pScene->GetGameObject(m_DoorName));
+	OrderWalk::BeginReplay(pScene, userData);
 }

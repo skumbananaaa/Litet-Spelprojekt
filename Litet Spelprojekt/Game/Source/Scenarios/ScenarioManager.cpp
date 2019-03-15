@@ -2,6 +2,7 @@
 #include "..\..\Include\Game.h"
 #include <System/Random.h>
 #include <World/Logger.h>
+#include "../../Include/ReplayHandler.h"
 
 std::vector<IScenario*> ScenarioManager::s_Scenarios;
 std::vector<int32> ScenarioManager::s_ActiveScenarios;
@@ -32,17 +33,20 @@ void ScenarioManager::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexc
 
 void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 {
-	for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
+	if (!ReplayHandler::IsReplaying())
 	{
-		IScenario* scenario = s_Scenarios[s_NonActiveScenarios[i]];
-		float time = scenario->GetTimeOfNextOutBreak() - dtS;
-		if (time <= 0)
+		for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
 		{
-			StartScenario(s_NonActiveScenarios[i]);
-		}
-		else
-		{
-			scenario->SetTimeOfNextOutBreak(time);
+			IScenario* scenario = s_Scenarios[s_NonActiveScenarios[i]];
+			float time = scenario->GetTimeOfNextOutBreak() - dtS;
+			if (time <= 0)
+			{
+				StartScenario(s_NonActiveScenarios[i]);
+			}
+			else
+			{
+				scenario->SetTimeOfNextOutBreak(time);
+			}
 		}
 	}
 
@@ -81,20 +85,39 @@ bool ScenarioManager::StartScenario(int32 index) noexcept
 	return false;
 }
 
+bool ScenarioManager::StartScenario(IScenario* pScenario) noexcept
+{
+	for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
+	{
+		if (pScenario == s_Scenarios[s_NonActiveScenarios[i]])
+		{
+			Logger::LogEvent("Scenario [" + pScenario->GetName() + "] startade!");
+			pScenario->OnStart(Game::GetGame()->m_pSceneGame);
+			s_ActiveScenarios.push_back(s_NonActiveScenarios[i]);
+			s_NonActiveScenarios.erase(s_NonActiveScenarios.begin() + i);
+			return true;
+		}
+	}
+	return false;
+}
+
 void ScenarioManager::Escalate(int32 index, const glm::ivec3& position) noexcept
 {
-	if (StartScenario(index))
+	if (!ReplayHandler::IsReplaying())
 	{
-		s_Scenarios[index]->Escalate(position);
-	}
-	else
-	{
-		for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
+		if (StartScenario(index))
 		{
-			if (index == s_ActiveScenarios[i])
+			s_Scenarios[index]->Escalate(position);
+		}
+		else
+		{
+			for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
 			{
-				s_Scenarios[index]->Escalate(position);
-				return;
+				if (index == s_ActiveScenarios[i])
+				{
+					s_Scenarios[index]->Escalate(position);
+					return;
+				}
 			}
 		}
 	}
@@ -114,6 +137,13 @@ void ScenarioManager::Reset() noexcept
 	{
 		scenario->Release();
 	}
+
+	for (int i = 0; i < s_ActiveScenarios.size(); i++)
+	{
+		s_NonActiveScenarios.push_back(s_ActiveScenarios[i]);
+	}
+
+	s_ActiveScenarios.clear();
 }
 
 const std::vector<IScenario*>& ScenarioManager::GetScenarios() noexcept

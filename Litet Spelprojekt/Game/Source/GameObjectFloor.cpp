@@ -119,17 +119,33 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 		for (uint32 i = 0; i < selectedMembers.size(); i++)
 		{
 			Crewmember* pCrewmember = pCrew->GetMember(selectedMembers[i]);
-			extinguisherTile = FindClosestExtinguisher(pCrewmember->GetPosition());
+	
 
-			if (!pCrewmember->HasGearEquipped())
+			bool hasGearEquipped = pCrewmember->HasGearEquipped();
+			bool hasExtinguisherEquipped = pCrewmember->HasExtinguisherEquipped();
+			glm::ivec3 goalTile;
+
+			if (!hasGearEquipped)
 			{
-				pCrewmember->GiveOrder(new OrderExtinguishFire(
-					pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
-					tile, extinguisherTile,
-					pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z],
-					pCrewmember->HasGearEquipped(),
-					false, pCrewmember->HasExtinguisherEquipped()));
+				goalTile = pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile);
 			}
+			else
+			{
+				if (!hasExtinguisherEquipped)
+				{
+					goalTile = FindClosestExtinguisher(pCrewmember->GetPosition());
+				}
+				else
+				{
+					goalTile = tile;
+				}
+			}
+
+			pCrewmember->GiveOrder(new OrderExtinguishFire(
+				goalTile,
+				tile,
+				pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z],
+				false, ""));
 		}
 	}
 	else if (name == "Plugga hål")

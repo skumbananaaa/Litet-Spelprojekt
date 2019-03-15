@@ -2,9 +2,8 @@
 #include "../../Include/Crewmember.h"
 
 
-OrderExtinguishFire::OrderExtinguishFire(const glm::ivec3& roomTile, const glm::ivec3& burningTile, const glm::ivec3& extinguisherTile, uint32 roomBurningId, 
-	bool hasGearEquipped, bool fireFullyExtinguished, bool hasExtinguisher) :
-	OrderWalk(hasGearEquipped && hasExtinguisher != fireFullyExtinguished ? burningTile : extinguisherTile),
+OrderExtinguishFire::OrderExtinguishFire(const glm::ivec3& goalTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool fireFullyExtinguished, const std::string& extinguisherName) :
+	OrderWalk(goalTile),
 	m_EquippingGearTimer(0.0f),
 	m_ExtinguishingIntensity(FIRE_EXTINGUISH_BY_CREW_RATE)
 {
@@ -13,13 +12,11 @@ OrderExtinguishFire::OrderExtinguishFire(const glm::ivec3& roomTile, const glm::
 	//hasGearEquipped F fireFullyExtinguished F : F
 	//hasGearEquipped T fireFullyExtinguished T : F
 
+	m_ExtinguisherName = extinguisherName;
 	m_RoomBurningId = roomBurningId;
-	m_RoomTile = roomTile;
 	m_BurningTile = burningTile;
-	m_ExtinguisherTile = extinguisherTile;
 	m_ExtinguishingFire = false;
 	m_FireFullyExtinguished = fireFullyExtinguished;
-	std::cout << "Extinguish Fire Order Room Tile: " << glm::to_string(roomTile) << std::endl;
 	std::cout << "Extinguish Fire Order Burning Tile: " << glm::to_string(burningTile) << std::endl;
 }
 
@@ -53,10 +50,29 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				{
 					m_EquippingGearTimer = 0.0f;
 					pCrewmember->SetGearIsEquipped(true);
-					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_ExtinguisherTile, m_RoomBurningId, pCrewmember->HasGearEquipped()
-						, false, pCrewmember->HasExtinguisherEquipped()));
+					if (pCrewmember->HasExtinguisherEquipped())
+					{
+						pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
+					}
+					else
+					{
+						pCrewmember->GiveOrder(new OrderExtinguishFire(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName), m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
+					}
 					return false;
 				}
+			}
+		}
+		else if (!pCrewmember->HasExtinguisherEquipped())
+		{
+			//walking to extinguisher
+			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
+			{
+				pCrewmember->SetExtinguisherIsEquipped(true);
+				//change animation
+				//delete object
+				pScene->RemoveGameObject(pScene->GetGameObject(m_ExtinguisherName));
+
+				pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 			}
 		}
 		else
@@ -110,16 +126,14 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_FireFullyExtinguished = true;
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
-						pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_ExtinguisherTile, m_RoomBurningId, pCrewmember->HasGearEquipped()
-							, true, pCrewmember->HasExtinguisherEquipped()));
+						pCrewmember->GiveOrder(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, m_BurningTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
 						return false;
 					}
 
 					//Fire Not Fully Extinguished
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
-					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_ExtinguisherTile, m_RoomBurningId, pCrewmember->HasGearEquipped()
-						, false, pCrewmember->HasExtinguisherEquipped()));
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 					return false;
 				}
 				else
@@ -139,8 +153,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				{
 					m_BurningTile = correctTargetTile;
 					m_RoomBurningId = ppLevel[correctTargetTile.x][correctTargetTile.z];
-					pCrewmember->GiveOrder(new OrderExtinguishFire(m_RoomTile, m_BurningTile, m_ExtinguisherTile, m_RoomBurningId, pCrewmember->HasGearEquipped()
-						, false, pCrewmember->HasExtinguisherEquipped()));
+					pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 					return false;
 				}
 			}
@@ -165,10 +178,15 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					{
 						m_EquippingGearTimer = 0.0f;
 						pCrewmember->SetGearIsEquipped(false);
+						pCrewmember->SetExtinguisherIsEquipped(false);
 						return true;
 					}
 				}
 			}
+		}
+		else
+		{
+			return true;
 		}
 	}
 

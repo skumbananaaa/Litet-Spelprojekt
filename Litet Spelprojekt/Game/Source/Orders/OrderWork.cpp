@@ -79,7 +79,6 @@ void OrderWork::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexce
 	if (m_IsAtInstrument)
 	{
 		Crewmember* pCrewmember = GetCrewMember();
-		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 		GetCrewMember()->SetPosition(m_Position);
 		pCrewmember->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 	}

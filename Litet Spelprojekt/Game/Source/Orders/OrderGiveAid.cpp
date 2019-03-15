@@ -1,10 +1,11 @@
 #include "../../Include/Orders/OrderGiveAid.h"
 #include "../../Include/Crew.h"
 
-OrderGiveAid::OrderGiveAid(Crewmember* injuredMember): OrderWalk(injuredMember->GetTile())
+OrderGiveAid::OrderGiveAid(Crewmember* injuredMember): OrderWalk(injuredMember->GetTile() * glm::ivec3(1, 2, 1) - glm::ivec3(1, 0, 0))
 {
 	m_pAiding = injuredMember;
 	m_Target = injuredMember->GetTile();
+	m_IsAiding = false;
 }
 
 OrderGiveAid::~OrderGiveAid()
@@ -26,7 +27,16 @@ bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 	}
 	if (res)
 	{
+		if (!m_IsAiding)
+		{
+			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
+		}
 		res = m_pAiding->Heal(healLevel, dtS);
+
+		if (res)
+		{
+			Logger::LogEvent(GetCrewMember()->GetName() + " gav hjälp till " + m_pAiding->GetName() + "!", true);
+		}
 	}
 	return res;
 }
@@ -45,7 +55,6 @@ void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 		}
 	}
 
-	Logger::LogEvent(GetCrewMember()->GetName() + " gav hjälp till " + m_pAiding->GetName() + "!", true);
 	GetCrewMember()->ReportPosition();
 
 	m_pAiding = nullptr;

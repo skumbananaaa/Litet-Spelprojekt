@@ -550,7 +550,7 @@ void Crewmember::ReportPosition() noexcept
 
 void Crewmember::ChangeTexture() noexcept
 {
-	if (!IsAbleToWalk() && !m_HasChangedTexture)
+	if (!IsAbleToWork() && !m_HasChangedTexture)
 	{
 		SetMaterial(MATERIAL::CREW_INJURED);
 		m_HasChangedTexture = true;

@@ -29,19 +29,19 @@ void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 	if (pCrewmember->HasExtinguisherEquipped())
 	{
 		pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH_RUN);
 	}
 	else
 	{
 		pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
-	}
-
-	if (pCrewmember->IsIdling())
-	{
-		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
-	}
-	else
-	{
-		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+		if (pCrewmember->IsIdling())
+		{
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
+		}
+		else
+		{
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+		}
 	}
 
 	ThreadHandler::RequestExecution(this);
@@ -77,13 +77,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 				{
 					if (door1->AccessRequest(pCrewmember->GetShipNumber()))
 					{
-
+						pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
 						pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR);
 						door1->SetOpen(true);
 					}
 				}
 				/*else*/ if (pCrewmember->GetAnimatedMesh() != ResourceHandler::GetAnimatedMesh(MESH::ANIMATED_MODEL_OPENDOOR))
 				{
+					pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
 					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 				}
 				return false;
@@ -92,14 +93,17 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			{
 				if (pCrewmember->HasExtinguisherEquipped())
 				{
+					pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
 					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH_RUN);
 				}
 				else if (pCrewmember->IsIdling())
 				{
+					pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
 					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
 				}
 				else
 				{
+					pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
 					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 				}
 			}
@@ -121,14 +125,17 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		{
 			if (pCrewmember->HasExtinguisherEquipped())
 			{
+				pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH_RUN);
 			}
 			else if (pCrewmember->IsIdling())
 			{
+				pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
 			}
 			else
 			{
+				pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
 				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 			}
 		}
@@ -151,7 +158,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
-		Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenl�cka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
+		Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
 		pCrewmember->ReportPosition();
 		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 	}
@@ -175,6 +182,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	Crewmember* pCrewmember = GetCrewMember();
+
 	//pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 }
 

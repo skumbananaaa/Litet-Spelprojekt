@@ -79,7 +79,7 @@ void OrderToilet::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 	if (m_IsAtToilet)
 	{
 		Crewmember* pCrewmember = GetCrewMember();
-		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 		GetCrewMember()->SetPosition(m_Position);
 		pCrewmember->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 	}

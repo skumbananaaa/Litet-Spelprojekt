@@ -17,11 +17,18 @@ OrderWalkMedicBay::~OrderWalkMedicBay()
 */
 bool OrderWalkMedicBay::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
-	/*if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
+	bool res = OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
+	if (res)
 	{
-		// Make it so that a crewmember goes to bed.
-	}*/
-	return OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
+		Crewmember* pMember = GetCrewMember();
+		pMember->SetResting(!pMember->IsAbleToWork());
+		pMember->SetIdling(false);
+	}
+	else if (!GetCrewMember()->IsAbleToWalk())
+	{
+		return true;
+	}
+	return res;
 }
 
 void OrderWalkMedicBay::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
@@ -30,15 +37,21 @@ void OrderWalkMedicBay::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMemb
 
 	Crewmember* pMember = GetCrewMember();
 	pMember->ReportPosition();
-	pMember->SetResting(!pMember->IsAbleToWork());
 	Crewmember* assisted = pMember->GetAssisting();
 	if (assisted)
 	{
 		assisted->SetResting(true);
 		pMember->SetAssisting(nullptr);
+		Logger::LogEvent(GetCrewMember()->GetName() + "bar " + assisted->GetName() + " till sjukstugan!", true);
+	}
+	else
+	{
+		if (GetCrewMember()->IsResting())
+		{
+			Logger::LogEvent(GetCrewMember()->GetName() + " gick till sjukstugan!", true);
+		}
 	}
 
-	Logger::LogEvent(GetCrewMember()->GetName() + " gick till sjukstugan!", true);
 	GetCrewMember()->ReportPosition();
 }
 /*

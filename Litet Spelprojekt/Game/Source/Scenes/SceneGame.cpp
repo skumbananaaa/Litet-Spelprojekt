@@ -368,48 +368,23 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			switch (keycode)
 			{
-				case KEY_O:
-				{
-				//m_CartesianCamera = !m_CartesianCamera;
-				break;
-			}
 				case KEY_P:
 				{
-				m_pTestAudioSource->TogglePause();
-				break;
-			}
+					m_pTestAudioSource->TogglePause();
+					break;
+				}
 				case KEY_SPACE:
 				{
-				ExtendScene();
-				UpdateMaterialClipPlanes();
-				break;
-			}
+					ExtendScene();
+					UpdateMaterialClipPlanes();
+					break;
+				}
 				case KEY_R:
 				{
-				ShowCrewmember(0);
-				ScenarioManager::OnVisibilityChange(m_pWorld, this);
-				break;
-			}
-				case KEY_NUMPAD_0:
-				{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_RED);
-				break;
-			}
-				case KEY_NUMPAD_1:
-				{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_GREEN);
-				break;
-			}
-				case KEY_NUMPAD_2:
-				{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_BLUE);
-				break;
-			}
-				case KEY_NUMPAD_3:
-				{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_YELLOW);
-				break;
-			}
+					ShowCrewmember(0);
+					ScenarioManager::OnVisibilityChange(m_pWorld, this);
+					break;
+				}
 				case KEY_G:
 				{
 					m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
@@ -440,6 +415,15 @@ void SceneGame::OnKeyDown(KEY keycode)
 				{
 					medic->GiveOrder(new OrderGiveAid(victim));
 				}
+					break;
+				}
+				case KEY_ENTER:
+				{
+					const std::vector<int32>& selectedList = m_Crew.GetSelectedList();
+					for (int32 i = 0; i < selectedList.size(); i++)
+					{
+						m_Crew.GetMember(selectedList[i])->RequestReportPosition();
+					}
 					break;
 				}
 			}
@@ -532,7 +516,7 @@ void SceneGame::CreateCrew() noexcept
 
 	int index = 0;
 	float x, y, z;
-	bool hidden = false;
+	bool hidden = true;
 
 	Crewmember* crewmember;
 

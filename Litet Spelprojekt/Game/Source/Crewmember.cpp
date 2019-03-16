@@ -18,7 +18,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_GearIsEquipped(false),
 	m_HasEquippedExtinguisher(false),
 	m_IsCarried(false),
-	m_HasTriedToWalkToSickbay(false)
+	m_HasTriedToWalkToSickbay(false),
+	m_pShadow(nullptr)
 {
 	//Set crewmembers to be updated
 	m_IsTickable = true;
@@ -63,6 +64,9 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_Group = groupType;
 
 	m_CloseColor = DOOR_COLOR_RED;
+
+	m_ReportTimer = 0.0f;
+	m_ReportTime = 0.0f;
 }
 
 Crewmember::~Crewmember()
@@ -92,6 +96,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	m_OrderHandler.Update(pSceneGame, m_pWorld, pSceneGame->GetCrew(), deltaTime);
 	GameObject::Update(camera, deltaTime);
 	UpdateTransform();
+	m_pShadow->UpdateTransform();
 
 	if (IsAlive())
 	{
@@ -100,7 +105,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		UpdateHealth(deltaTime);
 	}
 
-	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z]);
+	Room& room = m_pWorld->GetRoom(GetRoom());
 
 	uint32 index = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
 
@@ -130,12 +135,41 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	ChangeTexture();
 
-	if (m_pWorld->GetRoom(GetRoom()).IsActive())
+	if (room.IsActive())
 	{
+		if (m_pShadow->IsVisible())
+		{
+			m_pShadow->SetIsVisible(false);
+		}
 		UpdateLastKnownPosition();
+	}
+	else
+	{
+		if (!m_pShadow->IsVisible())
+		{
+			m_pShadow->SetDirection(m_Direction);
+			m_pShadow->SetPosition(m_LastKnownPosition);
+			m_pShadow->UpdateTransform();
+			m_pShadow->SetIsVisible(true);
+		}
 	}
 
 	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
+
+	if (m_ReportTime > 0)
+	{
+		m_ReportTimer += deltaTime;
+		if (m_pUISelectedCrew)
+		{
+			m_pUISelectedCrew->SetPercentage(m_ReportTimer / m_ReportTime);
+		}
+		if (m_ReportTimer >= m_ReportTime)
+		{
+			m_ReportTime = 0.0f;
+			m_ReportTimer = 0.0f;
+			ReportPosition();
+		}
+	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
@@ -363,7 +397,7 @@ void Crewmember::ApplySmokeInjury(float smoke)
 
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
 {
-	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
+	glm::vec3 centre = GetLastKnownPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
 	centre.x += extension * glm::floor(centre.y / 2.0f);
 
 	float t = -1;
@@ -378,7 +412,7 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 		};
 
 		float h[] = {
-			0.1,
+			0.15,
 			0.9,
 			0.25
 		};
@@ -450,9 +484,21 @@ void Crewmember::OnAllOrdersFinished() noexcept
 	GiveOrder(OrderSchedule::GetIdleOrder());
 }
 
-void Crewmember::OnAddedToScene(Scene* scene) noexcept
+void Crewmember::OnAddedToScene(Scene* pScene) noexcept
 {
-	scene->RegisterPickableGameObject(this);
+	//Look at
+	{
+		m_pShadow = new GameObject();
+		m_pShadow->SetMaterial(MATERIAL::BLACK);
+		m_pShadow->SetMesh(MESH::CREWMEMBER_SHADOW);
+		m_pShadow->SetPosition(m_LastKnownPosition);
+		m_pShadow->SetDirection(m_Direction);
+		m_pShadow->UpdateTransform();
+		m_pShadow->SetWorld(m_pWorld);
+		pScene->AddGameObject(m_pShadow);
+	}
+
+	pScene->RegisterPickableGameObject(this);
 }
 
 void Crewmember::OnHovered() noexcept
@@ -550,6 +596,14 @@ void Crewmember::ReportPosition() noexcept
 	uint32 roomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
 	m_LastKnownPosition = GetPosition();
 	m_pWorld->SetRoomActive(roomIndex, true);
+}
+
+void Crewmember::RequestReportPosition() noexcept
+{
+	if (m_ReportTime < 3.0f)
+	{
+		m_ReportTime = Random::GenerateInt(3, 15);
+	}
 }
 
 void Crewmember::ChangeTexture() noexcept

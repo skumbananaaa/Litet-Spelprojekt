@@ -109,6 +109,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	glm::vec4 floorClipPlane(0.0f,	  factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 1.9f));
 	glm::vec4 particleClipPlane(0.0f, factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 2.0f));
 
+	ResourceHandler::GetMaterial(MATERIAL::BLACK)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_FRAME)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_RED)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_GREEN)			->SetLevelClipPlane(standardClipPlane);

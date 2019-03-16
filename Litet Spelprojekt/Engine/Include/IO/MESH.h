@@ -43,6 +43,7 @@ public:
 	static uint32 GENERATOR;
 	static uint32 FIRE_EXTINGUISHER;
 	static uint32 FIRESPRINKLER;
+	static uint32 CREWMEMBER_SHADOW;
 
 private:
 	static void RegisterResourcesPreLoading();

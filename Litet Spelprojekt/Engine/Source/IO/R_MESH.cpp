@@ -42,6 +42,7 @@ uint32 MESH::SHELF_EMPTY = 0;
 uint32 MESH::GENERATOR = 0;
 uint32 MESH::FIRE_EXTINGUISHER = 0;
 uint32 MESH::FIRESPRINKLER = 0;
+uint32 MESH::CREWMEMBER_SHADOW = 0;
 
 
 /*
@@ -90,4 +91,5 @@ void MESH::RegisterResources()
 	GENERATOR						= ResourceHandler::RegisterMesh("Generator.obj");
 	FIRE_EXTINGUISHER				= ResourceHandler::RegisterMesh("FireExtinguisher.obj");
 	FIRESPRINKLER					= ResourceHandler::RegisterMesh("Sprinkler.obj");
+	CREWMEMBER_SHADOW				= ResourceHandler::RegisterMesh("CrewmemberShadow.obj");
 }

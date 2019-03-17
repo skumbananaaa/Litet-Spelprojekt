@@ -4,12 +4,19 @@
 
 UISelectedCrew::UISelectedCrew(const std::string& name) : TextView(0, 0, 100, 25, name, true)
 {
-	SetBackgroundColor(GUIContext::COLOR_SELECTED);
+	SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	SetTextColor(GUIContext::COLOR_BLACK);
+
+	m_pProgressBar = new ProgressBar(0, 0, 100, 25);
+	m_pProgressBar->SetProgressColor(GUIContext::COLOR_SELECTED);
+	Game::GetGame()->GetGUIManager().Add(m_pProgressBar);
+
+	m_pProgressBar->SetPercentage(100);
 }
 
 UISelectedCrew::~UISelectedCrew()
 {
+
 }
 
 void UISelectedCrew::UpdatePosition(const glm::vec3 & position) noexcept
@@ -22,7 +29,21 @@ void UISelectedCrew::UpdatePosition(const glm::vec3 & position) noexcept
 	pos = pos / pos.w;
 	float halfWidth = Game::GetGame()->GetWindow().GetWidth() / 2;
 	float halfHeight = Game::GetGame()->GetWindow().GetHeight() / 2;
-	SetPosition(pos.x * halfWidth + halfWidth - GetWidth() / 2, pos.y * halfHeight + halfHeight + GetHeight() / 2);
+	float x = pos.x * halfWidth + halfWidth - GetWidth() / 2;
+	float y = pos.y * halfHeight + halfHeight + GetHeight() / 2;
+	SetPosition(x, y);
+	m_pProgressBar->SetPosition(x, y);
+}
+
+void UISelectedCrew::SetPercentage(float percentage)
+{
+	m_pProgressBar->SetPercentage(percentage);
+}
+
+void UISelectedCrew::OnRemoved(GUIObject * parent)
+{
+	Game::GetGame()->GetGUIManager().Remove(m_pProgressBar);
+	m_pProgressBar = nullptr;
 }
 
 void UISelectedCrew::PrintName() const

@@ -82,6 +82,7 @@ public:
 	void SetExtinguisherIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
 	void ReportPosition() noexcept;
+	void RequestReportPosition() noexcept;
 	void ChangeTexture() noexcept;
 
 	//GETS
@@ -171,6 +172,11 @@ private:
 	AudioSource* m_pAudioSourceScream;
 
 	uint32 m_CloseColor;
+
+	GameObject* m_pShadow;
+
+	float m_ReportTime;
+	float m_ReportTimer;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept

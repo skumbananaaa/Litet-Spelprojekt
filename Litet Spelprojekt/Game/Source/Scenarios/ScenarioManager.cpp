@@ -55,6 +55,11 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 			scenario->OnEnd(scene);
 			SetAsNonActive(s_ActiveScenarios[i]);
 			s_ActiveScenarios.erase(s_ActiveScenarios.begin() + i);
+
+			if (scenario->IsComplete())
+			{
+				std::cout << "Scenario '" << scenario->GetName() << "' is complete" << std::endl;
+			}
 		}
 	}
 }

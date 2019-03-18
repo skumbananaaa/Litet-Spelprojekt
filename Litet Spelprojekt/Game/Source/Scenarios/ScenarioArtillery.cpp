@@ -122,3 +122,8 @@ int32 ScenarioArtillery::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 60 * 5;
 }
+
+bool ScenarioArtillery::IsComplete() noexcept
+{
+	return true;
+}

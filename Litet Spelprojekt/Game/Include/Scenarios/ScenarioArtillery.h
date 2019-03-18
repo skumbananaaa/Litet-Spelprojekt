@@ -23,6 +23,7 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 
 private:
 	GameObjectArtillery* m_pGameObjectArtillery;

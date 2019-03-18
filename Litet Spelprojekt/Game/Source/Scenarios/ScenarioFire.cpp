@@ -339,6 +339,11 @@ int32 ScenarioFire::GetMaxTimeBeforeOutbreak() noexcept
 	return 60;
 }
 
+bool ScenarioFire::IsComplete() noexcept
+{
+	return true;
+}
+
 void ScenarioFire::ShowInRoom(uint32 roomID) noexcept
 {
 	for (uint32 i = 0; i < m_Smoke.size(); i++)

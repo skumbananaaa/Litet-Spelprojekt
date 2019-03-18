@@ -41,7 +41,7 @@ GUIObject::~GUIObject()
 	RemoveKeyboardListener(this);
 	RemoveRealTimeRenderer();
 
-	for (int i = m_Children.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_Children.size() - 1; i >= 0; i--)
 	{
 		Remove(m_Children[i]);
 	}
@@ -256,12 +256,12 @@ void GUIObject::SetBorderColor(const glm::vec4& color) noexcept
 
 float GUIObject::GetWidth() const noexcept
 {
-	return m_pFramebuffer->GetWidth();
+	return (float)m_pFramebuffer->GetWidth();
 }
 
 float GUIObject::GetHeight() const noexcept
 {
-	return m_pFramebuffer->GetHeight();
+	return (float)m_pFramebuffer->GetHeight();
 }
 
 float GUIObject::GetActualWidth() const noexcept
@@ -571,10 +571,10 @@ void GUIObject::RenderBackgroundTexture(GUIContext* context)
 
 void GUIObject::RenderBorder(GUIContext* context)
 {
-	context->RenderTexture(GetDefaultTexture(), 0, 0, m_BorderThickness, GetHeight(), m_BorderColor);
-	context->RenderTexture(GetDefaultTexture(), GetWidth() - m_BorderThickness, 0, m_BorderThickness, GetHeight(), m_BorderColor);
-	context->RenderTexture(GetDefaultTexture(), 0, GetHeight() - m_BorderThickness, GetWidth(), m_BorderThickness, m_BorderColor);
-	context->RenderTexture(GetDefaultTexture(), 0, 0, GetWidth(), m_BorderThickness, m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), 0.0f, 0.0f, (float)m_BorderThickness, (float)GetHeight(), m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), (float)GetWidth() - m_BorderThickness, 0, (float)m_BorderThickness, (float)GetHeight(), m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), 0.0f, (float)GetHeight() - m_BorderThickness, (float)GetWidth(), (float)m_BorderThickness, m_BorderColor);
+	context->RenderTexture(GetDefaultTexture(), 0.0f, 0.0f, (float)GetWidth(), (float)m_BorderThickness, m_BorderColor);
 }
 
 bool GUIObject::ContainsPoint(const glm::vec2& position, const GUIObject* caller) const noexcept
@@ -627,7 +627,7 @@ int32 GUIObject::GetBoderThickness() const noexcept
 
 void GUIObject::DeleteChildren()
 {
-	for (int i = m_Children.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_Children.size() - 1; i >= 0; i--)
 	{
 		Remove(m_Children[i]);
 	}
@@ -677,7 +677,7 @@ const std::vector<GUIObject*>& GUIObject::GetChildren() noexcept
 
 int32 GUIObject::GetNrOfChildren() const noexcept
 {
-	return m_Children.size() + m_ChildrenToAdd.size();
+	return (int32)(m_Children.size() + m_ChildrenToAdd.size());
 }
 
 Texture2D* GUIObject::GetDefaultTexture() const
@@ -697,7 +697,7 @@ Texture2D* GUIObject::GetClearTexture() const
 
 void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_MouseListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_MouseListeners[i]->IsVisible())
 		{
@@ -708,7 +708,7 @@ void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButto
 
 void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButton mousebutton)
 {
-	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_MouseListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_MouseListeners[i]->IsVisible())
 		{
@@ -719,7 +719,7 @@ void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButt
 
 void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 {
-	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_MouseListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_MouseListeners[i]->IsVisible())
 		{
@@ -730,7 +730,7 @@ void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 
 void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::vec2& offset)
 {
-	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_MouseListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_MouseListeners[i]->IsVisible())
 		{
@@ -742,7 +742,7 @@ void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::
 
 void GUIObject::InternalRootOnKeyUp(KEY keycode)
 {
-	for (int i = s_KeyboardListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_KeyboardListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_KeyboardListeners[i]->IsVisible())
 		{
@@ -753,7 +753,7 @@ void GUIObject::InternalRootOnKeyUp(KEY keycode)
 
 void GUIObject::InternalRootOnKeyDown(KEY keycode)
 {
-	for (int i = s_KeyboardListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_KeyboardListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_KeyboardListeners[i]->IsVisible())
 		{
@@ -764,7 +764,7 @@ void GUIObject::InternalRootOnKeyDown(KEY keycode)
 
 void GUIObject::InternalRootOnCharFromKey(char c)
 {
-	for (int i = s_KeyboardListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_KeyboardListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_KeyboardListeners[i]->IsVisible())
 		{

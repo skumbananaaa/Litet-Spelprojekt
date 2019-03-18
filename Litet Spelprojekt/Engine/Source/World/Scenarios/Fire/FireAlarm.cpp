@@ -1,4 +1,4 @@
-#include <EnginePch.h>
+﻿#include <EnginePch.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include <World/LightManager.h>
 #include <Graphics/Lights/SpotLight.h>
@@ -90,9 +90,9 @@ void FireAlarm::OnSmokeDetected() noexcept
 	m_Rotation = 0;
 	m_pAudioSrc->Play();
 
-	for (int32 x = 0; x < levelSizeX; x++)
+	for (uint32 x = 0; x < levelSizeX; x++)
 	{
-		for (int32 z = 0; z < levelSizeZ; z++)
+		for (uint32 z = 0; z < levelSizeZ; z++)
 		{
 			if (currentRoomIndex == ppLevel[x][z])
 			{

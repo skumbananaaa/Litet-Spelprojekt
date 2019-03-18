@@ -1,4 +1,4 @@
-#include <Graphics/Renderers/DefferedRenderer.h>
+ï»¿#include <Graphics/Renderers/DefferedRenderer.h>
 #include "..\Include\Editor.h"
 #include <World/LightManager.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
@@ -112,20 +112,20 @@ void Editor::OnResourcesLoaded()
 	
 	m_pTextViewEditor				= new TextView(0, m_pPanelEditor->GetHeight() - 50, m_pPanelEditor->GetWidth(), 50, "Rumsverktyg", true);
 	m_pButtonAddRoom				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 50, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Nytt rum");
-	m_pButtonEditRoom				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 110, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Ändra rum");
+	m_pButtonEditRoom				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 110, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Ã¤ndra rum");
 	m_pButtonRemoveRoom				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 170, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Ta bort rum");
-	m_pButtonAddDoor				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 230, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Lägg till dörr");
-	m_pButtonRemoveDoor				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 290, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Ta bort dörr");
-	m_pButtonAddStairs				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 350, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Lägg till stege");
+	m_pButtonAddDoor				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 230, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "LÃ¤gg till dÃ¶rr");
+	m_pButtonRemoveDoor				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 290, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Ta bort dÃ¶rr");
+	m_pButtonAddStairs				= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 350, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "LÃ¤gg till stege");
 	m_pButtonRemoveStairs			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 410, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Ta bort stege");
-	m_pSetRoomBurnTemperature		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 470, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt antändningstemp");
-	m_pButtonSetAsSickbay			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 530, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt sjukstuga");
-	m_pButtonSetAsToilet			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 590, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt toalett");
-	m_pButtonSetAsMachineRoom		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 650, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt maskinrum");
-	m_pButtonSetAsAmmunitionRoom	= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 710, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt ammunitionsrum");
-	m_pButtonSetAsKitchen			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 770, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt kök");
-	m_pButtonSetAsDiningRoom		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 830, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt matrum");
-	m_pButtonSetAsCaboose			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 890, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "Sätt hytt");
+	m_pSetRoomBurnTemperature		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 470, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt antÃ¤ndningstemp");
+	m_pButtonSetAsSickbay			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 530, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt sjukstuga");
+	m_pButtonSetAsToilet			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 590, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt toalett");
+	m_pButtonSetAsMachineRoom		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 650, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt maskinrum");
+	m_pButtonSetAsAmmunitionRoom	= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 710, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt ammunitionsrum");
+	m_pButtonSetAsKitchen			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 770, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt kÃ¶k");
+	m_pButtonSetAsDiningRoom		= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 830, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt matrum");
+	m_pButtonSetAsCaboose			= new Button(10, m_pPanelScrollableRoomEditor->GetClientHeight() - 890, m_pPanelScrollableRoomEditor->GetWidth() - 40, 50, "SÃ¤tt hytt");
 
 	m_pButtonAddRoom->SetUserData(reinterpret_cast<void*>(ADD_ROOM));
 	m_pButtonEditRoom->SetUserData(reinterpret_cast<void*>(EDIT_ROOM));
@@ -183,7 +183,7 @@ void Editor::OnResourcesLoaded()
 	ResourceHandler::QuaryGameObjectTypes(gameObjects);
 	m_pPanelMesh = new Panel(GetWindow().GetWidth() - 200, (GetWindow().GetHeight() - 650) / 2, 200, 650);
 	m_pButtonAddMesh = new Button(10, m_pPanelMesh->GetHeight() - 60, 85, 50, "Ny");
-	m_pButtonEditMesh = new Button(105, m_pPanelMesh->GetHeight() - 60, 85, 50, "Ändra");
+	m_pButtonEditMesh = new Button(105, m_pPanelMesh->GetHeight() - 60, 85, 50, "Ã„ndra");
 	m_pPanelScrollableAddMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth() - 20, ELEMENT_HEIGHT * gameObjects.size());
 	m_pPanelScrollableEditMesh = new PanelScrollable(10, 10, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30, m_pPanelMesh->GetWidth() - 20, m_pPanelMesh->GetHeight() - m_pButtonAddMesh->GetHeight() - 30);
 	m_pPanelMesh->Add(m_pButtonAddMesh);
@@ -200,10 +200,10 @@ void Editor::OnResourcesLoaded()
 
 
 	m_pPanelFloor = new Panel(0, GetWindow().GetHeight() / 4, 160, GetWindow().GetHeight() / 2);
-	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "Välj däck", true);
-	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "Däck 1");
-	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "Däck 2");
-	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "Däck 3");
+	m_pTextViewFloor = new TextView(0, m_pPanelFloor->GetHeight() - 50, m_pPanelFloor->GetWidth(), 50, "VÃ¤lj dÃ¤ck", true);
+	m_pButtonFloor1 = new Button(10, m_pPanelFloor->GetHeight() - 100, 140, 50, "DÃ¤ck 1");
+	m_pButtonFloor2 = new Button(10, m_pPanelFloor->GetHeight() - 160, 140, 50, "DÃ¤ck 2");
+	m_pButtonFloor3 = new Button(10, m_pPanelFloor->GetHeight() - 220, 140, 50, "DÃ¤ck 3");
 	m_pButtonFloor1->SetUserData(reinterpret_cast<void*>(0));
 	m_pButtonFloor2->SetUserData(reinterpret_cast<void*>(1));
 	m_pButtonFloor3->SetUserData(reinterpret_cast<void*>(2));

@@ -28,12 +28,14 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 	const std::vector<glm::ivec3> GetWaterInlets() const noexcept;
 
 private:
 	World* m_pWorld;
 	float m_TotalWaterLevel;
 	bool m_WaterAlwaysVisible;
+	mutable bool m_HasFlooded;
 	std::vector<glm::ivec2>* m_FloodingIDs;
 	std::vector<glm::ivec3> m_InletTiles;
 	std::vector<uint32> m_InletsToRemove;
@@ -171,6 +173,11 @@ inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std
 		{
 			newFloodingIDs.push_back(tilePos);
 			ppLevelData[tilePos.x][tilePos.y].AlreadyFlooded = true;
+
+			if (!m_HasFlooded)
+			{
+				m_HasFlooded = true;
+			}
 		}
 	}
 }

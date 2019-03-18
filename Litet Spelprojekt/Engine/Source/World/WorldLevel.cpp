@@ -138,7 +138,7 @@ const glm::vec4& WorldLevel::GetBulkhead(uint32 index) const noexcept
 
 uint32 WorldLevel::GetNrOfBulkheads() const noexcept
 {
-	return m_Bulkheads.size();
+	return (uint32)m_Bulkheads.size();
 }
 
 uint32 WorldLevel::GetTilesBetweenBulkheads() const noexcept

@@ -2,6 +2,7 @@
 #include "../../Include/GameState.h"
 
 ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
+	: m_HasFlooded(false)
 {
 	m_WaterAlwaysVisible = waterAlwaysVisible;
 }
@@ -26,12 +27,10 @@ void ScenarioWater::Release() noexcept
 
 void ScenarioWater::OnStart(SceneGame* scene) noexcept
 {
-	
 }
 
 void ScenarioWater::OnEnd(SceneGame* scene) noexcept
 {
-	DeleteArrSafe(m_FloodingIDs);
 }
 
 void ScenarioWater::Escalate(const glm::ivec3& position) noexcept
@@ -133,10 +132,8 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		std::vector<glm::ivec2> newFloodingIDs;
 		std::vector<glm::ivec2> toRemoveFloodingIDs;
 
-
 		//We are on the upper grid level of a world level
 
-		
 		for (uint32 i = 0; i < floodingIDs.size(); i++)
 		{
 			glm::ivec2 currentTile = glm::ivec2(floodingIDs[i].x, floodingIDs[i].y);
@@ -229,6 +226,8 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 
 			float waterlevel = ppLevelData[currentTile.x][currentTile.y].WaterLevel;
+			m_TotalWaterLevel += (waterlevel / WATER_MAX_LEVEL);
+
 			if (glm::abs(waterlevel - ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated) > WATER_UPDATE_LEVEL_INTERVAL)
 			{
 				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = glm::floor(WATER_ROUNDING_FACTOR * waterlevel) / WATER_ROUNDING_FACTOR;
@@ -255,8 +254,6 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 					}
 					pGameObject->SetIsVisible(true);
 					pGameObject->UpdateTransform();
-
-					m_TotalWaterLevel += (waterlevel / WATER_MAX_LEVEL);
 				}
 				else
 				{
@@ -267,7 +264,6 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 					pGameObject->SetIsVisible(false);
 				}
 			}
-
 		}
 
 		floodingIDs.insert(floodingIDs.end(), newFloodingIDs.begin(), newFloodingIDs.end());
@@ -299,9 +295,11 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 	m_InletsToRemove.clear();
 
-	constexpr float total = 40.0 * 10.0f * 3.0;
+	constexpr float total = 40.0f * 10.0f;
 	GameState::SetWaterLeakAmount(m_TotalWaterLevel / total);
-	return false;
+
+	//Will work for now since the first level is the only one that gets flooded
+	return m_HasFlooded && m_FloodingIDs[0].empty();
 }
 
 std::string ScenarioWater::GetName() noexcept
@@ -317,6 +315,12 @@ int32 ScenarioWater::GetCooldownTime() noexcept
 int32 ScenarioWater::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 1;
+}
+
+bool ScenarioWater::IsComplete() noexcept
+{
+	//Will work for now since the first level is the only one that gets flooded
+	return m_HasFlooded && m_FloodingIDs[0].empty();
 }
 
 const std::vector<glm::ivec3> ScenarioWater::GetWaterInlets() const noexcept

@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenes\SceneCredits.h"
+ï»¿#include "..\..\Include\Scenes\SceneCredits.h"
 #include "..\..\Include\Scenes\SceneMenu.h"
 #include "../../Include/Game.h"
 #include <Audio/Sources/AudioSource.h>
@@ -36,11 +36,11 @@ void SceneCredits::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer)
 	m_pTextViewTitle = new TextView(0, m_pPanel->GetHeight() - 50, m_pPanel->GetWidth(), 50, "Utvecklare", true);
 
 	m_pTextViewChristoffer = new TextView(0, m_pTextViewTitle->GetY() - 150, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Christoffer Andersson", true);
-	m_pTextViewHerman = new TextView(0, m_pTextViewChristoffer->GetY() - 50, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Herman Hansson Söderlund", true);
+	m_pTextViewHerman = new TextView(0, m_pTextViewChristoffer->GetY() - 50, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Herman Hansson SÃ¶derlund", true);
 	m_pTextViewAlexander = new TextView(0, m_pTextViewHerman->GetY() - 50, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Alexander Dahlin", true);
 	m_pTextViewTim = new TextView(0, m_pTextViewAlexander->GetY() - 50, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Tim Mellander", true);
 	m_pTextViewTimKort = new TextView(0, m_pTextViewTim->GetY() - 50, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Tim Johansson", true);
-	m_pTextViewLeo = new TextView(0, m_pTextViewTimKort->GetY() - 50, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Leo Wikström", true);
+	m_pTextViewLeo = new TextView(0, m_pTextViewTimKort->GetY() - 50, m_pPanel->GetWidth(), m_pButtonBack->GetHeight(), "Leo WikstrÃ¶m", true);
 
 	m_pButtonBack->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	m_pButtonBack->AddButtonListener(this);

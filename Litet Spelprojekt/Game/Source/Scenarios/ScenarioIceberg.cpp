@@ -5,7 +5,9 @@
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioIceberg::ScenarioIceberg() : m_pAudioSourceExplosion(nullptr)
+ScenarioIceberg::ScenarioIceberg() : m_pAudioSourceExplosion(nullptr),
+	m_InstancesToSpawn(1),
+	m_InstancesComplete(0)
 {
 	
 }
@@ -111,9 +113,11 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 		}
 		else
 		{
+			m_InstancesComplete++;
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -130,6 +134,11 @@ int32 ScenarioIceberg::GetCooldownTime() noexcept
 int32 ScenarioIceberg::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 60 * 5;
+}
+
+bool ScenarioIceberg::IsComplete() noexcept
+{
+	return m_InstancesComplete >= m_InstancesToSpawn;
 }
 
 int32 ScenarioIceberg::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept

@@ -3,8 +3,6 @@
 #include "ParticleData.h"
 #include <Audio/Sources/AudioSource.h>
 
-#define MAX_PARTICLES 500
-
 class MeshEmitter;
 
 class API IMeshListener

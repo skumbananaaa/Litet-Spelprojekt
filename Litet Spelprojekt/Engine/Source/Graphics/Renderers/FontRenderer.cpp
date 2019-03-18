@@ -134,7 +134,7 @@ void FontRenderer::RenderText(GLContext* context, std::string text, int32 x, int
 		// Render quad
 		glDrawArrays(GL_TRIANGLES, 0, VERTEX_COUNT);
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (character.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+		x += (int32)((character.Advance >> 6) * scale); // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);

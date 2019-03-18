@@ -19,12 +19,12 @@ GUIManager::~GUIManager()
 
 float GUIManager::GetWidth() const noexcept
 {
-	return Window::GetCurrentWindow().GetWidth();
+	return (float)Window::GetCurrentWindow().GetWidth();
 }
 
 float GUIManager::GetHeight() const noexcept
 {
-	return Window::GetCurrentWindow().GetHeight();
+	return (float)Window::GetCurrentWindow().GetHeight();
 }
 
 void GUIManager::InternalRootOnRender()

@@ -1,5 +1,6 @@
 #include "..\..\Include\Scenarios\ScenarioManager.h"
 #include "..\..\Include\Game.h"
+#include "../../Include/GameState.h"
 #include <System/Random.h>
 #include <World/Logger.h>
 
@@ -9,7 +10,7 @@ std::vector<int32> ScenarioManager::s_NonActiveScenarios;
 
 uint32 ScenarioManager::RegisterScenario(IScenario* scenario) noexcept
 {
-	int32 id = s_Scenarios.size();
+	int32 id = (int32)s_Scenarios.size();
 	s_Scenarios.push_back(scenario);
 	return id;
 }
@@ -24,7 +25,7 @@ void ScenarioManager::Release() noexcept
 
 void ScenarioManager::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept
 {
-	for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_ActiveScenarios.size() - 1; i >= 0; i--)
 	{
 		s_Scenarios[s_ActiveScenarios[i]]->OnVisibilityChange(pWorld, pScene);
 	}
@@ -32,7 +33,7 @@ void ScenarioManager::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexc
 
 void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 {
-	for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_NonActiveScenarios.size() - 1; i >= 0; i--)
 	{
 		IScenario* scenario = s_Scenarios[s_NonActiveScenarios[i]];
 		float time = scenario->GetTimeOfNextOutBreak() - dtS;
@@ -49,7 +50,7 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 		}
 	}
 
-	for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_ActiveScenarios.size() - 1; i >= 0; i--)
 	{
 		IScenario* scenario = s_Scenarios[s_ActiveScenarios[i]];
 		if (scenario->Update(dtS, world, scene))
@@ -62,6 +63,7 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 			if (scenario->IsComplete())
 			{
 				std::cout << "Scenario '" << scenario->GetName() << "' is complete" << std::endl;
+				GameState::AddScenariosCompleted();
 			}
 		}
 	}
@@ -70,12 +72,14 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 void ScenarioManager::SetEnabledScenarios(const std::vector<int32>& ids) noexcept
 {
 	s_NonActiveScenarios = ids;
+	GameState::SetNumScenariosSelected((uint32)s_NonActiveScenarios.size());
+
 	s_ActiveScenarios.clear();
 }
 
 bool ScenarioManager::StartScenario(int32 index) noexcept
 {
-	for (int i = s_NonActiveScenarios.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_NonActiveScenarios.size() - 1; i >= 0; i--)
 	{
 		if (index == s_NonActiveScenarios[i])
 		{
@@ -97,7 +101,7 @@ void ScenarioManager::Escalate(int32 index, const glm::ivec3& position) noexcept
 	}
 	else
 	{
-		for (int i = s_ActiveScenarios.size() - 1; i >= 0; i--)
+		for (int i = (int32)s_ActiveScenarios.size() - 1; i >= 0; i--)
 		{
 			if (index == s_ActiveScenarios[i])
 			{

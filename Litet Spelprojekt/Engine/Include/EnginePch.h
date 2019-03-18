@@ -1,5 +1,8 @@
 #pragma once
 #pragma warning(disable : 4251) //Disable DLL interface warning for STL
+#pragma warning(once : 4100) //Only generate warning about unused parameters once
+#pragma warning(once : 4201) //Only generate warning about nonstandard extension used once
+#pragma warning(error : 4005) //Make macro redefinition an error
 
 #define GLM_FORCE_SSE2
 #define GLM_ENABLE_EXPERIMENTAL

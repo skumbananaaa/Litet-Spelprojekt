@@ -461,14 +461,14 @@ void ForwardRenderer::UpdateShadowBuffer(const World* const pWorld) const noexce
 		ShadowBuffer buff = {};
 		sizeof(ShadowBuffer);
 
-		for (uint32 i = 0; i < pWorld->GetActiveRooms().size(); i++)
+		for (uint32 i = 0; i < (uint32)pWorld->GetActiveRooms().size(); i++)
 		{
 			uint32 roomIndex = pWorld->GetActiveRooms()[i];
 
 			buff.LightPosition[i] = glm::vec4(pWorld->GetRoom(roomIndex).GetCenter(), 1.0f);
 		}
 
-		for (uint32 i = pWorld->GetActiveRooms().size(); i < MAX_ROOMS_VISIBLE; i++)
+		for (uint32 i = (uint32)pWorld->GetActiveRooms().size(); i < MAX_ROOMS_VISIBLE; i++)
 		{
 			buff.LightPosition[i] = glm::vec4(0.0f);
 		}
@@ -548,7 +548,7 @@ void ForwardRenderer::ReflectionPass(const Scene& scene, const World* const pWor
 			material.SetExtensionBuffer(m_pExtensionBuffer);
 			material.Bind(nullptr);
 
-			mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+			mesh.SetInstances(m_DrawableBatches[i].Instances.data(), (uint32)m_DrawableBatches[i].Instances.size());
 			context.DrawIndexedMeshInstanced(mesh);
 
 			context.Enable(CULL_FACE);
@@ -599,7 +599,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 			context.Disable(CULL_FACE);
 		}
 
-		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), (uint32)m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
 	}
 
@@ -682,7 +682,7 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene, const W
 		material.SetShadowBuffer(m_pShadowBuffer);
 		material.Bind(nullptr);
 
-		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), (uint32)m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
 
 		context.Enable(CULL_FACE);

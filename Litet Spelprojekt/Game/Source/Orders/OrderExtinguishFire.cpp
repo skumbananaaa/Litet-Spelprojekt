@@ -70,7 +70,15 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				pCrewmember->SetExtinguisherIsEquipped(true);
 				//change animation
 				//delete object
-				pScene->RemoveGameObject(pScene->GetGameObject(m_ExtinguisherName));
+				GameObject* pGameObject = pScene->GetGameObject(m_ExtinguisherName);
+				if (pGameObject)
+				{
+					pScene->RemoveGameObject(pGameObject);
+				}
+				else
+				{
+					pCrewmember->GiveOrder(new OrderExtinguishFire(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName), m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
+				}
 
 				pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 			}

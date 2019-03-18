@@ -27,6 +27,8 @@ public:
 
 private:
 	GameObjectArtillery* m_pGameObjectArtillery;
+	uint32 m_InstancesToSpawn;
+	uint32 m_InstancesComplete;
 	glm::vec3 m_Target;
 	AudioSource* m_pAudioSourceExplosion;
 };

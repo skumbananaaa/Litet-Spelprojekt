@@ -379,7 +379,7 @@ void ResourceHandler::Load()
 	int32 currentFile = 1;
 
 	//Counting Meshes
-	for (int i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
+	for (uint32 i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
 	{
 		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
 		if (!desc.filename.empty())
@@ -389,7 +389,7 @@ void ResourceHandler::Load()
 	}
 
 	//Counting MeshParticles
-	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	for (uint32 i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
 	{
 		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
 		if (!desc.filename.empty())
@@ -398,7 +398,7 @@ void ResourceHandler::Load()
 		}
 	}
 
-	for (int i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
+	for (uint32 i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
 	{
 		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
 		if (!desc.filename.empty())
@@ -409,7 +409,7 @@ void ResourceHandler::Load()
 		}
 	}
 
-	for (int i = m_NrOfAnimatedMeshesLoaded; i < m_NrOfAnimatedMeshes; i++)
+	for (uint32 i = m_NrOfAnimatedMeshesLoaded; i < m_NrOfAnimatedMeshes; i++)
 	{
 		ANIMATED_MESH_DESC_INTERNAL desc = m_pAnimatedMeshFiles[i];
 		if (!desc.filename.empty())
@@ -420,7 +420,7 @@ void ResourceHandler::Load()
 		}
 	}
 
-	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	for (uint32 i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
 	{
 		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
 		if (!desc.filename.empty())
@@ -431,7 +431,7 @@ void ResourceHandler::Load()
 		}
 	}
 
-	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
+	for (uint32 i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
 	{
 		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
 		std::cout << "Loading Texture: " << desc.filename << std::endl;
@@ -439,7 +439,7 @@ void ResourceHandler::Load()
 		m_pTexture2Ds[i] = new Texture2D((m_PrePath + "Resources/Textures/" + desc.filename).c_str(), desc.format, desc.generateMipmaps, desc.flipVertically, desc.params);
 	}
 
-	for (int i = m_NrOfSoundsLoaded; i < m_NrOfSounds; i++)
+	for (uint32 i = m_NrOfSoundsLoaded; i < m_NrOfSounds; i++)
 	{
 		SOUND_DESC_INTERNAL desc = m_pSoundFiles[i];
 		std::cout << "Loading Sound: " << desc.filename << std::endl;
@@ -447,7 +447,7 @@ void ResourceHandler::Load()
 		m_pSounds[i] = new SoundEffect((m_PrePath + "Resources/Audio/" + desc.filename).c_str());
 	}
 
-	for (int i = m_NrOfMusicLoaded; i < m_NrOfMusic; i++)
+	for (uint32 i = m_NrOfMusicLoaded; i < m_NrOfMusic; i++)
 	{
 		MUSIC_DESC_INTERNAL desc = m_pMusicFiles[i];
 		std::cout << "Loading Music: " << desc.filename << std::endl;
@@ -455,7 +455,7 @@ void ResourceHandler::Load()
 		m_pMusic[i] = new Music((m_PrePath + "Resources/Audio/Music/" + desc.filename).c_str());
 	}
 
-	for (int i = m_NrOfShadersLoaded; i < m_NrOfShaders; i++)
+	for (uint32 i = m_NrOfShadersLoaded; i < m_NrOfShaders; i++)
 	{
 		SHADER_DESC_INTERNAL desc = m_ShaderFiles[i];
 		std::cout << "Loading Shader: " << desc.vertex << std::endl;
@@ -475,27 +475,27 @@ void ResourceHandler::Load()
 
 void ResourceHandler::Construct()
 {
-	for (int i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
+	for (uint32 i = m_NrOfMeshesLoaded; i < m_NrOfMeshes; i++)
 	{
 		m_pIndexedMeshes[i]->Construct();
 	}
 
-	for (int i = m_NrOfAnimatedMeshesLoaded; i < m_NrOfAnimatedMeshes; i++)
+	for (uint32 i = m_NrOfAnimatedMeshesLoaded; i < m_NrOfAnimatedMeshes; i++)
 	{
 		m_pAnimatedMeshes[i]->Construct();
 	}
 
-	for (int i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
+	for (uint32 i = m_NrOfMeshParticlesLoaded; i < m_NrOfMeshParticles; i++)
 	{
 		m_pMeshParticles[i]->Construct();
 	}
 
-	for (int i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
+	for (uint32 i = m_NrOfTexture2DLoaded; i < m_NrOfTexture2D; i++)
 	{
 		m_pTexture2Ds[i]->Construct();
 	}
 
-	for (int i = m_NrOfShadersLoaded; i < m_NrOfShaders; i++)
+	for (uint32 i = m_NrOfShadersLoaded; i < m_NrOfShaders; i++)
 	{
 		m_pShaders[i]->Construct();
 		m_pShaders[i]->SetDebugName(("ShaderProgram " + std::to_string(i)).c_str());
@@ -551,7 +551,7 @@ void ResourceHandler::ConstructResources()
 
 void ResourceHandler::ReleaseResources()
 {
-	for (int i = 0; i < m_NrOfMeshes; i++)
+	for (uint32 i = 0; i < m_NrOfMeshes; i++)
 	{
 		MESH_DESC_INTERNAL desc = m_pIndexedMeshFiles[i];
 		if (!desc.filename.empty())
@@ -561,7 +561,7 @@ void ResourceHandler::ReleaseResources()
 		Delete(m_pIndexedMeshes[i]);
 	}
 
-	for (int i = 0; i < m_NrOfAnimatedMeshes; i++)
+	for (uint32 i = 0; i < m_NrOfAnimatedMeshes; i++)
 	{
 		ANIMATED_MESH_DESC_INTERNAL desc = m_pAnimatedMeshFiles[i];
 		if (!desc.filename.empty())
@@ -571,7 +571,7 @@ void ResourceHandler::ReleaseResources()
 		Delete(m_pAnimatedMeshes[i]);
 	}
 
-	for (int i = 0; i < m_NrOfMeshParticles; i++)
+	for (uint32 i = 0; i < m_NrOfMeshParticles; i++)
 	{
 		MESH_DESC_INTERNAL desc = m_pMeshParticleFiles[i];
 		if (!desc.filename.empty())
@@ -581,28 +581,28 @@ void ResourceHandler::ReleaseResources()
 		Delete(m_pMeshParticles[i]);
 	}
 
-	for (int i = 0; i < m_NrOfTexture2D; i++)
+	for (uint32 i = 0; i < m_NrOfTexture2D; i++)
 	{
 		TEXTURE2D_DESC_INTERNAL desc = m_pTexture2DFiles[i];
 		std::cout << "Releasing Texture: " << desc.filename << std::endl;
 		Delete(m_pTexture2Ds[i]);
 	}
 
-	for (int i = 0; i < m_NrOfSounds; i++)
+	for (uint32 i = 0; i < m_NrOfSounds; i++)
 	{
 		SOUND_DESC_INTERNAL desc = m_pSoundFiles[i];
 		std::cout << "Releasing Sound: " << desc.filename << std::endl;
 		Delete(m_pSounds[i]);
 	}
 
-	for (int i = 0; i < m_NrOfMusic; i++)
+	for (uint32 i = 0; i < m_NrOfMusic; i++)
 	{
 		MUSIC_DESC_INTERNAL desc = m_pMusicFiles[i];
 		std::cout << "Releasing Music: " << desc.filename << std::endl;
 		Delete(m_pMusic[i]);
 	}
 
-	for (int i = 0; i < m_NrOfShaders; i++)
+	for (uint32 i = 0; i < m_NrOfShaders; i++)
 	{
 		SHADER_DESC_INTERNAL desc = m_ShaderFiles[i];
 		std::cout << "Releasing Shader: " << desc.vertex << std::endl;
@@ -610,13 +610,13 @@ void ResourceHandler::ReleaseResources()
 		Delete(m_pShaders[i]);
 	}
 
-	for (int i = 0; i < m_NrOfMaterials; i++)
+	for (uint32 i = 0; i < m_NrOfMaterials; i++)
 	{
 		std::cout << "Deleting Material" << std::endl;
 		Delete(m_pMaterials[i]);
 	}
 
-	for (int i = 0; i < m_NrOfDecals; i++)
+	for (uint32 i = 0; i < m_NrOfDecals; i++)
 	{
 		std::cout << "Deleting Decal" << std::endl;
 		Delete(m_pDecals[i]);

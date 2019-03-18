@@ -33,7 +33,6 @@ private:
 	glm::ivec2 FindClosestBurningTile(const uint32 * const * ppLevel, TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& currentTile) const noexcept;
 	glm::ivec3 FindClosestExtinguisher(const glm::vec3& currentPosition, std::string& extinguisherName) noexcept;
 
-
 private:
 	uint32 m_RoomBurningId;
 	glm::ivec3 m_BurningTile;
@@ -156,5 +155,10 @@ inline glm::ivec3 OrderExtinguishFire::FindClosestExtinguisher(const glm::vec3& 
 	exting = OrderSchedule::s_Extinguishers[index];
 	OrderSchedule::s_Extinguishers.erase(OrderSchedule::s_Extinguishers.begin() + index);
 	extinguisherName = exting->GetName();
+	if (extinguisherName == "")
+	{
+		std::cout << "ERROR: invalid extinguisher at index '" << index << '\'' << std::endl;
+	}
+
 	return exting->GetTile();
 }

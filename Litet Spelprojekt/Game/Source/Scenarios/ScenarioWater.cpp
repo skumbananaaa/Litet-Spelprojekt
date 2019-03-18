@@ -30,7 +30,6 @@ void ScenarioWater::OnStart(SceneGame* scene) noexcept
 
 void ScenarioWater::OnEnd(SceneGame* scene) noexcept
 {
-	DeleteArrSafe(m_FloodingIDs);
 }
 
 void ScenarioWater::Escalate(const glm::ivec3& position) noexcept
@@ -295,7 +294,6 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 	m_InletsToRemove.clear();
 
 	constexpr float total = 40.0f * 10.0f;
-	std::cout << "Waterlevel: " << m_TotalWaterLevel / total << std::endl;
 	GameState::SetWaterLeakAmount(m_TotalWaterLevel / total);
 
 	//Will work for now since the first level is the only one that gets flooded

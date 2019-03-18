@@ -7,7 +7,7 @@ Random Random::s_Instance = Random();
 
 Random::Random()
 {
-	srand(time(0));
+	srand((uint32)time(0));
 }
 
 Random::~Random()

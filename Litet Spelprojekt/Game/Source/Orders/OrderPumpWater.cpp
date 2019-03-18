@@ -1,6 +1,7 @@
 #include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
 #include "../../Include/Crewmember.h"
+
 OrderPumpWater::OrderPumpWater(uint32 roomToPump, glm::ivec3 pumpControl)
 	: OrderWalk(pumpControl),
 	m_RoomToPump(roomToPump)
@@ -48,7 +49,7 @@ bool OrderPumpWater::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMember
 			if (data->WaterLevel > 0.0001)
 			{
 				clean = false;
-				data->WaterLevel -= 0.01 * dtS;
+				data->WaterLevel -= PUMP_FACTOR * dtS;
 			}
 		}
 	}

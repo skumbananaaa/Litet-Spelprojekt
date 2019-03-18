@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4251) //Disable DLL interface warning for STL
 
 #define GLM_FORCE_SSE2
 #define GLM_ENABLE_EXPERIMENTAL

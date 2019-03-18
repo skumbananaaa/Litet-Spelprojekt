@@ -134,14 +134,13 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		Game* game = Game::GetGame();
 		Window* window = &game->GetWindow();
 		game->GetGUIManager().DeleteChildren();
-
-		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800) / 2, (window->GetHeight() - 800) / 2, 800, 800, true);
+		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800) / 2, (window->GetHeight() - 800) / 2, 800, 800, !GameState::HasCompletedScenarios());
 		game->GetGUIManager().Add(m_pUIEndScreen);
 	}
 
 	if (!IsPaused() && !m_IsGameOver)
 	{
-		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH)
+		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH || GameState::HasCompletedScenarios())
 		{
 			m_IsGameOver = true;
 		}

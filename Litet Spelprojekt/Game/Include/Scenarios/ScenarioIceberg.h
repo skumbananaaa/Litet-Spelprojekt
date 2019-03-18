@@ -8,7 +8,7 @@
 class ScenarioIceberg : public IScenario
 {
 public:
-	ScenarioIceberg();
+	ScenarioIceberg(uint32 numInstances);
 	virtual ~ScenarioIceberg();
 
 	virtual void Init(World* pWorld) noexcept override;

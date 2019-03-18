@@ -4,6 +4,7 @@
 #include "../../Include/GameState.h"
 
 ScenarioFire::ScenarioFire(bool fireAlwaysVisible)
+	: m_HasStarted(false)
 {
 	m_FireAlwaysVisible = fireAlwaysVisible;
 }
@@ -77,6 +78,11 @@ void ScenarioFire::Escalate(const glm::ivec3& position, float severity) noexcept
 	emitter->SetIsVisible(m_FireAlwaysVisible);
 	m_OnFire.push_back(position);
 	room.SetTileOnFire(position);
+
+	if (!m_HasStarted)
+	{
+		m_HasStarted = true;
+	}
 
 	if (tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR] != nullptr)
 	{
@@ -345,7 +351,7 @@ int32 ScenarioFire::GetMaxTimeBeforeOutbreak() noexcept
 
 bool ScenarioFire::IsComplete() noexcept
 {
-	return false;
+	return m_HasStarted && m_OnFire.empty();
 }
 
 void ScenarioFire::ShowInRoom(uint32 roomID) noexcept

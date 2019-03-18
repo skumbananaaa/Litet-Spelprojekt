@@ -381,7 +381,7 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 
 inline uint32 World::ConvertNonExtToExtFloorMaterial(const Material* pMaterial) noexcept
 {
-	int32 material = ResourceHandler::GetMaterial(pMaterial);
+	uint32 material = ResourceHandler::GetMaterial(pMaterial);
 	if (material == MATERIAL::FLOOR_NORMAL)
 	{
 		return MATERIAL::FLOOR_EXT_NORMAL;
@@ -436,8 +436,7 @@ inline uint32 World::ConvertNonExtToExtFloorMaterial(const Material* pMaterial) 
 
 inline uint32 World::ConvertExtToNonExtFloorMaterial(const Material* pMaterial) noexcept
 {
-	int32 material = ResourceHandler::GetMaterial(pMaterial);
-	
+	uint32 material = ResourceHandler::GetMaterial(pMaterial);
 	if (material == MATERIAL::FLOOR_EXT_NORMAL)
 	{
 		return MATERIAL::FLOOR_NORMAL;

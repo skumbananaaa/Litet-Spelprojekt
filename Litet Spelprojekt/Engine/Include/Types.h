@@ -10,6 +10,7 @@ typedef unsigned int uint32;
 typedef unsigned long long uint64;
 typedef uint8 byte;
 
+#if defined(ENGINE_EXPORT)
 namespace glm
 {
 	template struct API vec<4, float, glm::packed_highp>;
@@ -18,3 +19,4 @@ namespace glm
 
 	template struct API mat<4, 4, glm::f32, glm::packed_highp>;
 }
+#endif

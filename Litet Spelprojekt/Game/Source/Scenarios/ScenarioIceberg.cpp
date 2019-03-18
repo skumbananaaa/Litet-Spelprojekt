@@ -5,8 +5,9 @@
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioIceberg::ScenarioIceberg() : m_pAudioSourceExplosion(nullptr),
-	m_InstancesToSpawn(1),
+ScenarioIceberg::ScenarioIceberg(uint32 numInstances) 
+	: m_pAudioSourceExplosion(nullptr),
+	m_InstancesToSpawn(numInstances),
 	m_InstancesComplete(0)
 {
 	

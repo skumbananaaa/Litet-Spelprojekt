@@ -96,7 +96,7 @@ bool ScenarioManager::StartScenario(int32 index) noexcept
 	return false;
 }
 
-void ScenarioManager::Escalate(int32 index, const glm::ivec3& position) noexcept
+void ScenarioManager::Escalate(int32 index, const glm::ivec3& position, float severity) noexcept
 {
 	if (StartScenario(index))
 	{

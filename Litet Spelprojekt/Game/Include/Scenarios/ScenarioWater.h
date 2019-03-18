@@ -11,7 +11,6 @@ constexpr float WATER_AGING_DENOMINATOR = 1.0f;
 constexpr float WATER_INV_TIME_FOR_WATER_TO_LEVEL = 30.0f;
 constexpr float FIRE_EXTINGUISH_BY_WATER_RATE = 500.0f * RATE_OF_FIRE_SPREAD;
 constexpr float SMOKE_EXTINGUISH_BY_WATER_RATE = 1000.0f;
-constexpr float WATER_INTAKE_RATE = 0.3f;
 
 class ScenarioWater : public IScenario
 {
@@ -23,7 +22,7 @@ public:
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
 	virtual void OnEnd(SceneGame* scene)noexcept override;
-	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void Escalate(const glm::ivec3& position, float severity) noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) override;
 	virtual bool Update(float dtS, World* pWorld, SceneGame* pScene) noexcept override;
 	virtual std::string GetName() noexcept override;
@@ -39,6 +38,7 @@ private:
 	mutable bool m_HasFlooded;
 	std::vector<glm::ivec2>* m_FloodingIDs;
 	std::vector<glm::ivec3> m_InletTiles;
+	std::vector<float> m_WaterIntakeRates;
 	std::vector<uint32> m_InletsToRemove;
 
 private:

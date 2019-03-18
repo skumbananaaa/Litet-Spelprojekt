@@ -67,7 +67,7 @@ void ScenarioFire::OnEnd(SceneGame* scene) noexcept
 
 }
 
-void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
+void ScenarioFire::Escalate(const glm::ivec3& position, float severity) noexcept
 {
 	TileData& tileData = m_pWorld->GetLevel(position.y).GetLevelData()[position.x][position.z];
 	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(position.y).GetLevel()[position.x][position.z]);

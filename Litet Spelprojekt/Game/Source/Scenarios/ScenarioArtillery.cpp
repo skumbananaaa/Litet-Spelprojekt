@@ -47,7 +47,7 @@ void ScenarioArtillery::OnVisibilityChange(World* pWorld, SceneGame* pScene) noe
     
 }
 
-void ScenarioArtillery::Escalate(const glm::ivec3& position) noexcept
+void ScenarioArtillery::Escalate(const glm::ivec3& position, float severity) noexcept
 {
 
 }

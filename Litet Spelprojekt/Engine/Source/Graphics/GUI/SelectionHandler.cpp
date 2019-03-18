@@ -69,7 +69,7 @@ void SelectionHandler::OnSelected(ISelectable* selected)
 	}
 	else //We Clicked on an already selected Object
 	{
-		if ((!selection.empty() && !m_AtLeastOneSelected) || (!selection.size() > 1 && m_MultipleSelections))
+		if ((!selection.empty() && !m_AtLeastOneSelected) || (!(selection.size() > 1) && m_MultipleSelections))
 		{
 			selected->SetSelected(false);
 			TriggerOnDeselected(selected);

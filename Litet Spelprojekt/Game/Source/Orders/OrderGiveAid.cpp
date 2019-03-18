@@ -1,4 +1,4 @@
-#include "../../Include/Orders/OrderGiveAid.h"
+﻿#include "../../Include/Orders/OrderGiveAid.h"
 #include "../../Include/Crew.h"
 
 OrderGiveAid::OrderGiveAid(Crewmember* injuredMember): OrderWalk(injuredMember->GetTile() * glm::ivec3(1, 2, 1) - glm::ivec3(1, 0, 0))
@@ -35,7 +35,7 @@ bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 
 		if (res)
 		{
-			Logger::LogEvent(GetCrewMember()->GetName() + " gav hj�lp till " + m_pAiding->GetName() + "!", true);
+			Logger::LogEvent(GetCrewMember()->GetName() + " gav hjälp till " + m_pAiding->GetName() + "!", true);
 		}
 	}
 	return res;

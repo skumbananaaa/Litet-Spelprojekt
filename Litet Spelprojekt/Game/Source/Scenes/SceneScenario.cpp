@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenes\SceneScenario.h"
+ï»¿#include "..\..\Include\Scenes\SceneScenario.h"
 #include "..\..\Include\Scenes\SceneGame.h"
 #include "..\..\Include\Scenes\SceneMenu.h"
 #include "../../Include/Game.h"
@@ -43,8 +43,8 @@ void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer
 
 	m_pPanel = new Panel((window->GetWidth() - 600) / 2, (window->GetHeight() - 600) / 2, 600, 600);
 	m_pButtonBack = new Button(0, m_pPanel->GetHeight() - 50, 100, 50, "Tillbaka");
-	m_pButtonStart = new Button(m_pPanel->GetWidth() - m_pButtonBack->GetWidth(), m_pPanel->GetHeight() - 50, 100, 50, "Nästa");
-	m_pTextViewTitle = new TextView(0, m_pPanel->GetHeight() - 50, m_pPanel->GetWidth(), 50, "Välj Scenarion", true);
+	m_pButtonStart = new Button(m_pPanel->GetWidth() - m_pButtonBack->GetWidth(), m_pPanel->GetHeight() - 50, 100, 50, "NÃ¤sta");
+	m_pTextViewTitle = new TextView(0, m_pPanel->GetHeight() - 50, m_pPanel->GetWidth(), 50, "VÃ¤lj Scenarion", true);
 	m_pListScrollable = new ListScrollable(0, 0, m_pPanel->GetWidth(), m_pPanel->GetHeight() - m_pButtonBack->GetHeight());
 
 	m_pButtonBack->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);

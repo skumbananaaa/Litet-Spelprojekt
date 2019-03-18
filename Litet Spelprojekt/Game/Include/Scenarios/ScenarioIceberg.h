@@ -21,6 +21,7 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept;
 
 
@@ -31,6 +32,8 @@ private:
 	float m_Velocity;
 	float m_TotalDistance;
 	float m_DistanceTraveled;
+	uint32 m_InstancesToSpawn;
+	uint32 m_InstancesComplete;
 	bool m_HasBounced;
 	AudioSource* m_pAudioSourceExplosion;
 };

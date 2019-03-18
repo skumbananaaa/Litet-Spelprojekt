@@ -5,7 +5,10 @@
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioArtillery::ScenarioArtillery() : m_pAudioSourceExplosion(nullptr)
+ScenarioArtillery::ScenarioArtillery() 
+	: m_pAudioSourceExplosion(nullptr),
+	m_InstancesToSpawn(1),
+	m_InstancesComplete(0)
 {
 
 }
@@ -17,7 +20,7 @@ ScenarioArtillery::~ScenarioArtillery()
 
 void ScenarioArtillery::Init(World* pWorld) noexcept
 {
-
+	SetTimeOfNextOutBreak(1.0f);
 }
 
 void ScenarioArtillery::Release() noexcept
@@ -96,10 +99,13 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 				}	
 			}
 
+			m_InstancesComplete++;
 			return true;
 		}
+	
 		return false;
 	}
+
 	return true;
 }
 
@@ -121,4 +127,9 @@ int32 ScenarioArtillery::GetCooldownTime() noexcept
 int32 ScenarioArtillery::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 60 * 5;
+}
+
+bool ScenarioArtillery::IsComplete() noexcept
+{
+	return m_InstancesComplete >= m_InstancesToSpawn;
 }

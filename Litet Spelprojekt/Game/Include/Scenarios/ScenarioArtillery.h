@@ -23,9 +23,12 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 
 private:
 	GameObjectArtillery* m_pGameObjectArtillery;
+	uint32 m_InstancesToSpawn;
+	uint32 m_InstancesComplete;
 	glm::vec3 m_Target;
 	AudioSource* m_pAudioSourceExplosion;
 };

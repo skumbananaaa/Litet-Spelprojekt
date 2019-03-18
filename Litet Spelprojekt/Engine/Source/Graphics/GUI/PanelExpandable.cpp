@@ -44,12 +44,12 @@ bool PanelExpandable::IsExpanded() const noexcept
 
 float PanelExpandable::GetClientWidth() const noexcept
 {
-	return m_pFrameBufferClientArea->GetWidth();
+	return (float)m_pFrameBufferClientArea->GetWidth();
 }
 
 float PanelExpandable::GetClientHeight() const noexcept
 {
-	return m_pFrameBufferClientArea->GetHeight();
+	return (float)m_pFrameBufferClientArea->GetHeight();
 }
 
 void PanelExpandable::AddExpandableListener(IExpandableListener* listener)
@@ -182,7 +182,7 @@ void PanelExpandable::RenderChildrensFrameBuffers(GUIContext* context)
 
 void PanelExpandable::RenderRealTimePre(GUIContext* context, float x, float y)
 {
-	glScissor(x, y - GetClientHeight() * m_Percentage, GetWidth(), GetClientHeight() * m_Percentage + 1);
+	glScissor((int32)x, (int32)(y - GetClientHeight() * m_Percentage), (int32)GetWidth(), (int32)(GetClientHeight() * m_Percentage + 1));
 	glEnable(GL_SCISSOR_TEST);
 }
 
@@ -194,7 +194,7 @@ void PanelExpandable::RenderRealTime(GUIContext* context, float x, float y)
 void PanelExpandable::RenderRealTimePost(GUIContext* context)
 {
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
-	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
+	glScissor((int32)viewPortSize.z, (int32)viewPortSize.w, (int32)viewPortSize.x, (int32)viewPortSize.y);
 	glDisable(GL_SCISSOR_TEST);
 }
 

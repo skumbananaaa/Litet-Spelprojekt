@@ -29,6 +29,7 @@ public:
 	virtual void OnProgressAnimationEnd(ProgressButton* progressButton) override;
 
 	void SetVisible(bool visible) noexcept;
+	void Deselect();
 
 private:
 	ProgressButton* CreateButton(const std::string& text, const glm::vec4& color, float y, float width, float height, const glm::vec2& textOffset, int shipnumber);

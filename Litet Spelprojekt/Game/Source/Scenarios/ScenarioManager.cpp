@@ -38,7 +38,10 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 		float time = scenario->GetTimeOfNextOutBreak() - dtS;
 		if (time <= 0)
 		{
-			StartScenario(s_NonActiveScenarios[i]);
+			if (!scenario->IsComplete())
+			{
+				StartScenario(s_NonActiveScenarios[i]);
+			}
 		}
 		else
 		{
@@ -55,6 +58,11 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 			scenario->OnEnd(scene);
 			SetAsNonActive(s_ActiveScenarios[i]);
 			s_ActiveScenarios.erase(s_ActiveScenarios.begin() + i);
+
+			if (scenario->IsComplete())
+			{
+				std::cout << "Scenario '" << scenario->GetName() << "' is complete" << std::endl;
+			}
 		}
 	}
 }

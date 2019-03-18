@@ -44,7 +44,7 @@ GUIContext::~GUIContext()
 
 void GUIContext::BeginSelfRendering(Framebuffer* frameBuffer, const glm::vec4& clearColor)
 {
-	SetTransform(frameBuffer->GetWidth(), frameBuffer->GetHeight());
+	SetTransform((float)frameBuffer->GetWidth(), (float)frameBuffer->GetHeight());
 
 	m_pContext->SetFramebuffer(frameBuffer);
 	m_pContext->SetClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
@@ -56,7 +56,7 @@ void GUIContext::BeginRootRendering()
 {
 	int32 width = Window::GetCurrentWindow().GetWidth();
 	int32 height = Window::GetCurrentWindow().GetHeight();
-	SetTransform(width, height);
+	SetTransform((float)width, (float)height);
 
 	m_pContext->SetFramebuffer(nullptr);
 	m_pContext->SetViewport(width, height, 0, 0);
@@ -74,7 +74,7 @@ void GUIContext::RenderFrameBuffer(Framebuffer* frameBuffer, float x, float y)
 {
 	m_pContext->SetProgram(m_pShaderProgram);
 	m_pContext->SetUniformBuffer(m_pUniformBuffer, 0);
-	SetVertexQuadData(x, y, frameBuffer->GetWidth(), frameBuffer->GetHeight(), COLOR_WHITE);
+	SetVertexQuadData(x, y, (float)frameBuffer->GetWidth(), (float)frameBuffer->GetHeight(), COLOR_WHITE);
 	m_pContext->SetTexture(frameBuffer->GetColorAttachment(0), 0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	m_pContext->SetTexture(nullptr, 0);
@@ -82,7 +82,7 @@ void GUIContext::RenderFrameBuffer(Framebuffer* frameBuffer, float x, float y)
 
 void GUIContext::RenderText(const std::string& text, float x, float y, float width, float height, float scale, const glm::vec4& color, TextAlignment textAlignment)
 {
-	m_pFontRenderer->UpdateBuffer(width, height, color);
+	m_pFontRenderer->UpdateBuffer((int32)width, (int32)height, color);
 
 	glm::vec2 size = m_pFontRenderer->CalculateSize(text, scale);
 
@@ -102,7 +102,7 @@ void GUIContext::RenderText(const std::string& text, float x, float y, float wid
 		break;
 	}
 
-	m_pFontRenderer->RenderText(m_pContext, text, x, y, scale);
+	m_pFontRenderer->RenderText(m_pContext, text, (int32)x, (int32)y, scale);
 }
 
 void GUIContext::RenderTexture(const Texture2D* texture, float x, float y, float width, float height, const glm::vec4& color)

@@ -1,6 +1,6 @@
 #include <EnginePch.h>
 #include <Graphics/Shaders/Shader.h>
-#include <Graphics/Renderers/GLContext.h>s
+#include <Graphics/Renderers/GLContext.h>
 
 Shader::Shader(const std::string& shaderCode, const std::string& path, ShaderType type) noexcept 
 	: m_Shader(0),

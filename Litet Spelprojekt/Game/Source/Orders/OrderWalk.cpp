@@ -1,4 +1,4 @@
-#include <EnginePch.h>
+﻿#include <EnginePch.h>
 #include "../../Include/Orders/OrderWalk.h"
 #include <World/World.h>
 #include <Graphics/Scene.h>
@@ -143,26 +143,6 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 	Room& room = pWorld->GetRoom(pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z]);
 
-
-	if (room.IsBurning())
-	{
-		if (!room.IsFireDetected())
-		{
-			room.SetFireDetected(true);
-			Logger::LogEvent(pCrewmember->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index1) + "!", true);
-			pCrewmember->ReportPosition();
-			GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
-		}
-	}
-
-	if (room.IsFlooded() && !room.IsFloodDetected())
-	{
-		room.SetFloodDetected(true);
-		Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
-		pCrewmember->ReportPosition();
-		pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
-	}
-
 	if (room.IsActive())
 	{
 		pCrewmember->UpdateLastKnownPosition();
@@ -172,6 +152,16 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	{
 		m_NewRoom = false;
 		pCrewmember->LookForDoor();
+
+		if (room.IsFireDetected())
+		{
+			GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+		}
+
+		if (room.IsFloodDetected())
+		{
+			pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+		}
 	}
 
 	m_NewRoom = index1 != index2;

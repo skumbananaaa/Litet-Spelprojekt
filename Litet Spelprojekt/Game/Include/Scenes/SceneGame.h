@@ -23,7 +23,7 @@
 
 #define MIN_CREWHEALTH 0.4f
 #define MAX_SHIPDAMAGE 0.3f
-#define MAX_WATERLEAKAGE 0.7f
+#define MAX_WATERLEAKAGE 0.5f
 
 class SceneGame : public SceneInternal
 {
@@ -79,7 +79,6 @@ protected:
 private:
 	bool m_IsPaused;
 	bool m_IsGameOver;
-	bool m_CartesianCamera;
 
 	uint32 m_CurrentLight = 0;
 

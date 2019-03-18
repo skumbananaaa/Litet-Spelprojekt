@@ -16,6 +16,7 @@ uint32 MATERIAL::OCEAN_BLUE = 0;
 uint32 MATERIAL::BOAT = 0;
 uint32 MATERIAL::GROUND = 0;
 uint32 MATERIAL::WATER_OUTDOOR = 0;
+uint32 MATERIAL::INLET_BLUE = 0;
 uint32 MATERIAL::WATER_INDOOR = 0;
 uint32 MATERIAL::WALL_STANDARD = 0;
 uint32 MATERIAL::BULKHEADS_STANDARD = 0;
@@ -76,7 +77,8 @@ void MATERIAL::RegisterResourcesPreLoading()
 void MATERIAL::RegisterResources()
 {
 	OCEAN_BLUE					= ResourceHandler::RegisterMaterial(glm::vec4(0.09f, 0.34f, 0.49f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
-	BLACK						= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	INLET_BLUE					= ResourceHandler::RegisterMaterial(glm::vec4(0.09f, 0.24f, 0.39f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
+	BLACK						= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	WHITE						= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	ARTILLERY					= ResourceHandler::RegisterMaterial(glm::vec4(0.545f, 0.271, 0.075f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
 	DOOR_FRAME					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);

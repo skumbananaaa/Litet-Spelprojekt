@@ -7,9 +7,9 @@
 #endif
 
 constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 10000.0f;
-constexpr float SMOKE_DISSOLVE_RATE = 250.0f;
-constexpr float SMOKE_CREATION_RATE = 1.30f;
-constexpr float SMOKE_SPREAD_RATE = 1.0f;
+constexpr float SMOKE_DISSOLVE_RATE = 20.0f;
+constexpr float SMOKE_CREATION_RATE = 2.30f;
+constexpr float RATE_OF_SMOKE_SPREAD = 0.9f;
 
 class ScenarioFire : public IScenario
 {
@@ -27,6 +27,7 @@ public:
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 
 	void ShowInRoom(uint32 roomID) noexcept;
 

@@ -1,20 +1,14 @@
 #pragma once
-#include <Graphics/GUI/TextView.h>
-#include <Graphics/GUI/ProgressBar.h>
+#include <Graphics/GUI/ProgressButton.h>
 
-class UISelectedCrew : public TextView
+class UISelectedCrew : public ProgressButton
 {
 public:
 	UISelectedCrew(const std::string& name);
 	virtual ~UISelectedCrew();
 
 	void UpdatePosition(const glm::vec3& position) noexcept;
-	void SetPercentage(float percentage);
 
 protected:
-	virtual void OnRemoved(GUIObject* parent) override;
 	virtual void PrintName() const override;
-
-private:
-	ProgressBar* m_pProgressBar;
 };

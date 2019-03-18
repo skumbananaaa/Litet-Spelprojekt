@@ -15,20 +15,19 @@ void ListScrollable::Add(GUIObject* child) noexcept
 {
 	PanelScrollable::Add(child);
 
-	SetClientSize(GetClientWidth(), GetHeightOfChildren());
+	SetClientSize((float)GetClientWidth(), (float)GetHeightOfChildren());
 
-	int32 y = GetClientHeight();
-
-	for (int i = GetChildrenToAdd().size() - 1; i >= 0; i--)
+	int32 y = (int32)GetClientHeight();
+	for (int i = (int32)GetChildrenToAdd().size() - 1; i >= 0; i--)
 	{
-		y -= GetChildrenToAdd()[i]->GetActualHeight();
-		GetChildrenToAdd()[i]->SetPosition(GetChildrenToAdd()[i]->GetMargin().x, y);
+		y -= (int32)GetChildrenToAdd()[i]->GetActualHeight();
+		GetChildrenToAdd()[i]->SetPosition(GetChildrenToAdd()[i]->GetMargin().x, (float)y);
 	}
 
-	for (int i = GetChildren().size() - 1; i >= 0; i--)
+	for (int i = (int32)GetChildren().size() - 1; i >= 0; i--)
 	{
-		y -= GetChildren()[i]->GetActualHeight();
-		GetChildren()[i]->SetPosition(GetChildren()[i]->GetMargin().x, y);
+		y -= (int32)GetChildren()[i]->GetActualHeight();
+		GetChildren()[i]->SetPosition(GetChildren()[i]->GetMargin().x, (float)y);
 	}
 }
 
@@ -37,11 +36,11 @@ int32 ListScrollable::GetHeightOfChildren() noexcept
 	int height = 0;
 	for (GUIObject* object : GetChildren())
 	{
-		height += object->GetActualHeight();
+		height += (int32)object->GetActualHeight();
 	}
 	for (GUIObject* object : GetChildrenToAdd())
 	{
-		height += object->GetActualHeight();
+		height += (int32)object->GetActualHeight();
 	}
 	return height;
 }

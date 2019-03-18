@@ -20,6 +20,7 @@ public:
 	virtual std::string GetName() noexcept = 0;
 	virtual int32 GetCooldownTime() noexcept = 0;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept = 0;
+	virtual bool IsComplete() noexcept = 0;
 
 	float GetTimeOfNextOutBreak() const noexcept;
 	void SetTimeOfNextOutBreak(float time) noexcept;

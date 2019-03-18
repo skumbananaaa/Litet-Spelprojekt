@@ -127,6 +127,16 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	crewmember->UpdateLastKnownPosition();
 }
 
+void UICrew::Deselect()
+{
+	for (int i = 0; i < m_Panels.size(); i++)
+	{
+		m_Panels[i]->SetExpanded(false);
+		m_Panels[i]->SetSelected(false);
+	}
+	
+}
+
 void UICrew::SetVisible(bool visible) noexcept
 {
 	for (int i = 0; i < m_Panels.size(); i++)

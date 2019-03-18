@@ -139,7 +139,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	Crewmember* pCrewmember = GetCrewMember();
+	pCrewmember->SetPosition(glm::vec3(m_GoalTile.x, m_GoalTile.y * 2.0f, m_GoalTile.z));
 	//pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+}
+
+void OrderWalk::OnAborted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+{
+	Crewmember* pCrewmember = GetCrewMember();
+	pCrewmember->SetPosition(m_TargetPos);
 }
 
 bool OrderWalk::CanBeStackedWithSameType() noexcept
@@ -186,11 +193,6 @@ IOrder* OrderWalk::Clone() noexcept
 	return new OrderWalk(this);
 }
 
-void OrderWalk::BeginReplay(SceneGame * pScene, void * userData) noexcept
-{
-	IOrder::BeginReplay(pScene, userData);
-}
-
 bool OrderWalk::FollowPath(float dtS) noexcept
 {
 	Crewmember* pCrewmember = GetCrewMember();
@@ -221,7 +223,8 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			pCrewmember->SetDirection(glm::vec3(move.x, 0, move.z));
 			pCrewmember->Move(pCrewmember->GetDirection(), true, dtS);
-			pCrewmember->SetPosition(glm::vec3(pCrewmember->GetPosition().x, m_TargetPos.y, pCrewmember->GetPosition().z));
+			const glm::vec3& newPosition = pCrewmember->GetPosition();
+			pCrewmember->SetPosition(glm::vec3(newPosition.x, m_TargetPos.y, newPosition.z));
 		}
 	}
 	else

@@ -119,8 +119,8 @@ IOrder * OrderToilet::Clone() noexcept
 	return new OrderToilet(this);
 }
 
-void OrderToilet::BeginReplay(SceneGame * pScene, void * userData) noexcept
+void OrderToilet::InitClone(SceneGame * pScene, void * userData) noexcept
 {
 	m_pToilet = pScene->GetGameObject(m_Name);
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

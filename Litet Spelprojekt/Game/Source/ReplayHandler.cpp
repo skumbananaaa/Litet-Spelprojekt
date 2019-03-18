@@ -9,7 +9,17 @@ int ReplayHandler::s_Index = 0;
 
 void ReplayHandler::Reset() noexcept
 {
-	s_ReplayQueue = std::vector<std::tuple<IReplayable*, void*, float>>();
+	for (uint32 i = 0; i < s_ReplayQueue.size(); i++)
+	{
+		if (std::get<0>(s_ReplayQueue[i])->IsDeleteable())
+		{
+			DeleteSafe(std::get<0>(s_ReplayQueue[i]));
+		}
+
+		DeleteSafe(std::get<1>(s_ReplayQueue[i]));
+	}
+
+	s_ReplayQueue.clear();
 	s_Timer = 0.0F;
 	s_Index = 0;
 	s_IsReplying = false;
@@ -27,11 +37,6 @@ void ReplayHandler::Update(float dtS, SceneGame* pScene) noexcept
 				s_Index++;
 				void* userData = std::get<1>(tuple);
 				std::get<0>(tuple)->BeginReplay(pScene, userData); //Execute next event and bundle the userdata
-
-				if (userData)
-				{
-					delete userData;
-				}
 			}
 			else
 			{

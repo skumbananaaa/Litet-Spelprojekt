@@ -25,7 +25,7 @@ public:
 	virtual bool HasPriority() noexcept override;
 
 	virtual IOrder* Clone() noexcept override;
-	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+	virtual void InitClone(SceneGame* pScene, void* userData) noexcept override;
 
 protected:
 	bool CheckIfTileInWorld(const glm::ivec2& levelSize, const glm::ivec3& tile) const noexcept;

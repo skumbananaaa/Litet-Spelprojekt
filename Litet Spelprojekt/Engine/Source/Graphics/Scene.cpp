@@ -288,7 +288,7 @@ void Scene::RemoveGameObject(GameObject* pGameObject) noexcept
 			}
 		}
 
-		std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
+		//std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
 	}
 
 	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);

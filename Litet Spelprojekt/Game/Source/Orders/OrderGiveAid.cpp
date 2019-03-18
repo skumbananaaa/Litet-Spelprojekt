@@ -92,8 +92,8 @@ IOrder * OrderGiveAid::Clone() noexcept
 	return new OrderGiveAid(this);
 }
 
-void OrderGiveAid::BeginReplay(SceneGame * pScene, void * userData) noexcept
+void OrderGiveAid::InitClone(SceneGame * pScene, void * userData) noexcept
 {
 	m_pAiding = pScene->GetCrew()->GetMember(m_InjuredMember);
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

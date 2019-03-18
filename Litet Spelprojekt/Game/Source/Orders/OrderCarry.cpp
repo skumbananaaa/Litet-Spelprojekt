@@ -72,8 +72,8 @@ IOrder * OrderCarry::Clone() noexcept
 	return new OrderCarry(this);
 }
 
-void OrderCarry::BeginReplay(SceneGame * pScene, void * userData) noexcept
+void OrderCarry::InitClone(SceneGame* pScene, void* userData) noexcept
 {
 	m_pCarrying = pScene->GetCrew()->GetMember(m_InNeedOfAssist);
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

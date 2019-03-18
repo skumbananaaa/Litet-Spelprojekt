@@ -17,6 +17,7 @@ public:
 
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual void OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual void OnAborted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
 	virtual bool CanBeStackedWithSameType() noexcept override;
 	virtual bool HasPriority() noexcept override;
@@ -27,7 +28,6 @@ public:
 	virtual bool CanExecuteIfHurt() noexcept override;
 
 	virtual IOrder* Clone() noexcept override;
-	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 
 protected:
 	bool FollowPath(float dtS) noexcept;

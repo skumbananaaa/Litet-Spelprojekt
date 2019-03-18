@@ -126,8 +126,3 @@ IOrder * OrderPlugHole::Clone() noexcept
 {
 	return new OrderPlugHole(this);
 }
-
-void OrderPlugHole::BeginReplay(SceneGame * pScene, void * userData) noexcept
-{
-	OrderWalk::BeginReplay(pScene, userData);
-}

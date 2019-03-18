@@ -122,8 +122,8 @@ IOrder* OrderEat::Clone() noexcept
 	return new OrderEat(this);
 }
 
-void OrderEat::BeginReplay(SceneGame * pScene, void * userData) noexcept
+void OrderEat::InitClone(SceneGame * pScene, void * userData) noexcept
 {
 	m_pChair = pScene->GetGameObject(m_Name);
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

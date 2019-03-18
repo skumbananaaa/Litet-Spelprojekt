@@ -119,8 +119,8 @@ IOrder* OrderWork::Clone() noexcept
 	return new OrderWork(this);
 }
 
-void OrderWork::BeginReplay(SceneGame * pScene, void * userData) noexcept
+void OrderWork::InitClone(SceneGame * pScene, void * userData) noexcept
 {
 	m_pInstrument = pScene->GetGameObject(m_Name);
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

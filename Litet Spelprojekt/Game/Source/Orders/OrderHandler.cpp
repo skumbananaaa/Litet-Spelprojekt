@@ -130,14 +130,17 @@ void OrderHandler::Reset() noexcept
 	}
 }
 
-void OrderHandler::ForceOrder(IOrder* order) noexcept
+void OrderHandler::ForceOrder(SceneGame* pScene, void* userData, IOrder* order) noexcept
 {
 	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
 	{
+		m_OrderQueue[i]->m_IsAborted = true;
 		m_OrdersToDelete.push_back(m_OrderQueue[i]);
 	}
 	m_OrderQueue.clear();
-	m_OrderQueue.push_back(order);
+	IOrder* pOrderClone = order->Clone();
+	pOrderClone->InitClone(pScene, userData);
+	m_OrderQueue.push_back(pOrderClone);
 	StartNextExecutableOrder();
 }
 
@@ -149,6 +152,7 @@ bool OrderHandler::StartNextExecutableOrder()
 	}
 	else if (!IsCrewMemberAbleToExecuteOrder(m_OrderQueue[0]))
 	{
+		m_OrderQueue[0]->m_IsAborted = true;
 		m_OrdersToDelete.push_back(m_OrderQueue[0]);
 		m_OrderQueue.erase(m_OrderQueue.begin());
 		return StartNextExecutableOrder();
@@ -199,6 +203,7 @@ void OrderHandler::RemoveIdleOrders() noexcept
 	{
 		if (m_OrderQueue[i]->IsIdleOrder())
 		{
+			m_OrderQueue[i]->m_IsAborted = true;
 			m_OrdersToDelete.push_back(m_OrderQueue[i]);
 			m_OrderQueue.erase(m_OrderQueue.begin() + i);
 		}
@@ -211,6 +216,7 @@ int OrderHandler::ReplaceOrderOfSameType(IOrder* order) noexcept
 	{
 		if (m_OrderQueue[i]->GetName().compare(order->GetName()) == 0)
 		{
+			m_OrderQueue[i]->m_IsAborted = true;
 			m_OrdersToDelete.push_back(m_OrderQueue[i]);
 			m_OrderQueue[i] = order;
 			return i;
@@ -223,6 +229,7 @@ void OrderHandler::RemoveAllOrders() noexcept
 {
 	for (int i = 0; i < m_OrderQueue.size(); i++)
 	{
+		m_OrderQueue[i]->m_IsAborted = true;
 		m_OrdersToDelete.push_back(m_OrderQueue[i]);
 	}
 	m_OrderQueue.clear();
@@ -235,7 +242,15 @@ void OrderHandler::DeleteRemovedOrders(Scene* pScene, World* pWorld, Crew* pCrew
 		IOrder* pOrder = m_OrdersToDelete[i];
 		if (pOrder->ReadyToAbort())
 		{
-			pOrder->OnEnded(pScene, pWorld, pCrewMembers);
+			if(!pOrder->m_IsAborted)
+			{
+				pOrder->OnEnded(pScene, pWorld, pCrewMembers);
+			}
+			else
+			{
+				pOrder->OnAborted(pScene, pWorld, pCrewMembers);
+			}
+			
 			//std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Ended" << std::endl;
 			DeleteSafe(pOrder);
 			m_OrdersToDelete.erase(m_OrdersToDelete.begin() + i);

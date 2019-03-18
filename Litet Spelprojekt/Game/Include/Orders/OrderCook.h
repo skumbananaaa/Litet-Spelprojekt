@@ -18,7 +18,7 @@ public:
 	virtual bool IsIdleOrder() noexcept;
 
 	virtual IOrder* Clone() noexcept override;
-	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+	virtual void InitClone(SceneGame* pScene, void* userData) noexcept override;
 
 private:
 	GameObject* m_pOven;

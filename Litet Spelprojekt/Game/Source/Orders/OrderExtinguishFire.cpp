@@ -216,7 +216,7 @@ IOrder * OrderExtinguishFire::Clone() noexcept
 	return new OrderExtinguishFire(this);
 }
 
-void OrderExtinguishFire::BeginReplay(SceneGame* pScene, void* userData) noexcept
+void OrderExtinguishFire::InitClone(SceneGame * pScene, void * userData) noexcept
 {
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

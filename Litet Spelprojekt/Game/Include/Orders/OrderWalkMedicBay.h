@@ -19,5 +19,4 @@ public:
 	virtual void RunParallel() override;*/
 
 	virtual IOrder* Clone() noexcept override;
-	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 };

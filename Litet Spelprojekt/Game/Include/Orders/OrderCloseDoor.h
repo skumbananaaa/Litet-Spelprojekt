@@ -19,7 +19,7 @@ public:
 	virtual bool CanExecuteIfHurt() noexcept override;
 
 	virtual IOrder* Clone() noexcept override;
-	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+	virtual void InitClone(SceneGame* pScene, void* userData) noexcept override;
 
 private:
 	GameObjectDoor* m_pGameObjectDoor;

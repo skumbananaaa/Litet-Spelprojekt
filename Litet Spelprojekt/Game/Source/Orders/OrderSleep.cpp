@@ -126,8 +126,8 @@ IOrder * OrderSleep::Clone() noexcept
 	return new OrderSleep(this);
 }
 
-void OrderSleep::BeginReplay(SceneGame* pScene, void* userData) noexcept
+void OrderSleep::InitClone(SceneGame * pScene, void * userData) noexcept
 {
 	m_pBed = pScene->GetGameObject(m_Name);
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

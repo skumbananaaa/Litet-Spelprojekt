@@ -20,7 +20,6 @@ public:
 	virtual bool CanExecuteIfHurt() noexcept override;
 
 	virtual IOrder* Clone() noexcept override;
-	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 
 private:
 	uint32 m_RoomToPump;

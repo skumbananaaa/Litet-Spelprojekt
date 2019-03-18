@@ -7,6 +7,7 @@ class IReplayable
 public:
 	virtual ~IReplayable() {};
 	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept = 0;
+	virtual bool IsDeleteable() const noexcept { return false; }
 
 protected:
 	IReplayable() {};

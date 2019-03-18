@@ -4,6 +4,7 @@
 #include "..\..\Include\Scenes\SceneCredits.h"
 #include "../../Include/Game.h"
 #include <Audio/Sources/AudioSource.h>
+#include "../../Include/ReplayHandler.h"
 
 SceneMenu::SceneMenu()
 {
@@ -32,6 +33,8 @@ void SceneMenu::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
+
+	ReplayHandler::Reset();
 
 	m_pPanel = new Panel((window->GetWidth() - 600) / 2, (window->GetHeight() - 600) / 2, 600, 600);
 	m_pButtonPlay = new Button(100, m_pPanel->GetHeight() - 160, m_pPanel->GetWidth() - 200, 100, "Spela");

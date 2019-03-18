@@ -95,8 +95,3 @@ IOrder * OrderPumpWater::Clone() noexcept
 {
 	return new OrderPumpWater(this);
 }
-
-void OrderPumpWater::BeginReplay(SceneGame * pScene, void * userData) noexcept
-{
-	OrderWalk::BeginReplay(pScene, userData);
-}

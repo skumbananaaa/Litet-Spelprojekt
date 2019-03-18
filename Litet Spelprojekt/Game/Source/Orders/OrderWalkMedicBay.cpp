@@ -64,11 +64,6 @@ IOrder* OrderWalkMedicBay::Clone() noexcept
 	return new OrderWalkMedicBay(this);
 }
 
-void OrderWalkMedicBay::BeginReplay(SceneGame * pScene, void * userData) noexcept
-{
-	OrderWalk::BeginReplay(pScene, userData);
-}
-
 /*bool OrderWalkMedicBay::ReadyToAbort() noexcept
 {
 	return OrderWalk::ReadyToAbort();

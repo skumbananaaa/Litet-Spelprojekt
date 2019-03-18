@@ -76,8 +76,8 @@ IOrder * OrderDoor::Clone() noexcept
 	return new OrderDoor(this);
 }
 
-void OrderDoor::BeginReplay(SceneGame* pScene, void* userData) noexcept
+void OrderDoor::InitClone(SceneGame * pScene, void * userData) noexcept
 {
 	m_pGameObjectDoor = reinterpret_cast<GameObjectDoor*>(pScene->GetGameObject(m_DoorName));
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

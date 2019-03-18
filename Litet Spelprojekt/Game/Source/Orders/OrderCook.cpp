@@ -123,8 +123,8 @@ IOrder * OrderCook::Clone() noexcept
 	return new OrderCook(this);
 }
 
-void OrderCook::BeginReplay(SceneGame* pScene, void* userData) noexcept
+void OrderCook::InitClone(SceneGame * pScene, void * userData) noexcept
 {
 	m_pOven = pScene->GetGameObject(m_Name);
-	OrderWalk::BeginReplay(pScene, userData);
+	OrderWalk::InitClone(pScene, userData);
 }

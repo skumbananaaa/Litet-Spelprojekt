@@ -119,7 +119,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
-		Logger::LogEvent(GetName() + " larmar om vattenläcka i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+		Logger::LogEvent(GetName() + " larmar om vatten i " + m_pWorld->GetNameFromGlobal(index) + "!", true); 
 		ReportPosition();
 	}
 

@@ -22,6 +22,7 @@ void ScenarioWater::Init(World* pWorld) noexcept
 void ScenarioWater::Release() noexcept
 {
 	m_InletTiles.clear();
+	m_WaterIntakeRates.clear();
 	DeleteArrSafe(m_FloodingIDs);
 }
 
@@ -33,9 +34,10 @@ void ScenarioWater::OnEnd(SceneGame* scene) noexcept
 {
 }
 
-void ScenarioWater::Escalate(const glm::ivec3& position) noexcept
+void ScenarioWater::Escalate(const glm::ivec3& position, float severity) noexcept
 {
 	m_InletTiles.push_back(position);
+	m_WaterIntakeRates.push_back(severity);
 	m_FloodingIDs[position.y / 2].push_back(glm::ivec2(position.x, position.z));
 	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].WaterInlet = true;
 	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetMaterial(MATERIAL::INLET_BLUE);
@@ -94,7 +96,7 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 	{
 		TileData* const * ppLevelData = pWorld->GetLevel(m_InletTiles[i].y).GetLevelData();
 		TileData& tile = ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z];
-		tile.WaterLevel += WATER_INTAKE_RATE*dtS;
+		tile.WaterLevel += m_WaterIntakeRates[i] * dtS;
 		tile.WaterLevel = std::min(tile.WaterLevel, 2.0f);
 		tile.WaterLevelChange = 0.0f;
 		tile.WaterLevelLastUpdated = 0.0f;

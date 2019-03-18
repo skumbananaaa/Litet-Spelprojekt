@@ -14,7 +14,7 @@ public:
 	virtual void Release() noexcept = 0;
 	virtual void OnStart(SceneGame* scene) noexcept = 0;
 	virtual void OnEnd(SceneGame* scene)noexcept = 0;
-	virtual void Escalate(const glm::ivec3& position) noexcept = 0;
+	virtual void Escalate(const glm::ivec3& position, float severity = 1.0f) noexcept = 0;
 	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) = 0;
 	virtual bool Update(float dtS, World* pWorld, SceneGame* pScene) noexcept = 0;
 	virtual std::string GetName() noexcept = 0;

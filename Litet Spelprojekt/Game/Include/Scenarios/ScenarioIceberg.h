@@ -15,7 +15,7 @@ public:
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
 	virtual void OnEnd(SceneGame* scene)noexcept override;
-	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void Escalate(const glm::ivec3& position, float severity) noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept override;
 	virtual bool Update(float dtS, World* world, SceneGame* scene) noexcept override;
 	virtual std::string GetName() noexcept override;

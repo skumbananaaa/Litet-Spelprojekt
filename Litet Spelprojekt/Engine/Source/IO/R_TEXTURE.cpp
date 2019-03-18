@@ -58,6 +58,8 @@ uint32 TEXTURE::FLOOR_EXT_KITCHEN1 = 0;
 uint32 TEXTURE::FLOOR_EXT_DINING1 = 0;
 uint32 TEXTURE::FLOOR_EXT_CABOOSE1 = 0;
 uint32 TEXTURE::LOADING_CONTROLS = 0;
+uint32 TEXTURE::TUTORIAL_SCREEN_1 = 0;
+uint32 TEXTURE::TUTORIAL_SCREEN_2 = 0;
 uint32 TEXTURE::SHELF_AMMUNITION = 0;
 uint32 TEXTURE::SHELF_EMPTY = 0;
 uint32 TEXTURE::GENERATOR = 0;
@@ -118,6 +120,8 @@ void TEXTURE::RegisterResources()
 	FLOOR_DINING1				= ResourceHandler::RegisterTexture2D("diningFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_CABOOSE1				= ResourceHandler::RegisterTexture2D("cabooseFloorTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	LOADING_CONTROLS			= ResourceHandler::RegisterTexture2D("LoadingScreen.png", TEX_FORMAT_RGBA, false, true);
+	TUTORIAL_SCREEN_1			= ResourceHandler::RegisterTexture2D("TutorialScreen.png", TEX_FORMAT_RGBA, false, true);
+	TUTORIAL_SCREEN_2			= ResourceHandler::RegisterTexture2D("TutorialScreen2.png", TEX_FORMAT_RGBA, false, true);
 	FLOOR_EXT_NORMAL			= ResourceHandler::RegisterTexture2D("normalFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_EXT_SICKBAY1			= ResourceHandler::RegisterTexture2D("sickbayFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_EXT_TOILET1			= ResourceHandler::RegisterTexture2D("toiletFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);

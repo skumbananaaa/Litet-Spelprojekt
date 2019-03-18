@@ -16,6 +16,8 @@ public:
 
 	void DeleteAll() noexcept;
 
+	void SetVisible(bool visible) noexcept;
+
 private:
 	float m_Time;
 	float m_PixelsToMove;

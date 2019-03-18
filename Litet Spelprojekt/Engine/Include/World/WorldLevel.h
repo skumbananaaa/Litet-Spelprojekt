@@ -38,7 +38,7 @@ struct TileData
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
 
-		NrOfBaseGameObjects = GameObjects.size();
+		NrOfBaseGameObjects = (uint32)GameObjects.size();
 	}
 
 	void RemoveGameObject(GameObject* gameObject) noexcept

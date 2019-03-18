@@ -49,6 +49,7 @@ void OrderSchedule::Init(Scene* pScene)
 		s_Instruments.push_back(pGameObject);
 	}
 
+	//Find extinguishers
 	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Extinguisher" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Extinguishers.push_back(pGameObject);

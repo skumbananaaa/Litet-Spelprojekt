@@ -7,9 +7,9 @@
 #endif
 
 constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 10000.0f;
-constexpr float SMOKE_DISSOLVE_RATE = 250.0f;
-constexpr float SMOKE_CREATION_RATE = 1.30f;
-constexpr float SMOKE_SPREAD_RATE = 1.0f;
+constexpr float SMOKE_DISSOLVE_RATE = 20.0f;
+constexpr float SMOKE_CREATION_RATE = 2.30f;
+constexpr float RATE_OF_SMOKE_SPREAD = 0.9f;
 
 class ScenarioFire : public IScenario
 {
@@ -21,19 +21,20 @@ public:
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
 	virtual void OnEnd(SceneGame* scene)noexcept override;
-	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void Escalate(const glm::ivec3& position, float severity = 1.0f) noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept override;
 	virtual bool Update(float dtS, World* world, SceneGame* scene) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 
 	void ShowInRoom(uint32 roomID) noexcept;
 
 private:
 	World* m_pWorld;
 	bool m_FireAlwaysVisible;
-
+	bool m_HasStarted;
 	const uint32* const** m_pppMap;
 
 	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);

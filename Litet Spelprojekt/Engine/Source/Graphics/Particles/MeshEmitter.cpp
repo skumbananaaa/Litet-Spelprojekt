@@ -115,7 +115,7 @@ void MeshEmitter::Update(const Camera& camera, float deltaTime) noexcept
 		{
 			if (particle.LifePercentage >= m_ColorNodes[i].AtLifeTime)
 			{
-				colorCurrentIndex = i;
+				colorCurrentIndex = (int32)i;
 			}
 		}
 

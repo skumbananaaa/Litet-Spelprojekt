@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <EnginePch.h>
 #include <World/WorldLevel.h>
 #include <World/Room.h>
@@ -181,7 +181,7 @@ inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 
 
 			glm::ivec3 currentRoomCenter = glm::ivec3(room.GetCenter() - glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::ivec3 toVector = currentTile - currentRoomCenter;
-			uint32 currentDistanceSqrd = toVector.x * toVector.x + (10.0f * toVector.y * toVector.y) + toVector.z * toVector.z;
+			uint32 currentDistanceSqrd = (uint32)(toVector.x * toVector.x + (10.0f * toVector.y * toVector.y) + toVector.z * toVector.z);
 
 			if (currentDistanceSqrd < minDistSqrd)
 			{
@@ -218,7 +218,7 @@ inline std::string World::GetNameFromGlobal(uint32 globalIndex) noexcept
 	}
 	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
 	{
-		return "m�ss " + std::to_string((globalIndex + 1) - DINING_ROOM_INTERVAL_START);
+		return "mäss " + std::to_string((globalIndex + 1) - DINING_ROOM_INTERVAL_START);
 	}
 	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
 	{
@@ -307,6 +307,8 @@ inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromGlobal(uint3
 	{
 		return glm::uvec3(CABOOSE_INTERVAL_START - SMALLEST_RESERVED, CABOOSE_INTERVAL_END - SMALLEST_RESERVED, CABOOSE_CATEGORY_INDEX);
 	}
+
+	return glm::uvec3();
 }
 
 inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept
@@ -384,7 +386,7 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 
 inline uint32 World::ConvertNonExtToExtFloorMaterial(const Material* pMaterial) noexcept
 {
-	int32 material = ResourceHandler::GetMaterial(pMaterial);
+	uint32 material = ResourceHandler::GetMaterial(pMaterial);
 	if (material == MATERIAL::FLOOR_NORMAL)
 	{
 		return MATERIAL::FLOOR_EXT_NORMAL;
@@ -439,8 +441,7 @@ inline uint32 World::ConvertNonExtToExtFloorMaterial(const Material* pMaterial) 
 
 inline uint32 World::ConvertExtToNonExtFloorMaterial(const Material* pMaterial) noexcept
 {
-	int32 material = ResourceHandler::GetMaterial(pMaterial);
-	
+	uint32 material = ResourceHandler::GetMaterial(pMaterial);
 	if (material == MATERIAL::FLOOR_EXT_NORMAL)
 	{
 		return MATERIAL::FLOOR_NORMAL;

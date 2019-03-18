@@ -10,7 +10,7 @@
 
 class OrderExtinguishFire : public OrderWalk
 {
-	static constexpr float FIRE_EXTINGUISH_BY_CREW_RATE = 800.0f * RATE_OF_FIRE_SPREAD;
+	static constexpr float FIRE_EXTINGUISH_BY_CREW_RATE = 40.0f * RATE_OF_FIRE_SPREAD;
 
 public:
 	OrderExtinguishFire(const glm::ivec3& goalTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool fireFullyExtinguished, const std::string& extinguisherName);
@@ -32,7 +32,6 @@ private:
 	bool ExtinguishIfInWorld(TileData * const * ppLevelData, const glm::ivec3& tile, bool inWorld, float dtS) const noexcept;
 	glm::ivec2 FindClosestBurningTile(const uint32 * const * ppLevel, TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& currentTile) const noexcept;
 	glm::ivec3 FindClosestExtinguisher(const glm::vec3& currentPosition, std::string& extinguisherName) noexcept;
-
 
 private:
 	uint32 m_RoomBurningId;
@@ -101,7 +100,7 @@ inline glm::ivec2 OrderExtinguishFire::FindClosestBurningTile(const uint32 * con
 
 			TileData& currentTileData = ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y];
 
-			if (currentTileData.Temp > currentTileData.BurnsAt)
+			if (currentTileData.Temp > currentTileData.BurnsAt && !currentTileData.MarkedForExtinguish)
 			{
 				if (m_RoomBurningId == ppLevel[currentTileBeingChecked.x][currentTileBeingChecked.y])
 				{
@@ -156,5 +155,10 @@ inline glm::ivec3 OrderExtinguishFire::FindClosestExtinguisher(const glm::vec3& 
 	exting = OrderSchedule::s_Extinguishers[index];
 	OrderSchedule::s_Extinguishers.erase(OrderSchedule::s_Extinguishers.begin() + index);
 	extinguisherName = exting->GetName();
+	if (extinguisherName == "")
+	{
+		std::cout << "ERROR: invalid extinguisher at index '" << index << '\'' << std::endl;
+	}
+
 	return exting->GetTile();
 }

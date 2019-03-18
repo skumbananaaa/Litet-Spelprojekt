@@ -28,6 +28,9 @@ public:
 
 	virtual void OnProgressAnimationEnd(ProgressButton* progressButton) override;
 
+	void SetVisible(bool visible) noexcept;
+	void Deselect();
+
 private:
 	ProgressButton* CreateButton(const std::string& text, const glm::vec4& color, float y, float width, float height, const glm::vec2& textOffset, int shipnumber);
 	PanelExpandable* CreateExpandable(const std::string& text, float x, float y, float width, float buttonHeight, uint32 icon, int index, Crew* crew, const glm::vec4& buttonColor, const glm::vec2& textOffset);

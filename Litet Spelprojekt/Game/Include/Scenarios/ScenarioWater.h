@@ -22,20 +22,23 @@ public:
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
 	virtual void OnEnd(SceneGame* scene)noexcept override;
-	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void Escalate(const glm::ivec3& position, float severity) noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) override;
 	virtual bool Update(float dtS, World* pWorld, SceneGame* pScene) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 	const std::vector<glm::ivec3> GetWaterInlets() const noexcept;
 
 private:
 	World* m_pWorld;
 	float m_TotalWaterLevel;
 	bool m_WaterAlwaysVisible;
+	mutable bool m_HasFlooded;
 	std::vector<glm::ivec2>* m_FloodingIDs;
 	std::vector<glm::ivec3> m_InletTiles;
+	std::vector<float> m_WaterIntakeRates;
 	std::vector<uint32> m_InletsToRemove;
 
 private:
@@ -171,6 +174,11 @@ inline void ScenarioWater::UpdateFloodingIds(TileData * const * ppLevelData, std
 		{
 			newFloodingIDs.push_back(tilePos);
 			ppLevelData[tilePos.x][tilePos.y].AlreadyFlooded = true;
+
+			if (!m_HasFlooded)
+			{
+				m_HasFlooded = true;
+			}
 		}
 	}
 }

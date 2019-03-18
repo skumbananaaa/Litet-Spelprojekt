@@ -1,9 +1,10 @@
-#include "..\..\Include\Scenarios\ScenarioFire.h"
+﻿#include "..\..\Include\Scenarios\ScenarioFire.h"
 #include <System/Random.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../../Include/GameState.h"
 
 ScenarioFire::ScenarioFire(bool fireAlwaysVisible)
+	: m_HasStarted(false)
 {
 	m_FireAlwaysVisible = fireAlwaysVisible;
 }
@@ -15,6 +16,7 @@ ScenarioFire::~ScenarioFire()
 
 void ScenarioFire::Init(World* pWorld) noexcept
 {
+	SetTimeOfNextOutBreak(1.0f);
 	m_pWorld = pWorld;
 
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels()];
@@ -65,7 +67,7 @@ void ScenarioFire::OnEnd(SceneGame* scene) noexcept
 
 }
 
-void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
+void ScenarioFire::Escalate(const glm::ivec3& position, float severity) noexcept
 {
 	TileData& tileData = m_pWorld->GetLevel(position.y).GetLevelData()[position.x][position.z];
 	Room& room = m_pWorld->GetRoom(m_pWorld->GetLevel(position.y).GetLevel()[position.x][position.z]);
@@ -76,6 +78,11 @@ void ScenarioFire::Escalate(const glm::ivec3& position) noexcept
 	emitter->SetIsVisible(m_FireAlwaysVisible);
 	m_OnFire.push_back(position);
 	room.SetTileOnFire(position);
+
+	if (!m_HasStarted)
+	{
+		m_HasStarted = true;
+	}
 
 	if (tileData.GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR] != nullptr)
 	{
@@ -139,7 +146,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 			if (id == tileID)
 			{
-				GameObject* pObject = level.GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE];
+				/*GameObject* pObject = level.GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE];
 				if (pObject)
 				{
 					pObject->SetIsVisible(true);
@@ -149,8 +156,11 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 				if (pObject)
 				{
 					pObject->SetIsVisible(true);
-				}
+				}*/
+				SetSmokeVisible(id);
+				SetFireVisible(id);
 			}
+
 			room.ExtendAudioPos(pScene->GetExtension());
 		}
 
@@ -251,7 +261,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		//TWEAK HERE!
 		float spread = tile.SmokeAmount - tile.SmokeLimit;
 		//spread /= 4;
-		spread *= SMOKE_SPREAD_RATE * dtS;
+		spread *= RATE_OF_SMOKE_SPREAD * dtS;
 		uint32 rest = 0;
 		if (spread > 0.0001f)
 		{
@@ -326,7 +336,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 std::string ScenarioFire::GetName() noexcept
 {
-	return "Eldsv�da";
+	return "Eldsvåda";
 }
 
 int32 ScenarioFire::GetCooldownTime() noexcept
@@ -337,6 +347,11 @@ int32 ScenarioFire::GetCooldownTime() noexcept
 int32 ScenarioFire::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 60;
+}
+
+bool ScenarioFire::IsComplete() noexcept
+{
+	return m_HasStarted && m_OnFire.empty();
 }
 
 void ScenarioFire::ShowInRoom(uint32 roomID) noexcept

@@ -233,7 +233,7 @@ void GLContext::SetViewport(uint32 width, uint32 height, uint32 topX, uint32 top
 
 void GLContext::SetViewport(const glm::vec4& viewport) noexcept
 {
-	SetViewport(viewport.x, viewport.y, viewport.z, viewport.w);
+	SetViewport((uint32)viewport.x, (uint32)viewport.y, (uint32)viewport.z, (uint32)viewport.w);
 }
 
 bool GLContext::GetDepthMask() const noexcept

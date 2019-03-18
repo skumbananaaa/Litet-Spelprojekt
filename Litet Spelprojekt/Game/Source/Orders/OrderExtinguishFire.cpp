@@ -1,4 +1,4 @@
-#include "..\..\Include\Orders\OrderExtinguishFire.h"
+﻿#include "..\..\Include\Orders\OrderExtinguishFire.h"
 #include "../../Include/Crewmember.h"
 
 
@@ -51,6 +51,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				{
 					m_EquippingGearTimer = 0.0f;
 					pCrewmember->SetGearIsEquipped(true);
+					Logger::LogEvent(GetCrewMember()->GetName() + " tog på sig rökdykarutrustning!", true);
+					GetCrewMember()->ReportPosition();
 					if (pCrewmember->HasExtinguisherEquipped())
 					{
 						pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
@@ -69,7 +71,19 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				pCrewmember->SetExtinguisherIsEquipped(true);
-				pScene->RemoveGameObject(pScene->GetGameObject(m_ExtinguisherName));
+				Logger::LogEvent(GetCrewMember()->GetName() + " tog en brandsläckare!", true);
+				GetCrewMember()->ReportPosition();
+				//change animation
+				//delete object
+				GameObject* pGameObject = pScene->GetGameObject(m_ExtinguisherName);
+				if (pGameObject)
+				{
+					pScene->RemoveGameObject(pGameObject);
+				}
+				else
+				{
+					pCrewmember->GiveOrder(new OrderExtinguishFire(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName), m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
+				}
 
 				pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 			}
@@ -127,10 +141,12 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_RoomBurningId = 0;
 						Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med eldsläckning!", true);
 						pCrewmember->SetExtinguisherIsEquipped(false);
-						pCrewmember->GiveOrder(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, m_BurningTile, true), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
+						GetCrewMember()->ReportPosition();
+						pCrewmember->GiveOrder(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, m_BurningTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
 						return false;
 					}
 
+					ppLevelData[newTarget.x][newTarget.y].MarkedForExtinguish = true;
 					//Fire Not Fully Extinguished
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
@@ -184,6 +200,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						pCrewmember->SetGearIsEquipped(false);
 						pCrewmember->SetExtinguisherIsEquipped(false);
 						Logger::LogEvent(GetCrewMember()->GetName() + " tog av sig rökdykarutrustning!", true);
+						GetCrewMember()->ReportPosition();
 						return true;
 					}
 				}
@@ -202,7 +219,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 void OrderExtinguishFire::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
-	GetCrewMember()->ReportPosition();
 }
 
 bool OrderExtinguishFire::CanBeStackedWithSameType() noexcept

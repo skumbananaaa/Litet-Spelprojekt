@@ -21,12 +21,12 @@ PanelScrollable::~PanelScrollable()
 
 float PanelScrollable::GetClientWidth() const noexcept
 {
-	return m_pFrameBufferClientArea->GetWidth();
+	return (float)m_pFrameBufferClientArea->GetWidth();
 }
 
 float PanelScrollable::GetClientHeight() const noexcept
 {
-	return m_pFrameBufferClientArea->GetHeight();
+	return (float)m_pFrameBufferClientArea->GetHeight();
 }
 
 void PanelScrollable::SetVisible(bool visible) noexcept
@@ -155,7 +155,7 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 {
 	if (slider == m_pSliderVertical)
 	{
-		m_ClientOffset.y = (1.0 - slider->GetRatio()) * GetClientHeight() * (percentage - 1.0);
+		m_ClientOffset.y = (1.0f - slider->GetRatio()) * GetClientHeight() * (percentage - 1.0f);
 		if (m_pSliderHorizontal->IsVisible())
 		{
 			m_ClientOffset.y += SLIDER_SIZE;
@@ -163,13 +163,13 @@ void PanelScrollable::OnSliderChange(Slider* slider, float percentage)
 	}
 	else if (slider == m_pSliderHorizontal)
 	{
-		m_ClientOffset.x = (1.0 - slider->GetRatio()) * GetClientWidth() * percentage;
+		m_ClientOffset.x = (1.0f - slider->GetRatio()) * GetClientWidth() * percentage;
 	}
 
 	glm::vec2 mousePos = Input::GetMousePosition();
 	mousePos.y = Window::GetCurrentWindow().GetHeight() - mousePos.y;
 
-	for (int i = s_MouseListeners.size() - 1; i >= 0; i--)
+	for (int i = (int32)s_MouseListeners.size() - 1; i >= 0; i--)
 	{
 		if (s_MouseListeners[i]->IsVisible() && IsMyChild(s_MouseListeners[i]))
 		{
@@ -209,7 +209,7 @@ void PanelScrollable::RenderRealTimePre(GUIContext* context, float x, float y)
 {
 	float heightIndent = m_pSliderHorizontal->IsVisible() * m_pSliderHorizontal->GetHeight();
 	float widthIndent = m_pSliderVertical->IsVisible() * m_pSliderVertical->GetWidth();
-	glScissor(x, y + heightIndent, GetWidth() - widthIndent, GetHeight() - heightIndent);
+	glScissor((int32)x, (int32)(y + heightIndent), (int32)(GetWidth() - widthIndent), (int32)(GetHeight() - heightIndent));
 	glEnable(GL_SCISSOR_TEST);
 }
 
@@ -221,7 +221,7 @@ void PanelScrollable::RenderRealTime(GUIContext* context, float x, float y)
 void PanelScrollable::RenderRealTimePost(GUIContext* context)
 {
 	glm::vec4 viewPortSize = context->GetGraphicsContext()->GetViewPort();
-	glScissor(viewPortSize.z, viewPortSize.w, viewPortSize.x, viewPortSize.y);
+	glScissor((int32)viewPortSize.z, (int32)viewPortSize.w, (int32)viewPortSize.x, (int32)viewPortSize.y);
 	glDisable(GL_SCISSOR_TEST);
 }
 

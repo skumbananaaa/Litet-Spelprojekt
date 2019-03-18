@@ -5,7 +5,10 @@
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioIceberg::ScenarioIceberg() : m_pAudioSourceExplosion(nullptr)
+ScenarioIceberg::ScenarioIceberg(uint32 numInstances) 
+	: m_pAudioSourceExplosion(nullptr),
+	m_InstancesToSpawn(numInstances),
+	m_InstancesComplete(0)
 {
 	
 }
@@ -17,11 +20,16 @@ ScenarioIceberg::~ScenarioIceberg()
 
 void ScenarioIceberg::Init(World* pWorld) noexcept
 {
+	SetTimeOfNextOutBreak(1.0f);
 	m_pAudioSourceExplosion = AudioSource::CreateSoundSource(SOUND::MONO_CRASH);
 	m_pAudioSourceExplosion->SetRollOffFactor(10.0f);
 	m_pAudioSourceExplosion->SetReferenceDistance(0.0f);
 	m_pAudioSourceExplosion->SetMaxDistance(500.0f);
 	m_pAudioSourceExplosion->SetLooping(false);
+
+	//reseting Iceberg on initiation
+	WaterOutdoorMaterial* pMaterial = reinterpret_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
+	pMaterial->SetIcebergPosition(glm::vec2(FLT_MAX, FLT_MAX));
 }
 
 void ScenarioIceberg::Release() noexcept
@@ -66,7 +74,7 @@ void ScenarioIceberg::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexc
 
 }
 
-void ScenarioIceberg::Escalate(const glm::ivec3& position) noexcept
+void ScenarioIceberg::Escalate(const glm::ivec3& position, float severity) noexcept
 {
 
 }
@@ -91,7 +99,7 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 
 			glm::vec3 target = glm::vec3(glm::clamp(m_Target.x, 1.0f, 10.0f), m_Target.y, glm::clamp(m_Target.z, 1.0f, 40.0f));
 
-			ScenarioManager::Escalate(Game::GetGame()->m_ScenarioWater, target);
+			ScenarioManager::Escalate(Game::GetGame()->m_ScenarioWater, target, Random::GenerateFloat(0.3f, 10.0f));
 
 			m_pAudioSourceExplosion->Play();
 			Logger::LogEvent("Båten fick hål i skrovet av ett isberg", false);
@@ -110,9 +118,11 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 		}
 		else
 		{
+			m_InstancesComplete++;
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -129,6 +139,11 @@ int32 ScenarioIceberg::GetCooldownTime() noexcept
 int32 ScenarioIceberg::GetMaxTimeBeforeOutbreak() noexcept
 {
 	return 60 * 5;
+}
+
+bool ScenarioIceberg::IsComplete() noexcept
+{
+	return m_InstancesComplete >= m_InstancesToSpawn;
 }
 
 int32 ScenarioIceberg::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept

@@ -23,7 +23,7 @@
 
 #define MIN_CREWHEALTH 0.4f
 #define MAX_SHIPDAMAGE 0.3f
-#define MAX_WATERLEAKAGE 0.7f
+#define MAX_WATERLEAKAGE 0.5f
 
 class SceneGame : public SceneInternal
 {
@@ -49,6 +49,7 @@ public:
 
 	void PickPosition();
 	void RequestDoorClosed(uint32 doorColor);
+	void SetUIVisible(bool visible) noexcept;
 
 	void Pick(bool hover, int32 positionX, int32 positionY);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);
@@ -78,7 +79,6 @@ protected:
 private:
 	bool m_IsPaused;
 	bool m_IsGameOver;
-	bool m_CartesianCamera;
 
 	uint32 m_CurrentLight = 0;
 

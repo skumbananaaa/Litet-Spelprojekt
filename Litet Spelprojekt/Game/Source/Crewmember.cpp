@@ -119,7 +119,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	if (room.IsFlooded() && !room.IsFloodDetected())
 	{
 		room.SetFloodDetected(true);
-		Logger::LogEvent(GetName() + " larmar om vattenläcka i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
+		Logger::LogEvent(GetName() + " larmar om vatten i " + m_pWorld->GetNameFromGlobal(index) + "!", true); 
 		ReportPosition();
 	}
 
@@ -148,6 +148,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 		if (!m_pShadow->IsVisible())
 		{
 			m_pShadow->SetDirection(m_Direction);
+			m_LastKnownPosition = m_PlayerTile * glm::ivec3(1, 2, 1);
 			m_pShadow->SetPosition(m_LastKnownPosition);
 			m_pShadow->UpdateTransform();
 			m_pShadow->SetIsVisible(true);
@@ -155,21 +156,6 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	}
 
 	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
-
-	if (m_ReportTime > 0)
-	{
-		m_ReportTimer += deltaTime;
-		if (m_pUISelectedCrew)
-		{
-			m_pUISelectedCrew->SetPercentage(m_ReportTimer / m_ReportTime);
-		}
-		if (m_ReportTimer >= m_ReportTime)
-		{
-			m_ReportTime = 0.0f;
-			m_ReportTimer = 0.0f;
-			ReportPosition();
-		}
-	}
 }
 
 void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
@@ -543,6 +529,7 @@ void Crewmember::SetIsPicked(bool picked) noexcept
 		if (m_IsPicked)
 		{
 			m_pUISelectedCrew = new UISelectedCrew(GetName());
+			m_pUISelectedCrew->AddProgressListener(this);
 			Game::GetGame()->GetGUIManager().Add(m_pUISelectedCrew);
 			Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
 		}
@@ -600,9 +587,10 @@ void Crewmember::ReportPosition() noexcept
 
 void Crewmember::RequestReportPosition() noexcept
 {
-	if (m_ReportTime < 3.0f)
+	if (m_pUISelectedCrew && m_pUISelectedCrew->GetPercentage() >= 1.0f)
 	{
-		m_ReportTime = Random::GenerateInt(3, 15);
+		m_pUISelectedCrew->SetPercentage(0.0f);
+		m_pUISelectedCrew->StartAnimation(Random::GenerateInt(3, 15));
 	}
 }
 

@@ -78,7 +78,6 @@ protected:
 private:
 	bool m_IsPaused;
 	bool m_IsGameOver;
-	bool m_CartesianCamera;
 
 	uint32 m_CurrentLight = 0;
 

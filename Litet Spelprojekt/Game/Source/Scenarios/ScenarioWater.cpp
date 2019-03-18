@@ -13,6 +13,7 @@ ScenarioWater::~ScenarioWater()
 
 void ScenarioWater::Init(World* pWorld) noexcept
 {
+	SetTimeOfNextOutBreak(1.0f);
 	m_FloodingIDs = new std::vector<glm::ivec2>[pWorld->GetNumLevels() / 2];
 	m_pWorld = pWorld;
 }

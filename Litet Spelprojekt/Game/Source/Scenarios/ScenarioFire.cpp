@@ -15,6 +15,7 @@ ScenarioFire::~ScenarioFire()
 
 void ScenarioFire::Init(World* pWorld) noexcept
 {
+	SetTimeOfNextOutBreak(1.0f);
 	m_pWorld = pWorld;
 
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels()];

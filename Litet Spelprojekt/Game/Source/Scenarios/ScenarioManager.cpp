@@ -61,8 +61,12 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 
 void ScenarioManager::SetEnabledScenarios(const std::vector<int32>& ids) noexcept
 {
-	s_NonActiveScenarios = ids;
 	s_ActiveScenarios.clear();
+	s_NonActiveScenarios.clear();
+	for (int i = ids.size() - 1; i >= 0; i--)
+	{
+		SetAsNonActive(ids[i]);
+	}
 }
 
 bool ScenarioManager::StartScenario(int32 index) noexcept
@@ -105,6 +109,7 @@ void ScenarioManager::Init(World* pWorld)
 	for (IScenario* scenario : s_Scenarios)
 	{
 		scenario->Init(pWorld);
+		scenario->SetTimeOfNextOutBreak(Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
 	}
 }
 
@@ -113,7 +118,16 @@ void ScenarioManager::Reset() noexcept
 	for (IScenario* scenario : s_Scenarios)
 	{
 		scenario->Release();
+		scenario->SetTimeOfNextOutBreak(Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
 	}
+
+
+	for (int i = 0; i < s_ActiveScenarios.size(); i++)
+	{
+		s_NonActiveScenarios.push_back(s_ActiveScenarios[i]);
+	}
+
+	s_ActiveScenarios.clear();
 }
 
 const std::vector<IScenario*>& ScenarioManager::GetScenarios() noexcept

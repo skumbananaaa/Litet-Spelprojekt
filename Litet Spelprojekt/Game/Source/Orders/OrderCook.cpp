@@ -1,7 +1,7 @@
 #include "../../Include/Orders/OrderCook.h"
 #include "../../Include/Orders/OrderSchedule.h"
 #include "../../Include/Crewmember.h"
-
+#include <World/World.h>
 OrderCook::OrderCook(const glm::ivec3& ovenTile, GameObject* pOven)
 	: OrderWalk(ovenTile)
 {
@@ -81,6 +81,11 @@ bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		}
 	}
 
+	glm::ivec3 goal = OrderWalk::m_GoalTile;
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	{
+		return true;
+	}
 	return false;
 }
 

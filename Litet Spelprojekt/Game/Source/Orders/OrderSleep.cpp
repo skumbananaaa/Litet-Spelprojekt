@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Crewmember.h"
+#include <World/World.h>
 #include <System/Random.h>
 #include <IO/ResourceHandler.h>
 
@@ -77,6 +78,11 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 		return m_Timer <= 0.0f;
 	}
 
+	glm::ivec3 goal = OrderWalk::m_GoalTile;
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	{
+		return true;
+	}
 	return false;
 }
 

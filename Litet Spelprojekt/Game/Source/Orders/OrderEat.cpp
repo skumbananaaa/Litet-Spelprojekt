@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderEat.h"
 #include "../../Include/Crewmember.h"
+#include <World/World.h>
 
 OrderEat::OrderEat(const glm::ivec3& chairTile, GameObject* pChair)
 	: OrderWalk(chairTile)
@@ -70,6 +71,12 @@ bool OrderEat::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float 
 	{
 		m_Timer -= dtS;
 		return m_Timer <= 0.0f;
+	}
+
+	glm::ivec3 goal = OrderWalk::m_GoalTile;
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	{
+		return true;
 	}
 
 	return false;

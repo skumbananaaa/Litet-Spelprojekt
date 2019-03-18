@@ -94,7 +94,8 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 	{
 		TileData* const * ppLevelData = pWorld->GetLevel(m_InletTiles[i].y).GetLevelData();
 		TileData& tile = ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z];
-		tile.WaterLevel = 2.0f;
+		tile.WaterLevel += WATER_INTAKE_RATE*dtS;
+		tile.WaterLevel = std::min(tile.WaterLevel, 2.0f);
 		tile.WaterLevelChange = 0.0f;
 		tile.WaterLevelLastUpdated = 0.0f;
 		tile.WaterLevelAge = 0.0f;

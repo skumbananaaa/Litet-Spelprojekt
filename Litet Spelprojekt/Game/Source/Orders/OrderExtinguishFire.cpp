@@ -135,6 +135,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						return false;
 					}
 
+					ppLevelData[newTarget.x][newTarget.y].MarkedForExtinguish = true;
 					//Fire Not Fully Extinguished
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];

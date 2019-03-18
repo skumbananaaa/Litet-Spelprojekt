@@ -32,7 +32,7 @@ enum GroupType : uint32
 
 class TileData;
 
-class Crewmember : public GameObject, public UIOrder
+class Crewmember : public GameObject, public UIOrder, public IProgressListener
 {
 	friend class Crew;
 
@@ -113,6 +113,8 @@ public:
 	bool HasGearEquipped() const noexcept;
 	bool HasExtinguisherEquipped() const noexcept;
 	bool HasRecovered() const noexcept;
+
+	void OnProgressAnimationEnd(ProgressButton* progressButton);
 
 private:
 	//UPDATES
@@ -295,4 +297,9 @@ inline bool Crewmember::HasExtinguisherEquipped() const noexcept
 inline bool Crewmember::HasRecovered() const noexcept
 {
 	return m_Recovering > 1.0f;
+}
+
+inline void Crewmember::OnProgressAnimationEnd(ProgressButton * progressButton)
+{
+	ReportPosition();
 }

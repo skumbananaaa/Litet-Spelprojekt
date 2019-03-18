@@ -50,6 +50,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				{
 					m_EquippingGearTimer = 0.0f;
 					pCrewmember->SetGearIsEquipped(true);
+					Logger::LogEvent(GetCrewMember()->GetName() + " tog på sig rökdykarutrustning!", true);
+					GetCrewMember()->ReportPosition();
 					if (pCrewmember->HasExtinguisherEquipped())
 					{
 						pCrewmember->GiveOrder(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
@@ -68,6 +70,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				pCrewmember->SetExtinguisherIsEquipped(true);
+				Logger::LogEvent(GetCrewMember()->GetName() + " tog en brandsläckare!", true);
+				GetCrewMember()->ReportPosition();
 				//change animation
 				//delete object
 				pScene->RemoveGameObject(pScene->GetGameObject(m_ExtinguisherName));
@@ -131,6 +135,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_BurningTile = glm::ivec3(0);
 						m_RoomBurningId = 0;
 						Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med eldsläckning!", true);
+						GetCrewMember()->ReportPosition();
 						pCrewmember->GiveOrder(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, m_BurningTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
 						return false;
 					}
@@ -191,6 +196,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						pCrewmember->SetGearIsEquipped(false);
 						pCrewmember->SetExtinguisherIsEquipped(false);
 						Logger::LogEvent(GetCrewMember()->GetName() + " tog av sig rökdykarutrustning!", true);
+						GetCrewMember()->ReportPosition();
 						return true;
 					}
 				}
@@ -209,8 +215,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 void OrderExtinguishFire::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
-
-	GetCrewMember()->ReportPosition();
 }
 
 bool OrderExtinguishFire::CanBeStackedWithSameType() noexcept

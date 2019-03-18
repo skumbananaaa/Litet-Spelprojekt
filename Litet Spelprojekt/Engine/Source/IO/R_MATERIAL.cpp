@@ -76,7 +76,7 @@ void MATERIAL::RegisterResourcesPreLoading()
 void MATERIAL::RegisterResources()
 {
 	OCEAN_BLUE					= ResourceHandler::RegisterMaterial(glm::vec4(0.09f, 0.34f, 0.49f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
-	BLACK						= ResourceHandler::RegisterMaterial(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
+	BLACK						= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	WHITE						= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);
 	ARTILLERY					= ResourceHandler::RegisterMaterial(glm::vec4(0.545f, 0.271, 0.075f, 1.0f)	, 256.0f, SHADER::STANDARD_MATERIAL);
 	DOOR_FRAME					= ResourceHandler::RegisterMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)		, 256.0f, SHADER::STANDARD_MATERIAL);

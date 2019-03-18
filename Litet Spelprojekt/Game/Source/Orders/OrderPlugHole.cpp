@@ -67,9 +67,12 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 					}
 					else
 					{
-						Logger::LogEvent(GetCrewMember()->GetName() + " kontrollerade det pluggningen!", true);
+						Logger::LogEvent(GetCrewMember()->GetName() + " kontrollerade pluggningen!", true);
 					}
+					
 					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
+					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetMaterial(MATERIAL::WATER_INDOOR);
+
 					if (!pWorld->GetRoom(GetCrewMember()->GetRoom()).IsPumping())
 					{
 						pCrewmember->GiveOrder(new OrderPumpWater(GetCrewMember()->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));

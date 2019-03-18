@@ -127,6 +127,16 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	crewmember->UpdateLastKnownPosition();
 }
 
+void UICrew::Deselect()
+{
+	for (int i = 0; i < m_Panels.size(); i++)
+	{
+		m_Panels[i]->SetExpanded(false);
+		m_Panels[i]->SetSelected(false);
+	}
+	
+}
+
 ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& color, float y, float width, float height, const glm::vec2& textOffset, int shipnumber)
 {
 	ProgressButton* button = new ProgressButton(0, y, width, height, text);

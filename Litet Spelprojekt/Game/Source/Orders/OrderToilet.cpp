@@ -1,6 +1,6 @@
 #include "../../Include/Orders/OrderToilet.h"
 #include "../../Include/Crewmember.h"
-
+#include <World/World.h>
 OrderToilet::OrderToilet(const glm::ivec3& toiletTile, GameObject* pToilet)
 	: OrderWalk(toiletTile)
 {
@@ -69,6 +69,12 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 	{
 		m_Timer -= dtS;
 		return m_Timer <= 0.0f;
+	}
+	glm::ivec3 goal = OrderWalk::m_GoalTile;
+
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	{
+		return true;
 	}
 
 	return false;

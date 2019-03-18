@@ -139,7 +139,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 			if (id == tileID)
 			{
-				GameObject* pObject = level.GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE];
+				/*GameObject* pObject = level.GetLevelData()[pos.x][pos.z].GameObjects[GAMEOBJECT_CONST_INDEX_FIRE];
 				if (pObject)
 				{
 					pObject->SetIsVisible(true);
@@ -149,8 +149,11 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 				if (pObject)
 				{
 					pObject->SetIsVisible(true);
-				}
+				}*/
+				SetSmokeVisible(id);
+				SetFireVisible(id);
 			}
+
 			room.ExtendAudioPos(pScene->GetExtension());
 		}
 
@@ -251,7 +254,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		//TWEAK HERE!
 		float spread = tile.SmokeAmount - tile.SmokeLimit;
 		//spread /= 4;
-		spread *= SMOKE_SPREAD_RATE * dtS;
+		spread *= RATE_OF_SMOKE_SPREAD * dtS;
 		uint32 rest = 0;
 		if (spread > 0.0001f)
 		{
@@ -326,7 +329,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 std::string ScenarioFire::GetName() noexcept
 {
-	return "Eldsvåda";
+	return "Eldsvï¿½da";
 }
 
 int32 ScenarioFire::GetCooldownTime() noexcept

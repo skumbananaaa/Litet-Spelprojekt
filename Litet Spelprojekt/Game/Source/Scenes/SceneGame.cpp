@@ -756,6 +756,7 @@ void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)
 	else
 	{
 		m_Crew.ClearSelectedList();
+		m_pUICrew->Deselect();
 	}
 }
 

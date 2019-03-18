@@ -187,7 +187,9 @@ void Game::OnUpdate(float dtS)
 
 			if (dynamic_cast<SceneGame*>(m_pScene))
 			{
+				ThreadHandler::SetExecutionPaused(true);
 				DeleteSafe(m_pScene);
+				ThreadHandler::SetExecutionPaused(false);
 				m_pScene = nullptr;
 				if (!dynamic_cast<SceneGame*>(m_pSceneNext))
 				{

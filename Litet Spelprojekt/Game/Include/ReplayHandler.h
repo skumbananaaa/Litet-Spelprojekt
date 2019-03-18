@@ -22,7 +22,8 @@ private:
 
 	static void RegisterEvent(IReplayable* pReplayable, void* pUserData) noexcept;
 
-	static std::queue<std::tuple<IReplayable*, void*, float>> s_ReplayQueue;
+	static std::vector<std::tuple<IReplayable*, void*, float>> s_ReplayQueue;
 	static float s_Timer;
 	static bool s_IsReplying;
+	static int s_Index;
 };

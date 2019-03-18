@@ -34,7 +34,8 @@ void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroupType() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
 	Crewmember* pCrewmember = GetCrewMember();
 	pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
-	ThreadHandler::RequestExecution(this);
+	//ThreadHandler::RequestExecution(this);
+	RunParallel();
 }
 
 bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
@@ -82,7 +83,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && crewTile != m_TargetTile /*&& m_OopsIForgot > pCrewmember->GetForgetfulness()*/)
 		{
 			// Close door after passing through
-			door1->AccessRequest(pCrewmember->GetShipNumber());
+			//door1->AccessRequest(pCrewmember->GetShipNumber());
 			if (door1->IsOpen())
 			{
 				pCrewmember->SetDirection(-pCrewmember->GetDirection());
@@ -100,24 +101,24 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	Room& room = pWorld->GetRoom(pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z]);
 
 
-	if (room.IsBurning())
-	{
-		if (!room.IsFireDetected())
-		{
-			room.SetFireDetected(true);
-			Logger::LogEvent(pCrewmember->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index1) + "!", true);
-			pCrewmember->ReportPosition();
-			GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
-		}
-	}
+	//if (room.IsBurning())
+	//{
+	//	if (!room.IsFireDetected())
+	//	{
+	//		room.SetFireDetected(true);
+	//		Logger::LogEvent(pCrewmember->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index1) + "!", true);
+	//		pCrewmember->ReportPosition();
+	//		GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+	//	}
+	//}
 
-	if (room.IsFlooded() && !room.IsFloodDetected())
-	{
-		room.SetFloodDetected(true);
-		Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
-		pCrewmember->ReportPosition();
-		GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
-	}
+	//if (room.IsFlooded() && !room.IsFloodDetected())
+	//{
+	//	room.SetFloodDetected(true);
+	//	Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
+	//	pCrewmember->ReportPosition();
+	//	GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+	//}
 
 	if (room.IsActive())
 	{

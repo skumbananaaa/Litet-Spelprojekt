@@ -113,8 +113,6 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	if (pGameObject->IsTickable())
 	{
 		m_UpdateAbles.push_back(pGameObject);
-
-		std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
 	}
 
 	//Add gameobjects that has a mesh and material aka is drawable

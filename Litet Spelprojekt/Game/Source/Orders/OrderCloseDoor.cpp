@@ -33,7 +33,7 @@ bool OrderDoor::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, fl
 
 	uint32 shipNr = GetCrewMember()->GetShipNumber();
 
-	if (m_pGameObjectDoor->IsOpen() == m_Open || m_pGameObjectDoor->IsClosed() == !m_Open || !m_pGameObjectDoor->AccessRequest(shipNr) || !m_pGameObjectDoor->RemoveFromQueue(shipNr))
+	if (m_pGameObjectDoor->IsOpen() == m_Open || m_pGameObjectDoor->IsClosed() == !m_Open || (!m_pGameObjectDoor->AccessRequest(shipNr) && m_Open) || (!m_pGameObjectDoor->RemoveFromQueue(shipNr) && !m_Open))
 	{
 		m_pGameObjectDoor->RemoveFromQueue(shipNr);
 		return true;

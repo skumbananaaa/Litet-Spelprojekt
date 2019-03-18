@@ -10,6 +10,7 @@ OrderSleep::OrderSleep(OrderSleep * other) : OrderWalk(other)
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 90.0f;
 	m_IsAtBed = false;
+	m_Up = other->m_Up;
 }
 
 OrderSleep::OrderSleep(const glm::ivec3& bedTile, GameObject* pBed)
@@ -20,6 +21,7 @@ OrderSleep::OrderSleep(const glm::ivec3& bedTile, GameObject* pBed)
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 90.0f;
 	m_IsAtBed = false;
+	m_Up = Random::GenerateBool();
 }
 
 OrderSleep::~OrderSleep()
@@ -56,8 +58,7 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 			int rot = yaw / glm::half_pi<float>();
 
 			bool single = (m_pBed->GetMesh() == ResourceHandler::GetMesh(MESH::BED_SINGLE));
-			bool up = Random::GenerateBool();
-			float yOffset = (up && !single) ? 1.45f : 0.55f;
+			float yOffset = (m_Up && !single) ? 1.45f : 0.55f;
 
 			if (rot == 0)
 			{

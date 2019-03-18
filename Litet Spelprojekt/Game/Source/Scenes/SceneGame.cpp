@@ -15,7 +15,7 @@
 SceneGame::SceneGame(World* pWorld, bool hiddenCrew) 
 	: SceneInternal(false),
 	m_pWorld(pWorld),
-	m_pTestAudioSource(nullptr),
+	m_pAudioSourceBackground(nullptr),
 	m_CartesianCamera(false),
 	m_pUIPause(nullptr),
 	m_pUIEndScreen(nullptr),
@@ -46,7 +46,7 @@ SceneGame::~SceneGame()
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
 	DeleteSafe(m_pUINotification);
-	DeleteSafe(m_pTestAudioSource);
+	DeleteSafe(m_pAudioSourceBackground);
 
 	Logger::Save();
 }
@@ -80,15 +80,12 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	SetPaused(false);
 
 	OrderSchedule::Init(this);
-	if (!ReplayHandler::IsReplaying())
+	for (uint32 i = 0; i < m_Crew.GetCount(); i++)
 	{
-		for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+		IOrder* pOrder = OrderSchedule::GetIdleOrder();
+		if (pOrder)
 		{
-			IOrder* pOrder = OrderSchedule::GetIdleOrder();
-			if (pOrder)
-			{
-				m_Crew.GetMember(i)->GiveOrder(pOrder);
-			}
+			m_Crew.GetMember(i)->GiveOrder(pOrder);
 		}
 	}
 
@@ -263,7 +260,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 				}
 			}
 		}
-		else
+		else if(!ReplayHandler::IsReplaying())
 		{
 			Pick(true, position.x, position.y);
 		}
@@ -322,7 +319,7 @@ void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2& positio
 
 void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
-	if (!IsPaused() && !m_IsGameOver)
+	if (!IsPaused() && !m_IsGameOver && !ReplayHandler::IsReplaying())
 	{
 		switch (mousebutton)
 		{
@@ -369,20 +366,10 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			SetPaused(!IsPaused());
 		}
-		else if (!IsPaused())
+		else if (!IsPaused() && !ReplayHandler::IsReplaying())
 		{
 			switch (keycode)
 			{
-			case KEY_O:
-			{
-				//m_CartesianCamera = !m_CartesianCamera;
-				break;
-			}
-			case KEY_P:
-			{
-				m_pTestAudioSource->TogglePause();
-				break;
-			}
 			case KEY_SPACE:
 			{
 				ExtendScene();
@@ -393,31 +380,6 @@ void SceneGame::OnKeyDown(KEY keycode)
 			{
 				ShowCrewmember(0);
 				ScenarioManager::OnVisibilityChange(m_pWorld, this);
-				break;
-			}
-			case KEY_NUMPAD_0:
-			{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_RED);
-				break;
-			}
-			case KEY_NUMPAD_1:
-			{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_GREEN);
-				break;
-			}
-			case KEY_NUMPAD_2:
-			{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_BLUE);
-				break;
-			}
-			case KEY_NUMPAD_3:
-			{
-				RequestDoorClosed(DOOR_COLOR::DOOR_COLOR_YELLOW);
-				break;
-			}
-			case KEY_G:
-			{
-				m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
 				break;
 			}
 			case KEY_H:
@@ -446,12 +408,6 @@ void SceneGame::OnKeyDown(KEY keycode)
 					medic->GiveOrder(new OrderGiveAid(victim));
 				}
 			}
-			case KEY_M:
-			{
-				ScenarioWater* water = (ScenarioWater*)ScenarioManager::GetScenarios()[Game::GetGame()->m_ScenarioWater];
-				//TODO!!!! Get Inlet tile position!!
-				m_Crew.GetMember(0)->GiveOrder(new OrderPlugHole(glm::ivec3(3, 3, 3), water->GetWaterInlets()[0], m_Crew.GetMember(0)->HasGearEquipped()));
-			}
 			}
 		}
 	}
@@ -475,11 +431,11 @@ void SceneGame::OnGameOver() noexcept
 void SceneGame::CreateAudio() noexcept
 {
 	AudioListener::SetPosition(glm::vec3(0.0f));
-	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
-	m_pTestAudioSource->SetVolume(0.4);
-	m_pTestAudioSource->SetPitch(1.0f);
-	m_pTestAudioSource->SetLooping(true);
-	m_pTestAudioSource->Play();
+	m_pAudioSourceBackground = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
+	m_pAudioSourceBackground->SetVolume(0.4);
+	m_pAudioSourceBackground->SetPitch(1.0f);
+	m_pAudioSourceBackground->SetLooping(true);
+	m_pAudioSourceBackground->Play();
 }
 
 void SceneGame::CreateGameObjects() noexcept
@@ -500,22 +456,6 @@ void SceneGame::CreateGameObjects() noexcept
 			pGameObject = nullptr;
 		}
 	}
-}
-
-void SceneGame::CreateWorld() noexcept
-{
-	GameObject* pGameObject = nullptr;
-
-	m_pWorld = WorldSerializer::Read("world.json");
-
-	////Enable clipplane for wallmaterial
-	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
-	ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)->SetCullMode(CULL_MODE_NONE);
-
-	//SetClipPlanes(0);
-
-	// Generate rooms
-	m_pWorld->Generate(*this);
 }
 
 void SceneGame::CreateCrew() noexcept
@@ -542,7 +482,7 @@ void SceneGame::CreateCrew() noexcept
 
 	CreateCrewMember(glm::vec3(10.0f, 4.0f, 10.0f), names[0], GroupType::SMOKE_DIVER);
 	CreateCrewMember(glm::vec3(	5.0f, 0.0f, 10.0f), names[1], GroupType::NONE);
-	/*CreateCrewMember(glm::vec3(	2.0f, 0.0f, 12.0f), names[2], GroupType::MEDIC);
+	CreateCrewMember(glm::vec3(	2.0f, 0.0f, 12.0f), names[2], GroupType::MEDIC);
 	CreateCrewMember(glm::vec3(	5.0f, 0.0f, 18.0f), names[3], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	6.0f, 0.0f, 28.0f), names[4], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	1.0f, 0.0f, 40.0f), names[5], GroupType::SMOKE_DIVER);
@@ -555,7 +495,7 @@ void SceneGame::CreateCrew() noexcept
 	CreateCrewMember(glm::vec3(10.0f, 2.0f, 21.0f), names[12], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	8.0f, 2.0f, 17.0f), names[13], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	2.0f, 4.0f, 21.0f), names[14], GroupType::NONE);
-	CreateCrewMember(glm::vec3(10.0f, 2.0f, 31.0f), names[15], GroupType::NONE);*/
+	CreateCrewMember(glm::vec3(10.0f, 2.0f, 31.0f), names[15], GroupType::NONE);
 }
 
 void SceneGame::PickPosition()

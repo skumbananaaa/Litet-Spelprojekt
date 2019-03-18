@@ -25,6 +25,7 @@ private:
 	glm::vec3 m_Position;
 	float m_Timer;
 	bool m_IsAtBed;
+	bool m_Up;
 
 	//Replay
 	std::string m_Name;

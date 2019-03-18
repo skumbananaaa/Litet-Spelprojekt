@@ -2,29 +2,29 @@
 #include "../Include/IReplayable.h"
 #include "../Include/Scenes/SceneGame.h"
 
-std::queue<std::tuple<IReplayable*, void*, float>> ReplayHandler::s_ReplayQueue;
+std::vector<std::tuple<IReplayable*, void*, float>> ReplayHandler::s_ReplayQueue;
 float ReplayHandler::s_Timer = 0.0F;
 bool ReplayHandler::s_IsReplying = false;
+int ReplayHandler::s_Index = 0;
 
 void ReplayHandler::Reset() noexcept
 {
-	s_ReplayQueue = std::queue<std::tuple<IReplayable*, void*, float>>();
+	s_ReplayQueue = std::vector<std::tuple<IReplayable*, void*, float>>();
 	s_Timer = 0.0F;
+	s_Index = 0;
 	s_IsReplying = false;
 }
 
 void ReplayHandler::Update(float dtS, SceneGame* pScene) noexcept
 {
-	s_Timer += dtS;
-
 	if (s_IsReplying)
 	{
-		while(!s_ReplayQueue.empty())
+		while(s_Index < s_ReplayQueue.size())
 		{
-			auto& tuple = s_ReplayQueue.front();
+			auto& tuple = s_ReplayQueue[s_Index];
 			if (s_Timer >= std::get<2>(tuple)) //Check if it's time to execute next event
 			{
-				s_ReplayQueue.pop();
+				s_Index++;
 				void* userData = std::get<1>(tuple);
 				std::get<0>(tuple)->BeginReplay(pScene, userData); //Execute next event and bundle the userdata
 
@@ -39,6 +39,8 @@ void ReplayHandler::Update(float dtS, SceneGame* pScene) noexcept
 			}
 		}	
 	}
+
+	s_Timer += dtS;
 }
 
 bool ReplayHandler::IsReplaying() noexcept
@@ -49,6 +51,7 @@ bool ReplayHandler::IsReplaying() noexcept
 void ReplayHandler::StartReplay() noexcept
 {
 	s_Timer = 0.0F;
+	s_Index = 0;
 	s_IsReplying = true;
 }
 
@@ -56,6 +59,6 @@ void ReplayHandler::RegisterEvent(IReplayable* pReplayable, void* userData) noex
 {
 	if (!IsReplaying())
 	{
-		s_ReplayQueue.push(std::make_tuple(pReplayable, userData, s_Timer));
+		s_ReplayQueue.push_back(std::make_tuple(pReplayable, userData, s_Timer));
 	}
 }

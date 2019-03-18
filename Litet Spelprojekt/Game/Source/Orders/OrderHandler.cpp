@@ -157,7 +157,7 @@ bool OrderHandler::StartNextExecutableOrder()
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	IOrder* pOrder = m_OrderQueue[0];
 	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
-	std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Started" << std::endl;
+	//std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Started" << std::endl;
 
 	if (!ReplayHandler::IsReplaying())
 	{
@@ -236,7 +236,7 @@ void OrderHandler::DeleteRemovedOrders(Scene* pScene, World* pWorld, Crew* pCrew
 		if (pOrder->ReadyToAbort())
 		{
 			pOrder->OnEnded(pScene, pWorld, pCrewMembers);
-			std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Ended" << std::endl;
+			//std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Ended" << std::endl;
 			DeleteSafe(pOrder);
 			m_OrdersToDelete.erase(m_OrdersToDelete.begin() + i);
 		}

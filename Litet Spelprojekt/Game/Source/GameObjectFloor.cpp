@@ -1,4 +1,4 @@
-#include "../Include/GameObjectFloor.h"
+Ôªø#include "../Include/GameObjectFloor.h"
 #include "../Include/Game.h"
 #include "../Include/Orders/OrderExtinguishFire.h"
 #include "../Include/Orders/OrderPlugHole.h"
@@ -92,11 +92,11 @@ void GameObjectFloor::OnPicked(const std::vector<int32>& selectedMembers, int32 
 
 	if (pLowerTile->Temp > pLowerTile->BurnsAt)
 	{
-		AddChoice("Sl‰ck eld", nullptr);
+		AddChoice("Sl√§ck eld", nullptr);
 	}
 	if (pLowerTile->WaterInlet)
 	{
-		AddChoice("Plugga hÂl", nullptr);
+		AddChoice("Plugga h√•l", nullptr);
 	}
 	else if (pLowerTile->AlreadyFlooded)
 	{
@@ -117,7 +117,7 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 	World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
 	std::vector<GameObject*> pExtinguishers;
 
-	if (name == "Sl‰ck eld")
+	if (name == "Sl√§ck eld")
 	{
 		const glm::ivec3& tile = GetTile();
 		glm::ivec3 extinguisherTile(-1);
@@ -153,7 +153,7 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 				false, ""));
 		}
 	}
-	else if (name == "Plugga hÂl")
+	else if (name == "Plugga h√•l")
 	{
 		const glm::ivec3& tile = GetTile();
 		for (uint32 i = 0; i < selectedMembers.size(); i++)

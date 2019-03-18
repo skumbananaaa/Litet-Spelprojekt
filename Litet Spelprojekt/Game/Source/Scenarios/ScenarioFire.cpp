@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenarios\ScenarioFire.h"
+﻿#include "..\..\Include\Scenarios\ScenarioFire.h"
 #include <System/Random.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../../Include/GameState.h"
@@ -330,7 +330,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 std::string ScenarioFire::GetName() noexcept
 {
-	return "Eldsv�da";
+	return "Eldsvåda";
 }
 
 int32 ScenarioFire::GetCooldownTime() noexcept

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <EnginePch.h>
 #include <World/WorldLevel.h>
 #include <World/Room.h>
@@ -213,7 +213,7 @@ inline std::string World::GetNameFromGlobal(uint32 globalIndex) noexcept
 	}
 	else if (globalIndex >= DINING_ROOM_INTERVAL_START && globalIndex <= DINING_ROOM_INTERVAL_END)
 	{
-		return "m�ss " + std::to_string((globalIndex + 1) - DINING_ROOM_INTERVAL_START);
+		return "mäss " + std::to_string((globalIndex + 1) - DINING_ROOM_INTERVAL_START);
 	}
 	else if (globalIndex >= CABOOSE_INTERVAL_START && globalIndex <= CABOOSE_INTERVAL_END)
 	{

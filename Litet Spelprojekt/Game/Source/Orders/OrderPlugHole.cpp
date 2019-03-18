@@ -1,4 +1,4 @@
-#include "../../Include/Orders/OrderPlugHole.h"
+﻿#include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Crewmember.h"
 #include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
@@ -63,7 +63,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 				{
 					if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 					{
-						Logger::LogEvent(GetCrewMember()->GetName() + " pluggade igen h�let!", true);
+						Logger::LogEvent(GetCrewMember()->GetName() + " pluggade igen hålet!", true);
 					}
 					else
 					{

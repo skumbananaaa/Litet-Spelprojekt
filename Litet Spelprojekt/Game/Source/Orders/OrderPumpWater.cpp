@@ -1,4 +1,4 @@
-#include "../../Include/Orders/OrderPumpWater.h"
+﻿#include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
 #include "../../Include/Crewmember.h"
 OrderPumpWater::OrderPumpWater(uint32 roomToPump, glm::ivec3 pumpControl)
@@ -22,7 +22,7 @@ void OrderPumpWater::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 	pWorld->GetRoom(m_RoomToPump).SetPumping(false);
 
-	Logger::LogEvent(GetCrewMember()->GetName() + " blev f�rdig med pumpning!", true);
+	Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med pumpning!", true);
 	GetCrewMember()->ReportPosition();
 }
 

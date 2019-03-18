@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenes\SceneInstructions.h"
+﻿#include "..\..\Include\Scenes\SceneInstructions.h"
 #include "../../Include/Game.h"
 
 SceneInstructions::SceneInstructions() : 
@@ -49,7 +49,7 @@ void SceneInstructions::CreateWorld() noexcept
 	pWorld->GenerateRoomShadows(*m_pSceneGame);
 
 	m_pButtonContinue->SetVisible(true);
-	m_pButtonContinue->SetText("Forts�tt");
+	m_pButtonContinue->SetText("Fortsätt");
 	m_pButtonContinue->SetBackgroundColor(m_pButtonContinue->GetOnHoverColor());
 }
 

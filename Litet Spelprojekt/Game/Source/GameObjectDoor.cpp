@@ -1,4 +1,4 @@
-#include <EnginePch.h>
+Ôªø#include <EnginePch.h>
 #include "../Include/GameObjectDoor.h"
 #include "../Include/Game.h"
 #include "../Include/Orders/OrderCloseDoor.h"
@@ -202,11 +202,11 @@ void GameObjectDoor::OnPicked(const std::vector<int32>& selectedMembers, int32 x
 
 	if (!IsClosed())
 	{
-		AddChoice("St‰ng", reinterpret_cast<void*>(false));
+		AddChoice("St√§ng", reinterpret_cast<void*>(false));
 	}
 	else if (!IsOpen())
 	{
-		AddChoice("÷ppna", reinterpret_cast<void*>(true));
+		AddChoice("√ñppna", reinterpret_cast<void*>(true));
 	}
 
 	DisplayOrders(x, y, selectedMembers);

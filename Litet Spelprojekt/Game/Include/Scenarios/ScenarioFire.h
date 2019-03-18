@@ -34,7 +34,7 @@ public:
 private:
 	World* m_pWorld;
 	bool m_FireAlwaysVisible;
-
+	bool m_HasStarted;
 	const uint32* const** m_pppMap;
 
 	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);

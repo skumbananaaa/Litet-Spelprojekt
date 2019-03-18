@@ -9,7 +9,7 @@
 class ScenarioArtillery : public IScenario, public IMeshListener
 {
 public:
-	ScenarioArtillery();
+	ScenarioArtillery(uint32 numInstances);
 	virtual ~ScenarioArtillery();
 
 	virtual void Init(World* pWorld) noexcept override;

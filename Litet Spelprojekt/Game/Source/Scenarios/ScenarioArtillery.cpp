@@ -5,9 +5,9 @@
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioArtillery::ScenarioArtillery() 
+ScenarioArtillery::ScenarioArtillery(uint32 numInstances)
 	: m_pAudioSourceExplosion(nullptr),
-	m_InstancesToSpawn(1),
+	m_InstancesToSpawn(numInstances),
 	m_InstancesComplete(0)
 {
 

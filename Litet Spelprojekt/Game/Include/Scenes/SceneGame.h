@@ -49,6 +49,7 @@ public:
 
 	void PickPosition();
 	void RequestDoorClosed(uint32 doorColor);
+	void SetUIVisible(bool visible) noexcept;
 
 	void Pick(bool hover, int32 positionX, int32 positionY);
 	glm::vec3 GetRay(const glm::vec2& mousepos, uint32 windowWidth, uint32 windowHeight);

@@ -28,6 +28,7 @@ public:
 
 	virtual void OnProgressAnimationEnd(ProgressButton* progressButton) override;
 
+	void SetVisible(bool visible) noexcept;
 	void Deselect();
 
 private:

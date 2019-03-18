@@ -26,6 +26,10 @@ void ScenarioIceberg::Init(World* pWorld) noexcept
 	m_pAudioSourceExplosion->SetReferenceDistance(0.0f);
 	m_pAudioSourceExplosion->SetMaxDistance(500.0f);
 	m_pAudioSourceExplosion->SetLooping(false);
+
+	//reseting Iceberg on initiation
+	WaterOutdoorMaterial* pMaterial = reinterpret_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
+	pMaterial->SetIcebergPosition(glm::vec2(FLT_MAX, FLT_MAX));
 }
 
 void ScenarioIceberg::Release() noexcept

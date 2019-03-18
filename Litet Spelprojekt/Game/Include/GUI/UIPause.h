@@ -21,4 +21,12 @@ private:
 	TextView* m_pTextViewTitle;
 	Button* m_pButtonBack;
 	Button* m_pButtonExit;
+	Button* m_pButtonTutorial;
+	Button* m_pButtonNext;
+	Button* m_pButtonPrev;
+	Panel* m_pMenuPanel;
+	Panel* m_pTutorialPanel;
+
+	int32 m_TutorialScreenIndex;
+	std::vector<uint32> m_TutorialScreens;
 };

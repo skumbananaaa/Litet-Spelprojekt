@@ -119,12 +119,14 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	{
 		Game* game = Game::GetGame();
 		Window* window = &game->GetWindow();
-		m_pUIPause = new UIPause((window->GetWidth() - 600) / 2, (window->GetHeight() - 600) / 2, 600, 600);
+		m_pUIPause = new UIPause(0, 0, window->GetWidth(), window->GetHeight());
+		SetUIVisible(false);
 		game->GetGUIManager().Add(m_pUIPause);
 	}
 	else if (IsPaused() && !m_IsPaused)
 	{
 		Game* game = Game::GetGame();
+		SetUIVisible(true);
 		game->GetGUIManager().Remove(m_pUIPause);
 		m_pUIPause = nullptr;
 	}
@@ -700,6 +702,16 @@ void SceneGame::RequestDoorClosed(uint32 doorColor)
 		pCrewmember->SetCloseColor(doorColor);
 		pCrewmember->LookForDoor();
 	}
+}
+
+void SceneGame::SetUIVisible(bool visible) noexcept
+{
+	m_pUICrewMember->SetVisible(visible);
+	m_pUIRequest->SetVisible(visible);
+	m_pUILog->SetVisible(visible);
+
+	m_pUICrew->SetVisible(visible);
+	m_pUINotification->SetVisible(visible);
 }
 
 void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)

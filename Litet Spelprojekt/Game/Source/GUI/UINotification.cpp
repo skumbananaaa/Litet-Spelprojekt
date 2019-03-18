@@ -77,6 +77,14 @@ void UINotification::DeleteAll() noexcept
 	}
 }
 
+void UINotification::SetVisible(bool visible) noexcept
+{
+	for (int i = m_Notifications.size() - 1; i >= 0; i--)
+	{
+		m_Notifications[i].first->SetVisible(visible);
+	}
+}
+
 void UINotification::CreateNotification(const std::string& text)
 {
 	float y = m_Bounds.y;

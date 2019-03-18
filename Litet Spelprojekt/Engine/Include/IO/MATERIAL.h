@@ -17,6 +17,7 @@ public:
 	static uint32 FIRE_RELATED;
 	static uint32 LADDER;
 	static uint32 OCEAN_BLUE;
+	static uint32 INLET_BLUE;
 	static uint32 BOAT;
 	static uint32 GROUND;
 	static uint32 WATER_OUTDOOR;

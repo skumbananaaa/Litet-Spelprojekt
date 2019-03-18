@@ -10,7 +10,7 @@
 
 class OrderExtinguishFire : public OrderWalk
 {
-	static constexpr float FIRE_EXTINGUISH_BY_CREW_RATE = 800.0f * RATE_OF_FIRE_SPREAD;
+	static constexpr float FIRE_EXTINGUISH_BY_CREW_RATE = 40.0f * RATE_OF_FIRE_SPREAD;
 
 public:
 	OrderExtinguishFire(const glm::ivec3& goalTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool fireFullyExtinguished, const std::string& extinguisherName);

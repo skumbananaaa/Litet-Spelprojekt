@@ -1,4 +1,4 @@
-#include "../../Include/Orders/OrderPlugHole.h"
+﻿#include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Crewmember.h"
 #include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
@@ -35,7 +35,6 @@ void OrderPlugHole::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers)
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
 
-	Logger::LogEvent(GetCrewMember()->GetName() + " pluggade igen h�let!", true);
 	GetCrewMember()->ReportPosition();
 }
 
@@ -62,6 +61,14 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 				glm::ivec3 tile = GetCrewMember()->GetTile();
 				if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 				{
+					if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
+					{
+						Logger::LogEvent(GetCrewMember()->GetName() + " pluggade igen hålet!", true);
+					}
+					else
+					{
+						Logger::LogEvent(GetCrewMember()->GetName() + " kontrollerade det pluggningen!", true);
+					}
 					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
 					if (!pWorld->GetRoom(GetCrewMember()->GetRoom()).IsPumping())
 					{

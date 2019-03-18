@@ -14,6 +14,7 @@ ScenarioWater::~ScenarioWater()
 
 void ScenarioWater::Init(World* pWorld) noexcept
 {
+	SetTimeOfNextOutBreak(1.0f);
 	m_FloodingIDs = new std::vector<glm::ivec2>[pWorld->GetNumLevels() / 2];
 	m_pWorld = pWorld;
 }
@@ -37,6 +38,7 @@ void ScenarioWater::Escalate(const glm::ivec3& position) noexcept
 	m_InletTiles.push_back(position);
 	m_FloodingIDs[position.y / 2].push_back(glm::ivec2(position.x, position.z));
 	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].WaterInlet = true;
+	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetMaterial(MATERIAL::INLET_BLUE);
 }
 
 void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)

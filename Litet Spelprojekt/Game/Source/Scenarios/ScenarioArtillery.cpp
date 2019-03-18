@@ -20,7 +20,7 @@ ScenarioArtillery::~ScenarioArtillery()
 
 void ScenarioArtillery::Init(World* pWorld) noexcept
 {
-
+	SetTimeOfNextOutBreak(1.0f);
 }
 
 void ScenarioArtillery::Release() noexcept

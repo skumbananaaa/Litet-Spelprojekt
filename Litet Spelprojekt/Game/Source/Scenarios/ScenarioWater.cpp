@@ -20,6 +20,7 @@ void ScenarioWater::BeginReplay(SceneGame* pScene, void* userData) noexcept
 
 void ScenarioWater::Init(World* pWorld) noexcept
 {
+	SetTimeOfNextOutBreak(1.0f);
 	m_FloodingIDs = new std::vector<glm::ivec2>[pWorld->GetNumLevels() / 2];
 	m_pWorld = pWorld;
 }
@@ -91,6 +92,8 @@ void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)
 
 bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 {
+	m_TotalWaterLevel = 0.0f;
+
 	const std::vector<uint32>& activeRooms = pWorld->GetActiveRooms();
 #if defined(PRINT_CPU_DEBUG_DATA)
 	CPUProfiler::StartTimer(CPU_PROFILER_SLOT_3);
@@ -233,9 +236,10 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 			GameObject* pGameObject = ppLevelData[currentTile.x][currentTile.y].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 
-			if (glm::abs(ppLevelData[currentTile.x][currentTile.y].WaterLevel - ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated) > WATER_UPDATE_LEVEL_INTERVAL)
+			float waterlevel = ppLevelData[currentTile.x][currentTile.y].WaterLevel;
+			if (glm::abs(waterlevel - ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated) > WATER_UPDATE_LEVEL_INTERVAL)
 			{
-				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = glm::floor(WATER_ROUNDING_FACTOR * ppLevelData[currentTile.x][currentTile.y].WaterLevel) / WATER_ROUNDING_FACTOR;
+				ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated = glm::floor(WATER_ROUNDING_FACTOR * waterlevel) / WATER_ROUNDING_FACTOR;
 
 				float yScale = glm::clamp(ppLevelData[currentTile.x][currentTile.y].WaterLevelLastUpdated, 0.05f, 1.90f);
 
@@ -259,6 +263,8 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 					}
 					pGameObject->SetIsVisible(true);
 					pGameObject->UpdateTransform();
+
+					m_TotalWaterLevel += (waterlevel / WATER_MAX_LEVEL);
 				}
 				else
 				{
@@ -301,14 +307,8 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 	m_InletsToRemove.clear();
 
-	constexpr float total = 40.0 * 10.0f;
-	float amount = 0.0f;
-	for (uint32 i = 0; i < 3; i++)
-	{
-		amount += (m_FloodingIDs[i].size() / total);
-	}
-
-	GameState::SetWaterLeakAmount(amount);
+	constexpr float total = 40.0 * 10.0f * 3.0;
+	GameState::SetWaterLeakAmount(m_TotalWaterLevel / total);
 	return false;
 }
 

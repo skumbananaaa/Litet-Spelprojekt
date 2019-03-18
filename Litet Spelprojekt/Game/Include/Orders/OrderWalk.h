@@ -3,6 +3,7 @@
 #include <System/ThreadHandler.h>
 #include <GLM/glm.hpp>
 #include <World/Scenarios/Fire/FireAlarm.h>
+#include <World/Logger.h>
 
 class Path;
 

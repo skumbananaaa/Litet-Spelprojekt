@@ -24,6 +24,7 @@ public:
 protected:
 	Crewmember* m_pAiding;
 	glm::ivec3 m_Target;
+	bool m_IsAiding;
 
 	//Replay
 	uint32 m_InjuredMember;

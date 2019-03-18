@@ -46,7 +46,7 @@ void UINotification::Update(float dtS) noexcept
 	for (int i = m_NotificationsToDelete.size() - 1; i >= 0; i--)
 	{
 		Panel* pPanel = m_NotificationsToDelete[i];
-		pPanel->SetPosition(pPanel->GetX() + dtS * 400.0f, pPanel->GetY());
+		pPanel->SetPosition(pPanel->GetX() + dtS * 500.0f, pPanel->GetY());
 		if (pPanel->GetX() > Game::GetGame()->GetWindow().GetWidth())
 		{
 			for (int j = m_Notifications.size() - 1; j >= 0; j--)
@@ -77,12 +77,7 @@ void UINotification::DeleteAll() noexcept
 		Game::GetGame()->GetGUIManager().Remove(m_Notifications[i].first);
 		m_Notifications.erase(m_Notifications.begin() + i);
 	}
-
-	for (int i = m_NotificationsToDelete.size() - 1; i >= 0; i--)
-	{
-		Game::GetGame()->GetGUIManager().Remove(m_NotificationsToDelete[i]);
-		m_NotificationsToDelete.erase(m_NotificationsToDelete.begin() + i);
-	}
+	m_NotificationsToDelete.clear();
 }
 
 void UINotification::CreateNotification(const std::string& text)

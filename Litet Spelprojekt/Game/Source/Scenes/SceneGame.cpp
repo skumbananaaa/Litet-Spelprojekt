@@ -23,7 +23,6 @@ SceneGame::SceneGame(World* pWorld, bool hiddenCrew)
 	m_pUIRequest(nullptr),
 	m_IsGameOver(false),
 	m_pLookAt(nullptr),
-	m_TempTimer(0.0f),
 	m_HiddenCrew(hiddenCrew)
 {
 	Game* game = Game::GetGame();
@@ -114,8 +113,6 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 
 void SceneGame::OnUpdate(float dtS) noexcept
 {
-	m_TempTimer += dtS;
-
 	if (m_IsPaused && !IsPaused())
 	{
 		Game* game = Game::GetGame();
@@ -144,7 +141,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	{
 		ReplayHandler::Update(dtS, this);
 
-		if (GameState::GetWaterLeakAmount() > 1.0f || GameState::GetBurningAmount() > 0.3f || GameState::GetCrewHealth() < 0.5f || m_TempTimer > 30.0f)
+		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH)
 		{
 			m_IsGameOver = true;
 		}
@@ -260,7 +257,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 				}
 			}
 		}
-		else if(!ReplayHandler::IsReplaying())
+		else
 		{
 			Pick(true, position.x, position.y);
 		}
@@ -366,48 +363,60 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			SetPaused(!IsPaused());
 		}
-		else if (!IsPaused() && !ReplayHandler::IsReplaying())
+		else if (!IsPaused())
 		{
 			switch (keycode)
 			{
-			case KEY_SPACE:
-			{
-				ExtendScene();
-				UpdateMaterialClipPlanes();
-				break;
-			}
-			case KEY_R:
-			{
-				ShowCrewmember(0);
-				ScenarioManager::OnVisibilityChange(m_pWorld, this);
-				break;
-			}
-			case KEY_H:
-			{
-				Crewmember* medic = nullptr;
-				Crewmember* victim = nullptr;
-				for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+				case KEY_SPACE:
 				{
-					Crewmember* member = m_Crew.GetMember(i);
-					if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
+					ExtendScene();
+					UpdateMaterialClipPlanes();
+					break;
+				}
+				case KEY_H:
+				{
+					if (!ReplayHandler::IsReplaying())
 					{
-						victim = member;
-					}
-					else if (member->GetGroupType() == MEDIC)
-					{
-						medic = member;
+						Crewmember* medic = nullptr;
+						Crewmember* victim = nullptr;
+						for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+						{
+							Crewmember* member = m_Crew.GetMember(i);
+							if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
+							{
+								victim = member;
+							}
+							else if (member->GetGroupType() == MEDIC)
+							{
+								medic = member;
+							}
+
+							if (medic != nullptr && victim != nullptr)
+							{
+								break;
+							}
+						}
+
+						if (medic != nullptr && victim != nullptr)
+						{
+							medic->GiveOrder(new OrderGiveAid(victim));
+						}
 					}
 
-					if (medic != nullptr && victim != nullptr)
-					{
-						break;
-					}
+					break;
 				}
-				if (medic != nullptr && victim != nullptr)
+				case KEY_ENTER:
 				{
-					medic->GiveOrder(new OrderGiveAid(victim));
+					if (!ReplayHandler::IsReplaying())
+					{
+						const std::vector<int32>& selectedList = m_Crew.GetSelectedList();
+						for (int32 i = 0; i < selectedList.size(); i++)
+						{
+							m_Crew.GetMember(selectedList[i])->RequestReportPosition();
+						}
+					}
+					break;
 				}
-			}
 			}
 		}
 	}
@@ -445,7 +454,7 @@ void SceneGame::CreateGameObjects() noexcept
 		//Look at
 		{
 			pGameObject = new GameObject();
-			pGameObject->SetMaterial(MATERIAL::BOAT);
+			pGameObject->SetMaterial(MATERIAL::LOOK_AT);
 			pGameObject->SetMesh(MESH::QUAD);
 			pGameObject->SetPosition(GetCamera().GetLookAt() + glm::vec3(0.0f, 0.06f, 0.0f));
 			pGameObject->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -633,7 +642,6 @@ void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)
 	{
 		for (int i = 0; i < m_PickableGameObjects.size(); i++)
 		{
-			
 			if (m_PickableGameObjects[i]->IsHovered())
 			{
 				m_PickableGameObjects[i]->OnNotHovered();

@@ -24,6 +24,7 @@ void ScenarioIceberg::BeginReplay(SceneGame* pScene, void* userData) noexcept
 
 void ScenarioIceberg::Init(World* pWorld) noexcept
 {
+	SetTimeOfNextOutBreak(1.0f);
 	m_pAudioSourceExplosion = AudioSource::CreateSoundSource(SOUND::MONO_CRASH);
 	m_pAudioSourceExplosion->SetRollOffFactor(10.0f);
 	m_pAudioSourceExplosion->SetReferenceDistance(0.0f);

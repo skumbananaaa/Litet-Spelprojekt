@@ -31,8 +31,10 @@ public:
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
 	const std::vector<glm::ivec3> GetWaterInlets() const noexcept;
+
 private:
 	World* m_pWorld;
+	float m_TotalWaterLevel;
 	bool m_WaterAlwaysVisible;
 	std::vector<glm::ivec2>* m_FloodingIDs;
 	std::vector<glm::ivec3> m_InletTiles;
@@ -64,6 +66,7 @@ inline void ScenarioWater::StartWater(const glm::ivec3 & position) noexcept
 	m_InletTiles.push_back(position);
 	m_FloodingIDs[position.y / 2].push_back(glm::ivec2(position.x, position.z));
 	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].WaterInlet = true;
+	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetMaterial(MATERIAL::INLET_BLUE);
 }
 
 inline uint32 ScenarioWater::CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept

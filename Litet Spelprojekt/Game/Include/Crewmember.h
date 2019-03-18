@@ -4,6 +4,7 @@
 #include "../Include/Orders/OrderHandler.h"
 #include "../Include/GUI/UISelectedCrew.h"
 #include <Audio/Sources/AudioSource.h>
+#include "../Include/GUI/UIOrder.h"
 
 #pragma message("INCLUDE" __FILE__)
 
@@ -16,9 +17,10 @@
 #define CREWMEMBER_SERIOUSLY_INJURED_MOVEMENT_SPEED 0.8f
 #define CREWMEMBER_DEAD_MOVEMENT_SPEED 0.0f
 
-#define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.7f
+#define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.6f
 
 #define NR_GROUPS 3
+#define MAX_HEALTH 100.0f
 
 enum GroupType : uint32
 {
@@ -29,7 +31,7 @@ enum GroupType : uint32
 
 class TileData;
 
-class Crewmember : public GameObject
+class Crewmember : public GameObject, public UIOrder, public IProgressListener
 {
 	friend class Crew;
 	friend class IOrder;
@@ -68,6 +70,8 @@ public:
 	virtual void OnNotHovered() noexcept override;
 	void GiveOrder(IOrder* order) noexcept;
 
+	virtual void OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept;
+
 	//SETS
 	void SetPosition(const glm::vec3& position) noexcept;
 	void SetDirection(const glm::vec3& direction) noexcept;
@@ -75,8 +79,11 @@ public:
 	void SetIdling(bool value) noexcept;
 	void SetIsPicked(bool picked) noexcept;
 	void SetGearIsEquipped(bool value) noexcept;
+	void SetExtinguisherIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
 	void ReportPosition() noexcept;
+	void RequestReportPosition() noexcept;
+	void ChangeTexture() noexcept;
 
 	//GETS
 	int32 GetShipNumber() const noexcept;
@@ -87,6 +94,7 @@ public:
 
 	GroupType GetGroupType() const noexcept;
 	int32 GetForgetfulness() const noexcept;
+	Crewmember* GetAssisting() const noexcept;
 
 	//IS
 	bool IsIdling() const noexcept;
@@ -103,7 +111,10 @@ public:
 	bool HasInjurySmoke() const noexcept;
 	bool HasInjuryBleed() const noexcept;
 	bool HasGearEquipped() const noexcept;
+	bool HasExtinguisherEquipped() const noexcept;
 	bool HasRecovered() const noexcept;
+
+	void OnProgressAnimationEnd(ProgressButton* progressButton);
 
 private:
 	//UPDATES
@@ -142,15 +153,18 @@ private:
 	float m_HasInjuryBurned;
 	float m_HasInjurySmoke;
 	float m_HasInjuryBleeding;
-	float m_MaxHealth;
 	float m_Health;
 	bool m_HasTriedToWalkToSickbay;
+	bool m_HasChangedTexture;
+	bool m_HasEquippedExtinguisher;
 	float m_Recovering;
+	bool m_IsCarried;
 
 	//--MOVEMENT
 	float m_MovementSpeed;
 	bool m_Idling;
 	bool m_Resting;
+	bool m_WasAbleToWork;
 
 	int32 m_Forgetfulness;
 
@@ -160,6 +174,11 @@ private:
 	AudioSource* m_pAudioSourceScream;
 
 	uint32 m_CloseColor;
+
+	GameObject* m_pShadow;
+
+	float m_ReportTime;
+	float m_ReportTimer;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept
@@ -197,6 +216,11 @@ inline int32 Crewmember::GetForgetfulness() const noexcept
 	return m_Forgetfulness;
 }
 
+inline Crewmember * Crewmember::GetAssisting() const noexcept
+{
+	return m_pAssisting;
+}
+
 inline bool Crewmember::IsIdling() const noexcept
 {
 	return m_Idling;
@@ -220,7 +244,7 @@ inline bool Crewmember::IsAlive() const noexcept
 inline bool Crewmember::IsAbleToWork() const noexcept
 {
 	return !(m_HasInjurySmoke > 5.0f || 
-		(m_Health < 0.75  *m_MaxHealth) || 
+		(m_Health < 0.75  *MAX_HEALTH) ||
 		m_HasInjuryBoneBroken >= 3.0f ||
 		m_HasInjuryBurned > 3.0f || 
 		m_HasInjuryBleeding > 3.0f);
@@ -230,7 +254,7 @@ inline bool Crewmember::IsAbleToWalk() const noexcept
 {
 	return !(m_HasInjuryBoneBroken > 5.0f ||
 		m_HasInjurySmoke > 10.0f ||
-		m_Health < 0.5f * m_MaxHealth ||
+		m_Health < 0.5f * MAX_HEALTH ||
 		m_HasInjuryBurned > 10.0f ||
 		m_HasInjuryBleeding > 6.0f);
 }
@@ -265,7 +289,17 @@ inline bool Crewmember::HasGearEquipped() const noexcept
 	return m_GearIsEquipped;
 }
 
+inline bool Crewmember::HasExtinguisherEquipped() const noexcept
+{
+	return m_HasEquippedExtinguisher;
+}
+
 inline bool Crewmember::HasRecovered() const noexcept
 {
 	return m_Recovering > 1.0f;
+}
+
+inline void Crewmember::OnProgressAnimationEnd(ProgressButton * progressButton)
+{
+	ReportPosition();
 }

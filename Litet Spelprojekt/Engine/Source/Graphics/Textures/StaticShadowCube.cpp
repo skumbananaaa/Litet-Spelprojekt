@@ -107,7 +107,7 @@ void StaticShadowCube::Create(const glm::vec3& position, const Scene& scene)
 		const IndexedMesh& mesh = *(drawables[i]->GetMesh());
 		const Material* material = drawables[i]->GetMaterial();
 
-		if (material != ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR))
+		if (material != ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR) && material != ResourceHandler::GetMaterial(MATERIAL::FIRESPRINKLER))
 		{
 			modelBuff.Model = drawables[i]->GetTransform();
 			pModelBuffer->UpdateData(&modelBuff);

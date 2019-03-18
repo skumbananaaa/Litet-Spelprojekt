@@ -39,7 +39,7 @@ public:
 	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 	virtual bool IsDeleteable() const noexcept override { return true; }
 protected:
-	void GiveOrder(IOrder* order) noexcept;
+	void GiveOrderInbred(IOrder* order) noexcept;
 
 private:
 	Crewmember* m_pCrewMember;

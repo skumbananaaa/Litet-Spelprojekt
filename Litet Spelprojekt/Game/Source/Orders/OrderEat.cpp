@@ -92,7 +92,6 @@ void OrderEat::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcep
 	{
 
 		Crewmember* pCrewmember = GetCrewMember();
-		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 		pCrewmember->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 		pCrewmember->SetPosition(m_Position);
 	}

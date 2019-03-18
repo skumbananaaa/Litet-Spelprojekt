@@ -1,4 +1,4 @@
-#include "..\..\Include\GUI\UIEndScreen.h"
+ï»¿#include "..\..\Include\GUI\UIEndScreen.h"
 #include "..\..\Include\Game.h"
 #include "..\..\Include\GameState.h"
 #include "../../Include/Scenes/SceneReplay.h"
@@ -11,7 +11,7 @@ UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost)
 {
 	m_pTextViewTitle = new TextView(0, height - 50, width, 50, "Scenario Slut", true, 90);
 	
-	m_pTextViewEnd = new TextView(20, height - 120, width - 20, 50, lost ? "Du misslyckades, du är sämst. Vad gör du med ditt liv?" : "Du klarade det, bra jobbat vill du ha en medalj?", true, 80);
+	m_pTextViewEnd = new TextView(20, height - 120, width - 20, 50, lost ? "Du misslyckades, du Ã¤r sÃ¤mst. Vad gÃ¶r du med ditt liv?" : "Du klarade det, bra jobbat vill du ha en medalj?", true, 80);
 	if (lost)
 	{
 		m_pTextViewEnd->SetTextColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -19,16 +19,16 @@ UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost)
 
 	std::stringstream stream;
 	stream.precision(3);
-	stream << "Besättning:  " << GameState::GetCrewHealth() * 100.0f << "% av besättningen klarade sig utan skador";
+	stream << "BesÃ¤ttning:  " << GameState::GetCrewHealth() * 100.0f << "% av besÃ¤ttningen klarade sig utan skador";
 	m_pTextViewCrew = new TextView(20, height - 170, width - 20, 50, stream.str(), false);
 
 	stream.precision(2);
 	stream.str("");
-	stream << "Bränder:  " << GameState::GetBurningAmount() * 100.0f << "% av skeppet skadades av brand";
+	stream << "BrÃ¤nder:  " << GameState::GetBurningAmount() * 100.0f << "% av skeppet skadades av brand";
 	m_pTextViewFire = new TextView(20, height - 220, width - 20, 50, stream.str(), false);
 
 	stream.str("");
-	stream << "Vattenläckor:  " << GameState::GetWaterLeakAmount() << " av 3 våningar fylldes med vatten";
+	stream << "VattenlÃ¤ckor:  " << GameState::GetWaterLeakAmount() << " av 3 vÃ¥ningar fylldes med vatten";
 	m_pTextViewWater = new TextView(20, height - 270, width - 20, 50, stream.str(), false);
 
 	m_pButtonExit = new Button(width / 2 - (width - 600) - 25, 10, width - 600, 50, "Avsluta");

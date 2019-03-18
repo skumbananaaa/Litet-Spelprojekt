@@ -1,4 +1,4 @@
-#include <EnginePch.h>
+﻿#include <EnginePch.h>
 #include <IO/GAMEOBJECT.h>
 #include <IO/ResourceHandler.h>
 #include <Graphics/GameObject.h>
@@ -49,6 +49,6 @@ void GAMEOBJECT::RegisterResources()
 	SHELF_EMPTY					= ResourceHandler::RegisterGameObject("Hylla", MESH::SHELF_EMPTY, MATERIAL::SHELF_EMPTY);
 	SHELF_AMMUNITION			= ResourceHandler::RegisterGameObject("Ammunitionshylla", MESH::SHELF_AMMUNITION, MATERIAL::SHELF_AMMUNITION);
 	GENERATOR					= ResourceHandler::RegisterGameObject("Generator", MESH::GENERATOR, MATERIAL::GENERATOR);
-	FIRE_EXTINGUISHER			= ResourceHandler::RegisterGameObject("Brandsläckare", MESH::FIRE_EXTINGUISHER, MATERIAL::FIRE_EXTINGUISHER);
+	FIRE_EXTINGUISHER			= ResourceHandler::RegisterGameObject("Extinguisher", MESH::FIRE_EXTINGUISHER, MATERIAL::FIRE_EXTINGUISHER);
 	FIRESPRINKLER				= ResourceHandler::RegisterGameObject("Sprinkler", MESH::FIRESPRINKLER, MATERIAL::FIRESPRINKLER);
 }

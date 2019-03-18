@@ -163,6 +163,7 @@ void World::GenerateFloor(Scene& scene) noexcept
 				pGameObject->SetPosition(glm::vec3(x, level, z));
 				pGameObject->SetScale(glm::vec3(1.0f, 0.1f, 1.0f));
 				pGameObject->UpdateTransform();
+				m_Levels[level].GetLevelData()[x][z].GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR] = pGameObject;
 				scene.AddGameObject(pGameObject);
 			}
 		}

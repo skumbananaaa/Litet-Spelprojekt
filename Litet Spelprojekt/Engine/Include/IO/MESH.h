@@ -19,6 +19,9 @@ public:
 	static uint32 INSTRUMENT_2;
 	static uint32 LAMP;
 	static uint32 ANIMATED_MODEL_RUN;
+	static uint32 ANIMATED_MODEL_EXTINGUISH;
+	static uint32 ANIMATED_MODEL_EXTINGUISH_RUN;
+	static uint32 ANIMATED_MODEL_WALK;
 	static uint32 ANIMATED_MODEL_IDLE;
 	static uint32 ANIMATED_MODEL_WORK;
 	static uint32 ANIMATED_MODEL_EAT;
@@ -40,6 +43,7 @@ public:
 	static uint32 GENERATOR;
 	static uint32 FIRE_EXTINGUISHER;
 	static uint32 FIRESPRINKLER;
+	static uint32 CREWMEMBER_SHADOW;
 
 private:
 	static void RegisterResourcesPreLoading();

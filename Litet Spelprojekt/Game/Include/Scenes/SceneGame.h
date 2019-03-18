@@ -21,6 +21,10 @@
 #include <System/Random.h>
 #include "../GUI/UINotification.h"
 
+#define MIN_CREWHEALTH 0.4f
+#define MAX_SHIPDAMAGE 0.3f
+#define MAX_WATERLEAKAGE 0.7f
+
 class SceneGame : public SceneInternal
 {
 	friend class Game;
@@ -94,8 +98,6 @@ protected:
 
 	GameObject* m_pLookAt;
 	bool m_HiddenCrew;
-
-	float m_TempTimer;
 };
 
 inline void SceneGame::UpdateMaterialClipPlanes() noexcept
@@ -109,6 +111,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	glm::vec4 floorClipPlane(0.0f,	  factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 1.9f));
 	glm::vec4 particleClipPlane(0.0f, factorProduct * -1.0f, 0.0f, factorProduct * (camera.GetLookAt().y + 2.0f));
 
+	ResourceHandler::GetMaterial(MATERIAL::BLACK)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_FRAME)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_RED)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::DOOR_GREEN)			->SetLevelClipPlane(standardClipPlane);
@@ -132,6 +135,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::TABLE)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::TOILET)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::ANIMATED_MODEL)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::CREW_INJURED)		->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_NORMAL)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_SICKBAY1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_TOILET1)		->SetLevelClipPlane(floorClipPlane);
@@ -144,6 +148,18 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_KITCHEN1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_DINING1)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::FLOOR_CABOOSE1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_NORMAL)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_SICKBAY1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_TOILET1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_MACHINE1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_MACHINE2)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_MACHINE3)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_AMMUNITION1)->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_AMMUNITION2)->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_AMMUNITION3)->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_KITCHEN1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_DINING1)	->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::FLOOR_EXT_CABOOSE1)	->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::OVEN)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::SHELF_AMMUNITION)	->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::SHELF_EMPTY)			->SetLevelClipPlane(standardClipPlane);

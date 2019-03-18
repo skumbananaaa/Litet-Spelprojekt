@@ -1,6 +1,7 @@
 #include "../../Include/Orders/OrderHandler.h"
 #include "../../Include/Game.h"
 #include "../../Include/Orders/OrderWalk.h"
+#include "../../Include/Orders/OrderWalkMedicBay.h"
 #include "../../Include/ReplayHandler.h"
 
 #define NOT_FOUND -1
@@ -32,6 +33,12 @@ void OrderHandler::GiveOrder(IOrder* order) noexcept
 {
 	if (!order)
 	{
+		return;
+	}
+
+	if (!m_OrderQueue.empty() && dynamic_cast<OrderWalkMedicBay*>(m_OrderQueue[0]))
+	{
+		DeleteSafe(order);
 		return;
 	}
 
@@ -144,6 +151,18 @@ void OrderHandler::ForceOrder(SceneGame* pScene, void* userData, IOrder* order) 
 	StartNextExecutableOrder();
 }
 
+void OrderHandler::ForceOrderInbreed(IOrder* order) noexcept
+{
+	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
+	{
+		m_OrderQueue[i]->m_IsAborted = true;
+		m_OrdersToDelete.push_back(m_OrderQueue[i]);
+	}
+	m_OrderQueue.clear();
+	m_OrderQueue.push_back(order);
+	StartNextExecutableOrder();
+}
+
 bool OrderHandler::StartNextExecutableOrder()
 {
 	if (m_OrderQueue.empty())
@@ -174,6 +193,7 @@ bool OrderHandler::StartNextExecutableOrder()
 	}
 
 	m_pCrewmember->OnOrderStarted(pOrder->IsIdleOrder());
+	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
 	return true;
 }
 

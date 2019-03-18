@@ -1,4 +1,4 @@
-#include "../../Include/Orders/OrderPlugHole.h"
+﻿#include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Crewmember.h"
 #include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
@@ -30,7 +30,6 @@ OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeT
 	m_RoomTile = roomTile;
 	m_HoleTile = holeTile;
 	m_PluggingHole = false;
-	m_HolePlugged = false;
 }
 
 OrderPlugHole::~OrderPlugHole()
@@ -70,13 +69,23 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 
 			if (m_PluggingTimer <= 0.0001)
 			{
-				m_HolePlugged = true;
 				glm::ivec3 tile = GetCrewMember()->GetTile();
 
 				if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 				{
+					if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
+					{
+						Logger::LogEvent(GetCrewMember()->GetName() + " pluggade igen hålet!", true);
+					}
+					else
+					{
+						Logger::LogEvent(GetCrewMember()->GetName() + " kontrollerade det pluggningen!", true);
+					}
 					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
-					GiveOrder(new OrderPumpWater(GetCrewMember()->GetRoom(), glm::ivec3(3, 3, 3)));
+					if (!pWorld->GetRoom(GetCrewMember()->GetRoom()).IsPumping())
+					{
+						GiveOrderInbred(new OrderPumpWater(GetCrewMember()->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
+					}
 				}
 				res = true;
 			}
@@ -98,7 +107,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			if (m_EquippingGearTimer <= 0.0000001)
 			{
 				pCrewmember->SetGearIsEquipped(true);
-				GiveOrder(new OrderPlugHole(m_RoomTile, m_HoleTile, pCrewmember->HasGearEquipped()));
+				GiveOrderInbred(new OrderPlugHole(m_RoomTile, m_HoleTile, pCrewmember->HasGearEquipped()));
 				res = true;
 			}
 

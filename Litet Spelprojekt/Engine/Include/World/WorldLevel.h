@@ -6,6 +6,7 @@
 #define GAMEOBJECT_CONST_INDEX_DOOR 1
 #define GAMEOBJECT_CONST_INDEX_SMOKE 2
 #define GAMEOBJECT_CONST_INDEX_FIRE 3
+#define GAMEOBJECT_CONST_INDEX_FLOOR 4
 
 struct TileData 
 {
@@ -23,6 +24,7 @@ struct TileData
 	bool WaterInlet;
 	bool AlreadyFlooded;
 	bool Burning;
+	bool MarkedForExtinguish;
 
 	uint32 NrOfBaseGameObjects;
 	
@@ -30,6 +32,7 @@ struct TileData
 
 	TileData()
 	{
+		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
@@ -53,6 +56,11 @@ struct TileData
 	bool HasDoor() const noexcept
 	{
 		return GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+	}
+
+	bool HasFloor() const noexcept
+	{
+		return GameObjects[GAMEOBJECT_CONST_INDEX_FLOOR];
 	}
 };
 

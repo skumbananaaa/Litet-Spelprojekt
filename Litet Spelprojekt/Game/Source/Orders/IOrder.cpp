@@ -2,6 +2,7 @@
 #include "../../Include/Crewmember.h"
 #include "../../Include/Scenes/SceneGame.h"
 #include "../../Include/Orders/OrderHandler.h"
+#include "../../Include/ReplayHandler.h"
 
 IOrder::IOrder(IOrder * other) : m_IsAborted(false)
 {
@@ -17,13 +18,20 @@ void IOrder::InitClone(SceneGame * pScene, void * userData) noexcept
 
 void IOrder::BeginReplay(SceneGame* pScene, void* userData) noexcept
 {
-	//m_pCrewMember->GiveOrder(this); 
 	m_pCrewMember = pScene->GetCrew()->GetMember(m_ShipId);
 	m_pCrewMember->m_OrderHandler.ForceOrder(pScene, userData, this);
 }
 
-void IOrder::GiveOrder(IOrder* order) noexcept
+void IOrder::GiveOrderInbred(IOrder* order) noexcept
 {
-	order->m_IsInbred = true;
-	m_pCrewMember->GiveOrder(order);
+	if (!ReplayHandler::IsReplaying())
+	{
+		order->m_IsInbred = true;
+		m_pCrewMember->GiveOrder(order);
+	}
+	else
+	{
+		order->m_pCrewMember = m_pCrewMember;
+		m_pCrewMember->m_OrderHandler.ForceOrderInbreed(order);
+	}
 }

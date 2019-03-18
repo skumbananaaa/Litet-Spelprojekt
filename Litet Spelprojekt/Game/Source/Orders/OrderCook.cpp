@@ -85,7 +85,7 @@ bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			IOrder* pOrder = OrderSchedule::GetOrderEat();
 			if (pOrder)
 			{
-				GiveOrder(pOrder);
+				GiveOrderInbred(pOrder);
 			}
 
 			return true;

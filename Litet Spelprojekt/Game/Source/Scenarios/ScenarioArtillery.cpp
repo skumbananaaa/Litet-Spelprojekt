@@ -25,7 +25,7 @@ void ScenarioArtillery::BeginReplay(SceneGame* pScene, void* userData) noexcept
 
 void ScenarioArtillery::Init(World* pWorld) noexcept
 {
-
+	SetTimeOfNextOutBreak(1.0f);
 }
 
 void ScenarioArtillery::Release() noexcept

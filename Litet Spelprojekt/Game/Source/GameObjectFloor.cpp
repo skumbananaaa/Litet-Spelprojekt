@@ -1,7 +1,8 @@
-#include "../Include/GameObjectFloor.h"
+Ôªø#include "../Include/GameObjectFloor.h"
 #include "../Include/Game.h"
 #include "../Include/Orders/OrderExtinguishFire.h"
 #include "../Include/Orders/OrderPlugHole.h"
+#include "../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
 
 GameObjectFloor::GameObjectFloor()
@@ -91,11 +92,15 @@ void GameObjectFloor::OnPicked(const std::vector<int32>& selectedMembers, int32 
 
 	if (pLowerTile->Temp > pLowerTile->BurnsAt)
 	{
-		AddChoice("Sl‰ck eld", nullptr);
+		AddChoice("Sl√§ck eld", nullptr);
 	}
 	if (pLowerTile->WaterInlet)
 	{
-		AddChoice("Plugga hÂl", nullptr);
+		AddChoice("Plugga h√•l", nullptr);
+	}
+	else if (pLowerTile->AlreadyFlooded)
+	{
+		AddChoice("Pumpa vatten", nullptr);
 	}
 
 	DisplayOrders(x, y, selectedMembers);
@@ -110,23 +115,45 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 {
 	Crew* pCrew = Game::GetGame()->m_pSceneGame->GetCrew();
 	World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
+	std::vector<GameObject*> pExtinguishers;
 
-	if (name == "Sl‰ck eld")
+	if (name == "Sl√§ck eld")
 	{
 		const glm::ivec3& tile = GetTile();
+		glm::ivec3 extinguisherTile(-1);
 		for (uint32 i = 0; i < selectedMembers.size(); i++)
 		{
 			Crewmember* pCrewmember = pCrew->GetMember(selectedMembers[i]);
+	
+
+			bool hasGearEquipped = pCrewmember->HasGearEquipped();
+			bool hasExtinguisherEquipped = pCrewmember->HasExtinguisherEquipped();
+			glm::ivec3 goalTile;
+
+			if (!hasGearEquipped)
+			{
+				goalTile = pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile);
+			}
+			else
+			{
+				if (!hasExtinguisherEquipped)
+				{
+					goalTile = FindClosestExtinguisher(pCrewmember->GetPosition());
+				}
+				else
+				{
+					goalTile = tile;
+				}
+			}
 
 			pCrewmember->GiveOrder(new OrderExtinguishFire(
-				pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
+				goalTile,
 				tile,
 				pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z],
-				pCrewmember->HasGearEquipped(),
-				false));
+				false, ""));
 		}
 	}
-	else if (name == "Plugga hÂl")
+	else if (name == "Plugga h√•l")
 	{
 		const glm::ivec3& tile = GetTile();
 		for (uint32 i = 0; i < selectedMembers.size(); i++)
@@ -136,6 +163,32 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 				pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
 				tile,
 				pCrewmember->HasGearEquipped()));
+		}
+	}
+	else if (name == "Pumpa vatten")
+	{
+		const glm::ivec3& tile = GetTile();
+		bool res = false;
+		Crewmember* pCrewMember = nullptr;
+		uint32 roomId = pWorld->GetLevel(tile.y).GetLevel()[tile.x][tile.z];
+		if (!pWorld->GetRoom(roomId).IsPumping())
+		{
+			for (uint32 i = 0; i < selectedMembers.size(); i++)
+			{
+				pCrewMember = pCrew->GetMember(selectedMembers[i]);
+				if (pCrewMember->IsIdling() && !res)
+				{
+					res = true;
+					pCrewMember->GiveOrder(new OrderPumpWater(roomId,
+						pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, pCrewMember->GetTile())));
+					break;
+				}
+			}
+			if (!res && pCrewMember != nullptr)
+			{
+				pCrewMember->GiveOrder(new OrderPumpWater(roomId,
+					pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, pCrewMember->GetTile())));
+			}
 		}
 	}
 	/*if (reinterpret_cast<int>(userData) == 1)

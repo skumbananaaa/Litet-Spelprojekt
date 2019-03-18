@@ -1,4 +1,4 @@
-#include <EnginePch.h>
+ï»¿#include <EnginePch.h>
 #include "../../Include/Orders/OrderWalk.h"
 #include <World/World.h>
 #include <Graphics/Scene.h>
@@ -32,8 +32,17 @@ OrderWalk::~OrderWalk()
 void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroupType() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
+	
 	Crewmember* pCrewmember = GetCrewMember();
-	pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+	if (pCrewmember->IsIdling())
+	{
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
+	}
+	else
+	{
+		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+	}
+
 	//ThreadHandler::RequestExecution(this);
 	RunParallel();
 }
@@ -47,10 +56,13 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 	Crewmember* pCrewmember = GetCrewMember();
 	const glm::ivec3& crewTile = pCrewmember->GetTile();
+
 	TileData& tile1 = pWorld->GetLevel(crewTile.y * 2).GetLevelData()[crewTile.x][crewTile.z];
 	GameObjectDoor* door1 = (GameObjectDoor*)tile1.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
 	TileData& tile2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z];
 	GameObjectDoor* door2 = (GameObjectDoor*)tile2.GameObjects[GAMEOBJECT_CONST_INDEX_DOOR];
+
 	uint32 index1 = pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z];
 	uint32 index2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevel()[m_TargetTile.x][m_TargetTile.z];
 
@@ -77,10 +89,17 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			}
 			else
 			{
-				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+				if (pCrewmember->IsIdling())
+				{
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
+				}
+				else
+				{
+					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+				}
 			}
 		}
-		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && crewTile != m_TargetTile /*&& m_OopsIForgot > pCrewmember->GetForgetfulness()*/)
+		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() /*&& crewTile != m_TargetTile && m_OopsIForgot > pCrewmember->GetForgetfulness()*/)
 		{
 			// Close door after passing through
 			//door1->AccessRequest(pCrewmember->GetShipNumber());
@@ -94,31 +113,18 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		}
 		else
 		{
-			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			if (pCrewmember->IsIdling())
+			{
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WALK);
+			}
+			else
+			{
+				pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
+			}
 		}
 	}
 
 	Room& room = pWorld->GetRoom(pWorld->GetLevel(crewTile.y * 2).GetLevel()[crewTile.x][crewTile.z]);
-
-
-	//if (room.IsBurning())
-	//{
-	//	if (!room.IsFireDetected())
-	//	{
-	//		room.SetFireDetected(true);
-	//		Logger::LogEvent(pCrewmember->GetName() + " larmar om eld i " + pWorld->GetNameFromGlobal(index1) + "!", true);
-	//		pCrewmember->ReportPosition();
-	//		GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
-	//	}
-	//}
-
-	//if (room.IsFlooded() && !room.IsFloodDetected())
-	//{
-	//	room.SetFloodDetected(true);
-	//	Logger::LogEvent(pCrewmember->GetName() + " larmar om vattenläcka i " + pWorld->GetNameFromGlobal(index1) + "!", true);
-	//	pCrewmember->ReportPosition();
-	//	GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
-	//}
 
 	if (room.IsActive())
 	{
@@ -129,6 +135,16 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 	{
 		m_NewRoom = false;
 		pCrewmember->LookForDoor();
+
+		if (room.IsFireDetected())
+		{
+			GiveOrderInbred(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+		}
+
+		if (room.IsFloodDetected())
+		{
+			GiveOrderInbred(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+		}
 	}
 
 	m_NewRoom = index1 != index2;
@@ -146,7 +162,19 @@ void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexce
 void OrderWalk::OnAborted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	Crewmember* pCrewmember = GetCrewMember();
-	pCrewmember->SetPosition(m_TargetPos);
+	const glm::vec3& position = pCrewmember->GetPosition();
+	glm::vec3 move = m_TargetPos - position;
+	move = glm::normalize(move);
+	if (std::abs(move.y) > 0.1f)
+	{
+		move.y /= std::abs(move.y);
+		pCrewmember->SetDirection(glm::vec3(1, 0, 0));
+		pCrewmember->SetPosition(glm::vec3(m_TargetPos.x, m_TargetPos.y - move.y, m_TargetPos.z));
+	}
+	else
+	{
+		pCrewmember->SetPosition(glm::vec3(m_TargetPos.x, m_TargetPos.y, m_TargetPos.z));
+	}
 }
 
 bool OrderWalk::CanBeStackedWithSameType() noexcept

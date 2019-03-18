@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenes\SceneInstructions.h"
+﻿#include "..\..\Include\Scenes\SceneInstructions.h"
 #include "../../Include/Game.h"
 #include "../../Include/Orders/OrderSchedule.h"
 #include "../../Include/Scenarios/ScenarioManager.h"
@@ -43,14 +43,14 @@ void SceneInstructions::CreateWorld() noexcept
 
 	//SetClipPlanes(0);
 
-	m_pSceneGame = new SceneGame(pWorld, false);
+	m_pSceneGame = new SceneGame(pWorld, true);
 
 	// Generate rooms
 	pWorld->Generate(*m_pSceneGame);
 
 	pWorld->GenerateRoomShadows(*m_pSceneGame);
 
-	m_pButtonContinue->SetText("Forts�tt");
+	m_pButtonContinue->SetText("Fortsätt");
 	m_pButtonContinue->SetBackgroundColor(m_pButtonContinue->GetOnHoverColor());
 }
 

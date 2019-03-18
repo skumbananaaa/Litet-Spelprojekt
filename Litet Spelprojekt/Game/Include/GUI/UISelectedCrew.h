@@ -1,7 +1,7 @@
 #pragma once
-#include <Graphics/GUI/TextView.h>
+#include <Graphics/GUI/ProgressButton.h>
 
-class UISelectedCrew : public TextView
+class UISelectedCrew : public ProgressButton
 {
 public:
 	UISelectedCrew(const std::string& name);

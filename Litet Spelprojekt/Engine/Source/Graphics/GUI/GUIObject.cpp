@@ -116,9 +116,9 @@ void GUIObject::Remove(GUIObject* objectToRemove) noexcept
 	}
 	else
 	{
-		std::cout << "GUIObject Not Found\n" << objectToRemove << " Parent ";
-		PrintName();
-		std::cout << std::endl;
+		//std::cout << "GUIObject Not Found\n" << objectToRemove << " Parent ";
+		//PrintName();
+		//std::cout << std::endl;
 	}
 }
 

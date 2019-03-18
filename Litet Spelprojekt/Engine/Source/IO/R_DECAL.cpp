@@ -14,5 +14,6 @@ void DECAL::RegisterResourcesPreLoading()
 
 void DECAL::RegisterResources()
 {
-	BLOOD					= ResourceHandler::RegisterDecal(TEXTURE::BLOOD, TEXTURE::BLOOD_NORMAL);
+	//Bör tas bort helt och hållet (Dahlle fixa)
+	//BLOOD					= ResourceHandler::RegisterDecal(TEXTURE::BLOOD, TEXTURE::BLOOD_NORMAL);
 }

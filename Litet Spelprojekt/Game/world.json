@@ -6589,6 +6589,27 @@
             "rotation": 0.0
         },
         {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 5,
+            "gameObject": 3,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 14,
+            "gameObject": 3,
+            "rotation": 12.566370010375977
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 13,
+            "gameObject": 4,
+            "rotation": 6.2831854820251469
+        },
+        {
             "tileIdX": 6,
             "tileIdY": 2,
             "tileIdZ": 19,

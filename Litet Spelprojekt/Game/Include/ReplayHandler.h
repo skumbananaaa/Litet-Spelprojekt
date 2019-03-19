@@ -12,7 +12,7 @@ class ReplayHandler
 public:
 	
 	static void Reset() noexcept;
-	static void Update(float dtS, SceneGame* pScene) noexcept;
+	__declspec(noinline) static void Update(float dtS, SceneGame* pScene) noexcept;
 	static bool IsReplaying() noexcept;
 	static void StartReplay() noexcept;
 

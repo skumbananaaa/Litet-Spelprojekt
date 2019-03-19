@@ -68,8 +68,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					}
 					else
 					{
-						std::cout << "Im now at: " << glm::to_string(pCrewmember->GetTile() * glm::ivec3(1, 2, 1)) << std::endl;
-						std::cout << "Getting Extinguisher at: " << glm::to_string(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName)) << std::endl;
 						GiveOrderInbred(new OrderExtinguishFire(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName), m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 					}
 					return false;
@@ -100,8 +98,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			//Run To Room That is Burning
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
-				std::cout << "Im now at: " << glm::to_string(pCrewmember->GetTile() * glm::ivec3(1, 2, 1)) << std::endl;
-				std::cout << "Goal at: " << glm::to_string(m_GoalTile * glm::ivec3(1, 2, 1)) << std::endl;
 				const glm::ivec2& levelSize = glm::ivec2(pWorld->GetLevel(m_BurningTile.y).GetSizeX(), pWorld->GetLevel(m_BurningTile.y).GetSizeZ());
 				const uint32 * const * ppLevel = pWorld->GetLevel(m_BurningTile.y).GetLevel();
 				TileData * const * ppLevelData = pWorld->GetLevel(m_BurningTile.y).GetLevelData();
@@ -159,7 +155,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					//Fire Not Fully Extinguished
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
-					GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
+					GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 					return false;
 				}
 				else

@@ -154,26 +154,17 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	Crewmember* pCrewmember = GetCrewMember();
-	pCrewmember->SetPosition(glm::vec3(m_GoalTile.x, m_GoalTile.y * 2.0f, m_GoalTile.z));
-	//pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	if (!IsReplaying())
+	{
+		RegisterReplayEvent(new glm::vec3(glm::vec3(m_GoalTile) * glm::vec3(1.0f, 2.0f, 1.0f)));
+	}
 }
 
 void OrderWalk::OnAborted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	Crewmember* pCrewmember = GetCrewMember();
-	const glm::vec3& position = pCrewmember->GetPosition();
-	glm::vec3 move = m_TargetPos - position;
-	move = glm::normalize(move);
-	if (std::abs(move.y) > 0.1f)
+	if (!IsReplaying())
 	{
-		move.y /= std::abs(move.y);
-		pCrewmember->SetDirection(glm::vec3(1, 0, 0));
-		pCrewmember->SetPosition(glm::vec3(m_TargetPos.x, m_TargetPos.y - move.y, m_TargetPos.z));
-	}
-	else
-	{
-		pCrewmember->SetPosition(glm::vec3(m_TargetPos.x, m_TargetPos.y, m_TargetPos.z));
+		RegisterReplayEvent(new glm::vec3(m_TargetPos));
 	}
 }
 

@@ -43,7 +43,7 @@ void SceneInstructions::CreateWorld() noexcept
 
 	//SetClipPlanes(0);
 
-	m_pSceneGame = new SceneGame(pWorld, true);
+	m_pSceneGame = new SceneGame(pWorld, false);
 
 	// Generate rooms
 	pWorld->Generate(*m_pSceneGame);

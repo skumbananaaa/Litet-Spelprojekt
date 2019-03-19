@@ -11,9 +11,12 @@ void ReplayHandler::Reset() noexcept
 {
 	for (uint32 i = 0; i < s_ReplayQueue.size(); i++)
 	{
-		if (std::get<0>(s_ReplayQueue[i])->IsDeleteable())
+		if (std::get<0>(s_ReplayQueue[i]) != nullptr)
 		{
-			DeleteSafe(std::get<0>(s_ReplayQueue[i]));
+			if (std::get<0>(s_ReplayQueue[i])->IsDeleteable())
+			{
+				DeleteSafe(std::get<0>(s_ReplayQueue[i]));
+			}
 		}
 
 		DeleteSafe(std::get<1>(s_ReplayQueue[i]));

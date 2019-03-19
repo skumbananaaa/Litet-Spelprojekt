@@ -375,7 +375,6 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 	TileData& tileData = toLevel.GetLevelData()[tileTo.x][tileTo.z];
 	Room& room = m_pWorld->GetRoom(toLevel.GetLevel()[tileTo.x][tileTo.z]);
 	uint32 tilesBetweenBulkheads = originLevel.GetTilesBetweenBulkheads();
-	//TWEAK HERE
 
 	float rateOfSpread = RATE_OF_FIRE_SPREAD;
 	uint32 mapTo = m_pppMap[tileTo.y][tileTo.x][tileTo.z];

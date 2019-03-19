@@ -109,7 +109,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	uint32 index = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
 
-	if (room.IsBurning() && !room.IsFireDetected())
+	if (room.IsBurning() && !room.IsFireDetected() && !room.IsFlooded())
 	{
 		room.SetFireDetected(true);
 		Logger::LogEvent(GetName() + " larmar om eld i " + m_pWorld->GetNameFromGlobal(index) + "!", true);

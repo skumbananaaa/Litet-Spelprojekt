@@ -137,7 +137,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Precise</FloatingPointModel>
       <PreprocessorDefinitions>NDEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -177,6 +177,7 @@
     <ClCompile Include="Source\Orders\OrderWalk.cpp" />
     <ClCompile Include="Source\Orders\OrderWalkMedicBay.cpp" />
     <ClCompile Include="Source\Orders\OrderWork.cpp" />
+    <ClCompile Include="Source\Orders\ReplayablePosition.cpp" />
     <ClCompile Include="Source\ReplayHandler.cpp" />
     <ClCompile Include="Source\Scenarios\IScenario.cpp" />
     <ClCompile Include="Source\Scenarios\ScenarioArtillery.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="Include\Orders\OrderWalk.h" />
     <ClInclude Include="Include\Orders\OrderWalkMedicBay.h" />
     <ClInclude Include="Include\Orders\OrderWork.h" />
+    <ClInclude Include="Include\Orders\ReplayablePosition.h" />
     <ClInclude Include="Include\Path.h" />
     <ClInclude Include="Include\ReplayHandler.h" />
     <ClInclude Include="Include\Scenarios\IScenario.h" />

@@ -35,7 +35,7 @@ void ReplayHandler::Update(float dtS, SceneGame* pScene) noexcept
 	{
 		while(s_Index < s_ReplayQueue.size())
 		{
-			auto& tuple = s_ReplayQueue[s_Index];
+			std::tuple<IReplayable*, void*, float>& tuple = s_ReplayQueue[s_Index];
 			if (s_Timer >= std::get<2>(tuple)) //Check if it's time to execute next event
 			{
 				s_Index++;
@@ -60,10 +60,10 @@ bool ReplayHandler::IsReplaying() noexcept
 void ReplayHandler::StartReplay() noexcept
 {
 	s_TotalTime = s_Timer;
-	I_DONT_KNOW_WHAT_TO_NAME_THIS_FUNKTION();
+	SoftReset();
 }
 
-void ReplayHandler::I_DONT_KNOW_WHAT_TO_NAME_THIS_FUNKTION() noexcept
+void ReplayHandler::SoftReset() noexcept
 {
 	s_Timer = 0.0F;
 	s_Index = 0;

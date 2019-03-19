@@ -93,6 +93,18 @@ void OrderHandler::ForceOrder(SceneGame* pScene, void* userData, IOrder* order) 
 	StartNextExecutableOrder();
 }
 
+void OrderHandler::ForceOrderInbreed(IOrder* pOrder) noexcept
+{
+	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
+	{
+		m_OrderQueue[i]->m_IsAborted = true;
+		DeleteOrder(m_OrderQueue[i]);
+	}
+	m_OrderQueue.clear();
+	m_OrderQueue.push_back(pOrder);
+	StartNextExecutableOrder();
+}
+
 void OrderHandler::GiveFilteredOrder(IOrder* pOrder) noexcept
 {
 	if (!pOrder)

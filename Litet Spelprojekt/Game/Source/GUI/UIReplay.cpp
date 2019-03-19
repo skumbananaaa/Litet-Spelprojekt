@@ -71,7 +71,7 @@ void UIReplay::OnMousePressed(const glm::vec2& position, MouseButton mousebutton
 
 		if (percentage < currentPercentage)
 		{
-			ReplayHandler::I_DONT_KNOW_WHAT_TO_NAME_THIS_FUNKTION();
+			ReplayHandler::SoftReset();
 
 			OrderSchedule::Release();
 			ScenarioManager::Reset();

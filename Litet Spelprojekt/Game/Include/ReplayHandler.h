@@ -12,10 +12,10 @@ class ReplayHandler
 public:
 	
 	static void Reset() noexcept;
-	__declspec(noinline) static void Update(float dtS, SceneGame* pScene) noexcept;
+	static void Update(float dtS, SceneGame* pScene) noexcept;
 	static bool IsReplaying() noexcept;
 	static void StartReplay() noexcept;
-	static void I_DONT_KNOW_WHAT_TO_NAME_THIS_FUNKTION() noexcept;
+	static void SoftReset() noexcept;
 	static float GetTotalTime() noexcept;
 	static float GetElapsedTime() noexcept;
 

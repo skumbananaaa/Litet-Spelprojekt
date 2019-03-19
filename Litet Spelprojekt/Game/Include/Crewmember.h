@@ -179,6 +179,9 @@ private:
 
 	float m_ReportTime;
 	float m_ReportTimer;
+
+	//--REPLAY
+	float m_ReplayPositionSyncTimer;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept

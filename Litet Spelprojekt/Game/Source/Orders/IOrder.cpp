@@ -19,24 +19,15 @@ void IOrder::InitClone(SceneGame * pScene, void* userData) noexcept
 void IOrder::BeginReplay(SceneGame* pScene, void* userData) noexcept
 {
 	m_pCrewMember = pScene->GetCrew()->GetMember(m_ShipId);
-
-	if (userData == nullptr)
-	{
-		m_pCrewMember->m_OrderHandler.ForceOrder(pScene, userData, this);
-	}
-	else
-	{
-		const glm::vec3* pPosition = reinterpret_cast<glm::vec3*>(userData);
-		std::cout << "Position Set From Order: " << glm::to_string(*pPosition) << std::endl;
-		m_pCrewMember->SetPosition(*pPosition);
-	}
+	m_pCrewMember->m_OrderHandler.ForceOrder(pScene, userData, this);
 }
 
 void IOrder::GiveOrderInbred(IOrder* order) noexcept
 {
+	order->m_IsInbred = true;
+
 	if (!ReplayHandler::IsReplaying())
 	{
-		order->m_IsInbred = true;
 		m_pCrewMember->GiveOrder(order);
 	}
 	else

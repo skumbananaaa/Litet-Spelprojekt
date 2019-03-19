@@ -41,11 +41,15 @@ public:
 protected:
 	void GiveOrderInbred(IOrder* order) noexcept;
 
+protected:
+	//Replay
+	bool m_IsInbred;
+
 private:
 	Crewmember* m_pCrewMember;
 
 	//Replay
 	uint32 m_ShipId;
-	bool m_IsInbred;
 	bool m_IsAborted;
+
 };

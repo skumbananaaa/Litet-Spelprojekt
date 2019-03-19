@@ -7,6 +7,7 @@
 #include "../../Include/GameObjectDoor.h"
 #include <World/Logger.h>
 #include <System/Random.h>
+#include "../../Include/Orders/ReplayablePosition.h"
 
 OrderWalk::OrderWalk(OrderWalk* other) : IOrder(other),
 	m_pPathFinder(nullptr),
@@ -154,18 +155,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	if (!IsReplaying())
-	{
-		RegisterReplayEvent(new glm::vec3(glm::vec3(m_GoalTile) * glm::vec3(1.0f, 2.0f, 1.0f)));
-	}
+	Crewmember* pCrewMember = GetCrewMember();
+	new ReplayablePosition(pCrewMember->GetPosition(), pCrewMember->GetShipNumber());
 }
 
 void OrderWalk::OnAborted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	if (!IsReplaying())
-	{
-		RegisterReplayEvent(new glm::vec3(m_TargetPos));
-	}
+	Crewmember* pCrewMember = GetCrewMember();
+	new ReplayablePosition(pCrewMember->GetPosition(), pCrewMember->GetShipNumber());
 }
 
 bool OrderWalk::CanBeStackedWithSameType() noexcept

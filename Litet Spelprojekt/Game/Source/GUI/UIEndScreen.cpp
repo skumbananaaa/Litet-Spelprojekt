@@ -32,7 +32,7 @@ UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost)
 	m_pTextViewWater = new TextView(20, height - 270, width - 20, 50, stream.str(), false);
 
 	m_pButtonExit = new Button(width / 2 - (width - 600) - 25, 10, width - 600, 50, "Avsluta");
-	m_pButtonReplay = new Button(width / 2 + 25, 10, width - 600, 50, "Repris");
+	m_pButtonReplay = new Button(width / 2 + 25, 10, width - 600, 50, "Repris (WIP)");
 	m_pButtonExit->AddButtonListener(this);
 	m_pButtonReplay->AddButtonListener(this);
 
@@ -76,7 +76,15 @@ void UIEndScreen::OnButtonPressed(Button* button)
 		OrderSchedule::Release();
 		ScenarioManager::Reset();
 		ResourceHandler::ResetGameObjectCounters();
-		ReplayHandler::StartReplay();
+
+		if (!ReplayHandler::IsReplaying())
+		{
+			ReplayHandler::StartReplay();
+		}
+		else
+		{
+			ReplayHandler::SoftReset();
+		}
 
 		World* pWorld = WorldSerializer::Read("world.json");
 

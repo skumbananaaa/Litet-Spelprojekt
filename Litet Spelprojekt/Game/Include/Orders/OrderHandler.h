@@ -18,6 +18,7 @@ public:
 
 private:
 	void ForceOrder(SceneGame* pScene, void* userData, IOrder* order) noexcept;
+	void ForceOrderInbreed(IOrder* pOrder) noexcept;
 	void GiveFilteredOrder(IOrder* pOrder) noexcept;
 
 	bool StartNextExecutableOrder();

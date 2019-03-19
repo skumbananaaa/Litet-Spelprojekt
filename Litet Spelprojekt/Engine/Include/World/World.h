@@ -132,7 +132,7 @@ public:
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
 
-	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept;
+	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire = false) const noexcept;
 
 public:
 	static std::string GetNameFromGlobal(uint32 globalIndex) noexcept;
@@ -163,7 +163,7 @@ private:
 	std::vector<PointLight*> m_RoomLights;
 };
 
-inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept
+inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire) const noexcept
 {
 	uint32 minDistSqrd = UINT32_MAX;
 	glm::ivec3 closestRoomCenter(-1);
@@ -174,6 +174,11 @@ inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 
 
 		if (room.IsRoomInitialized())
 		{
+			if (checkForFire && room.IsBurning())
+			{
+				continue;
+			}
+
 			glm::ivec3 currentRoomCenter = glm::ivec3(room.GetCenter() - glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::ivec3 toVector = currentTile - currentRoomCenter;
 			uint32 currentDistanceSqrd = (uint32)(toVector.x * toVector.x + (10.0f * toVector.y * toVector.y) + toVector.z * toVector.z);

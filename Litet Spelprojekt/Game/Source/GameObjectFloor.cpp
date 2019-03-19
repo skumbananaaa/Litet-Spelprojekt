@@ -132,7 +132,7 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 
 			if (!hasGearEquipped)
 			{
-				goalTile = pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile);
+				goalTile = pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile, true);
 			}
 			else
 			{

@@ -18,7 +18,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept
-	: Application(false, 1920, 1017, "", true),
+	: Application(false, 1920, 1000, "", true),
 	m_pSceneNext(nullptr),
 	m_pScene(nullptr),
 	m_pRenderer(nullptr),

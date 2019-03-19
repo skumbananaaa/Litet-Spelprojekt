@@ -12,6 +12,7 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 	m_fps(0),
 	m_ups(0),
 	m_ShouldRun(true),
+	m_ForcedUpdate(false),
 	m_ResourceMode(RESOURCE_MODE::LOAD),
 	m_Resource(""),
 	m_Progress(0),
@@ -71,6 +72,16 @@ void Application::OnResourceLoadingFinished()
 {
 	m_ResourceMode = RESOURCE_MODE::CONSTRUCT;
 	std::cout << "OnResourceLoadingFinished()" << std::endl;
+}
+
+void Application::DisableRenderingAndForceUpdate(bool yes) noexcept
+{
+	m_ForcedUpdate = yes;
+}
+
+bool Application::IsRenderingDisabled() noexcept
+{
+	return m_ForcedUpdate;
 }
 
 void Application::Exit() noexcept
@@ -135,19 +146,26 @@ int32_t Application::Run()
 			totalTime = 0.0f;
 		}
 
-		m_Accumulator += deltaTime;
-		while (m_Accumulator > timestep)
+		if (m_ForcedUpdate)
 		{
 			InternalOnUpdate(timestep);
-			m_Accumulator -= timestep;
-
 			ups++;
 		}
+		else
+		{
+			m_Accumulator += deltaTime;
+			while (m_Accumulator > timestep)
+			{
+				InternalOnUpdate(timestep);
+				m_Accumulator -= timestep;
+				ups++;
+			}
 
-		InternalOnRender(deltaTime);
-		fps++;
+			InternalOnRender(deltaTime);
+			fps++;
 
-		m_pWindow->SwapBuffers();
+			m_pWindow->SwapBuffers();
+		}
 	}
 
 	ThreadHandler::Exit();

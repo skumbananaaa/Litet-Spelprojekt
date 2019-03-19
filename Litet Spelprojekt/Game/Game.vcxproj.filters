@@ -171,6 +171,9 @@
     <ClCompile Include="Source\GameObjectExtinguisher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUI\UIReplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game.h">
@@ -324,6 +327,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\GameObjectExtinguisher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UIReplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

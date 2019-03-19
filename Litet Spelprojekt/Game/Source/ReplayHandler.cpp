@@ -4,6 +4,7 @@
 
 std::vector<std::tuple<IReplayable*, void*, float>> ReplayHandler::s_ReplayQueue;
 float ReplayHandler::s_Timer = 0.0F;
+float ReplayHandler::s_TotalTime = 0.0F;
 bool ReplayHandler::s_IsReplying = false;
 int ReplayHandler::s_Index = 0;
 
@@ -58,9 +59,25 @@ bool ReplayHandler::IsReplaying() noexcept
 
 void ReplayHandler::StartReplay() noexcept
 {
+	s_TotalTime = s_Timer;
+	I_DONT_KNOW_WHAT_TO_NAME_THIS_FUNKTION();
+}
+
+void ReplayHandler::I_DONT_KNOW_WHAT_TO_NAME_THIS_FUNKTION() noexcept
+{
 	s_Timer = 0.0F;
 	s_Index = 0;
 	s_IsReplying = true;
+}
+
+float ReplayHandler::GetTotalTime() noexcept
+{
+	return s_TotalTime;
+}
+
+float ReplayHandler::GetElapsedTime() noexcept
+{
+	return s_Timer;
 }
 
 void ReplayHandler::RegisterEvent(IReplayable* pReplayable, void* userData) noexcept

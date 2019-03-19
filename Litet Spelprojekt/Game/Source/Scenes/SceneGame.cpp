@@ -137,11 +137,14 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		game->GetGUIManager().Add(m_pUIEndScreen);
 	}
 
+	static float timer = 0;
+	timer += dtS;
+
 	if (!IsPaused() && !m_IsGameOver)
 	{
 		ReplayHandler::Update(dtS, this);
 
-		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH)
+		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH || (timer >= 30 && !ReplayHandler::IsReplaying()))
 		{
 			m_IsGameOver = true;
 		}

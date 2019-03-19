@@ -6,9 +6,9 @@
 #include "../../Include/Game.h"
 #include "../../Include/GameState.h"
 
-SceneReplay::SceneReplay(World* pWorld) : SceneGame(pWorld, false)
+SceneReplay::SceneReplay(World* pWorld, float percentage) : SceneGame(pWorld, false)
 {
-
+	m_BeginPercentage = percentage;
 }
 
 SceneReplay::~SceneReplay()
@@ -32,9 +32,11 @@ void SceneReplay::OnActivated(SceneInternal * lastScene, IRenderer * m_pRenderer
 
 	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
 	m_pUILog = new UILog(window->GetWidth() - 600, window->GetHeight() - 700, 600, 700);
+	m_UIReplay = new UIReplay(0, 0, window->GetWidth(), 30, m_BeginPercentage);
 
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_pUILog);
+	game->GetGUIManager().Add(m_UIReplay);
 
 	Logger::SetListener(m_pUILog);
 
@@ -44,4 +46,13 @@ void SceneReplay::OnActivated(SceneInternal * lastScene, IRenderer * m_pRenderer
 
 	OrderSchedule::Init(this);
 	GameState::Reset();
+}
+
+void SceneReplay::OnUpdate(float dtS) noexcept
+{
+	SceneGame::OnUpdate(dtS);
+	if (ReplayHandler::GetElapsedTime() >= ReplayHandler::GetTotalTime())
+	{
+		m_IsGameOver = true;
+	}
 }

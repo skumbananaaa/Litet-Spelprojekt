@@ -39,18 +39,8 @@ void ScenarioIceberg::Release() noexcept
 
 void ScenarioIceberg::OnStart(SceneGame* scene) noexcept
 {
-	glm::vec3 centre;
-
-	if (Random::GenerateBool())
-	{
-		m_Position = glm::vec3(- 40, 0.0F, 150);
-		centre = glm::vec3(0, 0, Random::GenerateInt(5, 35));
-	}
-	else
-	{
-		m_Position = glm::vec3(40 + 10, 0.0F, 150);
-		centre = glm::vec3(10, 0, Random::GenerateInt(5, 35));
-	}
+	m_Position = glm::vec3(- 40, 0.0F, 150);
+	glm::vec3 centre = glm::vec3(0, 0, Random::GenerateInt(5, 35));
 
 	glm::vec3 ray = glm::normalize(m_Position - centre);
 	m_Target = m_Position + ray * (float)(TestAgainstRay(ray, m_Position) + 10);

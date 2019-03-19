@@ -69,6 +69,8 @@ void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) n
 	{
 		GetCamera().SetPos(glm::vec3(30.0f, 30.0f, 30.0f));
 		GetCamera().SetLookAt(glm::vec3(5.5f, 0.0f, 20.5f));
+		WaterOutdoorMaterial* pMaterial = reinterpret_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
+		pMaterial->SetIcebergPosition(glm::vec2(FLT_MAX,FLT_MAX));
 	}
 
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
@@ -98,7 +100,7 @@ void SceneInternal::OnUpdate(float dtS) noexcept
 			s_IcebergPos.x = (Random::GenerateBool() * 2 - 1) * 30 + 5;
 		}
 
-		WaterOutdoorMaterial* pMaterial = reinterpret_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
+		WaterOutdoorMaterial* pMaterial = dynamic_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
 		pMaterial->SetIcebergPosition(s_IcebergPos);
 	}
 

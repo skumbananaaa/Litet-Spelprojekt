@@ -50,7 +50,7 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	z = m_pWorld->GetLevel(lvl).GetSizeZ() / 2;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
-	//Escalate(pos);
+	Escalate(pos);
 
 	/*uint32 lvl = 4;
 	uint32 x = 10;

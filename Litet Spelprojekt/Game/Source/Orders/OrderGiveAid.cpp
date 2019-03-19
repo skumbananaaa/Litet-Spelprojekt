@@ -21,7 +21,8 @@ bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 {
 	bool res = OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
 	float healLevel = 0;
-	if (GetCrewMember()->GetGroupType() == MEDIC)
+	Crewmember* pCrewmember = GetCrewMember();
+	if (pCrewmember->GetGroupType() == MEDIC)
 	{
 		healLevel = 0.2f;
 	}
@@ -29,13 +30,14 @@ bool OrderGiveAid::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers,
 	{
 		if (!m_IsAiding)
 		{
-			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
 		}
 		res = m_pAiding->Heal(healLevel, dtS);
 
 		if (res)
 		{
-			Logger::LogEvent(GetCrewMember()->GetName() + " gav hjälp till " + m_pAiding->GetName() + "!", true);
+			Logger::LogEvent(pCrewmember->GetName() + " gav hjälp till " + m_pAiding->GetName() + "!", true);
+			pCrewmember->ReportPosition();
 		}
 	}
 	return res;
@@ -48,14 +50,14 @@ void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 	for (uint32 i = 0; i < pCrewMembers->GetCount(); i++)
 	{
 		Crewmember* member = pCrewMembers->GetMember(i);
-		if (member->GetRoom() == GetCrewMember()->GetRoom() && !member->HasRecovered() && !member->IsAbleToWork())
+		Crewmember* pCrewmember = GetCrewMember();
+		if (member->GetRoom() == pCrewmember->GetRoom() && !member->HasRecovered() && !member->IsAbleToWork())
 		{
-			GetCrewMember()->GiveOrder(new OrderGiveAid(member));
+			pCrewmember->GiveOrder(new OrderGiveAid(member));
 			break;
 		}
 	}
 
-	GetCrewMember()->ReportPosition();
 
 	m_pAiding = nullptr;
 }

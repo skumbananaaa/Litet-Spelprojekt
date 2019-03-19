@@ -295,6 +295,7 @@ void Crewmember::GoToSickBay()
 		else
 		{
 			Logger::LogEvent(GetName() + " kan inte gå till sjukstugan!", true);
+			ReportPosition();
 		}
 	}
 }
@@ -328,6 +329,7 @@ bool Crewmember::Heal(float skillLevel, float dtS)
 	if (HasRecovered())
 	{
 		Logger::LogEvent(GetName() + " har fått medicinsk hjälp!", true);
+		ReportPosition();
 		res = true;
 	}
 	return res;
@@ -384,7 +386,7 @@ void Crewmember::ApplySmokeInjury(float smoke)
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
 {
 	glm::vec3 centre = GetLastKnownPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
-	centre.x += extension * glm::floor(centre.y / 2.0f);
+	centre.x += extension * glm::clamp(glm::floor(centre.y / 2.0f), 0.0f, 2.0f);
 
 	float t = -1;
 
@@ -502,7 +504,7 @@ void Crewmember::OnNotHovered() noexcept
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 { 
 	glm::vec3 pos = glm::vec3(glm::clamp(position.x, 1.0f, 10.0f), glm::clamp(position.y, 0.0f, 4.0f), glm::clamp(position.z, 1.0f, 40.0f));
-	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::floor((position.y) / 2), std::round(position.z));
 	//m_PlayerTile.z = m_PlayerTile.z < 0 ? 0 : m_PlayerTile.z;
 	
 	//HOT FIX (Gay?)
@@ -580,9 +582,8 @@ void Crewmember::SetResting(bool value) noexcept
 
 void Crewmember::ReportPosition() noexcept
 {
-	uint32 roomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
 	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetRoomActive(roomIndex, true);
+	m_pWorld->SetRoomActive(GetRoom(), true);
 }
 
 void Crewmember::RequestReportPosition() noexcept

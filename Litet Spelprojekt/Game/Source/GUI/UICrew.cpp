@@ -95,7 +95,7 @@ void UICrew::OnRenderGUIObject(GUIContext* context, GUIObject* object)
 void UICrew::OnButtonPressed(Button* button)
 {
 	ProgressButton* progressButton = (ProgressButton*)button;
-	progressButton->StartAnimation((float)Random::GenerateInt(3, 15));
+	progressButton->StartAnimation(Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
 	progressButton->SetText("Inväntar svar");
 	progressButton->SetTextColor(GUIContext::COLOR_BLACK);
 }

@@ -18,13 +18,13 @@ OrderWalkMedicBay::~OrderWalkMedicBay()
 bool OrderWalkMedicBay::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
 	bool res = OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS);
+	Crewmember* pCrewmember = GetCrewMember();
 	if (res)
 	{
-		Crewmember* pCrewmember = GetCrewMember();
 		pCrewmember->SetResting(!pCrewmember->IsAbleToWork());
 		pCrewmember->SetIdling(false);
 	}
-	else if (!GetCrewMember()->IsAbleToWalk())
+	else if (!pCrewmember->IsAbleToWalk())
 	{
 		return true;
 	}

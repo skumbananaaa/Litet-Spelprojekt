@@ -100,7 +100,7 @@ inline glm::ivec2 OrderExtinguishFire::FindClosestBurningTile(const uint32 * con
 
 			TileData& currentTileData = ppLevelData[currentTileBeingChecked.x][currentTileBeingChecked.y];
 
-			if (currentTileData.Temp > currentTileData.BurnsAt && !currentTileData.MarkedForExtinguish)
+			if (currentTileData.Temp > currentTileData.BurnsAt && currentTileData.GameObjects[GAMEOBJECT_CONST_INDEX_FIRE]->IsVisible() && !currentTileData.MarkedForExtinguish)
 			{
 				if (m_RoomBurningId == ppLevel[currentTileBeingChecked.x][currentTileBeingChecked.y])
 				{

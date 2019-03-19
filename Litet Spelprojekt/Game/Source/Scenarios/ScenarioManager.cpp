@@ -129,7 +129,7 @@ void ScenarioManager::Reset() noexcept
 	for (IScenario* scenario : s_Scenarios)
 	{
 		scenario->Release();
-		scenario->SetTimeOfNextOutBreak((float)Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
+		scenario->SetTimeOfNextOutBreak((float)Random::GenerateInt(10, scenario->GetMaxTimeBeforeOutbreak()));
 	}
 
 

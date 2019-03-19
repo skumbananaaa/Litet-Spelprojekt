@@ -23,9 +23,9 @@ OrderWalk::~OrderWalk()
 
 void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	m_pPathFinder = new Path(pWorld, GetCrewMember()->GetGroupType() == SMOKE_DIVER && GetCrewMember()->HasGearEquipped());
-	
 	Crewmember* pCrewmember = GetCrewMember();
+	m_pPathFinder = new Path(pWorld, pCrewmember->GetGroupType() == SMOKE_DIVER && pCrewmember->HasGearEquipped());
+	
 	if (pCrewmember->HasExtinguisherEquipped())
 	{
 		pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
@@ -155,7 +155,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 		if (room.IsFireDetected())
 		{
-			GetCrewMember()->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+			pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 		}
 
 		if (room.IsFloodDetected())

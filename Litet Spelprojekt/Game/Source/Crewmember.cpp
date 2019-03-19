@@ -295,6 +295,7 @@ void Crewmember::GoToSickBay()
 		else
 		{
 			Logger::LogEvent(GetName() + " kan inte gå till sjukstugan!", true);
+			ReportPosition();
 		}
 	}
 }
@@ -328,6 +329,7 @@ bool Crewmember::Heal(float skillLevel, float dtS)
 	if (HasRecovered())
 	{
 		Logger::LogEvent(GetName() + " har fått medicinsk hjälp!", true);
+		ReportPosition();
 		res = true;
 	}
 	return res;

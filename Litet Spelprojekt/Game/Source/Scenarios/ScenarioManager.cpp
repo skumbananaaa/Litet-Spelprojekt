@@ -119,8 +119,8 @@ void ScenarioManager::Init(World* pWorld)
 {
 	for (IScenario* scenario : s_Scenarios)
 	{
-		scenario->Init(pWorld);
 		scenario->SetTimeOfNextOutBreak((float)Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
+		scenario->Init(pWorld);
 	}
 }
 
@@ -135,7 +135,7 @@ void ScenarioManager::Reset() noexcept
 
 	for (int i = 0; i < s_ActiveScenarios.size(); i++)
 	{
-		s_NonActiveScenarios.push_back(s_ActiveScenarios[i]);
+		SetAsNonActive(s_ActiveScenarios[i]);
 	}
 
 	s_ActiveScenarios.clear();

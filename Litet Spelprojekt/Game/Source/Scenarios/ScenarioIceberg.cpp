@@ -35,6 +35,7 @@ void ScenarioIceberg::Init(World* pWorld) noexcept
 void ScenarioIceberg::Release() noexcept
 {
 	DeleteSafe(m_pAudioSourceExplosion);
+	m_InstancesComplete = 0;
 }
 
 void ScenarioIceberg::OnStart(SceneGame* scene) noexcept
@@ -123,12 +124,12 @@ std::string ScenarioIceberg::GetName() noexcept
 
 int32 ScenarioIceberg::GetCooldownTime() noexcept
 {
-	return 100;
+	return 60 * 5;
 }
 
 int32 ScenarioIceberg::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60 * 5;
+	return 30;
 }
 
 bool ScenarioIceberg::IsComplete() noexcept

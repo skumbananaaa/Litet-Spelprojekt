@@ -12,47 +12,47 @@
 #include <Graphics/Materials/WallMaterial.h>
 #include <Graphics/Materials/Decal.h>
 
-ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pIndexedMeshFiles[64];
-IndexedMesh* ResourceHandler::m_pIndexedMeshes[64];
+ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pIndexedMeshFiles[128];
+IndexedMesh* ResourceHandler::m_pIndexedMeshes[128];
 uint32 ResourceHandler::m_NrOfMeshes = 0;
 uint32 ResourceHandler::m_NrOfMeshesLoaded = 0;
 
-ResourceHandler::ANIMATED_MESH_DESC_INTERNAL ResourceHandler::m_pAnimatedMeshFiles[64];
-AnimatedMesh* ResourceHandler::m_pAnimatedMeshes[64];
+ResourceHandler::ANIMATED_MESH_DESC_INTERNAL ResourceHandler::m_pAnimatedMeshFiles[128];
+AnimatedMesh* ResourceHandler::m_pAnimatedMeshes[128];
 uint32 ResourceHandler::m_NrOfAnimatedMeshes = 0;
 uint32 ResourceHandler::m_NrOfAnimatedMeshesLoaded = 0;
 
-ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pMeshParticleFiles[64];
-MeshParticle* ResourceHandler::m_pMeshParticles[64];
+ResourceHandler::MESH_DESC_INTERNAL ResourceHandler::m_pMeshParticleFiles[128];
+MeshParticle* ResourceHandler::m_pMeshParticles[128];
 uint32 ResourceHandler::m_NrOfMeshParticles = 0;
 uint32 ResourceHandler::m_NrOfMeshParticlesLoaded = 0;
 
-ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[64];
-Texture2D* ResourceHandler::m_pTexture2Ds[64];
+ResourceHandler::TEXTURE2D_DESC_INTERNAL ResourceHandler::m_pTexture2DFiles[128];
+Texture2D* ResourceHandler::m_pTexture2Ds[128];
 uint32 ResourceHandler::m_NrOfTexture2D = 0;
 uint32 ResourceHandler::m_NrOfTexture2DLoaded = 0;
 
 Material* ResourceHandler::m_pMaterials[512];
 uint32 ResourceHandler::m_NrOfMaterials = 0;
 
-Decal* ResourceHandler::m_pDecals[64];
+Decal* ResourceHandler::m_pDecals[128];
 uint32 ResourceHandler::m_NrOfDecals = 0;
 
-ResourceHandler::GAMEOBJECT_DESC_INTERNAL ResourceHandler::m_pGameObjectFiles[64];
+ResourceHandler::GAMEOBJECT_DESC_INTERNAL ResourceHandler::m_pGameObjectFiles[128];
 uint32 ResourceHandler::m_NrOfGameObjects;
 
-ResourceHandler::SOUND_DESC_INTERNAL ResourceHandler::m_pSoundFiles[64];
-SoundEffect* ResourceHandler::m_pSounds[64];
+ResourceHandler::SOUND_DESC_INTERNAL ResourceHandler::m_pSoundFiles[128];
+SoundEffect* ResourceHandler::m_pSounds[128];
 uint32 ResourceHandler::m_NrOfSounds = 0;
 uint32 ResourceHandler::m_NrOfSoundsLoaded = 0;
 
-ResourceHandler::MUSIC_DESC_INTERNAL ResourceHandler::m_pMusicFiles[64];
-Music* ResourceHandler::m_pMusic[64];
+ResourceHandler::MUSIC_DESC_INTERNAL ResourceHandler::m_pMusicFiles[128];
+Music* ResourceHandler::m_pMusic[128];
 uint32 ResourceHandler::m_NrOfMusic = 0;
 uint32 ResourceHandler::m_NrOfMusicLoaded = 0;
 
-ResourceHandler::SHADER_DESC_INTERNAL ResourceHandler::m_ShaderFiles[64];
-ShaderProgram* ResourceHandler::m_pShaders[64];
+ResourceHandler::SHADER_DESC_INTERNAL ResourceHandler::m_ShaderFiles[128];
+ShaderProgram* ResourceHandler::m_pShaders[128];
 uint32 ResourceHandler::m_NrOfShaders = 0;
 uint32 ResourceHandler::m_NrOfShadersLoaded = 0;
 
@@ -520,6 +520,7 @@ void ResourceHandler::LoadResources(IResourceListener* resourceListener, std::st
 	m_NrOfSoundsLoaded = m_NrOfSounds;
 	m_NrOfMusicLoaded = m_NrOfMusic;
 	m_NrOfShadersLoaded = m_NrOfShaders;
+	m_NrOfMeshParticlesLoaded = m_NrOfMeshParticles;
 
 	MATERIAL::RegisterResourcesPreLoading();
 	DECAL::RegisterResourcesPreLoading();

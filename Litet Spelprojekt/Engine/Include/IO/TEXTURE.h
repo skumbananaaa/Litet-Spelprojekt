@@ -62,6 +62,7 @@ public:
 	static uint32 LOADING_CONTROLS;
 	static uint32 TUTORIAL_SCREEN_1;
 	static uint32 TUTORIAL_SCREEN_2;
+	static uint32 TUTORIAL_SCREEN_3;
 	static uint32 SHELF_AMMUNITION;
 	static uint32 SHELF_EMPTY;
 	static uint32 GENERATOR;

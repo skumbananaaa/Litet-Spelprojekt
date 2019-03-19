@@ -59,7 +59,7 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	uint32 z = 1;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
-	//Escalate(pos);
+	Escalate(pos);
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept
@@ -181,9 +181,9 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 
 				TileData& lowerTileData = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z];
 
-				for (uint32 i = lowerTileData.NrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
+				for (uint32 j = lowerTileData.NrOfBaseGameObjects; j < lowerTileData.GameObjects.size(); j++)
 				{
-					GameObject* pGameObject = lowerTileData.GameObjects[i];
+					GameObject* pGameObject = lowerTileData.GameObjects[j];
 
 					if (pGameObject != nullptr)
 					{
@@ -288,6 +288,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		//Fire
 		FireLevelData.Burning = false;
 		FireLevelData.MarkedForExtinguish = false;
+		FireLevelData.Temp = 30.0f;
 		emitter->SetIsVisible(false);
 		m_OnFire.erase(std::remove(m_OnFire.begin(), m_OnFire.end(), toRemoveOnFireIDs[i]), m_OnFire.end());
 		room.RemoveTileOnFire(toRemoveOnFireIDs[i]);
@@ -405,7 +406,7 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 
 	float rateOfSpread = RATE_OF_FIRE_SPREAD;
 	uint32 mapTo = m_pppMap[tileTo.y][tileTo.x][tileTo.z];
-	rateOfSpread *= (mapTo == m_pppMap[origin.y][origin.x][origin.z]) || (originTile.HasDoor() && tileData.HasDoor());
+	rateOfSpread *= (float)((mapTo == m_pppMap[origin.y][origin.x][origin.z]) || (originTile.HasDoor() && tileData.HasDoor()));
 	rateOfSpread += (RATE_OF_FIRE_WALL_SPREAD * (offset.y + 1) + RATE_OF_FIRE_FLOOR_SPREAD) * (mapTo != 1);
 	
 	bool spreadingThroughBulkhead = glm::min<uint32>(origin.z, tileTo.z) % tilesBetweenBulkheads == 0;

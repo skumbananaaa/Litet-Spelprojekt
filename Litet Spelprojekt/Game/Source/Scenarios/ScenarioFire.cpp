@@ -34,6 +34,7 @@ void ScenarioFire::Init(World* pWorld) noexcept
 void ScenarioFire::Release() noexcept
 {
 	DeleteArrSafe(m_pppMap);
+	m_HasStarted = false;
 	m_DiscoveredRooms.clear();
 	m_OnFire.clear();
 }

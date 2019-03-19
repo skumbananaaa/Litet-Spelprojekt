@@ -16,7 +16,6 @@ ScenarioFire::~ScenarioFire()
 
 void ScenarioFire::Init(World* pWorld) noexcept
 {
-	SetTimeOfNextOutBreak(1.0f);
 	m_pWorld = pWorld;
 
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels()];
@@ -41,7 +40,7 @@ void ScenarioFire::Release() noexcept
 
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
-	/*uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
+	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
 	lvl += lvl % 2;
 	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 1);
 	lvl = 0;
@@ -52,14 +51,14 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	z = m_pWorld->GetLevel(lvl).GetSizeZ() / 2;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
-	Escalate(pos);*/
+	Escalate(pos);
 
-	uint32 lvl = 4;
+	/*uint32 lvl = 4;
 	uint32 x = 10;
 	uint32 z = 1;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
-	//Escalate(pos);
+	Escalate(pos);*/
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept
@@ -234,7 +233,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 			TileData& aboveData = m_pWorld->GetLevel(aboveIndex).GetLevelData()[smokePos.x][smokePos.z];
 			Room& aboveRoom = m_pWorld->GetRoom(m_pWorld->GetLevel(aboveIndex).GetLevel()[smokePos.x][smokePos.z]);
 			// TWEAK HERE
- 			aboveData.Temp += glm::max(tile.SmokeAmount - tile.SmokeLimit, 0.0f) * dtS * 0.1f / aboveData.BurnsAt;
+ 			aboveData.Temp += glm::max(tile.SmokeAmount - tile.SmokeLimit, 0.0f) * dtS * 0.01f / aboveData.BurnsAt;
 			aboveData.Temp = std::min(aboveData.Temp, MAX_TILE_TEMP);
 
 			if (aboveData.Temp > aboveData.BurnsAt && !aboveData.Burning)
@@ -346,7 +345,7 @@ int32 ScenarioFire::GetCooldownTime() noexcept
 
 int32 ScenarioFire::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60;
+	return 10;
 }
 
 bool ScenarioFire::IsComplete() noexcept

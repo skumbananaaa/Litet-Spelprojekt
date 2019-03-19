@@ -35,6 +35,7 @@ void ScenarioIceberg::Init(World* pWorld) noexcept
 void ScenarioIceberg::Release() noexcept
 {
 	DeleteSafe(m_pAudioSourceExplosion);
+	m_InstancesComplete = 0;
 }
 
 void ScenarioIceberg::OnStart(SceneGame* scene) noexcept

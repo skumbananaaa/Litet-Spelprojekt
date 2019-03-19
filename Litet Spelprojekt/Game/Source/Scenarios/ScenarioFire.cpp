@@ -17,7 +17,7 @@ ScenarioFire::~ScenarioFire()
 void ScenarioFire::Init(World* pWorld) noexcept
 {
 	m_pWorld = pWorld;
-
+	SetTimeOfNextOutBreak(1.0f);
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels()];
 
 	for (uint32 i = 0; i < m_pWorld->GetNumLevels(); i++)
@@ -34,6 +34,7 @@ void ScenarioFire::Init(World* pWorld) noexcept
 void ScenarioFire::Release() noexcept
 {
 	DeleteArrSafe(m_pppMap);
+	m_HasStarted = false;
 	m_DiscoveredRooms.clear();
 	m_OnFire.clear();
 }

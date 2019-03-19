@@ -30,7 +30,7 @@ void ThreadHandler::RemoveMultiUpdater(IMultiUpdater* pUpdater)
 	s_Mutex2.lock();
 	for (int i = 0; i < s_MultiUpdaters.size(); i++)
 	{
-		if (s_MultiUpdaters[i] = pUpdater)
+		if (s_MultiUpdaters[i] == pUpdater)
 		{
 			s_MultiUpdaters.erase(s_MultiUpdaters.begin() + i);
 			break;

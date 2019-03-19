@@ -1,6 +1,7 @@
 ﻿#include "../../Include/Orders/OrderPumpWater.h"
 #include <World/World.h>
 #include "../../Include/Crewmember.h"
+
 OrderPumpWater::OrderPumpWater(OrderPumpWater * other) : OrderWalk(other),
 	m_RoomToPump(other->m_RoomToPump)
 {
@@ -45,7 +46,7 @@ bool OrderPumpWater::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMember
 
 		Room* room = &pWorld->GetRoom(m_RoomToPump);
 
-		uint32 size = room->GetTileData()->size();
+		uint32 size = (int32)room->GetTileData()->size();
 		clean = true;
 		for (uint32 i = 0; i < size; i++)
 		{
@@ -54,7 +55,7 @@ bool OrderPumpWater::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMember
 			if (data->WaterLevel > 0.0001)
 			{
 				clean = false;
-				data->WaterLevel -= 0.01 * dtS;
+				data->WaterLevel -= PUMP_FACTOR * dtS;
 			}
 		}
 	}

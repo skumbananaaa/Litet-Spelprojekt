@@ -222,7 +222,7 @@ bool OrderHandler::IsCrewMemberAbleToExecuteOrder(IOrder* order) noexcept
 
 void OrderHandler::RemoveIdleOrders() noexcept
 {
-	for (int32 i = m_OrderQueue.size() - 1; i >= 0; i--)
+	for (int32 i = (int32)m_OrderQueue.size() - 1; i >= 0; i--)
 	{
 		if (m_OrderQueue[i]->IsIdleOrder())
 		{
@@ -235,7 +235,7 @@ void OrderHandler::RemoveIdleOrders() noexcept
 
 int OrderHandler::ReplaceOrderOfSameType(IOrder* order) noexcept
 {
-	for (int i = 0; i < m_OrderQueue.size(); i++)
+	for (int32 i = 0; i < (int32)m_OrderQueue.size(); i++)
 	{
 		if (m_OrderQueue[i]->GetName().compare(order->GetName()) == 0)
 		{
@@ -250,7 +250,7 @@ int OrderHandler::ReplaceOrderOfSameType(IOrder* order) noexcept
 
 void OrderHandler::RemoveAllOrders() noexcept
 {
-	for (int i = 0; i < m_OrderQueue.size(); i++)
+	for (int i = 0; i < (int32)m_OrderQueue.size(); i++)
 	{
 		m_OrderQueue[i]->m_IsAborted = true;
 		DeleteOrder(m_OrderQueue[i]);

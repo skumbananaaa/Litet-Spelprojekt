@@ -31,11 +31,7 @@ Application::Application(bool fullscreen, uint32 width, uint32 height, const std
 	else
 	{
 		m_pWindow = new Window("Krisim", width, height, fullscreen);
-
-		float width = static_cast<float>(m_pWindow->GetWidth());
-		float height = static_cast<float>(m_pWindow->GetHeight());
-
-		m_pGraphicsContext = new GLContext(width, height);
+		m_pGraphicsContext = new GLContext((float)width, (float)height);
 		m_pAudioContext = IAudioContext::CreateContext();
 		m_pAudioContext->SetDistanceModel(DistanceModel::LINEAR_DISTANCE);
 

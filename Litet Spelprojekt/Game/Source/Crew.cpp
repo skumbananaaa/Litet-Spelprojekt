@@ -15,7 +15,7 @@ Crew::~Crew()
 
 void Crew::AddToSelectedList(int32 crewIndex) noexcept
 {
-	for (int i = 0; i < m_SelectedMembers.size(); i++)
+	for (int i = 0; i < (int32)m_SelectedMembers.size(); i++)
 	{
 		if (m_SelectedMembers[i] == crewIndex)
 		{
@@ -27,7 +27,7 @@ void Crew::AddToSelectedList(int32 crewIndex) noexcept
 
 void Crew::ClearSelectedList() noexcept
 {
-	for (int i = m_SelectedMembers.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_SelectedMembers.size() - 1; i >= 0; i--)
 	{
 		GetMember(m_SelectedMembers[i])->SetIsPicked(false);
 	}
@@ -36,7 +36,7 @@ void Crew::ClearSelectedList() noexcept
 
 void Crew::RemoveFromSelectedList(int32 crewIndex) noexcept
 {
-	for (int i = 0; i < m_SelectedMembers.size(); i++)
+	for (int i = 0; i < (int32)m_SelectedMembers.size(); i++)
 	{
 		if (m_SelectedMembers[i] == crewIndex)
 		{
@@ -66,14 +66,14 @@ const std::vector<uint32>& Crew::GetSquad(uint32 index) const noexcept
 Crewmember* Crew::AddMember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 {
 	Crewmember* member = new Crewmember(world, position, name, groupType);
-	member->SetShipNumber(m_Members.size());
+	member->SetShipNumber((int32)m_Members.size());
 
 	if (groupType != NONE)
 	{
 		m_Squads[groupType].push_back(member->GetShipNumber());
 	}
 
-	int32 squad = m_Members.size() / 2 + 2;
+	int32 squad = (int32)m_Members.size() / 2 + 2;
 	if (m_Squads.size() == squad)
 	{
 		m_Squads.push_back(std::vector<uint32>());
@@ -89,18 +89,18 @@ Crewmember* Crew::GetMember(int index)
 	return m_Members[index];
 }
 
-const int Crew::GetCount() const
+const uint32 Crew::GetCount() const
 {
-	return m_Members.size();
+	return (uint32)m_Members.size();
 }
 
 const uint32 Crew::GetSquadCount(uint32 squad) const
 {
 	assert(squad < m_Squads.size());
-	return m_Squads[squad].size();
+	return (uint32)m_Squads[squad].size();
 }
 
 const uint32 Crew::NrOfSquads() const
 {
-	return m_Squads.size();
+	return (uint32)m_Squads.size();
 }

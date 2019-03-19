@@ -41,13 +41,13 @@ void World::AddWorldObject(const WorldObject& object) noexcept
 	m_Objects.push_back(object);
 }
 
-const WorldLevel& const World::GetLevel(uint32 level) const noexcept
+const WorldLevel& World::GetLevel(uint32 level) const noexcept
 {
 	assert(level < m_Levels.size());
 	return m_Levels[level];
 }
 
-WorldLevel& const World::GetLevel(uint32 level) noexcept
+WorldLevel& World::GetLevel(uint32 level) noexcept
 {
 	assert(level < m_Levels.size());
 	return m_Levels[level];
@@ -55,7 +55,7 @@ WorldLevel& const World::GetLevel(uint32 level) noexcept
 
 uint32 World::GetNumLevels() const noexcept
 {
-	return m_Levels.size();
+	return (uint32)m_Levels.size();
 }
 
 const WorldObject& World::GetWorldObject(uint32 index) const noexcept
@@ -176,9 +176,6 @@ void World::PlaceGameObjects(Scene& scene) noexcept
 	for (size_t i = 0; i < m_Objects.size(); i++)
 	{
 	    const WorldObject& worldObject = m_Objects[i];
-		int32 width = m_Levels[worldObject.TileId.y].GetSizeX();
-		int32 height = m_Levels[worldObject.TileId.y].GetSizeZ();
-		int floorLevel = worldObject.TileId.y / 2;
 
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 		glm::uvec3 pos = worldObject.TileId;
@@ -201,11 +198,8 @@ void World::PlaceDoors(Scene& scene) noexcept
 	for (uint32 i = 0; i < m_Doors.size(); i++)
 	{
 		const glm::vec3& door1 = m_Doors[i];
-		WorldLevel& level = m_Levels[door1.y];
+		WorldLevel& level = m_Levels[(int32)door1.y];
 		
-		float halfWidth = level.GetSizeX() / 2;
-		float halfHeight = level.GetSizeZ() / 2;
-
 		for (uint32 j = i + 1; j < m_Doors.size(); j++)
 		{
 			const glm::vec3& door2 = m_Doors[j];
@@ -272,9 +266,6 @@ void World::PlaceStairs(Scene& scene) noexcept
 		const glm::ivec3& stair = m_Stairs[i];
 		WorldLevel& level = m_Levels[stair.y];
 		
-		float halfWidth = level.GetSizeX() / 2;
-		float halfHeight = level.GetSizeZ() / 2;
-
 		glm::vec3 position = ((glm::vec3)stair);
 
 		const uint32* const* grid = level.GetLevel();
@@ -356,7 +347,7 @@ void World::Generate(Scene& scene) noexcept
 void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 {
 	m_Stairs.resize(nrOfStairs);
-	for (int i = 0; i < m_Stairs.size(); i++)
+	for (int i = 0; i < (int32)m_Stairs.size(); i++)
 	{
 		m_Stairs[i] = stairs[i];
 		m_Levels[m_Stairs[i].y].GetLevelData()[m_Stairs[i].x][m_Stairs[i].z].HasStairs = true;
@@ -365,7 +356,7 @@ void World::SetStairs(const glm::ivec3* stairs, uint32 nrOfStairs)
 
 void World::SetDoors(const glm::ivec3* doors, uint32 nrOfDoors)
 {
-	for (int i = 0; i < nrOfDoors; i++)
+	for (uint32 i = 0; i < nrOfDoors; i++)
 	{
 		m_Doors.push_back(doors[i]);
 		//m_ppLevels[doors[i].y]->GetLevelData()[doors[i].x][doors[i].z].GameObjects[GAMEOBJECT_CONST_INDEX_DOOR] = 
@@ -485,7 +476,7 @@ void World::GenerateLevelObject(Scene& scene) noexcept
 			glm::vec4 wall;
 			GameObject* pGameObject = nullptr;
 
-			for (int i = 0; i < m_Levels[level].GetNrOfWalls(); i++)
+			for (uint32 i = 0; i < m_Levels[level].GetNrOfWalls(); i++)
 			{
 				wall = m_Levels[level].GetWall(i);
 
@@ -500,7 +491,7 @@ void World::GenerateLevelObject(Scene& scene) noexcept
 			}
 
 			glm::vec4 bulkhead;
-			for (int i = 0; i < m_Levels[level].GetNrOfBulkheads(); i++)
+			for (uint32 i = 0; i < m_Levels[level].GetNrOfBulkheads(); i++)
 			{
 				bulkhead = m_Levels[level].GetBulkhead(i);
 

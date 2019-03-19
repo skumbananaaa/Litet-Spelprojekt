@@ -1,6 +1,8 @@
 #pragma once
 #include "OrderWalk.h"
 
+#define PUMP_FACTOR 0.1f
+
 class OrderPumpWater : public OrderWalk
 {
 public:

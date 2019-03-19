@@ -5,7 +5,10 @@
 #include <World/Logger.h>
 #include <Audio/Sources/AudioSource.h>
 
-ScenarioArtillery::ScenarioArtillery() : m_pAudioSourceExplosion(nullptr)
+ScenarioArtillery::ScenarioArtillery(uint32 numInstances)
+	: m_pAudioSourceExplosion(nullptr),
+	m_InstancesToSpawn(numInstances),
+	m_InstancesComplete(0)
 {
 
 }
@@ -59,7 +62,7 @@ void ScenarioArtillery::OnVisibilityChange(World* pWorld, SceneGame* pScene) noe
     
 }
 
-void ScenarioArtillery::Escalate(const glm::ivec3& position) noexcept
+void ScenarioArtillery::Escalate(const glm::ivec3& position, float severity) noexcept
 {
 
 }
@@ -96,7 +99,7 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 			m_pAudioSourceExplosion->Play();
 
 			Crew* crew = scene->GetCrew();
-			for (int i = 0; i < crew->GetCount(); i++)
+			for (uint32 i = 0; i < crew->GetCount(); i++)
 			{
 				if (crew->GetMember(i)->GetPosition().y >= 4)
 				{
@@ -111,10 +114,13 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 				}	
 			}
 
+			m_InstancesComplete++;
 			return true;
 		}
+	
 		return false;
 	}
+
 	return true;
 }
 
@@ -130,10 +136,15 @@ std::string ScenarioArtillery::GetName() noexcept
 
 int32 ScenarioArtillery::GetCooldownTime() noexcept
 {
-	return 100;
+	return 60 * 5;
 }
 
 int32 ScenarioArtillery::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60 * 5;
+	return 60;
+}
+
+bool ScenarioArtillery::IsComplete() noexcept
+{
+	return m_InstancesComplete >= m_InstancesToSpawn;
 }

@@ -1,12 +1,9 @@
 #pragma once
-
 #include <Graphics/GameObject.h>
 #include "../Include/Orders/OrderHandler.h"
 #include "../Include/GUI/UISelectedCrew.h"
 #include <Audio/Sources/AudioSource.h>
 #include "../Include/GUI/UIOrder.h"
-
-#pragma message("INCLUDE" __FILE__)
 
 #define CHOSEN_LIGHT glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
 #define DEFAULT_LIGHT glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
@@ -22,6 +19,9 @@
 #define NR_GROUPS 3
 #define MAX_HEALTH 100.0f
 
+#define MAX_REPORT_TIME 10
+#define MIN_REPORT_TIME 1
+
 enum GroupType : uint32
 {
 	MEDIC = 0,
@@ -29,7 +29,7 @@ enum GroupType : uint32
 	NONE = 2
 };
 
-class TileData;
+struct TileData;
 
 class Crewmember : public GameObject, public UIOrder, public IProgressListener
 {

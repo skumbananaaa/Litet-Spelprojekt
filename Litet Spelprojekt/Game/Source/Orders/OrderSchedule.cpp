@@ -49,6 +49,7 @@ void OrderSchedule::Init(Scene* pScene)
 		s_Instruments.push_back(pGameObject);
 	}
 
+	//Find extinguishers
 	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Extinguisher" + std::to_string(i))) != nullptr; i++)
 	{
 		s_Extinguishers.push_back(pGameObject);
@@ -101,7 +102,7 @@ IOrder* OrderSchedule::GetOrderEat()
 {
 	if (!s_Chairs.empty())
 	{
-		GameObject* pGameObject = s_Chairs[Random::GenerateInt(0, s_Chairs.size() - 1)];
+		GameObject* pGameObject = s_Chairs[Random::GenerateInt(0, (int32)s_Chairs.size() - 1)];
 		return new OrderEat(pGameObject->GetTile(), pGameObject);
 	}
 
@@ -112,7 +113,7 @@ IOrder* OrderSchedule::GetOrderSleep()
 {
 	if (!s_Beds.empty())
 	{
-		GameObject* pGameObject = s_Beds[Random::GenerateInt(0, s_Beds.size() - 1)];
+		GameObject* pGameObject = s_Beds[Random::GenerateInt(0, (int32)s_Beds.size() - 1)];
 		return new OrderSleep(pGameObject->GetTile(), pGameObject);
 	}
 
@@ -123,7 +124,7 @@ IOrder* OrderSchedule::GetOrderCook()
 {
 	if (!s_Ovens.empty())
 	{
-		GameObject* pGameObject = s_Ovens[Random::GenerateInt(0, s_Ovens.size() - 1)];
+		GameObject* pGameObject = s_Ovens[Random::GenerateInt(0, (int32)s_Ovens.size() - 1)];
 		return new OrderCook(pGameObject->GetTile(), pGameObject);
 	}
 
@@ -134,7 +135,7 @@ IOrder* OrderSchedule::GetOrderWork()
 {
 	if (!s_Instruments.empty())
 	{
-		GameObject* pGameObject = s_Instruments[Random::GenerateInt(0, s_Instruments.size() - 1)];
+		GameObject* pGameObject = s_Instruments[Random::GenerateInt(0, (int32)s_Instruments.size() - 1)];
 		return new OrderWork(pGameObject->GetTile(), pGameObject);
 	}
 
@@ -146,7 +147,7 @@ IOrder* OrderSchedule::GetOrderToilet()
 
 	if (!s_Toilets.empty())
 	{
-		GameObject* pGameObject = s_Toilets[Random::GenerateInt(0, s_Toilets.size() - 1)];
+		GameObject* pGameObject = s_Toilets[Random::GenerateInt(0, (int32)s_Toilets.size() - 1)];
 		return new OrderToilet(pGameObject->GetTile(), pGameObject);
 	}
 

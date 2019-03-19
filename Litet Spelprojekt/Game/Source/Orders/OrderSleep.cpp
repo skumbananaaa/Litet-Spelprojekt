@@ -1,5 +1,6 @@
 #include "../../Include/Orders/OrderSleep.h"
 #include "../../Include/Crewmember.h"
+#include <World/World.h>
 #include <System/Random.h>
 #include <IO/ResourceHandler.h>
 #include "../../Include/Scenes/SceneGame.h"
@@ -55,30 +56,30 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 				yaw += glm::two_pi<float>();
 			}
 			yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
-			int rot = yaw / glm::half_pi<float>();
+			int rot = (int32)(yaw / glm::half_pi<float>());
 
 			bool single = (m_pBed->GetMesh() == ResourceHandler::GetMesh(MESH::BED_SINGLE));
 			float yOffset = (m_Up && !single) ? 1.45f : 0.55f;
 
 			if (rot == 0)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, -0.45f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, yOffset, -0.45f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 1)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.45f, yOffset, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(-0.45f, yOffset, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 			else if (rot == 2)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, yOffset, 0.45f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, yOffset, 0.45f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 			else if (rot == 3)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.45f, yOffset, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.45f, yOffset, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 		}
 	}
@@ -88,6 +89,11 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 		return m_Timer <= 0.0f;
 	}
 
+	glm::ivec3 goal = OrderWalk::m_GoalTile;
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -96,7 +102,7 @@ void OrderSleep::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexc
 	if (m_IsAtBed)
 	{
 		Crewmember* pCrewmember = GetCrewMember();
-		GetCrewMember()->SetPosition(m_Position);
+		pCrewmember->SetPosition(m_Position);
 		pCrewmember->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 	}
 	else

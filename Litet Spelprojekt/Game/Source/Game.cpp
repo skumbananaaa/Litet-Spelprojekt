@@ -47,8 +47,8 @@ Game::Game() noexcept
 	m_pAudioSourceMenu->SetLooping(true);
 	m_pAudioSourceMenu->Play();
 
-	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioArtillery());
-	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioIceberg());
+	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioArtillery(2));
+	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioIceberg(3));
 	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(false));
 	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(false));
 

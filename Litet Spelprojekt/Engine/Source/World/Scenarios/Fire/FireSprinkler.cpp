@@ -71,9 +71,9 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
 	bool allFireInRoomExtinguished = true;
 
-	for (int32 x = 0; x < levelSizeX; x++)
+	for (uint32 x = 0; x < levelSizeX; x++)
 	{
-		for (int32 z = 0; z < levelSizeZ; z++)
+		for (uint32 z = 0; z < levelSizeZ; z++)
 		{
 			TileData& tile = ppLevelData[x][z];
 
@@ -137,18 +137,18 @@ void FireSprinkler::OnSmokeDetected() noexcept
 	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
 
 
-	for (int32 x = 0; x < levelSizeX; x++)
+	for (uint32 x = 0; x < levelSizeX; x++)
 	{
-		for (int32 z = 0; z < levelSizeZ; z++)
+		for (uint32 z = 0; z < levelSizeZ; z++)
 		{
 			if (currentRoomIndex == ppLevel[x][z])
 			{
 				TileData& tile = ppLevelData[x][z];
 
-				m_MinBounds.x = glm::min<float>(m_MinBounds.x, x);
-				m_MinBounds.z = glm::min<float>(m_MinBounds.z, z);
-				m_MaxBounds.x = glm::max<float>(m_MaxBounds.x, x);
-				m_MaxBounds.z = glm::max<float>(m_MaxBounds.z, z);
+				m_MinBounds.x = glm::min<float>(m_MinBounds.x, (float)x);
+				m_MinBounds.z = glm::min<float>(m_MinBounds.z, (float)z);
+				m_MaxBounds.x = glm::max<float>(m_MaxBounds.x, (float)x);
+				m_MaxBounds.z = glm::max<float>(m_MaxBounds.z, (float)z);
 
 				for (uint32 i = tile.NrOfBaseGameObjects; i < tile.GameObjects.size(); i++)
 				{

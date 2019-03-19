@@ -115,17 +115,17 @@ void Slider::RenderRealTime(GUIContext* context, float x, float y)
 
 	if (IsVertical())
 	{
-		float indent = GetWidth() * 0.2;
-		width = GetWidth() - indent * 2;
-		height = GetHeight() * m_Ratio - indent * 2;
+		float indent = GetWidth() * 0.2f;
+		width = GetWidth() - indent * 2.0f;
+		height = GetHeight() * m_Ratio - indent * 2.0f;
 		x += indent;
 		y += m_SliderPos + indent;
 	}
 	else
 	{
-		float indent = GetHeight() * 0.2;
-		width = GetWidth() * m_Ratio - indent * 2;
-		height = GetHeight() - indent * 2;
+		float indent = GetHeight() * 0.2f;
+		width = GetWidth() * m_Ratio - indent * 2.0f;
+		height = GetHeight() - indent * 2.0f;
 		x += m_SliderPos + indent;
 		y += indent;
 	}
@@ -151,7 +151,7 @@ void Slider::SetPercentage(float percentage)
 {
 	if (IsVertical())
 	{
-		percentage = 1.0 - percentage;
+		percentage = 1.0f - percentage;
 		m_SliderPos = percentage * (GetHeight() - GetHeight() * m_Ratio);
 	}
 	else
@@ -164,12 +164,12 @@ float Slider::GetPercentage() const noexcept
 {
 	if (m_Ratio == 1)
 	{
-		return 0;
+		return 0.0f;
 	}
 
 	if (IsVertical())
 	{
-		return 1.0 - m_SliderPos / (GetHeight() - GetHeight() * m_Ratio);
+		return 1.0f - m_SliderPos / (GetHeight() - GetHeight() * m_Ratio);
 	}
 	else
 	{
@@ -319,20 +319,20 @@ void Slider::OnUpdate(float dtS)
 {
 	MoveSlider(m_SliderVel * dtS);
 
-	if (m_SliderVel > 0)
+	if (m_SliderVel > 0.0f)
 	{
-		m_SliderVel -= 1500.0 * dtS * GetRatio();
-		if (m_SliderVel < 0)
+		m_SliderVel -= 1500.0f * dtS * GetRatio();
+		if (m_SliderVel < 0.0f)
 		{
-			m_SliderVel = 0;
+			m_SliderVel = 0.0f;
 		}
 	}
-	else if(m_SliderVel < 0)
+	else if(m_SliderVel < 0.0f)
 	{
-		m_SliderVel += 1500.0 * dtS * GetRatio();
-		if (m_SliderVel > 0)
+		m_SliderVel += 1500.0f * dtS * GetRatio();
+		if (m_SliderVel > 0.0f)
 		{
-			m_SliderVel = 0;
+			m_SliderVel = 0.0f;
 		}
 	}
 }

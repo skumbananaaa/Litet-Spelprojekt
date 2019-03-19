@@ -42,7 +42,6 @@ void OrderExtinguishFire::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMem
 bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
 	Crewmember* pCrewmember = GetCrewMember();
-
 	if (!m_FireFullyExtinguished)
 	{
 		if (!pCrewmember->HasGearEquipped())
@@ -60,8 +59,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				{
 					m_EquippingGearTimer = 0.0f;
 					pCrewmember->SetGearIsEquipped(true);
-					Logger::LogEvent(GetCrewMember()->GetName() + " tog på sig rökdykarutrustning!", true);
-					GetCrewMember()->ReportPosition();
+					Logger::LogEvent(pCrewmember->GetName() + " tog på sig rökdykarutrustning!", true);
+					pCrewmember->ReportPosition();
 					if (pCrewmember->HasExtinguisherEquipped())
 					{
 						GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
@@ -80,36 +79,39 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				pCrewmember->SetExtinguisherIsEquipped(true);
-				Logger::LogEvent(GetCrewMember()->GetName() + " tog en brandsläckare!", true);
-				GetCrewMember()->ReportPosition();
+				Logger::LogEvent(pCrewmember->GetName() + " tog en brandsläckare!", true);
+				pCrewmember->ReportPosition();
 				//change animation
 				//delete object
-				pScene->RemoveGameObject(pScene->GetGameObject(m_ExtinguisherName));
+				GameObject* pGameObject = pScene->GetGameObject(m_ExtinguisherName);
+				if (pGameObject)
+				{
+					pScene->RemoveGameObject(pGameObject);
+				}
+				else
+				{
+					pCrewmember->GiveOrder(new OrderExtinguishFire(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName), m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
+				}
 
 				GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 			}
 		}
 		else
 		{
-			Crewmember* pCrewmember = GetCrewMember();
-			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EXTINGUISH_RUN);
-			pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL_EXTINGUISH);
-
 			//Run To Room That is Burning
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				const glm::ivec2& levelSize = glm::ivec2(pWorld->GetLevel(m_BurningTile.y).GetSizeX(), pWorld->GetLevel(m_BurningTile.y).GetSizeZ());
 				const uint32 * const * ppLevel = pWorld->GetLevel(m_BurningTile.y).GetLevel();
 				TileData * const * ppLevelData = pWorld->GetLevel(m_BurningTile.y).GetLevelData();
-				TileData& burningTile = ppLevelData[m_BurningTile.x][m_BurningTile.z];
 
 				if (!m_ExtinguishingFire)
 				{
 					m_ExtinguishingFire = true;
 				}
 
-				glm::vec3 direction = GetCrewMember()->GetDirection();
-				glm::vec3 right = glm::normalize(glm::cross(UP_VECTOR, GetCrewMember()->GetDirection()));
+				glm::vec3 direction = pCrewmember->GetDirection();
+				glm::vec3 right = glm::normalize(glm::cross(UP_VECTOR, pCrewmember->GetDirection()));
 
 				glm::ivec3 tileR = m_BurningTile + glm::ivec3(glm::round(direction + right));
 				glm::ivec3 tileM = m_BurningTile + glm::ivec3(glm::round(direction));
@@ -133,7 +135,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				if (allFiresExtinguished)
 				{
 					m_ExtinguishingFire = false;
-					pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
 					glm::ivec2 newTarget = FindClosestBurningTile(ppLevel, ppLevelData, levelSize, glm::ivec2(m_BurningTile.x, m_BurningTile.z));
 
 					std::cout << "New Target: " << glm::to_string(newTarget) << std::endl;
@@ -146,7 +147,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_RoomBurningId = 0;
 						glm::ivec3 currentTile = pCrewmember->GetTile() * glm::ivec3(1, 2, 1);
 						Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med eldsläckning!", true);
-						GetCrewMember()->ReportPosition();
+						pCrewmember->SetExtinguisherIsEquipped(false);
+						pCrewmember->ReportPosition();
 						GiveOrderInbred(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, currentTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
 						return false;
 					}
@@ -160,7 +162,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				}
 				else
 				{
-					m_ExtinguishingIntensity * 1.1f;
+					m_ExtinguishingIntensity *= 1.1f;
 				}
 			}
 			else
@@ -186,10 +188,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 	{
 		if (pCrewmember->HasGearEquipped())
 		{
-			Crewmember* pCrewmember = GetCrewMember();
-			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_RUN);
-			pCrewmember->SetMaterial(MATERIAL::ANIMATED_MODEL);
-
 			//Run To Room
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
@@ -206,8 +204,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						m_EquippingGearTimer = 0.0f;
 						pCrewmember->SetGearIsEquipped(false);
 						pCrewmember->SetExtinguisherIsEquipped(false);
-						Logger::LogEvent(GetCrewMember()->GetName() + " tog av sig rökdykarutrustning!", true);
-						GetCrewMember()->ReportPosition();
+						Logger::LogEvent(pCrewmember->GetName() + " tog av sig rökdykarutrustning!", true);
+						pCrewmember->ReportPosition();
 						return true;
 					}
 				}

@@ -2,6 +2,7 @@
 #include "../../Include/Orders/OrderSchedule.h"
 #include "../../Include/Crewmember.h"
 #include "../../Include/Game.h"
+#include <World/World.h>
 
 OrderCook::OrderCook(OrderCook* other) : OrderWalk(other)
 {
@@ -33,14 +34,15 @@ void OrderCook::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 
 bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
+	Crewmember* pCrewmember = GetCrewMember();
 	if (!m_IsAtOven)
 	{
 		if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 		{
 			m_IsAtOven = true;
-			m_Position = GetCrewMember()->GetPosition();
+			m_Position = pCrewmember->GetPosition();
 
-			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_WORK);
 
 			float yaw = m_pOven->GetRotation().w;
 			while (yaw > glm::two_pi<float>())
@@ -52,28 +54,28 @@ bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 				yaw += glm::two_pi<float>();
 			}
 			yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
-			int rot = yaw / glm::half_pi<float>();
+			int rot = (int32)(yaw / glm::half_pi<float>());
 
 			const glm::vec3& chairPos = m_pOven->GetPosition();
 			if (rot == 0)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, -0.9f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, -0.9f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 			else if (rot == 1)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(-0.9f, 0.1f, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(-0.9f, 0.1f, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 			else if (rot == 2)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, 0.9f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, 0.9f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 3)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(0.9f, 0.1f, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(0.9f, 0.1f, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 		}
 	}
@@ -92,6 +94,11 @@ bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 		}
 	}
 
+	glm::ivec3 goal = OrderWalk::m_GoalTile;
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	{
+		return true;
+	}
 	return false;
 }
 

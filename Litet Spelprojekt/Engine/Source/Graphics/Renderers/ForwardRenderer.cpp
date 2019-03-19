@@ -116,7 +116,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	//Set viewport and framebuffer
 	context.SetFramebuffer(nullptr);
 	context.SetViewport(Window::GetCurrentWindow().GetWidth(), Window::GetCurrentWindow().GetHeight(), 0, 0);
-	context.SetStencilMask(~0); //Active write to stencil or clear stencil does not work
+	context.SetStencilMask(uint8(~0)); //Active write to stencil or clear stencil does not work
 	context.Clear(CLEAR_FLAG_COLOR | CLEAR_FLAG_DEPTH | CLEAR_FLAG_STENCIL);
 
 	//Render scene
@@ -177,8 +177,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 
 	if (timer >= 1.0f)
 	{
-		float fps = static_cast<float>(Application::GetInstance().GetFPS());
-
+		//float fps = static_cast<float>(Application::GetInstance().GetFPS());
 		/*std::cout << "Frametimes: (Total time: " << (frametime / fps) * 1000.0f << "ms, FPS: " << fps << ")" << std::endl;
 		std::cout << " Reflectionpass: " << m_FrameTimes.ReflectionPass / fps << "ms" << std::endl;
 		std::cout << " DepthPrePass: " << m_FrameTimes.DepthPrePass / fps << "ms" << std::endl;
@@ -461,14 +460,14 @@ void ForwardRenderer::UpdateShadowBuffer(const World* const pWorld) const noexce
 		ShadowBuffer buff = {};
 		sizeof(ShadowBuffer);
 
-		for (uint32 i = 0; i < pWorld->GetActiveRooms().size(); i++)
+		for (uint32 i = 0; i < (uint32)pWorld->GetActiveRooms().size(); i++)
 		{
 			uint32 roomIndex = pWorld->GetActiveRooms()[i];
 
 			buff.LightPosition[i] = glm::vec4(pWorld->GetRoom(roomIndex).GetCenter(), 1.0f);
 		}
 
-		for (uint32 i = pWorld->GetActiveRooms().size(); i < MAX_ROOMS_VISIBLE; i++)
+		for (uint32 i = (uint32)pWorld->GetActiveRooms().size(); i < MAX_ROOMS_VISIBLE; i++)
 		{
 			buff.LightPosition[i] = glm::vec4(0.0f);
 		}
@@ -487,7 +486,7 @@ void ForwardRenderer::ReflectionPass(const Scene& scene, const World* const pWor
 		return;
 	}
 
-	GLContext& context = Application::GetInstance().GetGraphicsContext();
+	GLContext& context = GLContext::GetCurrentContext();
 
 	Camera reflectionCam = scene.GetCamera();
 	float reflDistance = reflectionCam.GetPosition().y * 2.0f;
@@ -523,13 +522,11 @@ void ForwardRenderer::ReflectionPass(const Scene& scene, const World* const pWor
 			return;
 		}
 
-		GLContext& context = GLContext::GetCurrentContext();
-
 		MaterialBuffer perBatch = {};
-		for (size_t i = 0; i < m_DrawableBatches.size(); i++)
+		for (size_t j = 0; j < m_DrawableBatches.size(); j++)
 		{
-			const IndexedMesh& mesh = *m_DrawableBatches[i].pMesh;
-			const Material& material = *m_DrawableBatches[i].pMaterial;
+			const IndexedMesh& mesh = *m_DrawableBatches[j].pMesh;
+			const Material& material = *m_DrawableBatches[j].pMaterial;
 
 			if (material.IsReflectable())
 			{
@@ -548,7 +545,7 @@ void ForwardRenderer::ReflectionPass(const Scene& scene, const World* const pWor
 			material.SetExtensionBuffer(m_pExtensionBuffer);
 			material.Bind(nullptr);
 
-			mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+			mesh.SetInstances(m_DrawableBatches[i].Instances.data(), (uint32)m_DrawableBatches[i].Instances.size());
 			context.DrawIndexedMeshInstanced(mesh);
 
 			context.Enable(CULL_FACE);
@@ -599,7 +596,7 @@ void ForwardRenderer::DepthPrePass(const Camera& camera, const Scene& scene, con
 			context.Disable(CULL_FACE);
 		}
 
-		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), (uint32)m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
 	}
 
@@ -682,7 +679,7 @@ void ForwardRenderer::MainPass(const Camera& camera, const Scene& scene, const W
 		material.SetShadowBuffer(m_pShadowBuffer);
 		material.Bind(nullptr);
 
-		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), m_DrawableBatches[i].Instances.size());
+		mesh.SetInstances(m_DrawableBatches[i].Instances.data(), (uint32)m_DrawableBatches[i].Instances.size());
 		context.DrawIndexedMeshInstanced(mesh);
 
 		context.Enable(CULL_FACE);

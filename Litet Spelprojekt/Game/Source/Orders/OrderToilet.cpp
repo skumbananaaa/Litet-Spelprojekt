@@ -1,6 +1,7 @@
 #include "../../Include/Orders/OrderToilet.h"
 #include "../../Include/Crewmember.h"
 #include "../../Include/Scenes/SceneGame.h"
+#include <World/World.h>
 
 OrderToilet::OrderToilet(OrderToilet* other) : OrderWalk(other)
 {
@@ -51,27 +52,27 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 				yaw += glm::two_pi<float>();
 			}
 			yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
-			int rot = yaw / glm::half_pi<float>();
+			int rot = (int32)(yaw / glm::half_pi<float>());
 			
 			if (rot == 0)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(-0.1f, 0.0f, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(-0.1f, 0.0f, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 			else if (rot == 1)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, 0.1f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, 0.1f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 2)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.1f, 0.0f, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.1f, 0.0f, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 			else if (rot == 3)
 			{
-				GetCrewMember()->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, -0.1f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
+				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, -0.1f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 		}
 	}
@@ -79,6 +80,12 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 	{
 		m_Timer -= dtS;
 		return m_Timer <= 0.0f;
+	}
+	glm::ivec3 goal = OrderWalk::m_GoalTile;
+
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	{
+		return true;
 	}
 
 	return false;
@@ -90,7 +97,7 @@ void OrderToilet::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 	{
 		Crewmember* pCrewmember = GetCrewMember();
 		pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-		GetCrewMember()->SetPosition(m_Position);
+		pCrewmember->SetPosition(m_Position);
 		pCrewmember->SetRotation(glm::vec4(1.0f, 0.0f, 0.0f, glm::radians<float>(0.0f)));
 	}
 	else

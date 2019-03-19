@@ -80,7 +80,7 @@ int32 GameObjectFloor::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origi
 		}
 	}
 
-	return t;
+	return (int32)t;
 }
 
 void GameObjectFloor::OnPicked(const std::vector<int32>& selectedMembers, int32 x, int32 y) noexcept
@@ -88,7 +88,6 @@ void GameObjectFloor::OnPicked(const std::vector<int32>& selectedMembers, int32 
 	std::cout << "I am a picked floor!" << std::endl;
 	const glm::ivec3& tile = GetTile();
 	TileData* pLowerTile = &Game::GetGame()->m_pSceneGame->GetWorld()->GetLevel(tile.y).GetLevelData()[tile.x][tile.z];
-	TileData* pUpperTile = &Game::GetGame()->m_pSceneGame->GetWorld()->GetLevel(tile.y + 1).GetLevelData()[tile.x][tile.z];
 
 	if (pLowerTile->Temp > pLowerTile->BurnsAt)
 	{
@@ -132,7 +131,7 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 
 			if (!hasGearEquipped)
 			{
-				goalTile = pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile);
+				goalTile = pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile, true);
 			}
 			else
 			{

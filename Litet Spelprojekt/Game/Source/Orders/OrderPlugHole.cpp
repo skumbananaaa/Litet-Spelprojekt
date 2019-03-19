@@ -44,8 +44,6 @@ void OrderPlugHole::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMember
 void OrderPlugHole::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
-
-	GetCrewMember()->ReportPosition();
 }
 
 bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
@@ -69,22 +67,27 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 
 			if (m_PluggingTimer <= 0.0001)
 			{
-				glm::ivec3 tile = GetCrewMember()->GetTile();
-
+				glm::ivec3 tile = pCrewmember->GetTile();
+				
 				if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 				{
 					if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 					{
-						Logger::LogEvent(GetCrewMember()->GetName() + " pluggade igen hålet!", true);
+						Logger::LogEvent(pCrewmember->GetName() + " pluggade igen hålet!", true);
+						pCrewmember->ReportPosition();
 					}
 					else
 					{
-						Logger::LogEvent(GetCrewMember()->GetName() + " kontrollerade det pluggningen!", true);
+						Logger::LogEvent(pCrewmember->GetName() + " kontrollerade pluggningen!", true);
+						pCrewmember->ReportPosition();
 					}
+					
 					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet = false;
-					if (!pWorld->GetRoom(GetCrewMember()->GetRoom()).IsPumping())
+					pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetMaterial(MATERIAL::WATER_INDOOR);
+
+					if (!pWorld->GetRoom(pCrewmember->GetRoom()).IsPumping())
 					{
-						GiveOrderInbred(new OrderPumpWater(GetCrewMember()->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
+						GiveOrderInbred(new OrderPumpWater(pCrewmember->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
 					}
 				}
 				res = true;

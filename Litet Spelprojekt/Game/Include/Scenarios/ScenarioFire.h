@@ -23,16 +23,22 @@ public:
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
 	virtual void OnEnd(SceneGame* scene)noexcept override;
-	virtual void Escalate(const glm::ivec3& position) noexcept override;
+	virtual void Escalate(const glm::ivec3& position, float severity = 1.0f) noexcept override;
 	virtual void OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept override;
 	virtual bool Update(float dtS, World* world, SceneGame* scene) noexcept override;
 	virtual std::string GetName() noexcept override;
 	virtual int32 GetCooldownTime() noexcept override;
 	virtual int32 GetMaxTimeBeforeOutbreak() noexcept override;
+	virtual bool IsComplete() noexcept override;
 
 	void ShowInRoom(uint32 roomID) noexcept;
 
 private:
+	World* m_pWorld;
+	bool m_FireAlwaysVisible;
+	bool m_HasStarted;
+	const uint32* const** m_pppMap;
+
 	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
 	bool SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
 	float CalculateDoorSpreadFactor(const TileData& tileFrom, const TileData& tileTo, bool spreadingThroughBulkhead) const noexcept;

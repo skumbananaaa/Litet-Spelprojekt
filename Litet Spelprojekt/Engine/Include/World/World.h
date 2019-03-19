@@ -133,7 +133,7 @@ public:
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
 
-	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept;
+	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire = false) const noexcept;
 
 public:
 	static std::string GetNameFromGlobal(uint32 globalIndex) noexcept;
@@ -164,7 +164,7 @@ private:
 	std::vector<PointLight*> m_RoomLights;
 };
 
-inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile) const noexcept
+inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire) const noexcept
 {
 	uint32 minDistSqrd = UINT32_MAX;
 	glm::ivec3 closestRoomCenter(-1);
@@ -175,9 +175,14 @@ inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 
 
 		if (room.IsRoomInitialized())
 		{
+			if (checkForFire && room.IsBurning())
+			{
+				continue;
+			}
+
 			glm::ivec3 currentRoomCenter = glm::ivec3(room.GetCenter() - glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::ivec3 toVector = currentTile - currentRoomCenter;
-			uint32 currentDistanceSqrd = toVector.x * toVector.x + (10.0f * toVector.y * toVector.y) + toVector.z * toVector.z;
+			uint32 currentDistanceSqrd = (uint32)(toVector.x * toVector.x + (10.0f * toVector.y * toVector.y) + toVector.z * toVector.z);
 
 			if (currentDistanceSqrd < minDistSqrd)
 			{
@@ -303,6 +308,8 @@ inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromGlobal(uint3
 	{
 		return glm::uvec3(CABOOSE_INTERVAL_START - SMALLEST_RESERVED, CABOOSE_INTERVAL_END - SMALLEST_RESERVED, CABOOSE_CATEGORY_INDEX);
 	}
+
+	return glm::uvec3();
 }
 
 inline glm::uvec3 World::GetReservedTileLocalIntervalAndCategoryFromLocal(uint32 localIndex) noexcept
@@ -380,7 +387,7 @@ inline uint32 World::GetReservedTileFloorMaterialFromGlobal(uint32 globalIndex) 
 
 inline uint32 World::ConvertNonExtToExtFloorMaterial(const Material* pMaterial) noexcept
 {
-	int32 material = ResourceHandler::GetMaterial(pMaterial);
+	uint32 material = ResourceHandler::GetMaterial(pMaterial);
 	if (material == MATERIAL::FLOOR_NORMAL)
 	{
 		return MATERIAL::FLOOR_EXT_NORMAL;
@@ -435,8 +442,7 @@ inline uint32 World::ConvertNonExtToExtFloorMaterial(const Material* pMaterial) 
 
 inline uint32 World::ConvertExtToNonExtFloorMaterial(const Material* pMaterial) noexcept
 {
-	int32 material = ResourceHandler::GetMaterial(pMaterial);
-	
+	uint32 material = ResourceHandler::GetMaterial(pMaterial);
 	if (material == MATERIAL::FLOOR_EXT_NORMAL)
 	{
 		return MATERIAL::FLOOR_NORMAL;

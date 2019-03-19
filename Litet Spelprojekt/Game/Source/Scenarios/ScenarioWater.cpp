@@ -102,7 +102,6 @@ bool ScenarioWater::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		tile.WaterLevelLastUpdated = 0.0f;
 		tile.WaterLevelAge = 0.0f;
 		tile.AlreadyFlooded = true;
-		GameObject* pGameObject = ppLevelData[m_InletTiles[i].x][m_InletTiles[i].z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER];
 
 		if (!tile.WaterInlet)
 		{

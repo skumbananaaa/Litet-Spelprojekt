@@ -26,9 +26,9 @@ SceneMenu::~SceneMenu()
 	DeleteSafe(m_pAudioSourceHover);
 }
 
-void SceneMenu::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+void SceneMenu::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noexcept
 {
-	SceneInternal::OnActivated(lastScene, m_pRenderer);
+	SceneInternal::OnActivated(lastScene, pRenderer);
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();

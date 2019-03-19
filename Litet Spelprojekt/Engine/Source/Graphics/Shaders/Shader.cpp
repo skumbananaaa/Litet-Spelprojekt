@@ -31,8 +31,6 @@ uint32 Shader::ShaderTypeTable(ShaderType type) const noexcept
 
 void Shader::Construct()
 {
-	const GLchar* shaderCode = m_ShaderCode.c_str();
-
 	GLint success;
 	GLchar infoLog[1024];
 

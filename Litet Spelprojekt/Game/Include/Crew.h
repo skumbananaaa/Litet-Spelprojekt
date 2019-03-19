@@ -26,7 +26,7 @@ public:
 	Crewmember* GetMember(int index);
 
 	// Counts
-	const int GetCount() const;
+	const uint32 GetCount() const;
 	const uint32 GetSquadCount(uint32 squad) const;
 	const uint32 NrOfSquads() const;
 

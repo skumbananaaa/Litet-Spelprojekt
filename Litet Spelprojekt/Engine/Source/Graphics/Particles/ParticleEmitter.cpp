@@ -87,11 +87,11 @@ void ParticleEmitter::Update(const Camera& camera, float deltaTime) noexcept
 
 		//Color
 		int32 colorCurrentIndex = 0;
-		for (size_t i = 0; i < m_ColorNodes.size(); i++)
+		for (size_t j = 0; j < m_ColorNodes.size(); j++)
 		{
-			if (particle.LifePercentage >= m_ColorNodes[i].AtLifeTime)
+			if (particle.LifePercentage >= m_ColorNodes[j].AtLifeTime)
 			{
-				colorCurrentIndex = (int32)i;
+				colorCurrentIndex = (int32)j;
 			}
 		}
 

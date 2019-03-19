@@ -125,7 +125,7 @@ int32 GameObjectExtinguisher::TestAgainstRay(const glm::vec3 ray, const glm::vec
 		}
 	}
 
-	return t;
+	return (int32)t;
 }
 
 void GameObjectExtinguisher::UpdateTransform() noexcept
@@ -179,12 +179,8 @@ void GameObjectExtinguisher::OnOrderChosen(const std::string& name, void* userDa
 
 	if (shipID >= 0)
 	{
-		World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
 		const glm::ivec3& tile = GetTile();
-		glm::ivec3 tile2;
-		TileData * const * tiles = pWorld->GetLevel(tile.y).GetLevelData();
 		Crewmember* crewmember = crew->GetMember(shipID);
-
 		crewmember->GiveOrder(new OrderWalk(tile));
 	}
 }

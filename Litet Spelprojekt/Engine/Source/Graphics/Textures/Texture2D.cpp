@@ -65,9 +65,7 @@ void Texture2D::CreateMS(const TextureDesc& desc, const TextureParams& params)
 
 	GL_CALL(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_Texture));
 
-	uint32 glformat = Texture::TexFormatToGL(desc.Format);
 	uint32 internalFormat = Texture::TexFormatToGLInternal(desc.Format);
-	uint32 type = Texture::TexFormatToGLType(desc.Format);
 	GL_CALL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, desc.Samples, internalFormat, desc.Width, desc.Height, false));
 	
 	if (desc.GenerateMips)

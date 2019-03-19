@@ -26,8 +26,8 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 
 					int fireFactorMultiplier = m_HasSmokeDiverGear ? 1 : 10000;
 					int fireFactor = m_pWorld->GetLevel(newY * 2 + 1).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->IsVisible() * fireFactorMultiplier;
-					int waterFactor = tile2.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (tile2.WaterLevel / WATER_MAX_LEVEL));
-					int waterFactorCurrent = tile1.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible() / glm::max(0.2f, 1.0f - (tile1.WaterLevel / WATER_MAX_LEVEL));
+					int waterFactor = (int)(tile2.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible()) / glm::max(0.2f, 1.0f - (tile2.WaterLevel / WATER_MAX_LEVEL));
+					int waterFactorCurrent = (int)(tile1.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible()) / glm::max(0.2f, 1.0f - (tile1.WaterLevel / WATER_MAX_LEVEL));
 					int waterFactorDoor = std::max(waterFactor, waterFactorCurrent) * (tile1.HasDoor() && door1 == door2) * 1000;
 					int cornerFactor = 1;
 
@@ -107,7 +107,7 @@ Path::Path(const World * world, bool hasSmokeDiverGear)
 	m_GetNumLevels = m_pWorld->GetNumLevels();
 	
 	int totalSize = 0;
-	for (int i = 0; i < (m_pWorld->GetNumLevels() / 2); i++)
+	for (uint32 i = 0; i < (m_pWorld->GetNumLevels() / 2); i++)
 	{
 		m_pSize[i].x = m_pWorld->GetLevel(i * 2).GetSizeX();
 		m_pSize[i].y = m_pWorld->GetLevel(i * 2).GetSizeZ();
@@ -124,7 +124,7 @@ Path::Path(const World * world, bool hasSmokeDiverGear)
 	for (int i = 0; i < m_LargestX; i++)
 	{
 		m_pppTiles[i] = new tls*[m_pWorld->GetNumLevels() / 2];
-		for (int j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
+		for (uint32 j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
 		{
 			m_pppTiles[i][j] = new tls[m_LargestZ];
 		}
@@ -164,7 +164,7 @@ glm::ivec3* Path::FindPath(const glm::ivec3& start, const glm::ivec3& goal)
 {
 	for (int i = 0; i < m_LargestX; i++)
 	{
-		for (int j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
+		for (uint32 j = 0; j < m_pWorld->GetNumLevels() / 2; j++)
 		{
 			for (int k = 0; k < m_LargestZ; k++)
 			{

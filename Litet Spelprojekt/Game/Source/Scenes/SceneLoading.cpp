@@ -14,15 +14,15 @@ SceneLoading::~SceneLoading()
 	
 }
 
-void SceneLoading::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+void SceneLoading::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noexcept
 {
-	SceneInternal::OnActivated(lastScene, m_pRenderer);
+	SceneInternal::OnActivated(lastScene, pRenderer);
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pTextViewFile = new TextView((window->GetWidth() - 300) / 2, (window->GetHeight() - 50) / 2 + 50, 300, 50, "Laddar...");
-	m_pLoadingBar = new ProgressBar((window->GetWidth() - 300) / 2, (window->GetHeight() - 50) / 2, 300, 50);
+	m_pTextViewFile = new TextView((window->GetWidth() - 300.0f) / 2.0f, (window->GetHeight() - 50.0f) / 2.0f + 50.0f, 300.0f, 50.0f, "Laddar...");
+	m_pLoadingBar = new ProgressBar((window->GetWidth() - 300.0f) / 2.0f, (window->GetHeight() - 50.0f) / 2.0f, 300.0f, 50.0f);
 
 	game->GetGUIManager().Add(m_pTextViewFile);
 	game->GetGUIManager().Add(m_pLoadingBar);

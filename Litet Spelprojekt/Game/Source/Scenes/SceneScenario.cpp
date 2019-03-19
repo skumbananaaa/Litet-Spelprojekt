@@ -34,9 +34,9 @@ SceneScenario::~SceneScenario()
 	DeleteSafe(m_pAudioSourceHover);
 }
 
-void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noexcept
 {
-	SceneInternal::OnActivated(lastScene, m_pRenderer);
+	SceneInternal::OnActivated(lastScene, pRenderer);
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -69,7 +69,7 @@ void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer
 		Button* button = new Button(0, 0, m_pListScrollable->GetWidth() - 20, 100, scenarios[i]->GetName());
 		button->SetMargin(10, 5, 10, 5);
 		button->SetSelected(true);
-		button->SetUserData(reinterpret_cast<void*>(i));
+		button->SetUserData(reinterpret_cast<void*>((int64)i));
 		button->AddExternalRenderer(this);
 		m_pListScrollable->Add(button);
 		m_SelectionHandler.AddSelectable(button);
@@ -118,8 +118,8 @@ void SceneScenario::OnButtonReleased(Button* button)
 		m_SelectionHandler.GetSelection(selection);
 		for (int i = 0; i < selection.size(); i++)
 		{
-			Button* button = (Button*)selection[i];
-			ids.push_back(reinterpret_cast<int32>(button->GetUserData()));
+			Button* selectedButton = (Button*)selection[i];
+			ids.push_back((int32)reinterpret_cast<int64>(selectedButton->GetUserData()));
 		}
 		ScenarioManager::SetEnabledScenarios(ids);
 		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneInstructions);

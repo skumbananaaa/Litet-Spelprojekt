@@ -25,7 +25,7 @@ SceneInternal::SceneInternal(bool autoRotateCamera) :
 
 	if (autoRotateCamera)
 	{
-		GameObject* pGameObject = new GameObject();
+		pGameObject = new GameObject();
 		pGameObject->SetName("ship");
 		pGameObject->SetMaterial(MATERIAL::BOAT);
 		pGameObject->SetMesh(MESH::SHIP);

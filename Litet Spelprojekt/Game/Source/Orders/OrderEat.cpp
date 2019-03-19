@@ -30,7 +30,7 @@ bool OrderEat::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float 
 			Crewmember* pCrewmember = GetCrewMember();
 			m_Position = pCrewmember->GetPosition();
 
-			GetCrewMember()->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EAT);
+			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_EAT);
 
 			float yaw = m_pChair->GetRotation().w;
 			while (yaw > glm::two_pi<float>())
@@ -42,28 +42,28 @@ bool OrderEat::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float 
 				yaw += glm::two_pi<float>();
 			}
 			yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
-			int rot = yaw / glm::half_pi<float>();
+			int rot = (int32)(yaw / glm::half_pi<float>());
 
 			const glm::vec3& chairPos = m_pChair->GetPosition();
 			if (rot == 0)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, -0.05f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, -0.05f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 			else if (rot == 1)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(-0.05f, 0.1f, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(-0.05f, 0.1f, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 			else if (rot == 2)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, 0.05f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(0.0f, 0.1f, 0.05f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 3)
 			{
-				GetCrewMember()->SetPosition(chairPos + glm::vec3(0.05f, 0.1f, 0.0f));
-				GetCrewMember()->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
+				pCrewmember->SetPosition(chairPos + glm::vec3(0.05f, 0.1f, 0.0f));
+				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 		}
 	}

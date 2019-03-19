@@ -10,17 +10,19 @@
 #include <Graphics/Materials/MaterialBase.h>
 #include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Scenarios/ScenarioWater.h"
+#include "../../Include/ReplayHandler.h"
 
-SceneGame::SceneGame(World* pWorld) 
+SceneGame::SceneGame(World* pWorld, bool hiddenCrew) 
 	: SceneInternal(false),
 	m_pWorld(pWorld),
-	m_pTestAudioSource(nullptr),
+	m_pAudioSourceBackground(nullptr),
 	m_pUIPause(nullptr),
 	m_pUIEndScreen(nullptr),
 	m_IsPaused(false),
 	m_pUIRequest(nullptr),
 	m_IsGameOver(false),
-	m_pLookAt(nullptr)
+	m_pLookAt(nullptr),
+	m_HiddenCrew(hiddenCrew)
 {
 	LightManager::Init(this, NUM_SPOT_LIGHTS);
 
@@ -39,15 +41,12 @@ SceneGame::SceneGame(World* pWorld)
 
 SceneGame::~SceneGame()
 {
-	ScenarioManager::Reset();
-
 	DeleteSafe(m_pWorld);
 	DeleteSafe(m_pUICrew);
 	DeleteSafe(m_pUINotification);
-	DeleteSafe(m_pTestAudioSource);
+	DeleteSafe(m_pAudioSourceBackground);
 
 	Logger::Save();
-	LightManager::Release();
 }
 
 void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noexcept
@@ -57,6 +56,9 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noex
 	CreateAudio();
 	CreateGameObjects();
 	CreateCrew();
+
+	ScenarioManager::Init(m_pWorld);
+	LightManager::Init(this, NUM_SPOT_LIGHTS);
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
@@ -106,8 +108,7 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 
 	GetCamera().SetMaxPitch(1.55334303f);
 
-	OrderSchedule::Release();
-	ResourceHandler::ResetGameObjectCounters();
+	LightManager::Release();
 }
 
 void SceneGame::OnUpdate(float dtS) noexcept
@@ -139,6 +140,8 @@ void SceneGame::OnUpdate(float dtS) noexcept
 
 	if (!IsPaused() && !m_IsGameOver)
 	{
+		ReplayHandler::Update(dtS, this);
+
 		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH || GameState::HasCompletedScenarios())
 		{
 			m_IsGameOver = true;
@@ -308,7 +311,7 @@ void SceneGame::OnMousePressed(MouseButton mousebutton, const glm::vec2& positio
 
 void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& position)
 {
-	if (!IsPaused() && !m_IsGameOver)
+	if (!IsPaused() && !m_IsGameOver && !ReplayHandler::IsReplaying())
 	{
 		switch (mousebutton)
 		{
@@ -359,61 +362,53 @@ void SceneGame::OnKeyDown(KEY keycode)
 		{
 			switch (keycode)
 			{
-				case KEY_P:
-				{
-					m_pTestAudioSource->TogglePause();
-					break;
-				}
 				case KEY_SPACE:
 				{
 					ExtendScene();
 					UpdateMaterialClipPlanes();
 					break;
 				}
-				case KEY_R:
-				{
-					ShowCrewmember(0);
-					ScenarioManager::OnVisibilityChange(m_pWorld, this);
-					break;
-				}
-				case KEY_G:
-				{
-					m_Crew.GetMember(0)->GiveOrder(OrderSchedule::GetIdleOrder());
-					break;
-				}
 				case KEY_H:
 				{
-					Crewmember* medic = nullptr;
-					Crewmember* victim = nullptr;
-					for (uint32 i = 0; i < m_Crew.GetCount(); i++)
-				{
-					Crewmember* member = m_Crew.GetMember(i);
-					if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
+					if (!ReplayHandler::IsReplaying())
 					{
-						victim = member;
-					}
-					else if (member->GetGroupType() == MEDIC)
-					{
-						medic = member;
+						Crewmember* medic = nullptr;
+						Crewmember* victim = nullptr;
+						for (uint32 i = 0; i < m_Crew.GetCount(); i++)
+						{
+							Crewmember* member = m_Crew.GetMember(i);
+							if (!member->HasRecovered() && !member->IsAbleToWork() && (m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_0).GetCenter() || m_pWorld->GetRoom(member->GetRoom()).GetCenter() == m_pWorld->GetRoom(SICKBAY_1).GetCenter()))
+							{
+								victim = member;
+							}
+							else if (member->GetGroupType() == MEDIC)
+							{
+								medic = member;
+							}
+
+							if (medic != nullptr && victim != nullptr)
+							{
+								break;
+							}
+						}
+
+						if (medic != nullptr && victim != nullptr)
+						{
+							medic->GiveOrder(new OrderGiveAid(victim));
+						}
 					}
 
-					if (medic != nullptr && victim != nullptr)
-					{
-						break;
-					}
-				}
-					if (medic != nullptr && victim != nullptr)
-				{
-					medic->GiveOrder(new OrderGiveAid(victim));
-				}
 					break;
 				}
 				case KEY_ENTER:
 				{
-					const std::vector<int32>& selectedList = m_Crew.GetSelectedList();
-					for (int32 i = 0; i < selectedList.size(); i++)
+					if (!ReplayHandler::IsReplaying())
 					{
-						m_Crew.GetMember(selectedList[i])->RequestReportPosition();
+						const std::vector<int32>& selectedList = m_Crew.GetSelectedList();
+						for (int32 i = 0; i < selectedList.size(); i++)
+						{
+							m_Crew.GetMember(selectedList[i])->RequestReportPosition();
+						}
 					}
 					break;
 				}
@@ -440,11 +435,11 @@ void SceneGame::OnGameOver() noexcept
 void SceneGame::CreateAudio() noexcept
 {
 	AudioListener::SetPosition(glm::vec3(0.0f));
-	m_pTestAudioSource = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
-	m_pTestAudioSource->SetVolume(0.4);
-	m_pTestAudioSource->SetPitch(1.0f);
-	m_pTestAudioSource->SetLooping(true);
-	m_pTestAudioSource->Play();
+	m_pAudioSourceBackground = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
+	m_pAudioSourceBackground->SetVolume(0.4);
+	m_pAudioSourceBackground->SetPitch(1.0f);
+	m_pAudioSourceBackground->SetLooping(true);
+	m_pAudioSourceBackground->Play();
 }
 
 void SceneGame::CreateGameObjects() noexcept
@@ -465,20 +460,6 @@ void SceneGame::CreateGameObjects() noexcept
 			pGameObject = nullptr;
 		}
 	}
-}
-
-void SceneGame::CreateWorld() noexcept
-{
-	m_pWorld = WorldSerializer::Read("world.json");
-
-	////Enable clipplane for wallmaterial
-	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
-	ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)->SetCullMode(CULL_MODE_NONE);
-
-	//SetClipPlanes(0);
-
-	// Generate rooms
-	m_pWorld->Generate(*this);
 }
 
 void SceneGame::CreateCrew() noexcept
@@ -503,100 +484,22 @@ void SceneGame::CreateCrew() noexcept
 		"Herman Söderlund"
 	};
 
-	int index = 0;
-	float x, y, z;
-	bool hidden = true;
-
-	Crewmember* crewmember;
-	m_Crew.AddMember(m_pWorld, glm::vec3(10.0f, 4.0f, 10.0f), names[0], GroupType::SMOKE_DIVER);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::SMOKE_DIVER);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
-	crewmember = m_Crew.GetMember(index++);
-	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-	crewmember->SetHidden(hidden);
-	crewmember->UpdateTransform();
-	AddGameObject(crewmember);
-
-	for (int i = index; i < NUM_CREW; i++)
-	{
-		y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
-		x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
-		z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
-		m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[i % NUM_CREW], GroupType::NONE);
-		crewmember = m_Crew.GetMember(i);
-		crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
-		crewmember->SetHidden(hidden);
-		crewmember->UpdateTransform();
-		AddGameObject(m_Crew.GetMember(i));
-	}
+	CreateCrewMember(glm::vec3(10.0f, 4.0f, 10.0f), names[0], GroupType::SMOKE_DIVER);
+	CreateCrewMember(glm::vec3(	5.0f, 0.0f, 10.0f), names[1], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	2.0f, 0.0f, 12.0f), names[2], GroupType::MEDIC);
+	CreateCrewMember(glm::vec3(	5.0f, 0.0f, 18.0f), names[3], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	6.0f, 0.0f, 28.0f), names[4], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	1.0f, 0.0f, 40.0f), names[5], GroupType::SMOKE_DIVER);
+	CreateCrewMember(glm::vec3(	5.0f, 2.0f,	 9.0f), names[6], GroupType::MEDIC);
+	CreateCrewMember(glm::vec3(	5.0f, 2.0f, 31.0f), names[7], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	6.0f, 4.0f, 27.0f), names[8], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	7.0f, 4.0f, 35.0f), names[9], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	4.0f, 4.0f, 38.0f), names[10], GroupType::NONE);
+	CreateCrewMember(glm::vec3(10.0f, 2.0f, 19.0f), names[11], GroupType::NONE);
+	CreateCrewMember(glm::vec3(10.0f, 2.0f, 21.0f), names[12], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	8.0f, 2.0f, 17.0f), names[13], GroupType::NONE);
+	CreateCrewMember(glm::vec3(	2.0f, 4.0f, 21.0f), names[14], GroupType::NONE);
+	CreateCrewMember(glm::vec3(10.0f, 2.0f, 31.0f), names[15], GroupType::NONE);
 }
 
 void SceneGame::PickPosition()
@@ -747,7 +650,6 @@ void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)
 	{
 		for (int i = 0; i < m_PickableGameObjects.size(); i++)
 		{
-			
 			if (m_PickableGameObjects[i]->IsHovered())
 			{
 				m_PickableGameObjects[i]->OnNotHovered();

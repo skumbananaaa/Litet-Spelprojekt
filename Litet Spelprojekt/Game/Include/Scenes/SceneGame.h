@@ -66,17 +66,18 @@ public:
 	bool IsPaused() const noexcept;
 
 protected:
-	SceneGame(World* pWorld);
+	SceneGame(World* pWorld, bool hiddenCrew = true);
 
 	void CreateAudio() noexcept;
 	void CreateGameObjects() noexcept;
-	void CreateWorld() noexcept;
 	void CreateCrew() noexcept;
 
 	void UpdateCamera(float dtS) noexcept;
 	void UpdateMaterialClipPlanes() noexcept;
 
-private:
+protected:
+	void CreateCrewMember(const glm::ivec3& pos, const std::string& name, GroupType type) noexcept;
+
 	bool m_IsPaused;
 	bool m_IsGameOver;
 
@@ -90,12 +91,13 @@ private:
 	UINotification* m_pUINotification;
 	UIEndScreen* m_pUIEndScreen;
 
-	AudioSource* m_pTestAudioSource;
+	AudioSource* m_pAudioSourceBackground;
 	World* m_pWorld;
 
 	Crew m_Crew;
 
 	GameObject* m_pLookAt;
+	bool m_HiddenCrew;
 };
 
 inline void SceneGame::UpdateMaterialClipPlanes() noexcept
@@ -171,4 +173,13 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	{
 		renderer->SetParticleClipPlane(floorClipPlane);
 	}
+}
+
+inline void SceneGame::CreateCrewMember(const glm::ivec3& pos, const std::string& name, GroupType type) noexcept
+{
+	Crewmember* crewmember = m_Crew.AddMember(m_pWorld, pos, name, type);
+	crewmember->SetRoom(m_pWorld->GetLevel(pos.y).GetLevel()[pos.x][pos.z]);
+	crewmember->SetHidden(m_HiddenCrew);
+	crewmember->UpdateTransform();
+	AddGameObject(crewmember);
 }

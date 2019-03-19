@@ -156,7 +156,25 @@
     <ClCompile Include="Source\GameState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ReplayHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\IReplayable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Orders\IOrder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scenes\SceneReplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\GameObjectExtinguisher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GUI\UIReplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Orders\ReplayablePosition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -302,7 +320,22 @@
     <ClInclude Include="Include\GameState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\ReplayHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IReplayable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Scenes\SceneReplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Include\GameObjectExtinguisher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UIReplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Orders\ReplayablePosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

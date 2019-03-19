@@ -1,10 +1,19 @@
 ﻿#include "../../Include/Orders/OrderGiveAid.h"
 #include "../../Include/Crew.h"
+#include "../../Include/Game.h"
 
-OrderGiveAid::OrderGiveAid(Crewmember* injuredMember): OrderWalk(injuredMember->GetTile() * glm::ivec3(1, 2, 1) - glm::ivec3(1, 0, 0))
+OrderGiveAid::OrderGiveAid(OrderGiveAid* other) : OrderWalk(other)
+{
+	m_Target = other->m_Target;
+	m_InjuredMember = other->m_InjuredMember;
+	m_IsAiding = false;
+}
+
+OrderGiveAid::OrderGiveAid(Crewmember* injuredMember) : OrderWalk(injuredMember->GetTile() * glm::ivec3(1, 2, 1) - glm::ivec3(1, 0, 0))
 {
 	m_pAiding = injuredMember;
 	m_Target = injuredMember->GetTile();
+	m_InjuredMember = injuredMember->GetShipNumber();
 	m_IsAiding = false;
 }
 
@@ -53,7 +62,7 @@ void OrderGiveAid::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 		Crewmember* pCrewmember = GetCrewMember();
 		if (member->GetRoom() == pCrewmember->GetRoom() && !member->HasRecovered() && !member->IsAbleToWork())
 		{
-			pCrewmember->GiveOrder(new OrderGiveAid(member));
+			GiveOrderInbred(new OrderGiveAid(member));
 			break;
 		}
 	}
@@ -90,4 +99,15 @@ void OrderGiveAid::RunParallel()
 bool OrderGiveAid::CanExecuteIfHurt() noexcept
 {
 	return false;
+}
+
+IOrder * OrderGiveAid::Clone() noexcept
+{
+	return new OrderGiveAid(this);
+}
+
+void OrderGiveAid::InitClone(SceneGame * pScene, void * userData) noexcept
+{
+	m_pAiding = pScene->GetCrew()->GetMember(m_InjuredMember);
+	OrderWalk::InitClone(pScene, userData);
 }

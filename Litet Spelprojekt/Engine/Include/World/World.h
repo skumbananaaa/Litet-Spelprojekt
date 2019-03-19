@@ -128,6 +128,7 @@ public:
 
 	void Generate(Scene& scene) noexcept;
 	void GenerateRoomShadows(const Scene& scene) noexcept;
+	void CopyRoomShadows(const Scene& scene, World* pWorld) noexcept;
 
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);

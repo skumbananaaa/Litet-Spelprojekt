@@ -33,6 +33,7 @@ void ScenarioArtillery::Init(World* pWorld) noexcept
 
 void ScenarioArtillery::Release() noexcept
 {
+	m_InstancesComplete = 0;
 }
 
 void ScenarioArtillery::OnStart(SceneGame* scene) noexcept

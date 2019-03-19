@@ -31,6 +31,7 @@ void ScenarioWater::Release() noexcept
 {
 	m_InletTiles.clear();
 	m_WaterIntakeRates.clear();
+	m_HasFlooded = false;
 	DeleteArrSafe(m_FloodingIDs);
 }
 

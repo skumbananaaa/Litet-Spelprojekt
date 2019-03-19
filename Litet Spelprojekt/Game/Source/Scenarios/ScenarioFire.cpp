@@ -1,4 +1,4 @@
-﻿#include "..\..\Include\Scenarios\ScenarioFire.h"
+#include "..\..\Include\Scenarios\ScenarioFire.h"
 #include <System/Random.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../../Include/GameState.h"
@@ -40,9 +40,9 @@ void ScenarioFire::Release() noexcept
 
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
-	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
+	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 2);
 	lvl += lvl % 2;
-	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 1);
+	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 2);
 	uint32 x = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeX() - 2);
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeZ() - 2);
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);

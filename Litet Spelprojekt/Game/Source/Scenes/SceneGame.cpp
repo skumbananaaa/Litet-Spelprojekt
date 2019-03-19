@@ -727,7 +727,10 @@ void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)
 			}
 			else if(!Input::IsKeyDown(KEY_LEFT_CTRL))
 			{
-				m_Crew.ClearSelectedList();
+				if (((Crewmember*)object)->IsAbleToWalk())
+				{
+					m_Crew.ClearSelectedList();
+				}
 				object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 			}
 			else

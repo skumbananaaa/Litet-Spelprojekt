@@ -1,4 +1,4 @@
-﻿#include "..\..\Include\Scenarios\ScenarioFire.h"
+#include "..\..\Include\Scenarios\ScenarioFire.h"
 #include <System/Random.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../../Include/GameState.h"
@@ -17,7 +17,7 @@ ScenarioFire::~ScenarioFire()
 void ScenarioFire::Init(World* pWorld) noexcept
 {
 	m_pWorld = pWorld;
-
+	SetTimeOfNextOutBreak(1.0f);
 	m_pppMap = new const uint32* const*[m_pWorld->GetNumLevels()];
 
 	for (uint32 i = 0; i < m_pWorld->GetNumLevels(); i++)
@@ -34,31 +34,21 @@ void ScenarioFire::Init(World* pWorld) noexcept
 void ScenarioFire::Release() noexcept
 {
 	DeleteArrSafe(m_pppMap);
+	m_HasStarted = false;
 	m_DiscoveredRooms.clear();
 	m_OnFire.clear();
 }
 
 void ScenarioFire::OnStart(SceneGame* scene) noexcept
 {
-	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
+	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 2);
 	lvl += lvl % 2;
-	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 1);
-	lvl = 0;
+	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 2);
 	uint32 x = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeX() - 2);
-	x = m_pWorld->GetLevel(lvl).GetSizeX() / 2;
-	x -= 2;
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeZ() - 2);
-	z = m_pWorld->GetLevel(lvl).GetSizeZ() / 2;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
 	Escalate(pos);
-
-	/*uint32 lvl = 4;
-	uint32 x = 10;
-	uint32 z = 1;
-	glm::ivec3 pos = glm::ivec3(x, lvl, z);
-
-	Escalate(pos);*/
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept
@@ -287,6 +277,7 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		//Fire
 		FireLevelData.Burning = false;
 		FireLevelData.MarkedForExtinguish = false;
+		FireLevelData.Temp = 30.0f;
 		emitter->SetIsVisible(false);
 		m_OnFire.erase(std::remove(m_OnFire.begin(), m_OnFire.end(), toRemoveOnFireIDs[i]), m_OnFire.end());
 		room.RemoveTileOnFire(toRemoveOnFireIDs[i]);
@@ -404,7 +395,7 @@ void ScenarioFire::SpreadFireSideways(float dtS, const glm::ivec3& offset, const
 
 	float rateOfSpread = RATE_OF_FIRE_SPREAD;
 	uint32 mapTo = m_pppMap[tileTo.y][tileTo.x][tileTo.z];
-	rateOfSpread *= (mapTo == m_pppMap[origin.y][origin.x][origin.z]) || (originTile.HasDoor() && tileData.HasDoor());
+	rateOfSpread *= (float)((mapTo == m_pppMap[origin.y][origin.x][origin.z]) || (originTile.HasDoor() && tileData.HasDoor()));
 	rateOfSpread += (RATE_OF_FIRE_WALL_SPREAD * (offset.y + 1) + RATE_OF_FIRE_FLOOR_SPREAD) * (mapTo != 1);
 	
 	bool spreadingThroughBulkhead = glm::min<uint32>(origin.z, tileTo.z) % tilesBetweenBulkheads == 0;

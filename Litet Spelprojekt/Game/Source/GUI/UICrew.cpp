@@ -67,8 +67,8 @@ void UICrew::OnSelected(const SelectionHandler* handler, ISelectable* selection)
 	for (int i = 0; i < panel->GetChildren().size(); i++)
 	{
 		uint32 shipNumber = (uint32)reinterpret_cast<uint64>(panel->GetChildren()[i]->GetUserData());
-		Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
-		crewmember->SetIsPicked(true);
+		Crewmember* pCrewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipNumber);
+		pCrewmember->SetIsPicked(true);
 	}
 }
 
@@ -121,9 +121,9 @@ void UICrew::OnProgressAnimationEnd(ProgressButton* progressButton)
 	progressButton->SetTextColor(GUIContext::COLOR_WHITE);
 	uint32 shipnumber = (uint32)reinterpret_cast<uint64>(progressButton->GetUserData());
 	Game::GetGame()->m_pSceneGame->ShowCrewmember(shipnumber);
-	Crewmember* crewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipnumber);
-	progressButton->SetText(crewmember->GetName());
-	crewmember->UpdateLastKnownPosition();
+	Crewmember* pCrewmember = Game::GetGame()->m_pSceneGame->GetCrewmember(shipnumber);
+	progressButton->SetText(pCrewmember->GetName());
+	pCrewmember->UpdateLastKnownPosition();
 }
 
 void UICrew::Deselect()

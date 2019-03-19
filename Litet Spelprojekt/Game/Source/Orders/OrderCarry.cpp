@@ -22,7 +22,7 @@ void OrderCarry::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) no
 	Crewmember* pCrewmember = GetCrewMember();
 	pCrewmember->SetAssisting(m_pCarrying);
 	pCrewmember->GoToSickBay();
-	Logger::LogEvent(pCrewmember->GetName() + " bar " + m_pCarrying->GetName() + " till sjukstugan!", true);
+	//Logger::LogEvent(pCrewmember->GetName() + " bar " + m_pCarrying->GetName() + " till sjukstugan!", true);
 	pCrewmember->ReportPosition();
 	//GetCrewMember()->SetAssisting(nullptr);
 }

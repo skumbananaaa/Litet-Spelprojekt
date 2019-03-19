@@ -25,6 +25,7 @@ void ScenarioArtillery::Init(World* pWorld) noexcept
 
 void ScenarioArtillery::Release() noexcept
 {
+	m_InstancesComplete = 0;
 }
 
 void ScenarioArtillery::OnStart(SceneGame* scene) noexcept
@@ -121,12 +122,12 @@ std::string ScenarioArtillery::GetName() noexcept
 
 int32 ScenarioArtillery::GetCooldownTime() noexcept
 {
-	return 100;
+	return 60 * 5;
 }
 
 int32 ScenarioArtillery::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60 * 5;
+	return 60;
 }
 
 bool ScenarioArtillery::IsComplete() noexcept

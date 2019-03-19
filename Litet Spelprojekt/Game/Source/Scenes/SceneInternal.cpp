@@ -5,6 +5,7 @@
 
 float SceneInternal::s_WaveX = 0.0F;
 float SceneInternal::s_WaveY = 0.0F;
+glm::vec2 SceneInternal::s_IcebergPos(0.0F, 200.0F);
 
 SceneInternal::SceneInternal(bool autoRotateCamera) :
 	m_AutoRotateCamera(autoRotateCamera)
@@ -12,7 +13,7 @@ SceneInternal::SceneInternal(bool autoRotateCamera) :
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	Camera* pCamera = new Camera(glm::vec3(20.0f, 20.0f, 0.0f), glm::vec3(5.5f, 2.0f, 20.5f));
+	Camera* pCamera = new Camera(glm::vec3(20.0f, 20.0f, 0.0f), glm::vec3(-5.5f, 2.0f, 20.5f));
 	float aspect = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
 	pCamera->CreatePerspective(glm::radians<float>(90.0f), aspect, 0.1f, 1000.0f);
 	pCamera->UpdateFromLookAt();
@@ -29,7 +30,7 @@ SceneInternal::SceneInternal(bool autoRotateCamera) :
 		pGameObject->SetName("ship");
 		pGameObject->SetMaterial(MATERIAL::BOAT);
 		pGameObject->SetMesh(MESH::SHIP);
-		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 12.5f));
+		pGameObject->SetPosition(glm::vec3(5.5f, -3.0f, 20.5f));
 		pGameObject->SetScale(glm::vec3(1.0f));
 		pGameObject->UpdateTransform();
 		AddGameObject(pGameObject);
@@ -62,11 +63,14 @@ void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) n
 		GetCamera().SetPos(lastScene->GetCamera().GetPosition());
 		GetCamera().SetYaw(lastScene->GetCamera().GetYaw());
 		GetCamera().SetPitch(lastScene->GetCamera().GetPitch());
+		GetCamera().SetLookAt(lastScene->GetCamera().GetLookAt());
 	}
 	else
 	{
-		GetCamera().SetPos(glm::vec3(20.0f, 20.0f, 0.0f));
-		GetCamera().SetLookAt(glm::vec3(5.5f, 2.0f, 20.5f));
+		GetCamera().SetPos(glm::vec3(30.0f, 30.0f, 30.0f));
+		GetCamera().SetLookAt(glm::vec3(5.5f, 0.0f, 20.5f));
+		WaterOutdoorMaterial* pMaterial = reinterpret_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
+		pMaterial->SetIcebergPosition(glm::vec2(FLT_MAX,FLT_MAX));
 	}
 
 	((WaterOutdoorMaterial*)ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR))->SetStencilTest(true, FUNC_NOT_EQUAL, 0x00, 1, 0xff);
@@ -76,7 +80,6 @@ void SceneInternal::OnActivated(SceneInternal* lastScene, IRenderer* renderer) n
 
 void SceneInternal::OnDeactivated(SceneInternal* newScene) noexcept
 {
-
 	Game* game = Game::GetGame();
 	game->GetGUIManager().DeleteChildren();
 }
@@ -89,6 +92,16 @@ void SceneInternal::OnUpdate(float dtS) noexcept
 	{
 		GetCamera().MoveRelativeLookAt(PosRelativeLookAt::RotateX, dtS * 0.1F);
 		GetCamera().UpdateFromLookAt();
+
+		s_IcebergPos.y += dtS * 5.0F;
+		if (s_IcebergPos.y >= 60.0F)
+		{
+			s_IcebergPos.y = -60.0F;
+			s_IcebergPos.x = (Random::GenerateBool() * 2 - 1) * 30 + 5;
+		}
+
+		WaterOutdoorMaterial* pMaterial = dynamic_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));
+		pMaterial->SetIcebergPosition(s_IcebergPos);
 	}
 
 	s_WaveX += 0.25f * dtS;

@@ -49,21 +49,11 @@ void ScenarioIceberg::OnStart(SceneGame* scene) noexcept
 {
 	if (!IsReplaying())
 	{
-		glm::vec3 centre;
-
-		if (Random::GenerateBool())
-		{
-			m_Position = glm::vec3(-40, 0.0F, 150);
-			centre = glm::vec3(0, 0, Random::GenerateInt(5, 35));
-		}
-		else
-		{
-			m_Position = glm::vec3(40 + 10, 0.0F, 150);
-			centre = glm::vec3(10, 0, Random::GenerateInt(5, 35));
-		}
-
-		glm::vec3 ray = glm::normalize(m_Position - centre);
-		m_Target = m_Position + ray * (float)(TestAgainstRay(ray, m_Position) + 10);
+    	m_Position = glm::vec3(- 40, 0.0F, 150);
+    	glm::vec3 centre = glm::vec3(0, 0, Random::GenerateInt(5, 35));
+    
+    	glm::vec3 ray = glm::normalize(m_Position - centre);
+    	m_Target = m_Position + ray * (float)(TestAgainstRay(ray, m_Position) + 10);
 
 		LaunchIceberg(m_Position, m_Target);
 		RegisterReplayEvent(new std::pair<glm::vec3, glm::vec3>(m_Position, m_Target));

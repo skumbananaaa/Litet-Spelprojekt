@@ -42,7 +42,7 @@ bool OrderEat::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float 
 				yaw += glm::two_pi<float>();
 			}
 			yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
-			int rot = yaw / glm::half_pi<float>();
+			int rot = (int32)(yaw / glm::half_pi<float>());
 
 			const glm::vec3& chairPos = m_pChair->GetPosition();
 			if (rot == 0)

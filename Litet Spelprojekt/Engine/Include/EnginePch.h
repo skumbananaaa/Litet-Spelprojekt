@@ -1,8 +1,13 @@
 #pragma once
+#pragma warning(disable : 4100) //Disable warning about unused parameters
+#pragma warning(disable : 4127) //Disable constant expression warning
+#pragma warning(disable : 4201) //Disable warning about nonstandard extension used
 #pragma warning(disable : 4251) //Disable DLL interface warning for STL
-#pragma warning(once : 4100) //Only generate warning about unused parameters once
-#pragma warning(once : 4201) //Only generate warning about nonstandard extension used once
+#pragma warning(disable : 4324) //Disable warning about padding
+#pragma warning(disable : 4505) //Disable warning about unreferenced function removed (stb_image)
 #pragma warning(error : 4005) //Make macro redefinition an error
+#pragma warning(error : 4456) //Make redefinition an error
+#pragma warning(error : 4458) //Make redefinition an error
 
 #define GLM_FORCE_SSE2
 #define GLM_ENABLE_EXPERIMENTAL

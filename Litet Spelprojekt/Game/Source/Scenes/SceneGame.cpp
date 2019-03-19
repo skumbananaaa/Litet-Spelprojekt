@@ -22,9 +22,6 @@ SceneGame::SceneGame(World* pWorld)
 	m_IsGameOver(false),
 	m_pLookAt(nullptr)
 {
-	Game* game = Game::GetGame();
-	Window* window = &game->GetWindow();
-
 	LightManager::Init(this, NUM_SPOT_LIGHTS);
 
 	ScenarioManager::Init(m_pWorld);
@@ -54,9 +51,9 @@ SceneGame::~SceneGame()
 	LightManager::Release();
 }
 
-void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noexcept
 {
-	SceneInternal::OnActivated(lastScene, m_pRenderer);
+	SceneInternal::OnActivated(lastScene, pRenderer);
 
 	CreateAudio();
 	CreateGameObjects();
@@ -65,17 +62,17 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) no
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2, window->GetHeight() - 170, 330, 170);
-	m_pUIRequest = new UICrewRequest(window->GetWidth() / 4, window->GetHeight() - 50, 200, 50);
-	m_pUILog = new UILog(window->GetWidth() - 600, window->GetHeight() - 700, 600, 700);
+	m_pUICrewMember = new UICrewMember((window->GetWidth() - 330) / 2.0f, window->GetHeight() - 170.0f, 330.0f, 170.0f);
+	m_pUIRequest = new UICrewRequest(window->GetWidth() / 4.0f, window->GetHeight() - 50.0f, 200.0f, 50.0f);
+	m_pUILog = new UILog(window->GetWidth() - 600.0f, window->GetHeight() - 700.0f, 600.0f, 700.0f);
 	game->GetGUIManager().Add(m_pUICrewMember);
 	game->GetGUIManager().Add(m_pUILog);
 	game->GetGUIManager().Add(m_pUIRequest);
 
 	Logger::SetListener(m_pUILog);
 
-	m_pUICrew = new UICrew(0, window->GetHeight() - 50, 200, 500, &m_Crew);
-	m_pUINotification = new UINotification(window->GetWidth() - 560, window->GetHeight(), 500, 50, 8.0F);
+	m_pUICrew = new UICrew(0.0f, window->GetHeight() - 50.0f, 200.0f, 500.0f, &m_Crew);
+	m_pUINotification = new UINotification(window->GetWidth() - 560.0f, (float)window->GetHeight(), 500.0f, 50.0f, 8.0F);
 
 	SetPaused(false);
 
@@ -119,7 +116,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	{
 		Game* game = Game::GetGame();
 		Window* window = &game->GetWindow();
-		m_pUIPause = new UIPause(0, 0, window->GetWidth(), window->GetHeight());
+		m_pUIPause = new UIPause(0.0f, 0.0f, (float)window->GetWidth(), (float)window->GetHeight());
 		SetUIVisible(false);
 		game->GetGUIManager().Add(m_pUIPause);
 	}
@@ -257,7 +254,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		}
 		else
 		{
-			Pick(true, position.x, position.y);
+			Pick(true, (int32)position.x, (int32)position.y);
 		}
 	}
 }
@@ -327,7 +324,7 @@ void SceneGame::OnMouseReleased(MouseButton mousebutton, const glm::vec2& positi
 			{
 				if (!Input::IsKeyDown(KEY_LEFT_ALT) && m_pWorld != nullptr)
 				{
-					Pick(false, position.x, position.y);
+					Pick(false, (int32)position.x, (int32)position.y);
 				}
 				break;
 			}
@@ -472,8 +469,6 @@ void SceneGame::CreateGameObjects() noexcept
 
 void SceneGame::CreateWorld() noexcept
 {
-	GameObject* pGameObject = nullptr;
-
 	m_pWorld = WorldSerializer::Read("world.json");
 
 	////Enable clipplane for wallmaterial
@@ -513,7 +508,6 @@ void SceneGame::CreateCrew() noexcept
 	bool hidden = true;
 
 	Crewmember* crewmember;
-
 	m_Crew.AddMember(m_pWorld, glm::vec3(10.0f, 4.0f, 10.0f), names[0], GroupType::SMOKE_DIVER);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)4.0f).GetLevel()[(int)10.0f][(int)10.0f]);
@@ -521,9 +515,9 @@ void SceneGame::CreateCrew() noexcept
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
-	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -531,9 +525,9 @@ void SceneGame::CreateCrew() noexcept
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
-	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -541,9 +535,9 @@ void SceneGame::CreateCrew() noexcept
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
-	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -551,9 +545,9 @@ void SceneGame::CreateCrew() noexcept
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
-	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::SMOKE_DIVER);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -561,9 +555,9 @@ void SceneGame::CreateCrew() noexcept
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
-	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -571,9 +565,9 @@ void SceneGame::CreateCrew() noexcept
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
-	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::MEDIC);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -581,9 +575,9 @@ void SceneGame::CreateCrew() noexcept
 	crewmember->UpdateTransform();
 	AddGameObject(crewmember);
 
-	y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-	x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-	z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+	y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+	x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+	z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 	m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[index % NUM_CREW], GroupType::NONE);
 	crewmember = m_Crew.GetMember(index++);
 	crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -593,9 +587,9 @@ void SceneGame::CreateCrew() noexcept
 
 	for (int i = index; i < NUM_CREW; i++)
 	{
-		y = (std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2;
-		x = std::rand() % (m_pWorld->GetLevel(y).GetSizeX() - 2) + 1;
-		z = std::rand() % (m_pWorld->GetLevel(y).GetSizeZ() - 2) + 1;
+		y = (float)((std::rand() % (m_pWorld->GetNumLevels() / 2)) * 2);
+		x = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeX() - 2) + 1);
+		z = (float)(std::rand() % (m_pWorld->GetLevel((uint32)y).GetSizeZ() - 2) + 1);
 		m_Crew.AddMember(m_pWorld, glm::vec3(x, y, z), names[i % NUM_CREW], GroupType::NONE);
 		crewmember = m_Crew.GetMember(i);
 		crewmember->SetRoom(m_pWorld->GetLevel((int)y).GetLevel()[(int)x][(int)z]);
@@ -790,7 +784,7 @@ GameObject* SceneGame::RayTestGameObjects()
 	float lastT = -1;
 	uint32 id = -1;
 
-	for (int i = 0; i < m_PickableGameObjects.size(); i++)
+	for (int i = 0; i < (int32)m_PickableGameObjects.size(); i++)
 	{
 		int32 t = m_PickableGameObjects[i]->TestAgainstRay(rayDir, rayOrigin, elevation, GetExtension());
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)

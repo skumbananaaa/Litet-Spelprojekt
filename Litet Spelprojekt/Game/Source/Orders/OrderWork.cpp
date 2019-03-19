@@ -42,7 +42,7 @@ bool OrderWork::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			}
 			yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
 			
-			int rot = yaw / glm::half_pi<float>();
+			int rot = (int32)(yaw / glm::half_pi<float>());
 			if (rot == 0)
 			{
 				pCrewmember->SetPosition(m_Position + glm::vec3(0.3f, 0.0f, 0.0));

@@ -449,7 +449,7 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 		}
 	}
 
-	return t;
+	return (int32)t;
 }
 
 void Crewmember::OnOrderStarted(bool idleOrder) noexcept
@@ -590,7 +590,7 @@ void Crewmember::RequestReportPosition() noexcept
 	if (m_pUISelectedCrew && m_pUISelectedCrew->GetPercentage() >= 1.0f)
 	{
 		m_pUISelectedCrew->SetPercentage(0.0f);
-		m_pUISelectedCrew->StartAnimation(Random::GenerateInt(3, 15));
+		m_pUISelectedCrew->StartAnimation((float)Random::GenerateInt(3, 15));
 	}
 }
 
@@ -613,17 +613,17 @@ void Crewmember::UpdateHealth(float dt)
 	{
 		if (HasInjurySmoke())
 		{
-			m_Health -= (std::log10(m_HasInjurySmoke) - std::log10(1.0)) * smokeDmgSpeed * dt;
+			m_Health -= (float)(std::log10(m_HasInjurySmoke) - std::log10(1.0)) * smokeDmgSpeed * dt;
 		}
 
 		if (HasInjuryBurned())
 		{
-			m_Health -= (std::log10(m_HasInjuryBurned) - std::log10(1.0)) * burnDmgSpeed * dt;
+			m_Health -= (float)(std::log10(m_HasInjuryBurned) - std::log10(1.0)) * burnDmgSpeed * dt;
 		}
 
 		if (HasInjuryBleed())
 		{
-			m_Health -= (std::log10(m_HasInjuryBleeding) - std::log10(1.0)) * bleedDmgSpeed * dt;
+			m_Health -= (float)(std::log10(m_HasInjuryBleeding) - std::log10(1.0)) * bleedDmgSpeed * dt;
 		}
 	}
 
@@ -682,7 +682,6 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 	const TileData& tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
-		bool isSmoked = HasInjurySmoke();
 		ApplySmokeInjury((tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt);
 	}
 }

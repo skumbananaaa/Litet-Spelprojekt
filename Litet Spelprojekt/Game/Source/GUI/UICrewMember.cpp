@@ -76,14 +76,14 @@ void UICrewMember::OnRender(GUIContext* context)
 
 		for (int i = 0; i < injuries.size(); i++)
 		{
-			context->RenderTexture(ResourceHandler::GetTexture2D(injuries[i]), (i + 1) * injuriesOffset + xOffset, 20, textureSize, textureSize, GUIContext::COLOR_WHITE);
+			context->RenderTexture(ResourceHandler::GetTexture2D(injuries[i]), (i + 1.0f) * injuriesOffset + xOffset, 20.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
 		}
 
 		glm::vec4 colors[3] = { GUIContext::COLOR_GREEN, GUIContext::COLOR_BLUE, GUIContext::COLOR_PURPLE };
 
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_FIRE), 75 + xOffset, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_MEDIC), 150 + xOffset, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
-		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_STRENGTH), 225 + xOffset, 85, textureSize, textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_FIRE), 75.0f + xOffset, 85.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_MEDIC), 150.0f + xOffset, 85.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_SKILL_STRENGTH), 225.0f + xOffset, 85.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
 		/*context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 65 + xOffset, 75, 20, 20, colors[m_Crewmember->GetSkillFire() - 1]);
 		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 140 + xOffset, 75, 20, 20, colors[m_Crewmember->GetSkillMedic() - 1]);
 		context->RenderTexture(ResourceHandler::GetTexture2D(TEXTURE::ICON_CIRCLE), 215 + xOffset, 75, 20, 20, colors[m_Crewmember->GetSkillStrength() - 1]);

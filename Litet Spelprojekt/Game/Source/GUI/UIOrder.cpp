@@ -69,13 +69,13 @@ void UIOrder::DisplayOrders(int32 x, int32 y, UIOrder* uiOrder)
 
 	int mouseOffsetArea = 50;
 
-	m_pPanel = new Panel(x - mouseOffsetArea, y - mouseOffsetArea, 200 + mouseOffsetArea * 2, uiOrder->m_Choices.size() * 30 + mouseOffsetArea * 2);
+	m_pPanel = new Panel((float)(x - mouseOffsetArea), (float)(y - mouseOffsetArea), 200.0f + mouseOffsetArea * 2.0f, uiOrder->m_Choices.size() * 30.0f + mouseOffsetArea * 2.0f);
 	m_pPanel->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	s_HoveringHandler.AddHoverable(m_pPanel);
 
 	for (int i = 0; i < uiOrder->m_Choices.size(); i++)
 	{
-		Button* button = new Button(mouseOffsetArea, i * 30 + mouseOffsetArea, m_pPanel->GetWidth() - mouseOffsetArea * 2, 30, uiOrder->m_Choices[i].first);
+		Button* button = new Button((float)mouseOffsetArea, i * 30.0f + mouseOffsetArea, m_pPanel->GetWidth() - mouseOffsetArea * 2.0f, 30.0f, uiOrder->m_Choices[i].first);
 		button->SetUserData(uiOrder->m_Choices[i].second);
 		button->SetTextCentered(false);
 		button->AddButtonListener(uiOrder);

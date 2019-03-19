@@ -84,7 +84,7 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 			m_pAudioSourceExplosion->Play();
 
 			Crew* crew = scene->GetCrew();
-			for (int i = 0; i < crew->GetCount(); i++)
+			for (uint32 i = 0; i < crew->GetCount(); i++)
 			{
 				if (crew->GetMember(i)->GetPosition().y >= 4)
 				{

@@ -105,7 +105,7 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 			Logger::LogEvent("Båten fick hål i skrovet av ett isberg", false);
 
 			Crew* crew = scene->GetCrew();
-			for (int i = 0; i < crew->GetCount(); i++)
+			for (uint32 i = 0; i < crew->GetCount(); i++)
 			{
 				float distance = glm::distance(crew->GetMember(i)->GetPosition(), target);
 				if (distance <= 2)
@@ -186,5 +186,5 @@ int32 ScenarioIceberg::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origi
 		}
 	}
 
-	return std::min(t_max[0], t_max[1]);
+	return (int32)std::min(t_max[0], t_max[1]);
 }

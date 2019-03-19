@@ -171,8 +171,7 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	Crewmember* pCrewmember = GetCrewMember();
-
+	//Crewmember* pCrewmember = GetCrewMember();
 	//pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
 }
 

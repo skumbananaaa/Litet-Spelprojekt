@@ -104,7 +104,7 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 			std::cout << "Scene has " << pScene->mNumMeshes << " meshes." << std::endl;
 		}
 
-		glm::mat4 globalTransform = AssimpToGLMMat4(pScene->mRootNode->mTransformation);
+		globalTransform = AssimpToGLMMat4(pScene->mRootNode->mTransformation);
 		globalTransform = glm::inverse(globalTransform);
 
 		const aiMesh* pMesh = pScene->mMeshes[0];
@@ -133,9 +133,6 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 			std::cout << "No metadata" << std::endl;
 		}
 		
-		const aiBone* paiBones = pMesh->mBones[0];
-
-		std::vector<MeshEntry> entries;
 		entries.resize(pScene->mNumMeshes);
 		std::cout << "Number of Meshes in file: " << entries.size() << std::endl;
 
@@ -174,7 +171,6 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 				verts.push_back(data);
 			}
 
-			int32 index = 0;
 			for (uint32 f = 0; f < paiMeshes.at(i)->mNumFaces; f++)
 			{
 				const aiFace& Face = paiMeshes.at(i)->mFaces[f];

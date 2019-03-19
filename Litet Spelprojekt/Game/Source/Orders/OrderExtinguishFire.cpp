@@ -27,13 +27,11 @@ OrderExtinguishFire::~OrderExtinguishFire()
 void OrderExtinguishFire::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
 	OrderWalk::OnStarted(pScene, pWorld, pCrewMembers);
-	Crewmember* pCrewmember = GetCrewMember();
 }
 
 bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
 {
 	Crewmember* pCrewmember = GetCrewMember();
-
 	if (!m_FireFullyExtinguished)
 	{
 		if (!pCrewmember->HasGearEquipped())
@@ -90,14 +88,12 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 		}
 		else
 		{
-			Crewmember* pCrewmember = GetCrewMember();
 			//Run To Room That is Burning
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				const glm::ivec2& levelSize = glm::ivec2(pWorld->GetLevel(m_BurningTile.y).GetSizeX(), pWorld->GetLevel(m_BurningTile.y).GetSizeZ());
 				const uint32 * const * ppLevel = pWorld->GetLevel(m_BurningTile.y).GetLevel();
 				TileData * const * ppLevelData = pWorld->GetLevel(m_BurningTile.y).GetLevelData();
-				TileData& burningTile = ppLevelData[m_BurningTile.x][m_BurningTile.z];
 
 				if (!m_ExtinguishingFire)
 				{
@@ -155,7 +151,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				}
 				else
 				{
-					m_ExtinguishingIntensity * 1.1f;
+					m_ExtinguishingIntensity *= 1.1f;
 				}
 			}
 			else
@@ -181,8 +177,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 	{
 		if (pCrewmember->HasGearEquipped())
 		{
-			Crewmember* pCrewmember = GetCrewMember();
-
 			//Run To Room
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{

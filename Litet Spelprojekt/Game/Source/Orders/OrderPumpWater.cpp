@@ -40,7 +40,7 @@ bool OrderPumpWater::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMember
 
 		Room* room = &pWorld->GetRoom(m_RoomToPump);
 
-		uint32 size = room->GetTileData()->size();
+		uint32 size = (int32)room->GetTileData()->size();
 		clean = true;
 		for (uint32 i = 0; i < size; i++)
 		{

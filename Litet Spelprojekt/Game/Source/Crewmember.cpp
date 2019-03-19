@@ -590,7 +590,7 @@ void Crewmember::RequestReportPosition() noexcept
 	if (m_pUISelectedCrew && m_pUISelectedCrew->GetPercentage() >= 1.0f)
 	{
 		m_pUISelectedCrew->SetPercentage(0.0f);
-		m_pUISelectedCrew->StartAnimation((float)Random::GenerateInt(3, 15));
+		m_pUISelectedCrew->StartAnimation(Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
 	}
 }
 

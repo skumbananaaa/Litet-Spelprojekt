@@ -15,6 +15,9 @@ public:
 	static void Update(float dtS, SceneGame* pScene) noexcept;
 	static bool IsReplaying() noexcept;
 	static void StartReplay() noexcept;
+	static void I_DONT_KNOW_WHAT_TO_NAME_THIS_FUNKTION() noexcept;
+	static float GetTotalTime() noexcept;
+	static float GetElapsedTime() noexcept;
 
 private:
 	ReplayHandler() {};
@@ -24,6 +27,7 @@ private:
 
 	static std::vector<std::tuple<IReplayable*, void*, float>> s_ReplayQueue;
 	static float s_Timer;
+	static float s_TotalTime;
 	static bool s_IsReplying;
 	static int s_Index;
 };

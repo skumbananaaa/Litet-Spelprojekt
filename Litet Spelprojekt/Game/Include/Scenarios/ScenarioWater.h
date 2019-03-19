@@ -44,7 +44,7 @@ private:
 	std::vector<uint32> m_InletsToRemove;
 
 private:
-	void StartWater(const glm::ivec3& position) noexcept;
+	void StartWater(const glm::ivec3& position, float severity) noexcept;
 
 	//Scenario Spread Helper Functions
 	uint32 CanSpreadTo(const uint32 * const * ppLevel, const glm::ivec2& levelSize, const glm::ivec2& tileFrom, const glm::ivec2& tileTo, const TileData* const* ppLevelData) const noexcept;
@@ -64,9 +64,10 @@ private:
 	void ExtinguishFire(TileData * const * ppLevelData, TileData * const * ppLevelDataAbove, const glm::ivec2& currentTile, float dtS) const noexcept;
 };
 
-inline void ScenarioWater::StartWater(const glm::ivec3 & position) noexcept
+inline void ScenarioWater::StartWater(const glm::ivec3 & position, float severity) noexcept
 {
 	m_InletTiles.push_back(position);
+	m_WaterIntakeRates.push_back(severity);
 	m_FloodingIDs[position.y / 2].push_back(glm::ivec2(position.x, position.z));
 	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].WaterInlet = true;
 	m_pWorld->GetLevel(position.y / 2).GetLevelData()[position.x][position.z].GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->SetMaterial(MATERIAL::INLET_BLUE);

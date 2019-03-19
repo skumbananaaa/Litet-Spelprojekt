@@ -16,9 +16,9 @@ SceneReplay::~SceneReplay()
 
 }
 
-void SceneReplay::OnActivated(SceneInternal * lastScene, IRenderer * m_pRenderer) noexcept
+void SceneReplay::OnActivated(SceneInternal * lastScene, IRenderer* pRenderer) noexcept
 {
-	SceneInternal::OnActivated(lastScene, m_pRenderer);
+	SceneInternal::OnActivated(lastScene, pRenderer);
 
 	CreateAudio();
 	CreateGameObjects();

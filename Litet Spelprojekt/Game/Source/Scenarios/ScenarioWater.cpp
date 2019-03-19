@@ -15,7 +15,8 @@ ScenarioWater::~ScenarioWater()
 
 void ScenarioWater::BeginReplay(SceneGame* pScene, void* userData) noexcept
 {
-	StartWater(*((glm::ivec3*)userData));
+	auto pair = (std::pair<glm::ivec3, float>*)userData;
+	StartWater(pair->first, pair->second);
 	ScenarioManager::StartScenario(this);
 }
 
@@ -45,11 +46,9 @@ void ScenarioWater::Escalate(const glm::ivec3& position, float severity) noexcep
 {
 	if (!IsReplaying())
 	{
-		StartWater(position);
-		RegisterReplayEvent(new glm::ivec3(position));
+		StartWater(position, severity);
+		RegisterReplayEvent(new std::pair<glm::ivec3, float>(position, severity));
 	}
-	
-		m_WaterIntakeRates.push_back(severity); mdawdawhjui
 }
 
 void ScenarioWater::OnVisibilityChange(World* pWorld, SceneGame* pScene)

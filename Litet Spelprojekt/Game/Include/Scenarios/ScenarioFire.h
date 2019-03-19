@@ -34,11 +34,6 @@ public:
 	void ShowInRoom(uint32 roomID) noexcept;
 
 private:
-	World* m_pWorld;
-	bool m_FireAlwaysVisible;
-	bool m_HasStarted;
-	const uint32* const** m_pppMap;
-
 	void SpreadFireSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, Scene* scene);
 	bool SpreadSmokeSideways(float dtS, const glm::ivec3& offset, const glm::ivec3& origin, float amount, Scene* scene);
 	float CalculateDoorSpreadFactor(const TileData& tileFrom, const TileData& tileTo, bool spreadingThroughBulkhead) const noexcept;
@@ -53,7 +48,7 @@ private:
 private:
 	World* m_pWorld;
 	bool m_FireAlwaysVisible;
-
+	bool m_HasStarted;
 	const uint32* const** m_pppMap;
 
 	// x, y, z = x, level, z

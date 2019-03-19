@@ -8,7 +8,7 @@ public:
 	SceneReplay(World* pWorld, float percentage = 0.0F);
 	~SceneReplay();
 
-	virtual void OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept override;
+	virtual void OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noexcept override;
 	virtual void OnUpdate(float dtS) noexcept override;
 
 private:

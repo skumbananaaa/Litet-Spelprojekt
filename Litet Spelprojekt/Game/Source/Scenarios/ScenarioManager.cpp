@@ -120,7 +120,7 @@ void ScenarioManager::Escalate(int32 index, const glm::ivec3& position, float se
 {
 	if (!ReplayHandler::IsReplaying())
 	{
-		for (int i = (int32)s_ActiveScenarios.size() - 1; i >= 0; i--)
+		if (StartScenario(index))
 		{
 			s_Scenarios[index]->Escalate(position, severity);
 		}

@@ -12,6 +12,16 @@ glm::ivec3 startTarget(const glm::ivec3& roomTile, const glm::ivec3& holeTile, b
 	return roomTile;
 }
 
+OrderPlugHole::OrderPlugHole(OrderPlugHole* other) : OrderWalk(other),
+	m_EquippingGearTimer(EQUIPTIME),
+	m_PluggingTimer(PLUGTIME)
+{
+	m_RoomTile = other->m_RoomTile;
+	m_HoleTile = other->m_HoleTile;
+	m_PluggingHole = false;
+	m_HolePlugged = false;
+}
+
 OrderPlugHole::OrderPlugHole(const glm::ivec3& roomTile, const glm::ivec3& holeTile, bool hasGearEquipped)
 	: OrderWalk(startTarget(roomTile, holeTile, hasGearEquipped)),
 	m_EquippingGearTimer(EQUIPTIME),
@@ -54,9 +64,11 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			}
 
 			m_PluggingTimer -= dtS;
+
 			if (m_PluggingTimer <= 0.0001)
 			{
 				glm::ivec3 tile = pCrewmember->GetTile();
+				
 				if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
 				{
 					if (pWorld->GetLevel(tile.y).GetLevelData()[tile.x][tile.z].WaterInlet)
@@ -75,7 +87,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 
 					if (!pWorld->GetRoom(pCrewmember->GetRoom()).IsPumping())
 					{
-						pCrewmember->GiveOrder(new OrderPumpWater(pCrewmember->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
+						GiveOrderInbred(new OrderPumpWater(pCrewmember->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
 					}
 				}
 				res = true;
@@ -98,7 +110,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 			if (m_EquippingGearTimer <= 0.0000001)
 			{
 				pCrewmember->SetGearIsEquipped(true);
-				pCrewmember->GiveOrder(new OrderPlugHole(m_RoomTile, m_HoleTile, pCrewmember->HasGearEquipped()));
+				GiveOrderInbred(new OrderPlugHole(m_RoomTile, m_HoleTile, pCrewmember->HasGearEquipped()));
 				res = true;
 			}
 
@@ -120,4 +132,9 @@ std::string OrderPlugHole::GetName() noexcept
 bool OrderPlugHole::IsIdleOrder() noexcept
 {
 	return false;
+}
+
+IOrder * OrderPlugHole::Clone() noexcept
+{
+	return new OrderPlugHole(this);
 }

@@ -83,10 +83,10 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 				{
 					glm::vec2 toVector = glm::vec2(tilePos.x - x, tilePos.z - z);
 
-						if (glm::length2(toVector) < SPRINKLER_RADIUS_SQRD)
-						{
-							tile.Temp -= FIRE_EXTINGUISH_BY_SPRINKLER_RATE * dt;
-						}
+					if (glm::length2(toVector) < SPRINKLER_RADIUS_SQRD)
+					{
+						tile.Temp -= FIRE_EXTINGUISH_BY_SPRINKLER_RATE * dt;
+					}
 				}
 
 				for (uint32 i = 0; i < tile.GameObjects.size(); i++)

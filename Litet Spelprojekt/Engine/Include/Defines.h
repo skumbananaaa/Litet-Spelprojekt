@@ -37,6 +37,8 @@
 #define MAX_NUM_ROOMS 128
 #define MAX_ROOMS_VISIBLE 5
 
+#define NUM_CREW 16
+
 constexpr float WATER_UPDATE_LEVEL_INTERVAL = 0.02f;
 constexpr float WATER_ROUNDING_FACTOR = 50.0f;
 constexpr float WATER_MAX_LEVEL = 2.0f;

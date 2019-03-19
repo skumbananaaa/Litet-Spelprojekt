@@ -1,9 +1,18 @@
 #include "../../Include/Orders/OrderCarry.h"
 #include "../../Include/Crew.h"
+#include "../../Include/Game.h"
 
-OrderCarry::OrderCarry(Crewmember * inNeedOfAssist) : OrderWalk(inNeedOfAssist->GetTile() * glm::ivec3(1, 2, 1))
+OrderCarry::OrderCarry(OrderCarry* other) : OrderWalk(other)
+{
+	m_InNeedOfAssist = other->m_InNeedOfAssist;
+	GetCrewMember()->SetAssisting(nullptr);
+}
+
+OrderCarry::OrderCarry(Crewmember* inNeedOfAssist) : OrderWalk(inNeedOfAssist->GetTile() * glm::ivec3(1, 2, 1))
 {
 	m_pCarrying = inNeedOfAssist;
+	m_InNeedOfAssist = inNeedOfAssist->GetShipNumber();
+	GetCrewMember()->SetAssisting(nullptr);
 }
 
 OrderCarry::~OrderCarry()
@@ -69,4 +78,15 @@ void OrderCarry::RunParallel()
 bool OrderCarry::CanExecuteIfHurt() noexcept
 {
 	return false;
+}
+
+IOrder * OrderCarry::Clone() noexcept
+{
+	return new OrderCarry(this);
+}
+
+void OrderCarry::InitClone(SceneGame* pScene, void* userData) noexcept
+{
+	m_pCarrying = pScene->GetCrew()->GetMember(m_InNeedOfAssist);
+	OrderWalk::InitClone(pScene, userData);
 }

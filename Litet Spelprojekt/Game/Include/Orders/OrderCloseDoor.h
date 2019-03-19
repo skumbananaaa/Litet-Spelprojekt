@@ -6,6 +6,7 @@ class GameObjectDoor;
 class OrderDoor : public OrderWalk 
 {
 public:
+	OrderDoor(OrderDoor* other);
 	OrderDoor(GameObjectDoor* door, const glm::ivec3& doorTile, bool open);
 	virtual ~OrderDoor();
 
@@ -17,7 +18,13 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual bool CanExecuteIfHurt() noexcept override;
 
+	virtual IOrder* Clone() noexcept override;
+	virtual void InitClone(SceneGame* pScene, void* userData) noexcept override;
+
 private:
 	GameObjectDoor* m_pGameObjectDoor;
 	bool m_Open;
+
+	//Replay
+	std::string m_DoorName;
 };

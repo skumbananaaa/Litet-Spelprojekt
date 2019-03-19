@@ -18,6 +18,13 @@ ScenarioIceberg::~ScenarioIceberg()
 	DeleteSafe(m_pAudioSourceExplosion);
 }
 
+void ScenarioIceberg::BeginReplay(SceneGame* pScene, void* userData) noexcept
+{
+	auto pPair = (std::pair<glm::vec3, glm::vec3>*)userData;
+	LaunchIceberg(pPair->first, pPair->second);
+	ScenarioManager::StartScenario(this);
+}
+
 void ScenarioIceberg::Init(World* pWorld) noexcept
 {
 	SetTimeOfNextOutBreak(1.0f);
@@ -40,28 +47,27 @@ void ScenarioIceberg::Release() noexcept
 
 void ScenarioIceberg::OnStart(SceneGame* scene) noexcept
 {
-	glm::vec3 centre;
-
-	if (Random::GenerateBool())
+	if (!IsReplaying())
 	{
-		m_Position = glm::vec3(- 40, 0.0F, 150);
-		centre = glm::vec3(0, 0, Random::GenerateInt(5, 35));
-	}
-	else
-	{
-		m_Position = glm::vec3(40 + 10, 0.0F, 150);
-		centre = glm::vec3(10, 0, Random::GenerateInt(5, 35));
-	}
+		glm::vec3 centre;
 
-	glm::vec3 ray = glm::normalize(m_Position - centre);
-	m_Target = m_Position + ray * (float)(TestAgainstRay(ray, m_Position) + 10);
+		if (Random::GenerateBool())
+		{
+			m_Position = glm::vec3(-40, 0.0F, 150);
+			centre = glm::vec3(0, 0, Random::GenerateInt(5, 35));
+		}
+		else
+		{
+			m_Position = glm::vec3(40 + 10, 0.0F, 150);
+			centre = glm::vec3(10, 0, Random::GenerateInt(5, 35));
+		}
 
-	glm::vec3 delta = m_Target - m_Position;
-	m_TotalDistance = glm::length(delta);
-	m_Direction = glm::normalize(delta);
-	m_Velocity = 10;
-	m_HasBounced = false;
-	m_DistanceTraveled = 0;
+		glm::vec3 ray = glm::normalize(m_Position - centre);
+		m_Target = m_Position + ray * (float)(TestAgainstRay(ray, m_Position) + 10);
+
+		LaunchIceberg(m_Position, m_Target);
+		RegisterReplayEvent(new std::pair<glm::vec3, glm::vec3>(m_Position, m_Target));
+	}
 }
 
 void ScenarioIceberg::OnEnd(SceneGame* scene) noexcept
@@ -188,4 +194,17 @@ int32 ScenarioIceberg::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origi
 	}
 
 	return (int32)std::min(t_max[0], t_max[1]);
+}
+
+void ScenarioIceberg::LaunchIceberg(glm::vec3 position, glm::vec3 target) noexcept
+{
+	m_Position = position;
+	m_Target = target;
+
+	glm::vec3 delta = m_Target - m_Position;
+	m_TotalDistance = glm::length(delta);
+	m_Direction = glm::normalize(delta);
+	m_Velocity = 10;
+	m_HasBounced = false;
+	m_DistanceTraveled = 0;
 }

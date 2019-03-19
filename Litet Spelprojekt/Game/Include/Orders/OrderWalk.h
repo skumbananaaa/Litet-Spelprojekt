@@ -12,11 +12,13 @@ class OrderWalk : public IOrder, public IRunnable
 protected:
 
 public:
+	OrderWalk(OrderWalk* other);
 	OrderWalk(const glm::ivec3& goalTile);
 	virtual ~OrderWalk();
 
 	virtual void OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual void OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
+	virtual void OnAborted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept override;
 	virtual bool OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept override;
 	virtual bool CanBeStackedWithSameType() noexcept override;
 	virtual bool HasPriority() noexcept override;
@@ -25,6 +27,8 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual void RunParallel() override;
 	virtual bool CanExecuteIfHurt() noexcept override;
+
+	virtual IOrder* Clone() noexcept override;
 
 protected:
 	bool FollowPath(float dtS) noexcept;

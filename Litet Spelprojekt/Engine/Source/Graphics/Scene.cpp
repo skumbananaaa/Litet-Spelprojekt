@@ -113,8 +113,6 @@ void Scene::AddGameObject(GameObject* pGameObject) noexcept
 	if (pGameObject->IsTickable())
 	{
 		m_UpdateAbles.push_back(pGameObject);
-
-		std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
 	}
 
 	//Add gameobjects that has a mesh and material aka is drawable
@@ -290,7 +288,7 @@ void Scene::RemoveGameObject(GameObject* pGameObject) noexcept
 			}
 		}
 
-		std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
+		//std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
 	}
 
 	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);
@@ -346,9 +344,9 @@ void Scene::OnSceneExtensionComplete() noexcept
 
 void Scene::OnUpdate(float dtS) noexcept
 {
-	for (GameObject* pGameObject : m_UpdateAbles)
+	for (int i = 0; i < m_UpdateAbles.size(); i++)
 	{
-		pGameObject->Update(*m_pCamera, dtS);
+		m_UpdateAbles[i]->Update(*m_pCamera, dtS);
 	}
 
 	if (m_Extending)

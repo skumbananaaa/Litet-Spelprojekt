@@ -10,6 +10,12 @@ StaticShadowCube::StaticShadowCube(const glm::vec3& position, const Scene& scene
 	Create(position, scene);
 }
 
+StaticShadowCube::StaticShadowCube(StaticShadowCube&& other)
+	: m_pCube(other.m_pCube)
+{
+	other.m_pCube = nullptr;
+}
+
 StaticShadowCube::~StaticShadowCube()
 {
 	DeleteSafe(m_pCube);

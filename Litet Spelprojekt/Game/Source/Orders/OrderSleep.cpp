@@ -3,14 +3,26 @@
 #include <World/World.h>
 #include <System/Random.h>
 #include <IO/ResourceHandler.h>
+#include "../../Include/Scenes/SceneGame.h"
+
+OrderSleep::OrderSleep(OrderSleep * other) : OrderWalk(other)
+{
+	m_Name = other->m_Name;
+	m_Position = glm::vec3(4.0f);
+	m_Timer = 90.0f;
+	m_IsAtBed = false;
+	m_Up = other->m_Up;
+}
 
 OrderSleep::OrderSleep(const glm::ivec3& bedTile, GameObject* pBed)
 	: OrderWalk(bedTile)
 {
+	m_Name = pBed->GetName();
 	m_pBed = pBed;
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 90.0f;
 	m_IsAtBed = false;
+	m_Up = Random::GenerateBool();
 }
 
 OrderSleep::~OrderSleep()
@@ -47,8 +59,7 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 			int rot = (int32)(yaw / glm::half_pi<float>());
 
 			bool single = (m_pBed->GetMesh() == ResourceHandler::GetMesh(MESH::BED_SINGLE));
-			bool up = Random::GenerateBool();
-			float yOffset = (up && !single) ? 1.45f : 0.55f;
+			float yOffset = (m_Up && !single) ? 1.45f : 0.55f;
 
 			if (rot == 0)
 			{
@@ -113,4 +124,15 @@ std::string OrderSleep::GetName() noexcept
 bool OrderSleep::IsIdleOrder() noexcept
 {
 	return true;
+}
+
+IOrder * OrderSleep::Clone() noexcept
+{
+	return new OrderSleep(this);
+}
+
+void OrderSleep::InitClone(SceneGame * pScene, void * userData) noexcept
+{
+	m_pBed = pScene->GetGameObject(m_Name);
+	OrderWalk::InitClone(pScene, userData);
 }

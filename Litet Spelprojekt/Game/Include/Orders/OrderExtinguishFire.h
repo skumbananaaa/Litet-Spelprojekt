@@ -13,6 +13,7 @@ class OrderExtinguishFire : public OrderWalk
 	static constexpr float FIRE_EXTINGUISH_BY_CREW_RATE = 40.0f * RATE_OF_FIRE_SPREAD;
 
 public:
+	OrderExtinguishFire(OrderExtinguishFire* other);
 	OrderExtinguishFire(const glm::ivec3& goalTile, const glm::ivec3& burningTile, uint32 roomBurningId, bool fireFullyExtinguished, const std::string& extinguisherName);
 	virtual ~OrderExtinguishFire();
 
@@ -24,6 +25,9 @@ public:
 	virtual bool IsIdleOrder() noexcept override;
 	virtual bool CanExecuteIfHurt() noexcept override;
 	virtual bool HasPriority() noexcept override;
+
+	virtual IOrder* Clone() noexcept override;
+	virtual void InitClone(SceneGame* pScene, void* userData) noexcept override;
 
 protected:
 	bool CheckIfTileInWorld(const glm::ivec2& levelSize, const glm::ivec3& tile) const noexcept;

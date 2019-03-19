@@ -85,8 +85,6 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noex
 			m_Crew.GetMember(i)->GiveOrder(pOrder);
 		}
 	}
-
-	GameState::Reset();
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
@@ -108,6 +106,7 @@ void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept
 
 	OrderSchedule::Release();
 	ResourceHandler::ResetGameObjectCounters();
+	GameState::Reset();
 }
 
 void SceneGame::OnUpdate(float dtS) noexcept

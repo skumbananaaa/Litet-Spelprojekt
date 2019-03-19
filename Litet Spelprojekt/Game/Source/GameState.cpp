@@ -1,7 +1,7 @@
 #include "../Include/GameState.h"
 
-float GameState::s_CrewHealth = 0.0f;
 float GameState::s_BurningAmount = 0.0f;
+float GameState::s_CrewHealth = 1.0f;
 float GameState::s_WaterLeakAmount = 0.0f;
 uint32 GameState::s_NumScenariosSelected = 1; //Set to one, otherwise does not work
 uint32 GameState::s_NumScenariosCompleted = 0;

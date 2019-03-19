@@ -1,4 +1,4 @@
-#include "..\..\Include\Scenarios\ScenarioFire.h"
+﻿#include "..\..\Include\Scenarios\ScenarioFire.h"
 #include <System/Random.h>
 #include <World/Scenarios/Fire/FireAlarm.h>
 #include "../../Include/GameState.h"

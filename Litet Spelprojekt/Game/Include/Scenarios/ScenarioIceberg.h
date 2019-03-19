@@ -11,6 +11,8 @@ public:
 	ScenarioIceberg(uint32 numInstances);
 	virtual ~ScenarioIceberg();
 
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;
@@ -24,7 +26,6 @@ public:
 	virtual bool IsComplete() noexcept override;
 	int32 TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin) noexcept;
 
-
 private:
 	glm::vec3 m_Position;
 	glm::vec3 m_Target;
@@ -36,4 +37,6 @@ private:
 	uint32 m_InstancesComplete;
 	bool m_HasBounced;
 	AudioSource* m_pAudioSourceExplosion;
+
+	void LaunchIceberg(glm::vec3 position, glm::vec3 target) noexcept;
 };

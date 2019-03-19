@@ -1,8 +1,15 @@
 #include "../../Include/Orders/OrderWalkMedicBay.h"
 #include "../../Include/Crewmember.h"
 #include <World/World.h>
-OrderWalkMedicBay::OrderWalkMedicBay(World* pWorld, const glm::ivec3& currtile)
-	: OrderWalk(pWorld->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currtile))
+#include "../../Include/Game.h"
+
+OrderWalkMedicBay::OrderWalkMedicBay(OrderWalkMedicBay* other)
+	: OrderWalk(other)
+{
+}
+
+OrderWalkMedicBay::OrderWalkMedicBay(const glm::ivec3& currtile)
+	: OrderWalk(Game::GetGame()->m_pSceneGame->GetWorld()->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currtile))
 {
 }
 
@@ -73,6 +80,11 @@ bool OrderWalkMedicBay::HasPriority() noexcept
 std::string OrderWalkMedicBay::GetName() noexcept
 {
 	return "Go to medic bay!";
+}
+
+IOrder* OrderWalkMedicBay::Clone() noexcept
+{
+	return new OrderWalkMedicBay(this);
 }
 
 /*bool OrderWalkMedicBay::ReadyToAbort() noexcept

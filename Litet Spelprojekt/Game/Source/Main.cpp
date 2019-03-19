@@ -1,5 +1,7 @@
 #include <System/Application.h>
 #include "../Include/Game.h"
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
 
 int main(int argc, char* argv[])
 {

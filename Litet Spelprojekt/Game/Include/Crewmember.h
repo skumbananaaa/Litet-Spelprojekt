@@ -17,7 +17,6 @@
 #define CREWMEMBER_IDLE_MOVEMENT_SPEED_MULTIPLIER 0.6f
 
 #define NR_GROUPS 3
-#define NUM_CREW 16
 #define MAX_HEALTH 100.0f
 
 #define MAX_REPORT_TIME 10
@@ -35,6 +34,7 @@ struct TileData;
 class Crewmember : public GameObject, public UIOrder, public IProgressListener
 {
 	friend class Crew;
+	friend class IOrder;
 
 public:
 	Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType);
@@ -179,6 +179,9 @@ private:
 
 	float m_ReportTime;
 	float m_ReportTimer;
+
+	//--REPLAY
+	float m_ReplayPositionSyncTimer;
 };
 
 inline int32 Crewmember::GetShipNumber() const noexcept

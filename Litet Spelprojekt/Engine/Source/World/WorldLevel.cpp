@@ -325,7 +325,8 @@ void WorldLevel::GenerateScenarioObjects(Scene* pScene, uint32 levelHeight)
 				pEmitter->SetScale(glm::vec2(0.1f), glm::vec2(0.3f));
 				pEmitter->SetBeginColor(glm::vec4(0.2f, 0.2f, 0.2f, 0.3f));
 				pEmitter->SetEndColor(glm::vec4(0.05f, 0.05f, 0.05f, 0.3f));
-				pEmitter->SetPosition(glm::vec3(x, levelHeight + 0.3f, z));
+				pEmitter->SetPosition(glm::vec3(x, levelHeight + 0.35f, z));
+				pEmitter->SetBoundingBox(pEmitter->GetPosition() - glm::vec3(0.5f, 0.0f, 0.5f), pEmitter->GetPosition() + glm::vec3(0.5f, 0.5f, 0.5f));
 				pEmitter->SetParticlesPerSeconds(4);
 				pEmitter->UpdateTransform();
 				pEmitter->SetIsVisible(false);
@@ -345,7 +346,8 @@ void WorldLevel::GenerateScenarioObjects(Scene* pScene, uint32 levelHeight)
 				pEmitter->SetBeginColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f));
 				pEmitter->AddColorNode(glm::vec4(1.0f, 0.92f, 0.03f, 1.0f), 0.3f);
 				pEmitter->SetEndColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-				pEmitter->SetPosition(glm::vec3(x, levelHeight, z));
+				pEmitter->SetPosition(glm::vec3(x, levelHeight + 0.05f, z));
+				pEmitter->SetBoundingBox(pEmitter->GetPosition() - glm::vec3(0.5f, 0.0f, 0.5f), pEmitter->GetPosition() + glm::vec3(0.5f, 0.7f, 0.5f));
 				pEmitter->SetParticlesPerSeconds(16);
 				pEmitter->UpdateTransform();
 				pEmitter->SetIsVisible(false);

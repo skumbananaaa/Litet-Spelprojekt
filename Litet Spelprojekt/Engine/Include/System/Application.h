@@ -25,6 +25,8 @@ public:
 	virtual void OnLoading(const std::string&, float percentage) override;
 	virtual void OnResourceLoadingFinished() override;
 
+	void DisableRenderingAndForceUpdate(bool yes) noexcept;
+	bool IsRenderingDisabled() noexcept;
 	void Exit() noexcept;
 	void ResetPrevTime() noexcept;
 
@@ -66,6 +68,7 @@ private:
 	int32 m_fps;
 	int32 m_ups;
 	bool m_ShouldRun;
+	bool m_ForcedUpdate;
 	volatile RESOURCE_MODE m_ResourceMode;
 	std::string m_Resource;
 	float m_Progress;

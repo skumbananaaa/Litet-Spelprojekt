@@ -1,10 +1,22 @@
 #include "../../Include/Orders/OrderCook.h"
 #include "../../Include/Orders/OrderSchedule.h"
 #include "../../Include/Crewmember.h"
+#include "../../Include/Game.h"
 #include <World/World.h>
+
+OrderCook::OrderCook(OrderCook* other) : OrderWalk(other)
+{
+	m_Name = other->m_Name;
+
+	m_Position = glm::vec3(4.0f);
+	m_Timer = 15.0f;
+	m_IsAtOven = false;
+}
+
 OrderCook::OrderCook(const glm::ivec3& ovenTile, GameObject* pOven)
 	: OrderWalk(ovenTile)
 {
+	m_Name = pOven->GetName();
 	m_pOven = pOven;
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 15.0f;
@@ -75,7 +87,7 @@ bool OrderCook::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 			IOrder* pOrder = OrderSchedule::GetOrderEat();
 			if (pOrder)
 			{
-				pCrewmember->GiveOrder(pOrder);
+				GiveOrderInbred(pOrder);
 			}
 
 			return true;
@@ -111,4 +123,15 @@ std::string OrderCook::GetName() noexcept
 bool OrderCook::IsIdleOrder() noexcept
 {
 	return true;
+}
+
+IOrder * OrderCook::Clone() noexcept
+{
+	return new OrderCook(this);
+}
+
+void OrderCook::InitClone(SceneGame * pScene, void * userData) noexcept
+{
+	m_pOven = pScene->GetGameObject(m_Name);
+	OrderWalk::InitClone(pScene, userData);
 }

@@ -18,6 +18,14 @@ ScenarioArtillery::~ScenarioArtillery()
 	DeleteSafe(m_pAudioSourceExplosion);
 }
 
+void ScenarioArtillery::BeginReplay(SceneGame* pScene, void* userData) noexcept
+{
+	auto pPair = (std::pair<glm::vec3, glm::vec3>*)userData;
+	m_pGameObjectArtillery = new GameObjectArtillery(pPair->first, pPair->second);
+	pScene->AddGameObject(m_pGameObjectArtillery);
+	ScenarioManager::StartScenario(this);
+}
+
 void ScenarioArtillery::Init(World* pWorld) noexcept
 {
 	SetTimeOfNextOutBreak(1.0f);
@@ -30,17 +38,24 @@ void ScenarioArtillery::Release() noexcept
 
 void ScenarioArtillery::OnStart(SceneGame* scene) noexcept
 {
-	glm::vec3 pos = glm::vec3(Random::GenerateInt(-200, 200), 200, Random::GenerateInt(-200, 200));
-	m_Target = glm::vec3(Random::GenerateInt(2, 9), 4, Random::GenerateInt(2, 39));
-	m_pGameObjectArtillery = new GameObjectArtillery(pos, m_Target);
+	if (!IsReplaying())
+	{
+		glm::vec3 pos = glm::vec3(Random::GenerateInt(-200, 200), 200, Random::GenerateInt(-200, 200));
+		m_Target = glm::vec3(Random::GenerateInt(2, 9), 4, Random::GenerateInt(2, 39));
+		m_pGameObjectArtillery = new GameObjectArtillery(pos, m_Target);
+		scene->AddGameObject(m_pGameObjectArtillery);
 
-	scene->AddGameObject(m_pGameObjectArtillery);
+		RegisterReplayEvent(new std::pair<glm::vec3, glm::vec3>(pos, m_Target));
+	}
 }
 
 void ScenarioArtillery::OnEnd(SceneGame* scene) noexcept
 {
-	scene->RemoveGameObject(m_pGameObjectArtillery);
-	DeleteSafe(m_pGameObjectArtillery);
+	if (m_pGameObjectArtillery)
+	{
+		scene->RemoveGameObject(m_pGameObjectArtillery);
+		DeleteSafe(m_pGameObjectArtillery);
+	}
 }
 
 void ScenarioArtillery::OnVisibilityChange(World* pWorld, SceneGame* pScene) noexcept

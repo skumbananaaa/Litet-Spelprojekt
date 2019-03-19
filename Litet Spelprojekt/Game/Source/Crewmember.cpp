@@ -10,6 +10,8 @@
 #include "../Include/Orders/OrderCarry.h"
 #include "../Include/GameState.h"
 #include "../Include/Scenes/SceneGame.h"
+#include "../Include/ReplayHandler.h"
+#include "../Include/Orders/ReplayablePosition.h"
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
@@ -19,7 +21,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	m_HasEquippedExtinguisher(false),
 	m_IsCarried(false),
 	m_HasTriedToWalkToSickbay(false),
-	m_pShadow(nullptr)
+	m_pShadow(nullptr),
+	m_ReplayPositionSyncTimer(0.0f)
 {
 	//Set crewmembers to be updated
 	m_IsTickable = true;
@@ -135,24 +138,39 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 	
 	ChangeTexture();
 
-	if (room.IsActive())
+	if (!ReplayHandler::IsReplaying())
 	{
-		if (m_pShadow->IsVisible())
+		if (room.IsActive())
 		{
-			m_pShadow->SetIsVisible(false);
+			if (m_pShadow->IsVisible())
+			{
+				m_pShadow->SetIsVisible(false);
+			}
+			UpdateLastKnownPosition();
 		}
-		UpdateLastKnownPosition();
+		else
+		{
+			if (!m_pShadow->IsVisible())
+			{
+				m_pShadow->SetDirection(m_Direction);
+				m_LastKnownPosition = m_PlayerTile * glm::ivec3(1, 2, 1);
+				m_pShadow->SetPosition(m_LastKnownPosition);
+				m_pShadow->UpdateTransform();
+				m_pShadow->SetIsVisible(true);
+			}
+		}
+
+		m_ReplayPositionSyncTimer += deltaTime;
+
+		if (m_ReplayPositionSyncTimer > 0.25f)
+		{
+			new ReplayablePosition(GetPosition(), m_ShipNumber);
+			m_ReplayPositionSyncTimer = 0.0f;
+		}
 	}
 	else
 	{
-		if (!m_pShadow->IsVisible())
-		{
-			m_pShadow->SetDirection(m_Direction);
-			m_LastKnownPosition = m_PlayerTile * glm::ivec3(1, 2, 1);
-			m_pShadow->SetPosition(m_LastKnownPosition);
-			m_pShadow->UpdateTransform();
-			m_pShadow->SetIsVisible(true);
-		}
+		UpdateLastKnownPosition();
 	}
 
 	m_pAudioSourceScream->SetPosition(GetPosition() + glm::vec3(pSceneGame->GetExtension() * glm::floor(GetPosition().y / 2), 0.0f, 0.0f));
@@ -289,7 +307,7 @@ void Crewmember::GoToSickBay()
 
 			if (currentTileID < SICKBAY_INTERVAL_START || currentTileID > SICKBAY_INTERVAL_END)
 			{
-				m_OrderHandler.GiveOrder(new OrderWalkMedicBay(m_pWorld, currentTile));
+				m_OrderHandler.GiveOrder(new OrderWalkMedicBay(currentTile));
 			}
 		}
 		else
@@ -456,20 +474,20 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 
 void Crewmember::OnOrderStarted(bool idleOrder) noexcept
 {
-	std::cout << GetName() << " started order!" << std::endl;
 	m_Idling = idleOrder;
 }
 
 void Crewmember::OnAllOrdersFinished() noexcept
 {
-	std::cout << GetName() << " finished all order(s)!" << std::endl;
+	if (!ReplayHandler::IsReplaying())
+	{
+		SetIdling(true);
 
-	SetIdling(true);
+		UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+		m_HasTriedToWalkToSickbay = false;
 
-	UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
-	m_HasTriedToWalkToSickbay = false;
-
-	GiveOrder(OrderSchedule::GetIdleOrder());
+		GiveOrder(OrderSchedule::GetIdleOrder());
+	}
 }
 
 void Crewmember::OnAddedToScene(Scene* pScene) noexcept
@@ -483,6 +501,7 @@ void Crewmember::OnAddedToScene(Scene* pScene) noexcept
 		m_pShadow->SetDirection(m_Direction);
 		m_pShadow->UpdateTransform();
 		m_pShadow->SetWorld(m_pWorld);
+		m_pShadow->SetIsVisible(!ReplayHandler::IsReplaying());
 		pScene->AddGameObject(m_pShadow);
 	}
 

@@ -25,5 +25,6 @@ private:
 	TextView* m_pTextViewFire;
 	TextView* m_pTextViewWater;
 	Button* m_pButtonExit;
+	Button* m_pButtonReplay;
 	ListScrollable* m_pLog;
 };

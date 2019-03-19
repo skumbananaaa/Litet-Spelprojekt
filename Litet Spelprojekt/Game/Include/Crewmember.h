@@ -23,6 +23,9 @@
 #define NUM_CREW 16
 #define MAX_HEALTH 100.0f
 
+#define MAX_REPORT_TIME 10
+#define MIN_REPORT_TIME 1
+
 enum GroupType : uint32
 {
 	MEDIC = 0,

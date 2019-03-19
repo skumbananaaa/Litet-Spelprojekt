@@ -10,7 +10,7 @@ class API FireSprinkler : public GameObject
 {
 	static constexpr float SPRINKLER_RADIUS = 5.0f;
 	static constexpr float SPRINKLER_RADIUS_SQRD = SPRINKLER_RADIUS * SPRINKLER_RADIUS;
-	static constexpr float FIRE_EXTINGUISH_BY_SPRINKLER_RATE = 500.0f * RATE_OF_FIRE_SPREAD;
+	static constexpr float FIRE_EXTINGUISH_BY_SPRINKLER_RATE = 1000.0f * RATE_OF_FIRE_SPREAD;
 
 public:
 	FireSprinkler(int32 source);

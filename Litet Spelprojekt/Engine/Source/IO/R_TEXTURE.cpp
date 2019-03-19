@@ -60,6 +60,7 @@ uint32 TEXTURE::FLOOR_EXT_CABOOSE1 = 0;
 uint32 TEXTURE::LOADING_CONTROLS = 0;
 uint32 TEXTURE::TUTORIAL_SCREEN_1 = 0;
 uint32 TEXTURE::TUTORIAL_SCREEN_2 = 0;
+uint32 TEXTURE::TUTORIAL_SCREEN_3 = 0;
 uint32 TEXTURE::SHELF_AMMUNITION = 0;
 uint32 TEXTURE::SHELF_EMPTY = 0;
 uint32 TEXTURE::GENERATOR = 0;
@@ -122,6 +123,7 @@ void TEXTURE::RegisterResources()
 	LOADING_CONTROLS			= ResourceHandler::RegisterTexture2D("LoadingScreen.png", TEX_FORMAT_RGBA, false, true);
 	TUTORIAL_SCREEN_1			= ResourceHandler::RegisterTexture2D("TutorialScreen.png", TEX_FORMAT_RGBA, false, true);
 	TUTORIAL_SCREEN_2			= ResourceHandler::RegisterTexture2D("TutorialScreen2.png", TEX_FORMAT_RGBA, false, true);
+	TUTORIAL_SCREEN_3			= ResourceHandler::RegisterTexture2D("TutorialScreen3.png", TEX_FORMAT_RGBA, false, true);
 	FLOOR_EXT_NORMAL			= ResourceHandler::RegisterTexture2D("normalFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_EXT_SICKBAY1			= ResourceHandler::RegisterTexture2D("sickbayFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
 	FLOOR_EXT_TOILET1			= ResourceHandler::RegisterTexture2D("toiletFloorExtTexture.png", TEX_FORMAT_RGBA, true, false, params);
@@ -142,7 +144,7 @@ void TEXTURE::RegisterResources()
 	ICON_INJURY_SMOKE				= ResourceHandler::RegisterTexture2D("Icons/InjurySmoke.png", TEX_FORMAT_RGBA, false, true);
 	ICON_SKILL_FIRE					= ResourceHandler::RegisterTexture2D("Icons/SkillFire.png", TEX_FORMAT_RGBA, false, true);
 	ICON_SKILL_MEDIC				= ResourceHandler::RegisterTexture2D("Icons/SkillMedic.png", TEX_FORMAT_RGBA, false, true);
-	ICON_SKILL_STRENGTH				= ResourceHandler::RegisterTexture2D("Icons/SkillStrength.png", TEX_FORMAT_RGBA, false, true);
+	ICON_SKILL_STRENGTH				= ResourceHandler::RegisterTexture2D("Icons/RoleCrew.png", TEX_FORMAT_RGBA, false, true);
 	ICON_CIRCLE						= ResourceHandler::RegisterTexture2D("Icons/Circle.png", TEX_FORMAT_RGBA, false, true);
 	ICON_CHECKED					= ResourceHandler::RegisterTexture2D("Icons/Checked.png", TEX_FORMAT_RGBA, false, true);
 	ICON_CROSSED					= ResourceHandler::RegisterTexture2D("Icons/Crossed.png", TEX_FORMAT_RGBA, false, true);

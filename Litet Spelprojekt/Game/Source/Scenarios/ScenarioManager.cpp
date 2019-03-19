@@ -39,6 +39,7 @@ void ScenarioManager::Update(float dtS, World* world, SceneGame* scene) noexcept
 		float time = scenario->GetTimeOfNextOutBreak() - dtS;
 		if (time <= 0)
 		{
+
 			if (!scenario->IsComplete())
 			{
 				StartScenario(s_NonActiveScenarios[i]);

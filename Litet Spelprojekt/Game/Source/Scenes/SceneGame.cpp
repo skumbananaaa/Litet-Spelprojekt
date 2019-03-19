@@ -35,7 +35,6 @@ SceneGame::SceneGame(World* pWorld)
 
 	GetCamera().SetMaxPitch(-glm::two_pi<float>() / 64.0f);
 	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 11.0f, 41.0f);
-	UpdateMaterialClipPlanes();
 }
 
 SceneGame::~SceneGame()
@@ -87,6 +86,7 @@ void SceneGame::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noex
 	}
 
 	GameState::Reset();
+	UpdateMaterialClipPlanes();
 }
 
 void SceneGame::OnDeactivated(SceneInternal* newScene) noexcept

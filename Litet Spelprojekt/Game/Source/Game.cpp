@@ -18,7 +18,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept
-	: Application(true, 1920, 1017, "", true),
+	: Application(false, 1920, 1017, "", true),
 	m_pSceneNext(nullptr),
 	m_pScene(nullptr),
 	m_pRenderer(nullptr),
@@ -49,7 +49,7 @@ Game::Game() noexcept
 
 	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioArtillery(2));
 	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioIceberg(3));
-	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(false));
+	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(true));
 	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 	SetScene(m_pSceneLoading);

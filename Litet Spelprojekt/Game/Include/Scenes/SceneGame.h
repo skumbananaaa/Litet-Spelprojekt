@@ -125,12 +125,12 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::CREW_STANDARD)		->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::SINGLE_BED)			->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::BUNK_BED)			->SetLevelClipPlane(standardClipPlane);
-	ResourceHandler::GetMaterial(MATERIAL::INSTRUMENT_1)		->SetLevelClipPlane(standardClipPlane);
-	ResourceHandler::GetMaterial(MATERIAL::INSTRUMENT_2)		->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::INSTRUMENT_1)		->SetLevelClipPlane(floorClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::INSTRUMENT_2)		->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::LAMP)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::CHAIR)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::CUPBOARD)			->SetLevelClipPlane(standardClipPlane);
-	ResourceHandler::GetMaterial(MATERIAL::TABLE)				->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::TABLE)				->SetLevelClipPlane(floorClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::TOILET)				->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::ANIMATED_MODEL)		->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::CREW_INJURED)		->SetLevelClipPlane(standardClipPlane);
@@ -169,6 +169,6 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	IRenderer* renderer = GetRenderer();
 	if (renderer != nullptr)
 	{
-		renderer->SetParticleClipPlane(standardClipPlane);
+		renderer->SetParticleClipPlane(floorClipPlane);
 	}
 }

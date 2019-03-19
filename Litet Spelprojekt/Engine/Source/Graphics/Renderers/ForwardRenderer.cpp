@@ -200,7 +200,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	m_FrameCounter++;
 }
 
-void ForwardRenderer::SetParticleClipPlane(const glm::vec4& clipPlane) noexcept
+ void ForwardRenderer::SetParticleClipPlane(const glm::vec4& clipPlane) noexcept
 {
 	m_ParticleClipPlaneBuffer.ClipPlane = clipPlane;
 }
@@ -752,6 +752,11 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	const std::vector<ParticleEmitter*>& particleSystems = scene.GetParticleEmitters();
 	for (size_t i = 0; i < particleSystems.size(); i++)
 	{
+		if (!particleSystems[i]->IsVisible())
+		{
+			continue;
+		}
+
 		if (particleSystems[i]->GetParticleBlendMode() == PARTICLE_ADDITIVE)
 		{
 			context.SetBlendFunc(BLEND_FUNC_SRC_ALPHA, BLEND_FUNC_ONE);
@@ -778,7 +783,12 @@ void ForwardRenderer::ParticlePass(const Camera& camera, const Scene& scene) con
 	const std::vector<MeshEmitter*>& meshEmitters= scene.GetMeshEmitters();
 	for (size_t i = 0; i < meshEmitters.size(); i++)
 	{
-		const MeshParticle& mesh = (*meshEmitters[i]->GetMesh());
+		if (!meshEmitters[i]->IsVisible())
+		{
+			continue;
+		}
+
+		const MeshParticle& mesh = *(meshEmitters[i]->GetMesh());
 
 		mesh.SetInstances(meshEmitters[i]->GetParticleInstances(), meshEmitters[i]->GetNumParticles());
 		context.DrawMeshParticle(mesh);

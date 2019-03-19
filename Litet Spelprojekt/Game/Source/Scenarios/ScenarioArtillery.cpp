@@ -121,12 +121,12 @@ std::string ScenarioArtillery::GetName() noexcept
 
 int32 ScenarioArtillery::GetCooldownTime() noexcept
 {
-	return 100;
+	return 60 * 5;
 }
 
 int32 ScenarioArtillery::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60 * 5;
+	return 60;
 }
 
 bool ScenarioArtillery::IsComplete() noexcept

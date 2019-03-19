@@ -133,12 +133,12 @@ std::string ScenarioIceberg::GetName() noexcept
 
 int32 ScenarioIceberg::GetCooldownTime() noexcept
 {
-	return 100;
+	return 60 * 5;
 }
 
 int32 ScenarioIceberg::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60 * 5;
+	return 30;
 }
 
 bool ScenarioIceberg::IsComplete() noexcept

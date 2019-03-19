@@ -43,22 +43,11 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	uint32 lvl = Random::GenerateInt(0, m_pWorld->GetNumLevels() - 1);
 	lvl += lvl % 2;
 	lvl = std::min(lvl, m_pWorld->GetNumLevels() - 1);
-	lvl = 0;
 	uint32 x = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeX() - 2);
-	x = m_pWorld->GetLevel(lvl).GetSizeX() / 2;
-	x -= 2;
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeZ() - 2);
-	z = m_pWorld->GetLevel(lvl).GetSizeZ() / 2;
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
 	Escalate(pos);
-
-	/*uint32 lvl = 4;
-	uint32 x = 10;
-	uint32 z = 1;
-	glm::ivec3 pos = glm::ivec3(x, lvl, z);
-
-	Escalate(pos);*/
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept

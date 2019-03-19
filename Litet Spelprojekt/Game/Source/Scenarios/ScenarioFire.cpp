@@ -55,9 +55,9 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	/*uint32 lvl = 4;
 	uint32 x = 10;
 	uint32 z = 1;
-	glm::ivec3 pos = glm::ivec3(x, lvl, z);*/
+	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
-	Escalate(pos);
+	Escalate(pos);*/
 }
 
 void ScenarioFire::OnEnd(SceneGame* scene) noexcept

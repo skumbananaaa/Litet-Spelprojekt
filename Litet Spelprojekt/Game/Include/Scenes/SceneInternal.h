@@ -35,4 +35,5 @@ private:
 
 	static float s_WaveX;
 	static float s_WaveY;
+	static glm::vec2 s_IcebergPos;
 };

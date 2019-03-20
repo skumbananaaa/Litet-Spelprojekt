@@ -10,6 +10,5 @@ int main(int argc, char* argv[])
 	Application* pApp = new Editor();
 	int res = pApp->Run();
 	delete pApp;
-
 	return res;
 }

@@ -118,7 +118,7 @@ int32 GameObjectDoor::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin
 	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
 	centre.x += extension * glm::floor(centre.y / 2.0f);
 
-	float t = -1;
+	float t = -1.0f;
 
 	if (glm::floor(centre.y / 2) == glm::floor(elevation / 2) || extension > 0)
 	{
@@ -129,9 +129,9 @@ int32 GameObjectDoor::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin
 		};
 
 		float h[] = {
-			0.15,
-			1.0,
-			0.5
+			0.15f,
+			1.0f,
+			0.5f
 		};
 
 		float d1[] = {

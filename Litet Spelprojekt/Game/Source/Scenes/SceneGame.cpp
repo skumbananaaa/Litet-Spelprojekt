@@ -133,7 +133,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		Game* game = Game::GetGame();
 		Window* window = &game->GetWindow();
 		game->GetGUIManager().DeleteChildren();
-		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800) / 2, (window->GetHeight() - 800) / 2, 800, 800, !GameState::HasCompletedScenarios());
+		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800.0f) / 2.0f, (window->GetHeight() - 800.0f) / 2.0f, 800.0f, 800.0f, m_Lost);
 		game->GetGUIManager().Add(m_pUIEndScreen);
 	}
 
@@ -141,7 +141,8 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	{
 		ReplayHandler::Update(dtS, this);
 
-		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH || GameState::HasCompletedScenarios())
+		m_Lost = (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE || GameState::GetBurningAmount() > MAX_SHIPDAMAGE || GameState::GetCrewHealth() < MIN_CREWHEALTH);
+		if (m_Lost || GameState::HasCompletedScenarios())
 		{
 			m_IsGameOver = true;
 		}
@@ -435,7 +436,7 @@ void SceneGame::CreateAudio() noexcept
 {
 	AudioListener::SetPosition(glm::vec3(0.0f));
 	m_pAudioSourceBackground = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
-	m_pAudioSourceBackground->SetVolume(0.4);
+	m_pAudioSourceBackground->SetVolume(0.4f);
 	m_pAudioSourceBackground->SetPitch(1.0f);
 	m_pAudioSourceBackground->SetLooping(true);
 	m_pAudioSourceBackground->Play();
@@ -689,15 +690,15 @@ GameObject* SceneGame::RayTestGameObjects()
 	glm::vec3 rayOrigin = GetCamera().GetPosition();
 	float elevation = GetCamera().GetLookAt().y;
 
-	float lastT = -1;
-	uint32 id = -1;
+	float lastT = -1.0f;
+	uint32 id = (uint32)-1;
 
-	for (int i = 0; i < (int32)m_PickableGameObjects.size(); i++)
+	for (uint32 i = 0; i < (uint32)m_PickableGameObjects.size(); i++)
 	{
 		int32 t = m_PickableGameObjects[i]->TestAgainstRay(rayDir, rayOrigin, elevation, GetExtension());
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{
-			lastT = t;
+			lastT = (float)t;
 			id = i;
 		}
 	}

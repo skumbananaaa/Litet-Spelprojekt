@@ -34,6 +34,18 @@ void UICrewMember::SetCrewMember(const Crewmember* crewmember)
 	}
 }
 
+void UICrewMember::SetVisible(bool visible) noexcept
+{
+	if (m_Crewmember && visible)
+	{
+		Panel::SetVisible(true);
+	}
+	else
+	{
+		Panel::SetVisible(false);
+	}
+}
+
 void UICrewMember::OnRender(GUIContext* context)
 {
 	Panel::OnRender(context);
@@ -73,7 +85,7 @@ void UICrewMember::OnRender(GUIContext* context)
 		case MEDIC: texture = TEXTURE::ICON_SKILL_MEDIC; break;
 		default: texture = TEXTURE::ICON_SKILL_STRENGTH; break;
 		}
-		context->RenderTexture(ResourceHandler::GetTexture2D(texture), injuriesOffset + xOffset, 85.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(texture), (float)(injuriesOffset + xOffset), 85.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
 	}
 }
 

@@ -418,9 +418,9 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 		};
 
 		float h[] = {
-			0.15,
-			0.9,
-			0.25
+			0.15f,
+			0.9f,
+			0.25f
 		};
 
 		float d1[] = {
@@ -610,7 +610,7 @@ void Crewmember::RequestReportPosition() noexcept
 	if (m_pUISelectedCrew && m_pUISelectedCrew->GetPercentage() >= 1.0f)
 	{
 		m_pUISelectedCrew->SetPercentage(0.0f);
-		m_pUISelectedCrew->StartAnimation(Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
+		m_pUISelectedCrew->StartAnimation((float)Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
 	}
 }
 

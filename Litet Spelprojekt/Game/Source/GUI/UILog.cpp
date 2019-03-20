@@ -1,5 +1,6 @@
 #include "..\..\Include\GUI\UILog.h"
 #include "../../Include/Game.h"
+#include <Audio/Sources/AudioSource.h>
 
 UILog::UILog(float x, float y, float width, float height) : Panel(x, y, width, height), m_Extend(false)
 {
@@ -13,11 +14,17 @@ UILog::UILog(float x, float y, float width, float height) : Panel(x, y, width, h
 	Add(m_pTextViewLog);
 	Add(m_ListScrollableLog);
 	m_DefaultX = x + width - m_pTextViewLog->GetHeight();
+
+	m_pAudioSourceSelect = AudioSource::CreateSoundSource(SOUND::UI_SELECT);
+	m_pAudioSourceSelect->SetRollOffFactor(10.0f);
+	m_pAudioSourceSelect->SetReferenceDistance(0.0f);
+	m_pAudioSourceSelect->SetMaxDistance(500.0f);
+	m_pAudioSourceSelect->SetLooping(false);
 }
 
 UILog::~UILog()
 {
-
+	DeleteSafe(m_pAudioSourceSelect);
 }
 
 void UILog::OnLogged(const std::string& time, const std::string& text) noexcept
@@ -27,7 +34,12 @@ void UILog::OnLogged(const std::string& time, const std::string& text) noexcept
 	textView->SetBackgroundColor(color);
 	m_ListScrollableLog->Add(textView);
 
-	Game::GetGame()->m_pSceneGame->GetUINotification()->CreateNotification(text);
+	if (!m_Extend)
+	{
+		Game::GetGame()->m_pSceneGame->GetUINotification()->CreateNotification(text);
+	}
+
+	m_pAudioSourceSelect->Play();
 }
 
 void UILog::OnUpdate(float dtS)

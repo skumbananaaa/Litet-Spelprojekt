@@ -10,6 +10,7 @@ public:
 	virtual ~UICrewMember();
 
 	void SetCrewMember(const Crewmember* crewmember);
+	virtual void SetVisible(bool visible) noexcept override;
 
 protected:
 	virtual void OnRender(GUIContext* context) override;

@@ -47,7 +47,7 @@ float GameState::GetCrewHealth()
 
 bool GameState::HasCompletedScenarios()
 {
-	return s_NumScenariosCompleted >= s_NumScenariosSelected;
+	return ((s_NumScenariosCompleted >= s_NumScenariosSelected) && (0 < s_NumScenariosSelected));
 }
 
 void GameState::SetNumScenariosSelected(uint32 numScenearios)

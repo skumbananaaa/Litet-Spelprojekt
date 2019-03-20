@@ -10,4 +10,5 @@ public:
 
 	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
 	virtual bool IsDeleteable() const noexcept override { return true; }
+	virtual void DestroyUserData(void*& userData) noexcept;
 };

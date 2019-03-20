@@ -13,3 +13,10 @@ void ReplayablePosition::BeginReplay(SceneGame* pScene, void* userData) noexcept
 	Crewmember* pCrewMember = pScene->GetCrewmember(pair->second);
 	pCrewMember->SetPosition(pair->first);
 }
+
+void ReplayablePosition::DestroyUserData(void*& userData) noexcept
+{
+	std::pair<glm::vec3, uint32>* pair = reinterpret_cast<std::pair<glm::vec3, uint32>*>(userData);
+	DeleteSafe(pair);
+	userData = pair;
+}

@@ -14,13 +14,13 @@ void ReplayHandler::Reset() noexcept
 	{
 		if (std::get<0>(s_ReplayQueue[i]) != nullptr)
 		{
+			std::get<0>(s_ReplayQueue[i])->DestroyUserData(std::get<1>(s_ReplayQueue[i]));
+
 			if (std::get<0>(s_ReplayQueue[i])->IsDeleteable())
 			{
 				DeleteSafe(std::get<0>(s_ReplayQueue[i]));
 			}
 		}
-
-		DeleteSafe(std::get<1>(s_ReplayQueue[i]));
 	}
 
 	s_ReplayQueue.clear();

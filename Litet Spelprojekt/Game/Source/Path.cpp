@@ -154,10 +154,10 @@ Path::~Path()
 	}
 	DeleteArrSafe(m_pppTiles);
 
-	DeleteSafe(m_pPath);
-	DeleteSafe(m_pOpenList);
-	DeleteSafe(m_pppMap);
-	DeleteSafe(m_pSize);
+	DeleteArrSafe(m_pPath);
+	DeleteArrSafe(m_pOpenList);
+	DeleteArrSafe(m_pppMap);
+	DeleteArrSafe(m_pSize);
 }
 
 glm::ivec3* Path::FindPath(const glm::ivec3& start, const glm::ivec3& goal)

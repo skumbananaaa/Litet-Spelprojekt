@@ -85,9 +85,9 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
 	bool allFireInRoomExtinguished = true;
 
-	for (uint32 x = 0; x < levelSizeX; x++)
+	for (int32 x = 0; x < levelSizeX; x++)
 	{
-		for (uint32 z = 0; z < levelSizeZ; z++)
+		for (int32 z = 0; z < levelSizeZ; z++)
 		{
 			TileData& tile = ppLevelData[x][z];
 
@@ -100,22 +100,6 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 					if (glm::length2(toVector) < SPRINKLER_RADIUS_SQRD)
 					{
 						tile.Temp = 30.0f;
-					}
-				}
-
-				for (uint32 i = 0; i < tile.GameObjects.size(); i++)
-				{
-					if (dynamic_cast <FireAlarm*>(tile.GameObjects[i]))
-					{
-						FireAlarm* pFireAlarm = (FireAlarm*)tile.GameObjects[i];
-
-						if (pFireAlarm != nullptr)
-						{
-							if (pFireAlarm->HasDetectedSmoke())
-							{
-								pFireAlarm->TurnOff();
-							}
-						}
 					}
 				}
 			}

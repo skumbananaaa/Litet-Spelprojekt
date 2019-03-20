@@ -90,7 +90,6 @@ bool ScenarioManager::StartScenario(int32 index) noexcept
 	{
 		if (index == s_NonActiveScenarios[i])
 		{
-			Logger::LogEvent("Scenario [" + s_Scenarios[index]->GetName() + "] startade!");
 			s_Scenarios[index]->OnStart(Game::GetGame()->m_pSceneGame);
 			s_ActiveScenarios.push_back(index);
 			s_NonActiveScenarios.erase(s_NonActiveScenarios.begin() + i);
@@ -106,7 +105,6 @@ bool ScenarioManager::StartScenario(IScenario* pScenario) noexcept
 	{
 		if (pScenario == s_Scenarios[s_NonActiveScenarios[i]])
 		{
-			Logger::LogEvent("Scenario [" + pScenario->GetName() + "] startade!");
 			pScenario->OnStart(Game::GetGame()->m_pSceneGame);
 			s_ActiveScenarios.push_back(s_NonActiveScenarios[i]);
 			s_NonActiveScenarios.erase(s_NonActiveScenarios.begin() + i);
@@ -122,7 +120,9 @@ void ScenarioManager::Escalate(int32 index, const glm::ivec3& position, float se
 	{
 		if (StartScenario(index))
 		{
+
 			s_Scenarios[index]->Escalate(position, severity);
+			Logger::LogEvent("Scenario [" + s_Scenarios[index]->GetName() + "] utbröt!");
 		}
 		else
 		{
@@ -131,6 +131,7 @@ void ScenarioManager::Escalate(int32 index, const glm::ivec3& position, float se
 				if (index == s_ActiveScenarios[i])
 				{
 					s_Scenarios[index]->Escalate(position, severity);
+					Logger::LogEvent("Scenario [" + s_Scenarios[index]->GetName() + "] utbröt!");
 					return;
 				}
 			}

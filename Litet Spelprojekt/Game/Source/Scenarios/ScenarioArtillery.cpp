@@ -26,6 +26,13 @@ void ScenarioArtillery::BeginReplay(SceneGame* pScene, void* userData) noexcept
 	ScenarioManager::StartScenario(this);
 }
 
+void ScenarioArtillery::DestroyUserData(void *& userData) noexcept
+{
+	std::pair<glm::vec3, uint32>* pair = reinterpret_cast<std::pair<glm::vec3, uint32>*>(userData);
+	DeleteSafe(pair);
+	userData = pair;
+}
+
 void ScenarioArtillery::Init(World* pWorld) noexcept
 {
 	SetTimeOfNextOutBreak(1.0f);

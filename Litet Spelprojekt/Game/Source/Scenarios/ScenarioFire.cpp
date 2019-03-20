@@ -21,6 +21,13 @@ void ScenarioFire::BeginReplay(SceneGame* pScene, void* userData) noexcept
 	ScenarioManager::StartScenario(this);
 }
 
+void ScenarioFire::DestroyUserData(void *& userData) noexcept
+{
+	glm::ivec3* position = reinterpret_cast<glm::ivec3*>(userData);
+	DeleteSafe(position);
+	userData = position;
+}
+
 void ScenarioFire::Init(World* pWorld) noexcept
 {
 	m_pWorld = pWorld;
@@ -286,22 +293,6 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		m_Smoke.erase(std::remove(m_Smoke.begin(), m_Smoke.end(), toRemoveSmokeIDs[i]), m_Smoke.end());
 
 		TileData& lowerTileData = m_pWorld->GetLevel(toRemoveSmokeIDs[i].y - 1).GetLevelData()[toRemoveSmokeIDs[i].x][toRemoveSmokeIDs[i].z];
-
-		for (uint32 j = lowerTileData.NrOfBaseGameObjects; j < lowerTileData.GameObjects.size(); j++)
-		{
-			if (dynamic_cast <FireAlarm*>(lowerTileData.GameObjects[j]))
-			{
-				FireAlarm* pFireAlarm = (FireAlarm*)lowerTileData.GameObjects[j];
-
-				if (pFireAlarm != nullptr)
-				{
-					if (pFireAlarm->HasDetectedSmoke())
-					{
-						pFireAlarm->TurnOff();
-					}
-				}
-			}
-		}
 	}
 
 	toRemoveOnFireIDs.clear();

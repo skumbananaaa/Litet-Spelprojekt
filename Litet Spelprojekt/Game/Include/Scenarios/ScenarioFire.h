@@ -8,7 +8,7 @@
 
 constexpr float WATER_EVAPORATION_BY_FIRE_RATE = 1.0f / 10000.0f;
 constexpr float SMOKE_DISSOLVE_RATE = 20.0f;
-constexpr float SMOKE_CREATION_RATE = 2.30f;
+constexpr float SMOKE_CREATION_RATE = 10.0f;
 constexpr float RATE_OF_SMOKE_SPREAD = 0.9f;
 
 class ScenarioFire : public IScenario
@@ -18,6 +18,7 @@ public:
 	virtual ~ScenarioFire();
 
 	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+	virtual void DestroyUserData(void*& userData) noexcept;
 
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void Release() noexcept override;

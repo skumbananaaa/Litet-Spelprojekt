@@ -46,6 +46,8 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 {
 	GameObject::Update(camera, dt);
 
+	bool allFireInRoomExtinguished = true;
+
 	if (m_pSpotlight)
 	{
 		glm::mat4 transformObject(1.0f);
@@ -59,6 +61,39 @@ void FireAlarm::Update(const Camera& camera, float dt) noexcept
 
 		m_Rotation += dt * 10;
 		m_pSpotlight->SetDirection(glm::vec3(dir.x, dir.y, dir.z));
+
+		glm::ivec3 tilePos = GetTile();
+
+		WorldLevel& worldLevel = m_pWorld->GetLevel(tilePos.y + 1);
+		uint32 levelSizeX = worldLevel.GetSizeX();
+		uint32 levelSizeZ = worldLevel.GetSizeZ();
+
+		const uint32* const * ppLevel = worldLevel.GetLevel();
+		TileData* const * ppLevelData = worldLevel.GetLevelData();
+
+		uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
+		bool allSmokeInRoomGone = true;
+
+		for (uint32 x = 0; x < levelSizeX; x++)
+		{
+			for (uint32 z = 0; z < levelSizeZ; z++)
+			{
+				TileData& tile = ppLevelData[x][z];
+
+				if (currentRoomIndex == ppLevel[x][z])
+				{
+					if (tile.SmokeAmount > tile.SmokeLimit)
+					{
+						allSmokeInRoomGone = false;
+					}
+				}
+			}
+		}
+
+		if (allSmokeInRoomGone)
+		{
+			TurnOff();
+		}
 	}
 }
 
@@ -73,11 +108,7 @@ void FireAlarm::OnSmokeDetected() noexcept
 	TileData* const * ppLevelData = worldLevel.GetLevelData();
 
 	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
-	if (!m_pSpotlight)
-	{
-		Logger::LogEvent("Brandvarnare i " + m_pWorld->GetNameFromGlobal(currentRoomIndex) + " utlöste!", true);
-	}
-
+	
 	glm::mat4 transformObject(1.0f);
 	const glm::vec4& rotation = GetRotation();
 	transformObject = glm::rotate(transformObject, rotation.w, glm::vec3(rotation.x, rotation.y, rotation.z));
@@ -85,7 +116,11 @@ void FireAlarm::OnSmokeDetected() noexcept
 	glm::vec4 pos = transformObject * glm::vec4(0, 0, 0, 1);
 	pos += glm::vec4(GetPosition(), 1);
 
-	m_pSpotlight = LightManager::AcquireSpotlight(pos, glm::cos(glm::radians(20.5f)), glm::cos(glm::radians(40.5f)), glm::vec3(1, 0, 0), glm::vec4(1.0, 0.25, 0.0, 1.0));
+	if (!m_pSpotlight)
+	{
+		Logger::LogEvent("Brandvarnare i " + m_pWorld->GetNameFromGlobal(currentRoomIndex) + " utlöste!", true);
+		m_pSpotlight = LightManager::AcquireSpotlight(pos, glm::cos(glm::radians(20.5f)), glm::cos(glm::radians(40.5f)), glm::vec3(1, 0, 0), glm::vec4(1.0, 0.25, 0.0, 1.0));
+	}
 
 	m_Rotation = 0;
 	m_pAudioSrc->Play();

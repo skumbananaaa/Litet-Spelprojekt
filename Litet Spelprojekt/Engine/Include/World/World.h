@@ -231,7 +231,7 @@ inline glm::ivec3 World::GetRandomTileInClosestRoomInInterval(uint32 startInterv
 	{
 		const Room& room = m_Rooms[roomIndex];
 		const std::vector<glm::ivec3>& roomTiles = room.GetRoomTiles();
-		uint32 randomTile = Random::GenerateInt(0, roomTiles.size() - 1);
+		uint32 randomTile = Random::GenerateInt(0, (int32)roomTiles.size() - 1);
 		return roomTiles[randomTile];
 	}
 
@@ -242,7 +242,7 @@ inline glm::ivec3 World::GetRandomTileInRoom(uint32 roomIndex) const noexcept
 {
 	const Room& room = m_Rooms[roomIndex];
 	const std::vector<glm::ivec3>& roomTiles = room.GetRoomTiles();
-	uint32 randomTile = Random::GenerateInt(0, roomTiles.size() - 1);
+	uint32 randomTile = Random::GenerateInt(0, (int32)roomTiles.size() - 1);
 	return roomTiles[randomTile];
 }
 

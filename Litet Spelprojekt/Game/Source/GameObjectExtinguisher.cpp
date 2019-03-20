@@ -152,9 +152,9 @@ void GameObjectExtinguisher::OnPicked(const std::vector<int32>& selectedMembers,
 {
 	std::cout << "I am a picked FIRE EXTINGUISHER!" << std::endl;
 
-	AddChoice("Plocka upp", reinterpret_cast<void*>(true));
+	/*AddChoice("Plocka upp", reinterpret_cast<void*>(true));
 
-	DisplayOrders(x, y, selectedMembers);
+	DisplayOrders(x, y, selectedMembers);*/
 }
 
 void GameObjectExtinguisher::OnAddedToScene(Scene* scene) noexcept
@@ -164,7 +164,7 @@ void GameObjectExtinguisher::OnAddedToScene(Scene* scene) noexcept
 
 void GameObjectExtinguisher::OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept
 {
-	Crew* crew = Game::GetGame()->m_pSceneGame->GetCrew();
+	/*Crew* crew = Game::GetGame()->m_pSceneGame->GetCrew();
 	float shortDistance = FLT_MAX;
 	int32 shipID = -1;
 	for (int i = 0; i < selectedMembers.size(); i++)
@@ -182,5 +182,5 @@ void GameObjectExtinguisher::OnOrderChosen(const std::string& name, void* userDa
 		const glm::ivec3& tile = GetTile();
 		Crewmember* crewmember = crew->GetMember(shipID);
 		crewmember->GiveOrder(new OrderWalk(tile));
-	}
+	}*/
 }

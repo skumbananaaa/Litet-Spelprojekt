@@ -18,7 +18,7 @@
 float g_Rot = 1.0;
 
 Game::Game() noexcept
-	: Application(false, 1920, 1000, "", true),
+	: Application(true, 1920, 1080, "", true),
 	m_pSceneNext(nullptr),
 	m_pScene(nullptr),
 	m_pRenderer(nullptr),
@@ -49,7 +49,7 @@ Game::Game() noexcept
 
 	m_ScenarioMissile	= ScenarioManager::RegisterScenario(new ScenarioArtillery(2));
 	m_ScenarioTorpedo	= ScenarioManager::RegisterScenario(new ScenarioIceberg(3));
-	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(true));
+	m_ScenarioFire		= ScenarioManager::RegisterScenario(new ScenarioFire(false));
 	m_ScenarioWater		= ScenarioManager::RegisterScenario(new ScenarioWater(false));
 
 	SetScene(m_pSceneLoading);
@@ -72,7 +72,7 @@ Game::~Game()
 	ScenarioManager::Release();
 }
 
-GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
+GameObject* Game::CreateGameObject(uint32 gameobject) noexcept
 {
 	if (gameobject == GAMEOBJECT::FIREALARM)
 	{

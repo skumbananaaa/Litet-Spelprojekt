@@ -291,6 +291,15 @@ void Scene::RemoveGameObject(GameObject* pGameObject) noexcept
 		//std::sort(m_UpdateAbles.begin(), m_UpdateAbles.end());
 	}
 
+	for (int i = 0; i < m_PickableGameObjects.size(); i++)
+	{
+		if (m_PickableGameObjects[i] == pGameObject)
+		{
+			m_PickableGameObjects.erase(m_PickableGameObjects.begin() + i);
+			break;
+		}
+	}
+
 	ParticleEmitter* pEmitter = dynamic_cast<ParticleEmitter*>(pGameObject);
 	if (pEmitter != nullptr)
 	{

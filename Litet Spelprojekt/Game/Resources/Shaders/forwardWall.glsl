@@ -120,7 +120,7 @@ void main()
 	}
 
 	//CLIPPING
-	gl_ClipDistance[0] = cutWalls;
+	gl_ClipDistance[0] = (g_InstanceModel[3].y < g_CameraLookAt.y) ? 0.0f : cutWalls;
 	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
 	gl_ClipDistance[2] = dot(worldPos, g_ClipPlane);
 

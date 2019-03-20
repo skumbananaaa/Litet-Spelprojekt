@@ -81,6 +81,7 @@ public:
 	void SetGearIsEquipped(bool value) noexcept;
 	void SetExtinguisherIsEquipped(bool value) noexcept;
 	void SetResting(bool value) noexcept;
+	void SetCarried(bool value) noexcept;
 	void ReportPosition() noexcept;
 	void RequestReportPosition() noexcept;
 	void ChangeTexture() noexcept;

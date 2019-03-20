@@ -185,7 +185,7 @@ void Crewmember::OnPicked(const std::vector<int32>& selectedMembers, int32 x, in
 		AddChoice("Assistera", (void*)this);
 		DisplayOrders(x, y, selectedMembers);
 	}
-	else
+	else if(!m_IsCarried)
 	{
 		SetIsPicked(!m_IsPicked);
 	}
@@ -599,6 +599,11 @@ void Crewmember::SetExtinguisherIsEquipped(bool value) noexcept
 void Crewmember::SetResting(bool value) noexcept
 {
 	m_Resting = value;
+}
+
+void Crewmember::SetCarried(bool value) noexcept
+{
+	m_IsCarried = value;
 }
 
 void Crewmember::ReportPosition() noexcept

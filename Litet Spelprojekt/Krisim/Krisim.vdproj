@@ -357,12 +357,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3D61010485C8DB3C1090C30FB76B19A6"
-        "OwnerKey" = "8:_92F5F8DA8BA44302862B1BF8698DF94C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_3D67D96D1B0D413992199C53EE196A56"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -383,12 +377,6 @@
         {
         "MsmKey" = "8:_41C7296D49EF430BA56811D8E328E813"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4277CB3A36E08EA15CE0AC7B63F02C9B"
-        "OwnerKey" = "8:_92F5F8DA8BA44302862B1BF8698DF94C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -503,12 +491,6 @@
         {
         "MsmKey" = "8:_5E7DBEC3A6CB4FCDA3D5350E0B3C07EF"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_614A95FDB46014047E2F85B8EA383319"
-        "OwnerKey" = "8:_92F5F8DA8BA44302862B1BF8698DF94C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -777,12 +759,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8F6A341F43E7562BC9A2BF86FA8948DA"
-        "OwnerKey" = "8:_92F5F8DA8BA44302862B1BF8698DF94C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_9147E35288B341F49BECC0B2D5988946"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -921,12 +897,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A5AC257B99B3239199E74C4AA77BF035"
-        "OwnerKey" = "8:_92F5F8DA8BA44302862B1BF8698DF94C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A6F90502BF8F4961A736EADAA80532E1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -989,12 +959,6 @@
         {
         "MsmKey" = "8:_AFA3183B051A47B28A2BDB2DCCA26252"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_AFFA97A6A9521C6AB7E315B68BEE663F"
-        "OwnerKey" = "8:_92F5F8DA8BA44302862B1BF8698DF94C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1065,6 +1029,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C0204D4790DD46C191A169F241B1DC67"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C157EB97240F400283DD866FF72E30B3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1109,12 +1079,6 @@
         {
         "MsmKey" = "8:_CB13C06472D349AA8F143D842CCBDB14"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_CB8E23D3CDA5CEC7F9FF95A926E67726"
-        "OwnerKey" = "8:_92F5F8DA8BA44302862B1BF8698DF94C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2632,26 +2596,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3D61010485C8DB3C1090C30FB76B19A6"
-            {
-            "SourcePath" = "8:api-ms-win-crt-runtime-l1-1-0.dll"
-            "TargetName" = "8:api-ms-win-crt-runtime-l1-1-0.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3D67D96D1B0D413992199C53EE196A56"
             {
             "SourcePath" = "8:..\\Game\\Resources\\Textures\\uv_Sprinkler.png"
@@ -2730,26 +2674,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4277CB3A36E08EA15CE0AC7B63F02C9B"
-            {
-            "SourcePath" = "8:api-ms-win-crt-locale-l1-1-0.dll"
-            "TargetName" = "8:api-ms-win-crt-locale-l1-1-0.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_43801C198EE644A0829883C728EA396F"
@@ -3130,26 +3054,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_614A95FDB46014047E2F85B8EA383319"
-            {
-            "SourcePath" = "8:api-ms-win-crt-heap-l1-1-0.dll"
-            "TargetName" = "8:api-ms-win-crt-heap-l1-1-0.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_61FAB0D6976649E7A708E581A9FCB25C"
@@ -4032,26 +3936,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8F6A341F43E7562BC9A2BF86FA8948DA"
-            {
-            "SourcePath" = "8:api-ms-win-crt-stdio-l1-1-0.dll"
-            "TargetName" = "8:api-ms-win-crt-stdio-l1-1-0.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9147E35288B341F49BECC0B2D5988946"
             {
             "SourcePath" = "8:..\\Game\\Resources\\Textures\\machineFloorTexture1.png"
@@ -4492,26 +4376,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5AC257B99B3239199E74C4AA77BF035"
-            {
-            "SourcePath" = "8:api-ms-win-crt-math-l1-1-0.dll"
-            "TargetName" = "8:api-ms-win-crt-math-l1-1-0.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A6F90502BF8F4961A736EADAA80532E1"
             {
             "SourcePath" = "8:..\\Game\\Resources\\Textures\\SkyBoxTextures\\ocean.hdr"
@@ -4730,26 +4594,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AFFA97A6A9521C6AB7E315B68BEE663F"
-            {
-            "SourcePath" = "8:VCRUNTIME140.dll"
-            "TargetName" = "8:VCRUNTIME140.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B31FDD8B0633414BA02898D21AEC02D4"
@@ -4972,6 +4816,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C0204D4790DD46C191A169F241B1DC67"
+            {
+            "SourcePath" = "8:..\\Game\\world.json"
+            "TargetName" = "8:world.json"
+            "Tag" = "8:"
+            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C157EB97240F400283DD866FF72E30B3"
             {
             "SourcePath" = "8:..\\Game\\Resources\\Textures\\waterLPDisplacementMap.jpg"
@@ -5130,26 +4994,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CB8E23D3CDA5CEC7F9FF95A926E67726"
-            {
-            "SourcePath" = "8:MSVCP140.dll"
-            "TargetName" = "8:MSVCP140.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_6ED6E351CBBC45129018F65EC669D711"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CBACA333453046C392FFBFE469C9019F"
@@ -6361,7 +6205,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Krisim"
         "ProductCode" = "8:{0BD86C84-9EA9-4C2A-B888-BD47CF687492}"
-        "PackageCode" = "8:{46DAE7BB-3521-4571-926F-B8AB74AE6409}"
+        "PackageCode" = "8:{D2F5F5A3-D975-4BD4-B586-8740B26F02F6}"
         "UpgradeCode" = "8:{81864DDD-BFC0-4DE8-B5C6-FC16949C908B}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"

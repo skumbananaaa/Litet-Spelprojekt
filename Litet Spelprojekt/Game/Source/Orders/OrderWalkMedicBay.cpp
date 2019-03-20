@@ -48,6 +48,7 @@ void OrderWalkMedicBay::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMemb
 	if (assisted)
 	{
 		assisted->SetResting(true);
+		assisted->SetCarried(false);
 		pCrewmember->SetAssisting(nullptr);
 		Logger::LogEvent(pCrewmember->GetName() + " bar " + assisted->GetName() + " till sjukstugan!", true);
 	}

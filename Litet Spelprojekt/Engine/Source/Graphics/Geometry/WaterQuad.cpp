@@ -99,20 +99,17 @@ WaterQuad* WaterQuad::CreateWaterQuad(const glm::vec2& pos, const glm::vec2& cen
 	{
 		for (float col = colStart; col < colEnd; col += scale)
 		{
-			//if (row < minHoleCoords.x || row > maxHoleCoords.x || col < minHoleCoords.y || col > maxHoleCoords.y)
-			{
-				StoreGridSquare(col, row, scale, vertices);
-			}
+			StoreGridSquare(col, row, scale, vertices);
 		}
 	}
 
-	WaterVertex* arrVertices = new WaterVertex[numVertices];
-	memcpy(arrVertices, vertices.data(), sizeof(WaterVertex) * numVertices);
+	WaterVertex* arrVertices = new WaterVertex[vertices.size()];
+	memcpy(arrVertices, vertices.data(), sizeof(WaterVertex) * vertices.size());
 
-	uint32* arrIndices = new uint32[numVertices];
-	for (uint32 i = 0; i < numVertices; i++) { arrIndices[i] = i; }
+	uint32* arrIndices = new uint32[vertices.size()];
+	for (uint32 i = 0; i < vertices.size(); i++) { arrIndices[i] = i; }
 
-	return new WaterQuad(arrVertices, arrIndices, numVertices, numVertices);
+	return new WaterQuad(arrVertices, arrIndices, vertices.size(), vertices.size());
 }
 
 void WaterQuad::StoreGridSquare(float col, float row, float scale, std::vector<WaterVertex>& vertices) noexcept
@@ -136,27 +133,35 @@ void WaterQuad::StoreTriangle(glm::vec2 cornerPositions[4], std::vector<WaterVer
 	int index0 = left ? 0 : 2;
 	int index1 = 1;
 	int index2 = left ? 2 : 3;
-	WaterVertex vertex = {};
+	WaterVertex vertex0 = {};
+	WaterVertex vertex1 = {};
+	WaterVertex vertex2 = {};
 
 	//Vertex 0
 	{
-		vertex.Position = cornerPositions[index0];
-		vertex.Indicators = GetIndicators(index0, cornerPositions, index1, index2);
-		vertices.push_back(vertex);
+		vertex0.Position = cornerPositions[index0];
+		vertex0.Indicators = GetIndicators(index0, cornerPositions, index1, index2);
 	}
 
 	//Vertex 1
 	{
-		vertex.Position = cornerPositions[index1];
-		vertex.Indicators = GetIndicators(index1, cornerPositions, index2, index0);
-		vertices.push_back(vertex);
+		vertex1.Position = cornerPositions[index1];
+		vertex1.Indicators = GetIndicators(index1, cornerPositions, index2, index0);
 	}
 
 	//Vertex 2
 	{
-		vertex.Position = cornerPositions[index2];
-		vertex.Indicators = GetIndicators(index2, cornerPositions, index0, index1);
-		vertices.push_back(vertex);
+		vertex2.Position = cornerPositions[index2];
+		vertex2.Indicators = GetIndicators(index2, cornerPositions, index0, index1);
+	}
+
+	glm::vec2 center = (vertex0.Position + vertex1.Position + vertex2.Position) / 3.0f;
+
+	if (!(center.x > 1 && center.y > 1 && center.x < 3 && center.y < 3) && !(center.x < 10 && center.y < 40 && center.x > 8 && center.y > 38))
+	{
+		vertices.push_back(vertex0);
+		vertices.push_back(vertex1);
+		vertices.push_back(vertex2);
 	}
 }
 
@@ -167,5 +172,12 @@ glm::vec4 WaterQuad::GetIndicators(uint32 currentVertex, glm::vec2 cornerPositio
 	glm::vec2 vertex1Pos = cornerPositions[vertex1];
 	glm::vec2 offset0 = vertex0Pos - currentVertexPos;
 	glm::vec2 offset1 = vertex1Pos - currentVertexPos;
+	return glm::vec4(offset0.x, offset0.y, offset1.x, offset1.y);
+}
+
+glm::vec4 WaterQuad::GetIndicators(const glm::vec2& currentPosition, const glm::vec2& v0Position, const glm::vec2& v1Position) noexcept
+{
+	glm::vec2 offset0 = v0Position - currentPosition;
+	glm::vec2 offset1 = v1Position - currentPosition;
 	return glm::vec4(offset0.x, offset0.y, offset1.x, offset1.y);
 }

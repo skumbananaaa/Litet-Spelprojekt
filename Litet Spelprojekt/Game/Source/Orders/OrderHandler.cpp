@@ -71,7 +71,7 @@ void OrderHandler::Reset() noexcept
 {
 	for (int i = 0; i < NUM_CREW; i++)
 	{
-		for (int j = 0; j < s_OrderCopies[i].size(); j++)
+		for (int j = 0; j < (int32)s_OrderCopies[i].size(); j++)
 		{
 			DeleteSafe(s_OrderCopies[i][j]);
 		}
@@ -81,7 +81,7 @@ void OrderHandler::Reset() noexcept
 
 void OrderHandler::ForceOrder(SceneGame* pScene, void* userData, IOrder* order) noexcept
 {
-	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_OrderQueue.size() - 1; i >= 0; i--)
 	{
 		m_OrderQueue[i]->m_IsAborted = true;
 		DeleteOrder(m_OrderQueue[i]);
@@ -95,7 +95,7 @@ void OrderHandler::ForceOrder(SceneGame* pScene, void* userData, IOrder* order) 
 
 void OrderHandler::ForceOrderInbreed(IOrder* pOrder) noexcept
 {
-	for (int i = m_OrderQueue.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_OrderQueue.size() - 1; i >= 0; i--)
 	{
 		m_OrderQueue[i]->m_IsAborted = true;
 		DeleteOrder(m_OrderQueue[i]);

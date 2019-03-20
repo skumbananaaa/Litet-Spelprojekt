@@ -41,11 +41,11 @@ void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pPanel = new Panel((window->GetWidth() - 600) / 2, (window->GetHeight() - 600) / 2, 600, 600);
-	m_pButtonBack = new Button(0, m_pPanel->GetHeight() - 50, 100, 50, "Tillbaka");
-	m_pButtonStart = new Button(m_pPanel->GetWidth() - m_pButtonBack->GetWidth(), m_pPanel->GetHeight() - 50, 100, 50, "Nästa");
-	m_pTextViewTitle = new TextView(0, m_pPanel->GetHeight() - 50, m_pPanel->GetWidth(), 50, "Välj Scenarion", true);
-	m_pListScrollable = new ListScrollable(0, 0, m_pPanel->GetWidth(), m_pPanel->GetHeight() - m_pButtonBack->GetHeight());
+	m_pPanel = new Panel((window->GetWidth() - 600.0f) / 2.0f, (window->GetHeight() - 600.0f) / 2.0f, 600.0f, 600.0f);
+	m_pButtonBack = new Button(0.0f, m_pPanel->GetHeight() - 50.0f, 100.0f, 50.0f, "Tillbaka");
+	m_pButtonStart = new Button(m_pPanel->GetWidth() - m_pButtonBack->GetWidth(), m_pPanel->GetHeight() - 50.0f, 100.0f, 50.0f, "Nästa");
+	m_pTextViewTitle = new TextView(0.0f, m_pPanel->GetHeight() - 50.0f, m_pPanel->GetWidth(), 50.0f, "Välj Scenarion", true);
+	m_pListScrollable = new ListScrollable(0.0f, 0.0f, m_pPanel->GetWidth(), m_pPanel->GetHeight() - m_pButtonBack->GetHeight());
 
 	m_pButtonBack->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	m_pButtonStart->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
@@ -66,8 +66,8 @@ void SceneScenario::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) 
 	const std::vector<IScenario*>& scenarios = ScenarioManager::GetScenarios();
 	for (int i = 0; i < scenarios.size(); i++)
 	{
-		Button* button = new Button(0, 0, m_pListScrollable->GetWidth() - 20, 100, scenarios[i]->GetName());
-		button->SetMargin(10, 5, 10, 5);
+		Button* button = new Button(0.0f, 0.0f, m_pListScrollable->GetWidth() - 20.0f, 100.0f, scenarios[i]->GetName());
+		button->SetMargin(10.0f, 5.0f, 10.0f, 5.0f);
 		button->SetSelected(true);
 		button->SetUserData(reinterpret_cast<void*>((int64)i));
 		button->AddExternalRenderer(this);

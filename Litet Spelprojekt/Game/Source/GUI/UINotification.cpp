@@ -49,7 +49,7 @@ void UINotification::Update(float dtS) noexcept
 		pPanel->SetPosition(pPanel->GetX() + dtS * 500.0f, pPanel->GetY());
 		if (pPanel->GetX() > Game::GetGame()->GetWindow().GetWidth())
 		{
-			for (int j = m_Notifications.size() - 1; j >= 0; j--)
+			for (int j = (int32)m_Notifications.size() - 1; j >= 0; j--)
 			{
 				if (m_Notifications[j].first == pPanel)
 				{

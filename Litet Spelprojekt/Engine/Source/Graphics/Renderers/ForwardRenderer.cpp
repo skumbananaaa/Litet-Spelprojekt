@@ -136,6 +136,8 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 		}
 	}
 
+	SkyBoxPass(mainCamera, scene);
+
 	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
 	MainPass(mainCamera, scene, pWorld);
 
@@ -153,7 +155,7 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
 	ParticlePass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[6], GL_TIMESTAMP);
-	SkyBoxPass(mainCamera, scene);
+
 	glQueryCounter(m_pCurrentQuery->pQueries[7], GL_TIMESTAMP);
 
 	//Get query results

@@ -76,7 +76,7 @@ FontRenderer::FontRenderer(void* face)
 
 FontRenderer::~FontRenderer()
 {
-	delete m_pPerFrameUniform;
+	DeleteSafe(m_pPerFrameUniform);
 
 	int counter = 0;
 	for (FontRenderer* renderer : m_Fontrenderers)

@@ -4,6 +4,7 @@
 class OrderSchedule
 {
 	friend class OrderExtinguishFire;
+	friend class OrderWalk;
 public:
 	OrderSchedule() = delete;
 	~OrderSchedule() = delete;
@@ -29,4 +30,5 @@ private:
 	static std::vector<GameObject*> s_Chairs;
 	static std::vector<GameObject*> s_Ovens;
 	static std::vector<GameObject*> s_Extinguishers;
+	static std::vector<GameObject*> s_Stairs;
 };

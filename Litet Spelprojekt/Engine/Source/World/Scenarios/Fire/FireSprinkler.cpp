@@ -76,8 +76,8 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 	glm::ivec3 tilePos = GetTile();
 
 	WorldLevel& worldLevel = m_pWorld->GetLevel(tilePos.y);
-	uint32 levelSizeX = worldLevel.GetSizeX();
-	uint32 levelSizeZ = worldLevel.GetSizeZ();
+	int32 levelSizeX = (int32)worldLevel.GetSizeX();
+	int32 levelSizeZ = (int32)worldLevel.GetSizeZ();
 
 	const uint32* const * ppLevel = worldLevel.GetLevel();
 	TileData* const * ppLevelData = worldLevel.GetLevelData();

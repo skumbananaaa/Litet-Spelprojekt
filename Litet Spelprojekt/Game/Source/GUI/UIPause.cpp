@@ -1,5 +1,6 @@
 #include "..\..\Include\GUI\UIPause.h"
 #include "..\..\Include\Game.h"
+#include "../../Include/GUI/UIOptions.h"
 
 UIPause::UIPause(float x, float y, float width, float height) : Panel(x, y, width, height)
 {
@@ -9,21 +10,23 @@ UIPause::UIPause(float x, float y, float width, float height) : Panel(x, y, widt
 	m_pMenuPanel = new Panel((width - 600) / 2, (height - 600) / 2, 600, 600);
 	m_pTextViewTitle = new TextView(0, 600 - 50, 600, 50, "Pausad", true);
 	m_pButtonBack = new Button(0, 600 - 50, 100, 50, "Tillbaka");
-	m_pButtonTutorial = new Button(100, 600 - 160, 600 - 200, 100, "Tutorial");
-	m_pButtonExit = new Button(100, 600 - 270, 600 - 200, 100, "Avsluta");
+	m_pButtonTutorial = new Button(100, 600 - 175, 600 - 200, 100, "Tutorial");
+	m_pButtonOptions = new Button(100, 600 - 300, 600 - 200, 100, "Alternativ");
+	m_pButtonExit = new Button(100, 600 - 425, 600 - 200, 100, "Avsluta");
 
 	m_pMenuPanel->SetBorderColor(GUIContext::COLOR_BLACK);
 	m_pMenuPanel->SetBoderThickness(3);
 	
-	Add(m_pMenuPanel);
 	m_pMenuPanel->Add(m_pTextViewTitle);
 	m_pMenuPanel->Add(m_pButtonBack);
 	m_pMenuPanel->Add(m_pButtonTutorial);
+	m_pMenuPanel->Add(m_pButtonOptions);
 	m_pMenuPanel->Add(m_pButtonExit);
 
 	m_pButtonBack->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	m_pButtonBack->AddButtonListener(this);
 	m_pButtonTutorial->AddButtonListener(this);
+	m_pButtonOptions->AddButtonListener(this);
 	m_pButtonExit->AddButtonListener(this);
 
 	//Tutorial Panel
@@ -37,13 +40,35 @@ UIPause::UIPause(float x, float y, float width, float height) : Panel(x, y, widt
 	m_pButtonNext = new Button(width - 311, 45, 200, 100, "Nästa");
 	m_pButtonPrev = new Button(50, 45, 200, 100, "Tillbaka");
 
-	Add(m_pTutorialPanel);
 	m_pTutorialPanel->Add(m_pButtonNext);
 	m_pTutorialPanel->Add(m_pButtonPrev);
 
 	m_pButtonNext->AddButtonListener(this);
 	m_pButtonPrev->AddButtonListener(this);
 	m_pTutorialPanel->SetVisible(false);
+
+	//Options Panel
+	m_pOptionsPanel = new Panel((width - 600) / 2, (height - 600) / 2, 600, 600);
+	m_pTextViewTitleOptions = new TextView(0, 600 - 50, 600, 50, "Alternativ", true);
+	m_pButtonBackOptions = new Button(0, 600 - 50, 100, 50, "Tillbaka");
+	m_pUIOptions = new UIOptions(3, 3, m_pOptionsPanel->GetWidth() - 6, m_pButtonBackOptions->GetY() - 3);
+
+	m_pOptionsPanel->SetVisible(false);
+	m_pOptionsPanel->SetBorderColor(GUIContext::COLOR_BLACK);
+	m_pOptionsPanel->SetBoderThickness(3);
+
+	m_pButtonBackOptions->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
+	m_pButtonBackOptions->AddButtonListener(this);
+
+	m_pOptionsPanel->Add(m_pTextViewTitleOptions);
+	m_pOptionsPanel->Add(m_pButtonBackOptions);
+	m_pOptionsPanel->Add(m_pUIOptions);
+
+
+
+	Add(m_pTutorialPanel);
+	Add(m_pOptionsPanel);
+	Add(m_pMenuPanel);
 }
 
 UIPause::~UIPause()
@@ -67,13 +92,20 @@ void UIPause::OnButtonPressed(Button* button)
 		}
 		else if (button == m_pButtonTutorial)
 		{
+			m_pOptionsPanel->SetVisible(false);
 			m_pMenuPanel->SetVisible(false);
 			m_pTutorialPanel->SetVisible(true);
 			m_TutorialScreenIndex = 0;
 			m_pTutorialPanel->SetBackgroundTexture(ResourceHandler::GetTexture2D(m_TutorialScreens[0]));
 		}
+		else if (button == m_pButtonOptions)
+		{
+			m_pOptionsPanel->SetVisible(true);
+			m_pMenuPanel->SetVisible(false);
+			m_pTutorialPanel->SetVisible(false);
+		}
 	}
-	else
+	else if(m_pTutorialPanel->IsVisible())
 	{
 		if (button == m_pButtonPrev)
 		{
@@ -84,6 +116,7 @@ void UIPause::OnButtonPressed(Button* button)
 				std::cout << "Returning from tutorial" << std::endl;
 				m_pMenuPanel->SetVisible(true);
 				m_pTutorialPanel->SetVisible(false);
+				m_pOptionsPanel->SetVisible(false);
 				return;
 			}
 		}
@@ -95,12 +128,22 @@ void UIPause::OnButtonPressed(Button* button)
 				std::cout << "Exiting tutorial" << std::endl;
 				m_pMenuPanel->SetVisible(true);
 				m_pTutorialPanel->SetVisible(false);
+				m_pOptionsPanel->SetVisible(false);
 				return;
 			}
 		}
 		std::cout << "New tutorial texture" << std::endl;
 		std::cout << "Texture index: " << m_TutorialScreenIndex << std::endl;
 		m_pTutorialPanel->SetBackgroundTexture(ResourceHandler::GetTexture2D(m_TutorialScreens[m_TutorialScreenIndex]));
+	}
+	else if (m_pOptionsPanel->IsVisible())
+	{
+		if (button == m_pButtonBackOptions)
+		{
+			m_pMenuPanel->SetVisible(true);
+			m_pTutorialPanel->SetVisible(false);
+			m_pOptionsPanel->SetVisible(false);
+		}
 	}
 }
 

@@ -91,9 +91,9 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		TileData& originTile = m_pWorld->GetLevel(pos.y).GetLevelData()[pos.x][pos.z];
 
 		SpreadFireSideways(dtS, glm::ivec3(0, 0, 0), pos, pScene);
-		if (pos.x < 9) SpreadFireSideways(dtS, glm::ivec3(1, 0, 0), pos, pScene);
+		if (pos.x < 10) SpreadFireSideways(dtS, glm::ivec3(1, 0, 0), pos, pScene);
 		if (pos.x > 1)	SpreadFireSideways(dtS, glm::ivec3(-1, 0, 0), pos, pScene);
-		if (pos.z < 39)	SpreadFireSideways(dtS, glm::ivec3(0, 0, 1), pos, pScene);
+		if (pos.z < 40)	SpreadFireSideways(dtS, glm::ivec3(0, 0, 1), pos, pScene);
 		if (pos.z > 1)	SpreadFireSideways(dtS, glm::ivec3(0, 0, -1), pos, pScene);
 
 		EvaporateWater(originTile, dtS);
@@ -246,9 +246,9 @@ bool ScenarioFire::Update(float dtS, World* pWorld, SceneGame* pScene) noexcept
 		uint32 rest = 0;
 		if (spread > 0.0001f)
 		{
-			if (smokePos.x < 9)		rest += SpreadSmokeSideways(dtS, glm::ivec3(1, 0, 0), smokePos, spread, pScene);
+			if (smokePos.x < 10)		rest += SpreadSmokeSideways(dtS, glm::ivec3(1, 0, 0), smokePos, spread, pScene);
 			if (smokePos.x > 1)		rest += SpreadSmokeSideways(dtS, glm::ivec3(-1, 0, 0), smokePos, spread, pScene);
-			if (smokePos.z < 39)	rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, 1), smokePos, spread, pScene);
+			if (smokePos.z < 40)	rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, 1), smokePos, spread, pScene);
 			if (smokePos.z > 1)		rest += SpreadSmokeSideways(dtS, glm::ivec3(0, 0, -1), smokePos, spread, pScene);
 			tile.SmokeAmount -= spread * (float)rest;
 		}

@@ -133,7 +133,9 @@ public:
 	//Returns true if any visibility change happend
 	bool UpdateVisibility(Scene& scene, float dt);
 
-	glm::ivec3 FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire = false) const noexcept;
+	glm::ivec3 FindClosestRoomCenterInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire = false) const noexcept;
+	glm::ivec3 GetRandomTileInClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire = false) const noexcept;
+	glm::ivec3 GetRandomTileInRoom(uint32 roomIndex) const noexcept;
 
 public:
 	static std::string GetNameFromGlobal(uint32 globalIndex) noexcept;
@@ -164,7 +166,7 @@ private:
 	std::vector<PointLight*> m_RoomLights;
 };
 
-inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire) const noexcept
+inline glm::ivec3 World::FindClosestRoomCenterInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3& currentTile, bool checkForFire) const noexcept
 {
 	uint32 minDistSqrd = UINT32_MAX;
 	glm::ivec3 closestRoomCenter(-1);
@@ -193,6 +195,55 @@ inline glm::ivec3 World::FindClosestRoomInInterval(uint32 startInterval, uint32 
 	}
 
 	return closestRoomCenter;
+}
+
+inline glm::ivec3 World::GetRandomTileInClosestRoomInInterval(uint32 startInterval, uint32 endInterval, const glm::ivec3 & currentTile, bool checkForFire) const noexcept
+{
+	uint32 minDistSqrd = UINT32_MAX;
+	glm::ivec3 closestRoomCenter(-1);
+	int32 roomIndex = UINT32_MAX;
+
+	for (uint32 i = startInterval; i <= endInterval; i++)
+	{
+		const Room& room = m_Rooms[i];
+
+		if (room.IsRoomInitialized())
+		{
+			if (checkForFire && room.IsBurning())
+			{
+				continue;
+			}
+
+			glm::ivec3 currentRoomCenter = glm::ivec3(room.GetCenter() - glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::ivec3 toVector = currentTile - currentRoomCenter;
+			uint32 currentDistanceSqrd = (uint32)(toVector.x * toVector.x + (10.0f * toVector.y * toVector.y) + toVector.z * toVector.z);
+
+			if (currentDistanceSqrd < minDistSqrd)
+			{
+				minDistSqrd = currentDistanceSqrd;
+				closestRoomCenter = currentRoomCenter;
+				roomIndex = i;
+			}
+		}
+	}
+
+	if (roomIndex != UINT32_MAX)
+	{
+		const Room& room = m_Rooms[roomIndex];
+		const std::vector<glm::ivec3>& roomTiles = room.GetRoomTiles();
+		uint32 randomTile = Random::GenerateInt(0, roomTiles.size() - 1);
+		return roomTiles[randomTile];
+	}
+
+	return glm::ivec3(-1);
+}
+
+inline glm::ivec3 World::GetRandomTileInRoom(uint32 roomIndex) const noexcept
+{
+	const Room& room = m_Rooms[roomIndex];
+	const std::vector<glm::ivec3>& roomTiles = room.GetRoomTiles();
+	uint32 randomTile = Random::GenerateInt(0, roomTiles.size() - 1);
+	return roomTiles[randomTile];
 }
 
 inline std::string World::GetNameFromGlobal(uint32 globalIndex) noexcept

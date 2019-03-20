@@ -131,7 +131,7 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 
 			if (!hasGearEquipped)
 			{
-				goalTile = pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile, true);
+				goalTile = pWorld->GetRandomTileInClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile, true);
 			}
 			else
 			{
@@ -159,7 +159,7 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 		{
 			Crewmember* pCrewmember = pCrew->GetMember(selectedMembers[i]);
 			pCrewmember->GiveOrder(new OrderPlugHole(
-				pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
+				pWorld->GetRandomTileInClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, tile),
 				tile,
 				pCrewmember->HasGearEquipped()));
 		}
@@ -179,14 +179,14 @@ void GameObjectFloor::OnOrderChosen(const std::string& name, void* userData, con
 				{
 					res = true;
 					pCrewMember->GiveOrder(new OrderPumpWater(roomId,
-						pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, pCrewMember->GetTile())));
+						pWorld->GetRandomTileInClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, pCrewMember->GetTile())));
 					break;
 				}
 			}
 			if (!res && pCrewMember != nullptr)
 			{
 				pCrewMember->GiveOrder(new OrderPumpWater(roomId,
-					pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, pCrewMember->GetTile())));
+					pWorld->GetRandomTileInClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, pCrewMember->GetTile())));
 			}
 		}
 	}

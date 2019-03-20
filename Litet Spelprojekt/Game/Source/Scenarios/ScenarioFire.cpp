@@ -54,9 +54,6 @@ void ScenarioFire::OnStart(SceneGame* scene) noexcept
 	uint32 z = Random::GenerateInt(1, m_pWorld->GetLevel(lvl).GetSizeZ() - 2);
 	glm::ivec3 pos = glm::ivec3(x, lvl, z);
 
-	//Ta bort
-	pos = glm::ivec3(10, 0, 8);
-
 	Escalate(pos);
 }
 

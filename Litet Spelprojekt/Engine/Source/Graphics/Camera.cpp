@@ -318,6 +318,8 @@ void Camera::SetMinXZMaxXZLookAt(float minX, float minZ, float maxX, float maxZ)
 	m_MinXZMaxXZLookAt.y = minZ;
 	m_MinXZMaxXZLookAt.z = maxX;
 	m_MinXZMaxXZLookAt.w = maxZ;
+
+	std::cout << glm::to_string(m_MinXZMaxXZLookAt) << std::endl;
 }
 
 void Camera::CalcInverses()

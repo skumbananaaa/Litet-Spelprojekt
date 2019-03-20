@@ -196,8 +196,8 @@ inline float Camera::GetDistanceToLookAt() const noexcept
 
 inline bool Camera::IsLookAtInBounds(const glm::vec3& newLookAt) const noexcept
 {
-	return	newLookAt.x > m_MinXZMaxXZLookAt.x &&
-			newLookAt.z > m_MinXZMaxXZLookAt.y &&
-			newLookAt.x < m_MinXZMaxXZLookAt.z &&
-			newLookAt.z < m_MinXZMaxXZLookAt.w;
+	return	newLookAt.x >= m_MinXZMaxXZLookAt.x &&
+			newLookAt.z >= m_MinXZMaxXZLookAt.y &&
+			newLookAt.x <= m_MinXZMaxXZLookAt.z &&
+			newLookAt.z <= m_MinXZMaxXZLookAt.w;
 }

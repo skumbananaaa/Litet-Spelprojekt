@@ -42,7 +42,7 @@ private:
 	virtual void Construct() override;
 
 public:
-	static WaterQuad* CreateWaterQuad(glm::vec2& pos, const glm::vec2 centerHoleDim, float scale, uint32 gridDiameter) noexcept;
+	static WaterQuad* CreateWaterQuad(const glm::vec2& pos, const glm::vec2& centerHoleDim, float scale, uint32 gridDiameter) noexcept;
 
 private:
 	static void StoreGridSquare(float col, float row, float scale, std::vector<WaterVertex>& vertices) noexcept;

@@ -79,7 +79,7 @@ void WaterQuad::Construct()
 	DeleteArrSafe(m_pIndices);
 }
 
-WaterQuad* WaterQuad::CreateWaterQuad(glm::vec2& pos, const glm::vec2 centerHoleDim, float scale, uint32 gridDiameter) noexcept
+WaterQuad* WaterQuad::CreateWaterQuad(const glm::vec2& pos, const glm::vec2& centerHoleDim, float scale, uint32 gridDiameter) noexcept
 {
 	uint32 numVertices = gridDiameter * gridDiameter * WATER_QUAD_VERTICES_PER_SQUARE;
 	std::vector<WaterVertex> vertices;

@@ -15,6 +15,7 @@
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
+	m_pAudioSourceScream(nullptr),
 	m_OrderHandler(this),
 	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false),
@@ -34,7 +35,6 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
 	InitAnimation(MESH::ANIMATED_MODEL_IDLE);
-	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
 	m_LastKnownPosition = position;
@@ -70,6 +70,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 
 	m_ReportTimer = 0.0f;
 	m_ReportTime = 0.0f;
+
+	SetPosition(position);
 }
 
 Crewmember::~Crewmember()

@@ -13,6 +13,7 @@ std::vector<GameObject*> OrderSchedule::s_Instruments;
 std::vector<GameObject*> OrderSchedule::s_Chairs;
 std::vector<GameObject*> OrderSchedule::s_Ovens;
 std::vector<GameObject*> OrderSchedule::s_Extinguishers;
+std::vector<GameObject*> OrderSchedule::s_Stairs;
 
 void OrderSchedule::Init(Scene* pScene)
 {
@@ -60,6 +61,12 @@ void OrderSchedule::Init(Scene* pScene)
 	{
 		s_Ovens.push_back(pGameObject);
 	}
+
+	//Find stairs
+	for (uint32 i = 0; (pGameObject = pScene->GetGameObject("Stair" + std::to_string(i))) != nullptr; i++)
+	{
+		s_Stairs.push_back(pGameObject);
+	}
 }
 
 void OrderSchedule::Release()
@@ -69,6 +76,7 @@ void OrderSchedule::Release()
 	s_Instruments.clear();
 	s_Chairs.clear();
 	s_Ovens.clear();
+	s_Stairs.clear();
 }
 
 IOrder* OrderSchedule::GetIdleOrder()

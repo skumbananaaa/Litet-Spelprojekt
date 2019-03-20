@@ -31,6 +31,7 @@ private:
 private:
 	Crewmember* m_pCrewmember;
 	std::vector<IOrder*> m_OrderQueue;
+	std::vector<IOrder*> m_OrdersToDelete;
 
 	static std::vector<IOrder*> s_OrderCopies[];
 };

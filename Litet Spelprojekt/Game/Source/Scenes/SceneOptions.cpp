@@ -1,6 +1,7 @@
 #include "..\..\Include\Scenes\SceneOptions.h"
 #include "../../Include/Game.h"
 #include <Audio/Sources/AudioSource.h>
+#include "../../Include/GUI/UIOptions.h"
 
 SceneOptions::SceneOptions()
 {
@@ -42,6 +43,7 @@ void SceneOptions::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) n
 
 	m_pPanel->Add(m_pButtonBack);
 	m_pPanel->Add(m_pTextViewTitle);
+	m_pPanel->Add(new UIOptions(3, 3, m_pPanel->GetWidth() - 6, m_pButtonBack->GetY() - 3));
 
 	game->GetGUIManager().Add(m_pPanel);
 }

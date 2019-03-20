@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GUI\UIOptions.cpp" />
     <ClCompile Include="Source\GUI\UIReplay.cpp" />
     <ClCompile Include="Source\IReplayable.cpp" />
     <ClCompile Include="Source\GameObjectExtinguisher.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="Include\GUI\UIEndScreen.h" />
     <ClInclude Include="Include\GUI\UILog.h" />
     <ClInclude Include="Include\GUI\UINotification.h" />
+    <ClInclude Include="Include\GUI\UIOptions.h" />
     <ClInclude Include="Include\GUI\UIOrder.h" />
     <ClInclude Include="Include\GUI\UIPause.h" />
     <ClInclude Include="Include\GUI\UIReplay.h" />

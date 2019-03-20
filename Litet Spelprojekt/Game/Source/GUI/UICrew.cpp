@@ -153,7 +153,7 @@ ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& c
 	button->SetTextOffset(textOffset);
 	button->SetUserData(reinterpret_cast<void*>((uint64)shipnumber));
 	button->AddButtonListener(this);
-	button->AddProgressListener(this);
+	button->AddProgressButtonListener(this);
 	m_HoveringHandler.AddHoverable(button);
 	return button;
 }

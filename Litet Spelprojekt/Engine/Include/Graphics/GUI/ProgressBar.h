@@ -2,6 +2,18 @@
 #include <EnginePch.h>
 #include <Graphics/GUI/GUIObject.h>
 
+class ProgressBar;
+
+class API IProgressListener
+{
+public:
+	virtual ~IProgressListener() {};
+	virtual void OnProgressChange(ProgressBar* pProgressBar, float percentage) = 0;
+
+protected:
+	IProgressListener() {};
+};
+
 class API ProgressBar : public GUIObject
 {
 public:
@@ -17,6 +29,9 @@ public:
 	void BeginProgress() noexcept;
 	void EndProgress() noexcept;
 
+	void AddProgressListener(IProgressListener* listener);
+	void RemoveProgressListener(IProgressListener* listener);
+
 protected:
 	virtual void OnRender(GUIContext* context) override;
 	virtual void RenderRealTime(GUIContext* context, float x = 0, float y = 0) override;
@@ -26,4 +41,5 @@ protected:
 private:
 	float m_Percentage;
 	glm::vec4 m_ProgressColor;
+	std::vector<IProgressListener*> m_ProgressListeners;
 };

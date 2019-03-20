@@ -238,20 +238,35 @@ void OrderHandler::RemoveAllOrders() noexcept
 	m_OrderQueue.clear();
 }
 
-void OrderHandler::DeleteOrder(IOrder * pOrder) noexcept
+void OrderHandler::DeleteOrder(IOrder* pOrder) noexcept
 {
+	for (int i = 0; i < m_OrdersToDelete.size(); i++)
+	{
+		if (m_OrdersToDelete[i] == pOrder)
+		{
+			return;
+		}
+	}
+
 	SceneGame* pScene = Game::GetGame()->m_pSceneGame;
 	World* pWorld = pScene->GetWorld();
 	Crew* pCrewMembers = pScene->GetCrew();
 
 	if (!pOrder->m_IsAborted)
 	{
-
 		pOrder->OnEnded(pScene, pWorld, pCrewMembers);
 	}
 	else
 	{
 		pOrder->OnAborted(pScene, pWorld, pCrewMembers);
+	}
+
+	for (int i = 0; i < m_OrdersToDelete.size(); i++)
+	{
+		if (m_OrdersToDelete[i] == pOrder)
+		{
+			return;
+		}
 	}
 
 	//std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Ended" << std::endl;

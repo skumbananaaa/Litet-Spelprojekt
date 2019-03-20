@@ -61,6 +61,7 @@ layout(std140, binding = 6) uniform WaterBuffer
 out VS_OUT
 {
 	vec4 ClipSpaceGrid;
+	vec3 WorldPosition;
 	vec3 Normal;
 	vec3 ToCameraVector;
 	vec3 LightColor;
@@ -226,6 +227,7 @@ void main()
 	vs_out.Specular = specular;
 	vs_out.LightColor = lightColor;
 
+	vs_out.WorldPosition = vec4(currentVertex, 1.0f).xyz;
 	gl_Position = g_ProjectionView * vec4(currentVertex, 1.0f);
 }
 
@@ -237,6 +239,7 @@ layout(early_fragment_tests) in;
 in VS_OUT
 {
 	vec4 ClipSpaceGrid;
+	vec3 WorldPosition;
 	vec3 Normal;
 	vec3 ToCameraVector;
 	vec3 LightColor;
@@ -294,6 +297,9 @@ void main()
 	finalColour = mix(finalColour, vec3(1.0F, 1.0F, 1.0F), fs_in.FoamFactor);
 	finalColour = finalColour * fs_in.LightColor + fs_in.Specular;
 	
-	g_OutColor = vec4(finalColour, 1.0f);
+	vec3 pos = fs_in.WorldPosition - vec3(4.0f, 0.0f, 19.0f);
+	float distSqrd = (pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+	float alpha = min(max((distSqrd - 4000.0f) / 6000.0f, 0.0f), 1.0f);
+	g_OutColor = vec4(finalColour, 1.0f - alpha);
 }
 #endif

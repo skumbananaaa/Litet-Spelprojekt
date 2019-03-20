@@ -136,7 +136,20 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 				if (allFiresExtinguished)
 				{
 					m_ExtinguishingFire = false;
-					glm::ivec2 newTarget = FindClosestBurningTile(ppLevel, ppLevelData, levelSize, glm::ivec2(m_BurningTile.x, m_BurningTile.z));
+					glm::ivec2 newTarget = glm::ivec2(-1, -1);
+					uint32 newLevel = m_BurningTile.y;
+					for (uint32 i = 0; i <= 4; i += 2)
+					{
+						newTarget = FindClosestBurningTile(pWorld, i, levelSize, glm::ivec2(m_BurningTile.x, m_BurningTile.z));
+						if (newTarget.x != -1 && newTarget.y != -1)
+						{
+							newLevel = i;
+							break;
+						}
+					}
+
+					ppLevel = pWorld->GetLevel(newLevel).GetLevel();
+					ppLevelData = pWorld->GetLevel(newLevel).GetLevelData();
 
 					std::cout << "New Target: " << glm::to_string(newTarget) << std::endl;
 
@@ -156,7 +169,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 
 					ppLevelData[newTarget.x][newTarget.y].MarkedForExtinguish = true;
 					//Fire Not Fully Extinguished
-					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
+					m_BurningTile = glm::ivec3(newTarget.x, newLevel, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
 					OrderWalk* pOrder = new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName);
 					pOrder->SetAlternateMeshAndMaterial(pCrewmember, MESH::ANIMATED_MODEL_EXTINGUISH, MATERIAL::ANIMATED_MODEL_EXTINGUISH);

@@ -34,7 +34,7 @@ protected:
 
 private:
 	bool ExtinguishIfInWorld(TileData * const * ppLevelData, const glm::ivec3& tile, bool inWorld, float dtS) const noexcept;
-	glm::ivec2 FindClosestBurningTile(const uint32 * const * ppLevel, TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& currentTile) const noexcept;
+	glm::ivec2 FindClosestBurningTile(World* pWorld, uint32 level, const glm::ivec2& levelSize, const glm::ivec2& currentTile) const noexcept;
 	glm::ivec3 FindClosestExtinguisher(const glm::vec3& currentPosition, std::string& extinguisherName) noexcept;
 
 private:
@@ -85,8 +85,11 @@ inline bool OrderExtinguishFire::ExtinguishIfInWorld(TileData * const * ppLevelD
 	return ppLevelData[tile.x][tile.z].Temp < ppLevelData[tile.x][tile.z].BurnsAt;
 }
 
-inline glm::ivec2 OrderExtinguishFire::FindClosestBurningTile(const uint32 * const * ppLevel, TileData * const * ppLevelData, const glm::ivec2& levelSize, const glm::ivec2& currentTile) const noexcept
+inline glm::ivec2 OrderExtinguishFire::FindClosestBurningTile(World* pWorld, uint32 level, const glm::ivec2& levelSize, const glm::ivec2& currentTile) const noexcept
 {
+
+	const uint32 * const * ppLevel = pWorld->GetLevel(level).GetLevel();
+	TileData * const * ppLevelData = pWorld->GetLevel(level).GetLevelData();
 	
 	glm::ivec2 closestBurningTileInRoom(-1);
 	glm::ivec2 closestBurningTileNotInRoom(-1);

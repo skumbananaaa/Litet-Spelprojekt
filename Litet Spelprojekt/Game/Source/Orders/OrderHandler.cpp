@@ -5,7 +5,6 @@
 #include "../../Include/ReplayHandler.h"
 
 #define NOT_FOUND -1
-std::vector<IOrder*> OrderHandler::s_OrderCopies[NUM_CREW];
 
 OrderHandler::OrderHandler(Crewmember* pCrewMember)
 {
@@ -73,18 +72,6 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 	m_OrdersToDelete.clear();
 }
 
-void OrderHandler::Reset() noexcept
-{
-	for (int i = 0; i < NUM_CREW; i++)
-	{
-		for (int j = 0; j < (int32)s_OrderCopies[i].size(); j++)
-		{
-			DeleteSafe(s_OrderCopies[i][j]);
-		}
-		s_OrderCopies[i].clear();
-	}
-}
-
 void OrderHandler::ForceOrder(SceneGame* pScene, void* userData, IOrder* order) noexcept
 {
 	for (int i = (int32)m_OrderQueue.size() - 1; i >= 0; i--)
@@ -96,18 +83,6 @@ void OrderHandler::ForceOrder(SceneGame* pScene, void* userData, IOrder* order) 
 	IOrder* pOrderClone = order->Clone();
 	pOrderClone->InitClone(pScene, userData);
 	m_OrderQueue.push_back(pOrderClone);
-	StartNextExecutableOrder();
-}
-
-void OrderHandler::ForceOrderInbreed(IOrder* pOrder) noexcept
-{
-	for (int i = (int32)m_OrderQueue.size() - 1; i >= 0; i--)
-	{
-		m_OrderQueue[i]->m_IsAborted = true;
-		DeleteOrder(m_OrderQueue[i]);
-	}
-	m_OrderQueue.clear();
-	m_OrderQueue.push_back(pOrder);
 	StartNextExecutableOrder();
 }
 
@@ -169,6 +144,7 @@ void OrderHandler::GiveFilteredOrder(IOrder* pOrder) noexcept
 			}
 		}
 	}
+
 	StartNextExecutableOrder();
 }
 
@@ -188,8 +164,6 @@ bool OrderHandler::StartNextExecutableOrder()
 
 	SceneGame* pSceneGame = Game::GetGame()->m_pSceneGame;
 	IOrder* pOrder = m_OrderQueue[0];
-	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
-	//std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Started" << std::endl;
 
 	if (!ReplayHandler::IsReplaying())
 	{
@@ -197,12 +171,12 @@ bool OrderHandler::StartNextExecutableOrder()
 		{
 			IOrder* pOrderClone = pOrder->Clone();
 			pOrderClone->RegisterReplayEvent(nullptr);
-			s_OrderCopies[m_pCrewmember->GetShipNumber()].push_back(pOrderClone);
 		}
 	}
 
 	m_pCrewmember->OnOrderStarted(pOrder->IsIdleOrder());
 	pOrder->OnStarted(pSceneGame, pSceneGame->GetWorld(), pSceneGame->GetCrew());
+	//std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Started" << std::endl;
 	return true;
 }
 

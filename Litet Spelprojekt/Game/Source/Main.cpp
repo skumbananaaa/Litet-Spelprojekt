@@ -9,6 +9,7 @@ int main(int argc, char* argv[])
 
 	Application* pApp = new Game();
 	int res = pApp->Run();
+	DeleteSafe(pApp);
 
 	return res;
 }

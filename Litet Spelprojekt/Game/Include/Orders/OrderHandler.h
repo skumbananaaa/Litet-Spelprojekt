@@ -14,11 +14,8 @@ public:
 	void GiveOrder(IOrder* order) noexcept;
 	void Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept;
 
-	static void Reset() noexcept;
-
 private:
 	void ForceOrder(SceneGame* pScene, void* userData, IOrder* order) noexcept;
-	void ForceOrderInbreed(IOrder* pOrder) noexcept;
 	void GiveFilteredOrder(IOrder* pOrder) noexcept;
 
 	bool StartNextExecutableOrder();
@@ -32,6 +29,4 @@ private:
 	Crewmember* m_pCrewmember;
 	std::vector<IOrder*> m_OrderQueue;
 	std::vector<IOrder*> m_OrdersToDelete;
-
-	static std::vector<IOrder*> s_OrderCopies[];
 };

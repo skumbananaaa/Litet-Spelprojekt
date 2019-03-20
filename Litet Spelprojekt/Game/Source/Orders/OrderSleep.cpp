@@ -126,7 +126,7 @@ bool OrderSleep::IsIdleOrder() noexcept
 	return true;
 }
 
-IOrder * OrderSleep::Clone() noexcept
+IOrder* OrderSleep::Clone() noexcept
 {
 	return new OrderSleep(this);
 }

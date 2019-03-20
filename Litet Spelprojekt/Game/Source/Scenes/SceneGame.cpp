@@ -37,7 +37,7 @@ SceneGame::SceneGame(World* pWorld, bool hiddenCrew)
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
 	GetCamera().SetMaxPitch(-glm::two_pi<float>() / 64.0f);
-	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 10.0f, 40.0f);
+	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 11.0f, 40.0f);
 }
 
 SceneGame::~SceneGame()
@@ -233,16 +233,16 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 					glm::vec3 newLookAt = oldLookAt + moveOffset;
 
 					if (!camera.IsLookAtInBounds(newLookAt) &&
-						newLookAt.x >= 1.0f && newLookAt.x <= 30.0f &&
+						newLookAt.x >= 1.0f && newLookAt.x <= 31.0f &&
 						newLookAt.z >= 1.0f && newLookAt.z <= 40.0f)
 					{
-						float xMove = 10.0f;
+						float xMove = -(float)IsExtended() * 10.0f;
 						float yOffset = -2.0f * (glm::floor(((((uint32)newLookAt.x - 1) % 10) / 5.0f)) - 0.5f);
-						float newY =  (oldLookAt.y / 2.0f) + yOffset;
-						float lookAtBoundsOffset = xMove * -newY;
+						float newY = (oldLookAt.y / 2.0f) + yOffset;
+						float lookAtBoundsOffset = -xMove * newY;
 
 						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
-							glm::min(lookAtBoundsOffset + 11.0f, 30.0f), 40.0f);
+							lookAtBoundsOffset + 11.0f, 40.0f);
 
 						moveOffset.y = 2.0f * yOffset;
 					}
@@ -277,7 +277,7 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 					float xMove = (float)IsExtended() * 10.0f;
 					float lookAtBoundsOffset = xMove * (camera.GetLookAt().y / 2.0f + 1.0f);
 					camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
-											glm::min(lookAtBoundsOffset + 11.0f, 30.0f), 40.0f);
+						lookAtBoundsOffset + 11.0f, 40.0f);
 					camera.MoveWorldCoords(glm::vec3(xMove, 2.0f, 0.0f), true);
 					UpdateMaterialClipPlanes();
 				}
@@ -289,7 +289,7 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 					float xMove = -(float)IsExtended() * 10.0f;
 					float lookAtBoundsOffset = -xMove * (camera.GetLookAt().y / 2.0f - 1.0f);
 					camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
-											glm::min(lookAtBoundsOffset + 11.0f, 30.0f), 40.0f);
+						lookAtBoundsOffset + 11.0f, 40.0f);
 					camera.MoveWorldCoords(glm::vec3(xMove, -2.0f, 0.0f), true);
 					UpdateMaterialClipPlanes();
 				}

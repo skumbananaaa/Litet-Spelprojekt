@@ -375,7 +375,7 @@ void Scene::OnUpdate(float dtS) noexcept
 			float heightFactor = m_pCamera->GetLookAt().y / 2.0f;
 			float lookAtBoundsOffset = m_Extension * heightFactor;
 			m_pCamera->SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
-										glm::min(lookAtBoundsOffset + 11.0f, 30.0f), 40.0f);
+				lookAtBoundsOffset + 11.0f, 40.0f);
 			m_pCamera->MoveWorldCoords(glm::vec3(extensionOffset * heightFactor, 0.0f, 0.0f), true);
 		}
 	}

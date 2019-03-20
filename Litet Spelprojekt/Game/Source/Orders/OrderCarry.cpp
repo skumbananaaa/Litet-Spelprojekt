@@ -26,18 +26,17 @@ void OrderCarry::OnStarted(Scene * pScene, World * pWorld, Crew * pCrewMembers) 
 void OrderCarry::OnEnded(Scene * pScene, World * pWorld, Crew * pCrewMembers) noexcept
 {
 	OrderWalk::OnEnded(pScene, pWorld, pCrewMembers);
-	Crewmember* pCrewmember = GetCrewMember();
-	pCrewmember->SetAssisting(m_pCarrying);
-	pCrewmember->GoToSickBay();
-	//Logger::LogEvent(pCrewmember->GetName() + " bar " + m_pCarrying->GetName() + " till sjukstugan!", true);
-	pCrewmember->ReportPosition();
-	//GetCrewMember()->SetAssisting(nullptr);
+	
+	GetCrewMember()->ReportPosition();
 }
 
 bool OrderCarry::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers, float dtS) noexcept
 {
 	if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 	{
+		Crewmember* pCrewmember = GetCrewMember();
+		pCrewmember->SetAssisting(m_pCarrying);
+		pCrewmember->GoToSickBay();
 		return true;
 	}
 	return false;

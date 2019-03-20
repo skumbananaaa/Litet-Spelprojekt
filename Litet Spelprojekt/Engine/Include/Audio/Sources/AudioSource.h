@@ -37,10 +37,15 @@ public:
 	static AudioSource* CreateSoundSource(int32 sound, const glm::vec3& pos = glm::vec3(0.0f), const glm::vec3& vel = glm::vec3(0.0f));
 	static AudioSource* CreateMusicSource(int32 music);
 
+	static void SetMusicVolume(float volume) noexcept;
+	static void SetSoundVolume(float volume) noexcept;
+
 private:
 	AudioSource(const SoundEffect& soundEffect, const glm::vec3& pos = glm::vec3(0.0f), const glm::vec3& vel = glm::vec3(0.0f)) noexcept;
 	AudioSource(const Music& music) noexcept;
 
 	uint32 m_SourceId;
-	bool m_Paused = false;
+	bool m_IsMusic;
+
+	static std::vector<AudioSource*> s_References;
 };

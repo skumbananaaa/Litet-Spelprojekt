@@ -5,6 +5,11 @@
 #define API __declspec(dllimport)
 #endif
 
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #define NUM_CLIP_DISTANCES 8
 
 #if !defined(Delete)
@@ -45,8 +50,9 @@ constexpr float WATER_MAX_LEVEL = 2.0f;
 
 constexpr float MAX_TILE_TEMP = 1000.0f;
 constexpr float RATE_OF_FIRE_SPREAD = 0.15f;
+constexpr float RATE_OF_FIRE_SPREAD_BIAS = 0.003f; //Provides Extra Control over Fire?
 constexpr float RATE_OF_FIRE_WALL_SPREAD = 0.00002f;
 constexpr float RATE_OF_RIRE_NORMAL_DOOR_SPREAD = 0.02f;
-constexpr float RATE_OF_FIRE_FLOOR_SPREAD = 0.003f;
 constexpr float RATE_OF_FIRE_BULKHEAD_SPREAD = 0.01f;
-constexpr float RATE_OF_FIRE_BULKHEAD_DOOR_SPREAD = 1.25f; //This spread is relative to the "rateOfBulkheadSpreadFactor"
+constexpr float RATE_OF_FIRE_BULKHEAD_DOOR_SPREAD = 1.25f; //This spread is relative to the "RATE_OF_FIRE_BULKHEAD_SPREAD"
+constexpr float RATE_OF_TEMP_SPREAD_THROUGH_CEILING = 0.1f;

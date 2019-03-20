@@ -23,6 +23,10 @@ void ProgressBar::SetPercentage(float percentage)
 		{
 			RequestRepaint();
 		}
+		for (IProgressListener* listener : m_ProgressListeners)
+		{
+			listener->OnProgressChange(this, percentage);
+		}
 	}
 }
 
@@ -56,6 +60,32 @@ void ProgressBar::BeginProgress() noexcept
 void ProgressBar::EndProgress() noexcept
 {
 	RemoveRealTimeRenderer();
+}
+
+void ProgressBar::AddProgressListener(IProgressListener * listener)
+{
+	if (!Contains<IProgressListener>(m_ProgressListeners, listener))
+	{
+		m_ProgressListeners.push_back(listener);
+	}
+	else
+	{
+		std::cout << "IProgressListener already added" << std::endl;
+	}
+}
+
+void ProgressBar::RemoveProgressListener(IProgressListener * listener)
+{
+	int32 counter = 0;
+	for (IProgressListener* object : m_ProgressListeners)
+	{
+		if (object == listener)
+		{
+			m_ProgressListeners.erase(m_ProgressListeners.begin() + counter);
+			return;
+		}
+		counter++;
+	}
 }
 
 void ProgressBar::OnRender(GUIContext* context)

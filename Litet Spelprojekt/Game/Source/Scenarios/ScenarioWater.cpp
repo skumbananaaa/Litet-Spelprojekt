@@ -20,6 +20,13 @@ void ScenarioWater::BeginReplay(SceneGame* pScene, void* userData) noexcept
 	ScenarioManager::StartScenario(this);
 }
 
+void ScenarioWater::DestroyUserData(void *& userData) noexcept
+{
+	std::pair<glm::vec3, float>* pair = reinterpret_cast<std::pair<glm::vec3, float>*>(userData);
+	DeleteSafe(pair);
+	userData = pair;
+}
+
 void ScenarioWater::Init(World* pWorld) noexcept
 {
 	SetTimeOfNextOutBreak(1.0f);

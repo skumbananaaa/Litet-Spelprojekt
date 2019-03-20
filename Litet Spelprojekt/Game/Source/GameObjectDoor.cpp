@@ -39,7 +39,6 @@ bool GameObjectDoor::AccessRequest(uint32 shipNr) noexcept
 {
 	if (std::find(m_AccessQueue.begin(), m_AccessQueue.end(), shipNr) == m_AccessQueue.end())
 	{
-		std::cout << Game::GetGame()->m_pSceneGame->GetCrew()->GetMember(shipNr)->GetName() << " Door ADD" << std::endl;
 		m_AccessQueue.push_back(shipNr);
 		return m_AccessQueue.size() == 1;
 	}
@@ -53,7 +52,6 @@ bool GameObjectDoor::RemoveFromQueue(uint32 shipNr) noexcept
 	{
 		if (m_AccessQueue.size() != 1 || IsClosed())
 		{
-			std::cout << Game::GetGame()->m_pSceneGame->GetCrew()->GetMember(shipNr)->GetName() << " Door REMOVE" << std::endl;
 			m_AccessQueue.erase(it);
 			return m_AccessQueue.empty();
 		}
@@ -120,7 +118,7 @@ int32 GameObjectDoor::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin
 	glm::vec3 centre = GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
 	centre.x += extension * glm::floor(centre.y / 2.0f);
 
-	float t = -1;
+	float t = -1.0f;
 
 	if (glm::floor(centre.y / 2) == glm::floor(elevation / 2) || extension > 0)
 	{
@@ -131,9 +129,9 @@ int32 GameObjectDoor::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin
 		};
 
 		float h[] = {
-			0.15,
-			1.0,
-			0.5
+			0.15f,
+			1.0f,
+			0.5f
 		};
 
 		float d1[] = {

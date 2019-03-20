@@ -1,6 +1,7 @@
 #include "..\..\Include\Scenes\SceneOptions.h"
 #include "../../Include/Game.h"
 #include <Audio/Sources/AudioSource.h>
+#include "../../Include/GUI/UIOptions.h"
 
 SceneOptions::SceneOptions()
 {
@@ -30,9 +31,9 @@ void SceneOptions::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) n
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pPanel = new Panel((window->GetWidth() - 600) / 2, (window->GetHeight() - 600) / 2, 600, 600);
-	m_pButtonBack = new Button(0, m_pPanel->GetHeight() - 50, 100, 50, "Tillbaka");
-	m_pTextViewTitle = new TextView(0, m_pPanel->GetHeight() - 50, m_pPanel->GetWidth(), 50, "Alternativ", true);
+	m_pPanel = new Panel((window->GetWidth() - 600.0f) / 2.0f, (window->GetHeight() - 600.0f) / 2.0f, 600.0f, 600.0f);
+	m_pButtonBack = new Button(0, m_pPanel->GetHeight() - 50.0f, 100.0f, 50.0f, "Tillbaka");
+	m_pTextViewTitle = new TextView(0, m_pPanel->GetHeight() - 50.0f, m_pPanel->GetWidth(), 50.0f, "Alternativ", true);
 
 	m_pButtonBack->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 	m_pButtonBack->AddButtonListener(this);
@@ -42,6 +43,7 @@ void SceneOptions::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) n
 
 	m_pPanel->Add(m_pButtonBack);
 	m_pPanel->Add(m_pTextViewTitle);
+	m_pPanel->Add(new UIOptions(3, 3, m_pPanel->GetWidth() - 6, m_pButtonBack->GetY() - 3));
 
 	game->GetGUIManager().Add(m_pPanel);
 }

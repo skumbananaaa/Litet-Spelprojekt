@@ -149,7 +149,7 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 						Logger::LogEvent(GetCrewMember()->GetName() + " blev färdig med eldsläckning!", true);
 						pCrewmember->SetExtinguisherIsEquipped(false);
 						pCrewmember->ReportPosition();
-						GiveOrderInbred(new OrderExtinguishFire(pWorld->FindClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, currentTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
+						GiveOrderInbred(new OrderExtinguishFire(pWorld->GetRandomTileInClosestRoomInInterval(CABOOSE_INTERVAL_START, CABOOSE_INTERVAL_END, currentTile), m_BurningTile, m_RoomBurningId, true, m_ExtinguisherName));
 						return false;
 					}
 

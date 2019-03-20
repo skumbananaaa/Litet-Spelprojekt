@@ -6,17 +6,11 @@ UINotification::UINotification(float x, float y, float width, float height, floa
 {
 	m_Time = time;
 	m_PixelsToMove = 0;
-
-	m_pAudioSourceSelect = AudioSource::CreateSoundSource(SOUND::UI_SELECT);
-	m_pAudioSourceSelect->SetRollOffFactor(10.0f);
-	m_pAudioSourceSelect->SetReferenceDistance(0.0f);
-	m_pAudioSourceSelect->SetMaxDistance(500.0f);
-	m_pAudioSourceSelect->SetLooping(false);
 }
 
 UINotification::~UINotification()
 {
-	DeleteSafe(m_pAudioSourceSelect);
+	
 }
 
 void UINotification::Update(float dtS) noexcept
@@ -36,6 +30,7 @@ void UINotification::Update(float dtS) noexcept
 		if (pair.second <= 0)
 		{
 			m_NotificationsToDelete.push_back(pair.first);
+			pair.second = 9999999.0F;
 		}
 	}
 
@@ -49,7 +44,7 @@ void UINotification::Update(float dtS) noexcept
 		pPanel->SetPosition(pPanel->GetX() + dtS * 500.0f, pPanel->GetY());
 		if (pPanel->GetX() > Game::GetGame()->GetWindow().GetWidth())
 		{
-			for (int j = m_Notifications.size() - 1; j >= 0; j--)
+			for (int j = (int32)m_Notifications.size() - 1; j >= 0; j--)
 			{
 				if (m_Notifications[j].first == pPanel)
 				{
@@ -75,8 +70,8 @@ void UINotification::DeleteAll() noexcept
 	for (int i = (int32)m_Notifications.size() - 1; i >= 0; i--)
 	{
 		Game::GetGame()->GetGUIManager().Remove(m_Notifications[i].first);
-		m_Notifications.erase(m_Notifications.begin() + i);
 	}
+	m_Notifications.clear();
 	m_NotificationsToDelete.clear();
 }
 
@@ -104,6 +99,4 @@ void UINotification::CreateNotification(const std::string& text)
 	Game::GetGame()->GetGUIManager().Add(pPanel);
 
 	m_PixelsToMove += 60;
-
-	m_pAudioSourceSelect->Play();
 }

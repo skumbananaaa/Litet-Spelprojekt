@@ -38,6 +38,7 @@
     <ClInclude Include="Include\Graphics\GUI\Button.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIContext.h" />
     <ClInclude Include="Include\Graphics\GUI\GUIObject.h" />
+    <ClInclude Include="Include\Graphics\GUI\ProgressSelector.h" />
     <ClInclude Include="Include\Graphics\GUI\HoveringHandler.h" />
     <ClInclude Include="Include\Graphics\GUI\IHoverable.h" />
     <ClInclude Include="Include\Graphics\GUI\ISelectable.h" />
@@ -115,6 +116,7 @@
     <ClInclude Include="Include\World\Logger.h" />
     <ClInclude Include="Include\World\Room.h" />
     <ClInclude Include="Include\World\Scenarios\Fire\FireSprinkler.h" />
+    <ClInclude Include="Include\World\Settings.h" />
     <ClInclude Include="Include\World\Tile.h" />
     <ClInclude Include="Include\World\VisualAudioSource.h" />
     <ClInclude Include="Include\World\World.h" />
@@ -135,6 +137,7 @@
     <ClCompile Include="Source\Graphics\GUI\ProgressBar.cpp" />
     <ClCompile Include="Source\Graphics\Geometry\AnimatedMesh.cpp" />
     <ClCompile Include="Source\Graphics\GUI\ProgressButton.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\ProgressSelector.cpp" />
     <ClCompile Include="Source\Graphics\GUI\SelectionHandler.cpp" />
     <ClCompile Include="Source\Graphics\GUI\TextField.cpp" />
     <ClCompile Include="Source\Graphics\Material\AnimatedSkeleton.cpp" />
@@ -226,6 +229,7 @@
     <ClCompile Include="Source\World\Room.cpp" />
     <ClCompile Include="Source\World\Logger.cpp" />
     <ClCompile Include="Source\World\Scenarios\Fire\FireSprinkler.cpp" />
+    <ClCompile Include="Source\World\Settings.cpp" />
     <ClCompile Include="Source\World\Tile.cpp" />
     <ClCompile Include="Source\World\VisualAudioSource.cpp" />
     <ClCompile Include="Source\World\World.cpp" />

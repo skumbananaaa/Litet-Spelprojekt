@@ -90,7 +90,7 @@ bool OrderSleep::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 	}
 
 	glm::ivec3 goal = OrderWalk::m_GoalTile;
-	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y * 2).GetLevel()[goal.x][goal.z]).IsFireDetected())
 	{
 		return true;
 	}
@@ -126,7 +126,7 @@ bool OrderSleep::IsIdleOrder() noexcept
 	return true;
 }
 
-IOrder * OrderSleep::Clone() noexcept
+IOrder* OrderSleep::Clone() noexcept
 {
 	return new OrderSleep(this);
 }

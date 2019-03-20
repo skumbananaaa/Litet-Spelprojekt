@@ -11,6 +11,7 @@
 #include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Scenarios/ScenarioWater.h"
 #include "../../Include/ReplayHandler.h"
+#include <World/Settings.h>
 
 SceneGame::SceneGame(World* pWorld, bool hiddenCrew) 
 	: SceneInternal(false),
@@ -36,7 +37,7 @@ SceneGame::SceneGame(World* pWorld, bool hiddenCrew)
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
 
 	GetCamera().SetMaxPitch(-glm::two_pi<float>() / 64.0f);
-	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 11.0f, 41.0f);
+	GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 10.0f, 40.0f);
 }
 
 SceneGame::~SceneGame()
@@ -133,7 +134,7 @@ void SceneGame::OnUpdate(float dtS) noexcept
 		Game* game = Game::GetGame();
 		Window* window = &game->GetWindow();
 		game->GetGUIManager().DeleteChildren();
-		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800) / 2, (window->GetHeight() - 800) / 2, 800, 800, !GameState::HasCompletedScenarios());
+		m_pUIEndScreen = new UIEndScreen((window->GetWidth() - 800.0f) / 2.0f, (window->GetHeight() - 800.0f) / 2.0f, 800.0f, 800.0f, m_Lost);
 		game->GetGUIManager().Add(m_pUIEndScreen);
 	}
 
@@ -141,7 +142,8 @@ void SceneGame::OnUpdate(float dtS) noexcept
 	{
 		ReplayHandler::Update(dtS, this);
 
-		if (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE|| GameState::GetBurningAmount() > MAX_SHIPDAMAGE|| GameState::GetCrewHealth() < MIN_CREWHEALTH || GameState::HasCompletedScenarios())
+		m_Lost = (GameState::GetWaterLeakAmount() > MAX_WATERLEAKAGE || GameState::GetBurningAmount() > MAX_SHIPDAMAGE || GameState::GetCrewHealth() < MIN_CREWHEALTH);
+		if (m_Lost || GameState::HasCompletedScenarios())
 		{
 			m_IsGameOver = true;
 		}
@@ -208,8 +210,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 
 			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 			{
-				const float cameraRotationSensitivity = 0.005f;
-				glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
+				glm::vec2 deltaPosition = Settings::GetCameraRotateSensitivity() * (position - lastPosition);
 
 				camera.MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
 				camera.MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
@@ -219,14 +220,12 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 
 			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
 			{
-				const float cameraMoveSensitivityX = 0.5f;
-				const float cameraMoveSensitivityY = 0.025f;
-				glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
+				glm::vec2 deltaPosition = Settings::GetCameraMoveYSensitivity() * (position - lastPosition);
 				glm::vec3 moveOffset(0.0f);
 				moveOffset.x = camera.GetFront().x;
 				moveOffset.z = camera.GetFront().z;
 				moveOffset = glm::normalize(moveOffset) *  -deltaPosition.y;
-				moveOffset += camera.GetMoveWorldFromLocal(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f));
+				moveOffset += camera.GetMoveWorldFromLocal(glm::vec3(Settings::GetCameraMoveXSensitivity() * deltaPosition.x, 0.0f, 0.0f));
 
 				if (IsExtended())
 				{
@@ -234,16 +233,16 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 					glm::vec3 newLookAt = oldLookAt + moveOffset;
 
 					if (!camera.IsLookAtInBounds(newLookAt) &&
-						newLookAt.x >= 1.0f && newLookAt.x <= 31.0f &&
-						newLookAt.z >= 1.0f && newLookAt.z <= 41.0f)
+						newLookAt.x >= 1.0f && newLookAt.x <= 30.0f &&
+						newLookAt.z >= 1.0f && newLookAt.z <= 40.0f)
 					{
 						float xMove = -(float)IsExtended() * 10.0f;
 						float yOffset = -2.0f * (glm::floor(((((uint32)newLookAt.x - 1) % 10) / 5.0f)) - 0.5f);
-						float newY =  (oldLookAt.y / 2.0f) + yOffset;
+						float newY = (oldLookAt.y / 2.0f) + yOffset;
 						float lookAtBoundsOffset = -xMove * newY;
 
 						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
-							lookAtBoundsOffset + 11.0f, 41.0f);
+							glm::min(lookAtBoundsOffset + 11.0f, 30.0f), 40.0f);
 
 						moveOffset.y = 2.0f * yOffset;
 					}
@@ -252,6 +251,8 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 				camera.MoveWorldCoords(moveOffset, true);
 
 				m_pUICrewMember->SetCrewMember(nullptr);
+
+				std::cout << glm::to_string(camera.GetLookAt()) << std::endl;
 			}
 		}
 		else
@@ -275,8 +276,16 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 				{
 					float xMove = (float)IsExtended() * 10.0f;
 					float lookAtBoundsOffset = xMove * (camera.GetLookAt().y / 2.0f + 1.0f);
-					camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
-											   lookAtBoundsOffset + 11.0f, 41.0f);
+					if (IsExtended())
+					{
+						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
+							glm::min(lookAtBoundsOffset + 11.0f, 30.0f), 40.0f);
+					}
+					else
+					{
+						GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 10.0f, 40.0f);
+					}
+
 					camera.MoveWorldCoords(glm::vec3(xMove, 2.0f, 0.0f), true);
 					UpdateMaterialClipPlanes();
 				}
@@ -287,8 +296,16 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 				{
 					float xMove = -(float)IsExtended() * 10.0f;
 					float lookAtBoundsOffset = -xMove * (camera.GetLookAt().y / 2.0f - 1.0f);
-					camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
-											   lookAtBoundsOffset + 11.0f, 41.0f);
+					if (IsExtended())
+					{
+						camera.SetMinXZMaxXZLookAt(lookAtBoundsOffset + 1.0f, 1.0f,
+							glm::min(lookAtBoundsOffset + 11.0f, 30.0f), 40.0f);
+					}
+					else
+					{
+						GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 10.0f, 40.0f);
+					}
+
 					camera.MoveWorldCoords(glm::vec3(xMove, -2.0f, 0.0f), true);
 					UpdateMaterialClipPlanes();
 				}
@@ -296,10 +313,9 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 		}
 		else
 		{
-			const float cameraZoomSensitivity = 0.1f;
 			const glm::vec2& cNearFar = camera.GetMinMaxDistToLookAt();
 			float distanceBoost = glm::max(15.0f * camera.GetDistanceToLookAt() / cNearFar.y, 1.0f);
-			camera.MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
+			camera.MoveRelativeLookAt(PosRelativeLookAt::Zoom, Settings::GetCameraZoomSensitivity() * offset.y * distanceBoost);
 		}
 	}
 }
@@ -363,6 +379,15 @@ void SceneGame::OnKeyDown(KEY keycode)
 			{
 				case KEY_SPACE:
 				{
+					if (IsExtended() || IsExtending())
+					{
+						GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 10.0f, 40.0f);
+					}
+					else
+					{
+						GetCamera().SetMinXZMaxXZLookAt(1.0f, 1.0f, 11.0f, 40.0f);
+					}
+
 					ExtendScene();
 					UpdateMaterialClipPlanes();
 					break;
@@ -399,7 +424,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 
 					break;
 				}
-				case KEY_ENTER:
+				case KEY_R:
 				{
 					if (!ReplayHandler::IsReplaying())
 					{
@@ -435,7 +460,7 @@ void SceneGame::CreateAudio() noexcept
 {
 	AudioListener::SetPosition(glm::vec3(0.0f));
 	m_pAudioSourceBackground = AudioSource::CreateMusicSource(MUSIC::WAVES_AND_SEAGULLS);
-	m_pAudioSourceBackground->SetVolume(0.4);
+	m_pAudioSourceBackground->SetVolume(0.4f);
 	m_pAudioSourceBackground->SetPitch(1.0f);
 	m_pAudioSourceBackground->SetLooping(true);
 	m_pAudioSourceBackground->Play();
@@ -602,11 +627,15 @@ void SceneGame::RequestDoorClosed(uint32 doorColor)
 
 void SceneGame::SetUIVisible(bool visible) noexcept
 {
+	if (!ReplayHandler::IsReplaying())
+	{
+		m_pUIRequest->SetVisible(visible);
+		m_pUICrew->SetVisible(visible);
+	}
+
 	m_pUICrewMember->SetVisible(visible);
-	m_pUIRequest->SetVisible(visible);
 	m_pUILog->SetVisible(visible);
 
-	m_pUICrew->SetVisible(visible);
 	m_pUINotification->SetVisible(visible);
 }
 
@@ -632,6 +661,7 @@ void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)
 				if (((Crewmember*)object)->IsAbleToWalk())
 				{
 					m_Crew.ClearSelectedList();
+					m_pUICrew->Deselect();
 				}
 				object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 			}
@@ -685,15 +715,15 @@ GameObject* SceneGame::RayTestGameObjects()
 	glm::vec3 rayOrigin = GetCamera().GetPosition();
 	float elevation = GetCamera().GetLookAt().y;
 
-	float lastT = -1;
-	uint32 id = -1;
+	float lastT = -1.0f;
+	uint32 id = (uint32)-1;
 
-	for (int i = 0; i < (int32)m_PickableGameObjects.size(); i++)
+	for (uint32 i = 0; i < (uint32)m_PickableGameObjects.size(); i++)
 	{
 		int32 t = m_PickableGameObjects[i]->TestAgainstRay(rayDir, rayOrigin, elevation, GetExtension());
 		if (t > 0 && lastT == -1 || t >= 0 && t < lastT)
 		{
-			lastT = t;
+			lastT = (float)t;
 			id = i;
 		}
 	}

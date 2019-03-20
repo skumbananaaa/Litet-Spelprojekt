@@ -15,6 +15,7 @@
 
 Crewmember::Crewmember(World* world, const glm::vec3& position, const std::string& name, GroupType groupType)
 	: m_pAssisting(nullptr),
+	m_pAudioSourceScream(nullptr),
 	m_OrderHandler(this),
 	m_pUISelectedCrew(nullptr),
 	m_GearIsEquipped(false),
@@ -34,7 +35,6 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 	SetDirection(glm::vec3(-1.0f, 0.0f, 0.0f));
 	SetMaterial(MATERIAL::ANIMATED_MODEL);
 	InitAnimation(MESH::ANIMATED_MODEL_IDLE);
-	SetPosition(position);
 	//SetScale(glm::vec3(0.2f));
 	UpdateTransform();
 	m_LastKnownPosition = position;
@@ -70,6 +70,8 @@ Crewmember::Crewmember(World* world, const glm::vec3& position, const std::strin
 
 	m_ReportTimer = 0.0f;
 	m_ReportTime = 0.0f;
+
+	SetPosition(position);
 }
 
 Crewmember::~Crewmember()
@@ -418,9 +420,9 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 		};
 
 		float h[] = {
-			0.15,
-			0.9,
-			0.25
+			0.15f,
+			0.9f,
+			0.25f
 		};
 
 		float d1[] = {
@@ -550,7 +552,7 @@ void Crewmember::SetIsPicked(bool picked) noexcept
 		if (m_IsPicked)
 		{
 			m_pUISelectedCrew = new UISelectedCrew(GetName());
-			m_pUISelectedCrew->AddProgressListener(this);
+			m_pUISelectedCrew->AddProgressButtonListener(this);
 			Game::GetGame()->GetGUIManager().Add(m_pUISelectedCrew);
 			Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
 		}
@@ -610,7 +612,7 @@ void Crewmember::RequestReportPosition() noexcept
 	if (m_pUISelectedCrew && m_pUISelectedCrew->GetPercentage() >= 1.0f)
 	{
 		m_pUISelectedCrew->SetPercentage(0.0f);
-		m_pUISelectedCrew->StartAnimation(Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
+		m_pUISelectedCrew->StartAnimation((float)Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
 	}
 }
 

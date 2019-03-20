@@ -7,28 +7,41 @@
 #include "../../Include/Scenarios/ScenarioManager.h"
 #include <sstream>
 
+float UIEndScreen::s_CrewHealth;
+float UIEndScreen::s_BurningAmount;
+float UIEndScreen::s_WaterLeakAmount;
+bool UIEndScreen::s_Lost;
+
 UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost) : Panel(x, y, width, height)
 {
+	if (!ReplayHandler::IsReplaying())
+	{
+		s_CrewHealth = GameState::GetCrewHealth();
+		s_BurningAmount = GameState::GetBurningAmount();
+		s_WaterLeakAmount = GameState::GetWaterLeakAmount();
+		s_Lost = lost;
+	}
+
 	m_pTextViewTitle = new TextView(0, height - 50, width, 50, "Scenario Slut", true, 90);
 	
-	m_pTextViewEnd = new TextView(20, height - 120, width - 20, 50, lost ? "Du misslyckades, du är sämst. Vad gör du med ditt liv?" : "Du klarade det, bra jobbat vill du ha en medalj?", true, 80);
-	if (lost)
+	m_pTextViewEnd = new TextView(20, height - 120, width - 20, 50, s_Lost ? "Du misslyckades, du är sämst. Vad gör du med ditt liv?" : "Du klarade det, bra jobbat vill du ha en medalj?", true, 80);
+	if (s_Lost)
 	{
 		m_pTextViewEnd->SetTextColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	}
 
 	std::stringstream stream;
 	stream.precision(3);
-	stream << "Besättning:  " << GameState::GetCrewHealth() * 100.0f << "% av besättningen klarade sig utan skador";
+	stream << "Besättning:  " << s_CrewHealth * 100.0f << "% av besättningen klarade sig utan skador";
 	m_pTextViewCrew = new TextView(20, height - 170, width - 20, 50, stream.str(), false);
 
 	stream.precision(2);
 	stream.str("");
-	stream << "Bränder:  " << GameState::GetBurningAmount() * 100.0f << "% av skeppet skadades av brand";
+	stream << "Bränder:  " << s_BurningAmount * 100.0f << "% av skeppet skadades av brand";
 	m_pTextViewFire = new TextView(20, height - 220, width - 20, 50, stream.str(), false);
 
 	stream.str("");
-	stream << "Vattenläckor:  " << GameState::GetWaterLeakAmount() << " av 3 våningar fylldes med vatten";
+	stream << "Vattenläckor:  " << s_WaterLeakAmount << " av 3 våningar fylldes med vatten";
 	m_pTextViewWater = new TextView(20, height - 270, width - 20, 50, stream.str(), false);
 
 	m_pButtonExit = new Button(width / 2 - (width - 600) - 25, 10, width - 600, 50, "Avsluta");

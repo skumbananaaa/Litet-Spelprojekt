@@ -95,7 +95,7 @@ void UICrew::OnRenderGUIObject(GUIContext* context, GUIObject* object)
 void UICrew::OnButtonPressed(Button* button)
 {
 	ProgressButton* progressButton = (ProgressButton*)button;
-	progressButton->StartAnimation(Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
+	progressButton->StartAnimation((float)Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
 	progressButton->SetText("Inväntar svar");
 	progressButton->SetTextColor(GUIContext::COLOR_BLACK);
 }
@@ -153,7 +153,7 @@ ProgressButton* UICrew::CreateButton(const std::string& text, const glm::vec4& c
 	button->SetTextOffset(textOffset);
 	button->SetUserData(reinterpret_cast<void*>((uint64)shipnumber));
 	button->AddButtonListener(this);
-	button->AddProgressListener(this);
+	button->AddProgressButtonListener(this);
 	m_HoveringHandler.AddHoverable(button);
 	return button;
 }

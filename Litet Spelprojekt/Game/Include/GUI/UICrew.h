@@ -5,7 +5,7 @@
 #include <Graphics/GUI/HoveringHandler.h>
 #include <Graphics/GUI/ProgressButton.h>
 
-class UICrew : public IExpandableListener, public ISelectionListener, public IHoveringListener, public IExternalUIRenderer, public IButtonListener, public IProgressListener
+class UICrew : public IExpandableListener, public ISelectionListener, public IHoveringListener, public IExternalUIRenderer, public IButtonListener, public IProgressButtonListener
 {
 public:
 	UICrew(float x, float y, float width, float height, Crew* crew);

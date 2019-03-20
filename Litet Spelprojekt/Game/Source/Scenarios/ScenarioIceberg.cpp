@@ -25,6 +25,13 @@ void ScenarioIceberg::BeginReplay(SceneGame* pScene, void* userData) noexcept
 	ScenarioManager::StartScenario(this);
 }
 
+void ScenarioIceberg::DestroyUserData(void*& userData) noexcept
+{
+	std::pair<glm::vec3, glm::vec3>* pair = reinterpret_cast<std::pair<glm::vec3, glm::vec3>*>(userData);
+	DeleteSafe(pair);
+	userData = pair;
+}
+
 void ScenarioIceberg::Init(World* pWorld) noexcept
 {
 	SetTimeOfNextOutBreak(1.0f);

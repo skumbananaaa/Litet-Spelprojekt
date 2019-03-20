@@ -45,9 +45,9 @@ void ProgressButton::SetProgressColor(const glm::vec4& color)
 	}
 }
 
-void ProgressButton::AddProgressListener(IProgressListener* listener)
+void ProgressButton::AddProgressButtonListener(IProgressButtonListener* listener)
 {
-	if (!Contains<IProgressListener>(m_Listeners, listener))
+	if (!Contains<IProgressButtonListener>(m_Listeners, listener))
 	{
 		m_Listeners.push_back(listener);
 	}
@@ -57,10 +57,10 @@ void ProgressButton::AddProgressListener(IProgressListener* listener)
 	}
 }
 
-void ProgressButton::RemoveProgressListener(IProgressListener* listener)
+void ProgressButton::RemoveProgressButtonListener(IProgressButtonListener* listener)
 {
 	int32 counter = 0;
-	for (IProgressListener* object : m_Listeners)
+	for (IProgressButtonListener* object : m_Listeners)
 	{
 		if (object == listener)
 		{
@@ -93,7 +93,7 @@ void ProgressButton::OnUpdate(float dtS)
 			m_Timer = 0;
 			RemoveRealTimeRenderer();
 			RequestRepaint();
-			for (IProgressListener* listener : m_Listeners)
+			for (IProgressButtonListener* listener : m_Listeners)
 			{
 				listener->OnProgressAnimationEnd(this);
 			}

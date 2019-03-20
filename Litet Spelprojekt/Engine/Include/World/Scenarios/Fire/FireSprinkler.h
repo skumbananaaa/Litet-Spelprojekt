@@ -10,7 +10,11 @@ class API FireSprinkler : public GameObject
 {
 	static constexpr float SPRINKLER_RADIUS = 5.0f;
 	static constexpr float SPRINKLER_RADIUS_SQRD = SPRINKLER_RADIUS * SPRINKLER_RADIUS;
-	static constexpr float FIRE_EXTINGUISH_BY_SPRINKLER_RATE = 1000.0f * RATE_OF_FIRE_SPREAD;
+	static constexpr float SPRINKLER_RESERVOIR_MAX = 1.0f;
+	static constexpr float SPRINKLER_RESERVOIR_MAX_MINUS_EPSILON = 1.0f - 0.00001f;
+	static constexpr float SPRINKLER_WATER_LOSS_PER_SECOND = 1.0f / (2.0f * 60.0f);
+	static constexpr float SPRINKLER_WATER_GAIN_PER_SECOND = 1.0f / (3.0f * 60.0f);
+	static constexpr float SPRINKLER_SECONDS_TO_TURN_OFF = 10.0f;
 
 public:
 	FireSprinkler(int32 source);
@@ -34,6 +38,8 @@ private:
 	MeshEmitter* m_pParticleEmitter;
 	glm::vec3 m_MinBounds;
 	glm::vec3 m_MaxBounds;
+	float m_WaterReservoir;
+	float m_TimeToTurnOff;
 };
 
 inline bool FireSprinkler::IsInsideBoundingBox(const glm::ivec2& pos) const noexcept

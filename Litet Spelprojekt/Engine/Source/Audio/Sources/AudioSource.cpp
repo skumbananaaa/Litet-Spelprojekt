@@ -1,5 +1,8 @@
 #include <EnginePch.h>
 #include <Audio/Sources/AudioSource.h>
+#include <World/Settings.h>
+
+std::vector<AudioSource*> AudioSource::s_References;
 
 AudioSource::AudioSource(const SoundEffect& soundEffect, const glm::vec3& pos, const glm::vec3& vel) noexcept
 {
@@ -10,6 +13,8 @@ AudioSource::AudioSource(const SoundEffect& soundEffect, const glm::vec3& pos, c
 	alSourcef(m_SourceId, AL_GAIN, 1.0f);
 	alSourcef(m_SourceId, AL_PITCH, 1.0f);
 	alSourcei(m_SourceId, AL_LOOPING, FALSE);
+	m_IsMusic = false;
+	s_References.push_back(this);
 }
 
 AudioSource::AudioSource(const Music& music) noexcept
@@ -20,10 +25,20 @@ AudioSource::AudioSource(const Music& music) noexcept
 	alSourcef(m_SourceId, AL_PITCH, 1.0f);
 	alSourcei(m_SourceId, AL_LOOPING, FALSE);
 	alSourcef(m_SourceId, AL_ROLLOFF_FACTOR, 0.0f);
+	m_IsMusic = true;
+	s_References.push_back(this);
 }
 
 AudioSource::~AudioSource()
 {
+	for (int i = 0; i < s_References.size(); i++)
+	{
+		if (s_References[i] == this)
+		{
+			s_References.erase(s_References.begin() + i);
+			break;
+		}
+	}
 	alDeleteSources(1, &m_SourceId);
 }
 
@@ -31,6 +46,15 @@ void AudioSource::Play() const noexcept
 {
 	if (!IsPlaying())
 	{
+		if (m_IsMusic)
+		{
+			SetVolume(Settings::GetVolumeMusic());
+		}
+		else
+		{
+			SetVolume(Settings::GetVolumeSoundEffect());
+		}
+
 		alSourcePlay(m_SourceId);
 	}
 }
@@ -42,16 +66,14 @@ void AudioSource::Pause() const noexcept
 
 void AudioSource::TogglePause() noexcept
 {
-	if (m_Paused) 
+	if (IsPlaying())
 	{
-		alSourcePlay(m_SourceId);
+		Pause();
 	}
-	else 
+	else
 	{
-		alSourcePause(m_SourceId);
+		Play();
 	}
-
-	m_Paused = !m_Paused;
 }
 
 void AudioSource::Stop() const noexcept
@@ -123,3 +145,24 @@ AudioSource* AudioSource::CreateMusicSource(int32 music)
 	return nullptr;
 }
 
+void AudioSource::SetMusicVolume(float volume) noexcept
+{
+	for (int i = 0; i < s_References.size(); i++)
+	{
+		if (s_References[i]->m_IsMusic)
+		{
+			s_References[i]->SetVolume(volume);
+		}
+	}
+}
+
+void AudioSource::SetSoundVolume(float volume) noexcept
+{
+	for (int i = 0; i < s_References.size(); i++)
+	{
+		if (!s_References[i]->m_IsMusic)
+		{
+			s_References[i]->SetVolume(volume);
+		}
+	}
+}

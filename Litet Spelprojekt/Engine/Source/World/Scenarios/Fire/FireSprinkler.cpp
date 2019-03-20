@@ -8,7 +8,9 @@ FireSprinkler::FireSprinkler(int32 source) : GameObject(),
 	m_HasDetectedSmoke(false),
 	m_pParticleEmitter(nullptr),
 	m_MinBounds(FLT_MAX, 0.0f, FLT_MAX),
-	m_MaxBounds(-FLT_MAX, 0.0f, -FLT_MAX)
+	m_MaxBounds(-FLT_MAX, 0.0f, -FLT_MAX),
+	m_WaterReservoir(SPRINKLER_RESERVOIR_MAX),
+	m_TimeToTurnOff(0.0f)
 {
 	//Set particleemitters to be updated
 	m_IsTickable = true;
@@ -38,6 +40,7 @@ bool FireSprinkler::HasDetectedSmoke() const noexcept
 
 void FireSprinkler::TurnOff() noexcept
 {
+	m_TimeToTurnOff = 0.0f;
 	m_HasDetectedSmoke = false;
 	m_pAudioSrc->Stop();
 
@@ -56,6 +59,17 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 {
 	if (!m_HasDetectedSmoke)
 	{
+		m_WaterReservoir += SPRINKLER_WATER_GAIN_PER_SECOND * dt;
+		m_WaterReservoir = glm::min<float>(m_WaterReservoir, SPRINKLER_RESERVOIR_MAX);
+		return;
+	}
+
+	m_WaterReservoir -= SPRINKLER_WATER_LOSS_PER_SECOND * dt;
+
+	if (m_WaterReservoir < 0.0f)
+	{
+		m_WaterReservoir = glm::max<float>(m_WaterReservoir, 0.0f);
+		TurnOff();
 		return;
 	}
 
@@ -71,9 +85,9 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 	uint32 currentRoomIndex = ppLevel[tilePos.x][tilePos.z];
 	bool allFireInRoomExtinguished = true;
 
-	for (uint32 x = 0; x < levelSizeX; x++)
+	for (int32 x = 0; x < levelSizeX; x++)
 	{
-		for (uint32 z = 0; z < levelSizeZ; z++)
+		for (int32 z = 0; z < levelSizeZ; z++)
 		{
 			TileData& tile = ppLevelData[x][z];
 
@@ -85,7 +99,7 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 
 					if (glm::length2(toVector) < SPRINKLER_RADIUS_SQRD)
 					{
-						tile.Temp -= FIRE_EXTINGUISH_BY_SPRINKLER_RATE * dt;
+						tile.Temp = 30.0f;
 					}
 				}
 
@@ -118,7 +132,16 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 
 	if (allFireInRoomExtinguished)
 	{
-		TurnOff();
+		m_TimeToTurnOff += dt;
+
+		if (m_TimeToTurnOff > SPRINKLER_SECONDS_TO_TURN_OFF)
+		{
+			TurnOff();
+		}
+	}
+	else
+	{
+		m_TimeToTurnOff = 0.0f;
 	}
 }
 
@@ -143,12 +166,12 @@ void FireSprinkler::OnSmokeDetected() noexcept
 		{
 			if (currentRoomIndex == ppLevel[x][z])
 			{
-				TileData& tile = ppLevelData[x][z];
-
 				m_MinBounds.x = glm::min<float>(m_MinBounds.x, (float)x);
 				m_MinBounds.z = glm::min<float>(m_MinBounds.z, (float)z);
 				m_MaxBounds.x = glm::max<float>(m_MaxBounds.x, (float)x);
 				m_MaxBounds.z = glm::max<float>(m_MaxBounds.z, (float)z);
+
+				TileData& tile = ppLevelData[x][z];
 
 				for (uint32 i = tile.NrOfBaseGameObjects; i < tile.GameObjects.size(); i++)
 				{
@@ -156,7 +179,7 @@ void FireSprinkler::OnSmokeDetected() noexcept
 
 					if (pFireSprinkler != nullptr)
 					{
-						if (!pFireSprinkler->HasDetectedSmoke())
+						if (!pFireSprinkler->HasDetectedSmoke() && pFireSprinkler->m_WaterReservoir > SPRINKLER_RESERVOIR_MAX_MINUS_EPSILON)
 						{
 							pFireSprinkler->OnSmokeDetected();
 						}
@@ -198,4 +221,7 @@ void FireSprinkler::OnSmokeDetected() noexcept
 	{
 		std::cout << "(FireSprinkler) Scene is null when smoke detected!" << std::endl;
 	}
+
+	std::cout << "Min Sprinkler Bounds: " << glm::to_string(m_MinBounds) << std::endl;
+	std::cout << "Max Sprinkler Bounds: " << glm::to_string(m_MaxBounds) << std::endl;
 }

@@ -26,10 +26,10 @@ void UIReplay::RenderProgress(GUIContext* context, float x, float y) noexcept
 	std::stringstream stream;
 	stream.precision(3);
 	stream << ReplayHandler::GetElapsedTime() << " s";
-	static float width = 6.0F;
+	float xPos = GetWidth() * GetPercentage();
 	Window& pWindow = Game::GetGame()->GetWindow();
-	context->RenderText(stream.str(), GetWidth() * GetPercentage() - 20, y + GetHeight() * 2.0F, pWindow.GetWidth(), pWindow.GetHeight(), 0.5F, GUIContext::COLOR_WHITE, CENTER_VERTICAL);
-	context->RenderTexture(GetDefaultTexture(), GetWidth() * GetPercentage() - width / 2.0F, y - GetHeight() / 2.0F, width, GetHeight() * 2, GUIContext::COLOR_WHITE);
+	context->RenderText(stream.str(), xPos - 20.0F, y + GetHeight() * 2.0F, pWindow.GetWidth(), pWindow.GetHeight(), 0.5F, GUIContext::COLOR_WHITE, CENTER_VERTICAL);
+	context->RenderTexture(GetDefaultTexture(), xPos - 3.0F, y - GetHeight() / 2.0F, 6, GetHeight() * 2, GUIContext::COLOR_WHITE);
 }
 
 void UIReplay::OnAdded(GUIObject * parent)

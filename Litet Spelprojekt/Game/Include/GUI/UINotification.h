@@ -1,6 +1,5 @@
 #pragma once
 #include <Graphics/GUI/Panel.h>
-#include <Audio/Sources/AudioSource.h>
 
 class UINotification : public IExternalUIRenderer
 {
@@ -24,5 +23,4 @@ private:
 	glm::vec4 m_Bounds;
 	std::vector<std::pair<Panel*, float>> m_Notifications;
 	std::vector<Panel*> m_NotificationsToDelete;
-	AudioSource* m_pAudioSourceSelect;
 };

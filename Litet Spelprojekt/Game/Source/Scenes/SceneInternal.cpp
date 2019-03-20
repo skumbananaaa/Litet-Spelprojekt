@@ -97,7 +97,7 @@ void SceneInternal::OnUpdate(float dtS) noexcept
 		if (s_IcebergPos.y >= 60.0F)
 		{
 			s_IcebergPos.y = -60.0F;
-			s_IcebergPos.x = (Random::GenerateBool() * 2 - 1) * 30 + 5;
+			s_IcebergPos.x = (Random::GenerateBool() * 2 - 1) * 30.0f + 5.0f;
 		}
 
 		WaterOutdoorMaterial* pMaterial = dynamic_cast<WaterOutdoorMaterial*> (ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR));

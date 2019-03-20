@@ -1,9 +1,20 @@
 #include "../../Include/Orders/OrderWork.h"
 #include "../../Include/Crewmember.h"
+#include "../../Include/Scenes/SceneGame.h"
 #include <World/World.h>
+
+OrderWork::OrderWork(OrderWork* other) : OrderWalk(other)
+{
+	m_Name = other->m_Name;
+	m_Position = glm::vec3(4.0f);
+	m_Timer = 45.0f;
+	m_IsAtInstrument = false;
+}
+
 OrderWork::OrderWork(const glm::ivec3& instrumentTile, GameObject* pInstrument)
 	: OrderWalk(instrumentTile)
 {
+	m_Name = pInstrument->GetName();
 	m_pInstrument = pInstrument;
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 45.0f;
@@ -107,4 +118,15 @@ std::string OrderWork::GetName() noexcept
 bool OrderWork::IsIdleOrder() noexcept
 {
 	return true;
+}
+
+IOrder* OrderWork::Clone() noexcept
+{
+	return new OrderWork(this);
+}
+
+void OrderWork::InitClone(SceneGame * pScene, void * userData) noexcept
+{
+	m_pInstrument = pScene->GetGameObject(m_Name);
+	OrderWalk::InitClone(pScene, userData);
 }

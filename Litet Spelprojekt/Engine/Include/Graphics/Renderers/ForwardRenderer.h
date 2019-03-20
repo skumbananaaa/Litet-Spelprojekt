@@ -24,8 +24,8 @@ public:
 	ForwardRenderer();
 	~ForwardRenderer();
 
-	void DrawScene(const Scene& scene, const World* pWorld, float dtS) const override final;
-	void SetParticleClipPlane(const glm::vec4& clipPlane) noexcept override final;
+	virtual void DrawScene(const Scene& scene, const World* pWorld, float dtS) const override final;
+	__declspec(noinline) virtual void SetParticleClipPlane(const glm::vec4& clipPlane) noexcept override final;
 
 private:
 	void Create() noexcept;

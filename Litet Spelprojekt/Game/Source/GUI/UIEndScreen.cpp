@@ -1,6 +1,10 @@
 ﻿#include "..\..\Include\GUI\UIEndScreen.h"
 #include "..\..\Include\Game.h"
 #include "..\..\Include\GameState.h"
+#include "../../Include/Scenes/SceneReplay.h"
+#include "../../Include/ReplayHandler.h"
+#include "../../Include/Orders/OrderSchedule.h"
+#include "../../Include/Scenarios/ScenarioManager.h"
 #include <sstream>
 
 UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost) : Panel(x, y, width, height)
@@ -27,7 +31,11 @@ UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost)
 	stream << "Vattenläckor:  " << GameState::GetWaterLeakAmount() << " av 3 våningar fylldes med vatten";
 	m_pTextViewWater = new TextView(20, height - 270, width - 20, 50, stream.str(), false);
 
-	m_pButtonExit = new Button((width - (width - 600)) / 2, 10, width - 600, 50, "Avsluta");
+	m_pButtonExit = new Button(width / 2 - (width - 600) - 25, 10, width - 600, 50, "Avsluta");
+	m_pButtonReplay = new Button(width / 2 + 25, 10, width - 600, 50, "Repris (WIP)");
+	m_pButtonExit->AddButtonListener(this);
+	m_pButtonReplay->AddButtonListener(this);
+
 	m_pLog = new ListScrollable((width - (width - 40)) / 2, 70, (width - 40), height - 400);
 	m_pLog->SetBackgroundColor(glm::vec4(0.1F, 0.1F, 0.1F, 1.0F));
 
@@ -37,6 +45,7 @@ UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost)
 	Add(m_pTextViewFire);
 	Add(m_pTextViewWater);
 	Add(m_pButtonExit);
+	Add(m_pButtonReplay);
 	Add(m_pLog);
 
 	for (int32 i = Logger::GetNumEntries() - 1; i >= 0; i--)
@@ -46,8 +55,6 @@ UIEndScreen::UIEndScreen(float x, float y, float width, float height, bool lost)
 		textView->SetBackgroundColor(color);
 		m_pLog->Add(textView);
 	}
-
-	m_pButtonExit->AddButtonListener(this);
 
 	SetBorderColor(GUIContext::COLOR_BLACK);
 	SetBoderThickness(3);
@@ -63,6 +70,35 @@ void UIEndScreen::OnButtonPressed(Button* button)
 	if (button == m_pButtonExit)
 	{
 		Game::GetGame()->SetScene(Game::GetGame()->m_pSceneMenu);
+	}
+	else if (button == m_pButtonReplay)
+	{
+		OrderSchedule::Release();
+		ScenarioManager::Reset();
+		ResourceHandler::ResetGameObjectCounters();
+
+		if (!ReplayHandler::IsReplaying())
+		{
+			ReplayHandler::StartReplay();
+		}
+		else
+		{
+			ReplayHandler::SoftReset();
+		}
+
+		World* pWorld = WorldSerializer::Read("world.json");
+
+		////Enable clipplane for wallmaterial
+		ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)->SetCullMode(CULL_MODE_NONE);
+		ResourceHandler::GetMaterial(MATERIAL::BULKHEADS_STANDARD)->SetCullMode(CULL_MODE_NONE);
+
+		SceneReplay* pSceneReplay = new SceneReplay(pWorld);
+
+		pWorld->Generate(*pSceneReplay);
+
+		pWorld->CopyRoomShadows(*pSceneReplay, Game::GetGame()->m_pSceneGame->GetWorld());
+
+		Game::GetGame()->StartGame(pSceneReplay);
 	}
 }
 

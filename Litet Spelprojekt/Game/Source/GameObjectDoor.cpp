@@ -39,6 +39,7 @@ bool GameObjectDoor::AccessRequest(uint32 shipNr) noexcept
 {
 	if (std::find(m_AccessQueue.begin(), m_AccessQueue.end(), shipNr) == m_AccessQueue.end())
 	{
+		std::cout << Game::GetGame()->m_pSceneGame->GetCrew()->GetMember(shipNr)->GetName() << " Door ADD" << std::endl;
 		m_AccessQueue.push_back(shipNr);
 		return m_AccessQueue.size() == 1;
 	}
@@ -50,8 +51,16 @@ bool GameObjectDoor::RemoveFromQueue(uint32 shipNr) noexcept
 	std::vector<uint32>::iterator it = std::find(m_AccessQueue.begin(), m_AccessQueue.end(), shipNr);
 	if (it != m_AccessQueue.end())
 	{
-		m_AccessQueue.erase(it);
-		return m_AccessQueue.empty();
+		if (m_AccessQueue.size() != 1 || IsClosed())
+		{
+			std::cout << Game::GetGame()->m_pSceneGame->GetCrew()->GetMember(shipNr)->GetName() << " Door REMOVE" << std::endl;
+			m_AccessQueue.erase(it);
+			return m_AccessQueue.empty();
+		}
+		else
+		{
+			return true;
+		}
 	}
 	return false;
 }

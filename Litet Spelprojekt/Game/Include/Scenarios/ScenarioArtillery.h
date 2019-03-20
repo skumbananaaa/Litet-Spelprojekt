@@ -12,6 +12,8 @@ public:
 	ScenarioArtillery(uint32 numInstances);
 	virtual ~ScenarioArtillery();
 
+	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void Release() noexcept override;
 	virtual void OnStart(SceneGame* scene) noexcept override;

@@ -5,6 +5,7 @@
 std::queue<IRunnable*> ThreadHandler::s_ExecutionQueue;
 std::vector<IMultiUpdater*> ThreadHandler::s_MultiUpdaters;
 bool ThreadHandler::s_Exit = true;
+bool ThreadHandler::s_PauseExecution = false;
 std::thread ThreadHandler::s_Thread1;
 std::thread ThreadHandler::s_Thread2;
 std::mutex ThreadHandler::s_Mutex1;
@@ -36,6 +37,11 @@ void ThreadHandler::RemoveMultiUpdater(IMultiUpdater* pUpdater)
 		}
 	}
 	s_Mutex2.unlock();
+}
+
+void ThreadHandler::SetExecutionPaused(bool pause)
+{
+	s_PauseExecution = pause;
 }
 
 void ThreadHandler::Init() noexcept
@@ -101,7 +107,10 @@ void ThreadHandler::Run2() noexcept
 		s_Mutex2.lock();
 		for (int i = 0; i < s_MultiUpdaters.size(); i++)
 		{
-			s_MultiUpdaters[i]->UpdateParallel(deltaTime);
+			if (!s_PauseExecution)
+			{
+				s_MultiUpdaters[i]->UpdateParallel(deltaTime);
+			}
 		}
 		s_Mutex2.unlock();
 

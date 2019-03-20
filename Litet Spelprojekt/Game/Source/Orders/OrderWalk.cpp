@@ -7,6 +7,15 @@
 #include "../../Include/GameObjectDoor.h"
 #include <World/Logger.h>
 #include <System/Random.h>
+#include "../../Include/Orders/ReplayablePosition.h"
+
+OrderWalk::OrderWalk(OrderWalk* other) : IOrder(other),
+	m_pPathFinder(nullptr),
+	m_pPath(nullptr),
+	m_IsPathReady(false)
+{
+	m_GoalTile = other->m_GoalTile;
+}
 
 OrderWalk::OrderWalk(const glm::ivec3& goalTile):
 	m_pPathFinder(nullptr),
@@ -44,7 +53,8 @@ void OrderWalk::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noex
 		}
 	}
 
-	ThreadHandler::RequestExecution(this);
+	//ThreadHandler::RequestExecution(this);
+	RunParallel();
 }
 
 bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float dtS) noexcept
@@ -108,10 +118,10 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 				}
 			}
 		}
-		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() && m_OopsIForgot > pCrewmember->GetForgetfulness())
+		else if (door1->RemoveFromQueue(pCrewmember->GetShipNumber()) && !door1->IsClosed() /*&& crewTile != m_TargetTile && m_OopsIForgot > pCrewmember->GetForgetfulness()*/)
 		{
 			// Close door after passing through
-			door1->AccessRequest(pCrewmember->GetShipNumber());
+			//door1->AccessRequest(pCrewmember->GetShipNumber());
 			if (door1->IsOpen())
 			{
 				pCrewmember->SetDirection(-pCrewmember->GetDirection());
@@ -155,12 +165,12 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 		if (room.IsFireDetected())
 		{
-			pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+			GiveOrderInbred(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 		}
 
 		if (room.IsFloodDetected())
 		{
-			pCrewmember->GiveOrder(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
+			GiveOrderInbred(new OrderWalk(m_GoalTile * glm::ivec3(1, 2, 1)));
 		}
 	}
 
@@ -171,8 +181,14 @@ bool OrderWalk::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, float
 
 void OrderWalk::OnEnded(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
 {
-	//Crewmember* pCrewmember = GetCrewMember();
-	//pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_IDLE);
+	Crewmember* pCrewMember = GetCrewMember();
+	new ReplayablePosition(pCrewMember->GetPosition(), pCrewMember->GetShipNumber());
+}
+
+void OrderWalk::OnAborted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
+{
+	Crewmember* pCrewMember = GetCrewMember();
+	new ReplayablePosition(pCrewMember->GetPosition(), pCrewMember->GetShipNumber());
 }
 
 bool OrderWalk::CanBeStackedWithSameType() noexcept
@@ -214,6 +230,11 @@ bool OrderWalk::CanExecuteIfHurt() noexcept
 	return true;
 }
 
+IOrder* OrderWalk::Clone() noexcept
+{
+	return new OrderWalk(this);
+}
+
 bool OrderWalk::FollowPath(float dtS) noexcept
 {
 	Crewmember* pCrewmember = GetCrewMember();
@@ -244,7 +265,8 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		{
 			pCrewmember->SetDirection(glm::vec3(move.x, 0, move.z));
 			pCrewmember->Move(pCrewmember->GetDirection(), true, dtS);
-			pCrewmember->SetPosition(glm::vec3(pCrewmember->GetPosition().x, m_TargetPos.y, pCrewmember->GetPosition().z));
+			const glm::vec3& newPosition = pCrewmember->GetPosition();
+			pCrewmember->SetPosition(glm::vec3(newPosition.x, m_TargetPos.y, newPosition.z));
 		}
 	}
 	else

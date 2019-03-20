@@ -1,10 +1,20 @@
 #include "../../Include/Orders/OrderEat.h"
 #include "../../Include/Crewmember.h"
+#include "../../Include/Game.h"
 #include <World/World.h>
+
+OrderEat::OrderEat(OrderEat* other) : OrderWalk(other)
+{
+	m_Name = other->m_Name;
+	m_Position = glm::vec3(4.0f);
+	m_Timer = 20.0f;
+	m_IsAtChair = false;
+}
 
 OrderEat::OrderEat(const glm::ivec3& chairTile, GameObject* pChair)
 	: OrderWalk(chairTile)
 {
+	m_Name = pChair->GetName();
 	m_pChair = pChair;
 	m_Position = glm::vec3(4.0f);
 	m_Timer = 20.0f;
@@ -13,6 +23,7 @@ OrderEat::OrderEat(const glm::ivec3& chairTile, GameObject* pChair)
 
 OrderEat::~OrderEat()
 {
+
 }
 
 void OrderEat::OnStarted(Scene* pScene, World* pWorld, Crew* pCrewMembers) noexcept
@@ -110,4 +121,15 @@ std::string OrderEat::GetName() noexcept
 bool OrderEat::IsIdleOrder() noexcept
 {
 	return true;
+}
+
+IOrder* OrderEat::Clone() noexcept
+{
+	return new OrderEat(this);
+}
+
+void OrderEat::InitClone(SceneGame * pScene, void * userData) noexcept
+{
+	m_pChair = pScene->GetGameObject(m_Name);
+	OrderWalk::InitClone(pScene, userData);
 }

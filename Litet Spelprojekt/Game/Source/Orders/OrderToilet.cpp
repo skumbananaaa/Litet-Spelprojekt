@@ -83,7 +83,7 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 	}
 	glm::ivec3 goal = OrderWalk::m_GoalTile;
 
-	if (pWorld->GetRoom(pWorld->GetLevel(goal.y).GetLevel()[goal.x][goal.z]).IsFireDetected())
+	if (pWorld->GetRoom(pWorld->GetLevel(goal.y * 2).GetLevel()[goal.x][goal.z]).IsFireDetected())
 	{
 		return true;
 	}

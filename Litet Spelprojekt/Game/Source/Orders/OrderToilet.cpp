@@ -39,7 +39,7 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 			m_IsAtToilet = true;
 			Crewmember* pCrewmember = GetCrewMember();
 			m_Position = pCrewmember->GetPosition();
-
+			const glm::vec3& toiletPosition = m_pToilet->GetPosition();
 			pCrewmember->UpdateAnimatedMesh(MESH::ANIMATED_MODEL_SITTING);
 
 			float yaw = m_pToilet->GetRotation().w;
@@ -56,22 +56,22 @@ bool OrderToilet::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMembers, flo
 			
 			if (rot == 0)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(-0.1f, 0.0f, 0.0f));
+				pCrewmember->SetPosition(toiletPosition);
 				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(270.0f)));
 			}
 			else if (rot == 1)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, 0.1f));
+				pCrewmember->SetPosition(toiletPosition);
 				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(0.0f)));
 			}
 			else if (rot == 2)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(0.1f, 0.0f, 0.0f));
+				pCrewmember->SetPosition(toiletPosition);
 				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(90.0f)));
 			}
 			else if (rot == 3)
 			{
-				pCrewmember->SetPosition(m_Position + glm::vec3(0.0f, 0.0f, -0.1f));
+				pCrewmember->SetPosition(toiletPosition);
 				pCrewmember->SetRotation(glm::vec4(0.0f, 1.0f, 0.0f, glm::radians<float>(180.0f)));
 			}
 		}

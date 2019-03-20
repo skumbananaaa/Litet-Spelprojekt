@@ -133,11 +133,11 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 			std::cout << "No metadata" << std::endl;
 		}
 		
+		//making space for the vertex attributes and indices.
 		entries.resize(pScene->mNumMeshes);
 		std::cout << "Number of Meshes in file: " << entries.size() << std::endl;
-
-		//making space for the vertex attributes and indices.
 		std::vector<aiMesh*> paiMeshes;
+
 
 		std::cout << "Loading data..." << std::endl;
 		//counting the number of indices and vertices in mesh
@@ -218,8 +218,6 @@ AnimatedMesh* AnimatedMesh::ReadColladaFile(const char* pFilename)
 					pBones[vertexID].AddBoneData(boneIndex, weight);
 				}
 			}
-
-			//////load bones and send them to VAO
 		}
 
 		AnimatedMesh* pResult = new AnimatedMesh(verts.data(), indices.data(), pBones, nrOfVerts, nrOfIndices, nrOfbones, globalTransform, boneMap, boneOffsets, pRootNode, pScene, importer, entries);

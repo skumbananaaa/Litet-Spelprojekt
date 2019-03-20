@@ -136,12 +136,13 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 		}
 	}
 
+	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
 	SkyBoxPass(mainCamera, scene);
 
-	glQueryCounter(m_pCurrentQuery->pQueries[3], GL_TIMESTAMP);
+	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
 	MainPass(mainCamera, scene, pWorld);
 
-	glQueryCounter(m_pCurrentQuery->pQueries[4], GL_TIMESTAMP);
+	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
 	AnimationPass(dtS, scene, pWorld);
 
 	if (pWorld != nullptr)
@@ -152,10 +153,8 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 		}
 	}
 
-	glQueryCounter(m_pCurrentQuery->pQueries[5], GL_TIMESTAMP);
-	ParticlePass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[6], GL_TIMESTAMP);
-
+	ParticlePass(mainCamera, scene);
 	glQueryCounter(m_pCurrentQuery->pQueries[7], GL_TIMESTAMP);
 
 	//Get query results
@@ -164,18 +163,17 @@ void ForwardRenderer::DrawScene(const Scene& scene, const World* pWorld, float d
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[0], GL_QUERY_RESULT, &startTime);
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[1], GL_QUERY_RESULT, &stopTime);
 	m_FrameTimes.ReflectionPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
-
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[2], GL_QUERY_RESULT, &startTime);
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[3], GL_QUERY_RESULT, &stopTime);
 	m_FrameTimes.DepthPrePass += static_cast<float>(stopTime - startTime) / 1000000.0f;
 	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[4], GL_QUERY_RESULT, &startTime);
-	m_FrameTimes.LightPass += static_cast<float>(startTime - stopTime) / 1000000.0f;
-	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[5], GL_QUERY_RESULT, &stopTime);
-	m_FrameTimes.AnimationPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
-	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[6], GL_QUERY_RESULT, &startTime);
-	m_FrameTimes.ParticlePass += static_cast<float>(startTime - stopTime) / 1000000.0f;
-	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[7], GL_QUERY_RESULT, &stopTime);
 	m_FrameTimes.SkyboxPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[5], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.LightPass += static_cast<float>(startTime - stopTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[6], GL_QUERY_RESULT, &startTime);
+	m_FrameTimes.AnimationPass += static_cast<float>(stopTime - startTime) / 1000000.0f;
+	glGetQueryObjectui64v(m_pCurrentQuery->pQueries[7], GL_QUERY_RESULT, &stopTime);
+	m_FrameTimes.ParticlePass += static_cast<float>(startTime - stopTime) / 1000000.0f;
 
 	if (timer >= 1.0f)
 	{

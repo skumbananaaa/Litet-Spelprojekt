@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <World/Scenarios/Fire/FireSprinkler.h>
+#include <World/Logger.h>
 #include <System/Application.h>
 #include <World/World.h>
 
@@ -198,6 +199,7 @@ void FireSprinkler::OnSmokeDetected() noexcept
 		}
 		else
 		{
+			Logger::LogEvent("Sprinkler i " + m_pWorld->GetNameFromGlobal(currentRoomIndex) + " utlöste!", true);
 			m_pParticleEmitter->SetIsVisible(true);
 		}
 	}

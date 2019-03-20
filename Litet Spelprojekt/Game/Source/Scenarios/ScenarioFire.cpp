@@ -5,7 +5,8 @@
 #include "../../Include/Scenarios/ScenarioManager.h"
 
 ScenarioFire::ScenarioFire(bool fireAlwaysVisible)
-	: m_HasStarted(false)
+	: m_HasStarted(false),
+	m_pppMap(nullptr)
 {
 	m_FireAlwaysVisible = fireAlwaysVisible;
 }
@@ -453,7 +454,6 @@ bool ScenarioFire::SpreadSmokeSideways(float dtS, const glm::ivec3& offset, cons
 				for (uint32 i = lowerTileData.NrOfBaseGameObjects; i < lowerTileData.GameObjects.size(); i++)
 				{
 					GameObject* pGameObject = lowerTileData.GameObjects[i];
-
 					if (pGameObject != nullptr)
 					{
 						if (!pGameObject->HasDetectedSmoke())

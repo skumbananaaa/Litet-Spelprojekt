@@ -299,7 +299,7 @@ void main()
 	
 	vec3 pos = fs_in.WorldPosition - vec3(4.0f, 0.0f, 19.0f);
 	float distSqrd = (pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
-	float alpha = min(max((distSqrd - 4000.0f) / 6000.0f, 0.0f), 1.0f);
+	float alpha = min(max((distSqrd - 4000.0f) / 5000.0f, 0.0f), 1.0f);
 	g_OutColor = vec4(finalColour, 1.0f - alpha);
 }
 #endif

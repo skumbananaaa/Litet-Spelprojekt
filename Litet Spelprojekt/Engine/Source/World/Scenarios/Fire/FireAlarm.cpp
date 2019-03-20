@@ -132,7 +132,6 @@ void FireAlarm::OnSmokeDetected() noexcept
 			if (currentRoomIndex == ppLevel[x][z])
 			{
 				TileData& tile = ppLevelData[x][z];
-
 				for (uint32 i = 0; i < tile.GameObjects.size(); i++)
 				{
 					if (tile.GameObjects[i] != nullptr)

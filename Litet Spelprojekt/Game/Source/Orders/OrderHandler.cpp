@@ -65,6 +65,12 @@ void OrderHandler::Update(Scene* pScene, World* pWorld, Crew* pCrewMembers, floa
 			}
 		}
 	}
+
+	for (int32 i = 0; i < (int32)m_OrdersToDelete.size(); i++)
+	{
+		DeleteSafe(m_OrdersToDelete[i]);
+	}
+	m_OrdersToDelete.clear();
 }
 
 void OrderHandler::Reset() noexcept
@@ -275,5 +281,5 @@ void OrderHandler::DeleteOrder(IOrder * pOrder) noexcept
 	}
 
 	//std::cout << "[" << pOrder->GetName() << "][" << m_pCrewmember->GetName() << "] Order Ended" << std::endl;
-	DeleteSafe(pOrder);
+	m_OrdersToDelete.push_back(pOrder);
 }

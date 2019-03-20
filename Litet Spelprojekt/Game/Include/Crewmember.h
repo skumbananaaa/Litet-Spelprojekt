@@ -31,7 +31,7 @@ enum GroupType : uint32
 
 struct TileData;
 
-class Crewmember : public GameObject, public UIOrder, public IProgressListener
+class Crewmember : public GameObject, public UIOrder, public IProgressButtonListener
 {
 	friend class Crew;
 	friend class IOrder;

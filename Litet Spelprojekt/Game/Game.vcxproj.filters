@@ -177,6 +177,9 @@
     <ClCompile Include="Source\Orders\ReplayablePosition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GUI\UIOptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Game.h">
@@ -336,6 +339,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Orders\ReplayablePosition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI\UIOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

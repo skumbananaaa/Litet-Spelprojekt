@@ -5,10 +5,14 @@
 
 class ProgressButton;
 
-class API IProgressListener
+class API IProgressButtonListener
 {
 public:
+	virtual ~IProgressButtonListener() {};
 	virtual void OnProgressAnimationEnd(ProgressButton* progressButton) = 0;
+
+protected:
+	IProgressButtonListener() {};
 };
 
 class API ProgressButton : public Button
@@ -23,8 +27,8 @@ public:
 	const glm::vec4& GetProgressColor() const noexcept;
 	void SetProgressColor(const glm::vec4& color);
 
-	void AddProgressListener(IProgressListener* listener);
-	void RemoveProgressListener(IProgressListener* listener);
+	void AddProgressButtonListener(IProgressButtonListener* listener);
+	void RemoveProgressButtonListener(IProgressButtonListener* listener);
 
 	void StartAnimation(float seconds) noexcept;
 
@@ -40,5 +44,5 @@ private:
 	glm::vec4 m_ProgressColor;
 	float m_Timer;
 	float m_TimeOfAnimation;
-	std::vector<IProgressListener*> m_Listeners;
+	std::vector<IProgressButtonListener*> m_Listeners;
 };

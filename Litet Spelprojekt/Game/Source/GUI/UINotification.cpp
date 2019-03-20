@@ -30,6 +30,7 @@ void UINotification::Update(float dtS) noexcept
 		if (pair.second <= 0)
 		{
 			m_NotificationsToDelete.push_back(pair.first);
+			pair.second = 9999999.0F;
 		}
 	}
 
@@ -69,8 +70,8 @@ void UINotification::DeleteAll() noexcept
 	for (int i = (int32)m_Notifications.size() - 1; i >= 0; i--)
 	{
 		Game::GetGame()->GetGUIManager().Remove(m_Notifications[i].first);
-		m_Notifications.erase(m_Notifications.begin() + i);
 	}
+	m_Notifications.clear();
 	m_NotificationsToDelete.clear();
 }
 

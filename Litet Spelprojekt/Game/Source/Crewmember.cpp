@@ -552,7 +552,7 @@ void Crewmember::SetIsPicked(bool picked) noexcept
 		if (m_IsPicked)
 		{
 			m_pUISelectedCrew = new UISelectedCrew(GetName());
-			m_pUISelectedCrew->AddProgressListener(this);
+			m_pUISelectedCrew->AddProgressButtonListener(this);
 			Game::GetGame()->GetGUIManager().Add(m_pUISelectedCrew);
 			Game::GetGame()->m_pSceneGame->GetCrew()->AddToSelectedList(GetShipNumber());
 		}

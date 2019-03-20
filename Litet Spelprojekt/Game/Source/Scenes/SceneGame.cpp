@@ -11,6 +11,7 @@
 #include "../../Include/Orders/OrderPlugHole.h"
 #include "../../Include/Scenarios/ScenarioWater.h"
 #include "../../Include/ReplayHandler.h"
+#include <World/Settings.h>
 
 SceneGame::SceneGame(World* pWorld, bool hiddenCrew) 
 	: SceneInternal(false),
@@ -209,8 +210,7 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 
 			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 			{
-				const float cameraRotationSensitivity = 0.005f;
-				glm::vec2 deltaPosition = cameraRotationSensitivity * (position - lastPosition);
+				glm::vec2 deltaPosition = Settings::GetCameraRotateSensitivity() * (position - lastPosition);
 
 				camera.MoveRelativeLookAt(PosRelativeLookAt::RotateX, deltaPosition.x);
 				camera.MoveRelativeLookAt(PosRelativeLookAt::RotateY, -deltaPosition.y);
@@ -220,14 +220,12 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 
 			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_RIGHT))
 			{
-				const float cameraMoveSensitivityX = 0.5f;
-				const float cameraMoveSensitivityY = 0.025f;
-				glm::vec2 deltaPosition = cameraMoveSensitivityY * (position - lastPosition);
+				glm::vec2 deltaPosition = Settings::GetCameraMoveYSensitivity() * (position - lastPosition);
 				glm::vec3 moveOffset(0.0f);
 				moveOffset.x = camera.GetFront().x;
 				moveOffset.z = camera.GetFront().z;
-				moveOffset = glm::normalize(moveOffset) * -deltaPosition.y;
-				moveOffset += camera.GetMoveWorldFromLocal(glm::vec3(cameraMoveSensitivityX * deltaPosition.x, 0.0f, 0.0f));
+				moveOffset = glm::normalize(moveOffset) *  -deltaPosition.y;
+				moveOffset += camera.GetMoveWorldFromLocal(glm::vec3(Settings::GetCameraMoveXSensitivity() * deltaPosition.x, 0.0f, 0.0f));
 
 				if (IsExtended())
 				{
@@ -299,10 +297,9 @@ void SceneGame::OnMouseScroll(const glm::vec2& offset, const glm::vec2& position
 		}
 		else
 		{
-			const float cameraZoomSensitivity = 0.1f;
 			const glm::vec2& cNearFar = camera.GetMinMaxDistToLookAt();
 			float distanceBoost = glm::max(15.0f * camera.GetDistanceToLookAt() / cNearFar.y, 1.0f);
-			camera.MoveRelativeLookAt(PosRelativeLookAt::Zoom, cameraZoomSensitivity * offset.y * distanceBoost);
+			camera.MoveRelativeLookAt(PosRelativeLookAt::Zoom, Settings::GetCameraZoomSensitivity() * offset.y * distanceBoost);
 		}
 	}
 }
@@ -402,7 +399,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 
 					break;
 				}
-				case KEY_ENTER:
+				case KEY_R:
 				{
 					if (!ReplayHandler::IsReplaying())
 					{

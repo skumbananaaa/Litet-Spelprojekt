@@ -88,6 +88,8 @@
     <ClCompile Include="Source\Graphics\GUI\TextField.cpp" />
     <ClCompile Include="Source\Graphics\Textures\StaticShadowCube.cpp" />
     <ClCompile Include="Source\World\Scenarios\Fire\FireSprinkler.cpp" />
+    <ClCompile Include="Source\World\Settings.cpp" />
+    <ClCompile Include="Source\Graphics\GUI\ProgressSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\EnginePch.h" />
@@ -194,6 +196,8 @@
     <ClInclude Include="Include\Graphics\IGLObject.h" />
     <ClInclude Include="Include\System\IMultiUpdater.h" />
     <ClInclude Include="Include\World\Scenarios\Fire\FireSprinkler.h" />
+    <ClInclude Include="Include\World\Settings.h" />
+    <ClInclude Include="Include\Graphics\GUI\ProgressSelector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\GLMHelper.inl" />

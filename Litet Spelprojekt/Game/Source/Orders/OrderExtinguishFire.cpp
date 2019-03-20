@@ -78,22 +78,21 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			//walking to extinguisher
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
-				pCrewmember->SetExtinguisherIsEquipped(true);
-				Logger::LogEvent(pCrewmember->GetName() + " tog en brandsläckare!", true);
-				pCrewmember->ReportPosition();
-				//change animation
-				//delete object
 				GameObject* pGameObject = pScene->GetGameObject(m_ExtinguisherName);
+
 				if (pGameObject)
 				{
+					Logger::LogEvent(pCrewmember->GetName() + " tog en brandsläckare!", true);
+					pCrewmember->ReportPosition();
+					pCrewmember->SetExtinguisherIsEquipped(true);
 					pScene->RemoveGameObject(pGameObject);
+					DeleteSafe(pGameObject);
+					GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 				}
 				else
 				{
-					pCrewmember->GiveOrder(new OrderExtinguishFire(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName), m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
+					GiveOrderInbred(new OrderExtinguishFire(FindClosestExtinguisher(pCrewmember->GetPosition(), m_ExtinguisherName), m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 				}
-
-				GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 			}
 		}
 		else
@@ -101,6 +100,8 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			//Run To Room That is Burning
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
+				SetAlternateMeshAndMaterial(pCrewmember, MESH::ANIMATED_MODEL_EXTINGUISH, MATERIAL::ANIMATED_MODEL_EXTINGUISH);
+
 				const glm::ivec2& levelSize = glm::ivec2(pWorld->GetLevel(m_BurningTile.y).GetSizeX(), pWorld->GetLevel(m_BurningTile.y).GetSizeZ());
 				const uint32 * const * ppLevel = pWorld->GetLevel(m_BurningTile.y).GetLevel();
 				TileData * const * ppLevelData = pWorld->GetLevel(m_BurningTile.y).GetLevelData();
@@ -157,7 +158,9 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 					//Fire Not Fully Extinguished
 					m_BurningTile = glm::ivec3(newTarget.x, m_BurningTile.y, newTarget.y);
 					m_RoomBurningId = ppLevel[newTarget.x][newTarget.y];
-					GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
+					OrderWalk* pOrder = new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName);
+					pOrder->SetAlternateMeshAndMaterial(pCrewmember, MESH::ANIMATED_MODEL_EXTINGUISH, MATERIAL::ANIMATED_MODEL_EXTINGUISH);
+					GiveOrderInbred(pOrder);
 					return false;
 				}
 				else
@@ -217,7 +220,6 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 		}
 	}
 
-	//Run out if dying or our fire out of control
 	return false;
 }
 

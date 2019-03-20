@@ -11,6 +11,7 @@ ProgressSelector::~ProgressSelector()
 
 void ProgressSelector::OnAdded(GUIObject* parent)
 {
+	AddRealTimeRenderer();
 	AddMouseListener(this);
 }
 
@@ -26,29 +27,12 @@ void ProgressSelector::OnMouseMove(const glm::vec2& position)
 	{
 		SetPercentage((position.x - GetXInWorld()) / GetWidth());
 	}
-	else
-	{
-		/*if (ContainsPoint(position))
-		{
-			if (!m_IsHovered)
-			{
-				m_IsHovered = true;
-				RequestRepaint();
-			}
-		}
-		else if (m_IsHovered)
-		{
-			m_IsHovered = false;
-			RequestRepaint();
-		}*/
-	}
 }
 
 void ProgressSelector::OnMousePressed(const glm::vec2& position, MouseButton mousebutton)
 {
 	if (ContainsPoint(position))
 	{
-		AddRealTimeRenderer();
 		m_IsPressed = true;
 		SetPercentage((position.x - GetXInWorld()) / GetWidth());
 	}
@@ -58,7 +42,6 @@ void ProgressSelector::OnMouseReleased(const glm::vec2& position, MouseButton mo
 {
 	if (m_IsPressed)
 	{
-		RemoveRealTimeRenderer();
 		RequestRepaint();
 		m_IsPressed = false;
 	}

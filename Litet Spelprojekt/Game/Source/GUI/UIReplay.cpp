@@ -28,7 +28,7 @@ void UIReplay::RenderProgress(GUIContext* context, float x, float y) noexcept
 	stream << ReplayHandler::GetElapsedTime() << " s";
 	float xPos = GetWidth() * GetPercentage();
 	Window& pWindow = Game::GetGame()->GetWindow();
-	context->RenderText(stream.str(), xPos - 20.0F, y + GetHeight() * 2.0F, pWindow.GetWidth(), pWindow.GetHeight(), 0.5F, GUIContext::COLOR_WHITE, CENTER_VERTICAL);
+	context->RenderText(stream.str(), xPos - 20.0F, y + GetHeight() * 2.0F, (float)pWindow.GetWidth(), (float)pWindow.GetHeight(), 0.5F, GUIContext::COLOR_WHITE, CENTER_VERTICAL);
 	context->RenderTexture(GetDefaultTexture(), xPos - 3.0F, y - GetHeight() / 2.0F, 6, GetHeight() * 2, GUIContext::COLOR_WHITE);
 }
 

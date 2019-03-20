@@ -15,6 +15,10 @@
 #ifndef RAPIDJSON_PRETTYWRITER_H_
 #define RAPIDJSON_PRETTYWRITER_H_
 
+#if defined(new)
+#undef new
+#endif
+
 #include "writer.h"
 
 #ifdef __GNUC__

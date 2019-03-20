@@ -3,6 +3,8 @@
 #include <Graphics/GUI/TextView.h>
 #include <Graphics/GUI/Button.h>
 
+class UIOptions;
+
 class UIPause : public Panel, public IButtonListener
 {
 public:
@@ -22,10 +24,15 @@ private:
 	Button* m_pButtonBack;
 	Button* m_pButtonExit;
 	Button* m_pButtonTutorial;
+	Button* m_pButtonOptions;
 	Button* m_pButtonNext;
 	Button* m_pButtonPrev;
 	Panel* m_pMenuPanel;
 	Panel* m_pTutorialPanel;
+	Panel* m_pOptionsPanel;
+	UIOptions* m_pUIOptions;
+	TextView* m_pTextViewTitleOptions;
+	Button* m_pButtonBackOptions;
 
 	int32 m_TutorialScreenIndex;
 	std::vector<uint32> m_TutorialScreens;

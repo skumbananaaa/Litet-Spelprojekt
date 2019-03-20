@@ -4,6 +4,8 @@
 #include <Graphics/GUI/ListScrollable.h>
 #include <World/Logger.h>
 
+class AudioSource;
+
 class UILog : public Panel, public ILogListener
 {
 public:
@@ -27,4 +29,5 @@ private:
 	bool m_Extend;
 	float m_Percentage;
 	float m_DefaultX;
+	AudioSource* m_pAudioSourceSelect;
 };

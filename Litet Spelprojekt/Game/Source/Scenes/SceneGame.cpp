@@ -661,6 +661,7 @@ void SceneGame::Pick(bool hover, int32 positionX, int32 positionY)
 				if (((Crewmember*)object)->IsAbleToWalk())
 				{
 					m_Crew.ClearSelectedList();
+					m_pUICrew->Deselect();
 				}
 				object->OnPicked(m_Crew.GetSelectedList(), positionX, positionY);
 			}

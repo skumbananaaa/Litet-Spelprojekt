@@ -9,7 +9,7 @@ OrderWalkMedicBay::OrderWalkMedicBay(OrderWalkMedicBay* other)
 }
 
 OrderWalkMedicBay::OrderWalkMedicBay(const glm::ivec3& currtile)
-	: OrderWalk(Game::GetGame()->m_pSceneGame->GetWorld()->FindClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currtile))
+	: OrderWalk(Game::GetGame()->m_pSceneGame->GetWorld()->GetRandomTileInClosestRoomInInterval(SICKBAY_INTERVAL_START, SICKBAY_INTERVAL_END, currtile))
 {
 }
 

@@ -87,7 +87,7 @@ bool OrderPlugHole::OnUpdate(Scene * pScene, World * pWorld, Crew * pCrewMembers
 
 					if (!pWorld->GetRoom(pCrewmember->GetRoom()).IsPumping())
 					{
-						GiveOrderInbred(new OrderPumpWater(pCrewmember->GetRoom(), pWorld->FindClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
+						GiveOrderInbred(new OrderPumpWater(pCrewmember->GetRoom(), pWorld->GetRandomTileInClosestRoomInInterval(MACHINE_ROOM_INTERVAL_START, MACHINE_ROOM_INTERVAL_END, tile)));
 					}
 				}
 				res = true;

@@ -21,6 +21,13 @@ void ScenarioFire::BeginReplay(SceneGame* pScene, void* userData) noexcept
 	ScenarioManager::StartScenario(this);
 }
 
+void ScenarioFire::DestroyUserData(void *& userData) noexcept
+{
+	glm::ivec3* position = reinterpret_cast<glm::ivec3*>(userData);
+	DeleteSafe(position);
+	userData = position;
+}
+
 void ScenarioFire::Init(World* pWorld) noexcept
 {
 	m_pWorld = pWorld;

@@ -19,6 +19,7 @@ public:
 	~ScenarioWater();
 
 	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+	virtual void DestroyUserData(void*& userData) noexcept;
 
 	virtual void Init(World* pWorld) noexcept override;
 	virtual void Release() noexcept override;

@@ -37,6 +37,7 @@ public:
 	virtual IOrder* Clone() noexcept = 0;
 	virtual void InitClone(SceneGame* pScene, void* userData) noexcept;
 	virtual void BeginReplay(SceneGame* pScene, void* userData) noexcept override;
+	virtual void DestroyUserData(void*& userData) noexcept {};
 	virtual bool IsDeleteable() const noexcept override { return true; }
 protected:
 	void GiveOrderInbred(IOrder* order) noexcept;

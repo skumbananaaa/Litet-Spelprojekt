@@ -73,7 +73,7 @@ void UICrewMember::OnRender(GUIContext* context)
 		case MEDIC: texture = TEXTURE::ICON_SKILL_MEDIC; break;
 		default: texture = TEXTURE::ICON_SKILL_STRENGTH; break;
 		}
-		context->RenderTexture(ResourceHandler::GetTexture2D(texture), injuriesOffset + xOffset, 85.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
+		context->RenderTexture(ResourceHandler::GetTexture2D(texture), (float)(injuriesOffset + xOffset), 85.0f, (float)textureSize, (float)textureSize, GUIContext::COLOR_WHITE);
 	}
 }
 

@@ -74,9 +74,9 @@ int32 GameObjectExtinguisher::TestAgainstRay(const glm::vec3 ray, const glm::vec
 		};
 
 		float h[] = {
-			0.2,
-			1.0,
-			0.2
+			0.2f,
+			1.0f,
+			0.2f
 		};
 
 		float d1[] = {

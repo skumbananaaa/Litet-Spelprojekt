@@ -26,8 +26,8 @@ void Path::AddToOpen(int x, int y, int z, int addX, int addY, int addZ)
 
 					int fireFactorMultiplier = m_HasSmokeDiverGear ? 1 : 10000;
 					int fireFactor = m_pWorld->GetLevel(newY * 2 + 1).GetLevelData()[newX][newZ].GameObjects[GAMEOBJECT_CONST_INDEX_SMOKE]->IsVisible() * fireFactorMultiplier;
-					int waterFactor = (int)(tile2.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible()) / glm::max(0.2f, 1.0f - (tile2.WaterLevel / WATER_MAX_LEVEL));
-					int waterFactorCurrent = (int)(tile1.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible()) / glm::max(0.2f, 1.0f - (tile1.WaterLevel / WATER_MAX_LEVEL));
+  					int waterFactor = (int)((float)(tile2.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible()) / glm::max(0.2f, 1.0f - (tile2.WaterLevel / WATER_MAX_LEVEL)));
+					int waterFactorCurrent = (int)((float)(tile1.GameObjects[GAMEOBJECT_CONST_INDEX_WATER]->IsVisible()) / glm::max(0.2f, 1.0f - (tile1.WaterLevel / WATER_MAX_LEVEL)));
 					int waterFactorDoor = std::max(waterFactor, waterFactorCurrent) * (tile1.HasDoor() && door1 == door2) * 1000;
 					int cornerFactor = 1;
 

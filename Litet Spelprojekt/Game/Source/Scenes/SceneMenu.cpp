@@ -36,11 +36,11 @@ void SceneMenu::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noex
 
 	ReplayHandler::Reset();
 
-	m_pPanel = new Panel((window->GetWidth() - 600) / 2, (window->GetHeight() - 600) / 2, 600, 600);
-	m_pButtonPlay = new Button(100, m_pPanel->GetHeight() - 160, m_pPanel->GetWidth() - 200, 100, "Spela");
-	m_pButtonOptions = new Button(100, m_pButtonPlay->GetY() - 125, m_pPanel->GetWidth() - 200, 100, "Alternativ");
-	m_pButtonCredits = new Button(100, m_pButtonOptions->GetY() - 125, m_pPanel->GetWidth() - 200, 100, "Utvecklare");
-	m_pButtonQuit = new Button(100, m_pButtonCredits->GetY() - 125, m_pPanel->GetWidth() - 200, 100, "Avsluta");
+	m_pPanel = new Panel((window->GetWidth() - 600.0f) / 2.0f, (window->GetHeight() - 600.0f) / 2.0f, 600.0f, 600.0f);
+	m_pButtonPlay = new Button(100.0f, m_pPanel->GetHeight() - 160.0f, m_pPanel->GetWidth() - 200.0f, 100.0f, "Spela");
+	m_pButtonOptions = new Button(100.0f, m_pButtonPlay->GetY() - 125.0f, m_pPanel->GetWidth() - 200.0f, 100.0f, "Alternativ");
+	m_pButtonCredits = new Button(100.0f, m_pButtonOptions->GetY() - 125.0f, m_pPanel->GetWidth() - 200.0f, 100.0f, "Utvecklare");
+	m_pButtonQuit = new Button(100.0f, m_pButtonCredits->GetY() - 125.0f, m_pPanel->GetWidth() - 200.0f, 100.0f, "Avsluta");
 
 	m_pPanel->SetBackgroundColor(GUIContext::COLOR_TRANSPARENT);
 

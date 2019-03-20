@@ -80,6 +80,7 @@ protected:
 
 	bool m_IsPaused;
 	bool m_IsGameOver;
+	bool m_Lost;
 
 	uint32 m_CurrentLight = 0;
 

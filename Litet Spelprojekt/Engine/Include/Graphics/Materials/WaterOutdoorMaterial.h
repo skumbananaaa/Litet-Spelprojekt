@@ -1,5 +1,6 @@
 #pragma once
 #include <Graphics/Textures/PlanarReflector.h>
+#include <Graphics/Textures/TextureCube.h>
 #include <Graphics/Buffers/UniformBuffer.h>
 #include "Material.h"
 

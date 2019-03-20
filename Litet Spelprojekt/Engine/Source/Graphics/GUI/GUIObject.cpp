@@ -702,6 +702,10 @@ void GUIObject::InternalRootOnMousePressed(const glm::vec2& position, MouseButto
 		if (s_MouseListeners[i]->IsVisible())
 		{
 			s_MouseListeners[i]->OnMousePressed(position, mousebutton);
+			if (i >= s_MouseListeners.size())
+			{
+				i = s_MouseListeners.size() - 1;
+			}
 		}
 	}
 }
@@ -713,6 +717,10 @@ void GUIObject::InternalRootOnMouseReleased(const glm::vec2& position, MouseButt
 		if (s_MouseListeners[i]->IsVisible())
 		{
 			s_MouseListeners[i]->OnMouseReleased(position, mousebutton);
+			if (i >= s_MouseListeners.size())
+			{
+				i = s_MouseListeners.size() - 1;
+			}
 		}
 	}
 }
@@ -724,6 +732,10 @@ void GUIObject::InternalRootOnMouseMove(const glm::vec2& position)
 		if (s_MouseListeners[i]->IsVisible())
 		{
 			s_MouseListeners[i]->OnMouseMove(position);
+			if (i >= s_MouseListeners.size())
+			{
+				i = s_MouseListeners.size() - 1;
+			}
 		}
 	}
 }
@@ -735,6 +747,10 @@ void GUIObject::InternalRootOnMouseScroll(const glm::vec2& position, const glm::
 		if (s_MouseListeners[i]->IsVisible())
 		{
 			s_MouseListeners[i]->OnMouseScroll(position, offset);
+			if (i >= s_MouseListeners.size())
+			{
+				i = s_MouseListeners.size() - 1;
+			}
 		}
 	}
 	InternalRootOnMouseMove(position);

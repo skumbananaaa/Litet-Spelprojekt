@@ -207,7 +207,6 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 		if (Input::IsKeyDown(KEY_LEFT_ALT))
 		{
 			Camera& camera = GetCamera();
-
 			if (Input::IsButtonDown(MouseButton::MOUSE_BUTTON_LEFT))
 			{
 				glm::vec2 deltaPosition = Settings::GetCameraRotateSensitivity() * (position - lastPosition);
@@ -251,8 +250,6 @@ void SceneGame::OnMouseMove(const glm::vec2& lastPosition, const glm::vec2& posi
 				camera.MoveWorldCoords(moveOffset, true);
 
 				m_pUICrewMember->SetCrewMember(nullptr);
-
-				std::cout << glm::to_string(camera.GetLookAt()) << std::endl;
 			}
 		}
 		else

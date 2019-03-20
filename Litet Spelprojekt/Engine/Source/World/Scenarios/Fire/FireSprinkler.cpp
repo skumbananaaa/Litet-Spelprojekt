@@ -1,5 +1,6 @@
 #include <EnginePch.h>
 #include <World/Scenarios/Fire/FireSprinkler.h>
+#include <World/Logger.h>
 #include <System/Application.h>
 #include <World/World.h>
 
@@ -76,8 +77,8 @@ void FireSprinkler::Update(const Camera& camera, float dt) noexcept
 	glm::ivec3 tilePos = GetTile();
 
 	WorldLevel& worldLevel = m_pWorld->GetLevel(tilePos.y);
-	uint32 levelSizeX = worldLevel.GetSizeX();
-	uint32 levelSizeZ = worldLevel.GetSizeZ();
+	int32 levelSizeX = (int32)worldLevel.GetSizeX();
+	int32 levelSizeZ = (int32)worldLevel.GetSizeZ();
 
 	const uint32* const * ppLevel = worldLevel.GetLevel();
 	TileData* const * ppLevelData = worldLevel.GetLevelData();
@@ -198,6 +199,7 @@ void FireSprinkler::OnSmokeDetected() noexcept
 		}
 		else
 		{
+			Logger::LogEvent("Sprinkler i " + m_pWorld->GetNameFromGlobal(currentRoomIndex) + " utlöste!", true);
 			m_pParticleEmitter->SetIsVisible(true);
 		}
 	}

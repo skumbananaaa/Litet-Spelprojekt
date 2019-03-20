@@ -293,9 +293,12 @@ void World::PlaceStairs(Scene& scene) noexcept
 		pGameObject->SetMaterial(MATERIAL::LADDER);
 		pGameObject->SetMesh(MESH::LADDER);
 		pGameObject->SetPosition(position);
+		pGameObject->SetName("Stair" + std::to_string(i));
 		pGameObject->SetRotation(glm::vec4(0, 1, 0, rotation));
 		pGameObject->UpdateTransform();
 		scene.AddGameObject(pGameObject);
+
+		level.GetLevelData()[stair.x][stair.z].GameObjects[GAMEOBJECT_CONST_INDEX_STAIR] = pGameObject;
 	}
 }
 

@@ -3,7 +3,8 @@
 #include "../../Include/Scenarios/ScenarioManager.h"
 
 ScenarioWater::ScenarioWater(bool waterAlwaysVisible)
-	: m_HasFlooded(false)
+	: m_HasFlooded(false),
+	m_FloodingIDs(nullptr)
 {
 	m_WaterAlwaysVisible = waterAlwaysVisible;
 }

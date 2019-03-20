@@ -39,7 +39,7 @@ GUIContext::GUIContext(GLContext* context, const ShaderProgram* shaderProgram, F
 
 GUIContext::~GUIContext()
 {
-	delete m_pUniformBuffer;
+	DeleteSafe(m_pUniformBuffer);
 }
 
 void GUIContext::BeginSelfRendering(Framebuffer* frameBuffer, const glm::vec4& clearColor)

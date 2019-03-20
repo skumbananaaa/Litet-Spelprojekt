@@ -79,13 +79,27 @@ bool OrderExtinguishFire::OnUpdate(Scene* pScene, World* pWorld, Crew* pCrewMemb
 			if (OrderWalk::OnUpdate(pScene, pWorld, pCrewMembers, dtS))
 			{
 				GameObject* pGameObject = pScene->GetGameObject(m_ExtinguisherName);
-
 				if (pGameObject)
 				{
 					Logger::LogEvent(pCrewmember->GetName() + " tog en brandsläckare!", true);
 					pCrewmember->ReportPosition();
 					pCrewmember->SetExtinguisherIsEquipped(true);
 					pScene->RemoveGameObject(pGameObject);
+
+					const glm::ivec3& tilepos = pGameObject->GetTile();
+					SceneGame* pSceneGame = dynamic_cast<SceneGame*>(pScene);
+					if (pSceneGame)
+					{
+						TileData& data = pSceneGame->GetWorld()->GetLevel(tilepos.y).GetLevelData()[tilepos.x][tilepos.z];
+						for (uint32 i = data.NrOfBaseGameObjects; i < data.GameObjects.size(); i++)
+						{
+							if (data.GameObjects[i] == pGameObject)
+							{
+								data.GameObjects[i] = nullptr;
+							}
+						}
+					}
+
 					DeleteSafe(pGameObject);
 					GiveOrderInbred(new OrderExtinguishFire(m_BurningTile, m_BurningTile, m_RoomBurningId, false, m_ExtinguisherName));
 				}

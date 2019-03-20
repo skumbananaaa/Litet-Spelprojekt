@@ -605,11 +605,15 @@ void SceneGame::RequestDoorClosed(uint32 doorColor)
 
 void SceneGame::SetUIVisible(bool visible) noexcept
 {
+	if (!ReplayHandler::IsReplaying())
+	{
+		m_pUIRequest->SetVisible(visible);
+		m_pUICrew->SetVisible(visible);
+	}
+
 	m_pUICrewMember->SetVisible(visible);
-	m_pUIRequest->SetVisible(visible);
 	m_pUILog->SetVisible(visible);
 
-	m_pUICrew->SetVisible(visible);
 	m_pUINotification->SetVisible(visible);
 }
 

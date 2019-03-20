@@ -121,6 +121,7 @@ inline void SceneGame::UpdateMaterialClipPlanes() noexcept
 	ResourceHandler::GetMaterial(MATERIAL::FIRE_RELATED)					->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::LADDER)							->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::OCEAN_BLUE)						->SetLevelClipPlane(standardClipPlane);
+	ResourceHandler::GetMaterial(MATERIAL::INLET_BLUE)						->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::WATER_OUTDOOR)					->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::WATER_INDOOR)					->SetLevelClipPlane(standardClipPlane);
 	ResourceHandler::GetMaterial(MATERIAL::WALL_STANDARD)					->SetLevelClipPlane(wallClipPlane);

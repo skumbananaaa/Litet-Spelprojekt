@@ -27,4 +27,9 @@ private:
 	Button* m_pButtonExit;
 	Button* m_pButtonReplay;
 	ListScrollable* m_pLog;
+
+	static float s_CrewHealth;
+	static float s_BurningAmount;
+	static float s_WaterLeakAmount;
+	static bool s_Lost;
 };

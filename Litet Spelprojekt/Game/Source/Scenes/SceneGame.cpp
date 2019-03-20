@@ -509,7 +509,7 @@ void SceneGame::CreateCrew() noexcept
 	};
 
 	CreateCrewMember(glm::vec3(10.0f, 4.0f, 10.0f), names[0], GroupType::SMOKE_DIVER);
-	CreateCrewMember(glm::vec3(	5.0f, 0.0f, 10.0f), names[1], GroupType::NONE);
+	/*CreateCrewMember(glm::vec3(	5.0f, 0.0f, 10.0f), names[1], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	2.0f, 0.0f, 12.0f), names[2], GroupType::MEDIC);
 	CreateCrewMember(glm::vec3(	5.0f, 0.0f, 18.0f), names[3], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	6.0f, 0.0f, 28.0f), names[4], GroupType::NONE);
@@ -523,7 +523,7 @@ void SceneGame::CreateCrew() noexcept
 	CreateCrewMember(glm::vec3(10.0f, 2.0f, 21.0f), names[12], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	8.0f, 2.0f, 17.0f), names[13], GroupType::NONE);
 	CreateCrewMember(glm::vec3(	2.0f, 4.0f, 21.0f), names[14], GroupType::NONE);
-	CreateCrewMember(glm::vec3(10.0f, 2.0f, 31.0f), names[15], GroupType::NONE);
+	CreateCrewMember(glm::vec3(10.0f, 2.0f, 31.0f), names[15], GroupType::NONE);*/
 }
 
 void SceneGame::PickPosition()

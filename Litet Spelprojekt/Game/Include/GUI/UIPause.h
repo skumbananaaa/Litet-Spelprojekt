@@ -19,6 +19,11 @@ public:
 protected:
 	virtual void PrintName() const override;
 
+	void CreateOptionsPanel() noexcept;
+	void CreateTutorialPanel() noexcept;
+	void CreatePausePanel() noexcept;
+	void Clear() noexcept;
+
 private:
 	TextView* m_pTextViewTitle;
 	Button* m_pButtonBack;

@@ -7,6 +7,7 @@
 #define GAMEOBJECT_CONST_INDEX_SMOKE 2
 #define GAMEOBJECT_CONST_INDEX_FIRE 3
 #define GAMEOBJECT_CONST_INDEX_FLOOR 4
+#define GAMEOBJECT_CONST_INDEX_STAIR 5
 
 struct TileData 
 {
@@ -37,13 +38,14 @@ struct TileData
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
 		GameObjects.push_back(nullptr);
+		GameObjects.push_back(nullptr);
 
 		NrOfBaseGameObjects = (uint32)GameObjects.size();
 	}
 
 	void RemoveGameObject(GameObject* gameObject) noexcept
 	{
-		for (int i = 2; i < GameObjects.size(); i++)
+		for (int i = NrOfBaseGameObjects; i < GameObjects.size(); i++)
 		{
 			if (GameObjects[i] == gameObject)
 			{

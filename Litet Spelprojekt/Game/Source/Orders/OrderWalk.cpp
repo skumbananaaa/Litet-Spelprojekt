@@ -8,6 +8,7 @@
 #include <World/Logger.h>
 #include <System/Random.h>
 #include "../../Include/Orders/ReplayablePosition.h"
+#include "../../Include/Game.h"
 
 OrderWalk::OrderWalk(OrderWalk* other) : IOrder(other),
 	m_pPathFinder(nullptr),
@@ -258,8 +259,49 @@ bool OrderWalk::FollowPath(float dtS) noexcept
 		if (std::abs(move.y) > 0.1)
 		{
 			move.y /= std::abs(move.y);
-			pCrewmember->SetDirection(glm::vec3(1, 0, 0));
 			pCrewmember->Move(glm::vec3(0, move.y, 0), false, dtS);
+
+
+			World* pWorld = Game::GetGame()->m_pSceneGame->GetWorld();
+			const glm::ivec3& tile = pCrewmember->GetTile();
+			GameObject* stair1 = pWorld->GetLevel(tile.y * 2).GetLevelData()[tile.x][tile.z].GameObjects[GAMEOBJECT_CONST_INDEX_STAIR];
+			GameObject* stair2 = pWorld->GetLevel(m_TargetTile.y * 2).GetLevelData()[m_TargetTile.x][m_TargetTile.z].GameObjects[GAMEOBJECT_CONST_INDEX_STAIR];
+
+			if (!stair1)
+			{
+				stair1 = stair2;
+			}
+			if (stair1)
+			{
+				float yaw = stair1->GetRotation().w;
+				while (yaw > glm::two_pi<float>())
+				{
+					yaw -= glm::two_pi<float>();
+				}
+				while (yaw < 0)
+				{
+					yaw += glm::two_pi<float>();
+				}
+				yaw = fmod(yaw + glm::quarter_pi<float>(), glm::two_pi<float>());
+				int rot = (int32)(yaw / glm::half_pi<float>());
+
+				if (rot == 0)
+				{
+					pCrewmember->SetDirection(glm::vec3(-1, 0, 0));
+				}
+				else if (rot == 1)
+				{
+					pCrewmember->SetDirection(glm::vec3(0, 0, 1));
+				}
+				else if (rot == 2)
+				{
+					pCrewmember->SetDirection(glm::vec3(1, 0, 0));
+				}
+				else if (rot == 3)
+				{
+					pCrewmember->SetDirection(glm::vec3(0, 0, -1));
+				}
+			}		
 		}
 		else
 		{

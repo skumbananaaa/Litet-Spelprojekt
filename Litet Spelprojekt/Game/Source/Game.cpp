@@ -72,7 +72,7 @@ Game::~Game()
 	ScenarioManager::Release();
 }
 
-GameObject * Game::CreateGameObject(uint32 gameobject) noexcept
+GameObject* Game::CreateGameObject(uint32 gameobject) noexcept
 {
 	if (gameobject == GAMEOBJECT::FIREALARM)
 	{

@@ -400,7 +400,7 @@ void SceneGame::OnKeyDown(KEY keycode)
 
 					break;
 				}
-				case KEY_ENTER:
+				case KEY_R:
 				{
 					if (!ReplayHandler::IsReplaying())
 					{

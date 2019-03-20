@@ -73,7 +73,7 @@ void ScenarioManager::SetEnabledScenarios(const std::vector<int32>& ids) noexcep
 {
 	s_ActiveScenarios.clear();
 	s_NonActiveScenarios.clear();
-	for (int i = ids.size() - 1; i >= 0; i--)
+	for (int i = (int32)ids.size() - 1; i >= 0; i--)
 	{
 		SetAsNonActive(ids[i]);
 	}
@@ -119,8 +119,8 @@ void ScenarioManager::Init(World* pWorld)
 {
 	for (IScenario* scenario : s_Scenarios)
 	{
+		scenario->SetTimeOfNextOutBreak((float)Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
 		scenario->Init(pWorld);
-		scenario->SetTimeOfNextOutBreak(Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
 	}
 }
 
@@ -129,13 +129,13 @@ void ScenarioManager::Reset() noexcept
 	for (IScenario* scenario : s_Scenarios)
 	{
 		scenario->Release();
-		scenario->SetTimeOfNextOutBreak(Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
+		scenario->SetTimeOfNextOutBreak((float)Random::GenerateInt(10, scenario->GetMaxTimeBeforeOutbreak()));
 	}
 
 
 	for (int i = 0; i < s_ActiveScenarios.size(); i++)
 	{
-		s_NonActiveScenarios.push_back(s_ActiveScenarios[i]);
+		SetAsNonActive(s_ActiveScenarios[i]);
 	}
 
 	s_ActiveScenarios.clear();
@@ -150,5 +150,5 @@ void ScenarioManager::SetAsNonActive(int id)
 {
 	IScenario* scenario = s_Scenarios[id];
 	s_NonActiveScenarios.push_back(id);
-	scenario->SetTimeOfNextOutBreak(Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
+	scenario->SetTimeOfNextOutBreak((float)Random::GenerateInt(scenario->GetCooldownTime(), scenario->GetCooldownTime() + scenario->GetMaxTimeBeforeOutbreak()));
 }

@@ -138,47 +138,47 @@ private:
 		std::string defines = "";
 	};
 
-	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[64];
-	static IndexedMesh* m_pIndexedMeshes[64];
+	static MESH_DESC_INTERNAL m_pIndexedMeshFiles[128];
+	static IndexedMesh* m_pIndexedMeshes[128];
 	static uint32 m_NrOfMeshes;
 	static uint32 m_NrOfMeshesLoaded;
 
-	static ANIMATED_MESH_DESC_INTERNAL m_pAnimatedMeshFiles[64];
-	static AnimatedMesh* m_pAnimatedMeshes[64];
+	static ANIMATED_MESH_DESC_INTERNAL m_pAnimatedMeshFiles[128];
+	static AnimatedMesh* m_pAnimatedMeshes[128];
 	static uint32 m_NrOfAnimatedMeshes;
 	static uint32 m_NrOfAnimatedMeshesLoaded;
 
-	static MESH_DESC_INTERNAL m_pMeshParticleFiles[64];
-	static MeshParticle* m_pMeshParticles[64];
+	static MESH_DESC_INTERNAL m_pMeshParticleFiles[128];
+	static MeshParticle* m_pMeshParticles[128];
 	static uint32 m_NrOfMeshParticles;
 	static uint32 m_NrOfMeshParticlesLoaded;
 
-	static TEXTURE2D_DESC_INTERNAL m_pTexture2DFiles[64];
-	static Texture2D* m_pTexture2Ds[64];
+	static TEXTURE2D_DESC_INTERNAL m_pTexture2DFiles[128];
+	static Texture2D* m_pTexture2Ds[128];
 	static uint32 m_NrOfTexture2D;
 	static uint32 m_NrOfTexture2DLoaded;
 
 	static Material* m_pMaterials[512];
 	static uint32 m_NrOfMaterials;
 
-	static Decal* m_pDecals[64];
+	static Decal* m_pDecals[128];
 	static uint32 m_NrOfDecals;
 
-	static GAMEOBJECT_DESC_INTERNAL m_pGameObjectFiles[64];
+	static GAMEOBJECT_DESC_INTERNAL m_pGameObjectFiles[128];
 	static uint32 m_NrOfGameObjects;
 
-	static SOUND_DESC_INTERNAL m_pSoundFiles[64];
-	static SoundEffect* m_pSounds[64];
+	static SOUND_DESC_INTERNAL m_pSoundFiles[128];
+	static SoundEffect* m_pSounds[128];
 	static uint32 m_NrOfSounds;
 	static uint32 m_NrOfSoundsLoaded;
 
-	static MUSIC_DESC_INTERNAL m_pMusicFiles[64];
-	static Music* m_pMusic[64];
+	static MUSIC_DESC_INTERNAL m_pMusicFiles[128];
+	static Music* m_pMusic[128];
 	static uint32 m_NrOfMusic;
 	static uint32 m_NrOfMusicLoaded;
 
-	static SHADER_DESC_INTERNAL m_ShaderFiles[64];
-	static ShaderProgram* m_pShaders[64];
+	static SHADER_DESC_INTERNAL m_ShaderFiles[128];
+	static ShaderProgram* m_pShaders[128];
 	static uint32 m_NrOfShaders;
 	static uint32 m_NrOfShadersLoaded;
 

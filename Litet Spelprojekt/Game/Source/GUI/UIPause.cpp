@@ -31,6 +31,7 @@ UIPause::UIPause(float x, float y, float width, float height) : Panel(x, y, widt
 	m_TutorialScreens.push_back(TEXTURE::LOADING_CONTROLS);
 	m_TutorialScreens.push_back(TEXTURE::TUTORIAL_SCREEN_1);
 	m_TutorialScreens.push_back(TEXTURE::TUTORIAL_SCREEN_2);
+	m_TutorialScreens.push_back(TEXTURE::TUTORIAL_SCREEN_3);
 
 	m_pTutorialPanel = new Panel(0, 0, width, height);
 	m_pButtonNext = new Button(width - 311, 45, 200, 100, "Nästa");

@@ -35,6 +35,7 @@ void ScenarioIceberg::Init(World* pWorld) noexcept
 void ScenarioIceberg::Release() noexcept
 {
 	DeleteSafe(m_pAudioSourceExplosion);
+	m_InstancesComplete = 0;
 }
 
 void ScenarioIceberg::OnStart(SceneGame* scene) noexcept
@@ -105,7 +106,7 @@ bool ScenarioIceberg::Update(float dtS, World* world, SceneGame* scene) noexcept
 			Logger::LogEvent("Båten fick hål i skrovet av ett isberg", false);
 
 			Crew* crew = scene->GetCrew();
-			for (int i = 0; i < crew->GetCount(); i++)
+			for (uint32 i = 0; i < crew->GetCount(); i++)
 			{
 				float distance = glm::distance(crew->GetMember(i)->GetPosition(), target);
 				if (distance <= 2)
@@ -133,12 +134,12 @@ std::string ScenarioIceberg::GetName() noexcept
 
 int32 ScenarioIceberg::GetCooldownTime() noexcept
 {
-	return 100;
+	return 60 * 5;
 }
 
 int32 ScenarioIceberg::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60 * 5;
+	return 30;
 }
 
 bool ScenarioIceberg::IsComplete() noexcept
@@ -186,5 +187,5 @@ int32 ScenarioIceberg::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origi
 		}
 	}
 
-	return std::min(t_max[0], t_max[1]);
+	return (int32)std::min(t_max[0], t_max[1]);
 }

@@ -27,7 +27,7 @@ void UINotification::Update(float dtS) noexcept
 		pixels = dtS * 200.0F;
 	}
 
-	for (int i = m_Notifications.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_Notifications.size() - 1; i >= 0; i--)
 	{
 		std::pair<Panel*, float>& pair = m_Notifications[i];
 		Panel* p = pair.first;
@@ -44,7 +44,7 @@ void UINotification::Update(float dtS) noexcept
 	m_PixelsToMove = glm::max(m_PixelsToMove, 0.0F);
 
 
-	for (int i = m_NotificationsToDelete.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_NotificationsToDelete.size() - 1; i >= 0; i--)
 	{
 		Panel* pPanel = m_NotificationsToDelete[i];
 		pPanel->SetPosition(pPanel->GetX() + dtS * 500.0f, pPanel->GetY());
@@ -64,13 +64,13 @@ void UINotification::OnRenderGUIObject(GUIContext* context, GUIObject* object)
 
 void UINotification::DeleteAll() noexcept
 {
-	for (int i = m_Notifications.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_Notifications.size() - 1; i >= 0; i--)
 	{
 		Game::GetGame()->GetGUIManager().Remove(m_Notifications[i].first);
 		m_Notifications.erase(m_Notifications.begin() + i);
 	}
 
-	for (int i = m_NotificationsToDelete.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_NotificationsToDelete.size() - 1; i >= 0; i--)
 	{
 		Game::GetGame()->GetGUIManager().Remove(m_NotificationsToDelete[i]);
 		m_NotificationsToDelete.erase(m_NotificationsToDelete.begin() + i);
@@ -79,7 +79,7 @@ void UINotification::DeleteAll() noexcept
 
 void UINotification::SetVisible(bool visible) noexcept
 {
-	for (int i = m_Notifications.size() - 1; i >= 0; i--)
+	for (int i = (int32)m_Notifications.size() - 1; i >= 0; i--)
 	{
 		m_Notifications[i].first->SetVisible(visible);
 	}

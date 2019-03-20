@@ -239,9 +239,7 @@ inline void ScenarioWater::Evaporate(Scene* pScene, TileData * const * ppLevelDa
 
 			SceneGame* pSceneGame = (SceneGame*)pScene;
 			World* pWorld = pSceneGame->GetWorld();
-
-			Room& room = pSceneGame->GetWorld()->GetRoom(ppLevel[tile.x][tile.y]);
-
+			Room& room = pWorld->GetRoom(ppLevel[tile.x][tile.y]);
 			if (room.IsFlooded() && !room.IsFloodUpdatedThisFrame())
 			{
 				room.SetFlooded(false);

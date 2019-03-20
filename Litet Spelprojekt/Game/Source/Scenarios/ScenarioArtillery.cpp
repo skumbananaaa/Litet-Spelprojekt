@@ -25,6 +25,7 @@ void ScenarioArtillery::Init(World* pWorld) noexcept
 
 void ScenarioArtillery::Release() noexcept
 {
+	m_InstancesComplete = 0;
 }
 
 void ScenarioArtillery::OnStart(SceneGame* scene) noexcept
@@ -84,7 +85,7 @@ bool ScenarioArtillery::Update(float dtS, World* world, SceneGame* scene) noexce
 			m_pAudioSourceExplosion->Play();
 
 			Crew* crew = scene->GetCrew();
-			for (int i = 0; i < crew->GetCount(); i++)
+			for (uint32 i = 0; i < crew->GetCount(); i++)
 			{
 				if (crew->GetMember(i)->GetPosition().y >= 4)
 				{
@@ -121,12 +122,12 @@ std::string ScenarioArtillery::GetName() noexcept
 
 int32 ScenarioArtillery::GetCooldownTime() noexcept
 {
-	return 100;
+	return 60 * 5;
 }
 
 int32 ScenarioArtillery::GetMaxTimeBeforeOutbreak() noexcept
 {
-	return 60 * 5;
+	return 60;
 }
 
 bool ScenarioArtillery::IsComplete() noexcept

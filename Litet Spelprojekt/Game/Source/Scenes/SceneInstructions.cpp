@@ -8,14 +8,14 @@ SceneInstructions::SceneInstructions() :
 {
 }
 
-void SceneInstructions::OnActivated(SceneInternal* lastScene, IRenderer* m_pRenderer) noexcept
+void SceneInstructions::OnActivated(SceneInternal* lastScene, IRenderer* pRenderer) noexcept
 {
-	SceneInternal::OnActivated(lastScene, m_pRenderer);
+	SceneInternal::OnActivated(lastScene, pRenderer);
 
 	Game* game = Game::GetGame();
 	Window* window = &game->GetWindow();
 
-	m_pPanel = new Panel(0.0f, 0.0f, window->GetWidth(), window->GetHeight());
+	m_pPanel = new Panel(0.0f, 0.0f, (float)window->GetWidth(), (float)window->GetHeight());
 	m_pPanel->SetBackgroundTexture(ResourceHandler::GetTexture2D(TEXTURE::LOADING_CONTROLS));
 	m_pPanel->AddExternalRenderer(this);
 	m_HasRenderedUI = false;

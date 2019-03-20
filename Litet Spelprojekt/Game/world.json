@@ -6568,6 +6568,48 @@
             "rotation": 37.699119567871097
         },
         {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 28,
+            "gameObject": 17,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 0,
+            "tileIdZ": 36,
+            "gameObject": 17,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 7,
+            "tileIdY": 0,
+            "tileIdZ": 35,
+            "gameObject": 17,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 5,
+            "tileIdY": 0,
+            "tileIdZ": 5,
+            "gameObject": 3,
+            "rotation": 4.71238899230957
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 14,
+            "gameObject": 3,
+            "rotation": 12.566370010375977
+        },
+        {
+            "tileIdX": 0,
+            "tileIdY": 0,
+            "tileIdZ": 13,
+            "gameObject": 4,
+            "rotation": 6.2831854820251469
+        },
+        {
             "tileIdX": 6,
             "tileIdY": 2,
             "tileIdZ": 19,
@@ -6953,11 +6995,11 @@
             "rotation": 0.0
         },
         {
-            "tileIdX": 5,
+            "tileIdX": 4,
             "tileIdY": 2,
-            "tileIdZ": 24,
+            "tileIdZ": 26,
             "gameObject": 16,
-            "rotation": 0.0
+            "rotation": 1.5707963705062867
         },
         {
             "tileIdX": 5,
@@ -6986,6 +7028,27 @@
             "tileIdZ": 0,
             "gameObject": 16,
             "rotation": 12.566370010375977
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 2,
+            "tileIdZ": 19,
+            "gameObject": 17,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 7,
+            "tileIdY": 2,
+            "tileIdZ": 21,
+            "gameObject": 17,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 7,
+            "tileIdY": 2,
+            "tileIdZ": 18,
+            "gameObject": 17,
+            "rotation": 0.0
         },
         {
             "tileIdX": 5,
@@ -7429,17 +7492,24 @@
             "rotation": 3.1415927410125734
         },
         {
-            "tileIdX": 8,
+            "tileIdX": 7,
             "tileIdY": 4,
-            "tileIdZ": 13,
+            "tileIdZ": 11,
+            "gameObject": 17,
+            "rotation": 0.0
+        },
+        {
+            "tileIdX": 2,
+            "tileIdY": 4,
+            "tileIdZ": 12,
             "gameObject": 17,
             "rotation": 0.0
         },
         {
             "tileIdX": 3,
             "tileIdY": 4,
-            "tileIdZ": 10,
-            "gameObject": 17,
+            "tileIdZ": 8,
+            "gameObject": 16,
             "rotation": 0.0
         }
     ],
@@ -7715,6 +7785,16 @@
             5,
             2,
             29
+        ],
+        [
+            5,
+            2,
+            32
+        ],
+        [
+            5,
+            2,
+            33
         ],
         [
             5,

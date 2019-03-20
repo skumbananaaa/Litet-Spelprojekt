@@ -109,7 +109,7 @@ void Crewmember::Update(const Camera& camera, float deltaTime) noexcept
 
 	uint32 index = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
 
-	if (room.IsBurning() && !room.IsFireDetected())
+	if (room.IsBurning() && !room.IsFireDetected() && !room.IsFlooded())
 	{
 		room.SetFireDetected(true);
 		Logger::LogEvent(GetName() + " larmar om eld i " + m_pWorld->GetNameFromGlobal(index) + "!", true);
@@ -295,6 +295,7 @@ void Crewmember::GoToSickBay()
 		else
 		{
 			Logger::LogEvent(GetName() + " kan inte gå till sjukstugan!", true);
+			ReportPosition();
 		}
 	}
 }
@@ -328,6 +329,7 @@ bool Crewmember::Heal(float skillLevel, float dtS)
 	if (HasRecovered())
 	{
 		Logger::LogEvent(GetName() + " har fått medicinsk hjälp!", true);
+		ReportPosition();
 		res = true;
 	}
 	return res;
@@ -384,7 +386,7 @@ void Crewmember::ApplySmokeInjury(float smoke)
 int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, float elevation, float extension) noexcept
 {
 	glm::vec3 centre = GetLastKnownPosition() + glm::vec3(0.0f, 0.9f, 0.0f);
-	centre.x += extension * glm::floor(centre.y / 2.0f);
+	centre.x += extension * glm::clamp(glm::floor(centre.y / 2.0f), 0.0f, 2.0f);
 
 	float t = -1;
 
@@ -449,7 +451,7 @@ int32 Crewmember::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin, fl
 		}
 	}
 
-	return t;
+	return (int32)t;
 }
 
 void Crewmember::OnOrderStarted(bool idleOrder) noexcept
@@ -502,7 +504,7 @@ void Crewmember::OnNotHovered() noexcept
 void Crewmember::SetPosition(const glm::vec3& position) noexcept
 { 
 	glm::vec3 pos = glm::vec3(glm::clamp(position.x, 1.0f, 10.0f), glm::clamp(position.y, 0.0f, 4.0f), glm::clamp(position.z, 1.0f, 40.0f));
-	m_PlayerTile = glm::ivec3(std::round(position.x), std::round((position.y) / 2), std::round(position.z));
+	m_PlayerTile = glm::ivec3(std::round(position.x), std::floor((position.y) / 2), std::round(position.z));
 	//m_PlayerTile.z = m_PlayerTile.z < 0 ? 0 : m_PlayerTile.z;
 	
 	//HOT FIX (Gay?)
@@ -580,9 +582,8 @@ void Crewmember::SetResting(bool value) noexcept
 
 void Crewmember::ReportPosition() noexcept
 {
-	uint32 roomIndex = m_pWorld->GetLevel(m_PlayerTile.y * 2).GetLevel()[m_PlayerTile.x][m_PlayerTile.z];
 	m_LastKnownPosition = GetPosition();
-	m_pWorld->SetRoomActive(roomIndex, true);
+	m_pWorld->SetRoomActive(GetRoom(), true);
 }
 
 void Crewmember::RequestReportPosition() noexcept
@@ -590,7 +591,7 @@ void Crewmember::RequestReportPosition() noexcept
 	if (m_pUISelectedCrew && m_pUISelectedCrew->GetPercentage() >= 1.0f)
 	{
 		m_pUISelectedCrew->SetPercentage(0.0f);
-		m_pUISelectedCrew->StartAnimation(Random::GenerateInt(3, 15));
+		m_pUISelectedCrew->StartAnimation(Random::GenerateInt(MIN_REPORT_TIME, MAX_REPORT_TIME));
 	}
 }
 
@@ -613,17 +614,17 @@ void Crewmember::UpdateHealth(float dt)
 	{
 		if (HasInjurySmoke())
 		{
-			m_Health -= (std::log10(m_HasInjurySmoke) - std::log10(1.0)) * smokeDmgSpeed * dt;
+			m_Health -= (float)(std::log10(m_HasInjurySmoke) - std::log10(1.0)) * smokeDmgSpeed * dt;
 		}
 
 		if (HasInjuryBurned())
 		{
-			m_Health -= (std::log10(m_HasInjuryBurned) - std::log10(1.0)) * burnDmgSpeed * dt;
+			m_Health -= (float)(std::log10(m_HasInjuryBurned) - std::log10(1.0)) * burnDmgSpeed * dt;
 		}
 
 		if (HasInjuryBleed())
 		{
-			m_Health -= (std::log10(m_HasInjuryBleeding) - std::log10(1.0)) * bleedDmgSpeed * dt;
+			m_Health -= (float)(std::log10(m_HasInjuryBleeding) - std::log10(1.0)) * bleedDmgSpeed * dt;
 		}
 	}
 
@@ -682,7 +683,6 @@ void Crewmember::CheckSmokeDamage(const TileData* const * data, float dt) noexce
 	const TileData& tileData = data[m_PlayerTile.x][m_PlayerTile.z];
 	if (tileData.SmokeAmount - tileData.SmokeLimit >= 1.0)
 	{
-		bool isSmoked = HasInjurySmoke();
 		ApplySmokeInjury((tileData.SmokeAmount / tileData.SmokeLimit) * smokeDmgSpeed * dt);
 	}
 }

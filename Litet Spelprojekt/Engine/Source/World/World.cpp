@@ -176,9 +176,6 @@ void World::PlaceGameObjects(Scene& scene) noexcept
 	for (size_t i = 0; i < m_Objects.size(); i++)
 	{
 	    const WorldObject& worldObject = m_Objects[i];
-		int32 width = m_Levels[worldObject.TileId.y].GetSizeX();
-		int32 height = m_Levels[worldObject.TileId.y].GetSizeZ();
-		int floorLevel = worldObject.TileId.y / 2;
 
 		GameObject* pGameObject = ResourceHandler::CreateGameObject(worldObject.GameObject);
 		glm::uvec3 pos = worldObject.TileId;
@@ -203,9 +200,6 @@ void World::PlaceDoors(Scene& scene) noexcept
 		const glm::vec3& door1 = m_Doors[i];
 		WorldLevel& level = m_Levels[(int32)door1.y];
 		
-		float halfWidth = (float)level.GetSizeX() / 2.0f;
-		float halfHeight = (float)level.GetSizeZ() / 2.0f;
-
 		for (uint32 j = i + 1; j < m_Doors.size(); j++)
 		{
 			const glm::vec3& door2 = m_Doors[j];
@@ -272,9 +266,6 @@ void World::PlaceStairs(Scene& scene) noexcept
 		const glm::ivec3& stair = m_Stairs[i];
 		WorldLevel& level = m_Levels[stair.y];
 		
-		float halfWidth = (float)level.GetSizeX() / 2.0f;
-		float halfHeight = (float)level.GetSizeZ() / 2.0f;
-
 		glm::vec3 position = ((glm::vec3)stair);
 
 		const uint32* const* grid = level.GetLevel();

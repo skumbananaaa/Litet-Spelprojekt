@@ -173,7 +173,7 @@ int32 GameObjectDoor::TestAgainstRay(const glm::vec3 ray, const glm::vec3 origin
 		}
 	}
 
-	return t;
+	return (int32)t;
 }
 
 void GameObjectDoor::UpdateTransform() noexcept
@@ -266,6 +266,6 @@ void GameObjectDoor::OnOrderChosen(const std::string& name, void* userData, cons
 			tile2 = tile;
 		}
 
-		crewmember->GiveOrder(new OrderDoor(this, tile2, reinterpret_cast<uint32>(userData)));
+		crewmember->GiveOrder(new OrderDoor(this, tile2, (uint32)reinterpret_cast<uint64>(userData)));
 	}
 }

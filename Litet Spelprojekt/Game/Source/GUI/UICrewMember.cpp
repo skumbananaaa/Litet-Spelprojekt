@@ -34,6 +34,18 @@ void UICrewMember::SetCrewMember(const Crewmember* crewmember)
 	}
 }
 
+void UICrewMember::SetVisible(bool visible) noexcept
+{
+	if (m_Crewmember && visible)
+	{
+		Panel::SetVisible(true);
+	}
+	else
+	{
+		Panel::SetVisible(false);
+	}
+}
+
 void UICrewMember::OnRender(GUIContext* context)
 {
 	Panel::OnRender(context);

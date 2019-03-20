@@ -252,7 +252,7 @@ void Crewmember::GiveOrder(IOrder* order) noexcept
 	}
 }
 
-void Crewmember::OnOrderChosen(const std::string & name, void * userData, const std::vector<int32>& selectedMembers) noexcept
+void Crewmember::OnOrderChosen(const std::string& name, void* userData, const std::vector<int32>& selectedMembers) noexcept
 {
 	if (name == "Assistera")
 	{

@@ -5,14 +5,12 @@
 OrderCarry::OrderCarry(OrderCarry* other) : OrderWalk(other)
 {
 	m_InNeedOfAssist = other->m_InNeedOfAssist;
-	GetCrewMember()->SetAssisting(nullptr);
 }
 
 OrderCarry::OrderCarry(Crewmember* inNeedOfAssist) : OrderWalk(inNeedOfAssist->GetTile() * glm::ivec3(1, 2, 1))
 {
 	m_pCarrying = inNeedOfAssist;
 	m_InNeedOfAssist = inNeedOfAssist->GetShipNumber();
-	GetCrewMember()->SetAssisting(nullptr);
 }
 
 OrderCarry::~OrderCarry()

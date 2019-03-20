@@ -102,7 +102,8 @@ void main()
 	vec3 scale = vec3(length(g_InstanceModel[0].xyz), length(g_InstanceModel[1].xyz), length(g_InstanceModel[2].xyz));
 
 	//Do extension
-	worldPos.x += g_Extension * floor(clamp(g_InstanceModel[3].y, 0.0f, 5.9f) / 2.0f);
+	float extension = g_Extension * floor(clamp(g_InstanceModel[3].y, 0.0f, 5.9f) / 2.0f);
+	worldPos.x += extension;
 
 	//Viewdir
 	vec3 viewDir = normalize(g_CameraPosition.xyz - worldPos.xyz);
@@ -112,6 +113,9 @@ void main()
 	vec3 cameraForward = normalize(g_CameraLookAt - g_CameraPosition);
 	float dotToLookAtForward = dot(vec3(cameraForward.x, 0.0f, cameraForward.z), vec3(toLookAt.x, 0.0f, toLookAt.z));
 	float cutWalls = 1.0f;
+	vec3 instancePos = g_InstanceModel[3].xyz;
+	instancePos.x += extension;
+	float distance = length(g_CameraLookAt - instancePos);
 
 	if (dotToLookAtForward > 0.0f)
 	{
@@ -120,7 +124,7 @@ void main()
 	}
 
 	//CLIPPING
-	gl_ClipDistance[0] = cutWalls;
+	gl_ClipDistance[0] = ((g_InstanceModel[3].y < g_CameraLookAt.y) || (distance > 7.5f)) ? 0.0f : cutWalls;
 	gl_ClipDistance[1] = dot(worldPos, g_ReflectionClipPlane);
 	gl_ClipDistance[2] = dot(worldPos, g_ClipPlane);
 

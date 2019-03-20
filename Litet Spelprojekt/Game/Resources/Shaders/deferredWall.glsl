@@ -65,6 +65,7 @@ void main()
 	{
 		vec4 wallClipPlane = vec4(0.0f, -1.0f, 0.0f, g_InstanceModel[3].y - WALL_STUMP_FROM_CENTER);
 		cutWalls = dot(worldPos, wallClipPlane);
+		g_CameraLookAt 
 	}
 
 	gl_ClipDistance[0] = cutWalls;
